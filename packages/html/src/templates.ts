@@ -123,6 +123,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
   const latestAttempt = input.attempts.at(-1);
   const weakConcepts = input.wrongNotes.flatMap((note) => note.relatedConcepts).slice(0, 5);
   const coverageDelta = coverageDeltaFor(input.incrementalReport);
+  const graphSummary = graphSummaryFor(input.componentGraphReport);
   const graphFilters = graphFilterButtons(input.componentGraphReport.nodes);
   const pages: RenderedPage[] = [
     {
@@ -139,7 +140,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
         <section class="grid">
           <article><h3>학습 지도</h3>${list(["Overview", "Language", "Folders", "Files", "Flow", "Glossary", "Rebuild", "Quiz"])}</article>
           <article><h3>커버리지</h3><p>${(input.coverageReport.coverageRatio * 100).toFixed(1)}% · 핵심 파일 ${input.coverageReport.coveredImportantFiles}개 설명</p><a href="coverage.html">커버리지 열기</a></article>
-          <article><h3>컴포넌트 그래프</h3><p>노드 ${input.componentGraphReport.nodes.length}개 · 관계 ${input.componentGraphReport.edges.length}개</p><a href="component-graph.html">그래프 열기</a></article>
+          <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
           <article><h3>퀴즈 요약</h3><p>총 ${input.quiz.totalQuestions}문제</p><p>최근 점수: ${latestAttempt ? latestAttempt.score.toFixed(1) : "미응시"}</p></article>
           <article><h3>오답노트</h3><p>오답 ${input.wrongNotes.length}개</p><p>취약 개념: ${weakConcepts.map(escapeHtml).join(", ") || "아직 없음"}</p><a href="wrong-notes.html">오답노트 열기</a></article>
@@ -189,7 +190,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     {
       name: "component-graph.html",
       title: "컴포넌트 그래프",
-      html: pageShell("컴포넌트 그래프", "component-graph.html", `<section class="panel"><h2>관계도</h2><p>${escapeHtml(input.componentGraphReport.beginnerExplanation)}</p><pre>${escapeHtml(input.componentGraphReport.mermaid)}</pre></section><section class="panel"><h2>노드 필터</h2><div class="toolbar graph-filter-toolbar" role="toolbar" aria-label="component graph filters">${graphFilters}</div></section><section class="grid"><article><h3>진입 노드</h3>${list(input.componentGraphReport.entryNodeIds)}</article><article><h3>관계</h3>${list(input.componentGraphReport.edges.slice(0, 40).map((edge) => `${edge.from} -> ${edge.to}: ${edge.label}`))}</article></section><section class="cards component-node-cards">${input.componentGraphReport.nodes.map((node) => `<article id="${node.id}" data-node-type="${escapeHtml(node.type)}"><h3>${escapeHtml(node.label)}</h3><p class="muted">${escapeHtml(node.type)}</p><p>${escapeHtml(node.summary)}</p>${node.href ? `<a href="${escapeHtml(node.href)}">관련 학습 섹션</a>` : ""}</article>`).join("")}</section>`, input)
+      html: pageShell("컴포넌트 그래프", "component-graph.html", `<section class="panel"><h2>관계도</h2><p>${escapeHtml(input.componentGraphReport.beginnerExplanation)}</p><pre>${escapeHtml(input.componentGraphReport.mermaid)}</pre></section><section class="panel"><h2>큰 그래프 요약</h2><p>${escapeHtml(graphSummary.largeRepoAdvice)}</p><dl class="meta"><div><dt>노드</dt><dd>${graphSummary.totalNodes}</dd></div><div><dt>관계</dt><dd>${graphSummary.totalEdges}</dd></div></dl><h3>노드 타입</h3>${list(Object.entries(graphSummary.nodeTypeCounts).map(([type, count]) => `${type}: ${count}`))}<h3>핵심 허브</h3>${list(graphSummary.topConnectedNodes.map((node) => `${node.label} [${node.type}] · degree ${node.degree}`))}</section><section class="panel"><h2>노드 필터</h2><div class="toolbar graph-filter-toolbar" role="toolbar" aria-label="component graph filters">${graphFilters}</div></section><section class="grid"><article><h3>진입 노드</h3>${list(input.componentGraphReport.entryNodeIds)}</article><article><h3>관계</h3>${list(input.componentGraphReport.edges.slice(0, 40).map((edge) => `${edge.from} -> ${edge.to}: ${edge.label}`))}</article></section><section class="cards component-node-cards">${input.componentGraphReport.nodes.map((node) => `<article id="${node.id}" data-node-type="${escapeHtml(node.type)}"><h3>${escapeHtml(node.label)}</h3><p class="muted">${escapeHtml(node.type)}</p><p>${escapeHtml(node.summary)}</p>${node.href ? `<a href="${escapeHtml(node.href)}">관련 학습 섹션</a>` : ""}</article>`).join("")}</section>`, input)
     },
     {
       name: "incremental.html",
@@ -259,6 +260,35 @@ function formatPercentOrNone(value: number | null): string {
 
 function formatPointDelta(value: number | null): string {
   return value === null ? "없음" : `${(value * 100).toFixed(1)}%p`;
+}
+
+function graphSummaryFor(report: ComponentGraphReport): ComponentGraphReport["summary"] {
+  const maybeReport = report as ComponentGraphReport & { summary?: ComponentGraphReport["summary"] };
+  if (maybeReport.summary) return maybeReport.summary;
+  const nodeTypeCounts = countBy(report.nodes.map((node) => node.type));
+  const edgeLabelCounts = countBy(report.edges.map((edge) => edge.label));
+  const degree = new Map<string, number>();
+  for (const edge of report.edges) {
+    degree.set(edge.from, (degree.get(edge.from) ?? 0) + 1);
+    degree.set(edge.to, (degree.get(edge.to) ?? 0) + 1);
+  }
+  return {
+    totalNodes: report.nodes.length,
+    totalEdges: report.edges.length,
+    nodeTypeCounts,
+    edgeLabelCounts,
+    topConnectedNodes: report.nodes
+      .map((node) => ({ id: node.id, label: node.label, type: node.type, degree: degree.get(node.id) ?? 0 }))
+      .sort((a, b) => b.degree - a.degree || a.label.localeCompare(b.label))
+      .slice(0, 8),
+    largeRepoAdvice: "이 세션은 graph summary 필드가 추가되기 전에 생성되어 HTML에서 요약을 재계산했습니다."
+  };
+}
+
+function countBy(values: string[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const value of values) counts[value] = (counts[value] ?? 0) + 1;
+  return counts;
 }
 
 function graphFilterButtons(nodes: ComponentGraphReport["nodes"]): string {

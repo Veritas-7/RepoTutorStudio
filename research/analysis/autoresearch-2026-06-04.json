@@ -139,6 +139,22 @@
         "html/component-graph.html data-node-type cards",
         "html/assets/app.js data-graph-filter handler"
       ]
+    },
+    {
+      "name": "richer large-repo graph summaries",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/component-graph-report.json summary object",
+        "markdown/component-graph.md large graph summary section",
+        "html/component-graph.html large graph summary panel"
+      ]
     }
   ],
   "verification": {
@@ -153,11 +169,12 @@
     "cliCoverageDeltaSmoke": "PASS",
     "fixtureGraphFilters": "PASS",
     "cliGraphFilterSmoke": "PASS",
+    "fixtureGraphSummary": "PASS",
+    "cliGraphSummarySmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },
   "candidateBacklog": [
-    "richer large-repo graph summaries",
     "export usability polish"
   ]
 }
