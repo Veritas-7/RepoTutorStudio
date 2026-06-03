@@ -242,7 +242,13 @@ async function list(parsed: ParsedArgs): Promise<void> {
     };
   }));
   const filtered = parsed.flags["verified-only"] === true ? rows.filter((row) => row.verificationOk === true) : rows;
-  console.log(JSON.stringify(filtered, null, 2));
+  const format = stringFlag(parsed.flags.format) ?? "json";
+  if (!["json", "markdown"].includes(format)) throw new Error("list supports --format json or markdown.");
+  if (format === "markdown") {
+    console.log(listMarkdown(filtered));
+  } else {
+    console.log(JSON.stringify(filtered, null, 2));
+  }
 }
 
 async function openSession(parsed: ParsedArgs): Promise<void> {
@@ -414,6 +420,49 @@ function resumeMarkdown(payload: {
   ].join("\n");
 }
 
+function listMarkdown(rows: Array<{
+  sessionId: string;
+  repo: string;
+  createdAt: string;
+  mode: string;
+  score: number | null;
+  wrong: number;
+  path: string;
+  html: string;
+  verificationStatus: string;
+  verificationOk: boolean | null;
+  verificationHtml: string;
+}>): string {
+  const body = rows.length === 0
+    ? "_No sessions found._"
+    : [
+      "| Session | Repo | Created | Mode | Score | Wrong | Verification | HTML |",
+      "|---|---|---|---|---:|---:|---|---|",
+      ...rows.map((row) => [
+        row.sessionId,
+        row.repo,
+        row.createdAt,
+        row.mode,
+        row.score === null ? "none" : String(row.score),
+        String(row.wrong),
+        row.verificationStatus,
+        row.html
+      ].map(markdownTableCell).join(" | "))
+        .map((line) => `| ${line} |`)
+    ].join("\n");
+  return [
+    "# RepoTutor Sessions",
+    "",
+    `- Returned sessions: ${rows.length}`,
+    "",
+    body
+  ].join("\n");
+}
+
+function markdownTableCell(value: string): string {
+  return value.replaceAll("|", "\\|").replaceAll("\n", " ");
+}
+
 async function sessionVerificationSummary(sessionRoot: string): Promise<{
   status: "passed" | "failed" | "missing";
   ok: boolean | null;
@@ -548,7 +597,7 @@ function help(): void {
   verify-export <session-id-or-path>
   verify-evidence <session-id-or-path>
   verify-session <session-id-or-path> --format json|markdown
-  list --verified-only
+  list --verified-only --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz
   open --list-targets
   doctor`);

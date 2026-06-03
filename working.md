@@ -199,6 +199,9 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Applied a fortieth AutoResearch upgrade: Markdown resume output.
   CLI `repo-tutor resume --format markdown` now renders a human-readable resume
   summary with verification status, target page paths, and verification checks.
+- 2026-06-04: Applied a forty-first AutoResearch upgrade: Markdown session
+  listing. CLI `repo-tutor list --format markdown` now renders a human-readable
+  session table, and still works with `--verified-only`.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -380,6 +383,10 @@ to a private repository, and preserve resumable state in this file.
     `repo-tutor resume --format markdown` returned `# RepoTutor Resume`,
     `Verification status: passed`, direct verification/evidence/quiz paths, and
     `session: PASS`
+  - temp CLI list-markdown smoke generated
+    `/tmp/repotutor-list-md-smoke.wN4Bip`; `repo-tutor list --verified-only
+    --format markdown` returned `# RepoTutor Sessions`, `Returned sessions: 1`,
+    a session table, `passed`, and `html/index.html`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -423,6 +430,7 @@ to a private repository, and preserve resumable state in this file.
   - `35d90f7` open target discovery
   - `643161c` fail-closed open targets
   - `5fc5ecd` enriched resume output
+  - `b88d17f` Markdown resume output
 
 ## Next Actions
 

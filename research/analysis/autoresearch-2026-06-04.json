@@ -575,6 +575,17 @@
         "repo-tutor resume --format markdown",
         "human-readable resume summary with HTML targets"
       ]
+    },
+    {
+      "name": "markdown session listing",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --format markdown",
+        "human-readable session table"
+      ]
     }
   ],
   "verification": {
@@ -645,6 +656,7 @@
     "cliOpenTargetExistsSmoke": "PASS",
     "cliResumeTargetsSmoke": "PASS",
     "cliResumeMarkdownSmoke": "PASS",
+    "cliListMarkdownSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
