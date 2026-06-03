@@ -1420,6 +1420,33 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`: PASS, 13/13 audit reports
 - 2026-06-04: Pushed AutoResearch Upgrade 120:
   - `9ce2cc6` project activity risk report
+- 2026-06-04: AutoResearch Upgrade 121 candidate selected:
+  `licensee/licensee` (`https://github.com/licensee/licensee`; public MIT;
+  899 stars; 331 forks; updated 2026-06-01T01:51:54Z). Cloned ignored
+  external source to `research/external-src/licensee-licensee` and inspected
+  docs plus core project/license file classes without executing it.
+- 2026-06-04: RED license-rights smoke generated
+  `/tmp/repotutor-license-rights-red.json`; old build was missing
+  `analysis/license-rights-report.json`, `markdown/license-rights.md`, and
+  `html/license-rights.html` as expected.
+- 2026-06-04: Implemented Licensee-style license rights report:
+  `LicenseRightsReportSchema`, `analysis/license-rights-report.json`,
+  `markdown/license-rights.md`, `html/license-rights.html`, license file
+  candidate scoring, package metadata license signals, README license hints,
+  review warnings, rights checklist, manifest/session-verification coverage,
+  learning-path linkage, and `open --target license-rights`.
+- 2026-06-04: GREEN license-rights smoke generated
+  `/tmp/repotutor-license-rights-green-studies.VPkljT/2026-06-04/local__simple-ts-app__main__f989eeae`;
+  confirmed `verificationCheckedRequiredArtifacts=63`,
+  `detectedProjectLicense`, `licenseFiles`, `packageLicenseSignals`,
+  `readmeLicenseReferences`, `reviewWarnings`, `rightsChecklist`,
+  `license-rights-card`, `data-source-pattern="Licensee"`,
+  manifest/learning-path entries, and `open --target license-rights` ->
+  `html/license-rights.html`.
+- 2026-06-04: Verification for Upgrade 121:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 13/13 audit reports
 
 ## Next Actions
 

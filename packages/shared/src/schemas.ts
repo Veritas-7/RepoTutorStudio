@@ -673,6 +673,53 @@ export const ProjectActivityReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const LicenseRightsReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  detectedProjectLicense: z.object({
+    spdxId: z.string().nullable(),
+    confidence: z.number().min(0).max(1),
+    evidence: z.string(),
+    sourceHref: z.string().nullable()
+  }),
+  licenseFiles: z.array(z.object({
+    filePath: z.string(),
+    filenameScore: z.number().min(0).max(1),
+    detectedSpdxId: z.string().nullable(),
+    confidence: z.number().min(0).max(1),
+    matcher: z.enum(["copyright-only", "exact-keyword", "spdx-filename", "text-similarity-hint", "unknown"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  packageLicenseSignals: z.array(z.object({
+    filePath: z.string(),
+    packageName: z.string().nullable(),
+    licenseText: z.string(),
+    detectedSpdxId: z.string().nullable(),
+    confidence: z.number().min(0).max(1),
+    sourceHref: z.string()
+  })),
+  readmeLicenseReferences: z.array(z.object({
+    filePath: z.string(),
+    detectedSpdxId: z.string().nullable(),
+    snippet: z.string(),
+    confidence: z.number().min(0).max(1),
+    sourceHref: z.string()
+  })),
+  reviewWarnings: z.array(z.object({
+    severity: z.enum(["info", "warn", "error"]),
+    message: z.string(),
+    relatedHref: z.string()
+  })),
+  rightsChecklist: z.array(z.object({
+    label: z.string(),
+    status: z.enum(["pass", "review", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -895,6 +942,7 @@ export type DependencyHealthReport = z.infer<typeof DependencyHealthReportSchema
 export type SearchIndexReport = z.infer<typeof SearchIndexReportSchema>;
 export type LearningJournalReport = z.infer<typeof LearningJournalReportSchema>;
 export type ProjectActivityReport = z.infer<typeof ProjectActivityReportSchema>;
+export type LicenseRightsReport = z.infer<typeof LicenseRightsReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

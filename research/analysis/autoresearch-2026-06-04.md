@@ -2269,6 +2269,38 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 121: License Rights Report
+
+- Cloned and inspected `licensee/licensee` under
+  `research/external-src/licensee-licensee` without executing external source.
+- GitHub metadata: public repo, MIT license, 899 stars, 331 forks, updated
+  2026-06-01T01:51:54Z. No source code was copied into RepoTutor.
+- Added `LicenseRightsReportSchema` and
+  `analysis/license-rights-report.json` with Licensee-style license file
+  scoring, matched-file confidence, package metadata signals, README license
+  hints, review warnings, and a learner-facing rights checklist.
+- Added `markdown/license-rights.md`, `html/license-rights.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target license-rights`.
+- Source pattern: Licensee finds likely license files from root license-like
+  filenames and top-level `LICENSES/*`, treats package manager license metadata
+  as an optional review signal, and keeps README license references as
+  low-confidence human-review hints.
+- RED smoke `/tmp/repotutor-license-rights-red.json` showed the old behavior
+  was missing `analysis/license-rights-report.json`,
+  `markdown/license-rights.md`, and `html/license-rights.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-license-rights-green-studies.VPkljT/2026-06-04/local__simple-ts-app__main__f989eeae`;
+  confirmed `verificationCheckedRequiredArtifacts=63`,
+  `detectedProjectLicense`, `licenseFiles`, `packageLicenseSignals`,
+  `readmeLicenseReferences`, `reviewWarnings`, `rightsChecklist`,
+  `license-rights-card`, `data-source-pattern="Licensee"`, manifest/learning
+  path entries, and `open --target license-rights` ->
+  `html/license-rights.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
