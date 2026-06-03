@@ -486,6 +486,18 @@
         "markdown/session-verification.md",
         "README.study.md verification report pointers"
       ]
+    },
+    {
+      "name": "html session verification entrypoint",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "html/session-verification.html",
+        "HTML manifest entrypoint for verification reports"
+      ]
     }
   ],
   "verification": {
@@ -547,6 +559,8 @@
     "cliSessionVerificationReportSmoke": "PASS",
     "fixtureSessionVerificationMarkdownReport": "PASS",
     "cliSessionVerificationMarkdownReportSmoke": "PASS",
+    "fixtureSessionVerificationHtmlEntrypoint": "PASS",
+    "cliSessionVerificationHtmlEntrypointSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

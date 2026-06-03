@@ -168,6 +168,11 @@ to a private repository, and preserve resumable state in this file.
   `markdown/session-verification.md` with PASS/FAIL status, artifact counts,
   sub-check status, and compact failure rows; `README.study.md` points to both
   the JSON and Markdown verification reports.
+- 2026-06-04: Applied a thirty-third AutoResearch upgrade: HTML session
+  verification entrypoint. The portable HTML export now includes
+  `html/session-verification.html`, sidebar/index navigation, and a manifest
+  entrypoint linking to the JSON and Markdown verification reports without
+  creating a verifier-manifest cycle.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -307,6 +312,12 @@ to a private repository, and preserve resumable state in this file.
     `/tmp/repotutor-session-md-report-smoke.wybixW/2026-06-04/local__simple-ts-app__main__10a43db1`
     with `markdown/session-verification.md` containing `# 세션 검증`,
     `상태: PASS`, all four sub-checks as PASS, and `실패 항목` as `없음`
+  - temp CLI session verification HTML smoke generated
+    `/tmp/repotutor-session-html-smoke.C9HLsl/2026-06-04/local__simple-ts-app__main__3a4153ce`
+    with `html/session-verification.html`, links to
+    `../analysis/session-verification-report.json` and
+    `../markdown/session-verification.md`, a manifest page entry, a manifest
+    entrypoint, and 18 manifest-covered files
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -342,6 +353,7 @@ to a private repository, and preserve resumable state in this file.
   - `9c815df` complete study session verification
   - `a5bc3b3` Markdown output for session verification
   - `10a43db` persistent session verification reports
+  - `3a4153c` Markdown session verification reports
 
 ## Next Actions
 

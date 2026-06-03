@@ -436,6 +436,18 @@ Transferable patterns:
   PASS status and sub-check statuses.
 - `scripts/compliance-audit.mjs`: verifies the Markdown report artifact.
 
+### Upgrade 33: HTML Session Verification Entrypoint
+
+- `packages/html/src/templates.ts`: adds `html/session-verification.html`.
+- `packages/html/src/templates.ts`: links the Verification page from the
+  sidebar, index summary, and HTML manifest entrypoints.
+- `packages/html/src/templates.ts`: links to
+  `../analysis/session-verification-report.json` and
+  `../markdown/session-verification.md` without embedding self-referential
+  verification data in the HTML manifest.
+- `packages/core/src/pipeline.test.ts`: verifies the HTML page and report links.
+- `scripts/compliance-audit.mjs`: verifies the HTML verification entrypoint.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -586,6 +598,11 @@ Local verification:
   `/tmp/repotutor-session-md-report-smoke.wybixW/2026-06-04/local__simple-ts-app__main__10a43db1`
   with `markdown/session-verification.md` containing `# 세션 검증`,
   `상태: PASS`, all four sub-checks as PASS, and `실패 항목` as `없음`.
+- Temp CLI session verification HTML smoke generated:
+  `/tmp/repotutor-session-html-smoke.C9HLsl/2026-06-04/local__simple-ts-app__main__3a4153ce`
+  with `html/session-verification.html`, links to the JSON and Markdown
+  verification reports, a manifest page entry, a manifest entrypoint, and 18
+  manifest-covered files.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

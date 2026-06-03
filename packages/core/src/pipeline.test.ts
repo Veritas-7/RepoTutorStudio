@@ -26,6 +26,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "component-graph.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "incremental.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "evidence.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "session-verification.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.codex, "events.jsonl"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.source, ".env"))).rejects.toThrow();
     const snapshotText = await fs.readFile(path.join(result.session.outputPaths.analysis, "source-snapshot-report.json"), "utf8");
@@ -95,6 +96,11 @@ describe("RepoTutor core pipeline", () => {
     expect(evidenceHtml).toContain("data-evidence-kind=\"import\"");
     expect(evidenceHtml).toContain("files.html#src-main.ts");
     expect(evidenceHtml).toContain("../source/src/main.ts");
+    const sessionVerificationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "session-verification.html"), "utf8");
+    expect(sessionVerificationHtml).toContain("세션 검증");
+    expect(sessionVerificationHtml).toContain("../analysis/session-verification-report.json");
+    expect(sessionVerificationHtml).toContain("../markdown/session-verification.md");
+    expect(sessionVerificationHtml).toContain("repo-tutor verify-session");
     const appJs = await fs.readFile(path.join(result.session.outputPaths.html, "assets", "app.js"), "utf8");
     expect(appJs).toContain("[data-evidence-kind-filter]");
     const fileLessonsText = await fs.readFile(path.join(result.session.outputPaths.analysis, "file-lessons.json"), "utf8");
