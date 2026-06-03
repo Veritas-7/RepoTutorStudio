@@ -551,6 +551,16 @@ Transferable patterns:
   `list supports --status passed, failed, missing, or all.`
 - `scripts/compliance-audit.mjs`: verifies the list status CLI surface.
 
+### Upgrade 44: Repo-Filtered Session Listing
+
+- `apps/cli/src/index.ts`: `repo-tutor list --repo <owner/name-or-name>` now
+  filters sessions by full repo id or repo basename.
+- `apps/cli/src/index.ts`: repo filtering happens before `--status`,
+  `--verified-only`, `--limit`, and JSON/Markdown rendering.
+- `apps/cli/src/index.ts`: missing or empty repo filters fail closed with
+  `repo must be a non-empty string`.
+- `scripts/compliance-audit.mjs`: verifies the repo-filter list CLI surface.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -758,6 +768,12 @@ Local verification:
   session verification report, `list --status passed` returned one passed row,
   `list --status missing` returned one missing row in JSON and Markdown, and
   `--status stale` exited 1 with `list supports --status`.
+- Temp CLI list-repo smoke generated:
+  `/tmp/repotutor-list-repo-smoke.XIo0gm`; two copied fixture repos `repo-alpha`
+  and `repo-beta` were studied, `list --repo repo-alpha` returned one JSON row
+  for `local/repo-alpha`, `list --repo local/repo-beta --format markdown`
+  returned one Markdown row, and missing `--repo` value exited 1 with
+  `repo must be a non-empty string`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
