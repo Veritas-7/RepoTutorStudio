@@ -350,6 +350,15 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs`: verifies the new report and includes
   `packages/core/src/pipeline.ts` in the lesson-generation audit scope.
 
+### Upgrade 25: CLI Source Evidence Report Access
+
+- `apps/cli/src/index.ts`: adds `repo-tutor evidence <session-id-or-path>`.
+- `apps/cli/src/index.ts`: supports `--kind` filtering and `--limit` for
+  evidence report rows.
+- `apps/cli/src/index.ts`: returns `totalEvidenceItems`, `evidenceByKind`,
+  `evidenceByFile`, filtered rows, lesson links, and source links as JSON.
+- `scripts/compliance-audit.mjs`: verifies the new headless CLI command.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -454,6 +463,11 @@ Local verification:
 - `pnpm audit:brief` initially caught the new artifact token outside the audit
   file scope; after adding `packages/core/src/pipeline.ts` to the
   lesson-generation audit, `pnpm audit:brief` passed 13/13.
+- Temp CLI evidence command smoke generated:
+  `/tmp/repotutor-evidence-cli-smoke.hnBk02/2026-06-04/local__simple-ts-app__main__dba4cad7`
+  and `repo-tutor evidence <session> --kind import --limit 1` returned
+  `filteredKind: import`, `returnedItems: 1`, `totalEvidenceItems: 9`,
+  `evidenceByKind`, `evidenceByFile`, and `sourceHref: source/src/main.ts`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
