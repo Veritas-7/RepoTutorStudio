@@ -27,6 +27,7 @@ import type {
   DecisionRecordReport,
   DependencyHealthReport,
   LearningJournalReport,
+  ProjectActivityReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -60,6 +61,7 @@ export interface StudyHtmlInput {
   decisionRecordReport: DecisionRecordReport;
   dependencyHealthReport: DependencyHealthReport;
   learningJournalReport: LearningJournalReport;
+  projectActivityReport: ProjectActivityReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -113,6 +115,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["api-reference.html", "API Reference"],
     ["search-index.html", "Search Index"],
     ["learning-journal.html", "Learning Journal"],
+    ["project-activity.html", "Project Activity"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -201,6 +204,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>API Reference</h3><p>${escapeHtml(input.apiReferenceReport.summary)}</p><p>TypeDoc 패턴으로 entry point, ReflectionKind, public export surface를 정리합니다.</p><a href="api-reference.html">API Reference 열기</a></article>
           <article><h3>Search Index</h3><p>${escapeHtml(input.searchIndexReport.summary)}</p><p>Pagefind 패턴으로 generated page, file lesson, folder lesson을 검색 가능한 문서 단위로 나눕니다.</p><a href="search-index.html">Search Index 열기</a></article>
           <article><h3>Learning Journal</h3><p>${escapeHtml(input.learningJournalReport.summary)}</p><p>learn-codebase 패턴으로 예측 질문, mastery map, spaced review queue를 남깁니다.</p><a href="learning-journal.html">Learning Journal 열기</a></article>
+          <article><h3>Project Activity</h3><p>${escapeHtml(input.projectActivityReport.summary)}</p><p>Repowise 패턴으로 snapshot-only activity, hotspot, dead-code, decision queue를 묶습니다.</p><a href="project-activity.html">Project Activity 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -295,6 +299,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "learning-journal.html",
       title: "Learning Journal",
       html: pageShell("Learning Journal", "learning-journal.html", `<section class="panel" data-source-pattern="learn-codebase"><h2>Active Recall Journal</h2><p>${escapeHtml(input.learningJournalReport.summary)}</p><p class="muted">${escapeHtml(input.learningJournalReport.sourcePattern)}</p><dl class="meta"><div><dt>openQuestions</dt><dd>${input.learningJournalReport.openQuestions.length}</dd></div><div><dt>spacedReview</dt><dd>${input.learningJournalReport.spacedReviewQueue.length}</dd></div><div><dt>masteryLevels</dt><dd>${input.learningJournalReport.masteryLevels.length}</dd></div><div><dt>socraticPrompts</dt><dd>${input.learningJournalReport.socraticPrompts.length}</dd></div></dl><p><a href="assets/learning-journal-template.md">learning-journal-template.md 열기</a></p></section><section class="grid"><article class="learning-journal-card"><h3>Focus & Goals</h3>${learningFocusList(input.learningJournalReport.focusGoals)}</article><article class="learning-journal-card"><h3>Spaced Review Queue</h3>${learningReviewList(input.learningJournalReport.spacedReviewQueue)}</article><article class="learning-journal-card"><h3>Aha Moments</h3>${learningAhaList(input.learningJournalReport.ahaMoments)}</article><article class="learning-journal-card"><h3>다음 확인 단계</h3>${list(input.learningJournalReport.learnerNextSteps)}</article></section><section class="cards learning-journal-cards">${learningMasteryCards(input.learningJournalReport.masteryLevels)}${learningQuestionCards(input.learningJournalReport.openQuestions)}${learningPromptCards(input.learningJournalReport.socraticPrompts)}</section>`, input)
+    },
+    {
+      name: "project-activity.html",
+      title: "Project Activity",
+      html: pageShell("Project Activity", "project-activity.html", `<section class="panel" data-source-pattern="Repowise"><h2>Project Activity Snapshot</h2><p>${escapeHtml(input.projectActivityReport.summary)}</p><p class="muted">${escapeHtml(input.projectActivityReport.sourcePattern)}</p><dl class="meta"><div><dt>history mode</dt><dd>${escapeHtml(input.projectActivityReport.historyAvailability.mode)}</dd></div><div><dt>branch</dt><dd>${escapeHtml(input.projectActivityReport.historyAvailability.branch ?? "unknown")}</dd></div><div><dt>commit</dt><dd>${escapeHtml(input.projectActivityReport.historyAvailability.commitHash?.slice(0, 12) ?? "unknown")}</dd></div><div><dt>hotspots</dt><dd>${input.projectActivityReport.hotspotCandidates.length}</dd></div></dl><p>${escapeHtml(input.projectActivityReport.historyAvailability.reason)}</p></section><section class="grid"><article class="project-activity-card"><h3>Activity Signals</h3>${projectActivitySignalList(input.projectActivityReport.activitySignals)}</article><article class="project-activity-card"><h3>Review Queues</h3>${projectActivityQueueList(input.projectActivityReport.reviewQueues)}</article><article class="project-activity-card"><h3>Decision Prompts</h3>${projectActivityDecisionPromptList(input.projectActivityReport.architectureDecisionPrompts)}</article><article class="project-activity-card"><h3>다음 확인 단계</h3>${list(input.projectActivityReport.learnerNextSteps)}</article></section><section class="cards project-activity-hotspots">${projectActivityHotspotCards(input.projectActivityReport.hotspotCandidates)}</section><section class="cards project-activity-dead-code">${projectActivityDeadCodeCards(input.projectActivityReport.deadCodeCandidates)}</section>`, input)
     },
     {
       name: "context-pack.html",
@@ -424,6 +433,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "API Reference", path: "html/api-reference.html", description: "TypeDoc식 entry point, public symbol, export warning을 확인합니다." },
       { label: "Search Index", path: "html/search-index.html", description: "Pagefind식 document, filter, metadata, term index를 확인합니다." },
       { label: "Learning Journal", path: "html/learning-journal.html", description: "learn-codebase식 active recall 질문, mastery map, spaced review queue를 확인합니다." },
+      { label: "Project Activity", path: "html/project-activity.html", description: "Repowise식 activity snapshot, hotspot, dead-code, decision review queue를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -609,6 +619,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "learning-journal.html",
       goal: "파일 수업을 읽기 전 예측 질문에 답하고, mastery map과 spaced review queue를 다음 세션의 시작점으로 남깁니다.",
       evidence: `open questions ${input.learningJournalReport.openQuestions.length}개, spaced review ${input.learningJournalReport.spacedReviewQueue.length}개`
+    },
+    {
+      title: "Project activity risk queue 확인",
+      href: "project-activity.html",
+      goal: "snapshot-only activity, hotspot 후보, dead-code 후보, decision prompt를 변경 전 검토 queue로 정리합니다.",
+      evidence: `hotspots ${input.projectActivityReport.hotspotCandidates.length}개, dead-code candidates ${input.projectActivityReport.deadCodeCandidates.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -819,6 +835,31 @@ function learningQuestionCards(items: LearningJournalReport["openQuestions"]): s
 function learningPromptCards(items: LearningJournalReport["socraticPrompts"]): string {
   if (items.length === 0) return "<article><h3>기록된 Socratic prompt가 없습니다.</h3><p>분석을 다시 실행하면 이곳에 질문 패턴이 쌓입니다.</p></article>";
   return items.map((item) => `<article class="learning-journal-card"><h3>${escapeHtml(item.category)}</h3><p>${escapeHtml(item.question)}</p><p class="muted">${escapeHtml(item.useWhen)}</p><h4>Graduated Hints</h4>${list(item.hintLevels)}<a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 리포트 열기</a></article>`).join("");
+}
+
+function projectActivitySignalList(items: ProjectActivityReport["activitySignals"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 activity signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.label)}</strong>: ${escapeHtml(item.value)}<br>${escapeHtml(item.explanation)}<br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 리포트 열기</a></li>`).join("")}</ul>`;
+}
+
+function projectActivityQueueList(items: ProjectActivityReport["reviewQueues"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 review queue가 없습니다.</p>";
+  return `<ul>${items.map((queue) => `<li><strong>${escapeHtml(queue.queue)}</strong>: ${escapeHtml(queue.purpose)} (${queue.items.length} items)</li>`).join("")}</ul>`;
+}
+
+function projectActivityDecisionPromptList(items: ProjectActivityReport["architectureDecisionPrompts"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 decision prompt가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.trigger)}</strong><br>${escapeHtml(item.question)}<br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 근거 열기</a></li>`).join("")}</ul>`;
+}
+
+function projectActivityHotspotCards(items: ProjectActivityReport["hotspotCandidates"]): string {
+  if (items.length === 0) return "<article class=\"project-activity-card\"><h3>Hotspot 후보가 없습니다.</h3><p>핵심 파일이 충분하지 않거나 정적 신호가 낮습니다.</p></article>";
+  return items.map((item) => `<article class="project-activity-card"><h3>${escapeHtml(item.filePath)}</h3><p class="muted">static hotspot score ${item.score}</p><p>${escapeHtml(item.reason)}</p><h4>Signals</h4>${list(item.signals)}<p><a href="${escapeHtml(htmlPageHref(item.lessonHref))}">파일 수업</a> · <a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></p></article>`).join("");
+}
+
+function projectActivityDeadCodeCards(items: ProjectActivityReport["deadCodeCandidates"]): string {
+  if (items.length === 0) return "<article class=\"project-activity-card\"><h3>Dead-code 후보가 없습니다.</h3><p>dependency graph에서 no-orphans 후보를 찾지 못했습니다.</p></article>";
+  return items.map((item) => `<article class="project-activity-card"><h3>${escapeHtml(item.filePath)}</h3><p class="muted">dead-code confidence ${item.confidence}</p><p>${escapeHtml(item.reason)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 수업</a> · <a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></p></article>`).join("");
 }
 
 function contextPackCards(files: ContextPackReport["topFiles"]): string {

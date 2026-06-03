@@ -622,6 +622,57 @@ export const LearningJournalReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ProjectActivityReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  historyAvailability: z.object({
+    mode: z.enum(["snapshot-only", "git-metadata", "unavailable"]),
+    reason: z.string(),
+    sourceType: SourceTypeSchema.nullable(),
+    sourceUrl: z.string().nullable(),
+    localSourcePath: z.string().nullable(),
+    branch: z.string().nullable(),
+    commitHash: z.string().nullable()
+  }),
+  activitySignals: z.array(z.object({
+    label: z.string(),
+    value: z.string(),
+    explanation: z.string(),
+    relatedHref: z.string()
+  })),
+  hotspotCandidates: z.array(z.object({
+    filePath: z.string(),
+    score: z.number().min(0),
+    reason: z.string(),
+    signals: z.array(z.string()),
+    lessonHref: z.string(),
+    sourceHref: z.string()
+  })),
+  deadCodeCandidates: z.array(z.object({
+    filePath: z.string(),
+    confidence: z.number().min(0).max(1),
+    reason: z.string(),
+    relatedHref: z.string(),
+    sourceHref: z.string()
+  })),
+  reviewQueues: z.array(z.object({
+    queue: z.string(),
+    purpose: z.string(),
+    items: z.array(z.object({
+      target: z.string(),
+      action: z.string(),
+      why: z.string(),
+      relatedHref: z.string()
+    }))
+  })),
+  architectureDecisionPrompts: z.array(z.object({
+    question: z.string(),
+    trigger: z.string(),
+    relatedHref: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -843,6 +894,7 @@ export type DecisionRecordReport = z.infer<typeof DecisionRecordReportSchema>;
 export type DependencyHealthReport = z.infer<typeof DependencyHealthReportSchema>;
 export type SearchIndexReport = z.infer<typeof SearchIndexReportSchema>;
 export type LearningJournalReport = z.infer<typeof LearningJournalReportSchema>;
+export type ProjectActivityReport = z.infer<typeof ProjectActivityReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

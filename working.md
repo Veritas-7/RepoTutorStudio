@@ -1385,6 +1385,39 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`: PASS, 13/13 audit reports
 - 2026-06-04: Pushed AutoResearch Upgrade 119:
   - `96c3588` active recall learning journal
+- 2026-06-04: AutoResearch Upgrade 120 candidate selected:
+  `repowise-dev/repowise` (`https://github.com/repowise-dev/repowise`;
+  public; GitHub license key `Other`, checked `LICENSE` AGPL-3.0-or-later;
+  2,187 stars; 282 forks; updated 2026-06-03T16:35:56Z). Cloned ignored
+  external source to `research/external-src/repowise-dev-repowise` and
+  inspected README, docs for intelligence/code health, and git indexer records
+  without executing it.
+- 2026-06-04: RED project-activity smoke generated
+  `/tmp/repotutor-project-activity-red-studies.*/...`; old build was missing
+  `analysis/project-activity-report.json`, `markdown/project-activity.md`, and
+  `html/project-activity.html` as expected.
+- 2026-06-04: Implemented Repowise-style project activity risk report:
+  `ProjectActivityReportSchema`, `analysis/project-activity-report.json`,
+  `markdown/project-activity.md`, `html/project-activity.html`, explicit
+  history availability, activity signals, static hotspot candidates, dead-code
+  candidates, review queues, architecture decision prompts,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target project-activity`. The report preserves source type,
+  branch, commit, URL/path metadata but does not fabricate full Git churn,
+  ownership, or co-change history after `.git` is removed from the safe study
+  source.
+- 2026-06-04: GREEN project-activity smoke generated
+  `/tmp/repotutor-project-activity-green-studies.jiEuX6/2026-06-04/local__simple-ts-app__main__9d0b090f`;
+  confirmed `verificationCheckedRequiredArtifacts=60`,
+  `historyAvailability`, `activitySignals`, `hotspotCandidates`,
+  `deadCodeCandidates`, `reviewQueues`, `architectureDecisionPrompts`,
+  `project-activity-card`, `data-source-pattern="Repowise"`,
+  manifest/learning-path entries, and `open --target project-activity` ->
+  `html/project-activity.html`.
+- 2026-06-04: Verification for Upgrade 120:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 13/13 audit reports
 
 ## Next Actions
 
