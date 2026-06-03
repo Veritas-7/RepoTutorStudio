@@ -292,6 +292,19 @@ Transferable patterns:
 - `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
   verify the source evidence filter markers.
 
+### Upgrade 20: Source Evidence Kind Breakdowns
+
+- `packages/shared/src/schemas.ts`: extends `CoverageReportSchema` with
+  `evidenceKindCounts`.
+- `packages/core/src/scanner.ts`: counts file lesson source evidence by kind
+  across import, export, entry, config, test, and text snippets.
+- `packages/core/src/markdown.ts`: renders a `소스 근거 종류` section in
+  `markdown/coverage.md`.
+- `packages/html/src/templates.ts`: renders evidence kind counts in the index
+  coverage card and `html/coverage.html`.
+- `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
+  verify evidence kind breakdown artifacts.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -370,6 +383,10 @@ Local verification:
   with `data-source-evidence-filter`, `data-source-evidence="present"`,
   `근거 있음`, `근거 부족`, and matching source-evidence filtering logic in
   `html/assets/app.js`.
+- Temp CLI evidence-kind smoke generated:
+  `/tmp/repotutor-evidence-kind-smoke.qk4tIy/2026-06-04/local__simple-ts-app__main__63a77df2`
+  with `evidenceKindCounts` `{text: 2, config: 4, import: 1, entry: 1, export:
+  1}`, Markdown `## 소스 근거 종류`, and HTML `근거 종류` / `소스 근거 종류`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

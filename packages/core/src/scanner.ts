@@ -227,6 +227,7 @@ function buildCoverageReport(repoMap: RepoMap, fileLessons: FileLesson[]): Cover
   const covered = new Set(fileLessons.map((lesson) => lesson.filePath));
   const evidenceBackedFiles = fileLessons.filter((lesson) => lesson.sourceEvidence.length > 0).length;
   const filesWithoutEvidence = fileLessons.filter((lesson) => lesson.sourceEvidence.length === 0).map((lesson) => lesson.filePath);
+  const evidenceKindCounts = countBy(fileLessons.flatMap((lesson) => lesson.sourceEvidence.map((item) => item.kind)));
   const importantCandidates = [
     ...repoMap.folders.flatMap((folder) => folder.representativeFiles.map((file) => `${folder.folderPath}/${file}`)),
     ...fileLessons.map((lesson) => lesson.filePath)
@@ -247,6 +248,7 @@ function buildCoverageReport(repoMap: RepoMap, fileLessons: FileLesson[]): Cover
     coverageRatio: repoMap.totalFiles === 0 ? 0 : Math.min(1, fileLessons.length / repoMap.totalFiles),
     evidenceBackedFiles,
     evidenceCoverageRatio: fileLessons.length === 0 ? 0 : evidenceBackedFiles / fileLessons.length,
+    evidenceKindCounts,
     filesWithoutEvidence: filesWithoutEvidence.slice(0, 30),
     uncoveredImportantFiles,
     highPriorityFolders,
