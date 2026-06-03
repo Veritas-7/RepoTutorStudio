@@ -256,6 +256,18 @@
         "tampered index.html negative test",
         "tamper CLI smoke evidence"
       ]
+    },
+    {
+      "name": "export integrity reporting",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor export integrityOk JSON field",
+        "repo-tutor export integrityCheckedFiles JSON field",
+        "fail-closed export integrity verification"
+      ]
     }
   ],
   "verification": {
@@ -286,6 +298,7 @@
     "cliVerifyExportSmoke": "PASS",
     "fixtureTamperNegativeVerify": "PASS",
     "cliTamperVerifySmoke": "PASS",
+    "cliExportIntegrityJsonSmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },

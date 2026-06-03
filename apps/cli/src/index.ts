@@ -91,9 +91,11 @@ async function exportSession(parsed: ParsedArgs): Promise<void> {
   if (!["html", "zip"].includes(format)) throw new Error("export supports --format html or --format zip.");
   const htmlInput = await loadStudyHtmlInput(sessionRoot);
   const { renderStudyHtml } = await import("@repotutor/html");
-  const { writeHtmlZipBundle, writeRenderedHtml } = await import("@repotutor/core");
+  const { verifyHtmlExportManifest, writeHtmlZipBundle, writeRenderedHtml } = await import("@repotutor/core");
   const rendered = renderStudyHtml(htmlInput);
   await writeRenderedHtml(sessionRoot, rendered);
+  const verification = await verifyHtmlExportManifest(sessionRoot);
+  if (!verification.ok) throw new Error("HTML export integrity verification failed.");
   const zip = format === "zip" ? await writeHtmlZipBundle(sessionRoot) : null;
   console.log(JSON.stringify({
     exported: format,
@@ -103,6 +105,8 @@ async function exportSession(parsed: ParsedArgs): Promise<void> {
     manifest: path.join(sessionRoot, "html", "manifest.json"),
     pages: rendered.manifest.pages.length,
     assets: rendered.manifest.assets.length,
+    integrityOk: verification.ok,
+    integrityCheckedFiles: verification.checkedFiles,
     zipBytes: zip?.bytes ?? null,
     zipFiles: zip?.fileCount ?? null,
     entrypoints: rendered.manifest.entrypoints.map((entry) => ({

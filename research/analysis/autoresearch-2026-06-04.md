@@ -241,6 +241,16 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs`: checks the CLI failure path includes
   `process.exitCode`.
 
+### Upgrade 16: Export Integrity Reporting
+
+- `apps/cli/src/index.ts`: `repo-tutor export --format html|zip` now verifies
+  the freshly written HTML export before returning.
+- `apps/cli/src/index.ts`: export JSON includes `integrityOk` and
+  `integrityCheckedFiles`.
+- `apps/cli/src/index.ts`: export fails closed if integrity verification fails.
+- `scripts/compliance-audit.mjs`: includes the export integrity JSON fields in
+  the offline export compliance check.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -300,6 +310,10 @@ Local verification:
   `/tmp/repotutor-tamper-verify-smoke.BRu06X/2026-06-04/local__simple-ts-app__main__67bd1c8e`,
   appended to `html/index.html`, and confirmed `verify-export` returned exit
   code 1, `ok: false`, and failure path `html/index.html`.
+- Temp CLI export-integrity JSON smoke generated:
+  `/tmp/repotutor-export-integrity-json-smoke.dkSgoj/2026-06-04/local__simple-ts-app__main__f5a93a48`
+  and returned `integrityOk: true`, `integrityCheckedFiles: 16`, 18 ZIP files,
+  and 76,489 ZIP bytes.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
