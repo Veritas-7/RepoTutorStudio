@@ -123,6 +123,8 @@ describe("RepoTutor core pipeline", () => {
     const learningPathHtml = await fs.readFile(path.join(result.session.outputPaths.html, "learning-path.html"), "utf8");
     expect(learningPathHtml).toContain("학습 경로");
     expect(learningPathHtml).toContain("learning-path-step");
+    expect(learningPathHtml).toContain("data-learning-primary");
+    expect(learningPathHtml).toContain("기본 투어");
     expect(learningPathHtml).toContain("id=\"learning-step-1\"");
     expect(learningPathHtml).toContain("learning-step-nav");
     expect(learningPathHtml).toContain("href=\"#learning-step-2\"");
