@@ -918,6 +918,21 @@ Local verification:
   `--format text` exited 1 with `verify-export supports --format`, and a
   tampered `html/index.html` made Markdown output return exit 1 with `OK: FAIL`
   and `html/index.html`.
+
+### Upgrade 56: Evidence Verification Markdown
+
+- Added `repo-tutor verify-evidence <session> --format markdown` so source
+  evidence integrity checks can be pasted into handoff notes while preserving
+  fail-closed exit behavior.
+- Added `verifyEvidence` format metadata to `repo-tutor doctor` and fail-closed
+  format validation for `verify-evidence`.
+- Temp CLI verify-evidence-markdown smoke generated
+  `/tmp/repotutor-verify-evidence-md-smoke.BBWQSx`; Markdown output included
+  `# RepoTutor Evidence Verification`, `OK: PASS`, and `Checked items: 9`,
+  `doctor` reported Markdown support for `verifyEvidence`, invalid
+  `--format text` exited 1 with `verify-evidence supports --format`, and
+  removing `source/src/main.ts` made Markdown output return exit 1 with
+  `OK: FAIL` and `missing-source-path`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
