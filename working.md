@@ -715,6 +715,13 @@ to a private repository, and preserve resumable state in this file.
     containing `quiz`, `list --html-targets complete` returned the intact row,
     Markdown output included `HTML Targets` and `missing: quiz`, and invalid
     `--html-targets stale` exited 1 with `list supports --html-targets`
+  - temp CLI verify-list-report smoke generated
+    `/tmp/repotutor-verify-list-report-smoke.51ZnNB`; an isolated fixture study
+    was created, JSON and Markdown verification reports were saved to nested
+    report paths, stdout returned the saved report paths, tampering manifest
+    fields saved a failure report and exited non-zero with `fields-mismatch`,
+    and missing `--report` value exited non-zero with
+    `report must be a non-empty string.`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -801,6 +808,7 @@ to a private repository, and preserve resumable state in this file.
   - `b399160` saved session list manifest schema versioning
   - `04eba07` saved session list manifest schema gate
   - `91dd874` saved session list row-count verification
+  - `a141f33` saved session list field verification
 
 ## Next Actions
 
