@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-03T23:45:00.265Z",
+  "createdAt": "2026-06-03T23:51:47.115Z",
   "checks": [
     {
       "name": "project setup",
@@ -102,6 +102,13 @@
     },
     {
       "name": "license rights report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "software bill of materials report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

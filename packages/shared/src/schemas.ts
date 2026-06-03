@@ -720,6 +720,62 @@ export const LicenseRightsReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SbomReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  sourceDescriptor: z.object({
+    sourceType: SourceTypeSchema.nullable(),
+    sourceUrl: z.string().nullable(),
+    localSourcePath: z.string().nullable(),
+    branch: z.string().nullable(),
+    commitHash: z.string().nullable(),
+    descriptorName: z.string(),
+    descriptorVersion: z.string()
+  }),
+  packageManifests: z.array(z.object({
+    filePath: z.string(),
+    ecosystem: z.string(),
+    packageCount: z.number().int().nonnegative(),
+    directDependencies: z.number().int().nonnegative(),
+    devDependencies: z.number().int().nonnegative(),
+    sourceHref: z.string()
+  })),
+  packageArtifacts: z.array(z.object({
+    name: z.string(),
+    version: z.string().nullable(),
+    ecosystem: z.string(),
+    packageType: z.string(),
+    purl: z.string().nullable(),
+    licenses: z.array(z.string()),
+    foundBy: z.string(),
+    locations: z.array(z.string()),
+    evidenceHref: z.string()
+  })),
+  fileArtifacts: z.array(z.object({
+    filePath: z.string(),
+    artifactKind: z.enum(["manifest", "lockfile", "container", "source", "config"]),
+    size: z.number().int().nonnegative(),
+    sourceHref: z.string()
+  })),
+  relationships: z.array(z.object({
+    from: z.string(),
+    to: z.string(),
+    relationshipType: z.enum(["declares", "contains", "evidence-for", "uses-ecosystem"]),
+    evidenceHref: z.string()
+  })),
+  outputFormats: z.array(z.object({
+    format: z.enum(["syft-json", "cyclonedx-json", "spdx-json"]),
+    readiness: z.enum(["available", "partial"]),
+    reason: z.string()
+  })),
+  reviewWarnings: z.array(z.object({
+    severity: z.enum(["info", "warn", "error"]),
+    message: z.string(),
+    relatedHref: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -943,6 +999,7 @@ export type SearchIndexReport = z.infer<typeof SearchIndexReportSchema>;
 export type LearningJournalReport = z.infer<typeof LearningJournalReportSchema>;
 export type ProjectActivityReport = z.infer<typeof ProjectActivityReportSchema>;
 export type LicenseRightsReport = z.infer<typeof LicenseRightsReportSchema>;
+export type SbomReport = z.infer<typeof SbomReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

@@ -23,6 +23,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "learning-journal-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "project-activity-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "license-rights-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "sbom-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -44,6 +45,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "learning-journal.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "project-activity.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "license-rights.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "sbom.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -68,6 +70,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "learning-journal.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "project-activity.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "license-rights.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "sbom.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -122,6 +125,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/learning-journal.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/project-activity.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/license-rights.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/sbom.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -265,6 +269,26 @@ describe("RepoTutor core pipeline", () => {
     expect(licenseRightsMarkdown).toContain("Source pattern: Licensee");
     expect(licenseRightsMarkdown).toContain("## Rights Checklist");
     expect(licenseRightsMarkdown).toContain("## Review Warnings");
+    const sbomText = await fs.readFile(path.join(result.session.outputPaths.analysis, "sbom-report.json"), "utf8");
+    expect(sbomText).toContain("Syft SBOM source descriptor artifacts packages file metadata relationships CycloneDX SPDX output formats");
+    expect(sbomText).toContain("\"sourceDescriptor\"");
+    expect(sbomText).toContain("\"packageManifests\"");
+    expect(sbomText).toContain("\"packageArtifacts\"");
+    expect(sbomText).toContain("\"fileArtifacts\"");
+    expect(sbomText).toContain("\"relationships\"");
+    expect(sbomText).toContain("\"outputFormats\"");
+    expect(sbomText).toContain("\"purl\"");
+    expect(sbomText).toContain("zod");
+    const sbomHtml = await fs.readFile(path.join(result.session.outputPaths.html, "sbom.html"), "utf8");
+    expect(sbomHtml).toContain("SBOM");
+    expect(sbomHtml).toContain("sbom-card");
+    expect(sbomHtml).toContain("data-source-pattern=\"Syft\"");
+    expect(sbomHtml).toContain("SBOM Snapshot");
+    const sbomMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "sbom.md"), "utf8");
+    expect(sbomMarkdown).toContain("# SBOM");
+    expect(sbomMarkdown).toContain("Source pattern: Syft");
+    expect(sbomMarkdown).toContain("## Package Artifacts");
+    expect(sbomMarkdown).toContain("## Output Formats");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -379,6 +403,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/learning-journal.html");
     expect(exportManifestText).toContain("html/project-activity.html");
     expect(exportManifestText).toContain("html/license-rights.html");
+    expect(exportManifestText).toContain("html/sbom.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -457,6 +482,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("learning-journal.html");
     expect(learningPathHtml).toContain("project-activity.html");
     expect(learningPathHtml).toContain("license-rights.html");
+    expect(learningPathHtml).toContain("sbom.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");

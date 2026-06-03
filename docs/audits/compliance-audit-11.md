@@ -1,6 +1,6 @@
 # Compliance Audit 11
 
-Created: 2026-06-03T23:45:00.176Z
+Created: 2026-06-03T23:51:47.015Z
 
 Status: PASS
 
@@ -89,6 +89,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - license rights report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - software bill of materials report
 
 - missing files: none
 - missing strings: none

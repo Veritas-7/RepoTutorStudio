@@ -29,6 +29,7 @@ import type {
   LearningJournalReport,
   ProjectActivityReport,
   LicenseRightsReport,
+  SbomReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -64,6 +65,7 @@ export interface StudyHtmlInput {
   learningJournalReport: LearningJournalReport;
   projectActivityReport: ProjectActivityReport;
   licenseRightsReport: LicenseRightsReport;
+  sbomReport: SbomReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -119,6 +121,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["learning-journal.html", "Learning Journal"],
     ["project-activity.html", "Project Activity"],
     ["license-rights.html", "License Rights"],
+    ["sbom.html", "SBOM"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -209,6 +212,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Learning Journal</h3><p>${escapeHtml(input.learningJournalReport.summary)}</p><p>learn-codebase 패턴으로 예측 질문, mastery map, spaced review queue를 남깁니다.</p><a href="learning-journal.html">Learning Journal 열기</a></article>
           <article><h3>Project Activity</h3><p>${escapeHtml(input.projectActivityReport.summary)}</p><p>Repowise 패턴으로 snapshot-only activity, hotspot, dead-code, decision queue를 묶습니다.</p><a href="project-activity.html">Project Activity 열기</a></article>
           <article><h3>License Rights</h3><p>${escapeHtml(input.licenseRightsReport.summary)}</p><p>Licensee 패턴으로 license file, package metadata, README 참조를 분리합니다.</p><a href="license-rights.html">License Rights 열기</a></article>
+          <article><h3>SBOM</h3><p>${escapeHtml(input.sbomReport.summary)}</p><p>Syft 패턴으로 source descriptor, package artifacts, file artifacts, relationships를 inventory로 묶습니다.</p><a href="sbom.html">SBOM 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -313,6 +317,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "license-rights.html",
       title: "License Rights",
       html: pageShell("License Rights", "license-rights.html", `<section class="panel" data-source-pattern="Licensee"><h2>License Rights Snapshot</h2><p>${escapeHtml(input.licenseRightsReport.summary)}</p><p class="muted">${escapeHtml(input.licenseRightsReport.sourcePattern)}</p><dl class="meta"><div><dt>detected</dt><dd>${escapeHtml(input.licenseRightsReport.detectedProjectLicense.spdxId ?? "unknown")}</dd></div><div><dt>confidence</dt><dd>${input.licenseRightsReport.detectedProjectLicense.confidence}</dd></div><div><dt>license files</dt><dd>${input.licenseRightsReport.licenseFiles.length}</dd></div><div><dt>warnings</dt><dd>${input.licenseRightsReport.reviewWarnings.length}</dd></div></dl><p>${escapeHtml(input.licenseRightsReport.detectedProjectLicense.evidence)}</p></section><section class="grid"><article class="license-rights-card"><h3>Rights Checklist</h3>${licenseChecklistList(input.licenseRightsReport.rightsChecklist)}</article><article class="license-rights-card"><h3>Review Warnings</h3>${licenseWarningList(input.licenseRightsReport.reviewWarnings)}</article><article class="license-rights-card"><h3>Package Metadata</h3>${packageLicenseList(input.licenseRightsReport.packageLicenseSignals)}</article><article class="license-rights-card"><h3>README References</h3>${readmeLicenseList(input.licenseRightsReport.readmeLicenseReferences)}</article></section><section class="cards license-file-cards">${licenseFileCards(input.licenseRightsReport.licenseFiles)}</section><section class="panel"><h2>다음 확인 단계</h2>${list(input.licenseRightsReport.learnerNextSteps)}</section>`, input)
+    },
+    {
+      name: "sbom.html",
+      title: "SBOM",
+      html: pageShell("SBOM", "sbom.html", `<section class="panel" data-source-pattern="Syft"><h2>SBOM Snapshot</h2><p>${escapeHtml(input.sbomReport.summary)}</p><p class="muted">${escapeHtml(input.sbomReport.sourcePattern)}</p><dl class="meta"><div><dt>manifests</dt><dd>${input.sbomReport.packageManifests.length}</dd></div><div><dt>packages</dt><dd>${input.sbomReport.packageArtifacts.length}</dd></div><div><dt>files</dt><dd>${input.sbomReport.fileArtifacts.length}</dd></div><div><dt>relationships</dt><dd>${input.sbomReport.relationships.length}</dd></div></dl><p>Descriptor: ${escapeHtml(input.sbomReport.sourceDescriptor.descriptorName)} v${escapeHtml(input.sbomReport.sourceDescriptor.descriptorVersion)} · commit ${escapeHtml(input.sbomReport.sourceDescriptor.commitHash?.slice(0, 12) ?? "unknown")}</p></section><section class="grid"><article class="sbom-card"><h3>Package Manifests</h3>${sbomManifestList(input.sbomReport.packageManifests)}</article><article class="sbom-card"><h3>Output Formats</h3>${sbomOutputFormatList(input.sbomReport.outputFormats)}</article><article class="sbom-card"><h3>Review Warnings</h3>${sbomWarningList(input.sbomReport.reviewWarnings)}</article><article class="sbom-card"><h3>다음 확인 단계</h3>${list(input.sbomReport.learnerNextSteps)}</article></section><section class="cards sbom-package-cards">${sbomPackageCards(input.sbomReport.packageArtifacts)}</section><section class="cards sbom-file-cards">${sbomFileCards(input.sbomReport.fileArtifacts)}</section><section class="panel"><h2>Relationships</h2>${sbomRelationshipList(input.sbomReport.relationships)}</section>`, input)
     },
     {
       name: "context-pack.html",
@@ -444,6 +453,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Learning Journal", path: "html/learning-journal.html", description: "learn-codebase식 active recall 질문, mastery map, spaced review queue를 확인합니다." },
       { label: "Project Activity", path: "html/project-activity.html", description: "Repowise식 activity snapshot, hotspot, dead-code, decision review queue를 확인합니다." },
       { label: "License Rights", path: "html/license-rights.html", description: "Licensee식 license file, package metadata, README license reference 검토 상태를 확인합니다." },
+      { label: "SBOM", path: "html/sbom.html", description: "Syft식 package artifact, file artifact, relationship inventory를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -641,6 +651,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "license-rights.html",
       goal: "Licensee식 license file, package metadata, README license reference를 분리해 공개/재사용 전 검토 상태를 확인합니다.",
       evidence: `license files ${input.licenseRightsReport.licenseFiles.length}개, warnings ${input.licenseRightsReport.reviewWarnings.length}개`
+    },
+    {
+      title: "SBOM 패키지 인벤토리 확인",
+      href: "sbom.html",
+      goal: "Syft식 source descriptor, package artifact, file artifact, relationship inventory로 배포 전 구성요소를 확인합니다.",
+      evidence: `package artifacts ${input.sbomReport.packageArtifacts.length}개, relationships ${input.sbomReport.relationships.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -901,6 +917,35 @@ function readmeLicenseList(items: LicenseRightsReport["readmeLicenseReferences"]
 function licenseFileCards(items: LicenseRightsReport["licenseFiles"]): string {
   if (items.length === 0) return "<article class=\"license-rights-card\"><h3>License file 후보가 없습니다.</h3><p>배포나 외부 공개 전에 LICENSE 파일을 추가할지 검토하세요.</p></article>";
   return items.map((item) => `<article class="license-rights-card"><h3>${escapeHtml(item.filePath)}</h3><p class="muted">${escapeHtml(item.detectedSpdxId ?? "unknown")} · confidence ${item.confidence} · filename score ${item.filenameScore}</p><p>${escapeHtml(item.evidence)}</p><p>matcher: ${escapeHtml(item.matcher)}</p><a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></article>`).join("");
+}
+
+function sbomManifestList(items: SbomReport["packageManifests"]): string {
+  if (items.length === 0) return "<p class=\"muted\">package manifest가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li>${escapeHtml(item.filePath)}: ${escapeHtml(item.ecosystem)} · packages ${item.packageCount} · direct ${item.directDependencies} · dev ${item.devDependencies}<br><a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function sbomOutputFormatList(items: SbomReport["outputFormats"]): string {
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.format)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.reason)}</li>`).join("")}</ul>`;
+}
+
+function sbomWarningList(items: SbomReport["reviewWarnings"]): string {
+  if (items.length === 0) return "<p class=\"muted\">검토 경고가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.severity)}</strong>: ${escapeHtml(item.message)} <a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related</a></li>`).join("")}</ul>`;
+}
+
+function sbomPackageCards(items: SbomReport["packageArtifacts"]): string {
+  if (items.length === 0) return "<article class=\"sbom-card\"><h3>Package artifact가 없습니다.</h3><p>지원되는 package manifest를 추가하면 여기에 표시됩니다.</p></article>";
+  return items.slice(0, 80).map((item) => `<article class="sbom-card"><h3>${escapeHtml(item.name)}${item.version ? `@${escapeHtml(item.version)}` : ""}</h3><p class="muted">${escapeHtml(item.packageType)} · ${escapeHtml(item.ecosystem)} · ${escapeHtml(item.foundBy)}</p><p>PURL: <code>${escapeHtml(item.purl ?? "unknown")}</code></p><p>Licenses: ${escapeHtml(item.licenses.join(", ") || "unknown")}</p><p>Locations: ${escapeHtml(item.locations.join(", "))}</p><a class="source-link" href="../${escapeHtml(item.evidenceHref)}">근거 열기</a></article>`).join("");
+}
+
+function sbomFileCards(items: SbomReport["fileArtifacts"]): string {
+  if (items.length === 0) return "<article class=\"sbom-card\"><h3>File artifact가 없습니다.</h3><p>manifest, lockfile, container 파일이 감지되지 않았습니다.</p></article>";
+  return items.map((item) => `<article class="sbom-card"><h3>${escapeHtml(item.filePath)}</h3><p class="muted">${escapeHtml(item.artifactKind)} · ${item.size} bytes</p><a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></article>`).join("");
+}
+
+function sbomRelationshipList(items: SbomReport["relationships"]): string {
+  if (items.length === 0) return "<p class=\"muted\">relationship이 없습니다.</p>";
+  return `<ul>${items.slice(0, 100).map((item) => `<li><code>${escapeHtml(item.from)}</code> --${escapeHtml(item.relationshipType)}--&gt; <code>${escapeHtml(item.to)}</code> <a class="source-link" href="../${escapeHtml(item.evidenceHref)}">evidence</a></li>`).join("")}</ul>`;
 }
 
 function contextPackCards(files: ContextPackReport["topFiles"]): string {

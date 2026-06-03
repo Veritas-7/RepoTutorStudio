@@ -2301,6 +2301,38 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 122: Software Bill of Materials Report
+
+- Cloned and inspected `anchore/syft` under
+  `research/external-src/anchore-syft` without executing external source.
+- GitHub metadata: public repo, Apache-2.0 license, 9,064 stars, 868 forks,
+  updated 2026-06-02T20:22:49Z. No source code was copied into RepoTutor.
+- Added `SbomReportSchema` and `analysis/sbom-report.json` with Syft-style
+  source descriptor, package manifests, package artifacts, file artifacts,
+  relationships, output-format readiness notes, and review warnings.
+- Added `markdown/sbom.md`, `html/sbom.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target sbom`.
+- Source pattern: Syft represents an SBOM as source, descriptor, artifacts
+  packages/file metadata/licenses, and artifact relationships, with output
+  formats such as Syft JSON, CycloneDX, and SPDX. RepoTutor maps that to a
+  deterministic static learner inventory from package manifests without
+  executing external tooling.
+- RED smoke generated
+  `/tmp/repotutor-sbom-red-studies.2uhpgw/2026-06-04/local__simple-ts-app__main__36517a48`;
+  old behavior was missing `analysis/sbom-report.json`, `markdown/sbom.md`,
+  and `html/sbom.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-sbom-green-studies.HFeXCi/2026-06-04/local__simple-ts-app__main__36517a48`;
+  confirmed `verificationCheckedRequiredArtifacts=66`, package manifest 1,
+  package artifacts 3, file artifacts 1, relationships 8,
+  `sourceDescriptor`, `packageArtifacts`, `fileArtifacts`, `outputFormats`,
+  `sbom-card`, `data-source-pattern="Syft"`, manifest/learning path entries,
+  and `open --target sbom` -> `html/sbom.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
