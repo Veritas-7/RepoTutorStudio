@@ -19,6 +19,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "interface-map-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "symbol-map-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "session-verification-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "overview.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "component-graph.md"))).resolves.toBeUndefined();
@@ -29,6 +30,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "interface-map.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "symbol-map.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "session-verification.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "index.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "learning-path.html"))).resolves.toBeUndefined();
@@ -42,6 +44,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "interface-map.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "symbol-map.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "session-verification.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "quiz-print.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.codex, "events.jsonl"))).resolves.toBeUndefined();
@@ -148,6 +151,18 @@ describe("RepoTutor core pipeline", () => {
     expect(contextPackMarkdown).toContain("# Context Pack");
     expect(contextPackMarkdown).toContain("Source pattern: Repomix");
     expect(contextPackMarkdown).toContain("## Split Output Plan");
+    const mcpHandoffText = await fs.readFile(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"), "utf8");
+    expect(mcpHandoffText).toContain("Codebase MCP getCodebase getRemoteCodebase saveCodebase tool handoff");
+    expect(mcpHandoffText).toContain("\"getCodebase\"");
+    expect(mcpHandoffText).toContain("\"getRemoteCodebase\"");
+    expect(mcpHandoffText).toContain("\"saveCodebase\"");
+    const mcpHandoffHtml = await fs.readFile(path.join(result.session.outputPaths.html, "mcp-handoff.html"), "utf8");
+    expect(mcpHandoffHtml).toContain("MCP Handoff");
+    expect(mcpHandoffHtml).toContain("mcp-handoff-card");
+    expect(mcpHandoffHtml).toContain("data-source-pattern=\"codebase-mcp\"");
+    const mcpHandoffMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"), "utf8");
+    expect(mcpHandoffMarkdown).toContain("# MCP Handoff");
+    expect(mcpHandoffMarkdown).toContain("Source pattern: Codebase MCP");
     const exportManifestText = await fs.readFile(path.join(result.session.outputPaths.html, "manifest.json"), "utf8");
     expect(exportManifestText).toContain("\"entrypoints\"");
     expect(exportManifestText).toContain("html/learning-path.html");
@@ -157,6 +172,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/interface-map.html");
     expect(exportManifestText).toContain("html/symbol-map.html");
     expect(exportManifestText).toContain("html/context-pack.html");
+    expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("\"integrity\"");
     expect(exportManifestText).toContain("\"bytes\"");
     expect(exportManifestText).toContain("\"sha256\"");
@@ -220,6 +236,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("interface-map.html");
     expect(learningPathHtml).toContain("symbol-map.html");
     expect(learningPathHtml).toContain("context-pack.html");
+    expect(learningPathHtml).toContain("mcp-handoff.html");
     const sessionVerificationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "session-verification.html"), "utf8");
     expect(sessionVerificationHtml).toContain("세션 검증");
     expect(sessionVerificationHtml).toContain("../analysis/session-verification-report.json");

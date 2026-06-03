@@ -311,6 +311,25 @@ export const ContextPackReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const McpHandoffReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  tools: z.array(z.object({
+    name: z.enum(["getCodebase", "getRemoteCodebase", "saveCodebase"]),
+    purpose: z.string(),
+    useWhen: z.string(),
+    recommendedPrompt: z.string(),
+    inputHints: z.array(z.string())
+  })),
+  prompts: z.array(z.object({
+    title: z.string(),
+    prompt: z.string(),
+    relatedReportHref: z.string()
+  })),
+  safetyNotes: z.array(z.string()),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -523,6 +542,7 @@ export type RuntimeEnvironmentReport = z.infer<typeof RuntimeEnvironmentReportSc
 export type InterfaceMapReport = z.infer<typeof InterfaceMapReportSchema>;
 export type SymbolMapReport = z.infer<typeof SymbolMapReportSchema>;
 export type ContextPackReport = z.infer<typeof ContextPackReportSchema>;
+export type McpHandoffReport = z.infer<typeof McpHandoffReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

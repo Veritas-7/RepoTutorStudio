@@ -46,6 +46,7 @@ const REQUIRED_ARTIFACTS = [
   "analysis/interface-map-report.json",
   "analysis/symbol-map-report.json",
   "analysis/context-pack-report.json",
+  "analysis/mcp-handoff-report.json",
   "markdown/overview.md",
   "markdown/evidence.md",
   "markdown/suggested-reads.md",
@@ -53,6 +54,7 @@ const REQUIRED_ARTIFACTS = [
   "markdown/interface-map.md",
   "markdown/symbol-map.md",
   "markdown/context-pack.md",
+  "markdown/mcp-handoff.md",
   "html/index.html",
   "html/learning-path.html",
   "html/files.html",
@@ -62,6 +64,7 @@ const REQUIRED_ARTIFACTS = [
   "html/interface-map.html",
   "html/symbol-map.html",
   "html/context-pack.html",
+  "html/mcp-handoff.html",
   "html/quiz-print.html",
   "html/manifest.json",
   "html/EXPORT-README.md"

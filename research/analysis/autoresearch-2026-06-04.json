@@ -119,6 +119,21 @@
         "git-aware ignore and security-aware pack exclusions",
         "context limit and split-output planning"
       ]
+    },
+    {
+      "repo": "DeDeveloper23/codebase-mcp",
+      "url": "https://github.com/DeDeveloper23/codebase-mcp",
+      "localPath": "research/external-src/DeDeveloper23-codebase-mcp",
+      "stars": 80,
+      "forks": 14,
+      "license": "MIT",
+      "updatedAt": "2026-05-24T00:17:47Z",
+      "adoptedPatterns": [
+        "MCP tool surface for codebase retrieval",
+        "getCodebase local workspace handoff",
+        "getRemoteCodebase public repository comparison",
+        "saveCodebase persistent analysis snapshot"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1556,6 +1571,28 @@
         "html/context-pack.html split output plan panel",
         "Repomix-style top-level directory preserving split plan"
       ]
+    },
+    {
+      "name": "MCP handoff report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/mcp-handoff-report.json",
+        "markdown/mcp-handoff.md",
+        "html/mcp-handoff.html",
+        "open --target mcp-handoff",
+        "McpHandoffReportSchema",
+        "Codebase MCP-style tool and prompt handoff report"
+      ]
     }
   ],
   "verification": {
@@ -1722,6 +1759,9 @@
     "cliContextPackOpenTargetSmoke": "PASS",
     "fixtureContextSplitPlan": "PASS",
     "cliContextSplitPlanSmoke": "PASS",
+    "fixtureMcpHandoffReport": "PASS",
+    "cliMcpHandoffSmoke": "PASS",
+    "cliMcpHandoffOpenTargetSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

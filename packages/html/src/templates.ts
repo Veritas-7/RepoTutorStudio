@@ -18,6 +18,7 @@ import type {
   InterfaceMapReport,
   SymbolMapReport,
   ContextPackReport,
+  McpHandoffReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -42,6 +43,7 @@ export interface StudyHtmlInput {
   interfaceMapReport: InterfaceMapReport;
   symbolMapReport: SymbolMapReport;
   contextPackReport: ContextPackReport;
+  mcpHandoffReport: McpHandoffReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -93,6 +95,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["interface-map.html", "Interface Map"],
     ["symbol-map.html", "Symbol Map"],
     ["context-pack.html", "Context Pack"],
+    ["mcp-handoff.html", "MCP Handoff"],
     ["session-verification.html", "Verification"],
     ["coverage.html", "Coverage"],
     ["component-graph.html", "Component Graph"],
@@ -172,6 +175,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>인터페이스 맵</h3><p>${escapeHtml(input.interfaceMapReport.summary)}</p><p>repomap 패턴으로 route/page/API 신호를 모읍니다.</p><a href="interface-map.html">인터페이스 맵 열기</a></article>
           <article><h3>심볼 맵</h3><p>${escapeHtml(input.symbolMapReport.summary)}</p><p>codebase-map 패턴으로 함수/클래스/상수 신호를 모읍니다.</p><a href="symbol-map.html">심볼 맵 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
+          <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -249,6 +253,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
+    },
+    {
+      name: "mcp-handoff.html",
+      title: "MCP Handoff",
+      html: pageShell("MCP Handoff", "mcp-handoff.html", `<section class="panel" data-source-pattern="codebase-mcp"><h2>AI/MCP 인계 계획</h2><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p class="muted">${escapeHtml(input.mcpHandoffReport.sourcePattern)}</p></section><section class="cards mcp-handoff-cards">${mcpToolCards(input.mcpHandoffReport.tools)}</section><section class="cards mcp-prompt-cards">${input.mcpHandoffReport.prompts.map((item) => `<article class="mcp-prompt-card"><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.prompt)}</p><a href="${escapeHtml(htmlPageHref(item.relatedReportHref))}">관련 리포트 열기</a></article>`).join("")}</section><section class="grid"><article class="mcp-handoff-card"><h3>Safety Notes</h3>${list(input.mcpHandoffReport.safetyNotes)}</article><article class="mcp-handoff-card"><h3>다음 확인 단계</h3>${list(input.mcpHandoffReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "session-verification.html",
@@ -337,6 +346,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "인터페이스 맵", path: "html/interface-map.html", description: "Route/page/API/component 신호와 data-flow 힌트를 확인합니다." },
       { label: "심볼 맵", path: "html/symbol-map.html", description: "함수, 클래스, 상수, 타입 신호를 원본 소스와 함께 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
+      { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "세션 검증", path: "html/session-verification.html", description: "생성 산출물과 무결성 검증 리포트를 확인합니다." },
       { label: "컴포넌트 그래프", path: "html/component-graph.html", description: "큰 저장소의 폴더, 파일, 용어, 재구현 단계를 탐색합니다." }
     ],
@@ -505,6 +515,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       evidence: `estimated tokens ${input.contextPackReport.totalEstimatedTokens}개`
     },
     {
+      title: "AI/MCP 인계 계획 확인",
+      href: "mcp-handoff.html",
+      goal: "다른 AI 또는 MCP 도구가 사용할 tool, prompt, safety note를 확인합니다.",
+      evidence: `handoff tools ${input.mcpHandoffReport.tools.length}개`
+    },
+    {
       title: "폴더와 핵심 파일 훑기",
       href: "files.html",
       goal: "핵심 파일 수업으로 진입점과 주변 파일을 연결합니다.",
@@ -623,6 +639,11 @@ function contextSplitPlanList(plans: ContextPackReport["splitPlans"]): string {
   return `<ul>${plans.map((plan) => `<li><strong>${escapeHtml(plan.name)}</strong>: ${plan.partCount} parts · max ${plan.maxBytes} bytes${plan.oversizedDirectories.length > 0 ? ` · oversized ${escapeHtml(plan.oversizedDirectories.join(", "))}` : ""}<ul>${plan.parts.map((part) => `<li>${escapeHtml(part.partName)}: ${part.estimatedBytes} bytes · ${part.estimatedTokens} tokens · ${part.fileCount} files · ${escapeHtml(part.directories.join(", "))}${part.overLimit ? " · over limit" : ""}</li>`).join("")}</ul></li>`).join("")}</ul>`;
 }
 
+function mcpToolCards(tools: McpHandoffReport["tools"]): string {
+  if (tools.length === 0) return "<article><h3>등록된 MCP 도구가 없습니다.</h3><p>handoff report를 다시 생성하세요.</p></article>";
+  return tools.map((tool) => `<article class="mcp-handoff-card"><h3>${escapeHtml(tool.name)}</h3><p>${escapeHtml(tool.purpose)}</p><p class="muted">${escapeHtml(tool.useWhen)}</p><h4>Prompt</h4><p>${escapeHtml(tool.recommendedPrompt)}</p><h4>Input hints</h4>${list(tool.inputHints)}</article>`).join("");
+}
+
 function sourceEvidenceState(file: FileLesson): "present" | "missing" {
   return (file.sourceEvidence ?? []).length > 0 ? "present" : "missing";
 }
@@ -654,6 +675,10 @@ function topDirectory(filePath: string): string {
 
 function sourceFileHref(filePath: string): string {
   return `../source/${filePath.split("/").map(encodeURIComponent).join("/")}`;
+}
+
+function htmlPageHref(filePath: string): string {
+  return filePath.startsWith("html/") ? filePath.slice(5) : filePath;
 }
 
 export function styleCss(): string {
