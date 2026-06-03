@@ -718,6 +718,17 @@
         "repo-tutor open --list-targets --format markdown",
         "doctor openTargets format metadata"
       ]
+    },
+    {
+      "name": "open all markdown paths",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor open --target all --format markdown",
+        "doctor openAll format metadata"
+      ]
     }
   ],
   "verification": {
@@ -801,6 +812,7 @@
     "cliResumeTargetStatusSmoke": "PASS",
     "cliListTargetStatusSmoke": "PASS",
     "cliOpenTargetsMarkdownSmoke": "PASS",
+    "cliOpenAllMarkdownSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

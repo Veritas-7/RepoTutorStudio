@@ -890,6 +890,19 @@ Local verification:
   `# RepoTutor Open Targets`, verification and component-graph rows, `doctor`
   reported Markdown support for `openTargets`, and invalid `--format text`
   exited 1 with `open --list-targets supports --format`.
+
+### Upgrade 54: Open All Markdown Paths
+
+- Added `repo-tutor open <session> --target all --format markdown` so all
+  concrete HTML target paths can be copied into handoff notes after fail-closed
+  existence checks.
+- Added `openAll` format metadata to `repo-tutor doctor` and fail-closed format
+  validation for `--target all`.
+- Temp CLI open-all-markdown smoke generated
+  `/tmp/repotutor-open-all-md-smoke.KWmraZ`; Markdown output included
+  `# RepoTutor Open Target Paths`, verification and quiz path rows, `doctor`
+  reported Markdown support for `openAll`, and invalid `--format text` exited 1
+  with `open --target all supports --format`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
