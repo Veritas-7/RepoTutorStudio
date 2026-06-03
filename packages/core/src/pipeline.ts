@@ -50,7 +50,13 @@ export async function runStudy(options: StudyOptions): Promise<StudyResult> {
     } as never
   });
 
-  const analysis = await analyzeRepository(session.outputPaths.source);
+  const analysis = await analyzeRepository(session.outputPaths.source, {
+    sourceType: session.sourceType,
+    sourceUrl: session.sourceUrl,
+    localSourcePath: session.localSourcePath,
+    branch: session.branch,
+    commitHash: session.commitHash
+  });
   const previousSnapshot = await findPreviousSnapshot(studiesRoot, session);
   analysis.incrementalReport = buildIncrementalReport(analysis.sourceSnapshotReport, analysis.coverageReport, previousSnapshot);
   const quiz = generateQuiz(session, analysis.folderLessons, analysis.fileLessons, analysis.glossary);
@@ -92,6 +98,7 @@ export async function loadStudyHtmlInput(sessionRoot: string): Promise<Parameter
     apiReferenceReport: await readJson(path.join(sessionRoot, "analysis", "api-reference-report.json")),
     searchIndexReport: await readJson(path.join(sessionRoot, "analysis", "search-index-report.json")),
     learningJournalReport: await readJson(path.join(sessionRoot, "analysis", "learning-journal-report.json")),
+    projectActivityReport: await readJson(path.join(sessionRoot, "analysis", "project-activity-report.json")),
     contextPackReport: await readJson(path.join(sessionRoot, "analysis", "context-pack-report.json")),
     mcpHandoffReport: await readJson(path.join(sessionRoot, "analysis", "mcp-handoff-report.json")),
     agentMemoryReport: await readJson(path.join(sessionRoot, "analysis", "agent-memory-report.json")),
@@ -130,6 +137,7 @@ async function writeAllArtifacts(session: StudySession, analysis: AnalysisBundle
     writeJson(path.join(session.outputPaths.analysis, "api-reference-report.json"), analysis.apiReferenceReport),
     writeJson(path.join(session.outputPaths.analysis, "search-index-report.json"), analysis.searchIndexReport),
     writeJson(path.join(session.outputPaths.analysis, "learning-journal-report.json"), analysis.learningJournalReport),
+    writeJson(path.join(session.outputPaths.analysis, "project-activity-report.json"), analysis.projectActivityReport),
     writeJson(path.join(session.outputPaths.analysis, "context-pack-report.json"), analysis.contextPackReport),
     writeJson(path.join(session.outputPaths.analysis, "mcp-handoff-report.json"), analysis.mcpHandoffReport),
     writeJson(path.join(session.outputPaths.analysis, "agent-memory-report.json"), analysis.agentMemoryReport),

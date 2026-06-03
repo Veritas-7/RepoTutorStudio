@@ -32,10 +32,20 @@ import {
   DependencyHealthReport,
   SearchIndexReport,
   LearningJournalReport,
+  ProjectActivityReport,
+  SourceType,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
 import { readTextIfSafe, WalkResult, walkSafe } from "./fs-utils.js";
+
+export interface AnalysisContext {
+  sourceType?: SourceType;
+  sourceUrl?: string | null;
+  localSourcePath?: string | null;
+  branch?: string | null;
+  commitHash?: string | null;
+}
 
 export interface AnalysisBundle {
   repoMap: RepoMap;
@@ -61,6 +71,7 @@ export interface AnalysisBundle {
   dependencyHealthReport: DependencyHealthReport;
   searchIndexReport: SearchIndexReport;
   learningJournalReport: LearningJournalReport;
+  projectActivityReport: ProjectActivityReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -69,7 +80,7 @@ export interface AnalysisBundle {
   rebuildRoadmap: RebuildRoadmap;
 }
 
-export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBundle> {
+export async function analyzeRepository(sourceRoot: string, context: AnalysisContext = {}): Promise<AnalysisBundle> {
   const walk = await walkSafe(sourceRoot);
   const repoMap = buildRepoMap(sourceRoot, walk);
   const languageReport = buildLanguageReport(walk);
@@ -99,8 +110,9 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const learningJournalReport = buildLearningJournalReport(fileLessons, glossary, graphQueryReport, tutorialAbstractionReport, searchIndexReport);
   const agentMemoryReport = buildAgentMemoryReport(repoMap, languageReport, purposeReport, contextPackReport, mcpHandoffReport, componentGraphReport);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
+  const projectActivityReport = buildProjectActivityReport(context, sourceSnapshotReport, fileLessons, dependencyHealthReport, decisionRecordReport);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -1314,6 +1326,170 @@ function buildDependencyHealthReport(fileLessons: FileLesson[]): DependencyHealt
       "cycles가 있으면 no-circular 항목의 파일 순서를 따라가며 한 방향 의존성으로 바꿀 수 있는지 확인하세요.",
       "orphanModules는 의도된 entry/config/test 예외인지, 실제로 제거 가능한 죽은 코드인지 구분하세요.",
       "topFanIn과 topFanOut이 큰 파일은 변경 영향도가 크므로 파일 수업과 원본을 함께 열어 책임을 나누세요."
+    ]
+  };
+}
+
+function buildProjectActivityReport(
+  context: AnalysisContext,
+  sourceSnapshotReport: SourceSnapshotReport,
+  fileLessons: FileLesson[],
+  dependencyHealthReport: DependencyHealthReport,
+  decisionRecordReport: DecisionRecordReport
+): ProjectActivityReport {
+  const snapshotFiles = new Map(sourceSnapshotReport.files.map((file) => [file.filePath, file]));
+  const fanIn = new Map(dependencyHealthReport.graphMetrics.topFanIn.map((item) => [item.filePath, item.count]));
+  const fanOut = new Map(dependencyHealthReport.graphMetrics.topFanOut.map((item) => [item.filePath, item.count]));
+  for (const edge of dependencyHealthReport.localDependencyEdges) {
+    if (edge.dependencyType === "local-import") {
+      fanOut.set(edge.fromFile, Math.max(fanOut.get(edge.fromFile) ?? 0, 1));
+      fanIn.set(edge.toFile, Math.max(fanIn.get(edge.toFile) ?? 0, 1));
+    }
+  }
+
+  const hotspotCandidates = fileLessons
+    .map((lesson) => {
+      const snapshotFile = snapshotFiles.get(lesson.filePath);
+      const sizeKb = (snapshotFile?.size ?? 0) / 1024;
+      const localImportCount = lesson.keyImports.filter(isRelativeImport).length;
+      const externalImportCount = lesson.keyImports.length - localImportCount;
+      const evidenceCount = lesson.sourceEvidence.length;
+      const inbound = fanIn.get(lesson.filePath) ?? 0;
+      const outbound = fanOut.get(lesson.filePath) ?? 0;
+      const exportedSurface = lesson.keyExports.length;
+      const entryWeight = lesson.executionFlowPosition.toLowerCase().includes("entry") ? 4 : 0;
+      const score = Number((sizeKb + inbound * 3 + outbound * 2 + localImportCount * 1.5 + exportedSurface * 1.2 + evidenceCount * 0.5 + entryWeight).toFixed(2));
+      const signals = [
+        `${Math.round(sizeKb * 10) / 10} KiB source snapshot size`,
+        `${inbound} fan-in / ${outbound} fan-out static dependency signal`,
+        `${localImportCount} local imports / ${externalImportCount} external imports`,
+        `${exportedSurface} exported symbols / ${evidenceCount} source evidence snippets`
+      ];
+      if (entryWeight > 0) signals.push("entry-like execution flow position");
+      return {
+        filePath: lesson.filePath,
+        score,
+        reason: "정적 파일 크기, import fan-in/fan-out, export surface, source evidence를 합산한 review hotspot 후보입니다.",
+        signals,
+        lessonHref: `html/files.html#${htmlAnchor(lesson.filePath)}`,
+        sourceHref: `source/${encodedPath(lesson.filePath)}`
+      };
+    })
+    .sort((a, b) => b.score - a.score || a.filePath.localeCompare(b.filePath))
+    .slice(0, 12);
+
+  const lessonByPath = new Map(fileLessons.map((lesson) => [lesson.filePath, lesson]));
+  const deadCodeCandidates = dependencyHealthReport.orphanModules.map((module) => {
+    const lesson = lessonByPath.get(module.filePath);
+    const signalCount = (lesson?.keyExports.length ?? 0) + (lesson?.keyImports.length ?? 0) + (lesson?.sourceEvidence.length ?? 0);
+    const confidence = Number(Math.min(0.95, 0.45 + (signalCount === 0 ? 0.3 : 0.1) + (dependencyHealthReport.ruleViolations.some((violation) => violation.fromFile === module.filePath && violation.ruleName === "no-orphans") ? 0.2 : 0)).toFixed(2));
+    return {
+      filePath: module.filePath,
+      confidence,
+      reason: `${module.reason} Git history가 없는 학습 snapshot에서는 실제 사용 여부를 단정하지 않고 검토 후보로만 표시합니다.`,
+      relatedHref: module.lessonHref,
+      sourceHref: module.sourceHref
+    };
+  });
+
+  const decisionPrompts = [
+    ...hotspotCandidates.slice(0, 4).map((candidate) => ({
+      question: `${candidate.filePath} 같은 hotspot 후보를 바꿀 때 어떤 아키텍처 결정을 먼저 확인해야 하나요?`,
+      trigger: `static hotspot score ${candidate.score}`,
+      relatedHref: candidate.lessonHref
+    })),
+    ...decisionRecordReport.records.slice(0, 4).map((record) => ({
+      question: `${record.title} 결정은 현재 분석된 파일 구조와 여전히 맞나요?`,
+      trigger: `${record.status} decision in ${record.scope}`,
+      relatedHref: `html/decision-records.html#${htmlAnchor(record.id)}`
+    }))
+  ].slice(0, 8);
+
+  const reviewQueues: ProjectActivityReport["reviewQueues"] = [
+    {
+      queue: "hotspot-review",
+      purpose: "fan-in/fan-out, 크기, export surface가 큰 파일을 먼저 읽고 변경 영향도를 확인합니다.",
+      items: hotspotCandidates.slice(0, 5).map((candidate) => ({
+        target: candidate.filePath,
+        action: "파일 수업과 원본을 열어 책임, import 방향, test gap을 확인합니다.",
+        why: `static hotspot score ${candidate.score}; ${candidate.signals[1]}`,
+        relatedHref: candidate.lessonHref
+      }))
+    },
+    {
+      queue: "dead-code-review",
+      purpose: "dependency-cruiser식 no-orphans 후보를 entry/config/test 예외와 실제 제거 후보로 분리합니다.",
+      items: deadCodeCandidates.slice(0, 5).map((candidate) => ({
+        target: candidate.filePath,
+        action: "사용 중인 진입점인지 확인하고, 아니라면 제거 또는 연결을 검토합니다.",
+        why: `dead-code confidence ${candidate.confidence}; ${candidate.reason}`,
+        relatedHref: candidate.relatedHref
+      }))
+    },
+    {
+      queue: "decision-review",
+      purpose: "변경 전에 관련 결정 기록과 ungoverned hotspot 후보를 확인합니다.",
+      items: decisionPrompts.slice(0, 5).map((prompt) => ({
+        target: prompt.trigger,
+        action: prompt.question,
+        why: "Repowise decision intelligence처럼 위험 파일과 결정 근거를 함께 보게 합니다.",
+        relatedHref: prompt.relatedHref
+      }))
+    }
+  ];
+
+  const historyMode = context.commitHash || context.branch ? "git-metadata" : "snapshot-only";
+  const historyReason = historyMode === "git-metadata"
+    ? "학습 세션 생성 전에 branch/commit 메타데이터는 보존했지만, 안전한 복사본에서는 .git 디렉터리를 제거하므로 전체 churn, ownership, co-change history는 계산하지 않습니다."
+    : "학습 세션 소스에는 Git 히스토리가 없어서 source snapshot과 정적 dependency/evidence 신호만 사용합니다.";
+
+  return {
+    summary: `Repowise식 project activity report: ${sourceSnapshotReport.totalFiles}개 파일 snapshot에서 hotspot 후보 ${hotspotCandidates.length}개, dead-code 후보 ${deadCodeCandidates.length}개, decision prompt ${decisionPrompts.length}개를 정리했습니다.`,
+    sourcePattern: "Repowise git analytics code health hotspots ownership co-change dead code architectural decisions MCP risk",
+    historyAvailability: {
+      mode: historyMode,
+      reason: historyReason,
+      sourceType: context.sourceType ?? null,
+      sourceUrl: context.sourceUrl ?? null,
+      localSourcePath: context.localSourcePath ?? null,
+      branch: context.branch ?? null,
+      commitHash: context.commitHash ?? null
+    },
+    activitySignals: [
+      {
+        label: "Source snapshot",
+        value: `${sourceSnapshotReport.totalFiles} files / ${sourceSnapshotReport.files.reduce((sum, file) => sum + file.size, 0)} bytes`,
+        explanation: "세션 생성 시점의 파일 크기와 SHA-256 snapshot을 activity 기준선으로 사용합니다.",
+        relatedHref: "html/incremental.html"
+      },
+      {
+        label: "Git metadata",
+        value: `${context.branch ?? "unknown"} @ ${context.commitHash ? context.commitHash.slice(0, 12) : "unknown"}`,
+        explanation: historyReason,
+        relatedHref: "session.json"
+      },
+      {
+        label: "Dependency graph health",
+        value: `${dependencyHealthReport.totalLocalDependencies} localDependencyEdges / ${dependencyHealthReport.orphanModules.length} orphanModules`,
+        explanation: "정적 import 그래프에서 변경 영향도와 dead-code 검토 후보를 가져옵니다.",
+        relatedHref: "html/dependency-health.html"
+      },
+      {
+        label: "Decision coverage",
+        value: `${decisionRecordReport.records.length} decision records / ${Object.keys(decisionRecordReport.statusCounts).length} statuses`,
+        explanation: "위험 파일을 바꾸기 전에 읽을 architecture decision 후보를 연결합니다.",
+        relatedHref: "html/decision-records.html"
+      }
+    ],
+    hotspotCandidates,
+    deadCodeCandidates,
+    reviewQueues,
+    architectureDecisionPrompts: decisionPrompts,
+    learnerNextSteps: [
+      "hotspot-review queue의 첫 파일을 열고 fan-in/fan-out 방향과 source evidence를 대조하세요.",
+      "dead-code-review queue는 삭제 단정이 아니라 검토 후보입니다. entry/config/test 예외를 먼저 확인하세요.",
+      "Git history가 필요한 churn, ownership, co-change 분석은 원본 Git 저장소에서 별도 full-history 분석으로 보강하세요.",
+      "decision-review queue의 질문을 실제 ADR 또는 팀 결정 기록으로 승격할지 판단하세요."
     ]
   };
 }

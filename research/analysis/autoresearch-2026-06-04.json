@@ -255,6 +255,22 @@
         "spaced review queue",
         "persistent learning journal template"
       ]
+    },
+    {
+      "repo": "repowise-dev/repowise",
+      "url": "https://github.com/repowise-dev/repowise",
+      "localPath": "research/external-src/repowise-dev-repowise",
+      "stars": 2187,
+      "forks": 282,
+      "license": "GitHub API: Other; LICENSE: AGPL-3.0-or-later",
+      "updatedAt": "2026-06-03T16:35:56Z",
+      "adoptedPatterns": [
+        "git analytics combined with static graph signals",
+        "code health hotspot queue",
+        "dead-code review candidates",
+        "architecture decision prompts linked to risky files",
+        "MCP-oriented risk handoff without executing external source"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1892,6 +1908,28 @@
         "LearningJournalReportSchema",
         "learn-codebase Socratic tutor active recall prediction before revelation persistent learning journal"
       ]
+    },
+    {
+      "name": "Project activity risk report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/project-activity-report.json",
+        "markdown/project-activity.md",
+        "html/project-activity.html",
+        "open --target project-activity",
+        "ProjectActivityReportSchema",
+        "Repowise git analytics code health hotspots ownership co-change dead code architectural decisions MCP risk"
+      ]
     }
   ],
   "verification": {
@@ -2105,7 +2143,13 @@
     "cliLearningJournalOpenTargetSmoke": "PASS",
     "buildLearningJournal": "PASS",
     "testLearningJournal": "PASS",
-    "auditBriefLearningJournal13": "PASS"
+    "auditBriefLearningJournal13": "PASS",
+    "fixtureProjectActivityReport": "PASS",
+    "cliProjectActivitySmoke": "PASS",
+    "cliProjectActivityOpenTargetSmoke": "PASS",
+    "buildProjectActivity": "PASS",
+    "testProjectActivity": "PASS",
+    "auditBriefProjectActivity13": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"

@@ -2232,6 +2232,43 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 120: Project Activity Risk Report
+
+- Cloned and inspected `repowise-dev/repowise` under
+  `research/external-src/repowise-dev-repowise` without executing external
+  source.
+- GitHub metadata: public repo, 2,187 stars, 282 forks, updated
+  2026-06-03T16:35:56Z; GitHub license key reports `Other`, while the checked
+  `LICENSE` file is AGPL-3.0-or-later. No source code was copied into
+  RepoTutor.
+- Added `ProjectActivityReportSchema` and
+  `analysis/project-activity-report.json` with Repowise-style activity signals,
+  explicit history availability, static hotspot candidates, dead-code review
+  candidates, review queues, and architecture decision prompts.
+- Added `markdown/project-activity.md`, `html/project-activity.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target project-activity`.
+- Source pattern: Repowise combines graph, Git history, code health, dead-code
+  detection, and architecture decisions for agent risk handoff. RepoTutor maps
+  that to a deterministic snapshot-only report because the generated study
+  source intentionally removes `.git`; the report preserves branch/commit
+  metadata but does not invent churn, ownership, or co-change history.
+- RED smoke
+  `/tmp/repotutor-project-activity-red-studies.*/...` showed the old behavior
+  was missing `analysis/project-activity-report.json`,
+  `markdown/project-activity.md`, and `html/project-activity.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-project-activity-green-studies.jiEuX6/2026-06-04/local__simple-ts-app__main__9d0b090f`;
+  confirmed `verificationCheckedRequiredArtifacts=60`, `historyAvailability`,
+  `activitySignals`, `hotspotCandidates`, `deadCodeCandidates`,
+  `reviewQueues`, `architectureDecisionPrompts`,
+  `project-activity-card`, `data-source-pattern="Repowise"`, manifest/learning
+  path entries, and `open --target project-activity` ->
+  `html/project-activity.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
