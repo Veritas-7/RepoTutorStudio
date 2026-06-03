@@ -893,6 +893,17 @@
         "repo-tutor list --sort score-desc|score-asc",
         "doctor listFilters sort score metadata"
       ]
+    },
+    {
+      "name": "jsonl session list output",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --format jsonl",
+        "doctor formats.list jsonl metadata"
+      ]
     }
   ],
   "verification": {
@@ -992,6 +1003,7 @@
     "cliListFilterConflictSmoke": "PASS",
     "cliListDateRangeSmoke": "PASS",
     "cliListScoreSortSmoke": "PASS",
+    "cliListJsonlSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
