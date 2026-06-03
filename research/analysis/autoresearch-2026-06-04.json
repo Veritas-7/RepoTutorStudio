@@ -104,6 +104,21 @@
         "dependency and symbol indexing",
         "multiple output formats"
       ]
+    },
+    {
+      "repo": "yamadashy/repomix",
+      "url": "https://github.com/yamadashy/repomix",
+      "localPath": "research/external-src/yamadashy-repomix",
+      "stars": 25920,
+      "forks": 1340,
+      "license": "MIT",
+      "updatedAt": "2026-06-03T20:06:01Z",
+      "adoptedPatterns": [
+        "AI-friendly repository context packing",
+        "token counting and token-count tree",
+        "git-aware ignore and security-aware pack exclusions",
+        "context limit and split-output planning"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1502,6 +1517,28 @@
         "SymbolMapReportSchema",
         "codebase-map-style function class constant symbol index"
       ]
+    },
+    {
+      "name": "context pack token budget report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/context-pack-report.json",
+        "markdown/context-pack.md",
+        "html/context-pack.html",
+        "open --target context-pack",
+        "ContextPackReportSchema",
+        "Repomix-style token budget and context pack report"
+      ]
     }
   ],
   "verification": {
@@ -1663,6 +1700,9 @@
     "fixtureSymbolMapReport": "PASS",
     "cliSymbolMapSmoke": "PASS",
     "cliSymbolMapOpenTargetSmoke": "PASS",
+    "fixtureContextPackReport": "PASS",
+    "cliContextPackSmoke": "PASS",
+    "cliContextPackOpenTargetSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
