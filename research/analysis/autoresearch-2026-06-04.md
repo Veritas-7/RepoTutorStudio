@@ -843,6 +843,17 @@ Local verification:
   commands including `study`, `list`, `open`, and `doctor`, list filters for
   `level` and `status`, Markdown resume support, and open targets including
   `verification` and `all`.
+
+### Upgrade 50: Doctor Markdown Output
+
+- Added `repo-tutor doctor --format markdown` for operator-friendly handoffs
+  while preserving JSON as the default machine-readable output.
+- Added fail-closed format validation so unsupported formats return a direct
+  `doctor supports --format json or markdown` error.
+- Temp CLI doctor-markdown smoke generated
+  `/tmp/repotutor-doctor-md-smoke.1a0B3j`; Markdown output included
+  `# RepoTutor Doctor`, commands, open targets, and list filters, and invalid
+  `--format text` exited 1 with `doctor supports --format`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

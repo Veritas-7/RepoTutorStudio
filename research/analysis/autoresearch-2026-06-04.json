@@ -674,6 +674,17 @@
         "repo-tutor doctor command metadata",
         "machine-readable list filters and open targets"
       ]
+    },
+    {
+      "name": "doctor markdown output",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor doctor --format markdown",
+        "fail-closed doctor format validation"
+      ]
     }
   ],
   "verification": {
@@ -753,6 +764,7 @@
     "cliResumeLevelSmoke": "PASS",
     "cliOpenAllSmoke": "PASS",
     "cliDoctorMetadataSmoke": "PASS",
+    "cliDoctorMarkdownSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
