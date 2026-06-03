@@ -49,12 +49,18 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
+  - `cargo check` in `apps/desktop-tauri/src-tauri`
+  - `gitleaks dir . --no-banner --redact`
   - fixture study generated `analysis/coverage-report.json`,
-    `markdown/coverage.md`, and `html/coverage.html`
+    `markdown/coverage.md`, `html/coverage.html`, and interactive
+    `html/quiz.html`
   - `pnpm audit:brief` produced 13/13 PASS
+- 2026-06-04: Pushed AutoResearch upgrades:
+  - `dc34c88` coverage report upgrade
+  - `e7ac6c5` offline quiz review mode
+  - `15d0897` Tauri quiz attempt flow
 
 ## Next Actions
 
-1. Commit and push the research/coverage upgrade.
-2. Continue next AutoResearch upgrade candidate unless the user stops:
+1. Continue next AutoResearch upgrade candidate unless the user stops:
    incremental re-analysis or source-backed component graph.
