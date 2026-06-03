@@ -304,8 +304,9 @@ async function list(parsed: ParsedArgs): Promise<void> {
       ? wrongRows.filter((row) => row.score !== null)
       : wrongRows;
   const minScore = optionalScoreFlag(parsed.flags["min-score"], "min-score");
-  const minScoreRows = minScore === null ? quizRows : quizRows.filter((row) => row.score !== null && row.score >= minScore);
   const maxScore = optionalScoreFlag(parsed.flags["max-score"], "max-score");
+  validateListFilterCombinations(parsed.flags, minScore, maxScore);
+  const minScoreRows = minScore === null ? quizRows : quizRows.filter((row) => row.score !== null && row.score >= minScore);
   const scoreRows = maxScore === null ? minScoreRows : minScoreRows.filter((row) => row.score !== null && row.score <= maxScore);
   const htmlTargets = htmlTargetsFlag(parsed.flags["html-targets"]);
   const targetRows = htmlTargets === "all"
@@ -402,6 +403,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       scoredOnly: true,
       minScore: true,
       maxScore: true,
+      filterConflictValidation: true,
       limit: true
     },
     openTargets: [...openTargetEntries().map((entry) => entry.target), "all"],
@@ -503,6 +505,17 @@ function optionalScoreFlag(value: string | boolean | undefined, name: string): n
   const parsed = Number(value);
   if (!Number.isFinite(parsed) || parsed < 0 || parsed > 100) throw new Error(`${name} must be a number from 0 to 100.`);
   return parsed;
+}
+
+function validateListFilterCombinations(flags: Record<string, string | boolean>, minScore: number | null, maxScore: number | null): void {
+  const unattemptedOnly = flags["unattempted-only"] === true;
+  const scoredOnly = flags["scored-only"] === true;
+  const wrongOnly = flags["wrong-only"] === true;
+  const hasScoreRange = minScore !== null || maxScore !== null;
+  if (unattemptedOnly && scoredOnly) throw new Error("list cannot combine --unattempted-only and --scored-only.");
+  if (unattemptedOnly && wrongOnly) throw new Error("list cannot combine --unattempted-only and --wrong-only.");
+  if (unattemptedOnly && hasScoreRange) throw new Error("list cannot combine --unattempted-only with score filters.");
+  if (minScore !== null && maxScore !== null && minScore > maxScore) throw new Error("min-score must be less than or equal to max-score.");
 }
 
 function verificationStatusFlag(value: string | boolean | undefined): "all" | "passed" | "failed" | "missing" {

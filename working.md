@@ -481,6 +481,12 @@ to a private repository, and preserve resumable state in this file.
     included `Score` as `100`, `doctor` reported `minScore` and `maxScore`
     filters, and invalid `--min-score 101` exited 1 with `min-score must be a
     number from 0 to 100`
+  - temp CLI list-filter-conflict smoke generated
+    `/tmp/repotutor-list-filter-conflict-smoke.nlhvCp`; invalid combinations
+    `--unattempted-only --scored-only`, `--unattempted-only --wrong-only`,
+    `--unattempted-only --min-score 1`, and `--min-score 90 --max-score 10`
+    all exited 1 with explicit conflict messages, and `doctor` reported
+    `listFilters.filterConflictValidation: true`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -615,6 +621,7 @@ to a private repository, and preserve resumable state in this file.
   - `de92329` quiz-mistake session list filters
   - `30e48f2` unattempted session list filters
   - `5d937fc` scored session list filters
+  - `3f86f3a` quiz-score session list filters
 
 ## Next Actions
 

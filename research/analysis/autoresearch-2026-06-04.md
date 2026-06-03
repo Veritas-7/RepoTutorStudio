@@ -1058,6 +1058,18 @@ Local verification:
   `Score` as `100`, `doctor` reported `minScore` and `maxScore` filters, and
   invalid `--min-score 101` exited 1 with `min-score must be a number from 0 to
   100`.
+
+### Upgrade 67: List Filter Conflict Validation
+
+- Added fail-closed validation for contradictory `repo-tutor list` filter
+  combinations so invalid review slices do not silently return empty output.
+- Added `filterConflictValidation` metadata to `repo-tutor doctor`.
+- Temp CLI list-filter-conflict smoke generated
+  `/tmp/repotutor-list-filter-conflict-smoke.nlhvCp`; invalid combinations
+  `--unattempted-only --scored-only`, `--unattempted-only --wrong-only`,
+  `--unattempted-only --min-score 1`, and `--min-score 90 --max-score 10` all
+  exited 1 with explicit conflict messages, and `doctor` reported
+  `listFilters.filterConflictValidation: true`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
