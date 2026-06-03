@@ -76,6 +76,9 @@ interface ListOutputContext {
   format: string;
   summary: boolean;
   rows: number;
+  fields: string[] | null;
+  fieldPreset: string | null;
+  filters: ListFilterManifest;
 }
 
 interface ListOutputManifest {
@@ -84,9 +87,30 @@ interface ListOutputManifest {
   format: string;
   summary: boolean;
   rows: number;
+  fields: string[] | null;
+  fieldPreset: string | null;
+  filters: ListFilterManifest;
   bytes: number;
   sha256: string;
   createdAt: string;
+}
+
+interface ListFilterManifest {
+  repo: string | null;
+  createdFrom: string | null;
+  createdTo: string | null;
+  mode: string;
+  level: string;
+  status: string;
+  htmlTargets: string;
+  sort: string | null;
+  limit: number | null;
+  verifiedOnly: boolean;
+  wrongOnly: boolean;
+  unattemptedOnly: boolean;
+  scoredOnly: boolean;
+  minScore: number | null;
+  maxScore: number | null;
 }
 
 interface ListOutputVerification {
@@ -463,6 +487,19 @@ async function list(parsed: ParsedArgs): Promise<void> {
   const limit = optionalPositiveIntegerFlag(parsed.flags.limit, "limit");
   const filtered = limit === null ? sortedRows : sortedRows.slice(0, limit);
   const format = stringFlag(parsed.flags.format) ?? "json";
+  const filters = listFilterManifest(parsed.flags, {
+    repo: repoFilter,
+    createdFrom: stringFlag(parsed.flags["created-from"]) ?? null,
+    createdTo: stringFlag(parsed.flags["created-to"]) ?? null,
+    mode,
+    level,
+    status,
+    htmlTargets,
+    sort,
+    limit,
+    minScore,
+    maxScore
+  });
   if (parsed.flags.summary === true) {
     if (parsed.flags.fields !== undefined || parsed.flags["field-preset"] !== undefined) throw new Error("list cannot combine --summary with --fields or --field-preset.");
     if (!["json", "markdown"].includes(format)) throw new Error("list --summary supports --format json or markdown.");
@@ -470,11 +507,15 @@ async function list(parsed: ParsedArgs): Promise<void> {
     await emitListOutput(format === "markdown" ? listSummaryMarkdown(summary) : jsonText(summary), parsed.flags.output, parsed.flags["output-manifest"], {
       format,
       summary: true,
-      rows: filtered.length
+      rows: filtered.length,
+      fields: null,
+      fieldPreset: null,
+      filters
     });
     return;
   }
   const fields = listFieldSelection(parsed.flags.fields, parsed.flags["field-preset"]);
+  const outputFields = fields ?? (format === "csv" ? [...DEFAULT_LIST_CSV_FIELDS] : null);
   const projected = fields ? projectListRows(filtered, fields) : filtered;
   if (!["json", "markdown", "jsonl", "csv"].includes(format)) throw new Error("list supports --format json, markdown, jsonl, or csv.");
   let rendered: string;
@@ -490,7 +531,10 @@ async function list(parsed: ParsedArgs): Promise<void> {
   await emitListOutput(rendered, parsed.flags.output, parsed.flags["output-manifest"], {
     format,
     summary: false,
-    rows: filtered.length
+    rows: filtered.length,
+    fields: outputFields,
+    fieldPreset: stringFlag(parsed.flags["field-preset"]) ?? null,
+    filters
   });
 }
 
@@ -757,6 +801,19 @@ function validateListFilterCombinations(flags: Record<string, string | boolean>,
   if (unattemptedOnly && wrongOnly) throw new Error("list cannot combine --unattempted-only and --wrong-only.");
   if (unattemptedOnly && hasScoreRange) throw new Error("list cannot combine --unattempted-only with score filters.");
   if (minScore !== null && maxScore !== null && minScore > maxScore) throw new Error("min-score must be less than or equal to max-score.");
+}
+
+function listFilterManifest(
+  flags: Record<string, string | boolean>,
+  values: Pick<ListFilterManifest, "repo" | "createdFrom" | "createdTo" | "mode" | "level" | "status" | "htmlTargets" | "sort" | "limit" | "minScore" | "maxScore">
+): ListFilterManifest {
+  return {
+    ...values,
+    verifiedOnly: flags["verified-only"] === true,
+    wrongOnly: flags["wrong-only"] === true,
+    unattemptedOnly: flags["unattempted-only"] === true,
+    scoredOnly: flags["scored-only"] === true
+  };
 }
 
 function verificationStatusFlag(value: string | boolean | undefined): "all" | "passed" | "failed" | "missing" {
@@ -1114,6 +1171,9 @@ function createListOutputManifest(text: string, outputPath: string, manifestPath
     format: context.format,
     summary: context.summary,
     rows: context.rows,
+    fields: context.fields,
+    fieldPreset: context.fieldPreset,
+    filters: context.filters,
     bytes: Buffer.byteLength(text),
     sha256: createHash("sha256").update(text).digest("hex"),
     createdAt: new Date().toISOString()

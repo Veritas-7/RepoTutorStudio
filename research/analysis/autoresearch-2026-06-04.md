@@ -1235,6 +1235,24 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 79: Saved Session List Manifest Selection Metadata
+
+- Extended list output manifests with selected `fields`, `fieldPreset`, and a
+  `filters` snapshot containing repo/date/mode/level/status/HTML-target/sort/
+  limit/quiz-filter metadata.
+- Summary manifests record `fields: null` and `fieldPreset: null` while still
+  recording the filters used to produce the summary.
+- Temp CLI list-manifest-metadata smoke generated
+  `/tmp/repotutor-list-manifest-metadata-smoke.4M0xZA`; two fixture sessions
+  were created, filtered JSONL score-preset output wrote manifest `fields`,
+  `fieldPreset`, `filters.mode`, `filters.level`, `filters.status`,
+  `filters.sort`, and `filters.limit` metadata matching the CLI invocation,
+  output row count matched manifest `rows`, and summary manifests recorded
+  `fields: null`, `fieldPreset: null`, and `filters.wrongOnly: true`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
