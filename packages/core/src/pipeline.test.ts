@@ -19,6 +19,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "interface-map-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "symbol-map-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "api-reference-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "search-index-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -36,6 +37,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "interface-map.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "symbol-map.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "api-reference.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "search-index.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -56,6 +58,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "interface-map.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "symbol-map.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "api-reference.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "search-index.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -105,6 +108,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/component-graph.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/dependency-health.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/api-reference.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/search-index.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -169,6 +173,25 @@ describe("RepoTutor core pipeline", () => {
     expect(apiReferenceMarkdown).toContain("# API Reference");
     expect(apiReferenceMarkdown).toContain("Source pattern: TypeDoc");
     expect(apiReferenceMarkdown).toContain("## Public Symbols");
+    const searchIndexText = await fs.readFile(path.join(result.session.outputPaths.analysis, "search-index-report.json"), "utf8");
+    expect(searchIndexText).toContain("Pagefind PageFragmentData MetaIndex filters meta_fields static low-bandwidth search index");
+    expect(searchIndexText).toContain("\"documents\"");
+    expect(searchIndexText).toContain("\"termIndex\"");
+    expect(searchIndexText).toContain("\"filterIndex\"");
+    expect(searchIndexText).toContain("\"metadataFields\"");
+    const searchIndexHtml = await fs.readFile(path.join(result.session.outputPaths.html, "search-index.html"), "utf8");
+    expect(searchIndexHtml).toContain("Search Index");
+    expect(searchIndexHtml).toContain("search-index-card");
+    expect(searchIndexHtml).toContain("data-source-pattern=\"Pagefind\"");
+    expect(searchIndexHtml).toContain("PageFragmentData");
+    expect(searchIndexHtml).toContain("MetaIndex");
+    const searchIndexMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "search-index.md"), "utf8");
+    expect(searchIndexMarkdown).toContain("# Search Index");
+    expect(searchIndexMarkdown).toContain("Source pattern: Pagefind");
+    expect(searchIndexMarkdown).toContain("## Filter Index");
+    const searchIndexAsset = await fs.readFile(path.join(result.session.outputPaths.html, "assets", "search-index.json"), "utf8");
+    expect(searchIndexAsset).toContain("\"documents\"");
+    expect(searchIndexAsset).toContain("\"termIndex\"");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -279,6 +302,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/interface-map.html");
     expect(exportManifestText).toContain("html/symbol-map.html");
     expect(exportManifestText).toContain("html/api-reference.html");
+    expect(exportManifestText).toContain("html/search-index.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -292,12 +316,14 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("\"readmePath\"");
     expect(exportManifestText).toContain("assets/component-graph.mmd");
     expect(exportManifestText).toContain("assets/learning-path.tour.json");
+    expect(exportManifestText).toContain("assets/search-index.json");
     const exportReadmeText = await fs.readFile(path.join(result.session.outputPaths.html, "EXPORT-README.md"), "utf8");
     expect(exportReadmeText).toContain("RepoTutor HTML Export");
     expect(exportReadmeText).toContain("Entry Points");
     expect(exportReadmeText).toContain("Integrity metadata uses sha256");
     expect(exportReadmeText).toContain("assets/component-graph.mmd");
     expect(exportReadmeText).toContain("assets/learning-path.tour.json");
+    expect(exportReadmeText).toContain("assets/search-index.json");
     const filesHtml = await fs.readFile(path.join(result.session.outputPaths.html, "files.html"), "utf8");
     expect(filesHtml).toContain("file-nav-toolbar");
     expect(filesHtml).toContain("data-file-ext-filter");
@@ -349,6 +375,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("interface-map.html");
     expect(learningPathHtml).toContain("symbol-map.html");
     expect(learningPathHtml).toContain("api-reference.html");
+    expect(learningPathHtml).toContain("search-index.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");
@@ -421,6 +448,7 @@ describe("RepoTutor core pipeline", () => {
     const zipText = await fs.readFile(zip.zipPath, "latin1");
     expect(zipText).toContain("assets/component-graph.mmd");
     expect(zipText).toContain("assets/learning-path.tour.json");
+    expect(zipText).toContain("assets/search-index.json");
     const exportVerification = await verifyHtmlExportManifest(result.session.outputPaths.root);
     expect(exportVerification.ok).toBe(true);
     expect(exportVerification.checkedFiles).toBeGreaterThan(5);

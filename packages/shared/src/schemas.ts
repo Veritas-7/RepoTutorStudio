@@ -530,6 +530,43 @@ export const DependencyHealthReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SearchIndexReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  totalDocuments: z.number().int().nonnegative(),
+  totalTerms: z.number().int().nonnegative(),
+  documents: z.array(z.object({
+    id: z.string(),
+    title: z.string(),
+    href: z.string(),
+    section: z.string(),
+    sourcePath: z.string().nullable(),
+    wordCount: z.number().int().nonnegative(),
+    filters: z.record(z.string(), z.array(z.string())),
+    meta: z.record(z.string(), z.string()),
+    anchors: z.array(z.object({
+      id: z.string(),
+      text: z.string(),
+      href: z.string()
+    })),
+    topTerms: z.array(z.string())
+  })),
+  termIndex: z.array(z.object({
+    term: z.string(),
+    documentCount: z.number().int().nonnegative(),
+    documents: z.array(z.string())
+  })),
+  filterIndex: z.array(z.object({
+    filter: z.string(),
+    values: z.array(z.object({
+      value: z.string(),
+      documentCount: z.number().int().nonnegative()
+    }))
+  })),
+  metadataFields: z.array(z.string()),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -749,6 +786,7 @@ export type GraphQueryReport = z.infer<typeof GraphQueryReportSchema>;
 export type TutorialAbstractionReport = z.infer<typeof TutorialAbstractionReportSchema>;
 export type DecisionRecordReport = z.infer<typeof DecisionRecordReportSchema>;
 export type DependencyHealthReport = z.infer<typeof DependencyHealthReportSchema>;
+export type SearchIndexReport = z.infer<typeof SearchIndexReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

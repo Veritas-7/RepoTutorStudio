@@ -30,6 +30,7 @@ import {
   TutorialAbstractionReport,
   DecisionRecordReport,
   DependencyHealthReport,
+  SearchIndexReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -57,6 +58,7 @@ export interface AnalysisBundle {
   tutorialAbstractionReport: TutorialAbstractionReport;
   decisionRecordReport: DecisionRecordReport;
   dependencyHealthReport: DependencyHealthReport;
+  searchIndexReport: SearchIndexReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -91,10 +93,11 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const tutorialAbstractionReport = buildTutorialAbstractionReport(fileLessons, suggestedReadsReport, componentGraphReport);
   const decisionRecordReport = buildDecisionRecordReport(repoMap, architectureReport, runtimeEnvironmentReport, interfaceMapReport, contextPackReport, tutorialAbstractionReport);
   const dependencyHealthReport = buildDependencyHealthReport(fileLessons);
+  const searchIndexReport = buildSearchIndexReport(fileLessons, folderLessons, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, dependencyHealthReport);
   const agentMemoryReport = buildAgentMemoryReport(repoMap, languageReport, purposeReport, contextPackReport, mcpHandoffReport, componentGraphReport);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -1375,6 +1378,251 @@ function rankFan(graph: Map<string, string[]>): Array<{ filePath: string; count:
     .map(([filePath, files]) => ({ filePath, count: new Set(files).size }))
     .filter((item) => item.count > 0)
     .sort((a, b) => b.count - a.count || a.filePath.localeCompare(b.filePath));
+}
+
+function buildSearchIndexReport(
+  fileLessons: FileLesson[],
+  folderLessons: FolderLesson[],
+  suggestedReadsReport: SuggestedReadsReport,
+  runtimeEnvironmentReport: RuntimeEnvironmentReport,
+  interfaceMapReport: InterfaceMapReport,
+  symbolMapReport: SymbolMapReport,
+  apiReferenceReport: ApiReferenceReport,
+  dependencyHealthReport: DependencyHealthReport
+): SearchIndexReport {
+  const seeds: Array<{
+    id: string;
+    title: string;
+    href: string;
+    section: string;
+    sourcePath: string | null;
+    text: string;
+    filters: Record<string, string[]>;
+    meta: Record<string, string>;
+    anchors: SearchIndexReport["documents"][number]["anchors"];
+  }> = [
+    searchSeed({
+      id: "report-suggested-reads",
+      title: "추천 읽기",
+      href: "html/suggested-reads.html",
+      section: "report",
+      sourcePath: null,
+      text: [suggestedReadsReport.summary, suggestedReadsReport.sourcePattern, ...suggestedReadsReport.items.map((item) => `${item.filePath} ${item.reason}`)].join("\n"),
+      sourcePattern: "Repo Baby",
+      kind: "recommended-reading"
+    }),
+    searchSeed({
+      id: "report-runtime-environment",
+      title: "실행 환경",
+      href: "html/runtime-environment.html",
+      section: "report",
+      sourcePath: null,
+      text: [runtimeEnvironmentReport.summary, runtimeEnvironmentReport.sourcePattern, ...runtimeEnvironmentReport.detectedManifests.map((item) => `${item.filePath} ${item.ecosystem} ${item.signal}`), ...runtimeEnvironmentReport.missingSignals].join("\n"),
+      sourcePattern: "docSmith",
+      kind: "runtime"
+    }),
+    searchSeed({
+      id: "report-interface-map",
+      title: "인터페이스 맵",
+      href: "html/interface-map.html",
+      section: "report",
+      sourcePath: null,
+      text: [interfaceMapReport.summary, interfaceMapReport.sourcePattern, ...interfaceMapReport.routeSignals.map((item) => `${item.filePath} ${item.kind} ${item.signal}`), ...interfaceMapReport.apiSignals.map((item) => `${item.filePath} ${item.method} ${item.pattern}`)].join("\n"),
+      sourcePattern: "repomap",
+      kind: "interface"
+    }),
+    searchSeed({
+      id: "report-symbol-map",
+      title: "심볼 맵",
+      href: "html/symbol-map.html",
+      section: "report",
+      sourcePath: null,
+      text: [symbolMapReport.summary, symbolMapReport.sourcePattern, ...symbolMapReport.symbols.map((item) => `${item.name} ${item.kind} ${item.filePath}`)].join("\n"),
+      sourcePattern: "codebase-map",
+      kind: "symbols"
+    }),
+    searchSeed({
+      id: "report-api-reference",
+      title: "API Reference",
+      href: "html/api-reference.html",
+      section: "report",
+      sourcePath: null,
+      text: [apiReferenceReport.summary, apiReferenceReport.sourcePattern, ...apiReferenceReport.publicSymbols.map((item) => `${item.name} ${item.kind} ${item.category} ${item.signature}`)].join("\n"),
+      sourcePattern: "TypeDoc",
+      kind: "api-reference"
+    }),
+    searchSeed({
+      id: "report-dependency-health",
+      title: "Dependency Health",
+      href: "html/dependency-health.html",
+      section: "report",
+      sourcePath: null,
+      text: [dependencyHealthReport.summary, dependencyHealthReport.sourcePattern, ...dependencyHealthReport.ruleViolations.map((item) => `${item.ruleName} ${item.fromFile} ${item.toFile ?? ""} ${item.message}`)].join("\n"),
+      sourcePattern: "dependency-cruiser",
+      kind: "dependency-health"
+    }),
+    ...folderLessons.slice(0, 25).map((lesson) => searchSeed({
+      id: `folder-${htmlAnchor(lesson.folderPath)}`,
+      title: lesson.folderPath,
+      href: `html/folders.html#${htmlAnchor(lesson.folderPath)}`,
+      section: "folder",
+      sourcePath: lesson.folderPath,
+      text: [lesson.role, lesson.beginnerExplanation, lesson.whyItExists, lesson.designReasoning, lesson.rebuildAdvice, ...lesson.importantFiles].join("\n"),
+      sourcePattern: "RepoTutor folder lesson",
+      kind: "folder"
+    })),
+    ...fileLessons.slice(0, 50).map((lesson) => searchSeed({
+      id: `file-${htmlAnchor(lesson.filePath)}`,
+      title: lesson.filePath,
+      href: `html/files.html#${htmlAnchor(lesson.filePath)}`,
+      section: "file",
+      sourcePath: lesson.filePath,
+      text: [
+        lesson.role,
+        lesson.beginnerExplanation,
+        lesson.whyItExists,
+        lesson.executionFlowPosition,
+        lesson.rebuildAdvice,
+        ...lesson.keyExports,
+        ...lesson.keyImports,
+        ...lesson.glossaryTerms,
+        ...lesson.sourceEvidence.map((item) => `${item.kind} ${item.snippet}`)
+      ].join("\n"),
+      sourcePattern: "RepoTutor file lesson",
+      kind: "file"
+    }))
+  ];
+
+  const documents = seeds.map((seed) => {
+    const terms = tokenizeSearchText(`${seed.title}\n${seed.text}\n${Object.values(seed.meta).join("\n")}`);
+    const topTerms = rankSearchTerms(terms).slice(0, 8).map(([term]) => term);
+    return {
+      id: seed.id,
+      title: seed.title,
+      href: seed.href,
+      section: seed.section,
+      sourcePath: seed.sourcePath,
+      wordCount: terms.length,
+      filters: seed.filters,
+      meta: seed.meta,
+      anchors: seed.anchors,
+      topTerms
+    };
+  });
+  const termIndex = buildSearchTermIndex(seeds);
+  const metadataFields = [...new Set(documents.flatMap((document) => Object.keys(document.meta)))].sort();
+  return {
+    summary: `Pagefind식 search index report: ${documents.length}개 학습 문서를 PageFragmentData처럼 href, filters, meta, anchors로 나누고 ${termIndex.length}개 검색어 색인을 만들었습니다.`,
+    sourcePattern: "Pagefind PageFragmentData MetaIndex filters meta_fields static low-bandwidth search index",
+    totalDocuments: documents.length,
+    totalTerms: termIndex.length,
+    documents,
+    termIndex,
+    filterIndex: buildSearchFilterIndex(documents),
+    metadataFields,
+    learnerNextSteps: [
+      "search-index.html에서 보고서, 폴더, 파일 문서가 어떤 filter와 metadata로 묶였는지 확인하세요.",
+      "termIndex의 상위 문서를 따라가면 generated HTML 전체를 가로지르는 학습 검색 출발점을 잡을 수 있습니다.",
+      "metadataFields와 filters를 보면 Pagefind식 정적 검색 UI를 붙일 때 어떤 facet을 노출할지 결정할 수 있습니다."
+    ]
+  };
+}
+
+function searchSeed(input: {
+  id: string;
+  title: string;
+  href: string;
+  section: string;
+  sourcePath: string | null;
+  text: string;
+  sourcePattern: string;
+  kind: string;
+}): {
+  id: string;
+  title: string;
+  href: string;
+  section: string;
+  sourcePath: string | null;
+  text: string;
+  filters: Record<string, string[]>;
+  meta: Record<string, string>;
+  anchors: SearchIndexReport["documents"][number]["anchors"];
+} {
+  return {
+    ...input,
+    filters: {
+      section: [input.section],
+      kind: [input.kind],
+      sourcePattern: [input.sourcePattern]
+    },
+    meta: {
+      title: input.title,
+      section: input.section,
+      kind: input.kind,
+      sourcePath: input.sourcePath ?? "",
+      sourcePattern: input.sourcePattern
+    },
+    anchors: [{
+      id: htmlAnchor(input.title),
+      text: input.title,
+      href: input.href
+    }]
+  };
+}
+
+function tokenizeSearchText(text: string): string[] {
+  const stopWords = new Set(["the", "and", "for", "with", "this", "that", "from", "html", "source", "report"]);
+  return [...text.toLowerCase().matchAll(/[a-z0-9가-힣_/-]{2,}/g)]
+    .map((match) => match[0])
+    .filter((term) => !stopWords.has(term))
+    .slice(0, 4_000);
+}
+
+function rankSearchTerms(terms: string[]): Array<[string, number]> {
+  return Object.entries(countBy(terms)).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+}
+
+function buildSearchTermIndex(seeds: Array<{ id: string; title: string; text: string; meta: Record<string, string> }>): SearchIndexReport["termIndex"] {
+  const termDocuments = new Map<string, Set<string>>();
+  for (const seed of seeds) {
+    const uniqueTerms = new Set(tokenizeSearchText(`${seed.title}\n${seed.text}\n${Object.values(seed.meta).join("\n")}`));
+    for (const term of uniqueTerms) {
+      const documents = termDocuments.get(term) ?? new Set<string>();
+      documents.add(seed.id);
+      termDocuments.set(term, documents);
+    }
+  }
+  return [...termDocuments.entries()]
+    .map(([term, documents]) => ({
+      term,
+      documentCount: documents.size,
+      documents: [...documents].sort().slice(0, 12)
+    }))
+    .sort((a, b) => b.documentCount - a.documentCount || a.term.localeCompare(b.term))
+    .slice(0, 80);
+}
+
+function buildSearchFilterIndex(documents: SearchIndexReport["documents"]): SearchIndexReport["filterIndex"] {
+  const filters = new Map<string, Map<string, Set<string>>>();
+  for (const document of documents) {
+    for (const [filter, values] of Object.entries(document.filters)) {
+      const valueMap = filters.get(filter) ?? new Map<string, Set<string>>();
+      for (const value of values) {
+        const documentSet = valueMap.get(value) ?? new Set<string>();
+        documentSet.add(document.id);
+        valueMap.set(value, documentSet);
+      }
+      filters.set(filter, valueMap);
+    }
+  }
+  return [...filters.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([filter, values]) => ({
+      filter,
+      values: [...values.entries()]
+        .map(([value, documents]) => ({ value, documentCount: documents.size }))
+        .sort((a, b) => b.documentCount - a.documentCount || a.value.localeCompare(b.value))
+    }));
 }
 
 function suggestedReadScore(lesson: FileLesson, index: number): number {

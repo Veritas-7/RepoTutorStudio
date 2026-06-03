@@ -2168,6 +2168,36 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 118: Static Search Index Report
+
+- Cloned and inspected `Pagefind/pagefind` under
+  `research/external-src/Pagefind-pagefind` without executing external source.
+- Added `SearchIndexReportSchema` and `analysis/search-index-report.json`
+  with Pagefind-style document fragments, term index, filter index, metadata
+  fields, anchors, and top terms.
+- Added `markdown/search-index.md`, `html/search-index.html`,
+  `html/assets/search-index.json`, manifest/verification coverage,
+  learning-path linkage, and `open --target search-index`.
+- Source pattern: Pagefind stores each page as `PageFragmentData` with URL,
+  content, word count, filters, metadata, and anchors, then connects queries to
+  pages through `MetaIndex`, filter chunks, and static assets; RepoTutor maps
+  that to a deterministic JSON search index over generated reports, file
+  lessons, and folder lessons.
+- RED smoke
+  `/tmp/repotutor-search-index-red-studies.FaSruS/2026-06-04/local__simple-ts-app__HEAD__56931863`
+  failed on the old behavior with missing `analysis/search-index-report.json`,
+  `html/search-index.html`, and `html/assets/search-index.json`.
+- GREEN smoke generated
+  `/tmp/repotutor-search-index-green-studies.1VlF5F/2026-06-04/local__simple-ts-app__main__56931863`;
+  generated JSON, Markdown, HTML, and asset artifacts, included
+  `documents`, `termIndex`, `filterIndex`, `metadataFields`,
+  `search-index-card`, `data-source-pattern="Pagefind"`, `PageFragmentData`,
+  `MetaIndex`, manifest/learning-path entries, and `open --target
+  search-index` returned `html/search-index.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
