@@ -448,6 +448,16 @@ Transferable patterns:
 - `packages/core/src/pipeline.test.ts`: verifies the HTML page and report links.
 - `scripts/compliance-audit.mjs`: verifies the HTML verification entrypoint.
 
+### Upgrade 34: Study Completion Verification Output
+
+- `apps/cli/src/index.ts`: reads
+  `analysis/session-verification-report.json` after `runStudy` completes.
+- `apps/cli/src/index.ts`: includes `verificationOk`, verification report
+  paths, checked required artifact count, and sub-check statuses in
+  `repo-tutor study` completion JSON.
+- `scripts/compliance-audit.mjs`: verifies the study output verification
+  fields.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -603,6 +613,12 @@ Local verification:
   with `html/session-verification.html`, links to the JSON and Markdown
   verification reports, a manifest page entry, a manifest entrypoint, and 18
   manifest-covered files.
+- Temp CLI study verification-output smoke generated:
+  `/tmp/repotutor-study-verification-output-smoke.iOjSiV/2026-06-04/local__simple-ts-app__main__8acedeae`
+  and `repo-tutor study` returned `verificationOk: true`,
+  `verificationReport`, `verificationMarkdown`, `verificationHtml`,
+  `verificationCheckedRequiredArtifacts: 11`, and all four `verificationChecks`
+  as true.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

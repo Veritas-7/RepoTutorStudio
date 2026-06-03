@@ -46,11 +46,23 @@ async function study(parsed: ParsedArgs): Promise<void> {
     sourceBaseDir: commandBaseDir(),
     enableCodex: parsed.flags["enable-codex"] === true
   });
+  const verificationReport = path.join(result.session.outputPaths.analysis, "session-verification-report.json");
+  const verification = JSON.parse(await fs.readFile(verificationReport, "utf8")) as {
+    ok: boolean;
+    checkedRequiredArtifacts: number;
+    checks: Record<string, boolean>;
+  };
   console.log(JSON.stringify({
     sessionId: result.session.sessionId,
     status: result.session.status,
     path: result.session.outputPaths.root,
     html: path.join(result.session.outputPaths.html, "index.html"),
+    verificationOk: verification.ok,
+    verificationReport,
+    verificationMarkdown: path.join(result.session.outputPaths.markdown, "session-verification.md"),
+    verificationHtml: path.join(result.session.outputPaths.html, "session-verification.html"),
+    verificationCheckedRequiredArtifacts: verification.checkedRequiredArtifacts,
+    verificationChecks: verification.checks,
     quizQuestions: result.session.quizSummary.totalQuestions
   }, null, 2));
 }
