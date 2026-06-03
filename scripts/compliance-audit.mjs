@@ -62,9 +62,10 @@ const checks = [
   check("offline html export", [
     "packages/html/src/templates.ts",
     "packages/core/src/quiz.ts",
+    "packages/core/src/exporter.ts",
     "apps/cli/src/index.ts",
     "packages/shared/src/schemas.ts"
-  ], ["index.html", "quiz.html", "wrong-notes.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints"]),
+  ], ["index.html", "quiz.html", "wrong-notes.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints", "writeHtmlZipBundle", "--format html|zip", "html-report.zip"]),
   check("source-backed component graph", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

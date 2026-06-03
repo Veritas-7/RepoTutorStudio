@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { calculateQuizCount, runStudy } from "./index.js";
+import { calculateQuizCount, runStudy, writeHtmlZipBundle } from "./index.js";
 
 const fixtureRoot = path.resolve("packages/core/tests/fixtures/simple-ts-app");
 
@@ -45,6 +45,11 @@ describe("RepoTutor core pipeline", () => {
     const exportReadmeText = await fs.readFile(path.join(result.session.outputPaths.html, "EXPORT-README.md"), "utf8");
     expect(exportReadmeText).toContain("RepoTutor HTML Export");
     expect(exportReadmeText).toContain("Entry Points");
+    const zip = await writeHtmlZipBundle(result.session.outputPaths.root);
+    expect(zip.fileCount).toBeGreaterThan(5);
+    expect(zip.bytes).toBeGreaterThan(100);
+    const zipSignature = await fs.readFile(zip.zipPath).then((buffer) => buffer.subarray(0, 4).toString("hex"));
+    expect(zipSignature).toBe("504b0304");
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
   });

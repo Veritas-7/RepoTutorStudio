@@ -169,6 +169,18 @@ Transferable patterns:
 - `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
   verify the portable export files and manifest entrypoints.
 
+### Upgrade 10: Zipped Portable HTML Bundle Export
+
+- `packages/core/src/exporter.ts`: adds `writeHtmlZipBundle`, a dependency-free
+  store-only ZIP writer for the portable `html/` export folder.
+- `packages/core/src/index.ts`: exports the bundle writer for CLI and tests.
+- `apps/cli/src/index.ts`: supports `repo-tutor export --format zip` and returns
+  the ZIP path, byte count, file count, regenerated HTML paths, and entrypoints.
+- `packages/core/src/pipeline.test.ts`: verifies ZIP creation and the `504b0304`
+  ZIP signature from a fixture study session.
+- `scripts/compliance-audit.mjs`: includes the ZIP bundle writer and
+  `html-report.zip` in the offline export compliance check.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -204,6 +216,11 @@ Local verification:
   `/tmp/repotutor-export-polish-studies-eTpBRE/2026-06-04/local__simple-ts-app__main__c8fa07ea/html/manifest.json`
   and `html/EXPORT-README.md`; CLI export returned 4 entrypoints, 14 pages, and
   2 assets.
+- Temp CLI ZIP export smoke generated:
+  `/tmp/repotutor-zip-smoke.eay76P/2026-06-04/local__simple-ts-app__main__8f7c2b94/exports/html-report.zip`
+  with 18 files, 72,114 bytes, signature `504b0304`, 14 pages, 2 assets, and
+  `unzip -l` entries for `index.html`, `manifest.json`, and
+  `EXPORT-README.md`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
@@ -211,5 +228,6 @@ Local verification:
 
 ## Deferred Candidate Backlog
 
-1. Add zipped/portable bundle export.
-2. Add additional large-repo navigation polish.
+1. Add additional large-repo navigation polish.
+2. Accept relative local paths when the CLI is launched through a filtered pnpm
+   dev runner whose package CWD differs from the user's shell CWD.
