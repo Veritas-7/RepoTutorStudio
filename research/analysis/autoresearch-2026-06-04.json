@@ -652,6 +652,17 @@
         "repo-tutor resume JSON mode and level fields",
         "Study mode and Learner level lines in Markdown resume output"
       ]
+    },
+    {
+      "name": "open all html targets",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor open --target all JSON target map",
+        "fail-closed validation for every open target file"
+      ]
     }
   ],
   "verification": {
@@ -729,6 +740,7 @@
     "cliListSortSmoke": "PASS",
     "cliListLevelSmoke": "PASS",
     "cliResumeLevelSmoke": "PASS",
+    "cliOpenAllSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
