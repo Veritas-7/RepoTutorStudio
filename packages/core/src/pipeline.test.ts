@@ -136,14 +136,18 @@ describe("RepoTutor core pipeline", () => {
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
     expect(contextPackText).toContain("\"directoryTokenTree\"");
+    expect(contextPackText).toContain("\"splitPlans\"");
+    expect(contextPackText).toContain("google-ai-studio-1mb");
     const contextPackHtml = await fs.readFile(path.join(result.session.outputPaths.html, "context-pack.html"), "utf8");
     expect(contextPackHtml).toContain("Context Pack");
     expect(contextPackHtml).toContain("context-pack-card");
     expect(contextPackHtml).toContain("context-pack-source-link");
     expect(contextPackHtml).toContain("data-source-pattern=\"Repomix\"");
+    expect(contextPackHtml).toContain("Split Output Plan");
     const contextPackMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "context-pack.md"), "utf8");
     expect(contextPackMarkdown).toContain("# Context Pack");
     expect(contextPackMarkdown).toContain("Source pattern: Repomix");
+    expect(contextPackMarkdown).toContain("## Split Output Plan");
     const exportManifestText = await fs.readFile(path.join(result.session.outputPaths.html, "manifest.json"), "utf8");
     expect(exportManifestText).toContain("\"entrypoints\"");
     expect(exportManifestText).toContain("html/learning-path.html");

@@ -614,6 +614,7 @@ function buildContextPackReport(walk: WalkResult, fileLessons: FileLesson[]): Co
     budgetProfiles,
     topFiles: packFiles.slice(0, 20),
     directoryTokenTree,
+    splitPlans: buildContextSplitPlans(packFiles),
     excludedFromPack,
     securityNotes: [
       "RepoTutor는 secret-like path와 binary/media/large lockfile을 pack 후보에서 제외합니다.",
@@ -622,10 +623,58 @@ function buildContextPackReport(walk: WalkResult, fileLessons: FileLesson[]): Co
     ],
     learnerNextSteps: [
       "먼저 token-heavy file을 열어 LLM에 넣을 필요가 있는지 판단하세요.",
+      "split plan의 part 단위로 공유하면 top-level directory context를 유지하면서 큰 저장소를 나눌 수 있습니다.",
       "예산을 초과하면 top file을 그대로 붙이지 말고 파일 수업, 심볼 맵, 인터페이스 맵으로 좁혀 주세요.",
       "secret/security note를 확인한 뒤 외부 AI 도구에 공유할 context 범위를 정하세요."
     ]
   };
+}
+
+function buildContextSplitPlans(files: ContextPackReport["topFiles"]): ContextPackReport["splitPlans"] {
+  const directoryGroups = new Map<string, { directory: string; fileCount: number; estimatedBytes: number; estimatedTokens: number }>();
+  for (const file of files) {
+    const directory = topDirectoryForContextPack(file.filePath);
+    const group = directoryGroups.get(directory) ?? { directory, fileCount: 0, estimatedBytes: 0, estimatedTokens: 0 };
+    group.fileCount += 1;
+    group.estimatedBytes += file.size;
+    group.estimatedTokens += file.estimatedTokens;
+    directoryGroups.set(directory, group);
+  }
+  const groups = [...directoryGroups.values()].sort((a, b) => b.estimatedBytes - a.estimatedBytes || a.directory.localeCompare(b.directory));
+  return [
+    { name: "google-ai-studio-1mb", maxBytes: 1_000_000 },
+    { name: "repomix-20mb", maxBytes: 20_000_000 }
+  ].map((profile) => {
+    const parts: ContextPackReport["splitPlans"][number]["parts"] = [];
+    let current: ContextPackReport["splitPlans"][number]["parts"][number] | null = null;
+    for (const group of groups) {
+      if (current && current.estimatedBytes > 0 && current.estimatedBytes + group.estimatedBytes > profile.maxBytes) {
+        parts.push(current);
+        current = null;
+      }
+      current ??= {
+        partName: `repomix-output.${parts.length + 1}.xml`,
+        directories: [],
+        fileCount: 0,
+        estimatedBytes: 0,
+        estimatedTokens: 0,
+        overLimit: false
+      };
+      current.directories.push(group.directory);
+      current.fileCount += group.fileCount;
+      current.estimatedBytes += group.estimatedBytes;
+      current.estimatedTokens += group.estimatedTokens;
+      current.overLimit = current.overLimit || group.estimatedBytes > profile.maxBytes || current.estimatedBytes > profile.maxBytes;
+    }
+    if (current) parts.push(current);
+    return {
+      name: profile.name,
+      maxBytes: profile.maxBytes,
+      partCount: parts.length,
+      parts,
+      oversizedDirectories: groups.filter((group) => group.estimatedBytes > profile.maxBytes).map((group) => group.directory)
+    };
+  });
 }
 
 function estimateTokens(bytes: number): number {

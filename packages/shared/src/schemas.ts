@@ -292,6 +292,20 @@ export const ContextPackReportSchema = z.object({
     fileCount: z.number().int().nonnegative(),
     estimatedTokens: z.number().int().nonnegative()
   })),
+  splitPlans: z.array(z.object({
+    name: z.string(),
+    maxBytes: z.number().int().positive(),
+    partCount: z.number().int().nonnegative(),
+    parts: z.array(z.object({
+      partName: z.string(),
+      directories: z.array(z.string()),
+      fileCount: z.number().int().nonnegative(),
+      estimatedBytes: z.number().int().nonnegative(),
+      estimatedTokens: z.number().int().nonnegative(),
+      overLimit: z.boolean()
+    })),
+    oversizedDirectories: z.array(z.string())
+  })),
   excludedFromPack: z.array(z.string()),
   securityNotes: z.array(z.string()),
   learnerNextSteps: z.array(z.string())
