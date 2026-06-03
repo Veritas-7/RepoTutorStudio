@@ -359,6 +359,12 @@ Transferable patterns:
   `evidenceByFile`, filtered rows, lesson links, and source links as JSON.
 - `scripts/compliance-audit.mjs`: verifies the new headless CLI command.
 
+### Upgrade 26: CLI Source Evidence File Filtering
+
+- `apps/cli/src/index.ts`: adds `--file <path>` to `repo-tutor evidence`.
+- `apps/cli/src/index.ts`: returns `filteredFile` in evidence command JSON.
+- `scripts/compliance-audit.mjs`: verifies the file-filter CLI surface.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -468,6 +474,11 @@ Local verification:
   and `repo-tutor evidence <session> --kind import --limit 1` returned
   `filteredKind: import`, `returnedItems: 1`, `totalEvidenceItems: 9`,
   `evidenceByKind`, `evidenceByFile`, and `sourceHref: source/src/main.ts`.
+- Temp CLI evidence file-filter smoke generated:
+  `/tmp/repotutor-evidence-file-cli-smoke.VdnFYA/2026-06-04/local__simple-ts-app__main__f54b60e4`
+  and `repo-tutor evidence <session> --kind import --file src/main.ts --limit 5`
+  returned `filteredKind: import`, `filteredFile: src/main.ts`,
+  `returnedItems: 1`, and `sourceHref: source/src/main.ts`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

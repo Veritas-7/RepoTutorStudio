@@ -139,6 +139,9 @@ to a private repository, and preserve resumable state in this file.
   report access. `repo-tutor evidence <session>` now reads
   `analysis/evidence-index-report.json`, supports `--kind` and `--limit`, and
   returns evidence counts plus filtered evidence rows as JSON.
+- 2026-06-04: Applied a twenty-sixth AutoResearch upgrade: CLI source evidence
+  file filtering. `repo-tutor evidence <session>` now supports `--file <path>`
+  and returns `filteredFile` so users can inspect evidence for one source file.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -236,6 +239,11 @@ to a private repository, and preserve resumable state in this file.
     and `repo-tutor evidence <session> --kind import --limit 1` returned
     `filteredKind: import`, `returnedItems: 1`, `totalEvidenceItems: 9`,
     `evidenceByKind`, `evidenceByFile`, and `sourceHref: source/src/main.ts`
+  - temp CLI evidence file-filter smoke generated
+    `/tmp/repotutor-evidence-file-cli-smoke.VdnFYA/2026-06-04/local__simple-ts-app__main__f54b60e4`
+    and `repo-tutor evidence <session> --kind import --file src/main.ts --limit 5`
+    returned `filteredKind: import`, `filteredFile: src/main.ts`,
+    `returnedItems: 1`, and `sourceHref: source/src/main.ts`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -264,6 +272,7 @@ to a private repository, and preserve resumable state in this file.
   - `a3e504a` source evidence index pages
   - `020887f` source evidence kind filters
   - `dba4cad` normalized source evidence report
+  - `f54b60e` CLI evidence report command
 
 ## Next Actions
 
