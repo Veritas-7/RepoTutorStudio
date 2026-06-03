@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { createHash } from "node:crypto";
+import { constants as fsConstants } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import readline from "node:readline/promises";
@@ -27,6 +28,7 @@ interface DoctorPayload {
     envStudiesRoot: string | null;
   };
   runtimeOptions: Record<string, boolean>;
+  runtimeHealth: Record<string, boolean>;
   listFilters: Record<string, string[] | boolean>;
   openTargets: string[];
   modes: string[];
@@ -593,6 +595,7 @@ async function openSession(parsed: ParsedArgs): Promise<void> {
 async function doctor(parsed: ParsedArgs): Promise<void> {
   const format = stringFlag(parsed.flags.format) ?? "json";
   if (!["json", "markdown"].includes(format)) throw new Error("doctor supports --format json or markdown.");
+  const runtimeStudiesRoot = studiesRoot(parsed.flags);
   const payload: DoctorPayload = {
     ok: true,
     product: "RepoTutor Studio",
@@ -615,7 +618,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
     },
     runtime: {
       cwd: process.cwd(),
-      studiesRoot: studiesRoot(parsed.flags),
+      studiesRoot: runtimeStudiesRoot,
       initCwd: process.env.INIT_CWD ?? null,
       envStudiesRoot: process.env.REPOTUTOR_STUDIES_ROOT ?? null
     },
@@ -624,6 +627,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       envStudiesRoot: true,
       initCwdFallback: true
     },
+    runtimeHealth: await doctorRuntimeHealth(runtimeStudiesRoot),
     listFilters: {
       level: ["beginner", "junior", "senior", "all"],
       mode: ["quick", "standard", "deep", "all"],
@@ -660,6 +664,25 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
     console.log(doctorMarkdown(payload));
   } else {
     console.log(JSON.stringify(payload, null, 2));
+  }
+}
+
+async function doctorRuntimeHealth(studiesRootPath: string): Promise<Record<string, boolean>> {
+  const studiesRootExists = await pathAccess(studiesRootPath, fsConstants.F_OK);
+  return {
+    studiesRootExists,
+    studiesRootReadable: studiesRootExists && await pathAccess(studiesRootPath, fsConstants.R_OK),
+    studiesRootWritable: studiesRootExists && await pathAccess(studiesRootPath, fsConstants.W_OK),
+    studiesRootParentWritable: await pathAccess(path.dirname(studiesRootPath), fsConstants.W_OK)
+  };
+}
+
+async function pathAccess(targetPath: string, mode: number): Promise<boolean> {
+  try {
+    await fs.access(targetPath, mode);
+    return true;
+  } catch {
+    return false;
   }
 }
 
@@ -1516,6 +1539,9 @@ function doctorMarkdown(payload: DoctorPayload): string {
   const runtimeOptions = Object.entries(payload.runtimeOptions)
     .map(([name, ok]) => `- ${name}: ${ok ? "true" : "false"}`)
     .join("\n");
+  const runtimeHealth = Object.entries(payload.runtimeHealth)
+    .map(([name, ok]) => `- ${name}: ${ok ? "true" : "false"}`)
+    .join("\n");
   const security = Object.entries(payload.security)
     .map(([name, ok]) => `- ${name}: ${ok ? "true" : "false"}`)
     .join("\n");
@@ -1540,6 +1566,10 @@ function doctorMarkdown(payload: DoctorPayload): string {
     "## Runtime Options",
     "",
     runtimeOptions,
+    "",
+    "## Runtime Health",
+    "",
+    runtimeHealth,
     "",
     "## List Filters",
     "",
