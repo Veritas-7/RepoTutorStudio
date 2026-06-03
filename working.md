@@ -433,6 +433,14 @@ to a private repository, and preserve resumable state in this file.
     `Quiz questions: 15`, and `Verification Checks`, `doctor` reported
     Markdown support for `study`, and invalid `--format text` exited 1 with
     `study supports --format`
+  - temp CLI export-summary-markdown smoke generated
+    `/tmp/repotutor-export-summary-md-smoke.HFdHEH`; `export --format html
+    --summary-format markdown` returned `# RepoTutor Export`, `Exported: html`,
+    `Integrity OK: true`, and `Entry Points`; `export --format zip
+    --summary-format markdown` returned `Exported: zip`, `ZIP files: 20`, and
+    `html-report.zip`; `doctor` reported Markdown support for `exportSummary`;
+    invalid `--summary-format text` exited 1 with
+    `export supports --summary-format`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -559,6 +567,7 @@ to a private repository, and preserve resumable state in this file.
   - `4788d27` export verification Markdown output
   - `87b5b94` evidence verification Markdown output
   - `4d7610c` quiz attempt Markdown output
+  - `d14351f` study result Markdown output
 
 ## Next Actions
 

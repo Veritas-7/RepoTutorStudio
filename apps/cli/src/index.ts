@@ -189,6 +189,8 @@ async function exportSession(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const format = stringFlag(parsed.flags.format) ?? "html";
   if (!["html", "zip"].includes(format)) throw new Error("export supports --format html or --format zip.");
+  const summaryFormat = stringFlag(parsed.flags["summary-format"]) ?? "json";
+  if (!["json", "markdown"].includes(summaryFormat)) throw new Error("export supports --summary-format json or markdown.");
   const htmlInput = await loadStudyHtmlInput(sessionRoot);
   const { renderStudyHtml } = await import("@repotutor/html");
   const { verifyHtmlExportManifest, writeHtmlZipBundle, writeRenderedHtml } = await import("@repotutor/core");
@@ -197,7 +199,7 @@ async function exportSession(parsed: ParsedArgs): Promise<void> {
   const verification = await verifyHtmlExportManifest(sessionRoot);
   if (!verification.ok) throw new Error("HTML export integrity verification failed.");
   const zip = format === "zip" ? await writeHtmlZipBundle(sessionRoot) : null;
-  console.log(JSON.stringify({
+  const payload = {
     exported: format,
     path: zip?.zipPath ?? path.join(sessionRoot, "html", "index.html"),
     html: path.join(sessionRoot, "html", "index.html"),
@@ -213,7 +215,8 @@ async function exportSession(parsed: ParsedArgs): Promise<void> {
       label: entry.label,
       path: path.join(sessionRoot, entry.path)
     }))
-  }, null, 2));
+  };
+  console.log(summaryFormat === "markdown" ? exportSummaryMarkdown(payload) : JSON.stringify(payload, null, 2));
 }
 
 async function verifyExport(parsed: ParsedArgs): Promise<void> {
@@ -359,7 +362,8 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       list: ["json", "markdown"],
       openTargets: ["json", "markdown"],
       openAll: ["json", "markdown"],
-      export: ["html", "zip"]
+      export: ["html", "zip"],
+      exportSummary: ["json", "markdown"]
     },
     listFilters: {
       level: ["beginner", "junior", "senior", "all"],
@@ -565,6 +569,44 @@ function studyMarkdown(payload: {
     "## Verification Checks",
     "",
     checks
+  ].join("\n");
+}
+
+function exportSummaryMarkdown(payload: {
+  exported: string;
+  path: string;
+  html: string;
+  readme: string;
+  manifest: string;
+  pages: number;
+  assets: number;
+  integrityOk: boolean;
+  integrityCheckedFiles: number;
+  zipBytes: number | null;
+  zipFiles: number | null;
+  entrypoints: Array<{ label: string; path: string }>;
+}): string {
+  const entrypoints = payload.entrypoints
+    .map((entry) => `- ${entry.label}: ${entry.path}`)
+    .join("\n");
+  return [
+    "# RepoTutor Export",
+    "",
+    `- Exported: ${payload.exported}`,
+    `- Path: ${payload.path}`,
+    `- Main HTML: ${payload.html}`,
+    `- README: ${payload.readme}`,
+    `- Manifest: ${payload.manifest}`,
+    `- Pages: ${payload.pages}`,
+    `- Assets: ${payload.assets}`,
+    `- Integrity OK: ${payload.integrityOk}`,
+    `- Integrity checked files: ${payload.integrityCheckedFiles}`,
+    `- ZIP bytes: ${payload.zipBytes ?? "none"}`,
+    `- ZIP files: ${payload.zipFiles ?? "none"}`,
+    "",
+    "## Entry Points",
+    "",
+    entrypoints || "- none"
   ].join("\n");
 }
 
@@ -972,7 +1014,7 @@ function help(): void {
   quiz <session-id-or-path> --answers answers.json --format json|markdown
   resume <session-id-or-path> --format json|markdown
   evidence <session-id-or-path> --kind import --file src/main.ts --limit 20 --format json|markdown
-  export <session-id-or-path> --format html|zip
+  export <session-id-or-path> --format html|zip --summary-format json|markdown
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
