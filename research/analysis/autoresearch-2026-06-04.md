@@ -64,6 +64,24 @@ Transferable patterns:
 - Let each step link to a file, directory, content page, or follow-up tour.
 - Provide a primary tour so new developers have a clear first path.
 
+### k3-2o/pi-repo-baby
+
+- URL: https://github.com/k3-2o/pi-repo-baby
+- Local source: `research/external-src/k3-2o-pi-repo-baby`
+- Stars at check: 7
+- Forks at check: 1
+- License: not specified
+- Updated: 2026-06-01T04:42:03Z
+- Relevance: Tree-sitter structural repo map with suggested next reads and
+  importance-ranked files for first-contact codebase orientation.
+
+Transferable patterns:
+
+- Rank first reads instead of asking agents to chain `ls`, `find`, `rg`, and
+  `read` manually.
+- Keep suggested next reads explicit and source-backed.
+- Offer a single page/report that tells learners where to start reading.
+
 ## Adopted Upgrade
 
 ### Upgrade 1: CodeBoarding-Inspired Coverage Report
@@ -1739,6 +1757,28 @@ Local verification:
 - `pnpm build`: PASS
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
+
+### Upgrade 104: Suggested Reads Report
+
+- Added `SuggestedReadsReportSchema` and `analysis/suggested-reads-report.json`
+  with Repo Baby-style recommended first-read files.
+- The scanner now ranks suggested reads from source evidence count,
+  imports/exports, related files, and entrypoint-like filenames.
+- Added `markdown/suggested-reads.md`, `html/suggested-reads.html`,
+  manifest/verification coverage, and `open --target suggested-reads`.
+- Source pattern: k3-2o/pi-repo-baby uses `suggested_reads()` and ranked
+  structural maps so an agent knows which files to inspect first; RepoTutor maps
+  that to source-backed learner next reads.
+- RED smoke `/tmp/repotutor-suggested-reads-red.*` failed on the old behavior
+  with `missing analysis/suggested-reads-report.json`.
+- GREEN smoke generated `/tmp/repotutor-suggested-reads-smoke.lyMXF2`;
+  generated the JSON, Markdown, and HTML artifacts, included
+  `suggested-read-card`, `Repo Baby`, and `추천 읽기`, and
+  `open --target suggested-reads` returned `html/suggested-reads.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports after adding scanner/Markdown
+  to the offline export audit scope
 
 ## Deferred Candidate Backlog
 

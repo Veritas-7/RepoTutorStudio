@@ -18,6 +18,7 @@ import {
   ComponentGraphReport,
   SourceSnapshotReport,
   IncrementalReport,
+  SuggestedReadsReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -33,6 +34,7 @@ export interface AnalysisBundle {
   fileLessons: FileLesson[];
   coverageReport: CoverageReport;
   evidenceIndexReport: EvidenceIndexReport;
+  suggestedReadsReport: SuggestedReadsReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -52,13 +54,14 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const fileLessons = await buildFileLessons(sourceRoot, walk);
   const coverageReport = buildCoverageReport(repoMap, fileLessons);
   const evidenceIndexReport = buildEvidenceIndexReport(fileLessons);
+  const suggestedReadsReport = buildSuggestedReadsReport(fileLessons);
   const flowReport = buildFlowReport(fileLessons, dependencyReport);
   const glossary = buildGlossary(languageReport, dependencyReport, fileLessons);
   const rebuildRoadmap = buildRebuildRoadmap(repoMap, fileLessons);
   const componentGraphReport = buildComponentGraphReport(folderLessons, fileLessons, glossary, rebuildRoadmap);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -275,6 +278,41 @@ function buildEvidenceIndexReport(fileLessons: FileLesson[]): EvidenceIndexRepor
     evidenceByFile: countBy(items.map((item) => item.filePath)),
     items
   };
+}
+
+function buildSuggestedReadsReport(fileLessons: FileLesson[]): SuggestedReadsReport {
+  const scored = fileLessons.map((lesson, index) => ({
+    lesson,
+    score: suggestedReadScore(lesson, index)
+  })).sort((a, b) => b.score - a.score || a.lesson.filePath.localeCompare(b.lesson.filePath));
+  const items = scored.slice(0, 8).map(({ lesson }, index) => ({
+    rank: index + 1,
+    filePath: lesson.filePath,
+    reason: [
+      `소스 근거 ${lesson.sourceEvidence.length}개`,
+      `관련 파일 ${lesson.relatedFiles.length}개`,
+      lesson.executionFlowPosition
+    ].join(" · "),
+    evidenceCount: lesson.sourceEvidence.length,
+    relatedFileCount: lesson.relatedFiles.length,
+    lessonHref: `html/files.html#${htmlAnchor(lesson.filePath)}`,
+    sourceHref: `source/${encodedPath(lesson.filePath)}`
+  }));
+  return {
+    summary: `Repo Baby식 추천 읽기: ${items.length}개 핵심 파일을 먼저 읽도록 정렬했습니다.`,
+    sourcePattern: "Repo Baby suggested_reads importance-ranked next reads",
+    items
+  };
+}
+
+function suggestedReadScore(lesson: FileLesson, index: number): number {
+  const entryBoost = /main|index|cli|app|server|lib/i.test(path.basename(lesson.filePath)) ? 6 : 0;
+  return entryBoost
+    + lesson.sourceEvidence.length * 3
+    + lesson.keyExports.length * 2
+    + lesson.keyImports.length * 2
+    + lesson.relatedFiles.length
+    + Math.max(0, 50 - index) / 50;
 }
 
 function buildComponentGraphReport(folderLessons: FolderLesson[], fileLessons: FileLesson[], glossary: GlossaryTerm[], rebuildRoadmap: RebuildRoadmap): ComponentGraphReport {
@@ -631,6 +669,10 @@ function truncateSnippet(value: string): string {
 function relatedByFolder(filePath: string, candidates: string[]): string[] {
   const dir = path.posix.dirname(filePath);
   return candidates.filter((candidate) => candidate !== filePath && path.posix.dirname(candidate) === dir).slice(0, 6);
+}
+
+function encodedPath(filePath: string): string {
+  return filePath.split("/").map(encodeURIComponent).join("/");
 }
 
 function glossaryTermsForFile(filePath: string): string[] {

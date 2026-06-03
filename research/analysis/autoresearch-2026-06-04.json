@@ -45,6 +45,20 @@
         "file and directory linked learning steps",
         "primary onboarding tour for new developers"
       ]
+    },
+    {
+      "repo": "k3-2o/pi-repo-baby",
+      "url": "https://github.com/k3-2o/pi-repo-baby",
+      "localPath": "research/external-src/k3-2o-pi-repo-baby",
+      "stars": 7,
+      "forks": 1,
+      "license": "not specified",
+      "updatedAt": "2026-06-01T04:42:03Z",
+      "adoptedPatterns": [
+        "suggested next reads",
+        "importance-ranked structural map",
+        "one-call codebase orientation"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1341,6 +1355,28 @@
         "기본 투어 learning path label",
         "CodeTour-style primary tour signal"
       ]
+    },
+    {
+      "name": "suggested reads report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/suggested-reads-report.json",
+        "markdown/suggested-reads.md",
+        "html/suggested-reads.html",
+        "open --target suggested-reads",
+        "SuggestedReadsReportSchema",
+        "Repo Baby-style suggested next reads ranking"
+      ]
     }
   ],
   "verification": {
@@ -1488,6 +1524,9 @@
     "cliLearningPathStepNavigationSmoke": "PASS",
     "fixtureLearningPathPrimaryMarker": "PASS",
     "cliLearningPathPrimaryMarkerSmoke": "PASS",
+    "fixtureSuggestedReadsReport": "PASS",
+    "cliSuggestedReadsSmoke": "PASS",
+    "cliSuggestedReadsOpenTargetSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
