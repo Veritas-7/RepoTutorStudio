@@ -630,6 +630,17 @@
         "repo-tutor list --sort newest|oldest",
         "createdAt sorting before list limits"
       ]
+    },
+    {
+      "name": "learner-level session filters",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --level beginner|junior|senior|all",
+        "learner level column in Markdown session lists"
+      ]
     }
   ],
   "verification": {
@@ -705,6 +716,7 @@
     "cliListStatusSmoke": "PASS",
     "cliListRepoSmoke": "PASS",
     "cliListSortSmoke": "PASS",
+    "cliListLevelSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

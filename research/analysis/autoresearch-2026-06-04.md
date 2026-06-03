@@ -791,6 +791,23 @@ Local verification:
   row, `list --sort oldest --limit 1` returned the 2001 row, Markdown oldest
   output included the 2001 timestamp, and `--sort random` exited 1 with
   `list supports --sort`.
+
+### Upgrade 46: Learner-Level Session Filters
+
+- Added `learnerLevel` to `repo-tutor list` JSON rows as `level`, so quick
+  terminal triage can distinguish beginner, junior, and senior learning
+  sessions without opening `session.json`.
+- Added `repo-tutor list --level beginner|junior|senior|all` with fail-closed
+  validation and composition with existing repo, verification status, sort,
+  verified-only, limit, and format filters.
+- Added a `Level` column to Markdown session lists for reviewer-friendly
+  summaries.
+- Temp CLI list-level smoke generated
+  `/tmp/repotutor-list-level-smoke.Ue9Ehd` with two fixture sessions using
+  `--level beginner` and `--level senior`; `list --level senior` returned one
+  JSON row with `level: senior`, `list --level beginner --format markdown`
+  returned the `Level` column and `beginner`, and `--level expert` exited 1
+  with `list supports --level`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
