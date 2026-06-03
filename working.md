@@ -445,6 +445,11 @@ to a private repository, and preserve resumable state in this file.
     `/tmp/repotutor-list-path-md-smoke.QEFZRq`; `list --format markdown`
     returned `# RepoTutor Sessions`, a `Session Path` column, and the concrete
     session root path
+  - temp CLI doctor-runtime smoke generated
+    `/tmp/repotutor-doctor-runtime-smoke.laIdbD`; `doctor --studies-root`
+    JSON returned `runtime.studiesRoot`, `runtime.cwd`, and `envStudiesRoot`,
+    and `doctor --format markdown` returned `## Runtime`, `studiesRoot`, and
+    `cwd`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -573,6 +578,7 @@ to a private repository, and preserve resumable state in this file.
   - `4d7610c` quiz attempt Markdown output
   - `d14351f` study result Markdown output
   - `e609cfc` export summary Markdown output
+  - `5cfe507` list Markdown session paths
 
 ## Next Actions
 

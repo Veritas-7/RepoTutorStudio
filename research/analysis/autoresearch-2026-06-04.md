@@ -984,6 +984,17 @@ Local verification:
   `/tmp/repotutor-list-path-md-smoke.QEFZRq`; Markdown output included
   `# RepoTutor Sessions`, a `Session Path` column, and the concrete session
   root path.
+
+### Upgrade 61: Doctor Runtime Metadata
+
+- Added runtime metadata to `repo-tutor doctor` so operator diagnostics expose
+  the current cwd, resolved `studiesRoot`, `INIT_CWD`, and
+  `REPOTUTOR_STUDIES_ROOT` context.
+- Added a Runtime section to `repo-tutor doctor --format markdown`.
+- Temp CLI doctor-runtime smoke generated
+  `/tmp/repotutor-doctor-runtime-smoke.laIdbD`; JSON output included
+  `runtime.studiesRoot`, `runtime.cwd`, and `envStudiesRoot`, and Markdown
+  output included `## Runtime`, `studiesRoot`, and `cwd`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

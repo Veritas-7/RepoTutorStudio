@@ -18,6 +18,12 @@ interface DoctorPayload {
   product: string;
   commands: string[];
   formats: Record<string, string[]>;
+  runtime: {
+    cwd: string;
+    studiesRoot: string;
+    initCwd: string | null;
+    envStudiesRoot: string | null;
+  };
   listFilters: Record<string, string[] | boolean>;
   openTargets: string[];
   modes: string[];
@@ -364,6 +370,12 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       openAll: ["json", "markdown"],
       export: ["html", "zip"],
       exportSummary: ["json", "markdown"]
+    },
+    runtime: {
+      cwd: process.cwd(),
+      studiesRoot: studiesRoot(parsed.flags),
+      initCwd: process.env.INIT_CWD ?? null,
+      envStudiesRoot: process.env.REPOTUTOR_STUDIES_ROOT ?? null
     },
     listFilters: {
       level: ["beginner", "junior", "senior", "all"],
@@ -759,6 +771,12 @@ function doctorMarkdown(payload: DoctorPayload): string {
   const formats = Object.entries(payload.formats)
     .map(([command, values]) => `- ${command}: ${values.join(", ")}`)
     .join("\n");
+  const runtime = [
+    `- cwd: ${payload.runtime.cwd}`,
+    `- studiesRoot: ${payload.runtime.studiesRoot}`,
+    `- initCwd: ${payload.runtime.initCwd ?? "none"}`,
+    `- envStudiesRoot: ${payload.runtime.envStudiesRoot ?? "none"}`
+  ].join("\n");
   const filters = Object.entries(payload.listFilters)
     .map(([name, value]) => `- ${name}: ${Array.isArray(value) ? value.join(", ") : String(value)}`)
     .join("\n");
@@ -777,6 +795,10 @@ function doctorMarkdown(payload: DoctorPayload): string {
     "## Formats",
     "",
     formats,
+    "",
+    "## Runtime",
+    "",
+    runtime,
     "",
     "## List Filters",
     "",
