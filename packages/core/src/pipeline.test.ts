@@ -53,6 +53,9 @@ describe("RepoTutor core pipeline", () => {
     expect(componentGraphHtml).toContain("component-graph-download-toolbar");
     expect(componentGraphHtml).toContain("data-download-mermaid");
     expect(componentGraphHtml).toContain("component-graph-mermaid");
+    expect(componentGraphHtml).toContain("component-node-relations");
+    expect(componentGraphHtml).toContain("data-node-relation");
+    expect(componentGraphHtml).toContain("연결 관계");
     const componentGraphMermaid = await fs.readFile(path.join(result.session.outputPaths.html, "assets", "component-graph.mmd"), "utf8");
     expect(componentGraphMermaid).toContain("flowchart");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");

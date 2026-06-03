@@ -306,6 +306,10 @@ to a private repository, and preserve resumable state in this file.
   graph Mermaid asset. Generated HTML exports now include
   `html/assets/component-graph.mmd`, and manifest, export README, integrity
   verification, and ZIP export all track it.
+- 2026-06-04: Applied a ninety-fourth AutoResearch upgrade: component node
+  relation lists. `html/component-graph.html` node cards now show direct
+  incoming and outgoing graph relationships with `component-node-relations`
+  rows.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -804,6 +808,10 @@ to a private repository, and preserve resumable state in this file.
     `html/assets/component-graph.mmd` contained `flowchart`, `manifest.json`
     and `EXPORT-README.md` listed `assets/component-graph.mmd`,
     `verify-export` checked the asset, and ZIP export included it.
+  - temp CLI node-relations smoke generated
+    `/tmp/repotutor-node-relations-smoke.KYweIs`; generated
+    `html/component-graph.html` contained `component-node-relations`,
+    `data-node-relation`, `연결 관계`, `outgoing`, and `incoming`.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -898,6 +906,9 @@ to a private repository, and preserve resumable state in this file.
   - `524c9f1` doctor runtime health checks
   - `82a4c3c` printable html reports
   - `ee040cc` printable quiz answer key
+  - `1928282` offline quiz filters
+  - `5747a91` component graph Mermaid download
+  - `c75f777` component graph Mermaid asset
 
 ## Next Actions
 

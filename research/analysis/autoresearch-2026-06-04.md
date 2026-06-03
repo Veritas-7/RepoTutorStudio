@@ -1520,6 +1520,26 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 94: Component Node Relation Lists
+
+- Added per-node relationship lists to `html/component-graph.html` so each
+  component card shows directly connected incoming and outgoing graph edges.
+- Node cards now render a `연결 관계` section with
+  `component-node-relations` and `data-node-relation="incoming|outgoing"`
+  rows, making the graph explorable even when a learner is reading filtered
+  cards instead of the full Mermaid source.
+- Source pattern: CodeBoarding's component HTML includes related
+  classes/methods references; RepoTutor maps that idea to source-backed graph
+  edge context for each node.
+- RED smoke `/tmp/repotutor-node-relations-red.Jp2Nko` failed on the old
+  behavior with `graph html missing component-node-relations`.
+- GREEN smoke generated `/tmp/repotutor-node-relations-smoke.KYweIs`; generated
+  `component-graph.html` included `component-node-relations`,
+  `data-node-relation`, `연결 관계`, `outgoing`, and `incoming`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

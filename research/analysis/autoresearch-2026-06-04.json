@@ -1186,6 +1186,20 @@
         "EXPORT-README asset entry",
         "ZIP-bundled Mermaid source"
       ]
+    },
+    {
+      "name": "component node relation lists",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "component-node-relations list",
+        "data-node-relation incoming rows",
+        "data-node-relation outgoing rows",
+        "per-node connected edge context"
+      ]
     }
   ],
   "verification": {
@@ -1313,6 +1327,8 @@
     "cliGraphDownloadSmoke": "PASS",
     "fixtureComponentGraphMermaidAsset": "PASS",
     "cliGraphAssetSmoke": "PASS",
+    "fixtureComponentNodeRelations": "PASS",
+    "cliNodeRelationsSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
