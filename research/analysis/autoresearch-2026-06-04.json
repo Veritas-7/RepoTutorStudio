@@ -1,0 +1,62 @@
+{
+  "createdAt": "2026-06-04T00:59:31+09:00",
+  "mode": "external-github-source-scan",
+  "executedExternalCode": false,
+  "sources": [
+    {
+      "repo": "CodeBoarding/CodeBoarding",
+      "url": "https://github.com/CodeBoarding/CodeBoarding",
+      "localPath": "research/external-src/CodeBoarding",
+      "stars": 2082,
+      "forks": 177,
+      "license": "MIT",
+      "updatedAt": "2026-06-03T15:28:23Z",
+      "adoptedPatterns": [
+        "persistent architecture artifacts",
+        "file coverage report",
+        "component documentation pages",
+        "incremental-analysis-ready coverage metadata"
+      ]
+    },
+    {
+      "repo": "google/html-quiz",
+      "url": "https://github.com/google/html-quiz",
+      "localPath": "research/external-src/google-html-quiz",
+      "stars": 111,
+      "forks": 104,
+      "license": "Other repository license, Apache-2.0 quiz script",
+      "updatedAt": "2026-03-31T07:34:00Z",
+      "adoptedPatterns": [
+        "offline quiz assets",
+        "simple inspectable quiz configuration",
+        "static browser-first interaction model"
+      ]
+    }
+  ],
+  "upgradeApplied": {
+    "name": "learning coverage report",
+    "filesChanged": [
+      "packages/shared/src/schemas.ts",
+      "packages/core/src/scanner.ts",
+      "packages/core/src/pipeline.ts",
+      "packages/core/src/markdown.ts",
+      "packages/html/src/templates.ts"
+    ],
+    "newArtifacts": [
+      "analysis/coverage-report.json",
+      "markdown/coverage.md",
+      "html/coverage.html"
+    ]
+  },
+  "verification": {
+    "pnpmBuild": "PASS",
+    "pnpmTest": "PASS",
+    "fixtureCoverageReport": "PASS",
+    "briefAudit13": "PASS"
+  },
+  "candidateBacklog": [
+    "incremental re-analysis using file hashes and coverage deltas",
+    "offline interactive quiz board inspired by google/html-quiz",
+    "source-backed component graph page"
+  ]
+}

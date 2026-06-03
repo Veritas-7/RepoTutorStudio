@@ -13,6 +13,7 @@ import type {
   RebuildRoadmap,
   RepoMap,
   StudySession,
+  CoverageReport,
   WrongNote
 } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
@@ -26,6 +27,7 @@ export interface StudyHtmlInput {
   architectureReport: ArchitectureReport;
   folderLessons: FolderLesson[];
   fileLessons: FileLesson[];
+  coverageReport: CoverageReport;
   flowReport: FlowReport;
   glossary: GlossaryTerm[];
   rebuildRoadmap: RebuildRoadmap;
@@ -67,6 +69,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["architecture.html", "Architecture"],
     ["folders.html", "Folders"],
     ["files.html", "Files"],
+    ["coverage.html", "Coverage"],
     ["flow.html", "Flow"],
     ["glossary.html", "Glossary"],
     ["rebuild.html", "Rebuild"],
@@ -125,6 +128,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
         </section>
         <section class="grid">
           <article><h3>학습 지도</h3>${list(["Overview", "Language", "Folders", "Files", "Flow", "Glossary", "Rebuild", "Quiz"])}</article>
+          <article><h3>커버리지</h3><p>${(input.coverageReport.coverageRatio * 100).toFixed(1)}% · 핵심 파일 ${input.coverageReport.coveredImportantFiles}개 설명</p><a href="coverage.html">커버리지 열기</a></article>
           <article><h3>퀴즈 요약</h3><p>총 ${input.quiz.totalQuestions}문제</p><p>최근 점수: ${latestAttempt ? latestAttempt.score.toFixed(1) : "미응시"}</p></article>
           <article><h3>오답노트</h3><p>오답 ${input.wrongNotes.length}개</p><p>취약 개념: ${weakConcepts.map(escapeHtml).join(", ") || "아직 없음"}</p><a href="wrong-notes.html">오답노트 열기</a></article>
         </section>
@@ -164,6 +168,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "files.html",
       title: "핵심 파일 수업",
       html: pageShell("핵심 파일 수업", "files.html", `<section class="cards">${input.fileLessons.map((lesson) => `<article id="${htmlAnchor(lesson.filePath)}"><h3>${escapeHtml(lesson.filePath)}</h3><p>${escapeHtml(lesson.beginnerExplanation)}</p><p>${escapeHtml(lesson.whyItExists)}</p><h4>관련 용어</h4>${list(lesson.glossaryTerms)}</article>`).join("")}</section>`, input)
+    },
+    {
+      name: "coverage.html",
+      title: "학습 커버리지",
+      html: pageShell("학습 커버리지", "coverage.html", `<section class="panel"><h2>커버리지 요약</h2><p>${escapeHtml(input.coverageReport.beginnerExplanation)}</p><dl class="meta"><div><dt>전체 파일</dt><dd>${input.coverageReport.totalScannedFiles}</dd></div><div><dt>핵심 파일 설명</dt><dd>${input.coverageReport.coveredImportantFiles}</dd></div><div><dt>비율</dt><dd>${(input.coverageReport.coverageRatio * 100).toFixed(1)}%</dd></div></dl></section><section class="grid"><article><h3>우선 확인 폴더</h3>${list(input.coverageReport.highPriorityFolders.map((folder) => `${folder.folderPath}: ${folder.reason}`))}</article><article><h3>미커버 후보</h3>${list(input.coverageReport.uncoveredImportantFiles)}</article></section>`, input)
     },
     {
       name: "flow.html",

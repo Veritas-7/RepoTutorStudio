@@ -34,9 +34,23 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm --filter @repotutor/cli dev -- study /Users/wj/Ai/System/10_Projects/RepoTutorStudio/packages/core/tests/fixtures/simple-ts-app --mode quick --level beginner`
   - `pnpm --filter @repotutor/cli dev -- quiz <generated-session-path> --answers /tmp/repotutor-answers.json`
   - `cargo check` in `apps/desktop-tauri/src-tauri`
+- 2026-06-04: Created private GitHub repo
+  `https://github.com/Veritas-7/RepoTutorStudio`, verified `PRIVATE`, committed
+  and pushed initial implementation at `e47698a`.
+- 2026-06-04: Ran external GitHub research with `$autoresearch` workflow:
+  cloned `CodeBoarding/CodeBoarding` and `google/html-quiz` under
+  `research/external-src/`, wrote analysis under `research/analysis/`, and
+  applied the CodeBoarding-inspired learning coverage report upgrade.
+- 2026-06-04: Post-upgrade verification passed:
+  - `pnpm build`
+  - `pnpm test`
+  - fixture study generated `analysis/coverage-report.json`,
+    `markdown/coverage.md`, and `html/coverage.html`
+  - `pnpm audit:brief` produced 13/13 PASS
 
 ## Next Actions
 
-1. Add compliance audit artifacts and run 13 checks.
-2. Create and verify private GitHub repository mapping.
-3. Run external GitHub research and upgrade loop.
+1. Commit and push the research/coverage upgrade.
+2. Continue next AutoResearch upgrade candidate unless the user stops:
+   incremental re-analysis, interactive offline quiz board, or source-backed
+   component graph.

@@ -13,6 +13,7 @@ import {
   LanguageReport,
   PurposeReport,
   RebuildRoadmap,
+  CoverageReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -26,6 +27,7 @@ export interface AnalysisBundle {
   architectureReport: ArchitectureReport;
   folderLessons: FolderLesson[];
   fileLessons: FileLesson[];
+  coverageReport: CoverageReport;
   flowReport: FlowReport;
   glossary: GlossaryTerm[];
   rebuildRoadmap: RebuildRoadmap;
@@ -40,10 +42,11 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const architectureReport = buildArchitectureReport(repoMap, languageReport, dependencyReport);
   const folderLessons = buildFolderLessons(repoMap);
   const fileLessons = await buildFileLessons(sourceRoot, walk);
+  const coverageReport = buildCoverageReport(repoMap, fileLessons);
   const flowReport = buildFlowReport(fileLessons, dependencyReport);
   const glossary = buildGlossary(languageReport, dependencyReport, fileLessons);
   const rebuildRoadmap = buildRebuildRoadmap(repoMap, fileLessons);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -207,6 +210,32 @@ function buildFlowReport(fileLessons: FileLesson[], dependencyReport: Dependency
     appFlow: ["Tauri UI가 사용자의 입력을 받는다.", "Rust command가 Node sidecar를 호출한다.", "Node sidecar가 shared core pipeline을 실행한다.", "HTML preview와 session list가 갱신된다."],
     dataFlow: dependencyReport.manifests.length > 0 ? dependencyReport.manifests.map((manifest) => `${manifest.filePath} -> dependency report`) : ["source files -> analysis JSON -> Markdown -> HTML"],
     mermaid: "flowchart LR\n  Input[User input] --> Intake\n  Intake --> Scan\n  Scan --> Lessons\n  Lessons --> Quiz\n  Quiz --> WrongNotes\n  WrongNotes --> HTML"
+  };
+}
+
+function buildCoverageReport(repoMap: RepoMap, fileLessons: FileLesson[]): CoverageReport {
+  const covered = new Set(fileLessons.map((lesson) => lesson.filePath));
+  const importantCandidates = [
+    ...repoMap.folders.flatMap((folder) => folder.representativeFiles.map((file) => `${folder.folderPath}/${file}`)),
+    ...fileLessons.map((lesson) => lesson.filePath)
+  ];
+  const uniqueCandidates = [...new Set(importantCandidates)].filter(Boolean);
+  const uncoveredImportantFiles = uniqueCandidates.filter((file) => !covered.has(file)).slice(0, 30);
+  const highPriorityFolders = repoMap.folders
+    .filter((folder) => folder.fileCount > 0)
+    .sort((a, b) => b.fileCount - a.fileCount)
+    .slice(0, 8)
+    .map((folder) => ({
+      folderPath: folder.folderPath,
+      reason: `${folder.fileCount}개 파일이 있어 학습자가 구조를 놓치기 쉬운 폴더입니다.`
+    }));
+  return {
+    totalScannedFiles: repoMap.totalFiles,
+    coveredImportantFiles: fileLessons.length,
+    coverageRatio: repoMap.totalFiles === 0 ? 0 : Math.min(1, fileLessons.length / repoMap.totalFiles),
+    uncoveredImportantFiles,
+    highPriorityFolders,
+    beginnerExplanation: "coverage report는 전체 파일 중 학습 리포트가 자세히 설명한 핵심 파일의 비율을 보여줍니다. 낮으면 빠진 핵심 파일이 없는지 다시 살펴봐야 합니다."
   };
 }
 

@@ -10,8 +10,10 @@ apps/desktop-tauri/sidecar-dist/
 studies/*
 !studies/.gitkeep
 apps/cli/studies/
-research/*
+research/external-src/
 !research/.gitkeep
+!research/analysis/
+!research/analysis/**
 .env
 .env.*
 *.pem

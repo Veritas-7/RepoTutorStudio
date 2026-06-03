@@ -144,6 +144,18 @@ export const FileLessonSchema = z.object({
   glossaryTerms: z.array(z.string())
 });
 
+export const CoverageReportSchema = z.object({
+  totalScannedFiles: z.number().int().nonnegative(),
+  coveredImportantFiles: z.number().int().nonnegative(),
+  coverageRatio: z.number().min(0).max(1),
+  uncoveredImportantFiles: z.array(z.string()),
+  highPriorityFolders: z.array(z.object({
+    folderPath: z.string(),
+    reason: z.string()
+  })),
+  beginnerExplanation: z.string()
+});
+
 export const FlowReportSchema = z.object({
   startPoints: z.array(z.string()),
   cliFlow: z.array(z.string()),
@@ -266,6 +278,7 @@ export type PurposeReport = z.infer<typeof PurposeReportSchema>;
 export type ArchitectureReport = z.infer<typeof ArchitectureReportSchema>;
 export type FolderLesson = z.infer<typeof FolderLessonSchema>;
 export type FileLesson = z.infer<typeof FileLessonSchema>;
+export type CoverageReport = z.infer<typeof CoverageReportSchema>;
 export type FlowReport = z.infer<typeof FlowReportSchema>;
 export type GlossaryTerm = z.infer<typeof GlossaryTermSchema>;
 export type RebuildRoadmap = z.infer<typeof RebuildRoadmapSchema>;
