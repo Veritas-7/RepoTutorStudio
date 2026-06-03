@@ -26,7 +26,7 @@ const checks = [
   check("headless cli commands", [
     "apps/cli/src/index.ts",
     "packages/core/src/session-verifier.ts"
-  ], ["study", "quiz", "resume", "evidence", "export", "verify-export", "verify-evidence", "verify-session", "verifyEvidenceIndexReport", "verifyStudySessionArtifacts", "verificationOk", "verificationReport", "verificationMarkdown", "verificationHtml", "verificationCheckedRequiredArtifacts", "checkedRequiredArtifacts", "html-export-failed", "evidence-index-failed", "sessionVerificationMarkdown", "RepoTutor Session Verification", "process.exitCode", "list", "open", "doctor", "filteredKind", "filteredFile", "--file", "--format json|markdown", "evidenceMarkdown", "returnedItems"]),
+  ], ["study", "quiz", "resume", "evidence", "export", "verify-export", "verify-evidence", "verify-session", "verifyEvidenceIndexReport", "verifyStudySessionArtifacts", "verificationOk", "verificationStatus", "verificationReport", "verificationMarkdown", "verificationHtml", "verificationCheckedRequiredArtifacts", "checkedRequiredArtifacts", "html-export-failed", "evidence-index-failed", "sessionVerificationSummary", "sessionVerificationMarkdown", "RepoTutor Session Verification", "process.exitCode", "list", "--verified-only", "open", "doctor", "filteredKind", "filteredFile", "--file", "--format json|markdown", "evidenceMarkdown", "returnedItems"]),
   check("codex skill mode", [
     "skills/repo-tutor/SKILL.md",
     ".agents/skills/repo-tutor/SKILL.md",

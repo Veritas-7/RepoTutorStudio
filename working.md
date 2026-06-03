@@ -177,6 +177,11 @@ to a private repository, and preserve resumable state in this file.
   verification output. CLI `repo-tutor study` now returns `verificationOk`,
   verification report paths, checked required artifact count, and sub-check
   statuses in the completion JSON.
+- 2026-06-04: Applied a thirty-fifth AutoResearch upgrade: list verification
+  summaries. CLI `repo-tutor list` now reads each session's
+  `analysis/session-verification-report.json`, returns verification status,
+  report paths, checked artifact count, and sub-check statuses, and supports
+  `--verified-only`.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -328,6 +333,12 @@ to a private repository, and preserve resumable state in this file.
     `verificationReport`, `verificationMarkdown`, `verificationHtml`,
     `verificationCheckedRequiredArtifacts: 11`, and all four
     `verificationChecks` as true
+  - temp CLI list verification smoke generated
+    `/tmp/repotutor-list-verification-smoke.7R2dO9/2026-06-04/local__simple-ts-app__main__cca0b13a`
+    and `repo-tutor list --verified-only` returned one verified session with
+    `verificationStatus: passed`, `verificationOk: true`, verification
+    report/Markdown/HTML paths, `verificationCheckedRequiredArtifacts: 11`,
+    `htmlExport: true`, and `evidenceIndex: true`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -365,6 +376,7 @@ to a private repository, and preserve resumable state in this file.
   - `10a43db` persistent session verification reports
   - `3a4153c` Markdown session verification reports
   - `8acedea` HTML session verification entrypoint
+  - `cca0b13` study completion verification output
 
 ## Next Actions
 
