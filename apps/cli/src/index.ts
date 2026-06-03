@@ -304,11 +304,13 @@ async function openSession(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const target = stringFlag(parsed.flags.target) ?? "index";
   if (target === "all") {
+    const format = stringFlag(parsed.flags.format) ?? "json";
+    if (!["json", "markdown"].includes(format)) throw new Error("open --target all supports --format json or markdown.");
     const targetPaths = openTargetPaths(path.join(sessionRoot, "html"));
     for (const [targetName, filePath] of Object.entries(targetPaths)) {
       await assertReadableFile(filePath, `Open target file not found for ${targetName}: ${filePath}`);
     }
-    console.log(JSON.stringify(targetPaths, null, 2));
+    console.log(format === "markdown" ? openTargetPathsMarkdown(targetPaths) : JSON.stringify(targetPaths, null, 2));
     return;
   }
   const fileName = openTargetFile(target);
@@ -342,6 +344,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       verifySession: ["json", "markdown"],
       list: ["json", "markdown"],
       openTargets: ["json", "markdown"],
+      openAll: ["json", "markdown"],
       export: ["html", "zip"]
     },
     listFilters: {
@@ -684,6 +687,16 @@ function openTargetsMarkdown(entries: Array<{ target: string; fileName: string }
   ].join("\n");
 }
 
+function openTargetPathsMarkdown(paths: Record<string, string>): string {
+  return [
+    "# RepoTutor Open Target Paths",
+    "",
+    "| Target | Path |",
+    "|---|---|",
+    ...Object.entries(paths).map(([target, filePath]) => `| ${markdownTableCell(target)} | ${markdownTableCell(filePath)} |`)
+  ].join("\n");
+}
+
 function markdownTableCell(value: string): string {
   return value.replaceAll("|", "\\|").replaceAll("\n", " ");
 }
@@ -823,7 +836,7 @@ function help(): void {
   verify-evidence <session-id-or-path>
   verify-session <session-id-or-path> --format json|markdown
   list --repo owner/name --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
-  open <session-id-or-path> --target verification|evidence|quiz|all
+  open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);
 }

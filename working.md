@@ -399,6 +399,12 @@ to a private repository, and preserve resumable state in this file.
     paths for `index`, `verification`, `evidence`, `quiz`, and
     `component-graph`, and removing `html/quiz.html` made the command exit 1
     with `Open target file not found`
+  - temp CLI open-all-markdown smoke generated
+    `/tmp/repotutor-open-all-md-smoke.KWmraZ`;
+    `open --target all --format markdown` returned
+    `# RepoTutor Open Target Paths`, verification and quiz path rows, `doctor`
+    reported Markdown support for `openAll`, and invalid `--format text`
+    exited 1 with `open --target all supports --format`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -520,6 +526,7 @@ to a private repository, and preserve resumable state in this file.
   - `1221061` doctor Markdown output
   - `eb633c4` resume HTML target status
   - `095090a` list HTML target status filters
+  - `171e62f` open target Markdown discovery
 
 ## Next Actions
 
