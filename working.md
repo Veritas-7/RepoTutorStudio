@@ -192,6 +192,10 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Applied a thirty-eighth AutoResearch upgrade: fail-closed open
   targets. CLI `repo-tutor open` now verifies the selected HTML target exists
   before printing the path, returning a clear error if the page is missing.
+- 2026-06-04: Applied a thirty-ninth AutoResearch upgrade: resume page targets.
+  CLI `repo-tutor resume` now returns verification status and all generated
+  HTML target paths so a learner can resume directly into evidence,
+  verification, quiz, or graph pages.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -364,6 +368,10 @@ to a private repository, and preserve resumable state in this file.
     `open --target verification` returned an existing file, then deleting
     `html/session-verification.html` made the same command exit 1 with
     `Open target file not found`
+  - temp CLI resume-targets smoke generated
+    `/tmp/repotutor-resume-targets-smoke.nVkVm8/2026-06-04/local__simple-ts-app__main__643161c4`;
+    `repo-tutor resume` returned `verificationStatus: passed`, 17
+    `htmlTargets`, and direct `verification`, `evidence`, and `quiz` page paths
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -405,6 +413,7 @@ to a private repository, and preserve resumable state in this file.
   - `e9a3fc9` list verification summaries
   - `fc9d718` target-aware open command
   - `35d90f7` open target discovery
+  - `643161c` fail-closed open targets
 
 ## Next Actions
 

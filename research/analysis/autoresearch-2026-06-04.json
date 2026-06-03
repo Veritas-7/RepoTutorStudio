@@ -553,6 +553,17 @@
         "repo-tutor open readable target validation",
         "Open target file not found error for missing generated pages"
       ]
+    },
+    {
+      "name": "resume page targets",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor resume htmlTargets output",
+        "repo-tutor resume verificationStatus metadata"
+      ]
     }
   ],
   "verification": {
@@ -621,6 +632,7 @@
     "cliOpenTargetSmoke": "PASS",
     "cliOpenTargetListSmoke": "PASS",
     "cliOpenTargetExistsSmoke": "PASS",
+    "cliResumeTargetsSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

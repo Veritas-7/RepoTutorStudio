@@ -92,11 +92,20 @@ async function quiz(parsed: ParsedArgs): Promise<void> {
 async function resume(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const session = JSON.parse(await fs.readFile(path.join(sessionRoot, "session.json"), "utf8")) as { sessionId: string; repo: string; outputPaths: { html: string } };
+  const verification = await sessionVerificationSummary(sessionRoot);
   console.log(JSON.stringify({
     sessionId: session.sessionId,
     repo: session.repo,
     root: sessionRoot,
-    html: path.join(session.outputPaths.html, "index.html")
+    html: path.join(session.outputPaths.html, "index.html"),
+    htmlTargets: openTargetPaths(session.outputPaths.html),
+    verificationStatus: verification.status,
+    verificationOk: verification.ok,
+    verificationReport: verification.reportPath,
+    verificationMarkdown: verification.markdownPath,
+    verificationHtml: verification.htmlPath,
+    verificationCheckedRequiredArtifacts: verification.checkedRequiredArtifacts,
+    verificationChecks: verification.checks
   }, null, 2));
 }
 
@@ -419,6 +428,10 @@ function openTargetEntries(): Array<{ target: string; fileName: string }> {
     { target: "quiz", fileName: "quiz.html" },
     { target: "wrong-notes", fileName: "wrong-notes.html" }
   ];
+}
+
+function openTargetPaths(htmlRoot: string): Record<string, string> {
+  return Object.fromEntries(openTargetEntries().map((entry) => [entry.target, path.join(htmlRoot, entry.fileName)]));
 }
 
 function sessionVerificationMarkdown(payload: {
