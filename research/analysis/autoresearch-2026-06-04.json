@@ -224,6 +224,21 @@
         "ReflectionKind grouping for functions classes interfaces types and values",
         "export validation warnings for referenced or API-adjacent symbols"
       ]
+    },
+    {
+      "repo": "Pagefind/pagefind",
+      "url": "https://github.com/Pagefind/pagefind",
+      "localPath": "research/external-src/Pagefind-pagefind",
+      "stars": 5254,
+      "forks": 193,
+      "license": "MIT",
+      "updatedAt": "2026-06-03T14:47:40Z",
+      "adoptedPatterns": [
+        "PageFragmentData document records with url content word_count filters meta and anchors",
+        "MetaIndex metadata fields that connect search queries to result fragments",
+        "filter inverse index for faceted static search over generated pages",
+        "low-bandwidth static search bundle with generated JSON assets"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1815,6 +1830,29 @@
         "ApiReferenceReportSchema",
         "TypeDoc entry points reflections ReflectionKind public API reference report"
       ]
+    },
+    {
+      "name": "Static search index report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/search-index-report.json",
+        "markdown/search-index.md",
+        "html/search-index.html",
+        "html/assets/search-index.json",
+        "open --target search-index",
+        "SearchIndexReportSchema",
+        "Pagefind PageFragmentData MetaIndex filters meta_fields static low-bandwidth search index"
+      ]
     }
   ],
   "verification": {
@@ -2016,7 +2054,13 @@
     "cliApiReferenceOpenTargetSmoke": "PASS",
     "buildApiReference": "PASS",
     "testApiReference": "PASS",
-    "auditBriefApiReference13": "PASS"
+    "auditBriefApiReference13": "PASS",
+    "fixtureSearchIndexReport": "PASS",
+    "cliSearchIndexSmoke": "PASS",
+    "cliSearchIndexOpenTargetSmoke": "PASS",
+    "buildSearchIndex": "PASS",
+    "testSearchIndex": "PASS",
+    "auditBriefSearchIndex13": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"

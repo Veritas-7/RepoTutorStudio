@@ -1321,6 +1321,36 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`: PASS, 13/13 audit reports
 - 2026-06-04: Pushed AutoResearch Upgrade 117:
   - `ff5a960` API reference report
+- 2026-06-04: AutoResearch Upgrade 118 candidate selected:
+  `Pagefind/pagefind` (`https://github.com/Pagefind/pagefind`; public MIT;
+  5,254 stars; 193 forks; updated 2026-06-03T14:47:40Z). Cloned ignored
+  external source to `research/external-src/Pagefind-pagefind` and inspected
+  README, `pagefind/src/fragments/mod.rs`,
+  `pagefind/src/index/index_metadata.rs`, `pagefind/src/index/mod.rs`,
+  `pagefind/src/index/index_filter.rs`, `pagefind/src/output/mod.rs`,
+  `pagefind_web_js/lib/public_search_api.ts`,
+  `pagefind_web_js/lib/search_wrapper.ts`, and docs for metadata/filtering
+  without executing it.
+- 2026-06-04: RED search-index smoke generated
+  `/tmp/repotutor-search-index-red-studies.FaSruS/2026-06-04/local__simple-ts-app__HEAD__56931863`;
+  old build was missing `analysis/search-index-report.json`,
+  `html/search-index.html`, and `html/assets/search-index.json` as expected.
+- 2026-06-04: Implemented Pagefind-style static search index report:
+  `SearchIndexReportSchema`, `analysis/search-index-report.json`,
+  `markdown/search-index.md`, `html/search-index.html`,
+  `html/assets/search-index.json`, PageFragmentData-style documents,
+  MetaIndex-style term/filter/metadata fields, manifest/session-verification
+  coverage, learning-path linkage, and `open --target search-index`.
+- 2026-06-04: GREEN search-index smoke generated
+  `/tmp/repotutor-search-index-green-studies.1VlF5F/2026-06-04/local__simple-ts-app__main__56931863`;
+  confirmed `documents`, `termIndex`, `filterIndex`, `metadataFields`,
+  `search-index-card`, `data-source-pattern="Pagefind"`, `PageFragmentData`,
+  `MetaIndex`, `assets/search-index.json`, manifest/learning-path entries, and
+  `open --target search-index` -> `html/search-index.html`.
+- 2026-06-04: Verification for Upgrade 118:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 13/13 audit reports
 
 ## Next Actions
 

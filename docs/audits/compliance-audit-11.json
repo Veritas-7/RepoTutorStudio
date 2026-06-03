@@ -1,6 +1,6 @@
 {
   "iteration": 11,
-  "createdAt": "2026-06-03T23:00:13.385Z",
+  "createdAt": "2026-06-03T23:09:50.740Z",
   "checks": [
     {
       "name": "project setup",
@@ -74,6 +74,13 @@
     },
     {
       "name": "offline html export",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "static search index report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -1,6 +1,6 @@
 # Compliance Audit 2
 
-Created: 2026-06-03T23:00:12.793Z
+Created: 2026-06-03T23:09:50.098Z
 
 Status: PASS
 
@@ -65,6 +65,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - offline html export
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - static search index report
 
 - missing files: none
 - missing strings: none

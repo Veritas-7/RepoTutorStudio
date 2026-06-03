@@ -18,6 +18,7 @@ import type {
   InterfaceMapReport,
   SymbolMapReport,
   ApiReferenceReport,
+  SearchIndexReport,
   ContextPackReport,
   McpHandoffReport,
   AgentMemoryReport,
@@ -49,6 +50,7 @@ export interface StudyHtmlInput {
   interfaceMapReport: InterfaceMapReport;
   symbolMapReport: SymbolMapReport;
   apiReferenceReport: ApiReferenceReport;
+  searchIndexReport: SearchIndexReport;
   contextPackReport: ContextPackReport;
   mcpHandoffReport: McpHandoffReport;
   agentMemoryReport: AgentMemoryReport;
@@ -107,6 +109,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["interface-map.html", "Interface Map"],
     ["symbol-map.html", "Symbol Map"],
     ["api-reference.html", "API Reference"],
+    ["search-index.html", "Search Index"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -193,6 +196,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>인터페이스 맵</h3><p>${escapeHtml(input.interfaceMapReport.summary)}</p><p>repomap 패턴으로 route/page/API 신호를 모읍니다.</p><a href="interface-map.html">인터페이스 맵 열기</a></article>
           <article><h3>심볼 맵</h3><p>${escapeHtml(input.symbolMapReport.summary)}</p><p>codebase-map 패턴으로 함수/클래스/상수 신호를 모읍니다.</p><a href="symbol-map.html">심볼 맵 열기</a></article>
           <article><h3>API Reference</h3><p>${escapeHtml(input.apiReferenceReport.summary)}</p><p>TypeDoc 패턴으로 entry point, ReflectionKind, public export surface를 정리합니다.</p><a href="api-reference.html">API Reference 열기</a></article>
+          <article><h3>Search Index</h3><p>${escapeHtml(input.searchIndexReport.summary)}</p><p>Pagefind 패턴으로 generated page, file lesson, folder lesson을 검색 가능한 문서 단위로 나눕니다.</p><a href="search-index.html">Search Index 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -277,6 +281,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "api-reference.html",
       title: "API Reference",
       html: pageShell("API Reference", "api-reference.html", `<section class="panel" data-source-pattern="TypeDoc"><h2>Public API Reference</h2><p>${escapeHtml(input.apiReferenceReport.summary)}</p><p class="muted">${escapeHtml(input.apiReferenceReport.sourcePattern)}</p><dl class="meta"><div><dt>entry points</dt><dd>${input.apiReferenceReport.entryPoints.length}</dd></div><div><dt>public symbols</dt><dd>${input.apiReferenceReport.publicSymbols.length}</dd></div><div><dt>ReflectionKind</dt><dd>${Object.keys(input.apiReferenceReport.kindCounts).length}</dd></div><div><dt>export warnings</dt><dd>${input.apiReferenceReport.exportWarnings.length}</dd></div></dl></section><section class="grid"><article class="api-reference-card"><h3>Entry Points</h3>${apiEntryPointList(input.apiReferenceReport.entryPoints)}</article><article class="api-reference-card"><h3>Kind Counts</h3>${list(Object.entries(input.apiReferenceReport.kindCounts).map(([kind, count]) => `${kind}: ${count}`))}</article><article class="api-reference-card"><h3>Category Counts</h3>${list(Object.entries(input.apiReferenceReport.categoryCounts).map(([category, count]) => `${category}: ${count}`))}</article><article class="api-reference-card"><h3>Export Warnings</h3>${apiWarningList(input.apiReferenceReport.exportWarnings)}</article></section><section class="cards api-reference-cards">${apiReferenceCards(input.apiReferenceReport.publicSymbols)}</section><section class="panel"><h2>다음 확인 단계</h2>${list(input.apiReferenceReport.learnerNextSteps)}</section>`, input)
+    },
+    {
+      name: "search-index.html",
+      title: "Search Index",
+      html: pageShell("Search Index", "search-index.html", `<section class="panel" data-source-pattern="Pagefind"><h2>Static Search Index</h2><p>${escapeHtml(input.searchIndexReport.summary)}</p><p class="muted">${escapeHtml(input.searchIndexReport.sourcePattern)}</p><dl class="meta"><div><dt>PageFragmentData</dt><dd>${input.searchIndexReport.totalDocuments}</dd></div><div><dt>MetaIndex terms</dt><dd>${input.searchIndexReport.totalTerms}</dd></div><div><dt>filters</dt><dd>${input.searchIndexReport.filterIndex.length}</dd></div><div><dt>metaFields</dt><dd>${input.searchIndexReport.metadataFields.length}</dd></div></dl><p><a href="assets/search-index.json">assets/search-index.json 열기</a></p></section><section class="grid"><article class="search-index-card"><h3>Filters</h3>${searchFilterList(input.searchIndexReport.filterIndex)}</article><article class="search-index-card"><h3>Metadata Fields</h3>${list(input.searchIndexReport.metadataFields)}</article><article class="search-index-card"><h3>Top Terms</h3>${searchTermList(input.searchIndexReport.termIndex.slice(0, 25))}</article><article class="search-index-card"><h3>다음 확인 단계</h3>${list(input.searchIndexReport.learnerNextSteps)}</article></section><section class="cards search-index-cards">${searchDocumentCards(input.searchIndexReport.documents)}</section>`, input)
     },
     {
       name: "context-pack.html",
@@ -369,7 +378,8 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     "assets/style.css": styleCss(),
     "assets/app.js": appJs(),
     "assets/component-graph.mmd": input.componentGraphReport.mermaid,
-    "assets/learning-path.tour.json": learningPathTourJson(input, learningPath)
+    "assets/learning-path.tour.json": learningPathTourJson(input, learningPath),
+    "assets/search-index.json": `${JSON.stringify(input.searchIndexReport, null, 2)}\n`
   };
   const pageEntries = pages.map((page) => ({
     name: page.name,
@@ -400,6 +410,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "인터페이스 맵", path: "html/interface-map.html", description: "Route/page/API/component 신호와 data-flow 힌트를 확인합니다." },
       { label: "심볼 맵", path: "html/symbol-map.html", description: "함수, 클래스, 상수, 타입 신호를 원본 소스와 함께 확인합니다." },
       { label: "API Reference", path: "html/api-reference.html", description: "TypeDoc식 entry point, public symbol, export warning을 확인합니다." },
+      { label: "Search Index", path: "html/search-index.html", description: "Pagefind식 document, filter, metadata, term index를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -575,6 +586,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       evidence: `entry points ${input.apiReferenceReport.entryPoints.length}개, public symbols ${input.apiReferenceReport.publicSymbols.length}개`
     },
     {
+      title: "정적 검색 인덱스 확인",
+      href: "search-index.html",
+      goal: "generated HTML, file lesson, folder lesson이 어떤 document/filter/meta/term 색인으로 묶였는지 확인합니다.",
+      evidence: `PageFragmentData ${input.searchIndexReport.totalDocuments}개, MetaIndex terms ${input.searchIndexReport.totalTerms}개`
+    },
+    {
       title: "LLM Context Pack 예산 확인",
       href: "context-pack.html",
       goal: "AI 도구에 공유할 파일 묶음의 token-heavy file과 context limit 적합성을 확인합니다.",
@@ -738,6 +755,21 @@ function apiReferenceCards(symbols: ApiReferenceReport["publicSymbols"]): string
 function apiWarningList(items: ApiReferenceReport["exportWarnings"]): string {
   if (items.length === 0) return "<p class=\"muted\">기록된 export warning이 없습니다.</p>";
   return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.symbolName)}</strong> in ${escapeHtml(item.filePath)}: ${escapeHtml(item.message)} ${escapeHtml(item.suggestion)} <a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function searchFilterList(items: SearchIndexReport["filterIndex"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 filter index가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filter)}</strong>: ${item.values.map((value) => `${escapeHtml(value.value)} ${value.documentCount}`).join(", ")}</li>`).join("")}</ul>`;
+}
+
+function searchTermList(items: SearchIndexReport["termIndex"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 term index가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.term)}</strong>: ${item.documentCount} docs · ${escapeHtml(item.documents.slice(0, 4).join(", "))}</li>`).join("")}</ul>`;
+}
+
+function searchDocumentCards(documents: SearchIndexReport["documents"]): string {
+  if (documents.length === 0) return "<article><h3>기록된 search document가 없습니다.</h3><p>분석을 다시 실행하면 이곳에 문서 프래그먼트가 쌓입니다.</p></article>";
+  return documents.map((document) => `<article class="search-index-card" data-search-section="${escapeHtml(document.section)}"><h3>${escapeHtml(document.title)}</h3><p class="muted">${escapeHtml(document.section)} · ${document.wordCount} words · ${escapeHtml(document.sourcePath ?? "generated")}</p><p>filters: ${escapeHtml(Object.entries(document.filters).map(([key, values]) => `${key}=${values.join("|")}`).join(", "))}</p><p>meta: ${escapeHtml(Object.keys(document.meta).join(", "))}</p><p>top terms: ${escapeHtml(document.topTerms.join(", ") || "none")}</p><a href="${escapeHtml(document.href.replace(/^html\//, ""))}">문서 열기</a></article>`).join("");
 }
 
 function contextPackCards(files: ContextPackReport["topFiles"]): string {

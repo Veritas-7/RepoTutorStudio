@@ -1771,6 +1771,7 @@ function openTargetEntries(): Array<{ target: string; fileName: string }> {
     { target: "interface-map", fileName: "interface-map.html" },
     { target: "symbol-map", fileName: "symbol-map.html" },
     { target: "api-reference", fileName: "api-reference.html" },
+    { target: "search-index", fileName: "search-index.html" },
     { target: "context-pack", fileName: "context-pack.html" },
     { target: "mcp-handoff", fileName: "mcp-handoff.html" },
     { target: "agent-memory", fileName: "agent-memory.html" },
