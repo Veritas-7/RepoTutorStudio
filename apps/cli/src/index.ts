@@ -241,8 +241,10 @@ async function list(parsed: ParsedArgs): Promise<void> {
       verificationChecks: verification.checks
     };
   }));
+  const repoFilter = optionalStringFlag(parsed.flags.repo, "repo");
+  const repoRows = repoFilter ? rows.filter((row) => repoMatches(row.repo, repoFilter)) : rows;
   const status = verificationStatusFlag(parsed.flags.status);
-  const statusRows = status === "all" ? rows : rows.filter((row) => row.verificationStatus === status);
+  const statusRows = status === "all" ? repoRows : repoRows.filter((row) => row.verificationStatus === status);
   const verifiedRows = parsed.flags["verified-only"] === true ? statusRows.filter((row) => row.verificationOk === true) : statusRows;
   const limit = optionalPositiveIntegerFlag(parsed.flags.limit, "limit");
   const filtered = limit === null ? verifiedRows : verifiedRows.slice(0, limit);
@@ -339,6 +341,12 @@ function stringFlag(value: string | boolean | undefined): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
+function optionalStringFlag(value: string | boolean | undefined, name: string): string | null {
+  if (value === undefined) return null;
+  if (typeof value !== "string" || value.trim() === "") throw new Error(`${name} must be a non-empty string.`);
+  return value.trim();
+}
+
 function numberFlag(value: string | boolean | undefined, fallback: number): number {
   if (typeof value !== "string") return fallback;
   const parsed = Number(value);
@@ -358,6 +366,12 @@ function verificationStatusFlag(value: string | boolean | undefined): "all" | "p
   if (typeof value !== "string") throw new Error("list supports --status passed, failed, missing, or all.");
   if (["all", "passed", "failed", "missing"].includes(value)) return value as "all" | "passed" | "failed" | "missing";
   throw new Error("list supports --status passed, failed, missing, or all.");
+}
+
+function repoMatches(repo: string, filter: string): boolean {
+  const normalizedRepo = repo.toLowerCase();
+  const normalizedFilter = filter.toLowerCase();
+  return normalizedRepo === normalizedFilter || normalizedRepo.endsWith(`/${normalizedFilter}`);
 }
 
 async function assertReadableFile(filePath: string, message: string): Promise<void> {
@@ -616,7 +630,7 @@ function help(): void {
   verify-export <session-id-or-path>
   verify-evidence <session-id-or-path>
   verify-session <session-id-or-path> --format json|markdown
-  list --status passed|failed|missing|all --verified-only --limit 10 --format json|markdown
+  list --repo owner/name --status passed|failed|missing|all --verified-only --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz
   open --list-targets
   doctor`);

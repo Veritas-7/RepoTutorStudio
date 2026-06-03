@@ -208,6 +208,10 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Applied a forty-third AutoResearch upgrade: verification-status
   session filters. CLI `repo-tutor list --status passed|failed|missing|all`
   now filters sessions by verification state before limit and output rendering.
+- 2026-06-04: Applied a forty-fourth AutoResearch upgrade: repo-filtered
+  session listing. CLI `repo-tutor list --repo <owner/name-or-name>` now
+  filters sessions by full repo id or repo basename before status, verified,
+  limit, and output rendering.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -403,6 +407,11 @@ to a private repository, and preserve resumable state in this file.
     passed` returned one passed row, `list --status missing` returned one
     missing row in JSON and Markdown, and `--status stale` exited 1 with
     `list supports --status`
+  - temp CLI list-repo smoke generated `/tmp/repotutor-list-repo-smoke.XIo0gm`;
+    two copied fixture repos `repo-alpha` and `repo-beta` were studied,
+    `list --repo repo-alpha` returned one JSON row for `local/repo-alpha`,
+    `list --repo local/repo-beta --format markdown` returned one Markdown row,
+    and missing `--repo` value exited 1 with `repo must be a non-empty string`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -449,6 +458,7 @@ to a private repository, and preserve resumable state in this file.
   - `b88d17f` Markdown resume output
   - `9e52046` Markdown session list
   - `0544e48` bounded session list output
+  - `f5f1cf0` verification-status session filters
 
 ## Next Actions
 

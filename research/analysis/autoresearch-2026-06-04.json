@@ -608,6 +608,17 @@
         "repo-tutor list --status passed|failed|missing|all",
         "fail-closed validation for list status filters"
       ]
+    },
+    {
+      "name": "repo-filtered session listing",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --repo owner/name",
+        "repo basename matching for local study sessions"
+      ]
     }
   ],
   "verification": {
@@ -681,6 +692,7 @@
     "cliListMarkdownSmoke": "PASS",
     "cliListLimitSmoke": "PASS",
     "cliListStatusSmoke": "PASS",
+    "cliListRepoSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
