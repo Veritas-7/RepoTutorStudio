@@ -339,6 +339,9 @@ to a private repository, and preserve resumable state in this file.
   progress summary. `html/learning-path.html` now shows
   `data-learning-progress-summary` with `완료 0 / N`, and offline JS updates it
   after initial restore, checkbox changes, and progress reset.
+- 2026-06-04: Applied a hundred-second AutoResearch upgrade: learning path
+  step navigation. Each `html/learning-path.html` step now has a stable
+  `learning-step-N` anchor and `learning-step-nav` previous/next links.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -879,6 +882,11 @@ to a private repository, and preserve resumable state in this file.
     `html/learning-path.html` contained `data-learning-progress-summary` and
     `완료 0 /`, while `html/assets/app.js` contained
     `updateLearningProgressSummary` and `[data-learning-progress-summary]`.
+  - temp CLI learning-nav smoke generated
+    `/tmp/repotutor-learning-nav-smoke.UIf7oU`; generated
+    `html/learning-path.html` contained `id="learning-step-1"`,
+    `learning-step-nav`, `href="#learning-step-2"`, `다음 단계`, and
+    `이전 단계`.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -983,6 +991,7 @@ to a private repository, and preserve resumable state in this file.
   - `9454f79` learning path tour asset
   - `86762b2` learning path progress persistence
   - `cc64368` learning path progress reset
+  - `65d92d1` learning path progress summary
 
 ## Next Actions
 

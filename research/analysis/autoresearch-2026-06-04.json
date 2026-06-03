@@ -1314,6 +1314,20 @@
         "updateLearningProgressSummary browser handler",
         "CodeTour-style current-of-total progress signal"
       ]
+    },
+    {
+      "name": "learning path step navigation",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "learning-step stable anchors",
+        "learning-step-nav previous and next links",
+        "href=\"#learning-step-N\" intra-page navigation",
+        "CodeTour-style previous-next learning path navigation"
+      ]
     }
   ],
   "verification": {
@@ -1457,6 +1471,8 @@
     "cliLearningPathProgressResetSmoke": "PASS",
     "fixtureLearningPathProgressSummary": "PASS",
     "cliLearningPathProgressSummarySmoke": "PASS",
+    "fixtureLearningPathStepNavigation": "PASS",
+    "cliLearningPathStepNavigationSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
