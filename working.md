@@ -456,6 +456,12 @@ to a private repository, and preserve resumable state in this file.
     `list --mode quick --format markdown` returned one Markdown row with
     `quick`, `doctor` reported list filter support for `mode`, and invalid
     `--mode slow` exited 1 with `list supports --mode`
+  - temp CLI list-wrong-only smoke generated
+    `/tmp/repotutor-list-wrong-smoke.FlvSHS`; two fixture sessions were
+    created, one session was scored with 15 wrong answers, `list --wrong-only`
+    returned exactly that one JSON row, Markdown output included the `Wrong`
+    column with score `0` and wrong count `15`, and `doctor` reported
+    `listFilters.wrongOnly: true`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -586,6 +592,7 @@ to a private repository, and preserve resumable state in this file.
   - `e609cfc` export summary Markdown output
   - `5cfe507` list Markdown session paths
   - `e3a123a` doctor runtime metadata
+  - `0f9b92b` study-mode session list filters
 
 ## Next Actions
 
