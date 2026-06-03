@@ -58,17 +58,31 @@
         "html/quiz.html browser-only answer feedback",
         "html/assets/app.js live review score"
       ]
+    },
+    {
+      "name": "persisted Tauri quiz attempts",
+      "filesChanged": [
+        "apps/desktop-tauri/src-tauri/src/lib.rs",
+        "apps/desktop-tauri/src/App.tsx",
+        "apps/desktop-tauri/src/styles.css"
+      ],
+      "newArtifacts": [
+        "Tauri load_quiz command",
+        "Tauri submit_quiz command",
+        "Tauri Quiz tab answer selection and submit flow"
+      ]
     }
   ],
   "verification": {
     "pnpmBuild": "PASS",
     "pnpmTest": "PASS",
+    "cargoCheck": "PASS",
     "fixtureCoverageReport": "PASS",
-    "briefAudit13": "PASS"
+    "briefAudit13": "PASS",
+    "gitleaksDir": "PASS"
   },
   "candidateBacklog": [
     "incremental re-analysis using file hashes and coverage deltas",
-    "persisted Tauri quiz attempt submission using the same core scoring API",
     "source-backed component graph page"
   ]
 }
