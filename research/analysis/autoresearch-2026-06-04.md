@@ -373,6 +373,21 @@ Transferable patterns:
   with filters, kind counts, lesson links, source links, and snippets.
 - `scripts/compliance-audit.mjs`: verifies the Markdown CLI output surface.
 
+### Upgrade 28: Source Evidence Integrity Verification
+
+- `packages/core/src/evidence.ts`: adds `verifyEvidenceIndexReport` for
+  fail-closed verification of `analysis/evidence-index-report.json`.
+- `packages/core/src/evidence.ts`: checks copied source paths, encoded source
+  hrefs, lesson HTML files, lesson anchors, report count consistency, and
+  session-root path safety.
+- `apps/cli/src/index.ts`: adds
+  `repo-tutor verify-evidence <session-id-or-path>` with JSON output and
+  non-zero exit on verification failure.
+- `packages/core/src/pipeline.test.ts`: verifies the positive report path and a
+  missing copied source file negative path.
+- `scripts/compliance-audit.mjs`: verifies the new core verifier and CLI
+  command surface.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -492,6 +507,14 @@ Local verification:
   and `repo-tutor evidence <session> --kind import --file src/main.ts --limit 5 --format markdown`
   returned `# RepoTutor Evidence`, `Filters: kind=import, file=src/main.ts`,
   `src/main.ts:L1`, and `Source: source/src/main.ts`.
+- Temp CLI verify-evidence smoke generated:
+  `/tmp/repotutor-verify-evidence-smoke.qrxS8b/2026-06-04/local__simple-ts-app__main__625d78d3`
+  and `repo-tutor verify-evidence <session>` returned `ok: true`,
+  `checkedItems: 9`, `checkedSourceFiles: 4`, `checkedSourceLinks: 4`,
+  `checkedLessonLinks: 4`, and no failures.
+- Temp CLI verify-evidence negative smoke removed `source/src/main.ts` from
+  that temp session and confirmed `repo-tutor verify-evidence <session>` exited
+  1 with `ok: false`, `missing-source-path`, and `missing-source-href`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

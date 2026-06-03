@@ -145,6 +145,11 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Applied a twenty-seventh AutoResearch upgrade: Markdown output for
   CLI source evidence. `repo-tutor evidence <session>` now supports
   `--format markdown` for human-readable evidence summaries.
+- 2026-06-04: Applied a twenty-eighth AutoResearch upgrade: source evidence
+  integrity verification. Core now exports `verifyEvidenceIndexReport`, and CLI
+  `repo-tutor verify-evidence <session>` checks the normalized evidence report,
+  copied source paths, source hrefs, lesson HTML files, and lesson anchors with
+  fail-closed JSON output.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -252,6 +257,15 @@ to a private repository, and preserve resumable state in this file.
     and `repo-tutor evidence <session> --kind import --file src/main.ts --limit 5 --format markdown`
     returned `# RepoTutor Evidence`, `Filters: kind=import, file=src/main.ts`,
     `src/main.ts:L1`, and `Source: source/src/main.ts`
+  - temp CLI verify-evidence smoke generated
+    `/tmp/repotutor-verify-evidence-smoke.qrxS8b/2026-06-04/local__simple-ts-app__main__625d78d3`
+    and `repo-tutor verify-evidence <session>` returned `ok: true`,
+    `checkedItems: 9`, `checkedSourceFiles: 4`, `checkedSourceLinks: 4`,
+    `checkedLessonLinks: 4`, and no failures
+  - temp CLI verify-evidence negative smoke removed
+    `source/src/main.ts` from that temp session and confirmed
+    `repo-tutor verify-evidence <session>` exited 1 with `ok: false`,
+    `missing-source-path`, and `missing-source-href`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -282,6 +296,7 @@ to a private repository, and preserve resumable state in this file.
   - `dba4cad` normalized source evidence report
   - `f54b60e` CLI evidence report command
   - `b9bf2e5` CLI evidence file filtering
+  - `625d78d` Markdown output for CLI evidence
 
 ## Next Actions
 

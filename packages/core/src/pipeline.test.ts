@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { calculateQuizCount, runStudy, verifyHtmlExportManifest, writeHtmlZipBundle } from "./index.js";
+import { calculateQuizCount, runStudy, verifyEvidenceIndexReport, verifyHtmlExportManifest, writeHtmlZipBundle } from "./index.js";
 
 const fixtureRoot = path.resolve("packages/core/tests/fixtures/simple-ts-app");
 
@@ -105,6 +105,13 @@ describe("RepoTutor core pipeline", () => {
     expect(evidenceIndexText).toContain("\"sourceHref\"");
     expect(evidenceIndexText).toContain("html/files.html#src-main.ts");
     expect(evidenceIndexText).toContain("source/src/main.ts");
+    const evidenceVerification = await verifyEvidenceIndexReport(result.session.outputPaths.root);
+    expect(evidenceVerification.ok).toBe(true);
+    expect(evidenceVerification.checkedItems).toBeGreaterThan(0);
+    expect(evidenceVerification.checkedSourceFiles).toBeGreaterThan(0);
+    expect(evidenceVerification.checkedSourceLinks).toBeGreaterThan(0);
+    expect(evidenceVerification.checkedLessonLinks).toBeGreaterThan(0);
+    expect(evidenceVerification.failures).toHaveLength(0);
     const zip = await writeHtmlZipBundle(result.session.outputPaths.root);
     expect(zip.fileCount).toBeGreaterThan(5);
     expect(zip.bytes).toBeGreaterThan(100);
@@ -118,6 +125,10 @@ describe("RepoTutor core pipeline", () => {
     const tamperedVerification = await verifyHtmlExportManifest(result.session.outputPaths.root);
     expect(tamperedVerification.ok).toBe(false);
     expect(tamperedVerification.failures[0]?.path).toBe("html/index.html");
+    await fs.rm(path.join(result.session.outputPaths.source, "src", "main.ts"));
+    const missingSourceVerification = await verifyEvidenceIndexReport(result.session.outputPaths.root);
+    expect(missingSourceVerification.ok).toBe(false);
+    expect(missingSourceVerification.failures.some((failure) => failure.reason === "missing-source-path" && failure.path === "source/src/main.ts")).toBe(true);
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
   });

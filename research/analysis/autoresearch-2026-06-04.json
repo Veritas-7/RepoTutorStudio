@@ -420,6 +420,21 @@
         "repo-tutor evidence --format markdown",
         "human-readable evidence summary output"
       ]
+    },
+    {
+      "name": "source evidence integrity verification",
+      "filesChanged": [
+        "packages/core/src/evidence.ts",
+        "packages/core/src/index.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "verifyEvidenceIndexReport core API",
+        "repo-tutor verify-evidence command",
+        "fail-closed source evidence link verification"
+      ]
     }
   ],
   "verification": {
@@ -470,6 +485,9 @@
     "cliEvidenceCommandSmoke": "PASS",
     "cliEvidenceFileFilterSmoke": "PASS",
     "cliEvidenceMarkdownSmoke": "PASS",
+    "fixtureEvidenceVerification": "PASS",
+    "cliVerifyEvidenceSmoke": "PASS",
+    "cliVerifyEvidenceNegativeSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

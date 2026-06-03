@@ -1,4 +1,5 @@
 export * from "./exporter.js";
+export * from "./evidence.js";
 export * from "./pipeline.js";
 export * from "./quiz.js";
 export * from "./scanner.js";
