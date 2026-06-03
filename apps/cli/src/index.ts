@@ -86,19 +86,23 @@ async function resume(parsed: ParsedArgs): Promise<void> {
 async function exportSession(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const format = stringFlag(parsed.flags.format) ?? "html";
-  if (format !== "html") throw new Error("Only --format html is supported in MVP.");
+  if (!["html", "zip"].includes(format)) throw new Error("export supports --format html or --format zip.");
   const htmlInput = await loadStudyHtmlInput(sessionRoot);
   const { renderStudyHtml } = await import("@repotutor/html");
-  const { writeRenderedHtml } = await import("@repotutor/core");
+  const { writeHtmlZipBundle, writeRenderedHtml } = await import("@repotutor/core");
   const rendered = renderStudyHtml(htmlInput);
   await writeRenderedHtml(sessionRoot, rendered);
+  const zip = format === "zip" ? await writeHtmlZipBundle(sessionRoot) : null;
   console.log(JSON.stringify({
-    exported: "html",
-    path: path.join(sessionRoot, "html", "index.html"),
+    exported: format,
+    path: zip?.zipPath ?? path.join(sessionRoot, "html", "index.html"),
+    html: path.join(sessionRoot, "html", "index.html"),
     readme: path.join(sessionRoot, "html", "EXPORT-README.md"),
     manifest: path.join(sessionRoot, "html", "manifest.json"),
     pages: rendered.manifest.pages.length,
     assets: rendered.manifest.assets.length,
+    zipBytes: zip?.bytes ?? null,
+    zipFiles: zip?.fileCount ?? null,
     entrypoints: rendered.manifest.entrypoints.map((entry) => ({
       label: entry.label,
       path: path.join(sessionRoot, entry.path)
@@ -210,7 +214,7 @@ function help(): void {
   quiz <session-id-or-path> --interactive
   quiz <session-id-or-path> --answers answers.json
   resume <session-id-or-path>
-  export <session-id-or-path> --format html
+  export <session-id-or-path> --format html|zip
   list
   open <session-id-or-path>
   doctor`);

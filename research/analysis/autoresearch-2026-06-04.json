@@ -171,6 +171,21 @@
         "html/EXPORT-README.md",
         "repo-tutor export JSON summary with readme, manifest, counts, entrypoints"
       ]
+    },
+    {
+      "name": "zipped portable HTML bundle export",
+      "filesChanged": [
+        "packages/core/src/exporter.ts",
+        "packages/core/src/index.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "exports/html-report.zip",
+        "repo-tutor export --format zip JSON summary with zipBytes and zipFiles",
+        "dependency-free ZIP bundle writer for html export artifacts"
+      ]
     }
   ],
   "verification": {
@@ -189,11 +204,13 @@
     "cliGraphSummarySmoke": "PASS",
     "fixtureExportManifestReadme": "PASS",
     "cliExportPolishSmoke": "PASS",
+    "fixtureZipBundle": "PASS",
+    "cliZipExportSmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },
   "candidateBacklog": [
-    "zipped portable bundle export",
-    "additional large-repo navigation polish"
+    "additional large-repo navigation polish",
+    "relative local-path handling for filtered pnpm CLI dev runs"
   ]
 }

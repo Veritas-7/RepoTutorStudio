@@ -1,3 +1,4 @@
+export * from "./exporter.js";
 export * from "./pipeline.js";
 export * from "./quiz.js";
 export * from "./scanner.js";

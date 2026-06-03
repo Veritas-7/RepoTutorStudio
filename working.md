@@ -73,6 +73,10 @@ to a private repository, and preserve resumable state in this file.
   usability. The HTML export folder now includes `manifest.json` and
   `EXPORT-README.md`; CLI `repo-tutor export --format html` returns readme,
   manifest, page/asset counts, and entrypoint paths.
+- 2026-06-04: Applied a tenth AutoResearch upgrade: zipped portable HTML
+  bundle export. CLI `repo-tutor export --format zip` now regenerates the
+  portable HTML folder and writes `exports/html-report.zip` with the HTML
+  pages, manifest, README, and assets in one dependency-free ZIP bundle.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -93,6 +97,11 @@ to a private repository, and preserve resumable state in this file.
     and top hub `README.md` with degree 8
   - temp CLI export-polish smoke generated `html/manifest.json`,
     `html/EXPORT-README.md`, 4 entrypoints, 14 pages, and 2 assets
+  - temp CLI ZIP export smoke generated
+    `/tmp/repotutor-zip-smoke.eay76P/2026-06-04/local__simple-ts-app__main__8f7c2b94/exports/html-report.zip`
+    with 18 files, 72,114 bytes, signature `504b0304`, 14 pages, 2 assets, and
+    `unzip -l` entries for `index.html`, `manifest.json`, and
+    `EXPORT-README.md`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -105,8 +114,10 @@ to a private repository, and preserve resumable state in this file.
   - `6aeb168` coverage delta summaries
   - `28f1bc5` component graph filters
   - `c8fa07e` component graph summaries
+  - `8f7c2b9` portable HTML export guide
 
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops:
-   zipped/portable bundle export or additional large-repo navigation polish.
+   additional large-repo navigation polish or relative local-path handling for
+   filtered pnpm CLI dev runs.
