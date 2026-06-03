@@ -82,6 +82,26 @@ Transferable patterns:
 - Keep suggested next reads explicit and source-backed.
 - Offer a single page/report that tells learners where to start reading.
 
+### Jai0401/docSmith
+
+- URL: https://github.com/Jai0401/docSmith
+- Local source: `research/external-src/Jai0401-docSmith`
+- Stars at check: 16
+- Forks at check: 0
+- License: MIT
+- Updated: 2026-05-24T14:36:59Z
+- Relevance: structured codebase documentation plus Dockerfile and Docker
+  Compose generation prompts for runtime setup understanding.
+
+Transferable patterns:
+
+- Treat setup/runtime documentation as a first-class codebase understanding
+  output, not only a README detail.
+- Separate dependency manifests, setup prerequisites, Dockerfile signals, and
+  Compose/service signals.
+- Give learners a checklist for what to verify before attempting local or
+  container execution.
+
 ## Adopted Upgrade
 
 ### Upgrade 1: CodeBoarding-Inspired Coverage Report
@@ -1779,6 +1799,31 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports after adding scanner/Markdown
   to the offline export audit scope
+
+### Upgrade 105: Runtime Environment Report
+
+- Added `RuntimeEnvironmentReportSchema` and
+  `analysis/runtime-environment-report.json` with docSmith-style setup and
+  container readiness signals.
+- The scanner now detects dependency manifests, README/setup hints,
+  `.env.example`/`.env.sample`, Dockerfile, and Docker Compose files without
+  executing external code.
+- Added `markdown/runtime-environment.md`, `html/runtime-environment.html`,
+  manifest/verification coverage, learning-path linkage, and
+  `open --target runtime-environment`.
+- Source pattern: docSmith asks for Dockerfile and Docker Compose generation
+  from packed codebase context; RepoTutor maps that to a static learner report
+  showing which runtime/container files are present and what to inspect next.
+- RED smoke `/tmp/repotutor-runtime-env-red.*` failed on the old behavior with
+  `missing analysis/runtime-environment-report.json`.
+- GREEN smoke generated `/tmp/repotutor-runtime-env-smoke.8d4vTV`; generated
+  the JSON, Markdown, and HTML artifacts, included `runtime-env-card`,
+  `docSmith`, `실행 환경`, and `data-source-pattern="docSmith"`, and
+  `open --target runtime-environment` returned
+  `html/runtime-environment.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
 
 ## Deferred Candidate Backlog
 

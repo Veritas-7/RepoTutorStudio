@@ -59,6 +59,21 @@
         "importance-ranked structural map",
         "one-call codebase orientation"
       ]
+    },
+    {
+      "repo": "Jai0401/docSmith",
+      "url": "https://github.com/Jai0401/docSmith",
+      "localPath": "research/external-src/Jai0401-docSmith",
+      "stars": 16,
+      "forks": 0,
+      "license": "MIT",
+      "updatedAt": "2026-05-24T14:36:59Z",
+      "adoptedPatterns": [
+        "structured documentation sections",
+        "Dockerfile generation prompt",
+        "Docker Compose generation prompt",
+        "runtime prerequisite detection"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1377,6 +1392,28 @@
         "SuggestedReadsReportSchema",
         "Repo Baby-style suggested next reads ranking"
       ]
+    },
+    {
+      "name": "runtime environment report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/runtime-environment-report.json",
+        "markdown/runtime-environment.md",
+        "html/runtime-environment.html",
+        "open --target runtime-environment",
+        "RuntimeEnvironmentReportSchema",
+        "docSmith-style runtime and container signal summary"
+      ]
     }
   ],
   "verification": {
@@ -1527,6 +1564,9 @@
     "fixtureSuggestedReadsReport": "PASS",
     "cliSuggestedReadsSmoke": "PASS",
     "cliSuggestedReadsOpenTargetSmoke": "PASS",
+    "fixtureRuntimeEnvironmentReport": "PASS",
+    "cliRuntimeEnvironmentSmoke": "PASS",
+    "cliRuntimeEnvironmentOpenTargetSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

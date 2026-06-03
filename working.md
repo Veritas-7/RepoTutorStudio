@@ -352,6 +352,31 @@ to a private repository, and preserve resumable state in this file.
   report. RepoTutor now writes `analysis/suggested-reads-report.json`,
   `markdown/suggested-reads.md`, and `html/suggested-reads.html`, and CLI
   `open --target suggested-reads` returns the new page.
+- 2026-06-04: Pushed Upgrade 104 at `45bc3aa` with HEAD and `origin/main`
+  matching.
+- 2026-06-04: Cloned `Jai0401/docSmith` under
+  `research/external-src/Jai0401-docSmith` for read-only AutoResearch source
+  inspection. Source pattern: structured docs plus Dockerfile and Docker Compose
+  generation prompts for runtime setup understanding.
+- 2026-06-04: Started a hundred-fifth AutoResearch upgrade: runtime environment
+  report. RepoTutor now targets `analysis/runtime-environment-report.json`,
+  `markdown/runtime-environment.md`, `html/runtime-environment.html`, and CLI
+  `open --target runtime-environment`.
+- 2026-06-04: RED smoke for Upgrade 105 failed as expected at
+  `/tmp/repotutor-runtime-env-red.*` with
+  `missing analysis/runtime-environment-report.json`.
+- 2026-06-04: GREEN smoke for Upgrade 105 generated
+  `/tmp/repotutor-runtime-env-smoke.8d4vTV`; generated runtime environment
+  JSON, Markdown, and HTML artifacts, included `runtime-env-card`, `docSmith`,
+  `실행 환경`, and `data-source-pattern="docSmith"`, and
+  `open --target runtime-environment` returned the new page.
+- 2026-06-04: Upgrade 105 verification passed:
+  - `pnpm build`
+  - `pnpm test`
+  - `pnpm audit:brief`
+  - `jq empty research/analysis/autoresearch-2026-06-04.json`
+  - `jq empty docs/audits/compliance-audit-summary.json`
+  - `git diff --check`
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`

@@ -14,6 +14,7 @@ import type {
   RebuildRoadmap,
   RepoMap,
   SuggestedReadsReport,
+  RuntimeEnvironmentReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -34,6 +35,7 @@ export interface StudyHtmlInput {
   fileLessons: FileLesson[];
   coverageReport: CoverageReport;
   suggestedReadsReport: SuggestedReadsReport;
+  runtimeEnvironmentReport: RuntimeEnvironmentReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -81,6 +83,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["files.html", "Files"],
     ["evidence.html", "Evidence"],
     ["suggested-reads.html", "Suggested Reads"],
+    ["runtime-environment.html", "Runtime Environment"],
     ["session-verification.html", "Verification"],
     ["coverage.html", "Coverage"],
     ["component-graph.html", "Component Graph"],
@@ -156,6 +159,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>커버리지</h3><p>${(input.coverageReport.coverageRatio * 100).toFixed(1)}% · 핵심 파일 ${input.coverageReport.coveredImportantFiles}개 설명</p><p>소스 근거 ${coverageEvidence.evidenceBackedFiles}개 · ${(coverageEvidence.evidenceCoverageRatio * 100).toFixed(1)}%</p><p>근거 종류 ${coverageEvidenceKinds.length}개</p><a href="coverage.html">커버리지 열기</a></article>
           <article><h3>근거 인덱스</h3><p>소스 근거 ${input.fileLessons.reduce((sum, lesson) => sum + (lesson.sourceEvidence ?? []).length, 0)}개</p><p>파일 수업과 복사된 원본 소스를 함께 엽니다.</p><a href="evidence.html">근거 인덱스 열기</a></article>
           <article><h3>추천 읽기</h3><p>${escapeHtml(input.suggestedReadsReport.summary)}</p><p>Repo Baby 패턴으로 먼저 읽을 파일을 정렬합니다.</p><a href="suggested-reads.html">추천 읽기 열기</a></article>
+          <article><h3>실행 환경</h3><p>${escapeHtml(input.runtimeEnvironmentReport.summary)}</p><p>docSmith 패턴으로 Docker와 setup 신호를 정리합니다.</p><a href="runtime-environment.html">실행 환경 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -213,6 +217,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "suggested-reads.html",
       title: "추천 읽기",
       html: pageShell("추천 읽기", "suggested-reads.html", `<section class="panel" data-source-pattern="Repo Baby"><h2>먼저 읽을 파일</h2><p>${escapeHtml(input.suggestedReadsReport.summary)}</p><p class="muted">${escapeHtml(input.suggestedReadsReport.sourcePattern)}</p></section><section class="cards suggested-read-cards">${input.suggestedReadsReport.items.map((item) => `<article class="suggested-read-card"><h3>${item.rank}. ${escapeHtml(item.filePath)}</h3><p>${escapeHtml(item.reason)}</p><p class="muted">소스 근거 ${item.evidenceCount}개 · 관련 파일 ${item.relatedFileCount}개</p><a href="${escapeHtml(item.lessonHref.replace(/^html\//, ""))}">파일 수업 열기</a> <a href="../${escapeHtml(item.sourceHref)}">원본 열기</a></article>`).join("")}</section>`, input)
+    },
+    {
+      name: "runtime-environment.html",
+      title: "실행 환경",
+      html: pageShell("실행 환경", "runtime-environment.html", `<section class="panel" data-source-pattern="docSmith"><h2>런타임 준비 신호</h2><p>${escapeHtml(input.runtimeEnvironmentReport.summary)}</p><p class="muted">${escapeHtml(input.runtimeEnvironmentReport.sourcePattern)}</p></section><section class="grid"><article class="runtime-env-card"><h3>매니페스트</h3>${list(input.runtimeEnvironmentReport.detectedManifests.map((item) => `${item.filePath}: ${item.ecosystem} · ${item.signal}`))}</article><article class="runtime-env-card"><h3>설치/실행</h3>${list(input.runtimeEnvironmentReport.setupSignals.map((item) => `${item.filePath}: ${item.signal}`))}</article><article class="runtime-env-card"><h3>컨테이너</h3>${list(input.runtimeEnvironmentReport.containerSignals.map((item) => `${item.filePath}: ${item.signal}`))}</article><article class="runtime-env-card"><h3>서비스 힌트</h3>${list(input.runtimeEnvironmentReport.serviceHints.map((item) => `${item.name}: ${item.reason}`))}</article></section><section class="grid"><article><h3>부족한 신호</h3>${list(input.runtimeEnvironmentReport.missingSignals)}</article><article><h3>다음 확인 단계</h3>${list(input.runtimeEnvironmentReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "session-verification.html",
@@ -297,6 +306,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "오답노트", path: "html/wrong-notes.html", description: "틀린 문제를 다시 보는 페이지입니다." },
       { label: "소스 근거 인덱스", path: "html/evidence.html", description: "파일 수업 근거와 복사된 원본 소스 파일을 함께 탐색합니다." },
       { label: "추천 읽기", path: "html/suggested-reads.html", description: "먼저 읽을 핵심 파일을 source-backed 순서로 확인합니다." },
+      { label: "실행 환경", path: "html/runtime-environment.html", description: "설치, 런타임, Docker/Compose 신호를 확인합니다." },
       { label: "세션 검증", path: "html/session-verification.html", description: "생성 산출물과 무결성 검증 리포트를 확인합니다." },
       { label: "컴포넌트 그래프", path: "html/component-graph.html", description: "큰 저장소의 폴더, 파일, 용어, 재구현 단계를 탐색합니다." }
     ],
@@ -439,6 +449,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "language.html",
       goal: `${input.languageReport.primaryLanguage} 중심의 기술 스택을 먼저 확인합니다.`,
       evidence: `manifest ${input.dependencyReport.manifests.length}개`
+    },
+    {
+      title: "실행 환경 신호 확인",
+      href: "runtime-environment.html",
+      goal: "설치, 런타임, Docker/Compose 단서를 보고 프로젝트를 어떻게 실행할지 추정합니다.",
+      evidence: `setup ${input.runtimeEnvironmentReport.setupSignals.length}개, container ${input.runtimeEnvironmentReport.containerSignals.length}개`
     },
     {
       title: "폴더와 핵심 파일 훑기",
