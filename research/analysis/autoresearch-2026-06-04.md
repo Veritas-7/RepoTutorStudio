@@ -1924,6 +1924,33 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 109: Context Pack Token Budget Report
+
+- Cloned and inspected `yamadashy/repomix` under
+  `research/external-src/yamadashy-repomix` without executing external source.
+- Added `ContextPackReportSchema` and
+  `analysis/context-pack-report.json` with Repomix-style included file counts,
+  byte totals, estimated token totals, budget profiles, token-heavy files,
+  directory token tree, excluded pack candidates, and security notes.
+- Added `markdown/context-pack.md`, `html/context-pack.html`,
+  manifest/verification coverage, learning-path linkage, and
+  `open --target context-pack`.
+- Source pattern: Repomix packs repositories into AI-friendly outputs, reports
+  token counts/token-count trees, respects ignore rules, and uses security
+  checks; RepoTutor maps the transferable planning subset to a deterministic
+  static context budget report.
+- RED smoke `/tmp/repotutor-context-pack-red.*` failed on the old behavior with
+  `missing analysis/context-pack-report.json`.
+- GREEN smoke generated `/tmp/repotutor-context-pack-smoke.1fAGLi`;
+  generated the JSON, Markdown, and HTML artifacts, included
+  `small-chat-8k`, `standard-32k`, `long-context-128k`,
+  `context-pack-card`, `context-pack-source-link`,
+  `data-source-pattern="Repomix"`, and `Token Budget`, and
+  `open --target context-pack` returned `html/context-pack.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

@@ -267,6 +267,36 @@ export const SymbolMapReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ContextPackReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  totalIncludedFiles: z.number().int().nonnegative(),
+  totalIncludedBytes: z.number().int().nonnegative(),
+  totalEstimatedTokens: z.number().int().nonnegative(),
+  budgetProfiles: z.array(z.object({
+    name: z.string(),
+    tokenLimit: z.number().int().positive(),
+    fits: z.boolean(),
+    overflowTokens: z.number().int().nonnegative()
+  })),
+  topFiles: z.array(z.object({
+    filePath: z.string(),
+    size: z.number().int().nonnegative(),
+    estimatedTokens: z.number().int().nonnegative(),
+    packReason: z.string(),
+    lessonHref: z.string(),
+    sourceHref: z.string()
+  })),
+  directoryTokenTree: z.array(z.object({
+    directory: z.string(),
+    fileCount: z.number().int().nonnegative(),
+    estimatedTokens: z.number().int().nonnegative()
+  })),
+  excludedFromPack: z.array(z.string()),
+  securityNotes: z.array(z.string()),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -478,6 +508,7 @@ export type SuggestedReadsReport = z.infer<typeof SuggestedReadsReportSchema>;
 export type RuntimeEnvironmentReport = z.infer<typeof RuntimeEnvironmentReportSchema>;
 export type InterfaceMapReport = z.infer<typeof InterfaceMapReportSchema>;
 export type SymbolMapReport = z.infer<typeof SymbolMapReportSchema>;
+export type ContextPackReport = z.infer<typeof ContextPackReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

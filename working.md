@@ -439,6 +439,28 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`
 - 2026-06-04: Pushed Upgrade 108 at `2c6101d` with HEAD and `origin/main`
   matching.
+- 2026-06-04: Cloned `yamadashy/repomix` under
+  `research/external-src/yamadashy-repomix` for read-only AutoResearch source
+  inspection. Source pattern: AI-friendly repository context packing, token
+  counting, token-count tree, git-aware ignore rules, and security-aware pack
+  exclusions.
+- 2026-06-04: Started a hundred-ninth AutoResearch upgrade: context pack token
+  budget report. RepoTutor now targets `analysis/context-pack-report.json`,
+  `markdown/context-pack.md`, `html/context-pack.html`, and CLI
+  `open --target context-pack`.
+- 2026-06-04: RED smoke for Upgrade 109 failed as expected at
+  `/tmp/repotutor-context-pack-red.*` with
+  `missing analysis/context-pack-report.json`.
+- 2026-06-04: GREEN smoke for Upgrade 109 generated
+  `/tmp/repotutor-context-pack-smoke.1fAGLi`; generated context pack JSON,
+  Markdown, and HTML artifacts, included `small-chat-8k`, `standard-32k`,
+  `long-context-128k`, `context-pack-card`, `context-pack-source-link`,
+  `data-source-pattern="Repomix"`, and `Token Budget`, and
+  `open --target context-pack` returned the new page.
+- 2026-06-04: Upgrade 109 verification passed:
+  - `pnpm build`
+  - `pnpm test`
+  - `pnpm audit:brief`
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`

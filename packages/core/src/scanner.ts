@@ -22,6 +22,7 @@ import {
   RuntimeEnvironmentReport,
   InterfaceMapReport,
   SymbolMapReport,
+  ContextPackReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -41,6 +42,7 @@ export interface AnalysisBundle {
   runtimeEnvironmentReport: RuntimeEnvironmentReport;
   interfaceMapReport: InterfaceMapReport;
   symbolMapReport: SymbolMapReport;
+  contextPackReport: ContextPackReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -64,13 +66,14 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const runtimeEnvironmentReport = buildRuntimeEnvironmentReport(walk, dependencyReport);
   const interfaceMapReport = await buildInterfaceMapReport(walk);
   const symbolMapReport = await buildSymbolMapReport(walk, fileLessons);
+  const contextPackReport = buildContextPackReport(walk, fileLessons);
   const flowReport = buildFlowReport(fileLessons, dependencyReport);
   const glossary = buildGlossary(languageReport, dependencyReport, fileLessons);
   const rebuildRoadmap = buildRebuildRoadmap(repoMap, fileLessons);
   const componentGraphReport = buildComponentGraphReport(folderLessons, fileLessons, glossary, rebuildRoadmap);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -560,6 +563,85 @@ function dedupeSymbols(symbols: SymbolMapReport["symbols"]): SymbolMapReport["sy
     seen.add(key);
     return true;
   });
+}
+
+function buildContextPackReport(walk: WalkResult, fileLessons: FileLesson[]): ContextPackReport {
+  const lessonByPath = new Map(fileLessons.map((lesson) => [lesson.filePath, lesson]));
+  const packFiles = walk.files
+    .filter((file) => file.isTextCandidate && !walk.secretCandidatePaths.includes(file.relPath))
+    .map((file) => ({
+      filePath: file.relPath,
+      size: file.size,
+      estimatedTokens: estimateTokens(file.size),
+      packReason: contextPackReason(file.relPath, lessonByPath.get(file.relPath)),
+      lessonHref: `html/files.html#${htmlAnchor(file.relPath)}`,
+      sourceHref: `source/${encodedPath(file.relPath)}`
+    }))
+    .sort((a, b) => b.estimatedTokens - a.estimatedTokens || a.filePath.localeCompare(b.filePath));
+  const totalIncludedBytes = packFiles.reduce((sum, file) => sum + file.size, 0);
+  const totalEstimatedTokens = packFiles.reduce((sum, file) => sum + file.estimatedTokens, 0);
+  const directoryCounts = new Map<string, { fileCount: number; estimatedTokens: number }>();
+  for (const file of packFiles) {
+    const directory = topDirectoryForContextPack(file.filePath);
+    const current = directoryCounts.get(directory) ?? { fileCount: 0, estimatedTokens: 0 };
+    current.fileCount += 1;
+    current.estimatedTokens += file.estimatedTokens;
+    directoryCounts.set(directory, current);
+  }
+  const directoryTokenTree = [...directoryCounts.entries()]
+    .map(([directory, row]) => ({ directory, ...row }))
+    .sort((a, b) => b.estimatedTokens - a.estimatedTokens || a.directory.localeCompare(b.directory))
+    .slice(0, 30);
+  const excludedFromPack = [...new Set([
+    ...walk.excludedPaths,
+    ...walk.files.filter((file) => !file.isTextCandidate).map((file) => file.relPath)
+  ])].slice(0, 50);
+  const budgetProfiles = [
+    { name: "small-chat-8k", tokenLimit: 8_000 },
+    { name: "standard-32k", tokenLimit: 32_000 },
+    { name: "long-context-128k", tokenLimit: 128_000 }
+  ].map((profile) => ({
+    ...profile,
+    fits: totalEstimatedTokens <= profile.tokenLimit,
+    overflowTokens: Math.max(0, totalEstimatedTokens - profile.tokenLimit)
+  }));
+  return {
+    summary: `Repomix식 context pack: ${packFiles.length}개 텍스트 파일을 약 ${totalEstimatedTokens.toLocaleString("en-US")} tokens로 추정하고 예산별 적합성을 계산했습니다.`,
+    sourcePattern: "Repomix token counting git-aware ignore AI-friendly context pack",
+    totalIncludedFiles: packFiles.length,
+    totalIncludedBytes,
+    totalEstimatedTokens,
+    budgetProfiles,
+    topFiles: packFiles.slice(0, 20),
+    directoryTokenTree,
+    excludedFromPack,
+    securityNotes: [
+      "RepoTutor는 secret-like path와 binary/media/large lockfile을 pack 후보에서 제외합니다.",
+      "Token 값은 외부 tokenizer 실행 없이 byte 기반으로 추정한 deterministic budget signal입니다.",
+      "Repomix의 include/ignore/token-count-tree 패턴을 학습용 정적 리포트로 이식했습니다."
+    ],
+    learnerNextSteps: [
+      "먼저 token-heavy file을 열어 LLM에 넣을 필요가 있는지 판단하세요.",
+      "예산을 초과하면 top file을 그대로 붙이지 말고 파일 수업, 심볼 맵, 인터페이스 맵으로 좁혀 주세요.",
+      "secret/security note를 확인한 뒤 외부 AI 도구에 공유할 context 범위를 정하세요."
+    ]
+  };
+}
+
+function estimateTokens(bytes: number): number {
+  return Math.max(1, Math.ceil(bytes / 4));
+}
+
+function contextPackReason(filePath: string, lesson: FileLesson | undefined): string {
+  const reasons = [];
+  if (lesson) reasons.push(`핵심 파일 수업 포함, 소스 근거 ${lesson.sourceEvidence.length}개`);
+  if (/readme|package\.json|pyproject|cargo\.toml|go\.mod/i.test(path.basename(filePath))) reasons.push("프로젝트 목적/실행 환경 단서");
+  if (/main|index|app|cli|server/i.test(path.basename(filePath))) reasons.push("진입점 후보");
+  return reasons.length > 0 ? reasons.join(" · ") : "텍스트 파일 pack 후보";
+}
+
+function topDirectoryForContextPack(filePath: string): string {
+  return filePath.includes("/") ? filePath.split("/")[0] : "root";
 }
 
 function suggestedReadScore(lesson: FileLesson, index: number): number {
