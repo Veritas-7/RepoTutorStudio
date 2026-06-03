@@ -256,6 +256,10 @@ to a private repository, and preserve resumable state in this file.
   manifest selection metadata. List output manifests now record selected
   fields, field presets, filters, sort, and limit metadata so saved inventories
   can be reproduced and audited after handoff.
+- 2026-06-04: Applied an eightieth AutoResearch upgrade: saved session list
+  manifest schema versioning. New list output manifests now record
+  `schemaVersion: 1`, and `verify-list-output` reports the schema version in
+  JSON and Markdown outputs.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -611,6 +615,11 @@ to a private repository, and preserve resumable state in this file.
     `filters.sort`, and `filters.limit` metadata matching the CLI invocation,
     output row count matched manifest `rows`, and summary manifests recorded
     `fields: null`, `fieldPreset: null`, and `filters.wrongOnly: true`
+  - temp CLI list-manifest-schema smoke generated
+    `/tmp/repotutor-list-manifest-schema-smoke.pMWIQQ`; one fixture session was
+    created, saved JSONL output wrote `schemaVersion: 1`, `verify-list-output`
+    JSON reported `schemaVersion: 1`, and verifier Markdown included
+    `Schema version: 1`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -758,6 +767,7 @@ to a private repository, and preserve resumable state in this file.
   - `05fdb53` saved session list output manifests
   - `fd1b60b` saved session list output verification
   - `d71ac45` custom saved list output manifest paths
+  - `6877d93` saved session list manifest selection metadata
 
 ## Next Actions
 

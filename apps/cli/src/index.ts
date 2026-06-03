@@ -82,6 +82,7 @@ interface ListOutputContext {
 }
 
 interface ListOutputManifest {
+  schemaVersion: number;
   outputPath: string;
   manifestPath: string;
   format: string;
@@ -117,6 +118,7 @@ interface ListOutputVerification {
   ok: boolean;
   outputPath: string;
   manifestPath: string;
+  schemaVersion: number | null;
   format: string | null;
   summary: boolean | null;
   rows: number | null;
@@ -1166,6 +1168,7 @@ function outputManifestPath(value: string | boolean | undefined, outputPath: str
 
 function createListOutputManifest(text: string, outputPath: string, manifestPath: string, context: ListOutputContext): ListOutputManifest {
   return {
+    schemaVersion: 1,
     outputPath,
     manifestPath,
     format: context.format,
@@ -1196,6 +1199,7 @@ async function verifyListOutputManifest(outputPath: string, manifestPath: string
 
   const expectedBytes = typeof manifest?.bytes === "number" ? manifest.bytes : null;
   const expectedSha256 = typeof manifest?.sha256 === "string" ? manifest.sha256 : null;
+  const schemaVersion = typeof manifest?.schemaVersion === "number" ? manifest.schemaVersion : null;
   const format = typeof manifest?.format === "string" ? manifest.format : null;
   const summary = typeof manifest?.summary === "boolean" ? manifest.summary : null;
   const rows = typeof manifest?.rows === "number" ? manifest.rows : null;
@@ -1240,6 +1244,7 @@ async function verifyListOutputManifest(outputPath: string, manifestPath: string
     ok: failures.length === 0,
     outputPath,
     manifestPath,
+    schemaVersion,
     format,
     summary,
     rows,
@@ -1511,6 +1516,7 @@ function listOutputVerificationMarkdown(payload: ListOutputVerification): string
     `- OK: ${payload.ok ? "PASS" : "FAIL"}`,
     `- Output: ${payload.outputPath}`,
     `- Manifest: ${payload.manifestPath}`,
+    `- Schema version: ${payload.schemaVersion ?? "unknown"}`,
     `- Format: ${payload.format ?? "unknown"}`,
     `- Summary: ${payload.summary ?? "unknown"}`,
     `- Rows: ${payload.rows ?? "unknown"}`,
