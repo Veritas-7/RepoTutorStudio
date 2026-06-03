@@ -318,6 +318,10 @@ to a private repository, and preserve resumable state in this file.
   controls. `html/quiz.html` now includes a `data-reset-quiz` button and
   offline JS clears picked answers, choice state, and live score text for
   reload-free quiz retry.
+- 2026-06-04: Applied a ninety-seventh AutoResearch upgrade: guided learning
+  path HTML. `html/learning-path.html` now provides a CodeTour-inspired ordered
+  tour over generated report pages and is included in manifest, session
+  verification, and `open --target learning-path`.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -829,6 +833,14 @@ to a private repository, and preserve resumable state in this file.
     contained `quiz-reset-toolbar`, `data-reset-quiz`, and `복습 초기화`, and
     `html/assets/app.js` contained `[data-reset-quiz]`, `picked.clear()`, and
     `quiz-live-score`.
+  - corrected temp CLI learning-path smoke generated
+    `/tmp/repotutor-learning-path-smoke.dvaNGA`; generated
+    `html/learning-path.html` contained `learning-path-step`,
+    `data-learning-step`, `CodeTour`, `학습 경로`, and `component-graph.html`,
+    `manifest.json` listed `html/learning-path.html`, and
+    `open --target learning-path` returned the page path. An earlier smoke
+    script at `/tmp/repotutor-learning-path-smoke.9p9xjX` exposed a test-script
+    issue because single-target `open` returns a plain path, not JSON.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -928,6 +940,7 @@ to a private repository, and preserve resumable state in this file.
   - `c75f777` component graph Mermaid asset
   - `2a96d42` component node relation lists
   - `3e82dac` component node anchor links
+  - `3f4267c` offline quiz reset controls
 
 ## Next Actions
 

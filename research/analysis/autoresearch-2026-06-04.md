@@ -47,6 +47,23 @@ Transferable patterns:
 - Derive question state from the DOM/static assets without server dependency.
 - Keep configuration simple and inspectable.
 
+### microsoft/codetour
+
+- URL: https://github.com/microsoft/codetour
+- Local source: `research/external-src/microsoft-codetour`
+- Stars at check: 4536
+- Forks at check: not captured in local search output
+- License: MIT
+- Updated: 2026-06-01T13:58:15Z
+- Relevance: ordered, file-linked codebase walkthroughs for developer
+  onboarding.
+
+Transferable patterns:
+
+- Model onboarding as an ordered tour of steps.
+- Let each step link to a file, directory, content page, or follow-up tour.
+- Provide a primary tour so new developers have a clear first path.
+
 ## Adopted Upgrade
 
 ### Upgrade 1: CodeBoarding-Inspired Coverage Report
@@ -1577,6 +1594,31 @@ Local verification:
   `quiz.html` included `quiz-reset-toolbar`, `data-reset-quiz`, and
   `복습 초기화`, while `assets/app.js` included `[data-reset-quiz]`,
   `picked.clear()`, and `quiz-live-score`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
+### Upgrade 97: Guided Learning Path HTML
+
+- Added `html/learning-path.html`, a generated tour-style page that orders the
+  existing RepoTutor report pages into purpose, language, files, evidence,
+  component graph, rebuild, and quiz steps.
+- Each card renders as `learning-path-step` with `data-learning-step` metadata
+  and a direct link to the corresponding generated page.
+- Added the page to sidebar navigation, HTML manifest output, required session
+  artifact verification, and CLI target discovery as
+  `open --target learning-path`.
+- Source pattern: microsoft/codetour represents onboarding as ordered
+  `CodeTourStep` entries with file/directory/content targets and primary tour
+  guidance; RepoTutor maps that to a static portable learning path over its
+  generated report pages.
+- RED smoke `/tmp/repotutor-learning-path-red.AOxxTD` failed on the old
+  behavior with `missing learning-path.html`.
+- Corrected GREEN smoke generated `/tmp/repotutor-learning-path-smoke.dvaNGA`;
+  generated `learning-path.html` included `learning-path-step`,
+  `data-learning-step`, `CodeTour`, `학습 경로`, and `component-graph.html`,
+  manifest listed `html/learning-path.html`, and `open --target learning-path`
+  returned the page path.
 - `pnpm build`: PASS
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
