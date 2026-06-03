@@ -52,7 +52,7 @@ const checks = [
     "packages/core/src/markdown.ts",
     "packages/html/src/templates.ts",
     "packages/shared/src/schemas.ts"
-  ], ["PurposeReport", "FolderLesson", "FileLesson", "FlowReport", "RebuildRoadmap", "sourceEvidence", "source-evidence", "source-link", "../source/", "원본 열기", "소스 근거", "evidenceBackedFiles", "evidenceCoverageRatio", "evidenceKindCounts", "filesWithoutEvidence", "소스 근거 종류"]),
+  ], ["PurposeReport", "FolderLesson", "FileLesson", "FlowReport", "RebuildRoadmap", "sourceEvidence", "source-evidence", "source-link", "../source/", "원본 열기", "evidence.md", "evidence.html", "evidence-index-cards", "소스 근거", "evidenceBackedFiles", "evidenceCoverageRatio", "evidenceKindCounts", "filesWithoutEvidence", "소스 근거 종류"]),
   check("quiz engine", [
     "packages/core/src/quiz.ts",
     "packages/shared/src/constants.ts"
@@ -68,7 +68,7 @@ const checks = [
     "packages/core/src/exporter.ts",
     "apps/cli/src/index.ts",
     "packages/shared/src/schemas.ts"
-  ], ["index.html", "quiz.html", "wrong-notes.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints", "writeHtmlZipBundle", "verifyHtmlExportManifest", "integrityOk", "integrityCheckedFiles", "--format html|zip", "html-report.zip", "file-nav-toolbar", "data-file-ext-filter", "data-file-dir-filter", "data-source-evidence-filter", "data-source-evidence", "integrity", "sha256", "bytes"]),
+  ], ["index.html", "quiz.html", "wrong-notes.html", "evidence.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints", "writeHtmlZipBundle", "verifyHtmlExportManifest", "integrityOk", "integrityCheckedFiles", "--format html|zip", "html-report.zip", "file-nav-toolbar", "data-file-ext-filter", "data-file-dir-filter", "data-source-evidence-filter", "data-source-evidence", "integrity", "sha256", "bytes"]),
   check("source-backed component graph", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
