@@ -243,6 +243,19 @@
         "repo-tutor verify-export CLI command",
         "PASS/FAIL JSON with manifest failure details"
       ]
+    },
+    {
+      "name": "tamper-negative export verification",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "verify-export non-zero exit on integrity failure",
+        "tampered index.html negative test",
+        "tamper CLI smoke evidence"
+      ]
     }
   ],
   "verification": {
@@ -271,11 +284,12 @@
     "cliManifestIntegritySmoke": "PASS",
     "fixtureVerifyExport": "PASS",
     "cliVerifyExportSmoke": "PASS",
+    "fixtureTamperNegativeVerify": "PASS",
+    "cliTamperVerifySmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },
   "candidateBacklog": [
-    "tamper-negative integrity test",
     "continue source-backed usability upgrades"
   ]
 }
