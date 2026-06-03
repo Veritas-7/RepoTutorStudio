@@ -49,6 +49,8 @@ async function main(): Promise<void> {
 async function study(parsed: ParsedArgs): Promise<void> {
   const source = parsed.rest[0];
   if (!source) throw new Error("study requires a GitHub URL or local path.");
+  const format = stringFlag(parsed.flags.format) ?? "json";
+  if (!["json", "markdown"].includes(format)) throw new Error("study supports --format json or markdown.");
   const result = await runStudy({
     source,
     mode: flagEnum(parsed.flags.mode, ["quick", "standard", "deep"], "standard") as StudyMode,
@@ -63,7 +65,7 @@ async function study(parsed: ParsedArgs): Promise<void> {
     checkedRequiredArtifacts: number;
     checks: Record<string, boolean>;
   };
-  console.log(JSON.stringify({
+  const payload = {
     sessionId: result.session.sessionId,
     status: result.session.status,
     path: result.session.outputPaths.root,
@@ -75,7 +77,8 @@ async function study(parsed: ParsedArgs): Promise<void> {
     verificationCheckedRequiredArtifacts: verification.checkedRequiredArtifacts,
     verificationChecks: verification.checks,
     quizQuestions: result.session.quizSummary.totalQuestions
-  }, null, 2));
+  };
+  console.log(format === "markdown" ? studyMarkdown(payload) : JSON.stringify(payload, null, 2));
 }
 
 async function quiz(parsed: ParsedArgs): Promise<void> {
@@ -346,6 +349,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       "doctor"
     ],
     formats: {
+      study: ["json", "markdown"],
       quiz: ["json", "markdown"],
       resume: ["json", "markdown"],
       evidence: ["json", "markdown"],
@@ -526,6 +530,42 @@ async function htmlTargetStatus(targets: Record<string, string>): Promise<Record
     Object.entries(targets).map(async ([target, filePath]) => [target, await readableFileExists(filePath)] as const)
   );
   return Object.fromEntries(statuses);
+}
+
+function studyMarkdown(payload: {
+  sessionId: string;
+  status: string;
+  path: string;
+  html: string;
+  verificationOk: boolean;
+  verificationReport: string;
+  verificationMarkdown: string;
+  verificationHtml: string;
+  verificationCheckedRequiredArtifacts: number;
+  verificationChecks: Record<string, boolean>;
+  quizQuestions: number;
+}): string {
+  const checks = Object.entries(payload.verificationChecks)
+    .map(([name, ok]) => `- ${name}: ${ok ? "PASS" : "FAIL"}`)
+    .join("\n");
+  return [
+    "# RepoTutor Study",
+    "",
+    `- Session ID: ${payload.sessionId}`,
+    `- Status: ${payload.status}`,
+    `- Root: ${payload.path}`,
+    `- Main HTML: ${payload.html}`,
+    `- Verification OK: ${payload.verificationOk}`,
+    `- Verification report: ${payload.verificationReport}`,
+    `- Verification markdown: ${payload.verificationMarkdown}`,
+    `- Verification HTML: ${payload.verificationHtml}`,
+    `- Required artifacts checked: ${payload.verificationCheckedRequiredArtifacts}`,
+    `- Quiz questions: ${payload.quizQuestions}`,
+    "",
+    "## Verification Checks",
+    "",
+    checks
+  ].join("\n");
 }
 
 function evidenceMarkdown(payload: {
@@ -927,7 +967,7 @@ function commandBaseDir(): string {
 
 function help(): void {
   console.log(`repo-tutor commands:
-  study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior
+  study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown
   quiz <session-id-or-path> --interactive --format json|markdown
   quiz <session-id-or-path> --answers answers.json --format json|markdown
   resume <session-id-or-path> --format json|markdown

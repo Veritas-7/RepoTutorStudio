@@ -427,6 +427,12 @@ to a private repository, and preserve resumable state in this file.
     `Wrong notes: .../html/wrong-notes.html`, `doctor` reported Markdown
     support for `quiz`, and invalid `--format text` exited 1 with
     `quiz supports --format`
+  - temp CLI study-markdown smoke generated
+    `/tmp/repotutor-study-md-smoke.UdhoAw`; `study --format markdown`
+    returned `# RepoTutor Study`, `Verification OK: true`,
+    `Quiz questions: 15`, and `Verification Checks`, `doctor` reported
+    Markdown support for `study`, and invalid `--format text` exited 1 with
+    `study supports --format`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -552,6 +558,7 @@ to a private repository, and preserve resumable state in this file.
   - `4feced9` open all target Markdown paths
   - `4788d27` export verification Markdown output
   - `87b5b94` evidence verification Markdown output
+  - `4d7610c` quiz attempt Markdown output
 
 ## Next Actions
 

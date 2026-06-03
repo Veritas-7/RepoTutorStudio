@@ -947,6 +947,18 @@ Local verification:
   `Wrong notes: .../html/wrong-notes.html`, `doctor` reported Markdown support
   for `quiz`, and invalid `--format text` exited 1 with
   `quiz supports --format`.
+
+### Upgrade 58: Study Result Markdown
+
+- Added `repo-tutor study <source> --format markdown` so newly generated study
+  sessions can produce a portable handoff summary immediately after creation.
+- Added `study` format metadata to `repo-tutor doctor` and fail-closed format
+  validation for `study`.
+- Temp CLI study-markdown smoke generated
+  `/tmp/repotutor-study-md-smoke.UdhoAw`; Markdown output included
+  `# RepoTutor Study`, `Verification OK: true`, `Quiz questions: 15`, and
+  `Verification Checks`, `doctor` reported Markdown support for `study`, and
+  invalid `--format text` exited 1 with `study supports --format`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
