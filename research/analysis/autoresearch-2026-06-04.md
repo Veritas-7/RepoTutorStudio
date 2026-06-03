@@ -995,6 +995,19 @@ Local verification:
   `/tmp/repotutor-doctor-runtime-smoke.laIdbD`; JSON output included
   `runtime.studiesRoot`, `runtime.cwd`, and `envStudiesRoot`, and Markdown
   output included `## Runtime`, `studiesRoot`, and `cwd`.
+
+### Upgrade 62: Mode-Filtered Session Lists
+
+- Added `repo-tutor list --mode quick|standard|deep|all` so operators can
+  isolate quick, standard, or deep learning sessions without manually scanning
+  all rows.
+- Added `mode` filter metadata to `repo-tutor doctor`.
+- Temp CLI list-mode smoke generated
+  `/tmp/repotutor-list-mode-smoke.Eo8An5`; quick and deep fixture sessions were
+  created, `list --mode deep` returned one JSON row with `mode: deep`,
+  `list --mode quick --format markdown` returned one Markdown row with `quick`,
+  `doctor` reported list filter support for `mode`, and invalid `--mode slow`
+  exited 1 with `list supports --mode`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

@@ -292,8 +292,10 @@ async function list(parsed: ParsedArgs): Promise<void> {
   const repoRows = repoFilter ? rows.filter((row) => repoMatches(row.repo, repoFilter)) : rows;
   const level = learnerLevelFlag(parsed.flags.level);
   const levelRows = level === "all" ? repoRows : repoRows.filter((row) => row.level === level);
+  const mode = studyModeFlag(parsed.flags.mode);
+  const modeRows = mode === "all" ? levelRows : levelRows.filter((row) => row.mode === mode);
   const status = verificationStatusFlag(parsed.flags.status);
-  const statusRows = status === "all" ? levelRows : levelRows.filter((row) => row.verificationStatus === status);
+  const statusRows = status === "all" ? modeRows : modeRows.filter((row) => row.verificationStatus === status);
   const verifiedRows = parsed.flags["verified-only"] === true ? statusRows.filter((row) => row.verificationOk === true) : statusRows;
   const htmlTargets = htmlTargetsFlag(parsed.flags["html-targets"]);
   const targetRows = htmlTargets === "all"
@@ -379,6 +381,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
     },
     listFilters: {
       level: ["beginner", "junior", "senior", "all"],
+      mode: ["quick", "standard", "deep", "all"],
       status: ["passed", "failed", "missing", "all"],
       htmlTargets: ["complete", "missing", "all"],
       sort: ["newest", "oldest"],
@@ -491,6 +494,13 @@ function learnerLevelFlag(value: string | boolean | undefined): "all" | "beginne
   if (typeof value !== "string") throw new Error("list supports --level beginner, junior, senior, or all.");
   if (["all", "beginner", "junior", "senior"].includes(value)) return value as "all" | "beginner" | "junior" | "senior";
   throw new Error("list supports --level beginner, junior, senior, or all.");
+}
+
+function studyModeFlag(value: string | boolean | undefined): "all" | "quick" | "standard" | "deep" {
+  if (value === undefined) return "all";
+  if (typeof value !== "string") throw new Error("list supports --mode quick, standard, deep, or all.");
+  if (["all", "quick", "standard", "deep"].includes(value)) return value as "all" | "quick" | "standard" | "deep";
+  throw new Error("list supports --mode quick, standard, deep, or all.");
 }
 
 function htmlTargetsFlag(value: string | boolean | undefined): "all" | "complete" | "missing" {
@@ -1041,7 +1051,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
+  list --repo owner/name --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);

@@ -450,6 +450,12 @@ to a private repository, and preserve resumable state in this file.
     JSON returned `runtime.studiesRoot`, `runtime.cwd`, and `envStudiesRoot`,
     and `doctor --format markdown` returned `## Runtime`, `studiesRoot`, and
     `cwd`
+  - temp CLI list-mode smoke generated
+    `/tmp/repotutor-list-mode-smoke.Eo8An5`; quick and deep fixture sessions
+    were created, `list --mode deep` returned one JSON row with `mode: deep`,
+    `list --mode quick --format markdown` returned one Markdown row with
+    `quick`, `doctor` reported list filter support for `mode`, and invalid
+    `--mode slow` exited 1 with `list supports --mode`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -579,6 +585,7 @@ to a private repository, and preserve resumable state in this file.
   - `d14351f` study result Markdown output
   - `e609cfc` export summary Markdown output
   - `5cfe507` list Markdown session paths
+  - `e3a123a` doctor runtime metadata
 
 ## Next Actions
 
