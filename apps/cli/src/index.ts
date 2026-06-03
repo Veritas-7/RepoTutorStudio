@@ -729,8 +729,8 @@ function listMarkdown(rows: Array<{
   const body = rows.length === 0
     ? "_No sessions found._"
     : [
-      "| Session | Repo | Created | Mode | Level | Score | Wrong | Verification | HTML Targets | HTML |",
-      "|---|---|---|---|---|---:|---:|---|---|---|",
+      "| Session | Repo | Created | Mode | Level | Score | Wrong | Verification | HTML Targets | Session Path | HTML |",
+      "|---|---|---|---|---|---:|---:|---|---|---|---|",
       ...rows.map((row) => [
         row.sessionId,
         row.repo,
@@ -741,6 +741,7 @@ function listMarkdown(rows: Array<{
         String(row.wrong),
         row.verificationStatus,
         row.htmlTargetsComplete ? "complete" : `missing: ${row.missingHtmlTargets.join(", ")}`,
+        row.path,
         row.html
       ].map(markdownTableCell).join(" | "))
         .map((line) => `| ${line} |`)

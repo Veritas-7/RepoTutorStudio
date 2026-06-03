@@ -974,6 +974,16 @@ Local verification:
   `ZIP files: 20`, and `html-report.zip`; `doctor` reported Markdown support
   for `exportSummary`; invalid `--summary-format text` exited 1 with
   `export supports --summary-format`.
+
+### Upgrade 60: List Markdown Session Paths
+
+- Added the session root path to `repo-tutor list --format markdown` so a
+  multi-session handoff contains both the browser entrypoint and the resumable
+  session root without requiring a follow-up `resume` call.
+- Temp CLI list-path-markdown smoke generated
+  `/tmp/repotutor-list-path-md-smoke.QEFZRq`; Markdown output included
+  `# RepoTutor Sessions`, a `Session Path` column, and the concrete session
+  root path.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

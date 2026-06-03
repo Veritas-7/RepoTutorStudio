@@ -441,6 +441,10 @@ to a private repository, and preserve resumable state in this file.
     `html-report.zip`; `doctor` reported Markdown support for `exportSummary`;
     invalid `--summary-format text` exited 1 with
     `export supports --summary-format`
+  - temp CLI list-path-markdown smoke generated
+    `/tmp/repotutor-list-path-md-smoke.QEFZRq`; `list --format markdown`
+    returned `# RepoTutor Sessions`, a `Session Path` column, and the concrete
+    session root path
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -568,6 +572,7 @@ to a private repository, and preserve resumable state in this file.
   - `87b5b94` evidence verification Markdown output
   - `4d7610c` quiz attempt Markdown output
   - `d14351f` study result Markdown output
+  - `e609cfc` export summary Markdown output
 
 ## Next Actions
 
