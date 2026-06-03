@@ -1540,6 +1540,26 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 95: Component Node Anchor Links
+
+- Turned component graph node cards into stable in-page anchors with
+  `component-node-anchor` and `data-node-id` metadata.
+- Incoming and outgoing relation rows now link directly to the connected node
+  card with `data-node-link` and `href="#component-node-..."`, so learners can
+  follow graph relationships from card to card without scanning the full
+  Mermaid source.
+- Source pattern: CodeBoarding's component Markdown links expandable components
+  to detail files; RepoTutor maps that to local, source-backed graph-card
+  drilldown links inside the portable HTML report.
+- RED smoke `/tmp/repotutor-node-anchor-red.9b9L1H` failed on the old behavior
+  with `graph html missing component-node-anchor`.
+- GREEN smoke generated `/tmp/repotutor-node-anchor-smoke.UsF7cn`; generated
+  `component-graph.html` included `component-node-anchor`, `data-node-link`,
+  `href="#component-node-`, and `data-node-id`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

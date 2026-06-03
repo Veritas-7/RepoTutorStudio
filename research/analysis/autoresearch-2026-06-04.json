@@ -1200,6 +1200,20 @@
         "data-node-relation outgoing rows",
         "per-node connected edge context"
       ]
+    },
+    {
+      "name": "component node anchor links",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "component-node-anchor cards",
+        "data-node-id card metadata",
+        "data-node-link relation anchors",
+        "href=\"#component-node-*\" graph drilldown links"
+      ]
     }
   ],
   "verification": {
@@ -1329,6 +1343,8 @@
     "cliGraphAssetSmoke": "PASS",
     "fixtureComponentNodeRelations": "PASS",
     "cliNodeRelationsSmoke": "PASS",
+    "fixtureComponentNodeAnchorLinks": "PASS",
+    "cliNodeAnchorSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

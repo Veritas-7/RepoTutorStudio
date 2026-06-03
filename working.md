@@ -310,6 +310,10 @@ to a private repository, and preserve resumable state in this file.
   relation lists. `html/component-graph.html` node cards now show direct
   incoming and outgoing graph relationships with `component-node-relations`
   rows.
+- 2026-06-04: Applied a ninety-fifth AutoResearch upgrade: component node
+  anchor links. Component graph node cards now expose stable
+  `component-node-*` anchors, `data-node-id` metadata, and relation rows that
+  link to connected cards with `data-node-link`.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -812,6 +816,10 @@ to a private repository, and preserve resumable state in this file.
     `/tmp/repotutor-node-relations-smoke.KYweIs`; generated
     `html/component-graph.html` contained `component-node-relations`,
     `data-node-relation`, `연결 관계`, `outgoing`, and `incoming`.
+  - temp CLI node-anchor smoke generated
+    `/tmp/repotutor-node-anchor-smoke.UsF7cn`; generated
+    `html/component-graph.html` contained `component-node-anchor`,
+    `data-node-link`, `href="#component-node-`, and `data-node-id`.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -909,6 +917,7 @@ to a private repository, and preserve resumable state in this file.
   - `1928282` offline quiz filters
   - `5747a91` component graph Mermaid download
   - `c75f777` component graph Mermaid asset
+  - `2a96d42` component node relation lists
 
 ## Next Actions
 
