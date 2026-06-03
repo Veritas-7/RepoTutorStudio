@@ -314,6 +314,22 @@
         "html/coverage.html files.html anchor links for evidence gaps",
         "html/assets/app.js source evidence filter handler"
       ]
+    },
+    {
+      "name": "source evidence kind breakdowns",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/coverage-report.json evidenceKindCounts",
+        "markdown/coverage.md source evidence kind section",
+        "html/coverage.html source evidence kind section"
+      ]
     }
   ],
   "verification": {
@@ -351,6 +367,8 @@
     "cliEvidenceCoverageSmoke": "PASS",
     "fixtureEvidenceFilters": "PASS",
     "cliEvidenceFilterSmoke": "PASS",
+    "fixtureEvidenceKindCounts": "PASS",
+    "cliEvidenceKindSmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },

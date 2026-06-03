@@ -115,6 +115,10 @@ to a private repository, and preserve resumable state in this file.
   evidence state, each file card exposes `data-source-evidence`, and
   `coverage.html` links source-evidence gaps back to the matching file lesson
   anchors.
+- 2026-06-04: Applied a twentieth AutoResearch upgrade: source evidence kind
+  breakdowns. `coverage-report.json`, `coverage.md`, and `coverage.html` now
+  show how much evidence comes from import, export, entry, config, test, or
+  text snippets.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -179,6 +183,11 @@ to a private repository, and preserve resumable state in this file.
     `data-source-evidence-filter`, `data-source-evidence="present"`,
     `근거 있음`, `근거 부족`, and a matching
     `[data-source-evidence-filter]` handler in `html/assets/app.js`
+  - temp CLI evidence-kind smoke generated
+    `/tmp/repotutor-evidence-kind-smoke.qk4tIy/2026-06-04/local__simple-ts-app__main__63a77df2`
+    with `evidenceKindCounts` `{text: 2, config: 4, import: 1, entry: 1,
+    export: 1}`, Markdown `## 소스 근거 종류`, and HTML `근거 종류`
+    / `소스 근거 종류`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -201,6 +210,7 @@ to a private repository, and preserve resumable state in this file.
   - `25cfde2` export integrity reporting
   - `d687db0` source evidence snippets
   - `eb9b601` source evidence coverage summaries
+  - `63a77df` source evidence drilldown filters
 
 ## Next Actions
 
