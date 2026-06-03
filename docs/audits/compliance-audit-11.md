@@ -1,6 +1,6 @@
 # Compliance Audit 11
 
-Created: 2026-06-03T23:09:50.740Z
+Created: 2026-06-03T23:21:27.352Z
 
 Status: PASS
 
@@ -71,6 +71,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - static search index report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - active recall learning journal
 
 - missing files: none
 - missing strings: none

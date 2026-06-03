@@ -47,6 +47,7 @@ const REQUIRED_ARTIFACTS = [
   "analysis/symbol-map-report.json",
   "analysis/api-reference-report.json",
   "analysis/search-index-report.json",
+  "analysis/learning-journal-report.json",
   "analysis/context-pack-report.json",
   "analysis/mcp-handoff-report.json",
   "analysis/agent-memory-report.json",
@@ -62,6 +63,7 @@ const REQUIRED_ARTIFACTS = [
   "markdown/symbol-map.md",
   "markdown/api-reference.md",
   "markdown/search-index.md",
+  "markdown/learning-journal.md",
   "markdown/context-pack.md",
   "markdown/mcp-handoff.md",
   "markdown/agent-memory.md",
@@ -79,6 +81,7 @@ const REQUIRED_ARTIFACTS = [
   "html/symbol-map.html",
   "html/api-reference.html",
   "html/search-index.html",
+  "html/learning-journal.html",
   "html/context-pack.html",
   "html/mcp-handoff.html",
   "html/agent-memory.html",
@@ -88,6 +91,7 @@ const REQUIRED_ARTIFACTS = [
   "html/dependency-health.html",
   "html/quiz-print.html",
   "html/assets/search-index.json",
+  "html/assets/learning-journal-template.md",
   "html/manifest.json",
   "html/EXPORT-README.md"
 ];

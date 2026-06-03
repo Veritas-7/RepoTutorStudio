@@ -1353,6 +1353,36 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`: PASS, 13/13 audit reports
 - 2026-06-04: Pushed AutoResearch Upgrade 118:
   - `2d163f5` static search index report
+- 2026-06-04: AutoResearch Upgrade 119 candidate selected:
+  `ktaletsk/learn-codebase` (`https://github.com/ktaletsk/learn-codebase`;
+  public MIT; 19 stars; 0 forks; updated 2026-04-20T06:31:01Z). Cloned
+  ignored external source to `research/external-src/ktaletsk-learn-codebase`
+  and inspected README, `SKILL.md`, `JOURNAL-TEMPLATE.md`, and
+  `QUESTION-PATTERNS.md` without executing it.
+- 2026-06-04: RED learning-journal smoke generated
+  `/tmp/repotutor-learning-journal-red-studies.4vOcud/2026-06-04/local__simple-ts-app__main__e966b5a6`;
+  old build was missing `analysis/learning-journal-report.json`,
+  `markdown/learning-journal.md`, `html/learning-journal.html`, and
+  `html/assets/learning-journal-template.md` as expected.
+- 2026-06-04: Implemented learn-codebase-style active recall learning journal:
+  `LearningJournalReportSchema`, `analysis/learning-journal-report.json`,
+  `markdown/learning-journal.md`, `html/learning-journal.html`,
+  `html/assets/learning-journal-template.md`, focus goals, mastery levels,
+  open questions, spaced review queue, Socratic prompts, manifest/session
+  verification coverage, learning-path linkage, and
+  `open --target learning-journal`.
+- 2026-06-04: GREEN learning-journal smoke generated
+  `/tmp/repotutor-learning-journal-green-studies.Idy1BV/2026-06-04/local__simple-ts-app__main__e966b5a6`;
+  confirmed `verificationCheckedRequiredArtifacts=57`, `focusGoals`,
+  `masteryLevels`, `openQuestions`, `spacedReviewQueue`, `socraticPrompts`,
+  `journalTemplateMarkdown`, `learning-journal-card`,
+  `data-source-pattern="learn-codebase"`, `Active Recall Journal`,
+  `Spaced Review Queue`, template asset, manifest/learning-path entries, and
+  `open --target learning-journal` -> `html/learning-journal.html`.
+- 2026-06-04: Verification for Upgrade 119:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 13/13 audit reports
 
 ## Next Actions
 

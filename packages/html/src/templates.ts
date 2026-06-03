@@ -26,6 +26,7 @@ import type {
   TutorialAbstractionReport,
   DecisionRecordReport,
   DependencyHealthReport,
+  LearningJournalReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -58,6 +59,7 @@ export interface StudyHtmlInput {
   tutorialAbstractionReport: TutorialAbstractionReport;
   decisionRecordReport: DecisionRecordReport;
   dependencyHealthReport: DependencyHealthReport;
+  learningJournalReport: LearningJournalReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -110,6 +112,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["symbol-map.html", "Symbol Map"],
     ["api-reference.html", "API Reference"],
     ["search-index.html", "Search Index"],
+    ["learning-journal.html", "Learning Journal"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -197,6 +200,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>심볼 맵</h3><p>${escapeHtml(input.symbolMapReport.summary)}</p><p>codebase-map 패턴으로 함수/클래스/상수 신호를 모읍니다.</p><a href="symbol-map.html">심볼 맵 열기</a></article>
           <article><h3>API Reference</h3><p>${escapeHtml(input.apiReferenceReport.summary)}</p><p>TypeDoc 패턴으로 entry point, ReflectionKind, public export surface를 정리합니다.</p><a href="api-reference.html">API Reference 열기</a></article>
           <article><h3>Search Index</h3><p>${escapeHtml(input.searchIndexReport.summary)}</p><p>Pagefind 패턴으로 generated page, file lesson, folder lesson을 검색 가능한 문서 단위로 나눕니다.</p><a href="search-index.html">Search Index 열기</a></article>
+          <article><h3>Learning Journal</h3><p>${escapeHtml(input.learningJournalReport.summary)}</p><p>learn-codebase 패턴으로 예측 질문, mastery map, spaced review queue를 남깁니다.</p><a href="learning-journal.html">Learning Journal 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -286,6 +290,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "search-index.html",
       title: "Search Index",
       html: pageShell("Search Index", "search-index.html", `<section class="panel" data-source-pattern="Pagefind"><h2>Static Search Index</h2><p>${escapeHtml(input.searchIndexReport.summary)}</p><p class="muted">${escapeHtml(input.searchIndexReport.sourcePattern)}</p><dl class="meta"><div><dt>PageFragmentData</dt><dd>${input.searchIndexReport.totalDocuments}</dd></div><div><dt>MetaIndex terms</dt><dd>${input.searchIndexReport.totalTerms}</dd></div><div><dt>filters</dt><dd>${input.searchIndexReport.filterIndex.length}</dd></div><div><dt>metaFields</dt><dd>${input.searchIndexReport.metadataFields.length}</dd></div></dl><p><a href="assets/search-index.json">assets/search-index.json 열기</a></p></section><section class="grid"><article class="search-index-card"><h3>Filters</h3>${searchFilterList(input.searchIndexReport.filterIndex)}</article><article class="search-index-card"><h3>Metadata Fields</h3>${list(input.searchIndexReport.metadataFields)}</article><article class="search-index-card"><h3>Top Terms</h3>${searchTermList(input.searchIndexReport.termIndex.slice(0, 25))}</article><article class="search-index-card"><h3>다음 확인 단계</h3>${list(input.searchIndexReport.learnerNextSteps)}</article></section><section class="cards search-index-cards">${searchDocumentCards(input.searchIndexReport.documents)}</section>`, input)
+    },
+    {
+      name: "learning-journal.html",
+      title: "Learning Journal",
+      html: pageShell("Learning Journal", "learning-journal.html", `<section class="panel" data-source-pattern="learn-codebase"><h2>Active Recall Journal</h2><p>${escapeHtml(input.learningJournalReport.summary)}</p><p class="muted">${escapeHtml(input.learningJournalReport.sourcePattern)}</p><dl class="meta"><div><dt>openQuestions</dt><dd>${input.learningJournalReport.openQuestions.length}</dd></div><div><dt>spacedReview</dt><dd>${input.learningJournalReport.spacedReviewQueue.length}</dd></div><div><dt>masteryLevels</dt><dd>${input.learningJournalReport.masteryLevels.length}</dd></div><div><dt>socraticPrompts</dt><dd>${input.learningJournalReport.socraticPrompts.length}</dd></div></dl><p><a href="assets/learning-journal-template.md">learning-journal-template.md 열기</a></p></section><section class="grid"><article class="learning-journal-card"><h3>Focus & Goals</h3>${learningFocusList(input.learningJournalReport.focusGoals)}</article><article class="learning-journal-card"><h3>Spaced Review Queue</h3>${learningReviewList(input.learningJournalReport.spacedReviewQueue)}</article><article class="learning-journal-card"><h3>Aha Moments</h3>${learningAhaList(input.learningJournalReport.ahaMoments)}</article><article class="learning-journal-card"><h3>다음 확인 단계</h3>${list(input.learningJournalReport.learnerNextSteps)}</article></section><section class="cards learning-journal-cards">${learningMasteryCards(input.learningJournalReport.masteryLevels)}${learningQuestionCards(input.learningJournalReport.openQuestions)}${learningPromptCards(input.learningJournalReport.socraticPrompts)}</section>`, input)
     },
     {
       name: "context-pack.html",
@@ -379,7 +388,10 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     "assets/app.js": appJs(),
     "assets/component-graph.mmd": input.componentGraphReport.mermaid,
     "assets/learning-path.tour.json": learningPathTourJson(input, learningPath),
-    "assets/search-index.json": `${JSON.stringify(input.searchIndexReport, null, 2)}\n`
+    "assets/search-index.json": `${JSON.stringify(input.searchIndexReport, null, 2)}\n`,
+    "assets/learning-journal-template.md": input.learningJournalReport.journalTemplateMarkdown.endsWith("\n")
+      ? input.learningJournalReport.journalTemplateMarkdown
+      : `${input.learningJournalReport.journalTemplateMarkdown}\n`
   };
   const pageEntries = pages.map((page) => ({
     name: page.name,
@@ -411,6 +423,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "심볼 맵", path: "html/symbol-map.html", description: "함수, 클래스, 상수, 타입 신호를 원본 소스와 함께 확인합니다." },
       { label: "API Reference", path: "html/api-reference.html", description: "TypeDoc식 entry point, public symbol, export warning을 확인합니다." },
       { label: "Search Index", path: "html/search-index.html", description: "Pagefind식 document, filter, metadata, term index를 확인합니다." },
+      { label: "Learning Journal", path: "html/learning-journal.html", description: "learn-codebase식 active recall 질문, mastery map, spaced review queue를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -592,6 +605,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       evidence: `PageFragmentData ${input.searchIndexReport.totalDocuments}개, MetaIndex terms ${input.searchIndexReport.totalTerms}개`
     },
     {
+      title: "학습 저널 질문에 먼저 답하기",
+      href: "learning-journal.html",
+      goal: "파일 수업을 읽기 전 예측 질문에 답하고, mastery map과 spaced review queue를 다음 세션의 시작점으로 남깁니다.",
+      evidence: `open questions ${input.learningJournalReport.openQuestions.length}개, spaced review ${input.learningJournalReport.spacedReviewQueue.length}개`
+    },
+    {
       title: "LLM Context Pack 예산 확인",
       href: "context-pack.html",
       goal: "AI 도구에 공유할 파일 묶음의 token-heavy file과 context limit 적합성을 확인합니다.",
@@ -770,6 +789,36 @@ function searchTermList(items: SearchIndexReport["termIndex"]): string {
 function searchDocumentCards(documents: SearchIndexReport["documents"]): string {
   if (documents.length === 0) return "<article><h3>기록된 search document가 없습니다.</h3><p>분석을 다시 실행하면 이곳에 문서 프래그먼트가 쌓입니다.</p></article>";
   return documents.map((document) => `<article class="search-index-card" data-search-section="${escapeHtml(document.section)}"><h3>${escapeHtml(document.title)}</h3><p class="muted">${escapeHtml(document.section)} · ${document.wordCount} words · ${escapeHtml(document.sourcePath ?? "generated")}</p><p>filters: ${escapeHtml(Object.entries(document.filters).map(([key, values]) => `${key}=${values.join("|")}`).join(", "))}</p><p>meta: ${escapeHtml(Object.keys(document.meta).join(", "))}</p><p>top terms: ${escapeHtml(document.topTerms.join(", ") || "none")}</p><a href="${escapeHtml(document.href.replace(/^html\//, ""))}">문서 열기</a></article>`).join("");
+}
+
+function learningFocusList(items: LearningJournalReport["focusGoals"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 focus goal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.label)}</strong>: ${escapeHtml(item.value)} <a href="${escapeHtml(htmlPageHref(item.evidenceHref))}">evidence</a></li>`).join("")}</ul>`;
+}
+
+function learningReviewList(items: LearningJournalReport["spacedReviewQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 spaced review 항목이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.concept)}</strong> · ${escapeHtml(item.reviewBy)} · review ${item.reviewNumber}<br>${escapeHtml(item.prompt)} <a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related</a></li>`).join("")}</ul>`;
+}
+
+function learningAhaList(items: LearningJournalReport["ahaMoments"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 aha moment가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.title)}</strong>: ${escapeHtml(item.insight)} <a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related</a></li>`).join("")}</ul>`;
+}
+
+function learningMasteryCards(levels: LearningJournalReport["masteryLevels"]): string {
+  if (levels.length === 0) return "<article><h3>기록된 mastery map이 없습니다.</h3><p>분석을 다시 실행하면 이곳에 concept 상태가 쌓입니다.</p></article>";
+  return levels.map((level) => `<article class="learning-journal-card" data-mastery-level="${escapeHtml(level.level)}"><h3>${escapeHtml(level.label)}</h3>${level.concepts.length === 0 ? "<p class=\"muted\">항목 없음</p>" : `<ul>${level.concepts.map((concept) => `<li><strong>${escapeHtml(concept.concept)}</strong><br>${escapeHtml(concept.status)}<br><span class="muted">${escapeHtml(concept.reason)}</span><br><em>${escapeHtml(concept.reviewPrompt)}</em><br><a href="${escapeHtml(htmlPageHref(concept.relatedHref))}">관련 리포트</a></li>`).join("")}</ul>`}</article>`).join("");
+}
+
+function learningQuestionCards(items: LearningJournalReport["openQuestions"]): string {
+  if (items.length === 0) return "<article><h3>기록된 open question이 없습니다.</h3><p>분석을 다시 실행하면 이곳에 질문이 쌓입니다.</p></article>";
+  return items.map((item) => `<article class="learning-journal-card" data-question-type="${escapeHtml(item.promptType)}"><h3>${escapeHtml(item.promptType)}</h3><p>${escapeHtml(item.question)}</p><p class="muted">${escapeHtml(item.sourcePattern)}</p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 리포트 열기</a></article>`).join("");
+}
+
+function learningPromptCards(items: LearningJournalReport["socraticPrompts"]): string {
+  if (items.length === 0) return "<article><h3>기록된 Socratic prompt가 없습니다.</h3><p>분석을 다시 실행하면 이곳에 질문 패턴이 쌓입니다.</p></article>";
+  return items.map((item) => `<article class="learning-journal-card"><h3>${escapeHtml(item.category)}</h3><p>${escapeHtml(item.question)}</p><p class="muted">${escapeHtml(item.useWhen)}</p><h4>Graduated Hints</h4>${list(item.hintLevels)}<a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 리포트 열기</a></article>`).join("");
 }
 
 function contextPackCards(files: ContextPackReport["topFiles"]): string {

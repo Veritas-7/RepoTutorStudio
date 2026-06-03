@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-03T23:09:50.878Z",
+  "createdAt": "2026-06-03T23:21:27.501Z",
   "checks": [
     {
       "name": "project setup",
@@ -81,6 +81,13 @@
     },
     {
       "name": "static search index report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "active recall learning journal",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

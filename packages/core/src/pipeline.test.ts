@@ -20,6 +20,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "symbol-map-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "api-reference-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "search-index-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "learning-journal-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -38,6 +39,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "symbol-map.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "api-reference.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "search-index.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "learning-journal.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -59,6 +61,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "symbol-map.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "api-reference.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "search-index.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "learning-journal.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -68,6 +71,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "dependency-health.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "session-verification.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "quiz-print.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "assets", "learning-journal-template.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.codex, "events.jsonl"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.source, ".env"))).rejects.toThrow();
     const snapshotText = await fs.readFile(path.join(result.session.outputPaths.analysis, "source-snapshot-report.json"), "utf8");
@@ -109,6 +113,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/dependency-health.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/api-reference.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/search-index.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/learning-journal.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -192,6 +197,28 @@ describe("RepoTutor core pipeline", () => {
     const searchIndexAsset = await fs.readFile(path.join(result.session.outputPaths.html, "assets", "search-index.json"), "utf8");
     expect(searchIndexAsset).toContain("\"documents\"");
     expect(searchIndexAsset).toContain("\"termIndex\"");
+    const learningJournalText = await fs.readFile(path.join(result.session.outputPaths.analysis, "learning-journal-report.json"), "utf8");
+    expect(learningJournalText).toContain("learn-codebase Socratic tutor active recall prediction before revelation persistent learning journal");
+    expect(learningJournalText).toContain("\"focusGoals\"");
+    expect(learningJournalText).toContain("\"masteryLevels\"");
+    expect(learningJournalText).toContain("\"openQuestions\"");
+    expect(learningJournalText).toContain("\"spacedReviewQueue\"");
+    expect(learningJournalText).toContain("\"socraticPrompts\"");
+    expect(learningJournalText).toContain("\"journalTemplateMarkdown\"");
+    const learningJournalHtml = await fs.readFile(path.join(result.session.outputPaths.html, "learning-journal.html"), "utf8");
+    expect(learningJournalHtml).toContain("Learning Journal");
+    expect(learningJournalHtml).toContain("learning-journal-card");
+    expect(learningJournalHtml).toContain("data-source-pattern=\"learn-codebase\"");
+    expect(learningJournalHtml).toContain("Active Recall Journal");
+    expect(learningJournalHtml).toContain("Spaced Review Queue");
+    const learningJournalMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "learning-journal.md"), "utf8");
+    expect(learningJournalMarkdown).toContain("# Learning Journal");
+    expect(learningJournalMarkdown).toContain("Source pattern: learn-codebase");
+    expect(learningJournalMarkdown).toContain("## Open Questions");
+    expect(learningJournalMarkdown).toContain("## Spaced Review Queue");
+    const learningJournalTemplateAsset = await fs.readFile(path.join(result.session.outputPaths.html, "assets", "learning-journal-template.md"), "utf8");
+    expect(learningJournalTemplateAsset).toContain("# Codebase Learning Journal");
+    expect(learningJournalTemplateAsset).toContain("## Concept Mastery Map");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -303,6 +330,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/symbol-map.html");
     expect(exportManifestText).toContain("html/api-reference.html");
     expect(exportManifestText).toContain("html/search-index.html");
+    expect(exportManifestText).toContain("html/learning-journal.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -317,6 +345,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("assets/component-graph.mmd");
     expect(exportManifestText).toContain("assets/learning-path.tour.json");
     expect(exportManifestText).toContain("assets/search-index.json");
+    expect(exportManifestText).toContain("assets/learning-journal-template.md");
     const exportReadmeText = await fs.readFile(path.join(result.session.outputPaths.html, "EXPORT-README.md"), "utf8");
     expect(exportReadmeText).toContain("RepoTutor HTML Export");
     expect(exportReadmeText).toContain("Entry Points");
@@ -324,6 +353,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportReadmeText).toContain("assets/component-graph.mmd");
     expect(exportReadmeText).toContain("assets/learning-path.tour.json");
     expect(exportReadmeText).toContain("assets/search-index.json");
+    expect(exportReadmeText).toContain("assets/learning-journal-template.md");
     const filesHtml = await fs.readFile(path.join(result.session.outputPaths.html, "files.html"), "utf8");
     expect(filesHtml).toContain("file-nav-toolbar");
     expect(filesHtml).toContain("data-file-ext-filter");
@@ -376,6 +406,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("symbol-map.html");
     expect(learningPathHtml).toContain("api-reference.html");
     expect(learningPathHtml).toContain("search-index.html");
+    expect(learningPathHtml).toContain("learning-journal.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");
@@ -449,6 +480,7 @@ describe("RepoTutor core pipeline", () => {
     expect(zipText).toContain("assets/component-graph.mmd");
     expect(zipText).toContain("assets/learning-path.tour.json");
     expect(zipText).toContain("assets/search-index.json");
+    expect(zipText).toContain("assets/learning-journal-template.md");
     const exportVerification = await verifyHtmlExportManifest(result.session.outputPaths.root);
     expect(exportVerification.ok).toBe(true);
     expect(exportVerification.checkedFiles).toBeGreaterThan(5);
