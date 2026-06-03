@@ -421,6 +421,13 @@ to a private repository, and preserve resumable state in this file.
     the 2099 row, `list --sort oldest --limit 1` returned the 2001 row,
     Markdown oldest output included the 2001 timestamp, and `--sort random`
     exited 1 with `list supports --sort`
+  - temp CLI list-level smoke generated
+    `/tmp/repotutor-list-level-smoke.Ue9Ehd`; two fixture sessions were created
+    with `--level beginner` and `--level senior`, `list --level senior`
+    returned one JSON row with
+    `level: senior`, `list --level beginner --format markdown` returned the
+    `Level` column and `beginner`, and `--level expert` exited 1 with
+    `list supports --level`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -469,6 +476,7 @@ to a private repository, and preserve resumable state in this file.
   - `0544e48` bounded session list output
   - `f5f1cf0` verification-status session filters
   - `1411f76` repo-filtered session list
+  - `b35ca6d` sorted session list
 
 ## Next Actions
 

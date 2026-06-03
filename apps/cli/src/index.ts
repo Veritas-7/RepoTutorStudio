@@ -228,6 +228,7 @@ async function list(parsed: ParsedArgs): Promise<void> {
       repo: `${session.owner}/${session.repo}`,
       createdAt: session.createdAt,
       mode: session.studyMode,
+      level: session.learnerLevel,
       score: session.quizSummary.latestScore,
       wrong: session.quizSummary.wrongCount,
       path: session.outputPaths.root,
@@ -243,8 +244,10 @@ async function list(parsed: ParsedArgs): Promise<void> {
   }));
   const repoFilter = optionalStringFlag(parsed.flags.repo, "repo");
   const repoRows = repoFilter ? rows.filter((row) => repoMatches(row.repo, repoFilter)) : rows;
+  const level = learnerLevelFlag(parsed.flags.level);
+  const levelRows = level === "all" ? repoRows : repoRows.filter((row) => row.level === level);
   const status = verificationStatusFlag(parsed.flags.status);
-  const statusRows = status === "all" ? repoRows : repoRows.filter((row) => row.verificationStatus === status);
+  const statusRows = status === "all" ? levelRows : levelRows.filter((row) => row.verificationStatus === status);
   const verifiedRows = parsed.flags["verified-only"] === true ? statusRows.filter((row) => row.verificationOk === true) : statusRows;
   const sort = listSortFlag(parsed.flags.sort);
   const sortedRows = sort ? sortSessionRows(verifiedRows, sort) : verifiedRows;
@@ -370,6 +373,13 @@ function verificationStatusFlag(value: string | boolean | undefined): "all" | "p
   throw new Error("list supports --status passed, failed, missing, or all.");
 }
 
+function learnerLevelFlag(value: string | boolean | undefined): "all" | "beginner" | "junior" | "senior" {
+  if (value === undefined) return "all";
+  if (typeof value !== "string") throw new Error("list supports --level beginner, junior, senior, or all.");
+  if (["all", "beginner", "junior", "senior"].includes(value)) return value as "all" | "beginner" | "junior" | "senior";
+  throw new Error("list supports --level beginner, junior, senior, or all.");
+}
+
 function repoMatches(repo: string, filter: string): boolean {
   const normalizedRepo = repo.toLowerCase();
   const normalizedFilter = filter.toLowerCase();
@@ -477,6 +487,7 @@ function listMarkdown(rows: Array<{
   repo: string;
   createdAt: string;
   mode: string;
+  level: string;
   score: number | null;
   wrong: number;
   path: string;
@@ -488,13 +499,14 @@ function listMarkdown(rows: Array<{
   const body = rows.length === 0
     ? "_No sessions found._"
     : [
-      "| Session | Repo | Created | Mode | Score | Wrong | Verification | HTML |",
-      "|---|---|---|---|---:|---:|---|---|",
+      "| Session | Repo | Created | Mode | Level | Score | Wrong | Verification | HTML |",
+      "|---|---|---|---|---|---:|---:|---|---|",
       ...rows.map((row) => [
         row.sessionId,
         row.repo,
         row.createdAt,
         row.mode,
+        row.level,
         row.score === null ? "none" : String(row.score),
         String(row.wrong),
         row.verificationStatus,
@@ -649,7 +661,7 @@ function help(): void {
   verify-export <session-id-or-path>
   verify-evidence <session-id-or-path>
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --status passed|failed|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
+  list --repo owner/name --level beginner|junior|senior|all --status passed|failed|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz
   open --list-targets
   doctor`);
