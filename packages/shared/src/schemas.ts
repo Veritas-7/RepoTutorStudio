@@ -156,6 +156,25 @@ export const CoverageReportSchema = z.object({
   beginnerExplanation: z.string()
 });
 
+export const ComponentGraphReportSchema = z.object({
+  nodes: z.array(z.object({
+    id: z.string(),
+    type: z.enum(["root", "folder", "file", "term", "rebuild-step"]),
+    label: z.string(),
+    path: z.string().nullable(),
+    summary: z.string(),
+    href: z.string().nullable()
+  })),
+  edges: z.array(z.object({
+    from: z.string(),
+    to: z.string(),
+    label: z.string()
+  })),
+  entryNodeIds: z.array(z.string()),
+  mermaid: z.string(),
+  beginnerExplanation: z.string()
+});
+
 export const FlowReportSchema = z.object({
   startPoints: z.array(z.string()),
   cliFlow: z.array(z.string()),
@@ -279,6 +298,7 @@ export type ArchitectureReport = z.infer<typeof ArchitectureReportSchema>;
 export type FolderLesson = z.infer<typeof FolderLessonSchema>;
 export type FileLesson = z.infer<typeof FileLessonSchema>;
 export type CoverageReport = z.infer<typeof CoverageReportSchema>;
+export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type FlowReport = z.infer<typeof FlowReportSchema>;
 export type GlossaryTerm = z.infer<typeof GlossaryTermSchema>;
 export type RebuildRoadmap = z.infer<typeof RebuildRoadmapSchema>;

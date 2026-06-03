@@ -1,6 +1,6 @@
 {
   "iteration": 4,
-  "createdAt": "2026-06-03T16:02:59.605Z",
+  "createdAt": "2026-06-03T16:06:49.559Z",
   "checks": [
     {
       "name": "project setup",
@@ -74,6 +74,13 @@
     },
     {
       "name": "offline html export",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "source-backed component graph",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

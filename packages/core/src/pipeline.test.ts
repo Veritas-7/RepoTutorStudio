@@ -14,9 +14,14 @@ describe("RepoTutor core pipeline", () => {
     expect(result.session.quizSummary.totalQuestions).toBeGreaterThanOrEqual(5);
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "repo-map.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "overview.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "component-graph.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "index.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "component-graph.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.codex, "events.jsonl"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.source, ".env"))).rejects.toThrow();
+    const graphText = await fs.readFile(path.join(result.session.outputPaths.analysis, "component-graph-report.json"), "utf8");
+    expect(graphText).toContain("\"nodes\"");
+    expect(graphText).toContain("\"edges\"");
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
   });

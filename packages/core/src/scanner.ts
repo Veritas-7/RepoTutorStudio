@@ -14,6 +14,7 @@ import {
   PurposeReport,
   RebuildRoadmap,
   CoverageReport,
+  ComponentGraphReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -28,6 +29,7 @@ export interface AnalysisBundle {
   folderLessons: FolderLesson[];
   fileLessons: FileLesson[];
   coverageReport: CoverageReport;
+  componentGraphReport: ComponentGraphReport;
   flowReport: FlowReport;
   glossary: GlossaryTerm[];
   rebuildRoadmap: RebuildRoadmap;
@@ -46,7 +48,8 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const flowReport = buildFlowReport(fileLessons, dependencyReport);
   const glossary = buildGlossary(languageReport, dependencyReport, fileLessons);
   const rebuildRoadmap = buildRebuildRoadmap(repoMap, fileLessons);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, flowReport, glossary, rebuildRoadmap };
+  const componentGraphReport = buildComponentGraphReport(folderLessons, fileLessons, glossary, rebuildRoadmap);
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, componentGraphReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -237,6 +240,97 @@ function buildCoverageReport(repoMap: RepoMap, fileLessons: FileLesson[]): Cover
     highPriorityFolders,
     beginnerExplanation: "coverage report는 전체 파일 중 학습 리포트가 자세히 설명한 핵심 파일의 비율을 보여줍니다. 낮으면 빠진 핵심 파일이 없는지 다시 살펴봐야 합니다."
   };
+}
+
+function buildComponentGraphReport(folderLessons: FolderLesson[], fileLessons: FileLesson[], glossary: GlossaryTerm[], rebuildRoadmap: RebuildRoadmap): ComponentGraphReport {
+  const nodes: ComponentGraphReport["nodes"] = [{
+    id: "root",
+    type: "root",
+    label: "repo root",
+    path: ".",
+    summary: "분석 대상 저장소의 시작점입니다.",
+    href: "index.html"
+  }];
+  const edges: ComponentGraphReport["edges"] = [];
+
+  for (const folder of folderLessons.slice(0, 20)) {
+    const id = nodeId("folder", folder.folderPath);
+    nodes.push({
+      id,
+      type: "folder",
+      label: folder.folderPath,
+      path: folder.folderPath,
+      summary: folder.role,
+      href: `folders.html#${htmlAnchor(folder.folderPath)}`
+    });
+    edges.push({ from: "root", to: id, label: "contains" });
+  }
+
+  for (const file of fileLessons.slice(0, 35)) {
+    const id = nodeId("file", file.filePath);
+    nodes.push({
+      id,
+      type: "file",
+      label: file.filePath,
+      path: file.filePath,
+      summary: file.role,
+      href: `files.html#${htmlAnchor(file.filePath)}`
+    });
+    const folder = closestFolderForFile(file.filePath, folderLessons);
+    edges.push({ from: folder ? nodeId("folder", folder.folderPath) : "root", to: id, label: "explains file" });
+  }
+
+  for (const term of glossary.slice(0, 20)) {
+    const id = nodeId("term", term.termEn);
+    nodes.push({
+      id,
+      type: "term",
+      label: `${term.termKo} (${term.termEn})`,
+      path: null,
+      summary: term.simpleDefinition,
+      href: `glossary.html#${htmlAnchor(term.termEn)}`
+    });
+    const matchingFile = fileLessons.find((file) => file.glossaryTerms.some((value) => value.includes(term.termKo) || value.includes(term.termEn)));
+    edges.push({ from: matchingFile ? nodeId("file", matchingFile.filePath) : "root", to: id, label: "uses term" });
+  }
+
+  for (const step of rebuildRoadmap.steps.slice(0, 10)) {
+    const id = nodeId("step", String(step.order));
+    nodes.push({
+      id,
+      type: "rebuild-step",
+      label: `${step.order}. ${step.title}`,
+      path: null,
+      summary: step.goal,
+      href: "rebuild.html"
+    });
+    const relatedFile = fileLessons.find((file) => step.relatedSourcePaths.some((sourcePath) => file.filePath === sourcePath || file.filePath.startsWith(`${sourcePath}/`)));
+    edges.push({ from: relatedFile ? nodeId("file", relatedFile.filePath) : "root", to: id, label: "rebuilds through" });
+  }
+
+  const mermaidEdges = edges.slice(0, 80).map((edge) => `  ${edge.from}["${labelForMermaid(nodes, edge.from)}"] -->|${edge.label}| ${edge.to}["${labelForMermaid(nodes, edge.to)}"]`).join("\n");
+  return {
+    nodes,
+    edges,
+    entryNodeIds: ["root", ...fileLessons.filter((file) => /main|index|cli|app/i.test(path.basename(file.filePath))).slice(0, 5).map((file) => nodeId("file", file.filePath))],
+    mermaid: `flowchart TD\n${mermaidEdges || "  root[\"repo root\"]"}`,
+    beginnerExplanation: "component graph는 폴더, 핵심 파일, 용어, 재구현 단계를 하나의 관계도로 묶습니다. 학습자는 한 파일이 어느 폴더에 속하고 어떤 용어와 구현 단계로 이어지는지 한눈에 따라갈 수 있습니다."
+  };
+}
+
+function nodeId(prefix: string, value: string): string {
+  return `${prefix}_${htmlAnchor(value).replace(/-/g, "_")}`;
+}
+
+function closestFolderForFile(filePath: string, folderLessons: FolderLesson[]): FolderLesson | null {
+  return folderLessons
+    .filter((folder) => filePath.startsWith(`${folder.folderPath}/`))
+    .sort((a, b) => b.folderPath.length - a.folderPath.length)[0] ?? null;
+}
+
+function labelForMermaid(nodes: ComponentGraphReport["nodes"], id: string): string {
+  const label = nodes.find((node) => node.id === id)?.label ?? id;
+  return label.replaceAll("\"", "'");
 }
 
 function buildGlossary(languageReport: LanguageReport, dependencyReport: DependencyReport, fileLessons: FileLesson[]): GlossaryTerm[] {

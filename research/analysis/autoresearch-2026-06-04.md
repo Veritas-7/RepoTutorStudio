@@ -79,6 +79,20 @@ Transferable patterns:
 - Scoring still uses `repo-tutor quiz`, so `quiz-attempts.jsonl`,
   `wrong-notes.json`, Markdown, and HTML refresh stay on the shared core path.
 
+### Upgrade 4: Source-Backed Component Graph
+
+- `packages/shared/src/schemas.ts`: added `ComponentGraphReportSchema`.
+- `packages/core/src/scanner.ts`: builds graph nodes for repo root, folders,
+  files, glossary terms, and rebuild-roadmap steps, plus labeled edges and
+  Mermaid text.
+- `packages/core/src/pipeline.ts`: writes
+  `analysis/component-graph-report.json` and reloads it during export/resume.
+- `packages/core/src/markdown.ts`: writes `markdown/component-graph.md`.
+- `packages/html/src/templates.ts`: writes `html/component-graph.html`, links it
+  from navigation, and adds an index summary.
+- `scripts/compliance-audit.mjs` and `packages/core/src/pipeline.test.ts` now
+  verify the component graph artifacts.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -86,6 +100,9 @@ Local verification:
 - `cargo check`: PASS
 - Fixture study generated:
   `studies/2026-06-04/local__simple-ts-app__main__e47698ac/analysis/coverage-report.json`
+- Later fixture study generated:
+  `studies/2026-06-04/local__simple-ts-app__main__c0316b25/analysis/component-graph-report.json`
+  plus `markdown/component-graph.md` and `html/component-graph.html`
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks dir . --no-banner --redact`: PASS after cleaning generated Rust
   target artifacts.
@@ -93,6 +110,5 @@ Local verification:
 ## Deferred Candidate Backlog
 
 1. Add incremental re-analysis using file hashes and coverage deltas.
-2. Add a source-backed component graph page that links folders, files, glossary
-   terms, and rebuild roadmap steps.
-3. Add incremental re-analysis using file hashes and coverage deltas.
+2. Add incremental re-analysis using file hashes and coverage deltas.
+3. Add component graph filters for large repositories.

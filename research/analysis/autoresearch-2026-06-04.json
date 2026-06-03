@@ -71,6 +71,23 @@
         "Tauri submit_quiz command",
         "Tauri Quiz tab answer selection and submit flow"
       ]
+    },
+    {
+      "name": "source-backed component graph",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/component-graph-report.json",
+        "markdown/component-graph.md",
+        "html/component-graph.html"
+      ]
     }
   ],
   "verification": {
@@ -78,11 +95,12 @@
     "pnpmTest": "PASS",
     "cargoCheck": "PASS",
     "fixtureCoverageReport": "PASS",
+    "fixtureComponentGraphReport": "PASS",
     "briefAudit13": "PASS",
     "gitleaksDir": "PASS"
   },
   "candidateBacklog": [
     "incremental re-analysis using file hashes and coverage deltas",
-    "source-backed component graph page"
+    "component graph filters for large repositories"
   ]
 }

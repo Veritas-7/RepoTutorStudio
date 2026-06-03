@@ -14,6 +14,7 @@ import type {
   RepoMap,
   StudySession,
   CoverageReport,
+  ComponentGraphReport,
   WrongNote
 } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
@@ -28,6 +29,7 @@ export interface StudyHtmlInput {
   folderLessons: FolderLesson[];
   fileLessons: FileLesson[];
   coverageReport: CoverageReport;
+  componentGraphReport: ComponentGraphReport;
   flowReport: FlowReport;
   glossary: GlossaryTerm[];
   rebuildRoadmap: RebuildRoadmap;
@@ -70,6 +72,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["folders.html", "Folders"],
     ["files.html", "Files"],
     ["coverage.html", "Coverage"],
+    ["component-graph.html", "Component Graph"],
     ["flow.html", "Flow"],
     ["glossary.html", "Glossary"],
     ["rebuild.html", "Rebuild"],
@@ -129,6 +132,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
         <section class="grid">
           <article><h3>학습 지도</h3>${list(["Overview", "Language", "Folders", "Files", "Flow", "Glossary", "Rebuild", "Quiz"])}</article>
           <article><h3>커버리지</h3><p>${(input.coverageReport.coverageRatio * 100).toFixed(1)}% · 핵심 파일 ${input.coverageReport.coveredImportantFiles}개 설명</p><a href="coverage.html">커버리지 열기</a></article>
+          <article><h3>컴포넌트 그래프</h3><p>노드 ${input.componentGraphReport.nodes.length}개 · 관계 ${input.componentGraphReport.edges.length}개</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>퀴즈 요약</h3><p>총 ${input.quiz.totalQuestions}문제</p><p>최근 점수: ${latestAttempt ? latestAttempt.score.toFixed(1) : "미응시"}</p></article>
           <article><h3>오답노트</h3><p>오답 ${input.wrongNotes.length}개</p><p>취약 개념: ${weakConcepts.map(escapeHtml).join(", ") || "아직 없음"}</p><a href="wrong-notes.html">오답노트 열기</a></article>
         </section>
@@ -173,6 +177,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "coverage.html",
       title: "학습 커버리지",
       html: pageShell("학습 커버리지", "coverage.html", `<section class="panel"><h2>커버리지 요약</h2><p>${escapeHtml(input.coverageReport.beginnerExplanation)}</p><dl class="meta"><div><dt>전체 파일</dt><dd>${input.coverageReport.totalScannedFiles}</dd></div><div><dt>핵심 파일 설명</dt><dd>${input.coverageReport.coveredImportantFiles}</dd></div><div><dt>비율</dt><dd>${(input.coverageReport.coverageRatio * 100).toFixed(1)}%</dd></div></dl></section><section class="grid"><article><h3>우선 확인 폴더</h3>${list(input.coverageReport.highPriorityFolders.map((folder) => `${folder.folderPath}: ${folder.reason}`))}</article><article><h3>미커버 후보</h3>${list(input.coverageReport.uncoveredImportantFiles)}</article></section>`, input)
+    },
+    {
+      name: "component-graph.html",
+      title: "컴포넌트 그래프",
+      html: pageShell("컴포넌트 그래프", "component-graph.html", `<section class="panel"><h2>관계도</h2><p>${escapeHtml(input.componentGraphReport.beginnerExplanation)}</p><pre>${escapeHtml(input.componentGraphReport.mermaid)}</pre></section><section class="grid"><article><h3>진입 노드</h3>${list(input.componentGraphReport.entryNodeIds)}</article><article><h3>관계</h3>${list(input.componentGraphReport.edges.slice(0, 40).map((edge) => `${edge.from} -> ${edge.to}: ${edge.label}`))}</article></section><section class="cards">${input.componentGraphReport.nodes.map((node) => `<article id="${node.id}"><h3>${escapeHtml(node.label)}</h3><p class="muted">${escapeHtml(node.type)}</p><p>${escapeHtml(node.summary)}</p>${node.href ? `<a href="${escapeHtml(node.href)}">관련 학습 섹션</a>` : ""}</article>`).join("")}</section>`, input)
     },
     {
       name: "flow.html",
