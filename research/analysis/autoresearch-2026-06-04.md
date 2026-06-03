@@ -831,6 +831,18 @@ Local verification:
   `open --target all` returned existing paths for `index`, `verification`,
   `evidence`, `quiz`, and `component-graph`, and deleting `html/quiz.html`
   made the command exit 1 with `Open target file not found`.
+
+### Upgrade 49: Doctor Capability Metadata
+
+- Enriched `repo-tutor doctor` with machine-readable command metadata, supported
+  output formats, list filters, and open target names.
+- This makes operator checks and shell wrappers able to discover current CLI
+  surfaces without scraping help text.
+- Temp CLI doctor-metadata smoke generated
+  `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor` returned
+  commands including `study`, `list`, `open`, and `doctor`, list filters for
+  `level` and `status`, Markdown resume support, and open targets including
+  `verification` and `all`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

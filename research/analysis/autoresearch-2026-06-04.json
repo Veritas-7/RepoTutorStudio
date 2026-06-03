@@ -663,6 +663,17 @@
         "repo-tutor open --target all JSON target map",
         "fail-closed validation for every open target file"
       ]
+    },
+    {
+      "name": "doctor capability metadata",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor doctor command metadata",
+        "machine-readable list filters and open targets"
+      ]
     }
   ],
   "verification": {
@@ -741,6 +752,7 @@
     "cliListLevelSmoke": "PASS",
     "cliResumeLevelSmoke": "PASS",
     "cliOpenAllSmoke": "PASS",
+    "cliDoctorMetadataSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
