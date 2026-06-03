@@ -15,6 +15,8 @@ import {
   RebuildRoadmap,
   CoverageReport,
   ComponentGraphReport,
+  SourceSnapshotReport,
+  IncrementalReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -30,6 +32,8 @@ export interface AnalysisBundle {
   fileLessons: FileLesson[];
   coverageReport: CoverageReport;
   componentGraphReport: ComponentGraphReport;
+  sourceSnapshotReport: SourceSnapshotReport;
+  incrementalReport: IncrementalReport;
   flowReport: FlowReport;
   glossary: GlossaryTerm[];
   rebuildRoadmap: RebuildRoadmap;
@@ -49,7 +53,9 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const glossary = buildGlossary(languageReport, dependencyReport, fileLessons);
   const rebuildRoadmap = buildRebuildRoadmap(repoMap, fileLessons);
   const componentGraphReport = buildComponentGraphReport(folderLessons, fileLessons, glossary, rebuildRoadmap);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, componentGraphReport, flowReport, glossary, rebuildRoadmap };
+  const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
+  const incrementalReport = emptyIncrementalReport();
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -316,6 +322,42 @@ function buildComponentGraphReport(folderLessons: FolderLesson[], fileLessons: F
     mermaid: `flowchart TD\n${mermaidEdges || "  root[\"repo root\"]"}`,
     beginnerExplanation: "component graph는 폴더, 핵심 파일, 용어, 재구현 단계를 하나의 관계도로 묶습니다. 학습자는 한 파일이 어느 폴더에 속하고 어떤 용어와 구현 단계로 이어지는지 한눈에 따라갈 수 있습니다."
   };
+}
+
+async function buildSourceSnapshotReport(walk: WalkResult): Promise<SourceSnapshotReport> {
+  const files = [];
+  for (const file of walk.files.filter((candidate) => candidate.isTextCandidate)) {
+    const text = await readTextIfSafe(file.absPath);
+    files.push({
+      filePath: file.relPath,
+      size: file.size,
+      sha256: text === null ? `untracked-${file.size}` : await sha256(text),
+      tracked: text !== null
+    });
+  }
+  return {
+    createdAt: new Date().toISOString(),
+    totalFiles: files.length,
+    files: files.sort((a, b) => a.filePath.localeCompare(b.filePath))
+  };
+}
+
+function emptyIncrementalReport(): IncrementalReport {
+  return {
+    baselineSessionId: null,
+    baselinePath: null,
+    addedFiles: [],
+    changedFiles: [],
+    removedFiles: [],
+    unchangedFiles: [],
+    summary: "이 저장소의 비교 기준 이전 세션이 아직 없습니다.",
+    beginnerExplanation: "incremental report는 같은 repo를 다시 분석했을 때 어떤 파일이 추가, 변경, 삭제, 유지되었는지 알려줍니다. 첫 분석에서는 비교할 기준이 없으므로 baseline 없음으로 저장됩니다."
+  };
+}
+
+async function sha256(text: string): Promise<string> {
+  const { createHash } = await import("node:crypto");
+  return createHash("sha256").update(text).digest("hex");
 }
 
 function nodeId(prefix: string, value: string): string {

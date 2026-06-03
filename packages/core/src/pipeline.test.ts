@@ -15,15 +15,40 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "repo-map.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "overview.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "component-graph.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "incremental.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "index.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "component-graph.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "incremental.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.codex, "events.jsonl"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.source, ".env"))).rejects.toThrow();
+    const snapshotText = await fs.readFile(path.join(result.session.outputPaths.analysis, "source-snapshot-report.json"), "utf8");
+    expect(snapshotText).toContain("\"sha256\"");
+    const incrementalText = await fs.readFile(path.join(result.session.outputPaths.analysis, "incremental-report.json"), "utf8");
+    expect(incrementalText).toContain("\"baselineSessionId\"");
     const graphText = await fs.readFile(path.join(result.session.outputPaths.analysis, "component-graph-report.json"), "utf8");
     expect(graphText).toContain("\"nodes\"");
     expect(graphText).toContain("\"edges\"");
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
+  });
+
+  it("compares a new study session against the previous source snapshot", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+
+    const first = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    await fs.writeFile(path.join(sourceRoot, "src", "added.ts"), "export const added = 'next lesson';\n");
+    await fs.appendFile(path.join(sourceRoot, "src", "message.ts"), "\nexport const changed = true;\n");
+    await fs.rm(path.join(sourceRoot, "README.md"));
+
+    const second = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+
+    expect(second.analysis.incrementalReport.baselineSessionId).toBe(first.session.sessionId);
+    expect(second.analysis.incrementalReport.addedFiles).toContain("src/added.ts");
+    expect(second.analysis.incrementalReport.changedFiles).toContain("src/message.ts");
+    expect(second.analysis.incrementalReport.removedFiles).toContain("README.md");
+    expect(second.analysis.incrementalReport.unchangedFiles).toContain("src/main.ts");
   });
 
   it("uses the required quiz count formula bounds", () => {

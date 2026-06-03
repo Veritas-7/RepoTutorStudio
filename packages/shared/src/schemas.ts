@@ -175,6 +175,28 @@ export const ComponentGraphReportSchema = z.object({
   beginnerExplanation: z.string()
 });
 
+export const SourceSnapshotReportSchema = z.object({
+  createdAt: z.string(),
+  totalFiles: z.number().int().nonnegative(),
+  files: z.array(z.object({
+    filePath: z.string(),
+    size: z.number().int().nonnegative(),
+    sha256: z.string(),
+    tracked: z.boolean()
+  }))
+});
+
+export const IncrementalReportSchema = z.object({
+  baselineSessionId: z.string().nullable(),
+  baselinePath: z.string().nullable(),
+  addedFiles: z.array(z.string()),
+  changedFiles: z.array(z.string()),
+  removedFiles: z.array(z.string()),
+  unchangedFiles: z.array(z.string()),
+  summary: z.string(),
+  beginnerExplanation: z.string()
+});
+
 export const FlowReportSchema = z.object({
   startPoints: z.array(z.string()),
   cliFlow: z.array(z.string()),
@@ -299,6 +321,8 @@ export type FolderLesson = z.infer<typeof FolderLessonSchema>;
 export type FileLesson = z.infer<typeof FileLessonSchema>;
 export type CoverageReport = z.infer<typeof CoverageReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
+export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
+export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
 export type FlowReport = z.infer<typeof FlowReportSchema>;
 export type GlossaryTerm = z.infer<typeof GlossaryTermSchema>;
 export type RebuildRoadmap = z.infer<typeof RebuildRoadmapSchema>;

@@ -1,6 +1,6 @@
 # Compliance Audit 5
 
-Created: 2026-06-03T16:06:49.561Z
+Created: 2026-06-03T16:11:24.612Z
 
 Status: PASS
 
@@ -71,6 +71,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - source-backed component graph
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - incremental re-analysis
 
 - missing files: none
 - missing strings: none

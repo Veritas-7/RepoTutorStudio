@@ -1,6 +1,6 @@
 {
   "iteration": 10,
-  "createdAt": "2026-06-03T16:06:49.570Z",
+  "createdAt": "2026-06-03T16:11:24.624Z",
   "checks": [
     {
       "name": "project setup",
@@ -81,6 +81,13 @@
     },
     {
       "name": "source-backed component graph",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "incremental re-analysis",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
