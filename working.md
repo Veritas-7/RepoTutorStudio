@@ -314,6 +314,10 @@ to a private repository, and preserve resumable state in this file.
   anchor links. Component graph node cards now expose stable
   `component-node-*` anchors, `data-node-id` metadata, and relation rows that
   link to connected cards with `data-node-link`.
+- 2026-06-04: Applied a ninety-sixth AutoResearch upgrade: offline quiz reset
+  controls. `html/quiz.html` now includes a `data-reset-quiz` button and
+  offline JS clears picked answers, choice state, and live score text for
+  reload-free quiz retry.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -820,6 +824,11 @@ to a private repository, and preserve resumable state in this file.
     `/tmp/repotutor-node-anchor-smoke.UsF7cn`; generated
     `html/component-graph.html` contained `component-node-anchor`,
     `data-node-link`, `href="#component-node-`, and `data-node-id`.
+  - temp CLI quiz-reset smoke generated
+    `/tmp/repotutor-quiz-reset-smoke.pHoPiN`; generated `html/quiz.html`
+    contained `quiz-reset-toolbar`, `data-reset-quiz`, and `복습 초기화`, and
+    `html/assets/app.js` contained `[data-reset-quiz]`, `picked.clear()`, and
+    `quiz-live-score`.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -918,6 +927,7 @@ to a private repository, and preserve resumable state in this file.
   - `5747a91` component graph Mermaid download
   - `c75f777` component graph Mermaid asset
   - `2a96d42` component node relation lists
+  - `3e82dac` component node anchor links
 
 ## Next Actions
 

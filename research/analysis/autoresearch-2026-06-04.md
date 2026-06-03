@@ -1560,6 +1560,27 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 96: Offline Quiz Reset Controls
+
+- Added a `quiz-reset-toolbar` to `html/quiz.html` with a
+  `data-reset-quiz` button labeled `복습 초기화`.
+- The offline JavaScript now clears the browser-only picked answer map,
+  re-enables all quiz choices, removes `correct`/`wrong` classes, and restores
+  the live score message so learners can retry the static quiz without a page
+  reload.
+- Source pattern: google/html-quiz manages in-browser score and button state for
+  replayable quiz sessions; RepoTutor maps that to a no-storage offline reset
+  flow for its generated quiz board.
+- RED smoke `/tmp/repotutor-quiz-reset-red.mXQtxk` failed on the old behavior
+  with `quiz html missing quiz-reset-toolbar`.
+- GREEN smoke generated `/tmp/repotutor-quiz-reset-smoke.pHoPiN`; generated
+  `quiz.html` included `quiz-reset-toolbar`, `data-reset-quiz`, and
+  `복습 초기화`, while `assets/app.js` included `[data-reset-quiz]`,
+  `picked.clear()`, and `quiz-live-score`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

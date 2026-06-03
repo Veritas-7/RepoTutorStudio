@@ -1214,6 +1214,20 @@
         "data-node-link relation anchors",
         "href=\"#component-node-*\" graph drilldown links"
       ]
+    },
+    {
+      "name": "offline quiz reset controls",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "quiz-reset-toolbar",
+        "data-reset-quiz button",
+        "picked.clear() reset handler",
+        "offline quiz retry without browser reload"
+      ]
     }
   ],
   "verification": {
@@ -1345,6 +1359,8 @@
     "cliNodeRelationsSmoke": "PASS",
     "fixtureComponentNodeAnchorLinks": "PASS",
     "cliNodeAnchorSmoke": "PASS",
+    "fixtureOfflineQuizReset": "PASS",
+    "cliQuizResetSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
