@@ -461,6 +461,18 @@
         "repo-tutor verify-session --format markdown",
         "human-readable session verification summary"
       ]
+    },
+    {
+      "name": "persistent session verification reports",
+      "filesChanged": [
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/session-verification-report.json",
+        "fail-closed study artifact verification after render"
+      ]
     }
   ],
   "verification": {
@@ -518,6 +530,8 @@
     "cliVerifySessionSmoke": "PASS",
     "cliVerifySessionNegativeSmoke": "PASS",
     "cliVerifySessionMarkdownSmoke": "PASS",
+    "fixtureSessionVerificationReport": "PASS",
+    "cliSessionVerificationReportSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

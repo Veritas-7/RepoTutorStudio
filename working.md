@@ -159,6 +159,10 @@ to a private repository, and preserve resumable state in this file.
   session readiness verification. `repo-tutor verify-session <session>` now
   supports `--format markdown`, rendering a human-readable PASS/FAIL summary,
   checked artifact counts, sub-check statuses, and compact failure rows.
+- 2026-06-04: Applied a thirty-first AutoResearch upgrade: persistent session
+  verification reports. Each completed `repo-tutor study` run now writes
+  `analysis/session-verification-report.json` after rendering artifacts and
+  fails closed if the aggregate session verifier reports a broken artifact set.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -289,6 +293,11 @@ to a private repository, and preserve resumable state in this file.
     and `repo-tutor verify-session <session> --format markdown` returned
     `# RepoTutor Session Verification`, `Status: PASS`, all four sub-checks as
     PASS, and `Failures` as `none`
+  - temp CLI persistent session report smoke generated
+    `/tmp/repotutor-session-report-smoke.oxj2h3/2026-06-04/local__simple-ts-app__main__a5bc3b3f`
+    with `analysis/session-verification-report.json` containing `ok: true`,
+    `checkedRequiredArtifacts: 11`, `htmlExport: true`, `evidenceIndex: true`,
+    and zero failures
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -322,6 +331,7 @@ to a private repository, and preserve resumable state in this file.
   - `625d78d` Markdown output for CLI evidence
   - `02727b8` source evidence integrity verification
   - `9c815df` complete study session verification
+  - `a5bc3b3` Markdown output for session verification
 
 ## Next Actions
 

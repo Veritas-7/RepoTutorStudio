@@ -10,6 +10,7 @@ import { materializeSession, prepareSession, readJson, updateSessionIndex, write
 import { generateQuiz, writeRenderedHtml } from "./quiz.js";
 import { markdownFiles, readmeStudy } from "./markdown.js";
 import { buildIncrementalReport, findPreviousSnapshot } from "./incremental.js";
+import { verifyStudySessionArtifacts } from "./session-verifier.js";
 export { listSessions } from "./sessions.js";
 
 export interface StudyOptions {
@@ -127,6 +128,9 @@ async function writeAllArtifacts(session: StudySession, analysis: AnalysisBundle
   const htmlInput = { session, ...analysis, quiz, wrongNotes, attempts };
   const rendered = renderStudyHtml(htmlInput);
   await writeRenderedHtml(session.outputPaths.root, rendered);
+  const sessionVerification = await verifyStudySessionArtifacts(session.outputPaths.root);
+  await writeJson(path.join(session.outputPaths.analysis, "session-verification-report.json"), sessionVerification);
+  if (!sessionVerification.ok) throw new Error("Session artifact verification failed.");
 }
 
 async function ensureSessionDirs(session: StudySession): Promise<void> {

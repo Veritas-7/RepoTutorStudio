@@ -14,6 +14,7 @@ describe("RepoTutor core pipeline", () => {
     expect(result.session.quizSummary.totalQuestions).toBeGreaterThanOrEqual(5);
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "repo-map.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "evidence-index-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "session-verification-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "overview.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "component-graph.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "incremental.md"))).resolves.toBeUndefined();
@@ -105,6 +106,10 @@ describe("RepoTutor core pipeline", () => {
     expect(evidenceIndexText).toContain("\"sourceHref\"");
     expect(evidenceIndexText).toContain("html/files.html#src-main.ts");
     expect(evidenceIndexText).toContain("source/src/main.ts");
+    const sessionVerificationText = await fs.readFile(path.join(result.session.outputPaths.analysis, "session-verification-report.json"), "utf8");
+    expect(sessionVerificationText).toContain("\"ok\": true");
+    expect(sessionVerificationText).toContain("\"checkedRequiredArtifacts\"");
+    expect(sessionVerificationText).toContain("\"evidenceIndex\"");
     const evidenceVerification = await verifyEvidenceIndexReport(result.session.outputPaths.root);
     expect(evidenceVerification.ok).toBe(true);
     expect(evidenceVerification.checkedItems).toBeGreaterThan(0);
