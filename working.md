@@ -64,6 +64,11 @@ to a private repository, and preserve resumable state in this file.
   for large repositories. `component-graph.html` now renders node-type filter
   controls for root, folder, file, term, and rebuild-step nodes; `assets/app.js`
   applies graph filters together with the global search filter.
+- 2026-06-04: Applied an eighth AutoResearch upgrade: richer large-repo graph
+  summaries. `component-graph-report.json` now stores total node/edge counts,
+  `nodeTypeCounts`, `edgeLabelCounts`, `topConnectedNodes`, and
+  `largeRepoAdvice`; `component-graph.md` and `component-graph.html` render the
+  summary before the detailed graph.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -80,6 +85,8 @@ to a private repository, and preserve resumable state in this file.
   - temp CLI graph-filter smoke generated `component-graph.html` with
     `data-graph-filter`, `data-node-type`, `graph-filter-toolbar`, and
     `component-node-cards`
+  - temp CLI graph-summary smoke generated 23 nodes, 22 edges, node type counts,
+    and top hub `README.md` with degree 8
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -90,8 +97,9 @@ to a private repository, and preserve resumable state in this file.
   - `a30cec6` source-backed component graph
   - `6e56360` incremental re-analysis reports
   - `6aeb168` coverage delta summaries
+  - `28f1bc5` component graph filters
 
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops:
-   richer large-repo graph summaries or export usability polish.
+   export usability polish.

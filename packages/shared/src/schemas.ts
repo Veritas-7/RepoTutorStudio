@@ -170,6 +170,19 @@ export const ComponentGraphReportSchema = z.object({
     to: z.string(),
     label: z.string()
   })),
+  summary: z.object({
+    totalNodes: z.number().int().nonnegative(),
+    totalEdges: z.number().int().nonnegative(),
+    nodeTypeCounts: z.record(z.string(), z.number().int().nonnegative()),
+    edgeLabelCounts: z.record(z.string(), z.number().int().nonnegative()),
+    topConnectedNodes: z.array(z.object({
+      id: z.string(),
+      label: z.string(),
+      type: z.string(),
+      degree: z.number().int().nonnegative()
+    })),
+    largeRepoAdvice: z.string()
+  }),
   entryNodeIds: z.array(z.string()),
   mermaid: z.string(),
   beginnerExplanation: z.string()

@@ -29,7 +29,12 @@ describe("RepoTutor core pipeline", () => {
     const graphText = await fs.readFile(path.join(result.session.outputPaths.analysis, "component-graph-report.json"), "utf8");
     expect(graphText).toContain("\"nodes\"");
     expect(graphText).toContain("\"edges\"");
+    expect(graphText).toContain("\"nodeTypeCounts\"");
+    expect(graphText).toContain("\"topConnectedNodes\"");
+    const componentGraphMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "component-graph.md"), "utf8");
+    expect(componentGraphMarkdown).toContain("## 큰 그래프 요약");
     const componentGraphHtml = await fs.readFile(path.join(result.session.outputPaths.html, "component-graph.html"), "utf8");
+    expect(componentGraphHtml).toContain("큰 그래프 요약");
     expect(componentGraphHtml).toContain("data-graph-filter");
     expect(componentGraphHtml).toContain("data-node-type");
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");

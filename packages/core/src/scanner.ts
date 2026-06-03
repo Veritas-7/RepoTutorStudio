@@ -318,10 +318,39 @@ function buildComponentGraphReport(folderLessons: FolderLesson[], fileLessons: F
   return {
     nodes,
     edges,
+    summary: buildComponentGraphSummary(nodes, edges),
     entryNodeIds: ["root", ...fileLessons.filter((file) => /main|index|cli|app/i.test(path.basename(file.filePath))).slice(0, 5).map((file) => nodeId("file", file.filePath))],
     mermaid: `flowchart TD\n${mermaidEdges || "  root[\"repo root\"]"}`,
     beginnerExplanation: "component graph는 폴더, 핵심 파일, 용어, 재구현 단계를 하나의 관계도로 묶습니다. 학습자는 한 파일이 어느 폴더에 속하고 어떤 용어와 구현 단계로 이어지는지 한눈에 따라갈 수 있습니다."
   };
+}
+
+function buildComponentGraphSummary(nodes: ComponentGraphReport["nodes"], edges: ComponentGraphReport["edges"]): ComponentGraphReport["summary"] {
+  const nodeTypeCounts = countBy(nodes.map((node) => node.type));
+  const edgeLabelCounts = countBy(edges.map((edge) => edge.label));
+  const degree = new Map<string, number>();
+  for (const edge of edges) {
+    degree.set(edge.from, (degree.get(edge.from) ?? 0) + 1);
+    degree.set(edge.to, (degree.get(edge.to) ?? 0) + 1);
+  }
+  const topConnectedNodes = nodes
+    .map((node) => ({ id: node.id, label: node.label, type: node.type, degree: degree.get(node.id) ?? 0 }))
+    .sort((a, b) => b.degree - a.degree || a.label.localeCompare(b.label))
+    .slice(0, 8);
+  return {
+    totalNodes: nodes.length,
+    totalEdges: edges.length,
+    nodeTypeCounts,
+    edgeLabelCounts,
+    topConnectedNodes,
+    largeRepoAdvice: "큰 저장소에서는 먼저 연결 수가 높은 노드와 file/folder 필터를 보고, 그 다음 rebuild-step과 term 노드로 학습 순서를 좁히세요."
+  };
+}
+
+function countBy(values: string[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const value of values) counts[value] = (counts[value] ?? 0) + 1;
+  return counts;
 }
 
 async function buildSourceSnapshotReport(walk: WalkResult): Promise<SourceSnapshotReport> {

@@ -142,6 +142,20 @@ Transferable patterns:
 - `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
   verify the graph filter markers.
 
+### Upgrade 8: Richer Large-Repo Graph Summaries
+
+- `packages/shared/src/schemas.ts`: extends `ComponentGraphReportSchema` with a
+  `summary` object containing total node/edge counts, `nodeTypeCounts`,
+  `edgeLabelCounts`, `topConnectedNodes`, and `largeRepoAdvice`.
+- `packages/core/src/scanner.ts`: computes graph summary statistics from graph
+  nodes and edges, including degree-ranked hub nodes.
+- `packages/core/src/markdown.ts`: writes a "큰 그래프 요약" section before
+  the Mermaid graph.
+- `packages/html/src/templates.ts`: renders a summary panel before filters and
+  includes a runtime fallback for older sessions that predate graph summaries.
+- `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
+  verify `nodeTypeCounts` and `topConnectedNodes`.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -168,6 +182,11 @@ Local verification:
   with `data-graph-filter`, `data-node-type`, `graph-filter-toolbar`, and
   `component-node-cards`; `assets/app.js` includes the `[data-graph-filter]`
   handler.
+- Temp CLI graph-summary smoke generated:
+  `/tmp/repotutor-graph-summary-studies-tohE0d/2026-06-04/local__simple-ts-app__main__28f1bc56/analysis/component-graph-report.json`
+  with 23 nodes, 22 edges, node type counts `{root: 1, folder: 1, file: 4, term: 7, rebuild-step: 10}`,
+  and top hub `README.md` degree 8; Markdown and HTML both include
+  `큰 그래프 요약`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
@@ -175,5 +194,4 @@ Local verification:
 
 ## Deferred Candidate Backlog
 
-1. Add richer large-repo graph summaries.
-2. Add export usability polish.
+1. Add export usability polish.
