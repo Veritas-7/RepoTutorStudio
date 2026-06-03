@@ -246,8 +246,10 @@ async function list(parsed: ParsedArgs): Promise<void> {
   const status = verificationStatusFlag(parsed.flags.status);
   const statusRows = status === "all" ? repoRows : repoRows.filter((row) => row.verificationStatus === status);
   const verifiedRows = parsed.flags["verified-only"] === true ? statusRows.filter((row) => row.verificationOk === true) : statusRows;
+  const sort = listSortFlag(parsed.flags.sort);
+  const sortedRows = sort ? sortSessionRows(verifiedRows, sort) : verifiedRows;
   const limit = optionalPositiveIntegerFlag(parsed.flags.limit, "limit");
-  const filtered = limit === null ? verifiedRows : verifiedRows.slice(0, limit);
+  const filtered = limit === null ? sortedRows : sortedRows.slice(0, limit);
   const format = stringFlag(parsed.flags.format) ?? "json";
   if (!["json", "markdown"].includes(format)) throw new Error("list supports --format json or markdown.");
   if (format === "markdown") {
@@ -372,6 +374,23 @@ function repoMatches(repo: string, filter: string): boolean {
   const normalizedRepo = repo.toLowerCase();
   const normalizedFilter = filter.toLowerCase();
   return normalizedRepo === normalizedFilter || normalizedRepo.endsWith(`/${normalizedFilter}`);
+}
+
+function listSortFlag(value: string | boolean | undefined): "newest" | "oldest" | null {
+  if (value === undefined) return null;
+  if (typeof value !== "string") throw new Error("list supports --sort newest or oldest.");
+  if (value === "newest" || value === "oldest") return value;
+  throw new Error("list supports --sort newest or oldest.");
+}
+
+function sortSessionRows<T extends { createdAt: string; sessionId: string }>(rows: T[], direction: "newest" | "oldest"): T[] {
+  const multiplier = direction === "newest" ? -1 : 1;
+  return [...rows].sort((left, right) => {
+    const leftTime = Date.parse(left.createdAt);
+    const rightTime = Date.parse(right.createdAt);
+    const timeDelta = (leftTime - rightTime) * multiplier;
+    return timeDelta || left.sessionId.localeCompare(right.sessionId);
+  });
 }
 
 async function assertReadableFile(filePath: string, message: string): Promise<void> {
@@ -630,7 +649,7 @@ function help(): void {
   verify-export <session-id-or-path>
   verify-evidence <session-id-or-path>
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --status passed|failed|missing|all --verified-only --limit 10 --format json|markdown
+  list --repo owner/name --status passed|failed|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz
   open --list-targets
   doctor`);

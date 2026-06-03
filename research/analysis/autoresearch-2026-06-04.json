@@ -619,6 +619,17 @@
         "repo-tutor list --repo owner/name",
         "repo basename matching for local study sessions"
       ]
+    },
+    {
+      "name": "sorted session listing",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --sort newest|oldest",
+        "createdAt sorting before list limits"
+      ]
     }
   ],
   "verification": {
@@ -693,6 +704,7 @@
     "cliListLimitSmoke": "PASS",
     "cliListStatusSmoke": "PASS",
     "cliListRepoSmoke": "PASS",
+    "cliListSortSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
