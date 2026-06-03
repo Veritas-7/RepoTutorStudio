@@ -181,7 +181,13 @@ async function verifySession(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const { verifyStudySessionArtifacts } = await import("@repotutor/core");
   const result = await verifyStudySessionArtifacts(sessionRoot);
-  console.log(JSON.stringify(result, null, 2));
+  const format = stringFlag(parsed.flags.format) ?? "json";
+  if (!["json", "markdown"].includes(format)) throw new Error("verify-session supports --format json or markdown.");
+  if (format === "markdown") {
+    console.log(sessionVerificationMarkdown(result));
+  } else {
+    console.log(JSON.stringify(result, null, 2));
+  }
   if (!result.ok) process.exitCode = 1;
 }
 
@@ -307,6 +313,46 @@ function evidenceMarkdown(payload: {
   ].join("\n");
 }
 
+function sessionVerificationMarkdown(payload: {
+  ok: boolean;
+  sessionRoot: string;
+  sessionId: string | null;
+  checkedRequiredArtifacts: number;
+  checks: Record<string, boolean>;
+  htmlExport: { ok: boolean; checkedFiles: number; failures: Array<{ path: string }> } | null;
+  evidenceIndex: { ok: boolean; checkedItems: number; checkedSourceFiles: number; checkedSourceLinks: number; checkedLessonLinks: number; failures: Array<{ path: string; reason: string }> } | null;
+  failures: Array<{ check: string; reason: string; path: string; detail?: string }>;
+}): string {
+  const status = payload.ok ? "PASS" : "FAIL";
+  const checks = Object.entries(payload.checks)
+    .map(([name, ok]) => `- ${name}: ${ok ? "PASS" : "FAIL"}`)
+    .join("\n");
+  const failureLines = payload.failures.length === 0
+    ? "- none"
+    : payload.failures.map((failure) => `- ${failure.check}: ${failure.reason} at ${failure.path}${failure.detail ? ` (${failure.detail})` : ""}`).join("\n");
+  return [
+    "# RepoTutor Session Verification",
+    "",
+    `- Status: ${status}`,
+    `- Session ID: ${payload.sessionId ?? "unknown"}`,
+    `- Session root: ${payload.sessionRoot}`,
+    `- Required artifacts checked: ${payload.checkedRequiredArtifacts}`,
+    `- HTML files checked: ${payload.htmlExport?.checkedFiles ?? 0}`,
+    `- Evidence items checked: ${payload.evidenceIndex?.checkedItems ?? 0}`,
+    `- Evidence source files checked: ${payload.evidenceIndex?.checkedSourceFiles ?? 0}`,
+    `- Evidence source links checked: ${payload.evidenceIndex?.checkedSourceLinks ?? 0}`,
+    `- Evidence lesson links checked: ${payload.evidenceIndex?.checkedLessonLinks ?? 0}`,
+    "",
+    "## Checks",
+    "",
+    checks,
+    "",
+    "## Failures",
+    "",
+    failureLines
+  ].join("\n");
+}
+
 function studiesRoot(flags: Record<string, string | boolean>): string {
   return path.resolve(
     stringFlag(flags["studies-root"])
@@ -329,7 +375,7 @@ function help(): void {
   export <session-id-or-path> --format html|zip
   verify-export <session-id-or-path>
   verify-evidence <session-id-or-path>
-  verify-session <session-id-or-path>
+  verify-session <session-id-or-path> --format json|markdown
   list
   open <session-id-or-path>
   doctor`);

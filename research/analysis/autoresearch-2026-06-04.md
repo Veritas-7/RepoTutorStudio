@@ -403,6 +403,16 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs`: verifies the aggregate verifier and CLI
   command surface.
 
+### Upgrade 30: Markdown Output for Session Verification
+
+- `apps/cli/src/index.ts`: adds `--format json|markdown` to
+  `repo-tutor verify-session`.
+- `apps/cli/src/index.ts`: renders a human-readable session verification
+  summary with PASS/FAIL status, artifact counts, sub-check statuses, and
+  compact failure rows.
+- `scripts/compliance-audit.mjs`: verifies the Markdown session verification
+  output surface.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -539,6 +549,11 @@ Local verification:
   `source/src/main.ts`, and confirmed `repo-tutor verify-session <session>`
   exited 1 with `htmlExport: false`, `evidenceIndex: false`,
   `html-export-failed`, and `evidence-index-failed`.
+- Temp CLI verify-session Markdown smoke generated:
+  `/tmp/repotutor-verify-session-md-smoke.AIwXar/2026-06-04/local__simple-ts-app__main__9c815df5`
+  and `repo-tutor verify-session <session> --format markdown` returned
+  `# RepoTutor Session Verification`, `Status: PASS`, four PASS sub-checks, and
+  `Failures` as `none`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
