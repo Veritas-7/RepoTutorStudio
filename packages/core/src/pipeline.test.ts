@@ -21,6 +21,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "evidence.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "session-verification.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "index.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "learning-path.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "manifest.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "EXPORT-README.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "component-graph.html"))).resolves.toBeUndefined();
@@ -73,6 +74,7 @@ describe("RepoTutor core pipeline", () => {
     expect(coverageMarkdown).toContain("- entry:");
     const exportManifestText = await fs.readFile(path.join(result.session.outputPaths.html, "manifest.json"), "utf8");
     expect(exportManifestText).toContain("\"entrypoints\"");
+    expect(exportManifestText).toContain("html/learning-path.html");
     expect(exportManifestText).toContain("html/quiz-print.html");
     expect(exportManifestText).toContain("\"integrity\"");
     expect(exportManifestText).toContain("\"bytes\"");
@@ -112,6 +114,12 @@ describe("RepoTutor core pipeline", () => {
     expect(evidenceHtml).toContain("data-evidence-kind=\"import\"");
     expect(evidenceHtml).toContain("files.html#src-main.ts");
     expect(evidenceHtml).toContain("../source/src/main.ts");
+    const learningPathHtml = await fs.readFile(path.join(result.session.outputPaths.html, "learning-path.html"), "utf8");
+    expect(learningPathHtml).toContain("학습 경로");
+    expect(learningPathHtml).toContain("learning-path-step");
+    expect(learningPathHtml).toContain("data-learning-step");
+    expect(learningPathHtml).toContain("data-source-pattern=\"CodeTour\"");
+    expect(learningPathHtml).toContain("component-graph.html");
     const sessionVerificationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "session-verification.html"), "utf8");
     expect(sessionVerificationHtml).toContain("세션 검증");
     expect(sessionVerificationHtml).toContain("../analysis/session-verification-report.json");

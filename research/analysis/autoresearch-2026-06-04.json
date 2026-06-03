@@ -31,6 +31,20 @@
         "simple inspectable quiz configuration",
         "static browser-first interaction model"
       ]
+    },
+    {
+      "repo": "microsoft/codetour",
+      "url": "https://github.com/microsoft/codetour",
+      "localPath": "research/external-src/microsoft-codetour",
+      "stars": 4536,
+      "forks": null,
+      "license": "MIT",
+      "updatedAt": "2026-06-01T13:58:15Z",
+      "adoptedPatterns": [
+        "ordered guided tour steps",
+        "file and directory linked learning steps",
+        "primary onboarding tour for new developers"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1228,6 +1242,22 @@
         "picked.clear() reset handler",
         "offline quiz retry without browser reload"
       ]
+    },
+    {
+      "name": "guided learning path html",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "packages/core/src/session-verifier.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "html/learning-path.html",
+        "learning-path-step cards",
+        "data-learning-step metadata",
+        "open --target learning-path"
+      ]
     }
   ],
   "verification": {
@@ -1361,6 +1391,8 @@
     "cliNodeAnchorSmoke": "PASS",
     "fixtureOfflineQuizReset": "PASS",
     "cliQuizResetSmoke": "PASS",
+    "fixtureLearningPathPage": "PASS",
+    "cliLearningPathSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

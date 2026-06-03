@@ -72,6 +72,7 @@ function list(items: string[]): string {
 function pageShell(title: string, active: string, body: string, input: StudyHtmlInput): string {
   const nav = [
     ["index.html", "Overview"],
+    ["learning-path.html", "Learning Path"],
     ["language.html", "Language"],
     ["architecture.html", "Architecture"],
     ["folders.html", "Folders"],
@@ -134,6 +135,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
   const fileNavigation = fileNavigationFor(input.fileLessons);
   const evidenceFilters = evidenceKindFilterButtons(input.fileLessons);
   const quizFilters = quizFilterButtons(input.quiz.questions);
+  const learningPath = learningPathFor(input);
   const pages: RenderedPage[] = [
     {
       name: "index.html",
@@ -161,6 +163,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <pre>${escapeHtml(input.repoMap.treeMarkdown)}</pre>
         </section>
       `, input)
+    },
+    {
+      name: "learning-path.html",
+      title: "학습 경로",
+      html: pageShell("학습 경로", "learning-path.html", `<section class="panel" data-source-pattern="CodeTour"><h2>투어형 학습 순서</h2><p>생성된 리포트를 순서대로 따라가며 저장소의 목적, 구조, 근거, 그래프, 재구현, 복습 문제로 이동합니다.</p></section><section class="cards learning-path-cards">${learningPath.map((step, index) => `<article class="learning-path-step" data-learning-step="${index + 1}"><h3>${index + 1}. ${escapeHtml(step.title)}</h3><p>${escapeHtml(step.goal)}</p><p class="muted">${escapeHtml(step.evidence)}</p><a href="${escapeHtml(step.href)}">이 단계 열기</a></article>`).join("")}</section>`, input)
     },
     {
       name: "overview.html",
@@ -406,6 +413,53 @@ function componentNodeRelations(nodeId: string, report: ComponentGraphReport): s
 
 function componentNodeAnchor(nodeId: string): string {
   return `component-node-${htmlAnchor(nodeId)}`;
+}
+
+function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: string; goal: string; evidence: string }> {
+  return [
+    {
+      title: "프로젝트 목적 확인",
+      href: "index.html",
+      goal: input.purposeReport.oneLineSummary,
+      evidence: `대상 사용자 ${input.purposeReport.targetUsers.length}개, 문제 정의 ${input.purposeReport.solvedProblems.length}개`
+    },
+    {
+      title: "언어와 의존성 파악",
+      href: "language.html",
+      goal: `${input.languageReport.primaryLanguage} 중심의 기술 스택을 먼저 확인합니다.`,
+      evidence: `manifest ${input.dependencyReport.manifests.length}개`
+    },
+    {
+      title: "폴더와 핵심 파일 훑기",
+      href: "files.html",
+      goal: "핵심 파일 수업으로 진입점과 주변 파일을 연결합니다.",
+      evidence: `폴더 수업 ${input.folderLessons.length}개, 파일 수업 ${input.fileLessons.length}개`
+    },
+    {
+      title: "소스 근거 대조",
+      href: "evidence.html",
+      goal: "설명과 복사된 원본 소스가 어떻게 연결되는지 확인합니다.",
+      evidence: `소스 근거 ${input.fileLessons.reduce((sum, lesson) => sum + (lesson.sourceEvidence ?? []).length, 0)}개`
+    },
+    {
+      title: "컴포넌트 그래프 따라가기",
+      href: "component-graph.html",
+      goal: "폴더, 파일, 용어, 재구현 단계의 관계를 그래프로 추적합니다.",
+      evidence: `노드 ${input.componentGraphReport.nodes.length}개, 관계 ${input.componentGraphReport.edges.length}개`
+    },
+    {
+      title: "맨땅 재구현 순서 보기",
+      href: "rebuild.html",
+      goal: "학습 내용을 구현 순서로 재배열합니다.",
+      evidence: `재구현 단계 ${input.rebuildRoadmap.steps.length}개`
+    },
+    {
+      title: "퀴즈로 복습",
+      href: "quiz.html",
+      goal: "정답 확인과 오답노트 흐름으로 이해도를 점검합니다.",
+      evidence: `퀴즈 ${input.quiz.totalQuestions}문제`
+    }
+  ];
 }
 
 function quizFilterButtons(questions: Quiz["questions"]): { sectionButtons: string; difficultyButtons: string } {

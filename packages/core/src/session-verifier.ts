@@ -44,6 +44,7 @@ const REQUIRED_ARTIFACTS = [
   "markdown/overview.md",
   "markdown/evidence.md",
   "html/index.html",
+  "html/learning-path.html",
   "html/files.html",
   "html/evidence.html",
   "html/quiz-print.html",
