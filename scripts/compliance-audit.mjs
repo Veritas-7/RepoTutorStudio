@@ -74,7 +74,7 @@ const checks = [
     "packages/core/src/session-verifier.ts",
     "apps/cli/src/index.ts",
     "packages/shared/src/schemas.ts"
-  ], ["index.html", "quiz.html", "quiz-print.html", "print-answer-key", "정답지", "wrong-notes.html", "evidence.html", "session-verification.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints", "writeHtmlZipBundle", "verifyHtmlExportManifest", "verifyStudySessionArtifacts", "integrityOk", "integrityCheckedFiles", "--format html|zip", "--summary-format json|markdown", "html-report.zip", "file-nav-toolbar", "data-file-ext-filter", "data-file-dir-filter", "data-source-evidence-filter", "data-source-evidence", "data-evidence-kind-filter", "@media print", "print-color-adjust", "Use browser print preview", "integrity", "sha256", "bytes"]),
+  ], ["index.html", "quiz.html", "quiz-print.html", "print-answer-key", "정답지", "quiz-section-toolbar", "data-quiz-section-filter", "data-quiz-difficulty-filter", "data-quiz-section", "data-quiz-difficulty", "wrong-notes.html", "evidence.html", "session-verification.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints", "writeHtmlZipBundle", "verifyHtmlExportManifest", "verifyStudySessionArtifacts", "integrityOk", "integrityCheckedFiles", "--format html|zip", "--summary-format json|markdown", "html-report.zip", "file-nav-toolbar", "data-file-ext-filter", "data-file-dir-filter", "data-source-evidence-filter", "data-source-evidence", "data-evidence-kind-filter", "@media print", "print-color-adjust", "Use browser print preview", "integrity", "sha256", "bytes"]),
   check("source-backed component graph", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

@@ -295,6 +295,10 @@ to a private repository, and preserve resumable state in this file.
   key. Generated HTML now includes `html/quiz-print.html`, a manifest
   entrypoint, required-artifact verification, and CLI `open --target quiz-print`
   support.
+- 2026-06-04: Applied a ninety-first AutoResearch upgrade: quiz section and
+  difficulty filters. `html/quiz.html` now exposes section and difficulty
+  filter toolbars, per-card quiz metadata, and offline JS handlers that combine
+  with global search.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -777,6 +781,12 @@ to a private repository, and preserve resumable state in this file.
     `<strong>해설:</strong>`, and `연결 수업`; `manifest.json`,
     `verify-session`, `open --target quiz-print`, and `open --list-targets`
     all recognized the page.
+  - temp CLI quiz-filter smoke generated
+    `/tmp/repotutor-quiz-filter-smoke.vFPca8`; generated `html/quiz.html`
+    contained `quiz-section-toolbar`, `quiz-difficulty-toolbar`,
+    `data-quiz-section-filter`, `data-quiz-difficulty-filter`,
+    `data-quiz-section`, and `data-quiz-difficulty`, with matching handlers in
+    `html/assets/app.js`.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.

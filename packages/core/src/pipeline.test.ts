@@ -108,8 +108,15 @@ describe("RepoTutor core pipeline", () => {
     expect(quizPrintHtml).toContain("print-answer-key");
     expect(quizPrintHtml).toContain("<strong>정답:</strong>");
     expect(quizPrintHtml).toContain("<strong>해설:</strong>");
+    const quizHtml = await fs.readFile(path.join(result.session.outputPaths.html, "quiz.html"), "utf8");
+    expect(quizHtml).toContain("quiz-section-toolbar");
+    expect(quizHtml).toContain("data-quiz-section-filter");
+    expect(quizHtml).toContain("data-quiz-difficulty-filter");
+    expect(quizHtml).toContain("data-quiz-section");
+    expect(quizHtml).toContain("data-quiz-difficulty");
     const appJs = await fs.readFile(path.join(result.session.outputPaths.html, "assets", "app.js"), "utf8");
     expect(appJs).toContain("[data-evidence-kind-filter]");
+    expect(appJs).toContain("[data-quiz-section-filter]");
     const fileLessonsText = await fs.readFile(path.join(result.session.outputPaths.analysis, "file-lessons.json"), "utf8");
     expect(fileLessonsText).toContain("\"sourceEvidence\"");
     expect(fileLessonsText).toContain("\"snippet\"");
