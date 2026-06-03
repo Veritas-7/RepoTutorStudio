@@ -244,6 +244,10 @@ async function list(parsed: ParsedArgs): Promise<void> {
   const sessions = await listSessions(studiesRoot(parsed.flags));
   const rows = await Promise.all(sessions.map(async (session) => {
     const verification = await sessionVerificationSummary(session.outputPaths.root);
+    const targetStatus = await htmlTargetStatus(openTargetPaths(session.outputPaths.html));
+    const missingHtmlTargets = Object.entries(targetStatus)
+      .filter(([, present]) => !present)
+      .map(([target]) => target);
     return {
       sessionId: session.sessionId,
       repo: `${session.owner}/${session.repo}`,
@@ -254,6 +258,8 @@ async function list(parsed: ParsedArgs): Promise<void> {
       wrong: session.quizSummary.wrongCount,
       path: session.outputPaths.root,
       html: path.join(session.outputPaths.html, "index.html"),
+      htmlTargetsComplete: missingHtmlTargets.length === 0,
+      missingHtmlTargets,
       verificationStatus: verification.status,
       verificationOk: verification.ok,
       verificationReport: verification.reportPath,
@@ -270,8 +276,12 @@ async function list(parsed: ParsedArgs): Promise<void> {
   const status = verificationStatusFlag(parsed.flags.status);
   const statusRows = status === "all" ? levelRows : levelRows.filter((row) => row.verificationStatus === status);
   const verifiedRows = parsed.flags["verified-only"] === true ? statusRows.filter((row) => row.verificationOk === true) : statusRows;
+  const htmlTargets = htmlTargetsFlag(parsed.flags["html-targets"]);
+  const targetRows = htmlTargets === "all"
+    ? verifiedRows
+    : verifiedRows.filter((row) => htmlTargets === "complete" ? row.htmlTargetsComplete : !row.htmlTargetsComplete);
   const sort = listSortFlag(parsed.flags.sort);
-  const sortedRows = sort ? sortSessionRows(verifiedRows, sort) : verifiedRows;
+  const sortedRows = sort ? sortSessionRows(targetRows, sort) : targetRows;
   const limit = optionalPositiveIntegerFlag(parsed.flags.limit, "limit");
   const filtered = limit === null ? sortedRows : sortedRows.slice(0, limit);
   const format = stringFlag(parsed.flags.format) ?? "json";
@@ -333,6 +343,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
     listFilters: {
       level: ["beginner", "junior", "senior", "all"],
       status: ["passed", "failed", "missing", "all"],
+      htmlTargets: ["complete", "missing", "all"],
       sort: ["newest", "oldest"],
       repo: true,
       verifiedOnly: true,
@@ -443,6 +454,13 @@ function learnerLevelFlag(value: string | boolean | undefined): "all" | "beginne
   if (typeof value !== "string") throw new Error("list supports --level beginner, junior, senior, or all.");
   if (["all", "beginner", "junior", "senior"].includes(value)) return value as "all" | "beginner" | "junior" | "senior";
   throw new Error("list supports --level beginner, junior, senior, or all.");
+}
+
+function htmlTargetsFlag(value: string | boolean | undefined): "all" | "complete" | "missing" {
+  if (value === undefined) return "all";
+  if (typeof value !== "string") throw new Error("list supports --html-targets complete, missing, or all.");
+  if (["all", "complete", "missing"].includes(value)) return value as "all" | "complete" | "missing";
+  throw new Error("list supports --html-targets complete, missing, or all.");
 }
 
 function repoMatches(repo: string, filter: string): boolean {
@@ -585,6 +603,8 @@ function listMarkdown(rows: Array<{
   wrong: number;
   path: string;
   html: string;
+  htmlTargetsComplete: boolean;
+  missingHtmlTargets: string[];
   verificationStatus: string;
   verificationOk: boolean | null;
   verificationHtml: string;
@@ -592,8 +612,8 @@ function listMarkdown(rows: Array<{
   const body = rows.length === 0
     ? "_No sessions found._"
     : [
-      "| Session | Repo | Created | Mode | Level | Score | Wrong | Verification | HTML |",
-      "|---|---|---|---|---|---:|---:|---|---|",
+      "| Session | Repo | Created | Mode | Level | Score | Wrong | Verification | HTML Targets | HTML |",
+      "|---|---|---|---|---|---:|---:|---|---|---|",
       ...rows.map((row) => [
         row.sessionId,
         row.repo,
@@ -603,6 +623,7 @@ function listMarkdown(rows: Array<{
         row.score === null ? "none" : String(row.score),
         String(row.wrong),
         row.verificationStatus,
+        row.htmlTargetsComplete ? "complete" : `missing: ${row.missingHtmlTargets.join(", ")}`,
         row.html
       ].map(markdownTableCell).join(" | "))
         .map((line) => `| ${line} |`)
@@ -787,7 +808,7 @@ function help(): void {
   verify-export <session-id-or-path>
   verify-evidence <session-id-or-path>
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --level beginner|junior|senior|all --status passed|failed|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
+  list --repo owner/name --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz|all
   open --list-targets
   doctor --format json|markdown`);
