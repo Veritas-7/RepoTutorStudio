@@ -827,6 +827,17 @@
         "repo-tutor list --wrong-only",
         "doctor listFilters wrongOnly metadata"
       ]
+    },
+    {
+      "name": "unattempted session lists",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --unattempted-only",
+        "doctor listFilters unattemptedOnly metadata"
+      ]
     }
   ],
   "verification": {
@@ -920,6 +931,7 @@
     "cliDoctorRuntimeSmoke": "PASS",
     "cliListModeSmoke": "PASS",
     "cliListWrongOnlySmoke": "PASS",
+    "cliListUnattemptedSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
