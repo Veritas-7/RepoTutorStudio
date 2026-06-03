@@ -17,6 +17,8 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "component-graph.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "incremental.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "index.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "manifest.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "EXPORT-README.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "component-graph.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "incremental.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.codex, "events.jsonl"))).resolves.toBeUndefined();
@@ -37,6 +39,12 @@ describe("RepoTutor core pipeline", () => {
     expect(componentGraphHtml).toContain("큰 그래프 요약");
     expect(componentGraphHtml).toContain("data-graph-filter");
     expect(componentGraphHtml).toContain("data-node-type");
+    const exportManifestText = await fs.readFile(path.join(result.session.outputPaths.html, "manifest.json"), "utf8");
+    expect(exportManifestText).toContain("\"entrypoints\"");
+    expect(exportManifestText).toContain("\"readmePath\"");
+    const exportReadmeText = await fs.readFile(path.join(result.session.outputPaths.html, "EXPORT-README.md"), "utf8");
+    expect(exportReadmeText).toContain("RepoTutor HTML Export");
+    expect(exportReadmeText).toContain("Entry Points");
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
   });

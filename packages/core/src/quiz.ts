@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { FileLesson, FolderLesson, GlossaryTerm, Quiz, QuizAttempt, QuizQuestion, StudyMode, StudySession, WrongNote } from "@repotutor/shared";
+import type { FileLesson, FolderLesson, GlossaryTerm, HtmlExportManifest, Quiz, QuizAttempt, QuizQuestion, StudyMode, StudySession, WrongNote } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 import { ensureDir, pathExists } from "./fs-utils.js";
 import { readJson, writeJson } from "./storage.js";
@@ -121,7 +121,22 @@ export async function writeRenderedHtml(sessionRoot: string, rendered: ReturnTyp
     await ensureDir(path.join(sessionRoot, "html", path.dirname(assetPath)));
     await fs.writeFile(path.join(sessionRoot, "html", assetPath), content);
   }
+  await writeJson(path.join(sessionRoot, "html", "manifest.json"), rendered.manifest);
+  await fs.writeFile(path.join(sessionRoot, "html", "EXPORT-README.md"), renderExportReadme(rendered.manifest));
   await writeJson(path.join(sessionRoot, "analysis", "html-export-manifest.json"), rendered.manifest);
+}
+
+function renderExportReadme(manifest: HtmlExportManifest): string {
+  const entrypoints = manifest.entrypoints
+    .map((entry) => `- ${entry.label}: ${insideHtmlPath(entry.path)} - ${entry.description}`)
+    .join("\n");
+  const pages = manifest.pages.map((page) => `- ${page.title}: ${insideHtmlPath(page.path)}`).join("\n");
+  const assets = manifest.assets.map((asset) => `- ${asset}`).join("\n");
+  return `# RepoTutor HTML Export\n\nOpen \`index.html\` in a browser to start. This folder is portable and can be copied as one offline report bundle.\n\n## Entry Points\n\n${entrypoints}\n\n## Pages\n\n${pages}\n\n## Assets\n\n${assets}\n`;
+}
+
+function insideHtmlPath(filePath: string): string {
+  return filePath.startsWith("html/") ? filePath.slice("html/".length) : filePath;
 }
 
 function buildWrongNote(question: QuizQuestion, selectedChoice: "A" | "B" | "C" | "D", attemptNumber: number): WrongNote {

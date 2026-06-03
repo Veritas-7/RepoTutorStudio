@@ -232,6 +232,14 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
   const manifest: HtmlExportManifest = {
     sessionId: input.session.sessionId,
     generatedAt: new Date().toISOString(),
+    manifestPath: "html/manifest.json",
+    readmePath: "html/EXPORT-README.md",
+    entrypoints: [
+      { label: "학습 시작", path: "html/index.html", description: "전체 학습 리포트의 시작 페이지입니다." },
+      { label: "퀴즈", path: "html/quiz.html", description: "오프라인 브라우저 복습 문제를 풉니다." },
+      { label: "오답노트", path: "html/wrong-notes.html", description: "틀린 문제를 다시 보는 페이지입니다." },
+      { label: "컴포넌트 그래프", path: "html/component-graph.html", description: "큰 저장소의 폴더, 파일, 용어, 재구현 단계를 탐색합니다." }
+    ],
     pages: pages.map((page) => ({ name: page.name, path: `html/${page.name}`, title: page.title })),
     assets: Object.keys(assets)
   };

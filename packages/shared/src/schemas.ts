@@ -314,6 +314,13 @@ export const WrongNoteSchema = z.object({
 export const HtmlExportManifestSchema = z.object({
   sessionId: z.string(),
   generatedAt: z.string(),
+  manifestPath: z.string(),
+  readmePath: z.string(),
+  entrypoints: z.array(z.object({
+    label: z.string(),
+    path: z.string(),
+    description: z.string()
+  })),
   pages: z.array(z.object({
     name: z.string(),
     path: z.string(),
