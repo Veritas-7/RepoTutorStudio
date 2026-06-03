@@ -474,6 +474,13 @@ to a private repository, and preserve resumable state in this file.
     --scored-only` returned exactly that scored JSON row, Markdown output
     included `Score` as `100` and `Wrong` as `0`, and `doctor` reported
     `listFilters.scoredOnly: true`
+  - temp CLI list-score-range smoke generated
+    `/tmp/repotutor-list-score-range-smoke.ppUrvq`; two fixture sessions were
+    scored at `0` and `100`, `list --min-score 50` returned only the `100`
+    row, `list --max-score 50` returned only the `0` row, Markdown output
+    included `Score` as `100`, `doctor` reported `minScore` and `maxScore`
+    filters, and invalid `--min-score 101` exited 1 with `min-score must be a
+    number from 0 to 100`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -607,6 +614,7 @@ to a private repository, and preserve resumable state in this file.
   - `0f9b92b` study-mode session list filters
   - `de92329` quiz-mistake session list filters
   - `30e48f2` unattempted session list filters
+  - `5d937fc` scored session list filters
 
 ## Next Actions
 

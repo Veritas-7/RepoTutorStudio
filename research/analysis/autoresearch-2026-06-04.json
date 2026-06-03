@@ -849,6 +849,17 @@
         "repo-tutor list --scored-only",
         "doctor listFilters scoredOnly metadata"
       ]
+    },
+    {
+      "name": "score range session lists",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --min-score N --max-score N",
+        "doctor listFilters minScore maxScore metadata"
+      ]
     }
   ],
   "verification": {
@@ -944,6 +955,7 @@
     "cliListWrongOnlySmoke": "PASS",
     "cliListUnattemptedSmoke": "PASS",
     "cliListScoredSmoke": "PASS",
+    "cliListScoreRangeSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
