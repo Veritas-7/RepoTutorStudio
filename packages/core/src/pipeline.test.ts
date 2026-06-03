@@ -45,6 +45,7 @@ describe("RepoTutor core pipeline", () => {
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
+    expect(coverageHtml).toContain("소스 근거 부족");
     const exportManifestText = await fs.readFile(path.join(result.session.outputPaths.html, "manifest.json"), "utf8");
     expect(exportManifestText).toContain("\"entrypoints\"");
     expect(exportManifestText).toContain("\"integrity\"");
@@ -60,6 +61,9 @@ describe("RepoTutor core pipeline", () => {
     expect(filesHtml).toContain("data-file-ext-filter");
     expect(filesHtml).toContain("data-file-dir-filter");
     expect(filesHtml).toContain("data-file-dir");
+    expect(filesHtml).toContain("data-source-evidence-filter");
+    expect(filesHtml).toContain("data-source-evidence");
+    expect(filesHtml).toContain("근거 있음");
     expect(filesHtml).toContain("소스 근거");
     expect(filesHtml).toContain("source-evidence");
     expect(filesHtml).toContain("import { createGreeting }");

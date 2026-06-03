@@ -300,6 +300,20 @@
         "analysis/coverage-report.json evidenceCoverageRatio",
         "html/coverage.html source evidence coverage summary"
       ]
+    },
+    {
+      "name": "source evidence drilldown filters",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "html/files.html source evidence filter toolbar",
+        "html/files.html data-source-evidence cards",
+        "html/coverage.html files.html anchor links for evidence gaps",
+        "html/assets/app.js source evidence filter handler"
+      ]
     }
   ],
   "verification": {
@@ -335,6 +349,8 @@
     "cliSourceEvidenceSmoke": "PASS",
     "fixtureEvidenceCoverage": "PASS",
     "cliEvidenceCoverageSmoke": "PASS",
+    "fixtureEvidenceFilters": "PASS",
+    "cliEvidenceFilterSmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },

@@ -278,6 +278,20 @@ Transferable patterns:
 - `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
   verify evidence coverage artifacts.
 
+### Upgrade 19: Source Evidence Drilldown Filters
+
+- `packages/html/src/templates.ts`: adds source-evidence filter controls to
+  `html/files.html`.
+- `packages/html/src/templates.ts`: marks file lesson cards with
+  `data-source-evidence` so learners can isolate files that have or lack source
+  evidence.
+- `packages/html/src/templates.ts`: renders source-evidence gaps in
+  `html/coverage.html` as links back to matching `files.html` lesson anchors.
+- `html/assets/app.js`: combines source-evidence filtering with global search,
+  graph filters, extension filters, and folder filters.
+- `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
+  verify the source evidence filter markers.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -351,6 +365,11 @@ Local verification:
   with 4 evidence-backed files, evidence coverage ratio 1.0, HTML
   `소스 근거 파일` / `근거 비율`, and Markdown source-evidence coverage
   sections.
+- Temp CLI evidence-filter smoke generated:
+  `studies/2026-06-04/local__simple-ts-app__main__eb9b601e/html/files.html`
+  with `data-source-evidence-filter`, `data-source-evidence="present"`,
+  `근거 있음`, `근거 부족`, and matching source-evidence filtering logic in
+  `html/assets/app.js`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
