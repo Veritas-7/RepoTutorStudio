@@ -1,0 +1,23 @@
+{
+  "name": "@repotutor/cli",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "repo-tutor": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && chmod +x dist/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@repotutor/core": "workspace:*",
+    "@repotutor/html": "workspace:*",
+    "@repotutor/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
