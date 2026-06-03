@@ -202,6 +202,9 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Applied a forty-first AutoResearch upgrade: Markdown session
   listing. CLI `repo-tutor list --format markdown` now renders a human-readable
   session table, and still works with `--verified-only`.
+- 2026-06-04: Applied a forty-second AutoResearch upgrade: bounded session
+  listing. CLI `repo-tutor list --limit N` now limits JSON and Markdown session
+  output after filters, and invalid limits fail closed.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -387,6 +390,11 @@ to a private repository, and preserve resumable state in this file.
     `/tmp/repotutor-list-md-smoke.wN4Bip`; `repo-tutor list --verified-only
     --format markdown` returned `# RepoTutor Sessions`, `Returned sessions: 1`,
     a session table, `passed`, and `html/index.html`
+  - temp CLI list-limit smoke generated `/tmp/repotutor-list-limit-smoke.Getzel`;
+    two fixture sessions were created, `list --verified-only --limit 1`
+    returned one JSON row, `list --verified-only --limit 1 --format markdown`
+    returned `Returned sessions: 1`, and `--limit 0` exited 1 with
+    `limit must be a positive integer`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -431,6 +439,7 @@ to a private repository, and preserve resumable state in this file.
   - `643161c` fail-closed open targets
   - `5fc5ecd` enriched resume output
   - `b88d17f` Markdown resume output
+  - `9e52046` Markdown session list
 
 ## Next Actions
 

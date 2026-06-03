@@ -241,7 +241,9 @@ async function list(parsed: ParsedArgs): Promise<void> {
       verificationChecks: verification.checks
     };
   }));
-  const filtered = parsed.flags["verified-only"] === true ? rows.filter((row) => row.verificationOk === true) : rows;
+  const verifiedRows = parsed.flags["verified-only"] === true ? rows.filter((row) => row.verificationOk === true) : rows;
+  const limit = optionalPositiveIntegerFlag(parsed.flags.limit, "limit");
+  const filtered = limit === null ? verifiedRows : verifiedRows.slice(0, limit);
   const format = stringFlag(parsed.flags.format) ?? "json";
   if (!["json", "markdown"].includes(format)) throw new Error("list supports --format json or markdown.");
   if (format === "markdown") {
@@ -339,6 +341,14 @@ function numberFlag(value: string | boolean | undefined, fallback: number): numb
   if (typeof value !== "string") return fallback;
   const parsed = Number(value);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function optionalPositiveIntegerFlag(value: string | boolean | undefined, name: string): number | null {
+  if (value === undefined) return null;
+  if (typeof value !== "string") throw new Error(`${name} must be a positive integer.`);
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed <= 0) throw new Error(`${name} must be a positive integer.`);
+  return parsed;
 }
 
 async function assertReadableFile(filePath: string, message: string): Promise<void> {
@@ -597,7 +607,7 @@ function help(): void {
   verify-export <session-id-or-path>
   verify-evidence <session-id-or-path>
   verify-session <session-id-or-path> --format json|markdown
-  list --verified-only --format json|markdown
+  list --verified-only --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz
   open --list-targets
   doctor`);
