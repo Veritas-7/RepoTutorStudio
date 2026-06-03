@@ -155,6 +155,10 @@ to a private repository, and preserve resumable state in this file.
   CLI `repo-tutor verify-session <session>` checks `session.json`, required
   report artifacts, HTML export integrity, and source evidence integrity in one
   fail-closed JSON result.
+- 2026-06-04: Applied a thirtieth AutoResearch upgrade: Markdown output for
+  session readiness verification. `repo-tutor verify-session <session>` now
+  supports `--format markdown`, rendering a human-readable PASS/FAIL summary,
+  checked artifact counts, sub-check statuses, and compact failure rows.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -280,6 +284,11 @@ to a private repository, and preserve resumable state in this file.
     removed `source/src/main.ts`, and confirmed
     `repo-tutor verify-session <session>` exited 1 with `htmlExport: false`,
     `evidenceIndex: false`, `html-export-failed`, and `evidence-index-failed`
+  - temp CLI verify-session Markdown smoke generated
+    `/tmp/repotutor-verify-session-md-smoke.AIwXar/2026-06-04/local__simple-ts-app__main__9c815df5`
+    and `repo-tutor verify-session <session> --format markdown` returned
+    `# RepoTutor Session Verification`, `Status: PASS`, all four sub-checks as
+    PASS, and `Failures` as `none`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -312,6 +321,7 @@ to a private repository, and preserve resumable state in this file.
   - `b9bf2e5` CLI evidence file filtering
   - `625d78d` Markdown output for CLI evidence
   - `02727b8` source evidence integrity verification
+  - `9c815df` complete study session verification
 
 ## Next Actions
 

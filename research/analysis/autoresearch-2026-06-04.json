@@ -450,6 +450,17 @@
         "repo-tutor verify-session command",
         "aggregate session readiness JSON gate"
       ]
+    },
+    {
+      "name": "markdown output for session verification",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor verify-session --format markdown",
+        "human-readable session verification summary"
+      ]
     }
   ],
   "verification": {
@@ -506,6 +517,7 @@
     "fixtureSessionVerification": "PASS",
     "cliVerifySessionSmoke": "PASS",
     "cliVerifySessionNegativeSmoke": "PASS",
+    "cliVerifySessionMarkdownSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
