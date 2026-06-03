@@ -22,6 +22,7 @@ import type {
   AgentMemoryReport,
   GraphQueryReport,
   TutorialAbstractionReport,
+  DecisionRecordReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -50,6 +51,7 @@ export interface StudyHtmlInput {
   agentMemoryReport: AgentMemoryReport;
   graphQueryReport: GraphQueryReport;
   tutorialAbstractionReport: TutorialAbstractionReport;
+  decisionRecordReport: DecisionRecordReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -105,6 +107,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["agent-memory.html", "Agent Memory"],
     ["graph-query.html", "Graph Query"],
     ["tutorial-abstractions.html", "Tutorial Abstractions"],
+    ["decision-records.html", "Decision Records"],
     ["session-verification.html", "Verification"],
     ["coverage.html", "Coverage"],
     ["component-graph.html", "Component Graph"],
@@ -188,6 +191,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
           <article><h3>Graph Query</h3><p>${escapeHtml(input.graphQueryReport.summary)}</p><p>Graphify 패턴으로 query/path/explain 질문을 준비합니다.</p><a href="graph-query.html">Graph Query 열기</a></article>
           <article><h3>Tutorial Abstractions</h3><p>${escapeHtml(input.tutorialAbstractionReport.summary)}</p><p>PocketFlow 패턴으로 핵심 추상화, 관계, 장 순서를 정리합니다.</p><a href="tutorial-abstractions.html">Tutorial Abstractions 열기</a></article>
+          <article><h3>Decision Records</h3><p>${escapeHtml(input.decisionRecordReport.summary)}</p><p>Log4brains 패턴으로 Context, Decision, Status, Consequences를 정리합니다.</p><a href="decision-records.html">Decision Records 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -287,6 +291,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Tutorial Abstractions", "tutorial-abstractions.html", `<section class="panel" data-source-pattern="PocketFlow"><h2>Codebase Tutorial Plan</h2><p>${escapeHtml(input.tutorialAbstractionReport.summary)}</p><p class="muted">${escapeHtml(input.tutorialAbstractionReport.sourcePattern)}</p></section><section class="cards tutorial-abstraction-cards">${tutorialAbstractionCards(input.tutorialAbstractionReport.abstractions)}</section><section class="grid"><article class="tutorial-abstraction-card"><h3>Relationships</h3>${list(input.tutorialAbstractionReport.relationships.map((item) => `${item.fromId} -> ${item.toId} [${item.label}]: ${item.reason}`))}</article><article class="tutorial-abstraction-card"><h3>Chapter Order</h3>${list(input.tutorialAbstractionReport.chapterOrder.map((item) => `${item.chapterNumber}. ${item.title}: ${item.whyNow}`))}</article><article class="tutorial-abstraction-card"><h3>다음 확인 단계</h3>${list(input.tutorialAbstractionReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "decision-records.html",
+      title: "Decision Records",
+      html: pageShell("Decision Records", "decision-records.html", `<section class="panel" data-source-pattern="Log4brains"><h2>Architecture Decision Records</h2><p>${escapeHtml(input.decisionRecordReport.summary)}</p><p class="muted">${escapeHtml(input.decisionRecordReport.sourcePattern)}</p></section><section class="grid"><article class="decision-record-card"><h3>Status Counts</h3>${list(Object.entries(input.decisionRecordReport.statusCounts).map(([status, count]) => `${status}: ${count}`))}</article><article class="decision-record-card"><h3>Timeline</h3>${list(input.decisionRecordReport.timeline.map((item) => `${item.sequence}. ${item.title} [${item.status}]`))}</article><article class="decision-record-card"><h3>Package Scopes</h3>${list(input.decisionRecordReport.packageScopes.map((item) => `${item.name}: ${item.adrFolder} (${item.recordCount})`))}</article></section><section class="cards decision-record-cards">${decisionRecordCards(input.decisionRecordReport.records)}</section><section class="panel"><h2>다음 확인 단계</h2>${list(input.decisionRecordReport.learnerNextSteps)}</section>`, input)
+    },
+    {
       name: "session-verification.html",
       title: "세션 검증",
       html: pageShell("세션 검증", "session-verification.html", `<section class="panel"><h2>검증 리포트</h2><p>이 세션은 생성 완료 후 필수 산출물, HTML export 무결성, 소스 근거 링크를 검증합니다.</p><dl class="meta"><div><dt>필수 산출물</dt><dd>session, analysis, markdown, HTML</dd></div><div><dt>HTML 무결성</dt><dd>manifest bytes + sha256</dd></div><div><dt>소스 근거</dt><dd>source path, source href, lesson anchor</dd></div></dl></section><section class="grid"><article><h3>JSON 리포트</h3><p>자동화와 CLI 검증에 적합한 구조화 리포트입니다.</p><a href="../analysis/session-verification-report.json">session-verification-report.json</a></article><article><h3>Markdown 리포트</h3><p>사람이 읽기 쉬운 PASS/FAIL 요약입니다.</p><a href="../markdown/session-verification.md">session-verification.md</a></article><article><h3>CLI 재검증</h3><p>같은 세션 폴더에서 <code>repo-tutor verify-session</code>을 실행하면 현재 파일 상태를 다시 확인합니다.</p></article></section>`, input)
@@ -377,6 +386,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
       { label: "Graph Query", path: "html/graph-query.html", description: "Graphify식 query, path, explain 질문으로 그래프 탐색 순서를 정합니다." },
       { label: "Tutorial Abstractions", path: "html/tutorial-abstractions.html", description: "PocketFlow식 핵심 추상화, 관계, 장 순서를 확인합니다." },
+      { label: "Decision Records", path: "html/decision-records.html", description: "Log4brains식 ADR 후보, status, context, consequences를 확인합니다." },
       { label: "세션 검증", path: "html/session-verification.html", description: "생성 산출물과 무결성 검증 리포트를 확인합니다." },
       { label: "컴포넌트 그래프", path: "html/component-graph.html", description: "큰 저장소의 폴더, 파일, 용어, 재구현 단계를 탐색합니다." }
     ],
@@ -569,6 +579,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       evidence: `abstractions ${input.tutorialAbstractionReport.abstractions.length}개, relationships ${input.tutorialAbstractionReport.relationships.length}개`
     },
     {
+      title: "아키텍처 결정 기록 확인",
+      href: "decision-records.html",
+      goal: "Context, Decision, Status, Consequences 형식으로 왜 이런 구조인지 확인합니다.",
+      evidence: `records ${input.decisionRecordReport.records.length}개, statuses ${Object.keys(input.decisionRecordReport.statusCounts).length}개`
+    },
+    {
       title: "폴더와 핵심 파일 훑기",
       href: "files.html",
       goal: "핵심 파일 수업으로 진입점과 주변 파일을 연결합니다.",
@@ -715,6 +731,11 @@ function tutorialAbstractionCards(items: TutorialAbstractionReport["abstractions
 function tutorialFileLinks(items: TutorialAbstractionReport["abstractions"][number]["relevantFiles"]): string {
   if (items.length === 0) return "<p class=\"muted\">기록된 관련 파일이 없습니다.</p>";
   return `<ul>${items.map((item) => `<li><a href="${escapeHtml(item.lessonHref.replace(/^html\//, ""))}">${escapeHtml(item.filePath)}</a> <a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function decisionRecordCards(items: DecisionRecordReport["records"]): string {
+  if (items.length === 0) return "<article><h3>기록된 decision record가 없습니다.</h3><p>분석 리포트를 다시 생성하세요.</p></article>";
+  return items.map((item) => `<article class="decision-record-card" id="${htmlAnchor(item.id)}"><h3>${escapeHtml(item.title)}</h3><p class="muted">${escapeHtml(item.status)} · ${escapeHtml(item.scope)} · ${escapeHtml(item.tags.join(", "))}</p><h4>Context</h4><p>${escapeHtml(item.context)}</p><h4>Decision</h4><p>${escapeHtml(item.decision)}</p><h4>Positive Consequences</h4>${list(item.consequences.positive)}<h4>Negative Consequences</h4>${list(item.consequences.negative)}<h4>Related Reports</h4>${list(item.relatedReports.map((report) => `${report.label}: ${report.href}`))}</article>`).join("");
 }
 
 function sourceEvidenceState(file: FileLesson): "present" | "missing" {

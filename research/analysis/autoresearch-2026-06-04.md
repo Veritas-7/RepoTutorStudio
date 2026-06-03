@@ -2082,6 +2082,33 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 115: Decision Record Report
+
+- Cloned and inspected `thomvaill/log4brains` under
+  `research/external-src/thomvaill-log4brains` without executing external
+  source.
+- Added `DecisionRecordReportSchema` and
+  `analysis/decision-record-report.json` with Log4brains-style ADR candidates,
+  status counts, context, decision, consequences, timeline, and package scopes.
+- Added `markdown/decision-records.md`, `html/decision-records.html`,
+  manifest/verification coverage, learning-path linkage, and
+  `open --target decision-records`.
+- Source pattern: Log4brains stores ADRs as docs-as-code near the source,
+  tracks status metadata, uses Context/Decision/Consequences sections, supports
+  package-specific ADR folders, and publishes a searchable timeline; RepoTutor
+  maps that to a static decision-record report over generated analysis pages.
+- RED smoke `/tmp/repotutor-decision-records-red.*` failed on the old behavior
+  with `missing analysis/decision-record-report.json`.
+- GREEN smoke generated
+  `/tmp/repotutor-decision-records-green-studies.1HGBOe`; generated the JSON,
+  Markdown, and HTML artifacts, included `records`, `statusCounts`, `timeline`,
+  `packageScopes`, `decision-record-card`, `data-source-pattern="Log4brains"`,
+  and `Decision Records`, and `open --target decision-records` returned
+  `html/decision-records.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

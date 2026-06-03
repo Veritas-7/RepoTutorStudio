@@ -179,6 +179,21 @@
         "order chapters from foundational to implementation details",
         "combine tutorial index with chapter links and visualization cues"
       ]
+    },
+    {
+      "repo": "thomvaill/log4brains",
+      "url": "https://github.com/thomvaill/log4brains",
+      "localPath": "research/external-src/thomvaill-log4brains",
+      "stars": 1482,
+      "forks": 111,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-02T19:03:24Z",
+      "adoptedPatterns": [
+        "docs-as-code architecture decision records stored near source",
+        "ADR status metadata with accepted/proposed/draft/superseded states",
+        "Context, Decision, Consequences template sections",
+        "chronological timeline and package-specific ADR folders"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1704,6 +1719,28 @@
         "TutorialAbstractionReportSchema",
         "PocketFlow abstraction relationship chapter-order tutorial guide"
       ]
+    },
+    {
+      "name": "Decision record report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/decision-record-report.json",
+        "markdown/decision-records.md",
+        "html/decision-records.html",
+        "open --target decision-records",
+        "DecisionRecordReportSchema",
+        "Log4brains ADR status context decision consequences timeline report"
+      ]
     }
   ],
   "verification": {
@@ -1887,7 +1924,13 @@
     "cliTutorialAbstractionsOpenTargetSmoke": "PASS",
     "buildTutorialAbstractions": "PASS",
     "testTutorialAbstractions": "PASS",
-    "auditBriefTutorialAbstractions13": "PASS"
+    "auditBriefTutorialAbstractions13": "PASS",
+    "fixtureDecisionRecordReport": "PASS",
+    "cliDecisionRecordsSmoke": "PASS",
+    "cliDecisionRecordsOpenTargetSmoke": "PASS",
+    "buildDecisionRecords": "PASS",
+    "testDecisionRecords": "PASS",
+    "auditBriefDecisionRecords13": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
