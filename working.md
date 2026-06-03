@@ -480,6 +480,26 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`
 - 2026-06-04: Pushed Upgrade 110 at `b54511d` with HEAD and `origin/main`
   matching.
+- 2026-06-04: Cloned `DeDeveloper23/codebase-mcp` under
+  `research/external-src/DeDeveloper23-codebase-mcp` for read-only AutoResearch
+  source inspection. Source pattern: MCP tools for local codebase retrieval,
+  remote public repository comparison, and saved codebase snapshots.
+- 2026-06-04: Started a hundred-eleventh AutoResearch upgrade: MCP handoff
+  report. RepoTutor now targets `analysis/mcp-handoff-report.json`,
+  `markdown/mcp-handoff.md`, `html/mcp-handoff.html`, and CLI
+  `open --target mcp-handoff`.
+- 2026-06-04: RED smoke for Upgrade 111 failed as expected at
+  `/tmp/repotutor-mcp-handoff-red.*` with
+  `missing analysis/mcp-handoff-report.json`.
+- 2026-06-04: GREEN smoke for Upgrade 111 generated
+  `/tmp/repotutor-mcp-handoff-smoke.WWgM6S`; generated MCP handoff JSON,
+  Markdown, and HTML artifacts, included `getCodebase`, `getRemoteCodebase`,
+  `saveCodebase`, `mcp-handoff-card`, `data-source-pattern="codebase-mcp"`,
+  and `MCP Handoff`, and `open --target mcp-handoff` returned the new page.
+- 2026-06-04: Upgrade 111 verification passed:
+  - `pnpm build`
+  - `pnpm test`
+  - `pnpm audit:brief`
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`

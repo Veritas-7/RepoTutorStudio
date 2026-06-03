@@ -1973,6 +1973,32 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 111: MCP Handoff Report
+
+- Cloned and inspected `DeDeveloper23/codebase-mcp` under
+  `research/external-src/DeDeveloper23-codebase-mcp` without executing external
+  source.
+- Added `McpHandoffReportSchema` and
+  `analysis/mcp-handoff-report.json` with codebase-mcp-style tool handoff rows
+  for `getCodebase`, `getRemoteCodebase`, and `saveCodebase`.
+- Added `markdown/mcp-handoff.md`, `html/mcp-handoff.html`,
+  manifest/verification coverage, learning-path linkage, and
+  `open --target mcp-handoff`.
+- Source pattern: Codebase MCP exposes MCP tools for local codebase retrieval,
+  remote public repository comparison, and saving codebase analysis snapshots;
+  RepoTutor maps that to a static AI handoff report with prompts, input hints,
+  safety notes, and related generated reports.
+- RED smoke `/tmp/repotutor-mcp-handoff-red.*` failed on the old behavior with
+  `missing analysis/mcp-handoff-report.json`.
+- GREEN smoke generated `/tmp/repotutor-mcp-handoff-smoke.WWgM6S`; generated
+  the JSON, Markdown, and HTML artifacts, included `getCodebase`,
+  `getRemoteCodebase`, `saveCodebase`, `mcp-handoff-card`,
+  `data-source-pattern="codebase-mcp"`, and `MCP Handoff`, and
+  `open --target mcp-handoff` returned `html/mcp-handoff.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

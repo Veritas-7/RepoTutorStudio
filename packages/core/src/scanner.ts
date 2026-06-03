@@ -23,6 +23,7 @@ import {
   InterfaceMapReport,
   SymbolMapReport,
   ContextPackReport,
+  McpHandoffReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -43,6 +44,7 @@ export interface AnalysisBundle {
   interfaceMapReport: InterfaceMapReport;
   symbolMapReport: SymbolMapReport;
   contextPackReport: ContextPackReport;
+  mcpHandoffReport: McpHandoffReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -67,13 +69,14 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const interfaceMapReport = await buildInterfaceMapReport(walk);
   const symbolMapReport = await buildSymbolMapReport(walk, fileLessons);
   const contextPackReport = buildContextPackReport(walk, fileLessons);
+  const mcpHandoffReport = buildMcpHandoffReport(repoMap, contextPackReport);
   const flowReport = buildFlowReport(fileLessons, dependencyReport);
   const glossary = buildGlossary(languageReport, dependencyReport, fileLessons);
   const rebuildRoadmap = buildRebuildRoadmap(repoMap, fileLessons);
   const componentGraphReport = buildComponentGraphReport(folderLessons, fileLessons, glossary, rebuildRoadmap);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, mcpHandoffReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -691,6 +694,76 @@ function contextPackReason(filePath: string, lesson: FileLesson | undefined): st
 
 function topDirectoryForContextPack(filePath: string): string {
   return filePath.includes("/") ? filePath.split("/")[0] : "root";
+}
+
+function buildMcpHandoffReport(repoMap: RepoMap, contextPackReport: ContextPackReport): McpHandoffReport {
+  return {
+    summary: `codebase-mcp식 AI handoff: ${repoMap.totalFiles}개 파일 저장소를 다른 AI/MCP 도구에 넘길 때 쓸 tool 3개와 prompt ${3}개를 준비했습니다.`,
+    sourcePattern: "Codebase MCP getCodebase getRemoteCodebase saveCodebase tool handoff",
+    tools: [
+      {
+        name: "getCodebase",
+        purpose: "현재 작업공간의 codebase context를 한 번에 읽도록 요청합니다.",
+        useWhen: "로컬 프로젝트를 AI 도구가 처음 이해해야 할 때 사용합니다.",
+        recommendedPrompt: "Analyze my current project and explain its main components, entry points, and risks.",
+        inputHints: [
+          "format: markdown 또는 xml",
+          "includeFileSummary: true",
+          "includeDirectoryStructure: true",
+          `estimatedTokens: ${contextPackReport.totalEstimatedTokens}`
+        ]
+      },
+      {
+        name: "getRemoteCodebase",
+        purpose: "비교 대상 public GitHub repository를 remote source로 가져와 분석합니다.",
+        useWhen: "외부 프로젝트와 구조나 구현 패턴을 비교해야 할 때 사용합니다.",
+        recommendedPrompt: "Analyze the repository at owner/repo and compare its onboarding flow with this project.",
+        inputHints: [
+          "repo: owner/repo 또는 https://github.com/owner/repo",
+          "format: markdown",
+          "removeComments: false"
+        ]
+      },
+      {
+        name: "saveCodebase",
+        purpose: "분석 결과를 나중에 다시 볼 수 있는 파일로 저장합니다.",
+        useWhen: "handoff, 리뷰, 장기 비교를 위해 codebase snapshot을 보존해야 할 때 사용합니다.",
+        recommendedPrompt: "Save an analysis of this codebase to codebase-analysis.md in markdown format.",
+        inputHints: [
+          "outputFile: codebase-analysis.md",
+          "format: markdown",
+          "showLineNumbers: true"
+        ]
+      }
+    ],
+    prompts: [
+      {
+        title: "Architecture handoff",
+        prompt: "Use the RepoTutor architecture, interface map, symbol map, and context pack reports to summarize the codebase for a new maintainer.",
+        relatedReportHref: "html/architecture.html"
+      },
+      {
+        title: "Remote comparison",
+        prompt: "Compare this project against a similar public repository and list transferable patterns, non-transferable assumptions, and safe next upgrades.",
+        relatedReportHref: "html/context-pack.html"
+      },
+      {
+        title: "Saved review packet",
+        prompt: "Save a markdown handoff that includes purpose, runtime setup, token-heavy files, split plan, and verification status.",
+        relatedReportHref: "html/session-verification.html"
+      }
+    ],
+    safetyNotes: [
+      "RepoTutor already excludes secret-like paths from copied source snapshots.",
+      "Do not send excluded paths or local secret files to remote AI tools.",
+      "Use context-pack split plans when a target tool has file-size or context limits."
+    ],
+    learnerNextSteps: [
+      "Start with getCodebase for local understanding, then use saveCodebase when the explanation needs to persist.",
+      "Use getRemoteCodebase only for public comparison targets that are safe to inspect.",
+      "Before sharing externally, compare the context pack excluded list with project policy."
+    ]
+  };
 }
 
 function suggestedReadScore(lesson: FileLesson, index: number): number {
