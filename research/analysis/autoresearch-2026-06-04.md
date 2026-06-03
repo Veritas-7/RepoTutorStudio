@@ -1085,6 +1085,19 @@ Local verification:
   beginner 2001 row, Markdown output included the 2099 timestamp, `doctor`
   reported created-date filters, and invalid date/range flags exited 1 with
   explicit messages.
+
+### Upgrade 69: Score-Sorted Session Lists
+
+- Added `repo-tutor list --sort score-desc|score-asc` so operators can rank
+  scored sessions by quiz outcome while keeping unscored sessions at the end.
+- Added score sort metadata to `repo-tutor doctor`.
+- Temp CLI list-score-sort smoke generated
+  `/tmp/repotutor-list-score-sort-smoke.2FS1UL`; two scored sessions and one
+  unscored session were created, `list --sort score-desc` returned scores in
+  `100`, `0`, `null` order, `list --sort score-asc` returned `0`, `100`,
+  `null` order, Markdown output included the `100` score row, `doctor`
+  reported `score-desc` and `score-asc` sort support, and invalid
+  `--sort score` exited 1 with the expanded sort error.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

@@ -495,6 +495,13 @@ to a private repository, and preserve resumable state in this file.
     beginner 2001 row, Markdown output included the 2099 timestamp, `doctor`
     reported created-date filters, and invalid date/range flags exited 1 with
     explicit messages
+  - temp CLI list-score-sort smoke generated
+    `/tmp/repotutor-list-score-sort-smoke.2FS1UL`; two scored sessions and one
+    unscored session were created, `list --sort score-desc` returned scores in
+    `100`, `0`, `null` order, `list --sort score-asc` returned `0`, `100`,
+    `null` order, Markdown output included the `100` score row, `doctor`
+    reported `score-desc` and `score-asc` sort support, and invalid
+    `--sort score` exited 1 with the expanded sort error
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -631,6 +638,7 @@ to a private repository, and preserve resumable state in this file.
   - `5d937fc` scored session list filters
   - `3f86f3a` quiz-score session list filters
   - `d97b75b` list filter conflict validation
+  - `c445345` created-date session list filters
 
 ## Next Actions
 

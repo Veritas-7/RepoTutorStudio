@@ -399,7 +399,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       mode: ["quick", "standard", "deep", "all"],
       status: ["passed", "failed", "missing", "all"],
       htmlTargets: ["complete", "missing", "all"],
-      sort: ["newest", "oldest"],
+      sort: ["newest", "oldest", "score-desc", "score-asc"],
       repo: true,
       createdFrom: true,
       createdTo: true,
@@ -588,14 +588,24 @@ function repoMatches(repo: string, filter: string): boolean {
   return normalizedRepo === normalizedFilter || normalizedRepo.endsWith(`/${normalizedFilter}`);
 }
 
-function listSortFlag(value: string | boolean | undefined): "newest" | "oldest" | null {
+function listSortFlag(value: string | boolean | undefined): "newest" | "oldest" | "score-desc" | "score-asc" | null {
   if (value === undefined) return null;
-  if (typeof value !== "string") throw new Error("list supports --sort newest or oldest.");
-  if (value === "newest" || value === "oldest") return value;
-  throw new Error("list supports --sort newest or oldest.");
+  if (typeof value !== "string") throw new Error("list supports --sort newest, oldest, score-desc, or score-asc.");
+  if (["newest", "oldest", "score-desc", "score-asc"].includes(value)) return value as "newest" | "oldest" | "score-desc" | "score-asc";
+  throw new Error("list supports --sort newest, oldest, score-desc, or score-asc.");
 }
 
-function sortSessionRows<T extends { createdAt: string; sessionId: string }>(rows: T[], direction: "newest" | "oldest"): T[] {
+function sortSessionRows<T extends { createdAt: string; sessionId: string; score: number | null }>(rows: T[], direction: "newest" | "oldest" | "score-desc" | "score-asc"): T[] {
+  if (direction === "score-desc" || direction === "score-asc") {
+    const multiplier = direction === "score-desc" ? -1 : 1;
+    return [...rows].sort((left, right) => {
+      if (left.score === null && right.score === null) return right.createdAt.localeCompare(left.createdAt) || left.sessionId.localeCompare(right.sessionId);
+      if (left.score === null) return 1;
+      if (right.score === null) return -1;
+      const scoreDelta = (left.score - right.score) * multiplier;
+      return scoreDelta || right.createdAt.localeCompare(left.createdAt) || left.sessionId.localeCompare(right.sessionId);
+    });
+  }
   const multiplier = direction === "newest" ? -1 : 1;
   return [...rows].sort((left, right) => {
     const leftTime = Date.parse(left.createdAt);
@@ -1123,7 +1133,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown
+  list --repo owner/name --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);
