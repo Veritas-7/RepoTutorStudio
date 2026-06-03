@@ -933,6 +933,20 @@ Local verification:
   `--format text` exited 1 with `verify-evidence supports --format`, and
   removing `source/src/main.ts` made Markdown output return exit 1 with
   `OK: FAIL` and `missing-source-path`.
+
+### Upgrade 57: Quiz Attempt Markdown
+
+- Added `repo-tutor quiz <session> --answers answers.json --format markdown` so
+  scored quiz attempts can be pasted into handoff notes immediately after an
+  offline review.
+- Added `quiz` format metadata to `repo-tutor doctor` and fail-closed format
+  validation for `quiz`.
+- Temp CLI quiz-markdown smoke generated
+  `/tmp/repotutor-quiz-md-smoke.0omscj`; Markdown output included
+  `# RepoTutor Quiz Attempt`, `Score: 100`, `Correct: 15`, and
+  `Wrong notes: .../html/wrong-notes.html`, `doctor` reported Markdown support
+  for `quiz`, and invalid `--format text` exited 1 with
+  `quiz supports --format`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

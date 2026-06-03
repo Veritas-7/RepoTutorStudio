@@ -421,6 +421,12 @@ to a private repository, and preserve resumable state in this file.
     `--format text` exited 1 with `verify-evidence supports --format`, and
     removing `source/src/main.ts` made Markdown output return exit 1 with
     `OK: FAIL` and `missing-source-path`
+  - temp CLI quiz-markdown smoke generated
+    `/tmp/repotutor-quiz-md-smoke.0omscj`; `quiz --format markdown`
+    returned `# RepoTutor Quiz Attempt`, `Score: 100`, `Correct: 15`, and
+    `Wrong notes: .../html/wrong-notes.html`, `doctor` reported Markdown
+    support for `quiz`, and invalid `--format text` exited 1 with
+    `quiz supports --format`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -545,6 +551,7 @@ to a private repository, and preserve resumable state in this file.
   - `171e62f` open target Markdown discovery
   - `4feced9` open all target Markdown paths
   - `4788d27` export verification Markdown output
+  - `87b5b94` evidence verification Markdown output
 
 ## Next Actions
 
