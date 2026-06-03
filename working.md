@@ -55,26 +55,35 @@ to a private repository, and preserve resumable state in this file.
   `analysis/incremental-report.json`, `markdown/incremental.md`, and
   `html/incremental.html`, comparing each completed same-repo session against
   the previous source snapshot by file hash and size.
+- 2026-06-04: Applied a sixth AutoResearch upgrade: coverage delta summaries
+  across repeated sessions. `incremental-report.json`, `incremental.md`, and
+  `incremental.html` now show previous/current coverage ratio, ratio delta, and
+  covered important file deltas when the previous same-repo session has
+  `coverage-report.json`.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
   - `cargo check` in `apps/desktop-tauri/src-tauri`
-  - `gitleaks dir . --no-banner --redact`
+  - staged `gitleaks protect --staged --no-banner --redact` before each push
   - fixture study generated `analysis/coverage-report.json`,
     `markdown/coverage.md`, `html/coverage.html`, interactive `html/quiz.html`,
     component graph artifacts, source snapshot artifacts, and incremental
     re-analysis artifacts
   - second fixture study generated a non-null incremental baseline:
     `studies/2026-06-04/local__simple-ts-app__main__a30cec65-2/analysis/incremental-report.json`
+  - temp CLI delta smoke generated coverageRatioDelta `0.19999999999999996`
+    with summary `80.0%에서 100.0%로 20.0%p`
   - `pnpm audit:brief` produced 13/13 PASS
+  - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
+    `cargo check`; those artifacts are not tracked or staged.
 - 2026-06-04: Pushed AutoResearch upgrades:
   - `dc34c88` coverage report upgrade
   - `e7ac6c5` offline quiz review mode
   - `15d0897` Tauri quiz attempt flow
   - `a30cec6` source-backed component graph
+  - `6e56360` incremental re-analysis reports
 
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops:
-   component graph filters for large repositories or coverage-delta summaries
-   across repeated sessions.
+   component graph filters for large repositories.

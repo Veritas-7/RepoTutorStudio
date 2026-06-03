@@ -25,6 +25,7 @@ describe("RepoTutor core pipeline", () => {
     expect(snapshotText).toContain("\"sha256\"");
     const incrementalText = await fs.readFile(path.join(result.session.outputPaths.analysis, "incremental-report.json"), "utf8");
     expect(incrementalText).toContain("\"baselineSessionId\"");
+    expect(incrementalText).toContain("\"coverageDelta\"");
     const graphText = await fs.readFile(path.join(result.session.outputPaths.analysis, "component-graph-report.json"), "utf8");
     expect(graphText).toContain("\"nodes\"");
     expect(graphText).toContain("\"edges\"");
@@ -36,11 +37,13 @@ describe("RepoTutor core pipeline", () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
     await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "scratch.txt"), "temporary notes not important to the lesson map\n");
 
     const first = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
     await fs.writeFile(path.join(sourceRoot, "src", "added.ts"), "export const added = 'next lesson';\n");
     await fs.appendFile(path.join(sourceRoot, "src", "message.ts"), "\nexport const changed = true;\n");
     await fs.rm(path.join(sourceRoot, "README.md"));
+    await fs.rm(path.join(sourceRoot, "scratch.txt"));
 
     const second = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
 
@@ -49,6 +52,8 @@ describe("RepoTutor core pipeline", () => {
     expect(second.analysis.incrementalReport.changedFiles).toContain("src/message.ts");
     expect(second.analysis.incrementalReport.removedFiles).toContain("README.md");
     expect(second.analysis.incrementalReport.unchangedFiles).toContain("src/main.ts");
+    expect(second.analysis.incrementalReport.coverageDelta.baselineCoverageRatio).toBeLessThan(second.analysis.incrementalReport.coverageDelta.currentCoverageRatio);
+    expect(second.analysis.incrementalReport.coverageDelta.coverageRatioDelta).toBeGreaterThan(0);
   });
 
   it("uses the required quiz count formula bounds", () => {

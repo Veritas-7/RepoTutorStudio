@@ -50,7 +50,7 @@ export async function runStudy(options: StudyOptions): Promise<StudyResult> {
 
   const analysis = await analyzeRepository(session.outputPaths.source);
   const previousSnapshot = await findPreviousSnapshot(studiesRoot, session);
-  analysis.incrementalReport = buildIncrementalReport(analysis.sourceSnapshotReport, previousSnapshot);
+  analysis.incrementalReport = buildIncrementalReport(analysis.sourceSnapshotReport, analysis.coverageReport, previousSnapshot);
   const quiz = generateQuiz(session, analysis.folderLessons, analysis.fileLessons, analysis.glossary);
   const wrongNotes: WrongNote[] = [];
   const attempts: QuizAttempt[] = [];

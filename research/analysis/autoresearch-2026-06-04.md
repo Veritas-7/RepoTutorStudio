@@ -112,6 +112,24 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs` and `packages/core/src/pipeline.test.ts` now
   verify the incremental artifacts and previous-snapshot comparison behavior.
 
+### Upgrade 6: Coverage Delta Summaries
+
+- `packages/shared/src/schemas.ts`: extended `IncrementalReportSchema` with a
+  `coverageDelta` object.
+- `packages/core/src/incremental.ts`: reads the previous session's
+  `analysis/coverage-report.json` when available and compares coverage ratio,
+  covered important files, and total scanned files.
+- `packages/core/src/scanner.ts`: includes current coverage values in the
+  analysis-time placeholder incremental report.
+- `packages/core/src/markdown.ts`: adds a coverage-change section to
+  `markdown/incremental.md`.
+- `packages/html/src/templates.ts`: adds coverage-change details to the index
+  summary and `html/incremental.html`, with a fallback for older sessions that
+  predate the `coverageDelta` field.
+- `scripts/compliance-audit.mjs` and `packages/core/src/pipeline.test.ts` now
+  verify `coverageDelta`; the test uses a first session with an unimportant
+  scratch file and a second session without it to prove a positive ratio delta.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -129,11 +147,15 @@ Local verification:
 - Second latest fixture study generated:
   `studies/2026-06-04/local__simple-ts-app__main__a30cec65-2/analysis/incremental-report.json`
   with baseline session `mpy9kgb5-91d5524a`
+- Temp CLI delta smoke generated:
+  `/tmp/repotutor-delta-studies-lJgVZf/2026-06-04/local__repotutor-delta-source-p1n5wA__local__eb48ab36/analysis/incremental-report.json`
+  with `coverageRatioDelta: 0.19999999999999996` and summary
+  `커버리지 비율은 80.0%에서 100.0%로 20.0%p 변했습니다.`
 - `pnpm audit:brief`: PASS, 13/13 audit reports
-- `gitleaks dir . --no-banner --redact`: PASS after cleaning generated Rust
-  target artifacts.
+- `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
+- Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
+  `cargo check`; pushed content is guarded with staged gitleaks.
 
 ## Deferred Candidate Backlog
 
 1. Add component graph filters for large repositories.
-2. Add coverage-delta summaries across repeated sessions.

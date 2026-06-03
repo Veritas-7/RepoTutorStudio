@@ -193,6 +193,18 @@ export const IncrementalReportSchema = z.object({
   changedFiles: z.array(z.string()),
   removedFiles: z.array(z.string()),
   unchangedFiles: z.array(z.string()),
+  coverageDelta: z.object({
+    baselineCoverageRatio: z.number().min(0).max(1).nullable(),
+    currentCoverageRatio: z.number().min(0).max(1),
+    coverageRatioDelta: z.number().min(-1).max(1).nullable(),
+    baselineCoveredImportantFiles: z.number().int().nonnegative().nullable(),
+    currentCoveredImportantFiles: z.number().int().nonnegative(),
+    coveredImportantFilesDelta: z.number().int().nullable(),
+    baselineTotalScannedFiles: z.number().int().nonnegative().nullable(),
+    currentTotalScannedFiles: z.number().int().nonnegative(),
+    totalScannedFilesDelta: z.number().int().nullable(),
+    summary: z.string()
+  }),
   summary: z.string(),
   beginnerExplanation: z.string()
 });

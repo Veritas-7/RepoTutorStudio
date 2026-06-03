@@ -108,6 +108,24 @@
         "markdown/incremental.md",
         "html/incremental.html"
       ]
+    },
+    {
+      "name": "coverage delta summaries",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/incremental.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/incremental-report.json coverageDelta object",
+        "markdown/incremental.md coverage-change section",
+        "html/incremental.html coverage-change panel"
+      ]
     }
   ],
   "verification": {
@@ -118,11 +136,12 @@
     "fixtureComponentGraphReport": "PASS",
     "fixtureIncrementalReport": "PASS",
     "fixtureIncrementalBaseline": "PASS",
+    "fixtureCoverageDelta": "PASS",
+    "cliCoverageDeltaSmoke": "PASS",
     "briefAudit13": "PASS",
-    "gitleaksDir": "PASS"
+    "gitleaksStaged": "PASS"
   },
   "candidateBacklog": [
-    "component graph filters for large repositories",
-    "coverage-delta summaries across repeated sessions"
+    "component graph filters for large repositories"
   ]
 }
