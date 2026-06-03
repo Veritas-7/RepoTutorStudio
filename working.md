@@ -90,6 +90,10 @@ to a private repository, and preserve resumable state in this file.
   integrity metadata. `manifest.json` now records page/asset byte counts,
   SHA-256 hashes, and an integrity summary; `EXPORT-README.md` explains the
   hash coverage and shows short hashes for quick inspection.
+- 2026-06-04: Applied a fourteenth AutoResearch upgrade: direct export
+  integrity verification. CLI `repo-tutor verify-export <session>` now checks
+  every manifest-listed page and asset against recorded byte counts and
+  SHA-256 hashes, returning PASS/FAIL JSON with failure details.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -128,6 +132,9 @@ to a private repository, and preserve resumable state in this file.
     `/tmp/repotutor-manifest-integrity-smoke.DSvUWT/2026-06-04/local__simple-ts-app__main__3a2cb784/html/manifest.json`
     with 16 covered files, `index.html` byte count 3,684, and verified
     `index.html` SHA-256 prefix `a34286246376`
+  - temp CLI verify-export smoke generated a completed fixture study under
+    `/tmp/repotutor-verify-export-smoke.1jhUun/2026-06-04/local__simple-ts-app__main__bf88883f`
+    and verified 16 manifest files with `ok: true` and no failures
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -144,6 +151,7 @@ to a private repository, and preserve resumable state in this file.
   - `d326442` zipped HTML export bundle
   - `df6a42d` CLI relative local-source resolution
   - `3a2cb78` file navigation filters
+  - `bf88883` export manifest integrity metadata
 
 ## Next Actions
 

@@ -23,7 +23,7 @@ const checks = [
   ], ["packages/core/src/pipeline.ts:runStudy", "packages/shared/src/schemas.ts:StudySessionSchema"]),
   check("headless cli commands", [
     "apps/cli/src/index.ts"
-  ], ["study", "quiz", "resume", "export", "list", "open", "doctor"]),
+  ], ["study", "quiz", "resume", "export", "verify-export", "list", "open", "doctor"]),
   check("codex skill mode", [
     "skills/repo-tutor/SKILL.md",
     ".agents/skills/repo-tutor/SKILL.md",
@@ -66,7 +66,7 @@ const checks = [
     "packages/core/src/exporter.ts",
     "apps/cli/src/index.ts",
     "packages/shared/src/schemas.ts"
-  ], ["index.html", "quiz.html", "wrong-notes.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints", "writeHtmlZipBundle", "--format html|zip", "html-report.zip", "file-nav-toolbar", "data-file-ext-filter", "data-file-dir-filter", "integrity", "sha256", "bytes"]),
+  ], ["index.html", "quiz.html", "wrong-notes.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints", "writeHtmlZipBundle", "verifyHtmlExportManifest", "--format html|zip", "html-report.zip", "file-nav-toolbar", "data-file-ext-filter", "data-file-dir-filter", "integrity", "sha256", "bytes"]),
   check("source-backed component graph", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

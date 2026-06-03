@@ -20,6 +20,7 @@ async function main(): Promise<void> {
     else if (parsed.command === "quiz") await quiz(parsed);
     else if (parsed.command === "resume") await resume(parsed);
     else if (parsed.command === "export") await exportSession(parsed);
+    else if (parsed.command === "verify-export") await verifyExport(parsed);
     else if (parsed.command === "list") await list(parsed);
     else if (parsed.command === "open") await openSession(parsed);
     else if (parsed.command === "doctor") await doctor();
@@ -109,6 +110,12 @@ async function exportSession(parsed: ParsedArgs): Promise<void> {
       path: path.join(sessionRoot, entry.path)
     }))
   }, null, 2));
+}
+
+async function verifyExport(parsed: ParsedArgs): Promise<void> {
+  const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
+  const { verifyHtmlExportManifest } = await import("@repotutor/core");
+  console.log(JSON.stringify(await verifyHtmlExportManifest(sessionRoot), null, 2));
 }
 
 async function list(parsed: ParsedArgs): Promise<void> {
@@ -220,6 +227,7 @@ function help(): void {
   quiz <session-id-or-path> --answers answers.json
   resume <session-id-or-path>
   export <session-id-or-path> --format html|zip
+  verify-export <session-id-or-path>
   list
   open <session-id-or-path>
   doctor`);

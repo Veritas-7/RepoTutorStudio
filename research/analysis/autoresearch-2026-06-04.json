@@ -229,6 +229,20 @@
         "html/manifest.json page and asset sha256 hashes",
         "html/EXPORT-README.md integrity coverage summary"
       ]
+    },
+    {
+      "name": "direct export integrity verification",
+      "filesChanged": [
+        "packages/core/src/exporter.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "verifyHtmlExportManifest core API",
+        "repo-tutor verify-export CLI command",
+        "PASS/FAIL JSON with manifest failure details"
+      ]
     }
   ],
   "verification": {
@@ -255,11 +269,13 @@
     "cliFileNavigationSmoke": "PASS",
     "fixtureManifestIntegrity": "PASS",
     "cliManifestIntegritySmoke": "PASS",
+    "fixtureVerifyExport": "PASS",
+    "cliVerifyExportSmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },
   "candidateBacklog": [
-    "direct export integrity verification command",
+    "tamper-negative integrity test",
     "continue source-backed usability upgrades"
   ]
 }
