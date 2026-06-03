@@ -904,6 +904,17 @@
         "repo-tutor list --format jsonl",
         "doctor formats.list jsonl metadata"
       ]
+    },
+    {
+      "name": "csv session list output",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --format csv",
+        "doctor formats.list csv metadata"
+      ]
     }
   ],
   "verification": {
@@ -1004,6 +1015,7 @@
     "cliListDateRangeSmoke": "PASS",
     "cliListScoreSortSmoke": "PASS",
     "cliListJsonlSmoke": "PASS",
+    "cliListCsvSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
