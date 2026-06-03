@@ -295,7 +295,10 @@ async function list(parsed: ParsedArgs): Promise<void> {
 
 async function openSession(parsed: ParsedArgs): Promise<void> {
   if (parsed.flags["list-targets"] === true) {
-    console.log(JSON.stringify(openTargetEntries(), null, 2));
+    const format = stringFlag(parsed.flags.format) ?? "json";
+    if (!["json", "markdown"].includes(format)) throw new Error("open --list-targets supports --format json or markdown.");
+    const entries = openTargetEntries();
+    console.log(format === "markdown" ? openTargetsMarkdown(entries) : JSON.stringify(entries, null, 2));
     return;
   }
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
@@ -338,6 +341,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       evidence: ["json", "markdown"],
       verifySession: ["json", "markdown"],
       list: ["json", "markdown"],
+      openTargets: ["json", "markdown"],
       export: ["html", "zip"]
     },
     listFilters: {
@@ -670,6 +674,16 @@ function doctorMarkdown(payload: DoctorPayload): string {
   ].join("\n");
 }
 
+function openTargetsMarkdown(entries: Array<{ target: string; fileName: string }>): string {
+  return [
+    "# RepoTutor Open Targets",
+    "",
+    "| Target | File |",
+    "|---|---|",
+    ...entries.map((entry) => `| ${markdownTableCell(entry.target)} | ${markdownTableCell(entry.fileName)} |`)
+  ].join("\n");
+}
+
 function markdownTableCell(value: string): string {
   return value.replaceAll("|", "\\|").replaceAll("\n", " ");
 }
@@ -810,7 +824,7 @@ function help(): void {
   verify-session <session-id-or-path> --format json|markdown
   list --repo owner/name --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz|all
-  open --list-targets
+  open --list-targets --format json|markdown
   doctor --format json|markdown`);
 }
 
