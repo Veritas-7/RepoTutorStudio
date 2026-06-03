@@ -2198,6 +2198,40 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 119: Active Recall Learning Journal
+
+- Cloned and inspected `ktaletsk/learn-codebase` under
+  `research/external-src/ktaletsk-learn-codebase` without executing external
+  source.
+- Added `LearningJournalReportSchema` and
+  `analysis/learning-journal-report.json` with learn-codebase-style focus
+  goals, mastery levels, open questions, spaced review queue, aha moments,
+  session log, Socratic prompts, and a portable journal template.
+- Added `markdown/learning-journal.md`, `html/learning-journal.html`,
+  `html/assets/learning-journal-template.md`, manifest/verification coverage,
+  learning-path linkage, and `open --target learning-journal`.
+- Source pattern: learn-codebase teaches codebases through Socratic
+  questioning, prediction before revelation, active recall, spaced repetition,
+  and a persistent learning journal; RepoTutor maps that to deterministic
+  session artifacts linked back to file lessons, glossary, source evidence,
+  graph query, tutorial abstractions, and search index pages.
+- RED smoke
+  `/tmp/repotutor-learning-journal-red-studies.4vOcud/2026-06-04/local__simple-ts-app__main__e966b5a6`
+  showed the old behavior was missing `analysis/learning-journal-report.json`,
+  `markdown/learning-journal.md`, `html/learning-journal.html`, and
+  `html/assets/learning-journal-template.md`.
+- GREEN smoke generated
+  `/tmp/repotutor-learning-journal-green-studies.Idy1BV/2026-06-04/local__simple-ts-app__main__e966b5a6`;
+  generated JSON, Markdown, HTML, and template asset artifacts, included
+  `focusGoals`, `masteryLevels`, `openQuestions`, `spacedReviewQueue`,
+  `socraticPrompts`, `journalTemplateMarkdown`, `learning-journal-card`,
+  `data-source-pattern="learn-codebase"`, `Active Recall Journal`,
+  `Spaced Review Queue`, and `open --target learning-journal` returned
+  `html/learning-journal.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

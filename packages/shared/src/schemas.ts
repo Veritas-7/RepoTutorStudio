@@ -567,6 +567,61 @@ export const SearchIndexReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const LearningJournalReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  focusGoals: z.array(z.object({
+    label: z.string(),
+    value: z.string(),
+    evidenceHref: z.string()
+  })),
+  masteryLevels: z.array(z.object({
+    level: z.enum(["need-to-explore", "learning", "confident"]),
+    label: z.string(),
+    concepts: z.array(z.object({
+      concept: z.string(),
+      status: z.string(),
+      reason: z.string(),
+      reviewPrompt: z.string(),
+      relatedHref: z.string()
+    }))
+  })),
+  openQuestions: z.array(z.object({
+    id: z.string(),
+    question: z.string(),
+    promptType: z.enum(["prediction", "trace", "design-reasoning", "comparison", "error-prediction", "meta"]),
+    relatedHref: z.string(),
+    sourcePattern: z.string()
+  })),
+  spacedReviewQueue: z.array(z.object({
+    concept: z.string(),
+    reviewBy: z.string(),
+    reviewNumber: z.number().int().positive(),
+    prompt: z.string(),
+    relatedHref: z.string()
+  })),
+  ahaMoments: z.array(z.object({
+    title: z.string(),
+    insight: z.string(),
+    relatedHref: z.string()
+  })),
+  sessionLog: z.array(z.object({
+    explored: z.string(),
+    learned: z.array(z.string()),
+    struggledWith: z.array(z.string()),
+    next: z.array(z.string())
+  })),
+  socraticPrompts: z.array(z.object({
+    category: z.string(),
+    question: z.string(),
+    useWhen: z.string(),
+    relatedHref: z.string(),
+    hintLevels: z.array(z.string())
+  })),
+  journalTemplateMarkdown: z.string(),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -787,6 +842,7 @@ export type TutorialAbstractionReport = z.infer<typeof TutorialAbstractionReport
 export type DecisionRecordReport = z.infer<typeof DecisionRecordReportSchema>;
 export type DependencyHealthReport = z.infer<typeof DependencyHealthReportSchema>;
 export type SearchIndexReport = z.infer<typeof SearchIndexReportSchema>;
+export type LearningJournalReport = z.infer<typeof LearningJournalReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

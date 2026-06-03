@@ -31,6 +31,7 @@ import {
   DecisionRecordReport,
   DependencyHealthReport,
   SearchIndexReport,
+  LearningJournalReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -59,6 +60,7 @@ export interface AnalysisBundle {
   decisionRecordReport: DecisionRecordReport;
   dependencyHealthReport: DependencyHealthReport;
   searchIndexReport: SearchIndexReport;
+  learningJournalReport: LearningJournalReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -94,10 +96,11 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const decisionRecordReport = buildDecisionRecordReport(repoMap, architectureReport, runtimeEnvironmentReport, interfaceMapReport, contextPackReport, tutorialAbstractionReport);
   const dependencyHealthReport = buildDependencyHealthReport(fileLessons);
   const searchIndexReport = buildSearchIndexReport(fileLessons, folderLessons, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, dependencyHealthReport);
+  const learningJournalReport = buildLearningJournalReport(fileLessons, glossary, graphQueryReport, tutorialAbstractionReport, searchIndexReport);
   const agentMemoryReport = buildAgentMemoryReport(repoMap, languageReport, purposeReport, contextPackReport, mcpHandoffReport, componentGraphReport);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -1623,6 +1626,258 @@ function buildSearchFilterIndex(documents: SearchIndexReport["documents"]): Sear
         .map(([value, documents]) => ({ value, documentCount: documents.size }))
         .sort((a, b) => b.documentCount - a.documentCount || a.value.localeCompare(b.value))
     }));
+}
+
+function buildLearningJournalReport(
+  fileLessons: FileLesson[],
+  glossary: GlossaryTerm[],
+  graphQueryReport: GraphQueryReport,
+  tutorialAbstractionReport: TutorialAbstractionReport,
+  searchIndexReport: SearchIndexReport
+): LearningJournalReport {
+  const priorityFiles = fileLessons.slice(0, 5);
+  const primaryFile = priorityFiles[0];
+  const glossaryConcepts = glossary.slice(0, 4);
+  const abstractionConcepts = tutorialAbstractionReport.abstractions.slice(0, 3);
+  const sourcePattern = "learn-codebase Socratic tutor active recall prediction before revelation persistent learning journal";
+  const focusGoals: LearningJournalReport["focusGoals"] = [
+    {
+      label: "Primary goal",
+      value: "낯선 저장소를 설명 가능한 mental model로 바꾸기",
+      evidenceHref: "html/index.html"
+    },
+    {
+      label: "Learning style",
+      value: "예측 질문, 소스 근거 대조, active recall, spaced review 순서로 학습",
+      evidenceHref: "html/evidence.html"
+    },
+    {
+      label: "Current focus",
+      value: primaryFile ? `${primaryFile.filePath}부터 실제 진입점을 추적` : "먼저 overview와 파일 수업으로 진입점 확인",
+      evidenceHref: primaryFile ? `html/files.html#${htmlAnchor(primaryFile.filePath)}` : "html/files.html"
+    }
+  ];
+
+  const masteryLevels: LearningJournalReport["masteryLevels"] = [
+    {
+      level: "need-to-explore",
+      label: "Need to Explore",
+      concepts: priorityFiles.slice(0, 3).map((lesson) => ({
+        concept: lesson.filePath,
+        status: "아직 예측과 trace가 필요한 핵심 파일",
+        reason: `${lesson.role} 역할이지만 학습자가 직접 설명해보기 전까지는 확신하지 않습니다.`,
+        reviewPrompt: `파일명 ${lesson.filePath}만 보고 어떤 입력과 출력이 있을지 먼저 예측하세요.`,
+        relatedHref: `html/files.html#${htmlAnchor(lesson.filePath)}`
+      }))
+    },
+    {
+      level: "learning",
+      label: "Learning",
+      concepts: glossaryConcepts.map((term) => ({
+        concept: `${term.termKo} (${term.termEn})`,
+        status: "부분 이해 상태로 active recall 복습 필요",
+        reason: term.projectSpecificMeaning,
+        reviewPrompt: `${term.termEn}를 이 저장소의 실제 파일 예시와 연결해 한 문장으로 설명하세요.`,
+        relatedHref: `html/glossary.html#${htmlAnchor(term.termEn)}`
+      }))
+    },
+    {
+      level: "confident",
+      label: "Confident",
+      concepts: abstractionConcepts.map((item) => ({
+        concept: item.name,
+        status: "튜토리얼 장으로 설명 가능한 개념 후보",
+        reason: item.chapterGoal,
+        reviewPrompt: `${item.name} 장을 읽지 않은 사람에게 왜 이 순서로 배워야 하는지 설명하세요.`,
+        relatedHref: `html/tutorial-abstractions.html#${htmlAnchor(item.id)}`
+      }))
+    }
+  ];
+
+  const tracePrompt = graphQueryReport.pathPrompts[0];
+  const promptSeeds = [
+    {
+      promptType: "prediction" as const,
+      question: primaryFile
+        ? `Looking at just ${primaryFile.filePath}, what do you expect it to coordinate before reading the lesson?`
+        : "Looking at the repository name and folders, what do you expect this project to do?",
+      relatedHref: primaryFile ? `html/files.html#${htmlAnchor(primaryFile.filePath)}` : "html/index.html"
+    },
+    {
+      promptType: "trace" as const,
+      question: tracePrompt
+        ? `Trace the path from ${tracePrompt.from} to ${tracePrompt.to}. What happens first, and what evidence would prove it?`
+        : "Trace one user input from intake to generated HTML. What happens first?",
+      relatedHref: "html/graph-query.html"
+    },
+    {
+      promptType: "design-reasoning" as const,
+      question: tutorialAbstractionReport.relationships[0]
+        ? `Why does ${tutorialAbstractionReport.relationships[0].fromId} connect to ${tutorialAbstractionReport.relationships[0].toId}?`
+        : "Why are these responsibilities split across folders instead of one file?",
+      relatedHref: "html/tutorial-abstractions.html"
+    },
+    {
+      promptType: "comparison" as const,
+      question: priorityFiles[1]
+        ? `How is ${priorityFiles[0]?.filePath ?? "the entry file"} different from ${priorityFiles[1].filePath}?`
+        : "How is the architecture page different from the file lessons page?",
+      relatedHref: "html/files.html"
+    },
+    {
+      promptType: "error-prediction" as const,
+      question: "Which generated report would fail first if a copied source file disappeared?",
+      relatedHref: "html/session-verification.html"
+    },
+    {
+      promptType: "meta" as const,
+      question: "What would you need to explain back before you should edit this codebase?",
+      relatedHref: "html/learning-journal.html"
+    }
+  ];
+
+  const openQuestions = promptSeeds.map((seed, index) => ({
+    id: `journal-question-${index + 1}`,
+    question: seed.question,
+    promptType: seed.promptType,
+    relatedHref: seed.relatedHref,
+    sourcePattern
+  }));
+
+  const spacedReviewQueue = [
+    ...glossaryConcepts.map((term, index) => ({
+      concept: `${term.termKo} (${term.termEn})`,
+      reviewBy: index === 0 ? "next-session" : `after-${index + 1}-days`,
+      reviewNumber: index + 1,
+      prompt: `${term.termEn}를 원본 파일 하나와 연결해 다시 설명하세요.`,
+      relatedHref: `html/glossary.html#${htmlAnchor(term.termEn)}`
+    })),
+    ...priorityFiles.slice(0, 3).map((lesson, index) => ({
+      concept: lesson.filePath,
+      reviewBy: `after-${index + 1}-days`,
+      reviewNumber: index + 1,
+      prompt: `${lesson.filePath}의 역할과 제거 시 깨질 흐름을 설명하세요.`,
+      relatedHref: `html/files.html#${htmlAnchor(lesson.filePath)}`
+    }))
+  ].slice(0, 8);
+
+  const ahaMoments = [
+    {
+      title: "Prediction before revelation",
+      insight: "파일 수업을 열기 전에 역할을 먼저 예측하면, 설명을 읽을 때 맞은 부분과 빈틈이 분리됩니다.",
+      relatedHref: "html/files.html"
+    },
+    {
+      title: "Evidence-backed confidence",
+      insight: "이해했다고 느끼는 것보다 source evidence와 lesson link로 다시 말할 수 있는지가 더 중요합니다.",
+      relatedHref: "html/evidence.html"
+    },
+    {
+      title: "Searchable review surface",
+      insight: `Pagefind식 색인 ${searchIndexReport.totalDocuments}개 문서를 복습 출발점으로 쓰면 모르는 개념을 빠르게 되찾을 수 있습니다.`,
+      relatedHref: "html/search-index.html"
+    }
+  ];
+
+  return {
+    summary: `learn-codebase식 learning journal report: ${openQuestions.length}개 Socratic 질문, ${spacedReviewQueue.length}개 spaced review 항목, ${masteryLevels.reduce((sum, level) => sum + level.concepts.length, 0)}개 mastery concept를 생성했습니다.`,
+    sourcePattern,
+    focusGoals,
+    masteryLevels,
+    openQuestions,
+    spacedReviewQueue,
+    ahaMoments,
+    sessionLog: [{
+      explored: "RepoTutor generated overview, file lessons, graph query, tutorial abstractions, search index",
+      learned: [
+        "예측 질문으로 파일 역할을 먼저 가정한다.",
+        "소스 근거 링크로 설명의 신뢰도를 확인한다.",
+        "spaced review queue로 다음 세션의 복습 대상을 남긴다."
+      ],
+      struggledWith: priorityFiles.slice(0, 3).map((lesson) => lesson.filePath),
+      next: [
+        "Need to Explore 항목 하나를 골라 예측을 적는다.",
+        "관련 파일 수업과 원본 소스를 대조한다.",
+        "정답을 본 뒤 review prompt에 다시 답한다."
+      ]
+    }],
+    socraticPrompts: [
+      {
+        category: "Prediction",
+        question: openQuestions[0]?.question ?? "What do you expect this module to do?",
+        useWhen: "파일이나 함수 설명을 열기 전",
+        relatedHref: openQuestions[0]?.relatedHref ?? "html/files.html",
+        hintLevels: [
+          "폴더명과 파일명에서 책임을 추론하세요.",
+          "입력, 처리, 출력 중 어느 쪽에 가까운지 고르세요.",
+          "파일 수업의 role 문장을 빈칸으로 두고 채워보세요."
+        ]
+      },
+      {
+        category: "Trace",
+        question: "한 입력이 analysis JSON, Markdown, HTML까지 이동하는 순서를 말해보세요.",
+        useWhen: "실행 흐름과 데이터 흐름을 학습할 때",
+        relatedHref: "html/flow.html",
+        hintLevels: [
+          "처음에는 intake 또는 source copy에서 시작합니다.",
+          "scanner와 renderer 사이의 산출물을 찾으세요.",
+          "source files -> analysis JSON -> Markdown -> HTML 순서로 채워보세요."
+        ]
+      },
+      {
+        category: "Evidence",
+        question: "그 설명을 뒷받침하는 실제 소스 근거 링크는 어디에 있나요?",
+        useWhen: "이해했다고 느끼지만 근거를 아직 못 댈 때",
+        relatedHref: "html/evidence.html",
+        hintLevels: [
+          "파일 수업의 소스 근거 섹션을 보세요.",
+          "evidence kind와 line snippet을 연결하세요.",
+          "원본 열기 링크를 따라가 같은 줄을 찾으세요."
+        ]
+      }
+    ],
+    journalTemplateMarkdown: learningJournalTemplateMarkdown(focusGoals, masteryLevels, openQuestions, spacedReviewQueue, ahaMoments),
+    learnerNextSteps: [
+      "learning-journal.html에서 Need to Explore 개념 하나를 고르고 답을 먼저 적으세요.",
+      "관련 파일 수업과 원본 소스를 확인한 뒤 자신의 답을 수정하세요.",
+      "spaced review queue 항목을 다음 세션 시작 질문으로 사용하세요."
+    ]
+  };
+}
+
+function learningJournalTemplateMarkdown(
+  focusGoals: LearningJournalReport["focusGoals"],
+  masteryLevels: LearningJournalReport["masteryLevels"],
+  openQuestions: LearningJournalReport["openQuestions"],
+  spacedReviewQueue: LearningJournalReport["spacedReviewQueue"],
+  ahaMoments: LearningJournalReport["ahaMoments"]
+): string {
+  return [
+    "# Codebase Learning Journal",
+    "",
+    "## Focus & Goals",
+    ...focusGoals.map((item) => `- **${item.label}**: ${item.value} (${item.evidenceHref})`),
+    "",
+    "## Concept Mastery Map",
+    ...masteryLevels.map((level) => [
+      `### ${level.label}`,
+      ...level.concepts.map((concept) => `- ${concept.concept}: ${concept.status} - ${concept.reviewPrompt}`)
+    ].join("\n")),
+    "",
+    "## Open Questions",
+    ...openQuestions.map((item) => `- [ ] ${item.question} (${item.promptType}, ${item.relatedHref})`),
+    "",
+    "## Spaced Review Queue",
+    ...spacedReviewQueue.map((item) => `- [ ] ${item.concept} (review by: ${item.reviewBy}) - ${item.reviewNumber} review - ${item.prompt}`),
+    "",
+    "## Aha Moments",
+    ...ahaMoments.map((item) => `### ${item.title}\n${item.insight}`),
+    "",
+    "## Session Log",
+    "- **Explored**: generated RepoTutor reports",
+    "- **Next**: answer one open question before reading the linked report",
+    ""
+  ].join("\n");
 }
 
 function suggestedReadScore(lesson: FileLesson, index: number): number {
