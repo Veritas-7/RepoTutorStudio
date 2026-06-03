@@ -103,9 +103,11 @@ async function evidence(parsed: ParsedArgs): Promise<void> {
     }>;
   };
   const kind = stringFlag(parsed.flags.kind);
+  const file = stringFlag(parsed.flags.file);
   const limit = numberFlag(parsed.flags.limit, 20);
   const items = report.items
     .filter((item) => !kind || item.kind === kind)
+    .filter((item) => !file || item.filePath === file)
     .slice(0, limit);
   console.log(JSON.stringify({
     sessionRoot,
@@ -113,6 +115,7 @@ async function evidence(parsed: ParsedArgs): Promise<void> {
     evidenceByKind: report.evidenceByKind,
     evidenceByFile: report.evidenceByFile,
     filteredKind: kind ?? null,
+    filteredFile: file ?? null,
     returnedItems: items.length,
     items
   }, null, 2));
@@ -271,7 +274,7 @@ function help(): void {
   quiz <session-id-or-path> --interactive
   quiz <session-id-or-path> --answers answers.json
   resume <session-id-or-path>
-  evidence <session-id-or-path> --kind import --limit 20
+  evidence <session-id-or-path> --kind import --file src/main.ts --limit 20
   export <session-id-or-path> --format html|zip
   verify-export <session-id-or-path>
   list
