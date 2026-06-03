@@ -81,7 +81,7 @@ const checks = [
     "packages/core/src/pipeline.ts",
     "packages/core/src/markdown.ts",
     "packages/html/src/templates.ts"
-  ], ["ComponentGraphReportSchema", "component-graph-report.json", "component-graph.md", "component-graph.html", "component-graph.mmd", "mermaid", "component-graph-download-toolbar", "data-download-mermaid", "component-graph-mermaid", "data-graph-filter", "data-node-type", "nodeTypeCounts", "topConnectedNodes"]),
+  ], ["ComponentGraphReportSchema", "component-graph-report.json", "component-graph.md", "component-graph.html", "component-graph.mmd", "mermaid", "component-graph-download-toolbar", "data-download-mermaid", "component-graph-mermaid", "component-node-relations", "data-node-relation", "연결 관계", "data-graph-filter", "data-node-type", "nodeTypeCounts", "topConnectedNodes"]),
   check("incremental re-analysis", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
