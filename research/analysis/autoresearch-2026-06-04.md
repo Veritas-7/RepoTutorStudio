@@ -156,6 +156,19 @@ Transferable patterns:
 - `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
   verify `nodeTypeCounts` and `topConnectedNodes`.
 
+### Upgrade 9: Portable HTML Export Usability
+
+- `packages/shared/src/schemas.ts`: extends `HtmlExportManifestSchema` with
+  `manifestPath`, `readmePath`, and explicit `entrypoints`.
+- `packages/html/src/templates.ts`: fills portable entrypoints for index, quiz,
+  wrong notes, and component graph pages.
+- `packages/core/src/quiz.ts`: writes `html/manifest.json` and
+  `html/EXPORT-README.md` alongside the HTML pages and assets.
+- `apps/cli/src/index.ts`: `repo-tutor export --format html` now returns
+  manifest/readme paths, page/asset counts, and entrypoint paths.
+- `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
+  verify the portable export files and manifest entrypoints.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -187,6 +200,10 @@ Local verification:
   with 23 nodes, 22 edges, node type counts `{root: 1, folder: 1, file: 4, term: 7, rebuild-step: 10}`,
   and top hub `README.md` degree 8; Markdown and HTML both include
   `큰 그래프 요약`.
+- Temp CLI export-polish smoke generated:
+  `/tmp/repotutor-export-polish-studies-eTpBRE/2026-06-04/local__simple-ts-app__main__c8fa07ea/html/manifest.json`
+  and `html/EXPORT-README.md`; CLI export returned 4 entrypoints, 14 pages, and
+  2 assets.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
@@ -194,4 +211,5 @@ Local verification:
 
 ## Deferred Candidate Backlog
 
-1. Add export usability polish.
+1. Add zipped/portable bundle export.
+2. Add additional large-repo navigation polish.

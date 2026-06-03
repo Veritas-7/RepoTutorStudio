@@ -90,8 +90,20 @@ async function exportSession(parsed: ParsedArgs): Promise<void> {
   const htmlInput = await loadStudyHtmlInput(sessionRoot);
   const { renderStudyHtml } = await import("@repotutor/html");
   const { writeRenderedHtml } = await import("@repotutor/core");
-  await writeRenderedHtml(sessionRoot, renderStudyHtml(htmlInput));
-  console.log(JSON.stringify({ exported: "html", path: path.join(sessionRoot, "html", "index.html") }, null, 2));
+  const rendered = renderStudyHtml(htmlInput);
+  await writeRenderedHtml(sessionRoot, rendered);
+  console.log(JSON.stringify({
+    exported: "html",
+    path: path.join(sessionRoot, "html", "index.html"),
+    readme: path.join(sessionRoot, "html", "EXPORT-README.md"),
+    manifest: path.join(sessionRoot, "html", "manifest.json"),
+    pages: rendered.manifest.pages.length,
+    assets: rendered.manifest.assets.length,
+    entrypoints: rendered.manifest.entrypoints.map((entry) => ({
+      label: entry.label,
+      path: path.join(sessionRoot, entry.path)
+    }))
+  }, null, 2));
 }
 
 async function list(parsed: ParsedArgs): Promise<void> {

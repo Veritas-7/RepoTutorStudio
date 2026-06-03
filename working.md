@@ -69,6 +69,10 @@ to a private repository, and preserve resumable state in this file.
   `nodeTypeCounts`, `edgeLabelCounts`, `topConnectedNodes`, and
   `largeRepoAdvice`; `component-graph.md` and `component-graph.html` render the
   summary before the detailed graph.
+- 2026-06-04: Applied a ninth AutoResearch upgrade: portable HTML export
+  usability. The HTML export folder now includes `manifest.json` and
+  `EXPORT-README.md`; CLI `repo-tutor export --format html` returns readme,
+  manifest, page/asset counts, and entrypoint paths.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -87,6 +91,8 @@ to a private repository, and preserve resumable state in this file.
     `component-node-cards`
   - temp CLI graph-summary smoke generated 23 nodes, 22 edges, node type counts,
     and top hub `README.md` with degree 8
+  - temp CLI export-polish smoke generated `html/manifest.json`,
+    `html/EXPORT-README.md`, 4 entrypoints, 14 pages, and 2 assets
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -98,8 +104,9 @@ to a private repository, and preserve resumable state in this file.
   - `6e56360` incremental re-analysis reports
   - `6aeb168` coverage delta summaries
   - `28f1bc5` component graph filters
+  - `c8fa07e` component graph summaries
 
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops:
-   export usability polish.
+   zipped/portable bundle export or additional large-repo navigation polish.

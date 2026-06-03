@@ -60,8 +60,11 @@ const checks = [
     "packages/html/src/templates.ts"
   ], ["wrong-notes.json", "wrong-notes.md", "wrong-notes.html", "mistakeReason"]),
   check("offline html export", [
-    "packages/html/src/templates.ts"
-  ], ["index.html", "quiz.html", "wrong-notes.html", "assets/style.css", "assets/app.js"]),
+    "packages/html/src/templates.ts",
+    "packages/core/src/quiz.ts",
+    "apps/cli/src/index.ts",
+    "packages/shared/src/schemas.ts"
+  ], ["index.html", "quiz.html", "wrong-notes.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints"]),
   check("source-backed component graph", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
