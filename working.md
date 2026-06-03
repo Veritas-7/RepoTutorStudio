@@ -119,6 +119,10 @@ to a private repository, and preserve resumable state in this file.
   breakdowns. `coverage-report.json`, `coverage.md`, and `coverage.html` now
   show how much evidence comes from import, export, entry, config, test, or
   text snippets.
+- 2026-06-04: Applied a twenty-first AutoResearch upgrade: source evidence
+  source-file links. `files.md` and `files.html` now link each source evidence
+  snippet back to the copied `source/` file, so learners can jump from the
+  lesson evidence to the original project file.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -188,6 +192,11 @@ to a private repository, and preserve resumable state in this file.
     with `evidenceKindCounts` `{text: 2, config: 4, import: 1, entry: 1,
     export: 1}`, Markdown `## 소스 근거 종류`, and HTML `근거 종류`
     / `소스 근거 종류`
+  - temp CLI source-link smoke generated
+    `/tmp/repotutor-source-link-smoke.5z54ZK/2026-06-04/local__simple-ts-app__main__946bc81d`
+    with HTML `source-link`, `원본 열기`, `../source/src/main.ts`, Markdown
+    `[원본](../source/src/main.ts)`, and copied
+    `source/src/main.ts` present
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -211,6 +220,7 @@ to a private repository, and preserve resumable state in this file.
   - `d687db0` source evidence snippets
   - `eb9b601` source evidence coverage summaries
   - `63a77df` source evidence drilldown filters
+  - `946bc81` source evidence kind summaries
 
 ## Next Actions
 

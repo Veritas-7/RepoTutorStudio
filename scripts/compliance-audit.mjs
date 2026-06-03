@@ -52,7 +52,7 @@ const checks = [
     "packages/core/src/markdown.ts",
     "packages/html/src/templates.ts",
     "packages/shared/src/schemas.ts"
-  ], ["PurposeReport", "FolderLesson", "FileLesson", "FlowReport", "RebuildRoadmap", "sourceEvidence", "source-evidence", "소스 근거", "evidenceBackedFiles", "evidenceCoverageRatio", "evidenceKindCounts", "filesWithoutEvidence", "소스 근거 종류"]),
+  ], ["PurposeReport", "FolderLesson", "FileLesson", "FlowReport", "RebuildRoadmap", "sourceEvidence", "source-evidence", "source-link", "../source/", "원본 열기", "소스 근거", "evidenceBackedFiles", "evidenceCoverageRatio", "evidenceKindCounts", "filesWithoutEvidence", "소스 근거 종류"]),
   check("quiz engine", [
     "packages/core/src/quiz.ts",
     "packages/shared/src/constants.ts"
