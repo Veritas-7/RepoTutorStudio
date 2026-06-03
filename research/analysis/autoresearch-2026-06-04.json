@@ -784,6 +784,16 @@
         "repo-tutor export --summary-format markdown",
         "doctor exportSummary format metadata"
       ]
+    },
+    {
+      "name": "list markdown session paths",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --format markdown Session Path column"
+      ]
     }
   ],
   "verification": {
@@ -873,6 +883,7 @@
     "cliQuizMarkdownSmoke": "PASS",
     "cliStudyMarkdownSmoke": "PASS",
     "cliExportSummaryMarkdownSmoke": "PASS",
+    "cliListPathMarkdownSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
