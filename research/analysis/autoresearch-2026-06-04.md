@@ -903,6 +903,21 @@ Local verification:
   `# RepoTutor Open Target Paths`, verification and quiz path rows, `doctor`
   reported Markdown support for `openAll`, and invalid `--format text` exited 1
   with `open --target all supports --format`.
+
+### Upgrade 55: Export Verification Markdown
+
+- Added `repo-tutor verify-export <session> --format markdown` so HTML export
+  integrity checks can be pasted into handoff notes without losing the
+  fail-closed exit behavior.
+- Added `verifyExport` format metadata to `repo-tutor doctor` and fail-closed
+  format validation for `verify-export`.
+- Temp CLI verify-export-markdown smoke generated
+  `/tmp/repotutor-verify-export-md-smoke.4JKJLi`; Markdown output included
+  `# RepoTutor Export Verification`, `OK: PASS`, and `Checked files: 18`,
+  `doctor` reported Markdown support for `verifyExport`, invalid
+  `--format text` exited 1 with `verify-export supports --format`, and a
+  tampered `html/index.html` made Markdown output return exit 1 with `OK: FAIL`
+  and `html/index.html`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
