@@ -959,6 +959,18 @@
         "repo-tutor list --output <file>",
         "doctor listFilters.output metadata"
       ]
+    },
+    {
+      "name": "saved session list output manifests",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --output <file> --output-manifest",
+        "sidecar .manifest.json with bytes and sha256",
+        "doctor listFilters.outputManifest metadata"
+      ]
     }
   ],
   "verification": {
@@ -1064,6 +1076,7 @@
     "cliListFieldPresetSmoke": "PASS",
     "cliListSummarySmoke": "PASS",
     "cliListOutputSmoke": "PASS",
+    "cliListOutputManifestSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

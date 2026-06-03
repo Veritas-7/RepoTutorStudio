@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import readline from "node:readline/promises";
@@ -69,6 +70,23 @@ interface ListSummary {
     maxScore: number | null;
   };
   repos: Record<string, number>;
+}
+
+interface ListOutputContext {
+  format: string;
+  summary: boolean;
+  rows: number;
+}
+
+interface ListOutputManifest {
+  outputPath: string;
+  manifestPath: string;
+  format: string;
+  summary: boolean;
+  rows: number;
+  bytes: number;
+  sha256: string;
+  createdAt: string;
 }
 
 const LIST_FIELDS = [
@@ -416,7 +434,11 @@ async function list(parsed: ParsedArgs): Promise<void> {
     if (parsed.flags.fields !== undefined || parsed.flags["field-preset"] !== undefined) throw new Error("list cannot combine --summary with --fields or --field-preset.");
     if (!["json", "markdown"].includes(format)) throw new Error("list --summary supports --format json or markdown.");
     const summary = listSummary(filtered);
-    await emitListOutput(format === "markdown" ? listSummaryMarkdown(summary) : jsonText(summary), parsed.flags.output);
+    await emitListOutput(format === "markdown" ? listSummaryMarkdown(summary) : jsonText(summary), parsed.flags.output, parsed.flags["output-manifest"], {
+      format,
+      summary: true,
+      rows: filtered.length
+    });
     return;
   }
   const fields = listFieldSelection(parsed.flags.fields, parsed.flags["field-preset"]);
@@ -432,7 +454,11 @@ async function list(parsed: ParsedArgs): Promise<void> {
   } else {
     rendered = jsonText(projected);
   }
-  await emitListOutput(rendered, parsed.flags.output);
+  await emitListOutput(rendered, parsed.flags.output, parsed.flags["output-manifest"], {
+    format,
+    summary: false,
+    rows: filtered.length
+  });
 }
 
 async function openSession(parsed: ParsedArgs): Promise<void> {
@@ -510,6 +536,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       fieldPresets: LIST_FIELD_PRESET_NAMES,
       summary: true,
       output: true,
+      outputManifest: true,
       repo: true,
       createdFrom: true,
       createdTo: true,
@@ -1006,21 +1033,54 @@ function listJsonl(rows: unknown[]): string {
   return rows.map((row) => JSON.stringify(row)).join("\n") + (rows.length > 0 ? "\n" : "");
 }
 
-async function emitListOutput(text: string, outputValue: string | boolean | undefined): Promise<void> {
+async function emitListOutput(
+  text: string,
+  outputValue: string | boolean | undefined,
+  outputManifestValue: string | boolean | undefined,
+  context: ListOutputContext
+): Promise<void> {
   const outputFile = optionalStringFlag(outputValue, "output");
+  const outputManifest = outputManifestFlag(outputManifestValue);
   const normalizedText = text.endsWith("\n") ? text : `${text}\n`;
   if (outputFile === null) {
+    if (outputManifest) throw new Error("list requires --output when --output-manifest is used.");
     process.stdout.write(normalizedText);
     return;
   }
   const outputPath = path.resolve(outputFile);
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
   await fs.writeFile(outputPath, normalizedText);
+  if (outputManifest) {
+    const manifestPath = `${outputPath}.manifest.json`;
+    const manifest = createListOutputManifest(normalizedText, outputPath, manifestPath, context);
+    await fs.writeFile(manifestPath, jsonText(manifest));
+    process.stdout.write(jsonText({ outputPath, manifestPath }));
+    return;
+  }
   console.log(outputPath);
 }
 
 function jsonText(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
+}
+
+function outputManifestFlag(value: string | boolean | undefined): boolean {
+  if (value === undefined) return false;
+  if (value === true) return true;
+  throw new Error("output-manifest is a boolean flag.");
+}
+
+function createListOutputManifest(text: string, outputPath: string, manifestPath: string, context: ListOutputContext): ListOutputManifest {
+  return {
+    outputPath,
+    manifestPath,
+    format: context.format,
+    summary: context.summary,
+    rows: context.rows,
+    bytes: Buffer.byteLength(text),
+    sha256: createHash("sha256").update(text).digest("hex"),
+    createdAt: new Date().toISOString()
+  };
 }
 
 function listSummary(rows: ListRow[]): ListSummary {
@@ -1407,7 +1467,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --output reports/list.json --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
+  list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --output reports/list.json --output-manifest --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);
