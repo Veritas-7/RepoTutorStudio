@@ -173,6 +173,10 @@ to a private repository, and preserve resumable state in this file.
   `html/session-verification.html`, sidebar/index navigation, and a manifest
   entrypoint linking to the JSON and Markdown verification reports without
   creating a verifier-manifest cycle.
+- 2026-06-04: Applied a thirty-fourth AutoResearch upgrade: study completion
+  verification output. CLI `repo-tutor study` now returns `verificationOk`,
+  verification report paths, checked required artifact count, and sub-check
+  statuses in the completion JSON.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -318,6 +322,12 @@ to a private repository, and preserve resumable state in this file.
     `../analysis/session-verification-report.json` and
     `../markdown/session-verification.md`, a manifest page entry, a manifest
     entrypoint, and 18 manifest-covered files
+  - temp CLI study verification-output smoke generated
+    `/tmp/repotutor-study-verification-output-smoke.iOjSiV/2026-06-04/local__simple-ts-app__main__8acedeae`
+    and `repo-tutor study` returned `verificationOk: true`,
+    `verificationReport`, `verificationMarkdown`, `verificationHtml`,
+    `verificationCheckedRequiredArtifacts: 11`, and all four
+    `verificationChecks` as true
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -354,6 +364,7 @@ to a private repository, and preserve resumable state in this file.
   - `a5bc3b3` Markdown output for session verification
   - `10a43db` persistent session verification reports
   - `3a4153c` Markdown session verification reports
+  - `8acedea` HTML session verification entrypoint
 
 ## Next Actions
 

@@ -498,6 +498,17 @@
         "html/session-verification.html",
         "HTML manifest entrypoint for verification reports"
       ]
+    },
+    {
+      "name": "study completion verification output",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor study verificationOk output",
+        "repo-tutor study verification report paths"
+      ]
     }
   ],
   "verification": {
@@ -561,6 +572,7 @@
     "cliSessionVerificationMarkdownReportSmoke": "PASS",
     "fixtureSessionVerificationHtmlEntrypoint": "PASS",
     "cliSessionVerificationHtmlEntrypointSmoke": "PASS",
+    "cliStudyVerificationOutputSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
