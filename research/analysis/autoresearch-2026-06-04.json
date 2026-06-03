@@ -186,6 +186,21 @@
         "repo-tutor export --format zip JSON summary with zipBytes and zipFiles",
         "dependency-free ZIP bundle writer for html export artifacts"
       ]
+    },
+    {
+      "name": "relative local-path intake for filtered CLI dev runs",
+      "filesChanged": [
+        "packages/core/src/intake.ts",
+        "packages/core/src/pipeline.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "StudyOptions.sourceBaseDir",
+        "CLI commandBaseDir from INIT_CWD",
+        "relative local source fixture test"
+      ]
     }
   ],
   "verification": {
@@ -206,11 +221,12 @@
     "cliExportPolishSmoke": "PASS",
     "fixtureZipBundle": "PASS",
     "cliZipExportSmoke": "PASS",
+    "fixtureRelativeSourceBaseDir": "PASS",
+    "cliRelativePathSmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },
   "candidateBacklog": [
-    "additional large-repo navigation polish",
-    "relative local-path handling for filtered pnpm CLI dev runs"
+    "additional large-repo navigation polish"
   ]
 }

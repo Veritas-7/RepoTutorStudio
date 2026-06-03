@@ -42,10 +42,11 @@ const checks = [
   ], ["studiesRoot", "sessionFolderName", "todayIsoDate", "session.json"]),
   check("static analyzer and safe intake", [
     "packages/core/src/intake.ts",
+    "packages/core/src/pipeline.ts",
     "packages/core/src/fs-utils.ts",
     "packages/core/src/scanner.ts",
     "packages/core/src/storage.ts"
-  ], ["git", "clone", "--depth", "isSecretLikePath", "readTextIfSafe"]),
+  ], ["git", "clone", "--depth", "isSecretLikePath", "readTextIfSafe", "sourceBaseDir"]),
   check("lesson generation outputs", [
     "packages/core/src/scanner.ts",
     "packages/core/src/markdown.ts"

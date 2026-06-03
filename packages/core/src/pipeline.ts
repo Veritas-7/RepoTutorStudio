@@ -17,6 +17,7 @@ export interface StudyOptions {
   mode?: StudyMode;
   level?: LearnerLevel;
   studiesRoot?: string;
+  sourceBaseDir?: string;
   enableCodex?: boolean;
 }
 
@@ -27,7 +28,7 @@ export interface StudyResult {
 
 export async function runStudy(options: StudyOptions): Promise<StudyResult> {
   const studiesRoot = path.resolve(options.studiesRoot ?? path.join(process.cwd(), "studies"));
-  const source = await parseSource(options.source);
+  const source = await parseSource(options.source, { baseDir: options.sourceBaseDir });
   const prepared = await prepareSession({ source, studiesRoot, mode: options.mode, level: options.level });
   await materializeSession(prepared);
   let session: StudySession = { ...prepared.session, status: "running" };

@@ -77,6 +77,11 @@ to a private repository, and preserve resumable state in this file.
   bundle export. CLI `repo-tutor export --format zip` now regenerates the
   portable HTML folder and writes `exports/html-report.zip` with the HTML
   pages, manifest, README, and assets in one dependency-free ZIP bundle.
+- 2026-06-04: Applied an eleventh AutoResearch upgrade: relative local-path
+  intake for filtered CLI dev runs. `runStudy` accepts `sourceBaseDir`, CLI
+  `study` passes `INIT_CWD`, and relative local sources now resolve from the
+  user's shell directory even when `pnpm --filter` runs the package from
+  `apps/cli`.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -102,6 +107,10 @@ to a private repository, and preserve resumable state in this file.
     with 18 files, 72,114 bytes, signature `504b0304`, 14 pages, 2 assets, and
     `unzip -l` entries for `index.html`, `manifest.json`, and
     `EXPORT-README.md`
+  - temp CLI relative-path smoke generated a completed fixture study from
+    `packages/core/tests/fixtures/simple-ts-app` under
+    `/tmp/repotutor-relative-cli-smoke.iLBw7a/2026-06-04/local__simple-ts-app__main__d3264425`
+    with `html/index.html` and 15 quiz questions
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -115,9 +124,9 @@ to a private repository, and preserve resumable state in this file.
   - `28f1bc5` component graph filters
   - `c8fa07e` component graph summaries
   - `8f7c2b9` portable HTML export guide
+  - `d326442` zipped HTML export bundle
 
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops:
-   additional large-repo navigation polish or relative local-path handling for
-   filtered pnpm CLI dev runs.
+   additional large-repo navigation polish.

@@ -3,29 +3,40 @@ import path from "node:path";
 import { SourceInput, SourceType, slugPart } from "@repotutor/shared";
 import { pathExists } from "./fs-utils.js";
 
-export async function parseSource(raw: string): Promise<SourceInput> {
+export interface ParseSourceOptions {
+  baseDir?: string;
+}
+
+export async function parseSource(raw: string, options: ParseSourceOptions = {}): Promise<SourceInput> {
   const trimmed = raw.trim();
   const github = parseGitHubUrl(trimmed);
   if (github) return github;
 
-  const resolved = path.resolve(trimmed);
-  if (await pathExists(resolved)) {
-    const stat = await fs.stat(resolved);
-    if (stat.isFile() && path.extname(resolved).toLowerCase() === ".zip") {
-      return localInput(trimmed, "zip", resolved);
-    }
-    if (stat.isDirectory() && await pathExists(path.join(resolved, "SKILL.md"))) {
-      return localInput(trimmed, "skill", resolved);
-    }
-    if (stat.isDirectory() && await pathExists(path.join(resolved, "agent-harness"))) {
-      return localInput(trimmed, "cli-anything", resolved);
-    }
-    if (stat.isDirectory()) {
-      return localInput(trimmed, "local", resolved);
+  const bases = uniqueStrings([options.baseDir, process.cwd()].filter((item): item is string => Boolean(item)));
+  for (const base of bases) {
+    const resolved = path.resolve(base, trimmed);
+    if (await pathExists(resolved)) {
+      const stat = await fs.stat(resolved);
+      if (stat.isFile() && path.extname(resolved).toLowerCase() === ".zip") {
+        return localInput(trimmed, "zip", resolved);
+      }
+      if (stat.isDirectory() && await pathExists(path.join(resolved, "SKILL.md"))) {
+        return localInput(trimmed, "skill", resolved);
+      }
+      if (stat.isDirectory() && await pathExists(path.join(resolved, "agent-harness"))) {
+        return localInput(trimmed, "cli-anything", resolved);
+      }
+      if (stat.isDirectory()) {
+        return localInput(trimmed, "local", resolved);
+      }
     }
   }
 
   throw new Error(`지원하지 않는 입력입니다: ${trimmed}`);
+}
+
+function uniqueStrings(values: string[]): string[] {
+  return Array.from(new Set(values.map((value) => path.resolve(value))));
 }
 
 function localInput(raw: string, sourceType: SourceType, resolved: string): SourceInput {
