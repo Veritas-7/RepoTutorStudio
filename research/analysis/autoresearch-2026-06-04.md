@@ -1123,6 +1123,19 @@ Local verification:
   returned the expected header plus two passed rows, path cells were quoted,
   `doctor` reported `formats.list` including `csv`, and invalid
   `--format yaml` exited 1 with the expanded list format error.
+
+### Upgrade 72: Field-Selected Session List Output
+
+- Added `repo-tutor list --fields <comma-list>` so JSON, JSONL, CSV, and
+  Markdown session inventories can emit only the fields needed by a handoff,
+  shell pipeline, or report import.
+- Added field metadata to `repo-tutor doctor` under `listFilters.fields`.
+- Temp CLI list-fields smoke generated
+  `/tmp/repotutor-list-fields-smoke.nsSYI7`; one fixture session was created,
+  `list --fields sessionId,repo,score,path` returned exactly those keys in
+  JSON and JSONL, CSV used those headers, Markdown rendered a selected-field
+  table, `doctor` reported the supported field list, invalid `--fields nope`
+  failed closed, and duplicate fields were de-duplicated in output order.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

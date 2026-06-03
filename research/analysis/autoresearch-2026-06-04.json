@@ -915,6 +915,17 @@
         "repo-tutor list --format csv",
         "doctor formats.list csv metadata"
       ]
+    },
+    {
+      "name": "field-selected session list output",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --fields sessionId,repo,score,path",
+        "doctor listFilters.fields metadata"
+      ]
     }
   ],
   "verification": {
@@ -1016,6 +1027,7 @@
     "cliListScoreSortSmoke": "PASS",
     "cliListJsonlSmoke": "PASS",
     "cliListCsvSmoke": "PASS",
+    "cliListFieldsSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

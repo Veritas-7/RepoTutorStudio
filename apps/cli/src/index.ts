@@ -30,6 +30,67 @@ interface DoctorPayload {
   security: Record<string, boolean>;
 }
 
+interface ListRow {
+  sessionId: string;
+  repo: string;
+  createdAt: string;
+  mode: string;
+  level: string;
+  score: number | null;
+  wrong: number;
+  path: string;
+  html: string;
+  htmlTargetsComplete: boolean;
+  missingHtmlTargets: string[];
+  verificationStatus: string;
+  verificationOk: boolean | null;
+  verificationReport: string;
+  verificationMarkdown: string;
+  verificationHtml: string;
+  verificationCheckedRequiredArtifacts: number | null;
+  verificationChecks: Record<string, boolean> | null;
+}
+
+const LIST_FIELDS = [
+  "sessionId",
+  "repo",
+  "createdAt",
+  "mode",
+  "level",
+  "score",
+  "wrong",
+  "path",
+  "html",
+  "htmlTargetsComplete",
+  "missingHtmlTargets",
+  "verificationStatus",
+  "verificationOk",
+  "verificationReport",
+  "verificationMarkdown",
+  "verificationHtml",
+  "verificationCheckedRequiredArtifacts",
+  "verificationChecks"
+] as const satisfies readonly (keyof ListRow)[];
+
+type ListField = typeof LIST_FIELDS[number];
+
+const LIST_FIELD_SET = new Set<string>(LIST_FIELDS);
+
+const DEFAULT_LIST_CSV_FIELDS = [
+  "sessionId",
+  "repo",
+  "createdAt",
+  "mode",
+  "level",
+  "score",
+  "wrong",
+  "verificationStatus",
+  "htmlTargetsComplete",
+  "missingHtmlTargets",
+  "path",
+  "html"
+] as const satisfies readonly ListField[];
+
 async function main(): Promise<void> {
   const parsed = parseArgs(process.argv.slice(2));
   try {
@@ -261,7 +322,7 @@ async function verifySession(parsed: ParsedArgs): Promise<void> {
 
 async function list(parsed: ParsedArgs): Promise<void> {
   const sessions = await listSessions(studiesRoot(parsed.flags));
-  const rows = await Promise.all(sessions.map(async (session) => {
+  const rows: ListRow[] = await Promise.all(sessions.map(async (session) => {
     const verification = await sessionVerificationSummary(session.outputPaths.root);
     const targetStatus = await htmlTargetStatus(openTargetPaths(session.outputPaths.html));
     const missingHtmlTargets = Object.entries(targetStatus)
@@ -320,16 +381,18 @@ async function list(parsed: ParsedArgs): Promise<void> {
   const sortedRows = sort ? sortSessionRows(targetRows, sort) : targetRows;
   const limit = optionalPositiveIntegerFlag(parsed.flags.limit, "limit");
   const filtered = limit === null ? sortedRows : sortedRows.slice(0, limit);
+  const fields = listFieldsFlag(parsed.flags.fields);
+  const projected = fields ? projectListRows(filtered, fields) : filtered;
   const format = stringFlag(parsed.flags.format) ?? "json";
   if (!["json", "markdown", "jsonl", "csv"].includes(format)) throw new Error("list supports --format json, markdown, jsonl, or csv.");
   if (format === "markdown") {
-    console.log(listMarkdown(filtered));
+    console.log(fields ? listFieldsMarkdown(projected, fields) : listMarkdown(filtered));
   } else if (format === "jsonl") {
-    process.stdout.write(listJsonl(filtered));
+    process.stdout.write(listJsonl(projected));
   } else if (format === "csv") {
-    process.stdout.write(listCsv(filtered));
+    process.stdout.write(listCsv(filtered, fields ?? [...DEFAULT_LIST_CSV_FIELDS]));
   } else {
-    console.log(JSON.stringify(filtered, null, 2));
+    console.log(JSON.stringify(projected, null, 2));
   }
 }
 
@@ -404,6 +467,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       status: ["passed", "failed", "missing", "all"],
       htmlTargets: ["complete", "missing", "all"],
       sort: ["newest", "oldest", "score-desc", "score-asc"],
+      fields: [...LIST_FIELDS],
       repo: true,
       createdFrom: true,
       createdTo: true,
@@ -528,6 +592,23 @@ function optionalCreatedAtBoundFlag(value: string | boolean | undefined, name: s
   const parsed = Date.parse(normalized);
   if (Number.isNaN(parsed)) throw new Error(`${name} must be an ISO date or timestamp.`);
   return parsed;
+}
+
+function listFieldsFlag(value: string | boolean | undefined): ListField[] | null {
+  if (value === undefined) return null;
+  if (typeof value !== "string" || value.trim() === "") throw new Error(`fields must be a comma-separated list of: ${LIST_FIELDS.join(", ")}.`);
+  const selected = value.split(",").map((field) => field.trim()).filter(Boolean);
+  const fields: ListField[] = [];
+  for (const field of selected) {
+    if (!LIST_FIELD_SET.has(field)) throw new Error(`list supports --fields ${LIST_FIELDS.join(", ")}.`);
+    if (!fields.includes(field as ListField)) fields.push(field as ListField);
+  }
+  if (fields.length === 0) throw new Error(`fields must be a comma-separated list of: ${LIST_FIELDS.join(", ")}.`);
+  return fields;
+}
+
+function projectListRows(rows: ListRow[], fields: ListField[]): Array<Partial<ListRow>> {
+  return rows.map((row) => Object.fromEntries(fields.map((field) => [field, row[field]])) as Partial<ListRow>);
 }
 
 function validateCreatedAtRange(createdFrom: number | null, createdTo: number | null): void {
@@ -867,49 +948,41 @@ function listJsonl(rows: unknown[]): string {
   return rows.map((row) => JSON.stringify(row)).join("\n") + (rows.length > 0 ? "\n" : "");
 }
 
-function listCsv(rows: Array<{
-  sessionId: string;
-  repo: string;
-  createdAt: string;
-  mode: string;
-  level: string;
-  score: number | null;
-  wrong: number;
-  path: string;
-  html: string;
-  htmlTargetsComplete: boolean;
-  missingHtmlTargets: string[];
-  verificationStatus: string;
-}>): string {
-  const header = [
-    "sessionId",
-    "repo",
-    "createdAt",
-    "mode",
-    "level",
-    "score",
-    "wrong",
-    "verificationStatus",
-    "htmlTargetsComplete",
-    "missingHtmlTargets",
-    "path",
-    "html"
-  ];
-  const lines = rows.map((row) => [
-    row.sessionId,
-    row.repo,
-    row.createdAt,
-    row.mode,
-    row.level,
-    row.score === null ? "" : String(row.score),
-    String(row.wrong),
-    row.verificationStatus,
-    String(row.htmlTargetsComplete),
-    row.missingHtmlTargets.join(";"),
-    row.path,
-    row.html
-  ].map(csvCell).join(","));
-  return [header.join(","), ...lines].join("\n") + "\n";
+function listFieldsMarkdown(rows: Array<Partial<ListRow>>, fields: ListField[]): string {
+  const body = rows.length === 0
+    ? "_No sessions found._"
+    : [
+      `| ${fields.map(markdownTableCell).join(" | ")} |`,
+      `| ${fields.map(() => "---").join(" | ")} |`,
+      ...rows.map((row) => `| ${fields.map((field) => markdownTableCell(listFieldDisplayValue(row[field]))).join(" | ")} |`)
+    ].join("\n");
+  return [
+    "# RepoTutor Sessions",
+    "",
+    `- Returned sessions: ${rows.length}`,
+    `- Fields: ${fields.join(", ")}`,
+    "",
+    body
+  ].join("\n");
+}
+
+function listCsv(rows: ListRow[], fields: readonly ListField[]): string {
+  const lines = rows.map((row) => fields.map((field) => csvCell(listFieldCsvValue(row[field]))).join(","));
+  return [fields.join(","), ...lines].join("\n") + "\n";
+}
+
+function listFieldDisplayValue(value: unknown): string {
+  if (value === null || value === undefined) return "none";
+  if (Array.isArray(value)) return value.length === 0 ? "none" : value.map(String).join(", ");
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
+function listFieldCsvValue(value: unknown): string {
+  if (value === null || value === undefined) return "";
+  if (Array.isArray(value)) return value.map(String).join(";");
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
 }
 
 function csvCell(value: string): string {
@@ -1190,7 +1263,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
+  list --repo owner/name --fields sessionId,repo,score,path --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);
