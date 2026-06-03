@@ -26,6 +26,7 @@ interface DoctorPayload {
     initCwd: string | null;
     envStudiesRoot: string | null;
   };
+  runtimeOptions: Record<string, boolean>;
   listFilters: Record<string, string[] | boolean>;
   openTargets: string[];
   modes: string[];
@@ -617,6 +618,11 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       studiesRoot: studiesRoot(parsed.flags),
       initCwd: process.env.INIT_CWD ?? null,
       envStudiesRoot: process.env.REPOTUTOR_STUDIES_ROOT ?? null
+    },
+    runtimeOptions: {
+      studiesRootFlag: true,
+      envStudiesRoot: true,
+      initCwdFallback: true
     },
     listFilters: {
       level: ["beginner", "junior", "senior", "all"],
@@ -1507,6 +1513,9 @@ function doctorMarkdown(payload: DoctorPayload): string {
   const filters = Object.entries(payload.listFilters)
     .map(([name, value]) => `- ${name}: ${Array.isArray(value) ? value.join(", ") : String(value)}`)
     .join("\n");
+  const runtimeOptions = Object.entries(payload.runtimeOptions)
+    .map(([name, ok]) => `- ${name}: ${ok ? "true" : "false"}`)
+    .join("\n");
   const security = Object.entries(payload.security)
     .map(([name, ok]) => `- ${name}: ${ok ? "true" : "false"}`)
     .join("\n");
@@ -1527,6 +1536,10 @@ function doctorMarkdown(payload: DoctorPayload): string {
     "## Runtime",
     "",
     runtime,
+    "",
+    "## Runtime Options",
+    "",
+    runtimeOptions,
     "",
     "## List Filters",
     "",
@@ -1807,7 +1820,8 @@ function help(): void {
   list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --output reports/list.json --output-manifest [manifest.json] --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
-  doctor --format json|markdown`);
+  doctor --format json|markdown
+  study/list/doctor option: --studies-root <dir>`);
 }
 
 await main();

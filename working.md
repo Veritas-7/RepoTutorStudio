@@ -734,6 +734,10 @@ to a private repository, and preserve resumable state in this file.
     `mode: quick` and `level: beginner`, doctor JSON/Markdown exposed the
     default study command, help listed default target usage, and typo command
     `lisst` still showed help.
+  - temp CLI studies-root option smoke generated
+    `/tmp/repotutor-studies-root-doc-smoke.M26C1G`; help listed
+    `--studies-root <dir>`, doctor JSON returned runtime option metadata, and
+    doctor Markdown included `## Runtime Options`.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -823,6 +827,7 @@ to a private repository, and preserve resumable state in this file.
   - `a141f33` saved session list field verification
   - `b94218d` saved session list verification report files
   - `db5312b` default saved list verification report paths
+  - `d361825` default study target command
 
 ## Next Actions
 

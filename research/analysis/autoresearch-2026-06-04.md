@@ -1373,6 +1373,27 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 87: Studies Root Runtime Option Discovery
+
+- Exposed the existing `--studies-root <dir>` runtime option in CLI help so
+  scripted users can find the isolated output-root control without reading
+  source.
+- Added `runtimeOptions` metadata to `repo-tutor doctor` JSON and a Markdown
+  `## Runtime Options` section covering `studiesRootFlag`,
+  `envStudiesRoot`, and `initCwdFallback`.
+- Source pattern: CodeBoarding exposes output-directory controls in CLI help;
+  RepoTutor now makes its comparable studies-root control visible in help and
+  doctor output.
+- RED smoke `/tmp/repotutor-studies-root-doc-red.*` failed on the old behavior
+  because help omitted `--studies-root <dir>`.
+- GREEN smoke generated `/tmp/repotutor-studies-root-doc-smoke.M26C1G`;
+  help listed `--studies-root <dir>`, doctor JSON returned
+  `runtimeOptions.studiesRootFlag: true`, and doctor Markdown included
+  `## Runtime Options`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
