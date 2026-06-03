@@ -245,6 +245,28 @@ export const InterfaceMapReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SymbolMapReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  totalSymbols: z.number().int().nonnegative(),
+  symbolsByKind: z.record(z.string(), z.number().int().nonnegative()),
+  symbols: z.array(z.object({
+    filePath: z.string(),
+    name: z.string(),
+    kind: z.enum(["function", "class", "constant", "interface", "type"]),
+    exported: z.boolean(),
+    sourceHref: z.string(),
+    lessonHref: z.string()
+  })),
+  filesWithSymbols: z.array(z.object({
+    filePath: z.string(),
+    count: z.number().int().nonnegative(),
+    lessonHref: z.string(),
+    sourceHref: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -455,6 +477,7 @@ export type EvidenceIndexReport = z.infer<typeof EvidenceIndexReportSchema>;
 export type SuggestedReadsReport = z.infer<typeof SuggestedReadsReportSchema>;
 export type RuntimeEnvironmentReport = z.infer<typeof RuntimeEnvironmentReportSchema>;
 export type InterfaceMapReport = z.infer<typeof InterfaceMapReportSchema>;
+export type SymbolMapReport = z.infer<typeof SymbolMapReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

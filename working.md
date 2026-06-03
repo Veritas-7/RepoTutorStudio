@@ -416,6 +416,27 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`
 - 2026-06-04: Pushed Upgrade 107 at `4c9c030` with HEAD and `origin/main`
   matching.
+- 2026-06-04: Cloned `carlrannaberg/codebase-map` under
+  `research/external-src/carlrannaberg-codebase-map` for read-only AutoResearch
+  source inspection. Source pattern: AST-based functions/classes/constants
+  extraction for LLM-optimized code maps.
+- 2026-06-04: Started a hundred-eighth AutoResearch upgrade: symbol map report.
+  RepoTutor now targets `analysis/symbol-map-report.json`,
+  `markdown/symbol-map.md`, `html/symbol-map.html`, and CLI
+  `open --target symbol-map`.
+- 2026-06-04: RED smoke for Upgrade 108 failed as expected at
+  `/tmp/repotutor-symbol-map-red.*` with
+  `missing analysis/symbol-map-report.json`.
+- 2026-06-04: GREEN smoke for Upgrade 108 generated
+  `/tmp/repotutor-symbol-map-smoke.Es0ZGq`; generated symbol map JSON,
+  Markdown, and HTML artifacts, detected `createThing`, `HiddenThing`, and
+  `VALUE`, included `symbol-map-card`, `symbol-source-link`, `codebase-map`,
+  `심볼 맵`, and `data-source-pattern="codebase-map"`, and
+  `open --target symbol-map` returned the new page.
+- 2026-06-04: Upgrade 108 verification passed:
+  - `pnpm build`
+  - `pnpm test`
+  - `pnpm audit:brief`
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`

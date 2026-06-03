@@ -89,6 +89,21 @@
         "component tracking",
         "data flow hints"
       ]
+    },
+    {
+      "repo": "carlrannaberg/codebase-map",
+      "url": "https://github.com/carlrannaberg/codebase-map",
+      "localPath": "research/external-src/carlrannaberg-codebase-map",
+      "stars": 16,
+      "forks": 2,
+      "license": "not specified",
+      "updatedAt": "2026-05-09T22:11:18Z",
+      "adoptedPatterns": [
+        "AST-based function class constant extraction",
+        "LLM-optimized project maps",
+        "dependency and symbol indexing",
+        "multiple output formats"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1465,6 +1480,28 @@
         "source links for API signals",
         "source links for component signals"
       ]
+    },
+    {
+      "name": "symbol map report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/symbol-map-report.json",
+        "markdown/symbol-map.md",
+        "html/symbol-map.html",
+        "open --target symbol-map",
+        "SymbolMapReportSchema",
+        "codebase-map-style function class constant symbol index"
+      ]
     }
   ],
   "verification": {
@@ -1623,6 +1660,9 @@
     "cliInterfaceMapOpenTargetSmoke": "PASS",
     "fixtureInterfaceMapSourceLinks": "PASS",
     "cliInterfaceMapSourceLinksSmoke": "PASS",
+    "fixtureSymbolMapReport": "PASS",
+    "cliSymbolMapSmoke": "PASS",
+    "cliSymbolMapOpenTargetSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
