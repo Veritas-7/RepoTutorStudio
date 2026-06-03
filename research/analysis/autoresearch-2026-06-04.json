@@ -287,6 +287,22 @@
         "README license references as optional low-confidence hints",
         "human compliance review warnings"
       ]
+    },
+    {
+      "repo": "anchore/syft",
+      "url": "https://github.com/anchore/syft",
+      "localPath": "research/external-src/anchore-syft",
+      "stars": 9064,
+      "forks": 868,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-02T20:22:49Z",
+      "adoptedPatterns": [
+        "SBOM source descriptor",
+        "package artifacts with name version type PURL and locations",
+        "file artifacts and metadata evidence",
+        "artifact relationships",
+        "CycloneDX SPDX and Syft JSON output readiness notes"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1968,6 +1984,28 @@
         "LicenseRightsReportSchema",
         "Licensee license file detection filename score SPDX confidence matched_files package metadata README references human compliance review"
       ]
+    },
+    {
+      "name": "Software bill of materials report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/sbom-report.json",
+        "markdown/sbom.md",
+        "html/sbom.html",
+        "open --target sbom",
+        "SbomReportSchema",
+        "Syft SBOM source descriptor artifacts packages file metadata relationships CycloneDX SPDX output formats"
+      ]
     }
   ],
   "verification": {
@@ -2193,7 +2231,13 @@
     "cliLicenseRightsOpenTargetSmoke": "PASS",
     "buildLicenseRights": "PASS",
     "testLicenseRights": "PASS",
-    "auditBriefLicenseRights13": "PASS"
+    "auditBriefLicenseRights13": "PASS",
+    "fixtureSbomReport": "PASS",
+    "cliSbomSmoke": "PASS",
+    "cliSbomOpenTargetSmoke": "PASS",
+    "buildSbom": "PASS",
+    "testSbom": "PASS",
+    "auditBriefSbom13": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"

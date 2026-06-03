@@ -34,6 +34,7 @@ import {
   LearningJournalReport,
   ProjectActivityReport,
   LicenseRightsReport,
+  SbomReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -74,6 +75,7 @@ export interface AnalysisBundle {
   learningJournalReport: LearningJournalReport;
   projectActivityReport: ProjectActivityReport;
   licenseRightsReport: LicenseRightsReport;
+  sbomReport: SbomReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -114,8 +116,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const projectActivityReport = buildProjectActivityReport(context, sourceSnapshotReport, fileLessons, dependencyHealthReport, decisionRecordReport);
   const licenseRightsReport = await buildLicenseRightsReport(walk);
+  const sbomReport = await buildSbomReport(context, walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -1760,6 +1763,328 @@ function selectProjectLicense(
     evidence: "No project license could be detected from Licensee-style file, package, or README signals.",
     sourceHref: null
   };
+}
+
+async function buildSbomReport(context: AnalysisContext, walk: WalkResult): Promise<SbomReport> {
+  const packageManifests: SbomReport["packageManifests"] = [];
+  const packageArtifacts: SbomReport["packageArtifacts"] = [];
+  const fileArtifacts: SbomReport["fileArtifacts"] = [];
+  const relationships: SbomReport["relationships"] = [];
+  const sourceNode = "source:repository";
+
+  for (const file of walk.files) {
+    const artifactKind = sbomFileArtifactKind(file.relPath);
+    if (artifactKind) {
+      fileArtifacts.push({
+        filePath: file.relPath,
+        artifactKind,
+        size: file.size,
+        sourceHref: `source/${encodedPath(file.relPath)}`
+      });
+      relationships.push({
+        from: sourceNode,
+        to: file.relPath,
+        relationshipType: "contains",
+        evidenceHref: `source/${encodedPath(file.relPath)}`
+      });
+    }
+
+    const manifest = await sbomManifestArtifacts(file);
+    if (!manifest) continue;
+    packageManifests.push(manifest.manifest);
+    packageArtifacts.push(...manifest.packages);
+    relationships.push(...manifest.relationships);
+  }
+
+  packageManifests.sort((a, b) => a.filePath.localeCompare(b.filePath));
+  packageArtifacts.sort((a, b) => a.ecosystem.localeCompare(b.ecosystem) || a.name.localeCompare(b.name) || (a.version ?? "").localeCompare(b.version ?? ""));
+  fileArtifacts.sort((a, b) => a.filePath.localeCompare(b.filePath));
+
+  const reviewWarnings: SbomReport["reviewWarnings"] = [];
+  if (packageManifests.length === 0) {
+    reviewWarnings.push({
+      severity: "error",
+      message: "Syft-style SBOM inventory found no supported package manifests.",
+      relatedHref: "html/sbom.html"
+    });
+  }
+  if (packageArtifacts.length > 0 && !fileArtifacts.some((artifact) => artifact.artifactKind === "lockfile")) {
+    reviewWarnings.push({
+      severity: "warn",
+      message: "Package manifests were found, but no lockfile artifact was detected; exact resolved package versions may need a package-manager lockfile.",
+      relatedHref: "html/sbom.html"
+    });
+  }
+  if (fileArtifacts.some((artifact) => artifact.artifactKind === "container")) {
+    reviewWarnings.push({
+      severity: "info",
+      message: "Container build files were detected. This static report records them as evidence but does not inspect built images or OS packages.",
+      relatedHref: "html/sbom.html"
+    });
+  }
+
+  return {
+    summary: `Syft식 SBOM report: package manifest ${packageManifests.length}개, package artifact ${packageArtifacts.length}개, file artifact ${fileArtifacts.length}개, relationship ${relationships.length}개를 정적 분석으로 기록했습니다.`,
+    sourcePattern: "Syft SBOM source descriptor artifacts packages file metadata relationships CycloneDX SPDX output formats",
+    sourceDescriptor: {
+      sourceType: context.sourceType ?? null,
+      sourceUrl: context.sourceUrl ?? null,
+      localSourcePath: context.localSourcePath ?? null,
+      branch: context.branch ?? null,
+      commitHash: context.commitHash ?? null,
+      descriptorName: "RepoTutor static SBOM",
+      descriptorVersion: "1"
+    },
+    packageManifests,
+    packageArtifacts,
+    fileArtifacts,
+    relationships,
+    outputFormats: [
+      {
+        format: "syft-json",
+        readiness: "partial",
+        reason: "RepoTutor emits a static educational SBOM report, not Syft's full schema with resolver metadata."
+      },
+      {
+        format: "cyclonedx-json",
+        readiness: "partial",
+        reason: "Package name/version/PURL fields are present where manifest data allows, but this report does not emit a full CycloneDX document."
+      },
+      {
+        format: "spdx-json",
+        readiness: "partial",
+        reason: "Package and license hints are recorded, but SPDX document namespace, checksums, and full package verification are outside the static learner report."
+      }
+    ],
+    reviewWarnings,
+    learnerNextSteps: [
+      "Lockfile가 missing이면 실제 배포 전 package manager lockfile로 resolved version을 확인하세요.",
+      "container artifact가 있으면 Syft 같은 실제 SBOM 도구로 image/filesystem을 별도 스캔하세요.",
+      "PURL이 없는 package artifact는 manifest가 이름/버전 정보를 충분히 제공하는지 확인하세요.",
+      "이 report는 학습용 정적 inventory입니다. 보안 스캔이나 규제 제출용 SBOM을 대체하지 않습니다."
+    ]
+  };
+}
+
+async function sbomManifestArtifacts(file: WalkResult["files"][number]): Promise<{
+  manifest: SbomReport["packageManifests"][number];
+  packages: SbomReport["packageArtifacts"];
+  relationships: SbomReport["relationships"];
+} | null> {
+  const base = path.basename(file.relPath);
+  if (!["package.json", "Cargo.toml", "requirements.txt", "pyproject.toml", "go.mod"].includes(base)) return null;
+  const text = await readTextIfSafe(file.absPath, 160_000);
+  if (text === null) return null;
+  const ecosystem = sbomEcosystemForManifest(file.relPath);
+  const sourceHref = `source/${encodedPath(file.relPath)}`;
+  const packages = parseSbomPackages(file.relPath, text, ecosystem);
+  const directDependencies = packages.filter((pkg) => !/dev|test/i.test(pkg.foundBy)).length;
+  const devDependencies = packages.length - directDependencies;
+  return {
+    manifest: {
+      filePath: file.relPath,
+      ecosystem,
+      packageCount: packages.length,
+      directDependencies,
+      devDependencies,
+      sourceHref
+    },
+    packages,
+    relationships: [
+      {
+        from: file.relPath,
+        to: ecosystem,
+        relationshipType: "uses-ecosystem",
+        evidenceHref: sourceHref
+      },
+      ...packages.map((pkg) => ({
+        from: file.relPath,
+        to: `${pkg.packageType}:${pkg.name}`,
+        relationshipType: "declares" as const,
+        evidenceHref: sourceHref
+      })),
+      ...packages.map((pkg) => ({
+        from: `${pkg.packageType}:${pkg.name}`,
+        to: file.relPath,
+        relationshipType: "evidence-for" as const,
+        evidenceHref: sourceHref
+      }))
+    ]
+  };
+}
+
+function parseSbomPackages(filePath: string, text: string, ecosystem: string): SbomReport["packageArtifacts"] {
+  const base = path.basename(filePath);
+  if (base === "package.json") return parsePackageJsonSbom(filePath, text, ecosystem);
+  if (base === "Cargo.toml") return parseCargoSbom(filePath, text, ecosystem);
+  if (base === "requirements.txt") return parseRequirementsSbom(filePath, text, ecosystem);
+  if (base === "pyproject.toml") return parsePyprojectSbom(filePath, text, ecosystem);
+  if (base === "go.mod") return parseGoModSbom(filePath, text, ecosystem);
+  return [];
+}
+
+function parsePackageJsonSbom(filePath: string, text: string, ecosystem: string): SbomReport["packageArtifacts"] {
+  try {
+    const json = JSON.parse(text) as {
+      name?: unknown;
+      version?: unknown;
+      license?: unknown;
+      dependencies?: Record<string, string>;
+      devDependencies?: Record<string, string>;
+    };
+    const packages: SbomReport["packageArtifacts"] = [];
+    if (typeof json.name === "string") {
+      packages.push(sbomPackageArtifact({
+        name: json.name,
+        version: typeof json.version === "string" ? json.version : null,
+        ecosystem,
+        packageType: "npm",
+        foundBy: "package-json-project",
+        filePath,
+        licenses: typeof json.license === "string" ? [json.license] : []
+      }));
+    }
+    for (const [name, version] of Object.entries(json.dependencies ?? {})) {
+      packages.push(sbomPackageArtifact({ name, version, ecosystem, packageType: "npm", foundBy: "package-json-dependencies", filePath, licenses: [] }));
+    }
+    for (const [name, version] of Object.entries(json.devDependencies ?? {})) {
+      packages.push(sbomPackageArtifact({ name, version, ecosystem, packageType: "npm", foundBy: "package-json-devDependencies", filePath, licenses: [] }));
+    }
+    return packages;
+  } catch {
+    return [];
+  }
+}
+
+function parseCargoSbom(filePath: string, text: string, ecosystem: string): SbomReport["packageArtifacts"] {
+  const packages: SbomReport["packageArtifacts"] = [];
+  const projectName = text.match(/^\s*name\s*=\s*["']([^"']+)["']/m)?.[1];
+  if (projectName) {
+    packages.push(sbomPackageArtifact({
+      name: projectName,
+      version: text.match(/^\s*version\s*=\s*["']([^"']+)["']/m)?.[1] ?? null,
+      ecosystem,
+      packageType: "cargo",
+      foundBy: "cargo-project",
+      filePath,
+      licenses: text.match(/^\s*license\s*=\s*["']([^"']+)["']/m)?.[1]?.split(/\s+OR\s+|\s+AND\s+/i) ?? []
+    }));
+  }
+  for (const name of manifestSectionKeys(text, "dependencies")) {
+    packages.push(sbomPackageArtifact({ name, version: null, ecosystem, packageType: "cargo", foundBy: "cargo-dependencies", filePath, licenses: [] }));
+  }
+  for (const name of manifestSectionKeys(text, "dev-dependencies")) {
+    packages.push(sbomPackageArtifact({ name, version: null, ecosystem, packageType: "cargo", foundBy: "cargo-dev-dependencies", filePath, licenses: [] }));
+  }
+  return packages;
+}
+
+function parseRequirementsSbom(filePath: string, text: string, ecosystem: string): SbomReport["packageArtifacts"] {
+  return text.split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("#") && !line.startsWith("-"))
+    .slice(0, 80)
+    .map((line) => {
+      const [name, version] = line.split(/[=<>~!]=?/);
+      return sbomPackageArtifact({ name: name.trim(), version: version?.trim() ?? null, ecosystem, packageType: "pypi", foundBy: "requirements.txt", filePath, licenses: [] });
+    });
+}
+
+function parsePyprojectSbom(filePath: string, text: string, ecosystem: string): SbomReport["packageArtifacts"] {
+  const packages: SbomReport["packageArtifacts"] = [];
+  const projectName = text.match(/^\s*name\s*=\s*["']([^"']+)["']/m)?.[1];
+  if (projectName) {
+    packages.push(sbomPackageArtifact({
+      name: projectName,
+      version: text.match(/^\s*version\s*=\s*["']([^"']+)["']/m)?.[1] ?? null,
+      ecosystem,
+      packageType: "pypi",
+      foundBy: "pyproject-project",
+      filePath,
+      licenses: text.match(/^\s*license\s*=\s*["']([^"']+)["']/m)?.[1] ? [text.match(/^\s*license\s*=\s*["']([^"']+)["']/m)?.[1] as string] : []
+    }));
+  }
+  const dependencyBlock = text.match(/dependencies\s*=\s*\[([\s\S]*?)\]/m)?.[1] ?? "";
+  for (const match of dependencyBlock.matchAll(/["']([^"']+)["']/g)) {
+    const [name, version] = match[1].split(/[=<>~!]=?/);
+    packages.push(sbomPackageArtifact({ name: name.trim(), version: version?.trim() ?? null, ecosystem, packageType: "pypi", foundBy: "pyproject-dependencies", filePath, licenses: [] }));
+  }
+  return packages;
+}
+
+function parseGoModSbom(filePath: string, text: string, ecosystem: string): SbomReport["packageArtifacts"] {
+  const packages: SbomReport["packageArtifacts"] = [];
+  const moduleName = text.match(/^module\s+(.+)$/m)?.[1]?.trim();
+  if (moduleName) {
+    packages.push(sbomPackageArtifact({ name: moduleName, version: null, ecosystem, packageType: "go", foundBy: "go-module", filePath, licenses: [] }));
+  }
+  const requireLines = [...text.matchAll(/^\s*require\s+([^\s]+)\s+([^\s]+)/gm)].map((match) => [match[1], match[2]] as const);
+  const blockLines = [...text.matchAll(/^\s*([^\s()]+)\s+(v[^\s]+)(?:\s+\/\/.*)?$/gm)].map((match) => [match[1], match[2]] as const);
+  for (const [name, version] of [...requireLines, ...blockLines].slice(0, 80)) {
+    if (name === moduleName || name === "module" || name === "go") continue;
+    packages.push(sbomPackageArtifact({ name, version, ecosystem, packageType: "go", foundBy: "go-mod-require", filePath, licenses: [] }));
+  }
+  return packages;
+}
+
+function sbomPackageArtifact(input: {
+  name: string;
+  version: string | null;
+  ecosystem: string;
+  packageType: string;
+  foundBy: string;
+  filePath: string;
+  licenses: string[];
+}): SbomReport["packageArtifacts"][number] {
+  const version = normalizeManifestVersion(input.version);
+  return {
+    name: input.name,
+    version,
+    ecosystem: input.ecosystem,
+    packageType: input.packageType,
+    purl: packageUrl(input.packageType, input.name, version),
+    licenses: input.licenses.filter(Boolean),
+    foundBy: input.foundBy,
+    locations: [input.filePath],
+    evidenceHref: `source/${encodedPath(input.filePath)}`
+  };
+}
+
+function sbomFileArtifactKind(filePath: string): SbomReport["fileArtifacts"][number]["artifactKind"] | null {
+  const base = path.basename(filePath);
+  if (["package-lock.json", "pnpm-lock.yaml", "yarn.lock", "Cargo.lock", "poetry.lock", "Pipfile.lock", "go.sum"].includes(base)) return "lockfile";
+  if (["package.json", "Cargo.toml", "requirements.txt", "pyproject.toml", "go.mod"].includes(base)) return "manifest";
+  if (/^Dockerfile/i.test(base) || /docker-compose\.ya?ml$/i.test(base)) return "container";
+  if (/\.ya?ml$/i.test(base) || /\.toml$/i.test(base)) return "config";
+  return null;
+}
+
+function sbomEcosystemForManifest(filePath: string): string {
+  const base = path.basename(filePath);
+  if (base === "package.json") return "JavaScript/Node";
+  if (base === "Cargo.toml") return "Rust/Cargo";
+  if (base === "requirements.txt" || base === "pyproject.toml") return "Python";
+  if (base === "go.mod") return "Go";
+  return inferEcosystem(filePath);
+}
+
+function manifestSectionKeys(text: string, section: string): string[] {
+  const escaped = section.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const block = text.match(new RegExp(`^\\s*\\[${escaped}\\]\\s*$([\\s\\S]*?)(?=^\\s*\\[|$)`, "m"))?.[1] ?? "";
+  return [...block.matchAll(/^\s*([A-Za-z0-9_-]+)\s*=/gm)].map((match) => match[1]).filter(Boolean);
+}
+
+function normalizeManifestVersion(value: string | null): string | null {
+  if (!value) return null;
+  const cleaned = value.trim().replace(/^[\^~<>=!* ]+/, "");
+  return cleaned || value.trim();
+}
+
+function packageUrl(packageType: string, name: string, version: string | null): string | null {
+  const normalizedName = name.trim();
+  if (!normalizedName) return null;
+  const encodedName = normalizedName.split("/").map(encodeURIComponent).join("/");
+  return `pkg:${packageType}/${encodedName}${version ? `@${encodeURIComponent(version)}` : ""}`;
 }
 
 function isRelativeImport(importText: string): boolean {

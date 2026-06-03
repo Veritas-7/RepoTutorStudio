@@ -1449,6 +1449,32 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`: PASS, 13/13 audit reports
 - 2026-06-04: Pushed AutoResearch Upgrade 121:
   - `f7c8f7a` license rights report
+- 2026-06-04: AutoResearch Upgrade 122 candidate selected:
+  `anchore/syft` (`https://github.com/anchore/syft`; public Apache-2.0;
+  9,064 stars; 868 forks; updated 2026-06-02T20:22:49Z). Cloned ignored
+  external source to `research/external-src/anchore-syft` and inspected
+  README plus SBOM/package/relationship source files without executing it.
+- 2026-06-04: RED sbom smoke generated
+  `/tmp/repotutor-sbom-red-studies.2uhpgw/2026-06-04/local__simple-ts-app__main__36517a48`;
+  old build was missing `analysis/sbom-report.json`, `markdown/sbom.md`, and
+  `html/sbom.html` as expected.
+- 2026-06-04: Implemented Syft-style software bill of materials report:
+  `SbomReportSchema`, `analysis/sbom-report.json`, `markdown/sbom.md`,
+  `html/sbom.html`, source descriptor, package manifests, package artifacts,
+  file artifacts, relationships, output-format readiness notes, review
+  warnings, manifest/session-verification coverage, learning-path linkage, and
+  `open --target sbom`.
+- 2026-06-04: GREEN sbom smoke generated
+  `/tmp/repotutor-sbom-green-studies.HFeXCi/2026-06-04/local__simple-ts-app__main__36517a48`;
+  confirmed `verificationCheckedRequiredArtifacts=66`, package manifest 1,
+  package artifacts 3, file artifact 1, relationships 8, `sourceDescriptor`,
+  `packageArtifacts`, `fileArtifacts`, `outputFormats`, `sbom-card`,
+  `data-source-pattern="Syft"`, manifest/learning-path entries, and
+  `open --target sbom` -> `html/sbom.html`.
+- 2026-06-04: Verification for Upgrade 122:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 13/13 audit reports
 
 ## Next Actions
 
