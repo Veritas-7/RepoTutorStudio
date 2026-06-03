@@ -387,6 +387,11 @@ to a private repository, and preserve resumable state in this file.
     `open --target verification` returned an existing file, then deleting
     `html/session-verification.html` made the same command exit 1 with
     `Open target file not found`
+  - temp CLI open-all smoke generated
+    `/tmp/repotutor-open-all-smoke.zJptpK`; `open --target all` returned JSON
+    paths for `index`, `verification`, `evidence`, `quiz`, and
+    `component-graph`, and removing `html/quiz.html` made the command exit 1
+    with `Open target file not found`
   - temp CLI resume-targets smoke generated
     `/tmp/repotutor-resume-targets-smoke.nVkVm8/2026-06-04/local__simple-ts-app__main__643161c4`;
     `repo-tutor resume` returned `verificationStatus: passed`, 17
@@ -482,6 +487,7 @@ to a private repository, and preserve resumable state in this file.
   - `1411f76` repo-filtered session list
   - `b35ca6d` sorted session list
   - `d4ae5b8` learner-level session filters
+  - `c44f095` resume learning context
 
 ## Next Actions
 

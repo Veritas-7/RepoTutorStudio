@@ -820,6 +820,17 @@ Local verification:
   `/tmp/repotutor-resume-level-smoke.5JYl1L`; `repo-tutor resume` returned
   `mode: deep` and `level: junior`, and `repo-tutor resume --format markdown`
   returned `Study mode: deep` and `Learner level: junior`.
+
+### Upgrade 48: Open All HTML Targets
+
+- Added `repo-tutor open <session> --target all` to return a JSON map of all
+  concrete HTML target paths for shell automation and handoff scripts.
+- The `all` path is fail-closed: every target file is checked before output, so
+  a stale or partial HTML export is surfaced immediately.
+- Temp CLI open-all smoke generated `/tmp/repotutor-open-all-smoke.zJptpK`;
+  `open --target all` returned existing paths for `index`, `verification`,
+  `evidence`, `quiz`, and `component-graph`, and deleting `html/quiz.html`
+  made the command exit 1 with `Open target file not found`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

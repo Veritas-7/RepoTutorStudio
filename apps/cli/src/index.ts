@@ -277,6 +277,14 @@ async function openSession(parsed: ParsedArgs): Promise<void> {
   }
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const target = stringFlag(parsed.flags.target) ?? "index";
+  if (target === "all") {
+    const targetPaths = openTargetPaths(path.join(sessionRoot, "html"));
+    for (const [targetName, filePath] of Object.entries(targetPaths)) {
+      await assertReadableFile(filePath, `Open target file not found for ${targetName}: ${filePath}`);
+    }
+    console.log(JSON.stringify(targetPaths, null, 2));
+    return;
+  }
   const fileName = openTargetFile(target);
   const htmlPath = path.join(sessionRoot, "html", fileName);
   await assertReadableFile(htmlPath, `Open target file not found: ${htmlPath}`);
@@ -674,7 +682,7 @@ function help(): void {
   verify-evidence <session-id-or-path>
   verify-session <session-id-or-path> --format json|markdown
   list --repo owner/name --level beginner|junior|senior|all --status passed|failed|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
-  open <session-id-or-path> --target verification|evidence|quiz
+  open <session-id-or-path> --target verification|evidence|quiz|all
   open --list-targets
   doctor`);
 }
