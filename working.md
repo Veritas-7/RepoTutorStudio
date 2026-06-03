@@ -98,6 +98,10 @@ to a private repository, and preserve resumable state in this file.
   verification. `verify-export` now returns a non-zero CLI exit when integrity
   verification fails, and tests/smoke prove a changed `html/index.html` is
   reported as `ok: false`.
+- 2026-06-04: Applied a sixteenth AutoResearch upgrade: export integrity
+  reporting. CLI `repo-tutor export --format html|zip` now verifies the freshly
+  rendered HTML manifest before returning, fails closed if verification fails,
+  and includes `integrityOk` plus `integrityCheckedFiles` in export JSON.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -143,6 +147,10 @@ to a private repository, and preserve resumable state in this file.
     `/tmp/repotutor-tamper-verify-smoke.BRu06X/2026-06-04/local__simple-ts-app__main__67bd1c8e`,
     appended to `html/index.html`, and confirmed `verify-export` returned exit
     code 1, `ok: false`, and failure path `html/index.html`
+  - temp CLI export-integrity JSON smoke generated
+    `/tmp/repotutor-export-integrity-json-smoke.dkSgoj/2026-06-04/local__simple-ts-app__main__f5a93a48`
+    and returned `integrityOk: true`, `integrityCheckedFiles: 16`, 18 ZIP files,
+    and 76,489 ZIP bytes
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -161,6 +169,7 @@ to a private repository, and preserve resumable state in this file.
   - `3a2cb78` file navigation filters
   - `bf88883` export manifest integrity metadata
   - `67bd1c8` export integrity verifier
+  - `f5a93a4` tamper-negative export verification
 
 ## Next Actions
 
