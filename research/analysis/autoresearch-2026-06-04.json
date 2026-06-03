@@ -358,6 +358,19 @@
         "html/evidence.html source evidence index",
         "html/manifest.json evidence entrypoint"
       ]
+    },
+    {
+      "name": "source evidence kind filters",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "html/evidence.html evidence kind toolbar",
+        "html/evidence.html data-evidence-kind-filter buttons",
+        "html/assets/app.js evidence kind filter handler"
+      ]
     }
   ],
   "verification": {
@@ -401,6 +414,8 @@
     "cliSourceLinkSmoke": "PASS",
     "fixtureEvidenceIndex": "PASS",
     "cliEvidenceIndexSmoke": "PASS",
+    "fixtureEvidenceKindFilters": "PASS",
+    "cliEvidenceKindFilterSmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },

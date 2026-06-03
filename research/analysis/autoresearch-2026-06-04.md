@@ -327,6 +327,17 @@ Transferable patterns:
 - `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
   verify evidence index artifacts.
 
+### Upgrade 23: Source Evidence Kind Filters
+
+- `packages/html/src/templates.ts`: adds an evidence-kind filter toolbar to
+  `html/evidence.html`.
+- `packages/html/src/templates.ts`: reuses evidence kind counts to render
+  import, export, entry, config, test, and text filter buttons.
+- `html/assets/app.js`: combines evidence kind filtering with global search and
+  existing file/component filters.
+- `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
+  verify evidence kind filter markers.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -418,6 +429,11 @@ Local verification:
   with `html/evidence.html`, `markdown/evidence.md`, `evidence-index-cards`,
   links to `files.html#src-main.ts`, `../source/src/main.ts`, and manifest
   entrypoint `html/evidence.html`.
+- Temp CLI evidence-kind-filter smoke generated:
+  `/tmp/repotutor-evidence-kind-filter-smoke.HkAyVZ/2026-06-04/local__simple-ts-app__main__a3e504ae`
+  with `evidence-kind-toolbar`, six `data-evidence-kind-filter` buttons,
+  `data-evidence-kind="import"`, and matching `evidenceKind` / `evidenceOk`
+  logic in `html/assets/app.js`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
