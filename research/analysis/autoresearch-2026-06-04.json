@@ -1007,6 +1007,18 @@
         "manifest fieldPreset metadata",
         "manifest filters metadata"
       ]
+    },
+    {
+      "name": "saved session list manifest schema versioning",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "manifest schemaVersion metadata",
+        "verify-list-output schemaVersion JSON",
+        "verify-list-output schema version Markdown"
+      ]
     }
   ],
   "verification": {
@@ -1116,6 +1128,7 @@
     "cliVerifyListOutputSmoke": "PASS",
     "cliListCustomManifestSmoke": "PASS",
     "cliListManifestMetadataSmoke": "PASS",
+    "cliListManifestSchemaSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

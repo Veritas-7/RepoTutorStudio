@@ -1253,6 +1253,21 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 80: Saved Session List Manifest Schema Versioning
+
+- Added `schemaVersion: 1` to newly generated list output manifests.
+- `repo-tutor verify-list-output` now reports the schema version in both JSON
+  and Markdown output while still allowing older manifests to show
+  `schemaVersion: null`.
+- Temp CLI list-manifest-schema smoke generated
+  `/tmp/repotutor-list-manifest-schema-smoke.pMWIQQ`; one fixture session was
+  created, saved JSONL output wrote `schemaVersion: 1`, `verify-list-output`
+  JSON reported `schemaVersion: 1`, and verifier Markdown included
+  `Schema version: 1`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
