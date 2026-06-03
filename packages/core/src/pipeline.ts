@@ -107,6 +107,7 @@ async function writeAllArtifacts(session: StudySession, analysis: AnalysisBundle
     writeJson(path.join(session.outputPaths.analysis, "folder-lessons.json"), analysis.folderLessons),
     writeJson(path.join(session.outputPaths.analysis, "file-lessons.json"), analysis.fileLessons),
     writeJson(path.join(session.outputPaths.analysis, "coverage-report.json"), analysis.coverageReport),
+    writeJson(path.join(session.outputPaths.analysis, "evidence-index-report.json"), analysis.evidenceIndexReport),
     writeJson(path.join(session.outputPaths.analysis, "component-graph-report.json"), analysis.componentGraphReport),
     writeJson(path.join(session.outputPaths.analysis, "source-snapshot-report.json"), analysis.sourceSnapshotReport),
     writeJson(path.join(session.outputPaths.analysis, "incremental-report.json"), analysis.incrementalReport),
