@@ -1272,6 +1272,20 @@
         "isPrimary tour marker",
         "CodeTour-style file-linked steps"
       ]
+    },
+    {
+      "name": "learning path progress persistence",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "data-learning-step-complete checkboxes",
+        "repotutor:learning-path localStorage key",
+        "learningProgress browser state",
+        "reload-persistent learning path completion"
+      ]
     }
   ],
   "verification": {
@@ -1409,6 +1423,8 @@
     "cliLearningPathSmoke": "PASS",
     "fixtureLearningPathTourAsset": "PASS",
     "cliLearningPathTourAssetSmoke": "PASS",
+    "fixtureLearningPathProgress": "PASS",
+    "cliLearningPathProgressSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

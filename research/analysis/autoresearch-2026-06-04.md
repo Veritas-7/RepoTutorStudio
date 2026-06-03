@@ -1646,6 +1646,26 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 99: Learning Path Progress Persistence
+
+- Added `data-learning-step-complete` checkboxes to each `learning-path.html`
+  step so learners can mark tour steps as complete.
+- The offline JavaScript now stores completed learning path step numbers in
+  localStorage under `repotutor:learning-path:<path>`, restores checked state on
+  reload, and updates the saved set on change.
+- Source pattern: microsoft/codetour stores per-tour step progress and exposes
+  completed state in the tree; RepoTutor maps that to lightweight browser-local
+  progress for the static learning path.
+- RED smoke `/tmp/repotutor-learning-progress-red.*` failed on the old behavior
+  with `learning path missing data-learning-step-complete`.
+- GREEN smoke generated `/tmp/repotutor-learning-progress-smoke.6p1hD6`;
+  generated `learning-path.html` included `data-learning-step-complete` and
+  `학습 완료`, while `assets/app.js` included `repotutor:learning-path`,
+  `localStorage`, `learningProgress`, and `[data-learning-step-complete]`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
