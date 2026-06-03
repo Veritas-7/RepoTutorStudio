@@ -205,6 +205,9 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Applied a forty-second AutoResearch upgrade: bounded session
   listing. CLI `repo-tutor list --limit N` now limits JSON and Markdown session
   output after filters, and invalid limits fail closed.
+- 2026-06-04: Applied a forty-third AutoResearch upgrade: verification-status
+  session filters. CLI `repo-tutor list --status passed|failed|missing|all`
+  now filters sessions by verification state before limit and output rendering.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -395,6 +398,11 @@ to a private repository, and preserve resumable state in this file.
     returned one JSON row, `list --verified-only --limit 1 --format markdown`
     returned `Returned sessions: 1`, and `--limit 0` exited 1 with
     `limit must be a positive integer`
+  - temp CLI list-status smoke generated `/tmp/repotutor-list-status-smoke.ZfCoNP`;
+    after removing one generated session verification report, `list --status
+    passed` returned one passed row, `list --status missing` returned one
+    missing row in JSON and Markdown, and `--status stale` exited 1 with
+    `list supports --status`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -440,6 +448,7 @@ to a private repository, and preserve resumable state in this file.
   - `5fc5ecd` enriched resume output
   - `b88d17f` Markdown resume output
   - `9e52046` Markdown session list
+  - `0544e48` bounded session list output
 
 ## Next Actions
 

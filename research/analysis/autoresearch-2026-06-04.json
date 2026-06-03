@@ -597,6 +597,17 @@
         "repo-tutor list --limit N",
         "fail-closed positive integer validation for list limits"
       ]
+    },
+    {
+      "name": "verification-status session filters",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --status passed|failed|missing|all",
+        "fail-closed validation for list status filters"
+      ]
     }
   ],
   "verification": {
@@ -669,6 +680,7 @@
     "cliResumeMarkdownSmoke": "PASS",
     "cliListMarkdownSmoke": "PASS",
     "cliListLimitSmoke": "PASS",
+    "cliListStatusSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

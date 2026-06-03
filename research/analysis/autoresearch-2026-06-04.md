@@ -541,6 +541,16 @@ Transferable patterns:
   `limit must be a positive integer`.
 - `scripts/compliance-audit.mjs`: verifies the list limit CLI surface.
 
+### Upgrade 43: Verification-Status Session Filters
+
+- `apps/cli/src/index.ts`: `repo-tutor list --status passed|failed|missing|all`
+  now filters sessions by verification status.
+- `apps/cli/src/index.ts`: status filtering happens before `--verified-only`,
+  `--limit`, and JSON/Markdown rendering.
+- `apps/cli/src/index.ts`: invalid status values fail closed with
+  `list supports --status passed, failed, missing, or all.`
+- `scripts/compliance-audit.mjs`: verifies the list status CLI surface.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -743,6 +753,11 @@ Local verification:
   `list --verified-only --limit 1 --format markdown` returned
   `Returned sessions: 1`, and `--limit 0` exited 1 with
   `limit must be a positive integer`.
+- Temp CLI list-status smoke generated:
+  `/tmp/repotutor-list-status-smoke.ZfCoNP`; after removing one generated
+  session verification report, `list --status passed` returned one passed row,
+  `list --status missing` returned one missing row in JSON and Markdown, and
+  `--status stale` exited 1 with `list supports --status`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

@@ -241,7 +241,9 @@ async function list(parsed: ParsedArgs): Promise<void> {
       verificationChecks: verification.checks
     };
   }));
-  const verifiedRows = parsed.flags["verified-only"] === true ? rows.filter((row) => row.verificationOk === true) : rows;
+  const status = verificationStatusFlag(parsed.flags.status);
+  const statusRows = status === "all" ? rows : rows.filter((row) => row.verificationStatus === status);
+  const verifiedRows = parsed.flags["verified-only"] === true ? statusRows.filter((row) => row.verificationOk === true) : statusRows;
   const limit = optionalPositiveIntegerFlag(parsed.flags.limit, "limit");
   const filtered = limit === null ? verifiedRows : verifiedRows.slice(0, limit);
   const format = stringFlag(parsed.flags.format) ?? "json";
@@ -349,6 +351,13 @@ function optionalPositiveIntegerFlag(value: string | boolean | undefined, name: 
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed <= 0) throw new Error(`${name} must be a positive integer.`);
   return parsed;
+}
+
+function verificationStatusFlag(value: string | boolean | undefined): "all" | "passed" | "failed" | "missing" {
+  if (value === undefined) return "all";
+  if (typeof value !== "string") throw new Error("list supports --status passed, failed, missing, or all.");
+  if (["all", "passed", "failed", "missing"].includes(value)) return value as "all" | "passed" | "failed" | "missing";
+  throw new Error("list supports --status passed, failed, missing, or all.");
 }
 
 async function assertReadableFile(filePath: string, message: string): Promise<void> {
@@ -607,7 +616,7 @@ function help(): void {
   verify-export <session-id-or-path>
   verify-evidence <session-id-or-path>
   verify-session <session-id-or-path> --format json|markdown
-  list --verified-only --limit 10 --format json|markdown
+  list --status passed|failed|missing|all --verified-only --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz
   open --list-targets
   doctor`);
