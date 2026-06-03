@@ -1,5 +1,7 @@
+import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
+import type { HtmlExportManifest } from "@repotutor/shared";
 import { ensureDir } from "./fs-utils.js";
 
 interface ZipEntry {
@@ -18,6 +20,21 @@ export interface ZipBundleResult {
   bytes: number;
 }
 
+export interface HtmlExportVerificationFailure {
+  path: string;
+  expectedBytes: number;
+  actualBytes: number | null;
+  expectedSha256: string;
+  actualSha256: string | null;
+}
+
+export interface HtmlExportVerificationResult {
+  ok: boolean;
+  manifestPath: string;
+  checkedFiles: number;
+  failures: HtmlExportVerificationFailure[];
+}
+
 export async function writeHtmlZipBundle(sessionRoot: string): Promise<ZipBundleResult> {
   const htmlRoot = path.join(sessionRoot, "html");
   const exportRoot = path.join(sessionRoot, "exports");
@@ -29,6 +46,53 @@ export async function writeHtmlZipBundle(sessionRoot: string): Promise<ZipBundle
     fileCount: (await listFiles(htmlRoot)).length,
     bytes
   };
+}
+
+export async function verifyHtmlExportManifest(sessionRoot: string): Promise<HtmlExportVerificationResult> {
+  const manifestPath = path.join(sessionRoot, "html", "manifest.json");
+  const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8")) as HtmlExportManifest;
+  const entries = [
+    ...manifest.pages.map((page) => ({ path: page.path, bytes: page.bytes, sha256: page.sha256 })),
+    ...manifest.assets.map((asset) => ({ path: asset.path, bytes: asset.bytes, sha256: asset.sha256 }))
+  ];
+  const failures: HtmlExportVerificationFailure[] = [];
+
+  for (const entry of entries) {
+    const absPath = htmlEntryPath(sessionRoot, entry.path);
+    try {
+      const data = await fs.readFile(absPath);
+      const actualSha256 = crypto.createHash("sha256").update(data).digest("hex");
+      if (data.length !== entry.bytes || actualSha256 !== entry.sha256) {
+        failures.push({
+          path: entry.path,
+          expectedBytes: entry.bytes,
+          actualBytes: data.length,
+          expectedSha256: entry.sha256,
+          actualSha256
+        });
+      }
+    } catch {
+      failures.push({
+        path: entry.path,
+        expectedBytes: entry.bytes,
+        actualBytes: null,
+        expectedSha256: entry.sha256,
+        actualSha256: null
+      });
+    }
+  }
+
+  return {
+    ok: failures.length === 0 && entries.length === manifest.integrity.coveredFiles,
+    manifestPath,
+    checkedFiles: entries.length,
+    failures
+  };
+}
+
+function htmlEntryPath(sessionRoot: string, entryPath: string): string {
+  const htmlRelative = entryPath.startsWith("html/") ? entryPath.slice("html/".length) : entryPath;
+  return path.join(sessionRoot, "html", htmlRelative);
 }
 
 async function writeZipFromDirectory(sourceRoot: string, zipPath: string): Promise<number> {

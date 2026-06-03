@@ -221,6 +221,17 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs`: includes `integrity`, `sha256`, and `bytes`
   in the offline export compliance check.
 
+### Upgrade 14: Direct Export Integrity Verification
+
+- `packages/core/src/exporter.ts`: adds `verifyHtmlExportManifest`, which
+  recalculates byte counts and SHA-256 hashes for every manifest-listed page and
+  asset.
+- `apps/cli/src/index.ts`: adds `repo-tutor verify-export <session-id-or-path>`.
+- `packages/core/src/pipeline.test.ts`: verifies the core verifier returns
+  `ok: true` for a generated fixture export.
+- `scripts/compliance-audit.mjs`: includes `verify-export` and
+  `verifyHtmlExportManifest` in the CLI/export compliance checks.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -273,6 +284,9 @@ Local verification:
   `/tmp/repotutor-manifest-integrity-smoke.DSvUWT/2026-06-04/local__simple-ts-app__main__3a2cb784/html/manifest.json`
   with 16 covered files, `index.html` byte count 3,684, and verified
   `index.html` SHA-256 prefix `a34286246376`.
+- Temp CLI verify-export smoke generated:
+  `/tmp/repotutor-verify-export-smoke.1jhUun/2026-06-04/local__simple-ts-app__main__bf88883f`
+  and verified 16 manifest files with `ok: true` and no failures.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
@@ -280,5 +294,5 @@ Local verification:
 
 ## Deferred Candidate Backlog
 
-1. Add a direct export integrity verification command.
+1. Add a tamper-negative integrity test.
 2. Continue source-backed usability upgrades.
