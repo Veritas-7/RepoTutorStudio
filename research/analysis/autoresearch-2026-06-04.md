@@ -1724,6 +1724,22 @@ Local verification:
 - `pnpm audit:brief`: PASS, 13/13 audit reports after source-token audit
   adjustment for dynamic step IDs and links
 
+### Upgrade 103: Learning Path Primary Marker
+
+- Added a `data-learning-primary` marker labeled `기본 투어` to
+  `learning-path.html`.
+- Source pattern: microsoft/codetour marks `isPrimary` tours in tree
+  descriptions with `(Primary)`; RepoTutor maps that to a portable static label
+  on the generated learning path.
+- RED smoke `/tmp/repotutor-learning-primary-red.*` failed on the old behavior
+  with `learning path missing data-learning-primary`.
+- GREEN smoke generated `/tmp/repotutor-learning-primary-smoke.wnerUs`;
+  generated `learning-path.html` included `data-learning-primary` and
+  `기본 투어`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
