@@ -120,6 +120,24 @@ Transferable patterns:
 - Surface component and data-flow hints so a learner can trace UI entry to data
   movement.
 
+### carlrannaberg/codebase-map
+
+- URL: https://github.com/carlrannaberg/codebase-map
+- Local source: `research/external-src/carlrannaberg-codebase-map`
+- Stars at check: 16
+- Forks at check: 2
+- License: not specified
+- Updated: 2026-05-09T22:11:18Z
+- Relevance: TypeScript/JavaScript code indexer that extracts functions,
+  classes, constants, dependencies, and compact LLM-oriented project maps.
+
+Transferable patterns:
+
+- Extract named code symbols separately from file-level summaries.
+- Keep symbol maps compact and linked to source files for LLM and learner use.
+- Use symbol counts to identify files that should be read function-by-function
+  instead of as one large blob.
+
 ## Adopted Upgrade
 
 ### Upgrade 1: CodeBoarding-Inspired Coverage Report
@@ -1878,6 +1896,30 @@ Local verification:
 - GREEN smoke generated `/tmp/repotutor-interface-links-smoke.eYV9Wk` and
   confirmed `interface-source-link`, `../source/src/pages/index.tsx`, and
   `../source/src/api/client.ts`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
+### Upgrade 108: Symbol Map Report
+
+- Added `SymbolMapReportSchema` and `analysis/symbol-map-report.json` with
+  codebase-map-style function, class, constant, interface, and type signals.
+- The scanner now extracts supported symbols from safe text code files, records
+  exported status, groups counts by symbol kind, and links each symbol to the
+  file lesson plus copied source file.
+- Added `markdown/symbol-map.md`, `html/symbol-map.html`,
+  manifest/verification coverage, learning-path linkage, and
+  `open --target symbol-map`.
+- Source pattern: codebase-map performs AST-based extraction of functions,
+  classes, constants, and dependencies for LLM-optimized maps; RepoTutor maps
+  the transferable symbol-index idea to a dependency-free static report.
+- RED smoke `/tmp/repotutor-symbol-map-red.*` failed on the old behavior with
+  `missing analysis/symbol-map-report.json`.
+- GREEN smoke generated `/tmp/repotutor-symbol-map-smoke.Es0ZGq`; generated
+  the JSON, Markdown, and HTML artifacts, found `createThing`, `HiddenThing`,
+  and `VALUE`, included `symbol-map-card`, `symbol-source-link`,
+  `codebase-map`, `심볼 맵`, and `data-source-pattern="codebase-map"`, and
+  `open --target symbol-map` returned `html/symbol-map.html`.
 - `pnpm build`: PASS
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports

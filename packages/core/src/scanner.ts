@@ -21,6 +21,7 @@ import {
   SuggestedReadsReport,
   RuntimeEnvironmentReport,
   InterfaceMapReport,
+  SymbolMapReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -39,6 +40,7 @@ export interface AnalysisBundle {
   suggestedReadsReport: SuggestedReadsReport;
   runtimeEnvironmentReport: RuntimeEnvironmentReport;
   interfaceMapReport: InterfaceMapReport;
+  symbolMapReport: SymbolMapReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -61,13 +63,14 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const suggestedReadsReport = buildSuggestedReadsReport(fileLessons);
   const runtimeEnvironmentReport = buildRuntimeEnvironmentReport(walk, dependencyReport);
   const interfaceMapReport = await buildInterfaceMapReport(walk);
+  const symbolMapReport = await buildSymbolMapReport(walk, fileLessons);
   const flowReport = buildFlowReport(fileLessons, dependencyReport);
   const glossary = buildGlossary(languageReport, dependencyReport, fileLessons);
   const rebuildRoadmap = buildRebuildRoadmap(repoMap, fileLessons);
   const componentGraphReport = buildComponentGraphReport(folderLessons, fileLessons, glossary, rebuildRoadmap);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -483,6 +486,80 @@ function buildDataFlowHints(routeSignals: InterfaceMapReport["routeSignals"], ap
     apiSignals.length > 0 ? `${apiSignals[0].filePath}에서 ${apiSignals[0].method} ${apiSignals[0].pattern} API 신호를 확인했습니다.` : "fetch/axios/router HTTP 신호가 없어 데이터 흐름은 import/export와 상태 관리 파일에서 추적해야 합니다.",
     componentSignals.length > 0 ? `${componentSignals[0].componentName} 컴포넌트를 화면 조립 단서로 사용할 수 있습니다.` : "명명된 React 컴포넌트 신호가 적어 파일명과 default export를 함께 확인하세요."
   ];
+}
+
+async function buildSymbolMapReport(walk: WalkResult, fileLessons: FileLesson[]): Promise<SymbolMapReport> {
+  const lessonPaths = new Set(fileLessons.map((lesson) => lesson.filePath));
+  const candidateFiles = walk.files
+    .filter((file) => file.isTextCandidate && /\.(ts|tsx|js|jsx|mjs|cjs|py|rb|go|rs)$/.test(file.relPath))
+    .sort((a, b) => Number(lessonPaths.has(b.relPath)) - Number(lessonPaths.has(a.relPath)) || a.relPath.localeCompare(b.relPath))
+    .slice(0, 120);
+  const symbols: SymbolMapReport["symbols"] = [];
+  for (const file of candidateFiles) {
+    const text = await readTextIfSafe(file.absPath, 100_000);
+    if (!text) continue;
+    symbols.push(...extractSymbols(file.relPath, text));
+  }
+  const uniqueSymbols = dedupeSymbols(symbols).slice(0, 120);
+  const symbolsByKind = countBy(uniqueSymbols.map((symbol) => symbol.kind));
+  const fileCounts = countBy(uniqueSymbols.map((symbol) => symbol.filePath));
+  const filesWithSymbols = Object.entries(fileCounts)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 30)
+    .map(([filePath, count]) => ({
+      filePath,
+      count,
+      lessonHref: `html/files.html#${htmlAnchor(filePath)}`,
+      sourceHref: `source/${encodedPath(filePath)}`
+    }));
+  return {
+    summary: `codebase-map식 symbol map: ${uniqueSymbols.length}개 함수/클래스/상수/type 신호를 정적으로 추출했습니다.`,
+    sourcePattern: "codebase-map AST-based functions classes constants index",
+    totalSymbols: uniqueSymbols.length,
+    symbolsByKind,
+    symbols: uniqueSymbols,
+    filesWithSymbols,
+    learnerNextSteps: [
+      "exported symbol부터 읽어 프로젝트의 공개 API를 파악하세요.",
+      "symbol이 많은 파일은 한 번에 읽지 말고 함수나 class 단위로 나누어 추적하세요.",
+      "symbol map을 file lesson과 함께 열어 이름, 역할, 원본 코드를 대조하세요."
+    ]
+  };
+}
+
+function extractSymbols(filePath: string, text: string): SymbolMapReport["symbols"] {
+  const rows: SymbolMapReport["symbols"] = [];
+  const patterns: Array<{ kind: SymbolMapReport["symbols"][number]["kind"]; regex: RegExp }> = [
+    { kind: "function", regex: /(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][A-Za-z0-9_$]*)/g },
+    { kind: "class", regex: /(?:export\s+)?(?:abstract\s+)?class\s+([A-Za-z_$][A-Za-z0-9_$]*)/g },
+    { kind: "constant", regex: /(?:export\s+)?(?:const|let|var)\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*=/g },
+    { kind: "interface", regex: /(?:export\s+)?interface\s+([A-Za-z_$][A-Za-z0-9_$]*)/g },
+    { kind: "type", regex: /(?:export\s+)?type\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*=/g }
+  ];
+  for (const pattern of patterns) {
+    for (const match of text.matchAll(pattern.regex)) {
+      const full = match[0] ?? "";
+      rows.push({
+        filePath,
+        name: match[1],
+        kind: pattern.kind,
+        exported: /^\s*export\s/.test(full),
+        sourceHref: `source/${encodedPath(filePath)}`,
+        lessonHref: `html/files.html#${htmlAnchor(filePath)}`
+      });
+    }
+  }
+  return rows;
+}
+
+function dedupeSymbols(symbols: SymbolMapReport["symbols"]): SymbolMapReport["symbols"] {
+  const seen = new Set<string>();
+  return symbols.filter((symbol) => {
+    const key = `${symbol.filePath}:${symbol.kind}:${symbol.name}:${symbol.exported}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function suggestedReadScore(lesson: FileLesson, index: number): number {
