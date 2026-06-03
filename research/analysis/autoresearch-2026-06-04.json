@@ -838,6 +838,17 @@
         "repo-tutor list --unattempted-only",
         "doctor listFilters unattemptedOnly metadata"
       ]
+    },
+    {
+      "name": "scored session lists",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --scored-only",
+        "doctor listFilters scoredOnly metadata"
+      ]
     }
   ],
   "verification": {
@@ -932,6 +943,7 @@
     "cliListModeSmoke": "PASS",
     "cliListWrongOnlySmoke": "PASS",
     "cliListUnattemptedSmoke": "PASS",
+    "cliListScoredSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
