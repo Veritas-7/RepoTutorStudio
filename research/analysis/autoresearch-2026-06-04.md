@@ -808,6 +808,18 @@ Local verification:
   JSON row with `level: senior`, `list --level beginner --format markdown`
   returned the `Level` column and `beginner`, and `--level expert` exited 1
   with `list supports --level`.
+
+### Upgrade 47: Resume Mode and Level Context
+
+- Added session `studyMode` and `learnerLevel` to `repo-tutor resume` JSON as
+  `mode` and `level`, so a resumed session carries the same learning-context
+  signal as `repo-tutor list`.
+- Added `Study mode` and `Learner level` lines to `repo-tutor resume --format
+  markdown` for portable handoff summaries.
+- Temp CLI resume-level smoke generated
+  `/tmp/repotutor-resume-level-smoke.5JYl1L`; `repo-tutor resume` returned
+  `mode: deep` and `level: junior`, and `repo-tutor resume --format markdown`
+  returned `Study mode: deep` and `Learner level: junior`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

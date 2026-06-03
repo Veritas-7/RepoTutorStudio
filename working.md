@@ -396,6 +396,10 @@ to a private repository, and preserve resumable state in this file.
     `repo-tutor resume --format markdown` returned `# RepoTutor Resume`,
     `Verification status: passed`, direct verification/evidence/quiz paths, and
     `session: PASS`
+  - temp CLI resume-level smoke generated
+    `/tmp/repotutor-resume-level-smoke.5JYl1L`; `repo-tutor resume` returned
+    `mode: deep` and `level: junior`, and `repo-tutor resume --format markdown`
+    returned `Study mode: deep` and `Learner level: junior`
   - temp CLI list-markdown smoke generated
     `/tmp/repotutor-list-md-smoke.wN4Bip`; `repo-tutor list --verified-only
     --format markdown` returned `# RepoTutor Sessions`, `Returned sessions: 1`,
@@ -477,6 +481,7 @@ to a private repository, and preserve resumable state in this file.
   - `f5f1cf0` verification-status session filters
   - `1411f76` repo-filtered session list
   - `b35ca6d` sorted session list
+  - `d4ae5b8` learner-level session filters
 
 ## Next Actions
 

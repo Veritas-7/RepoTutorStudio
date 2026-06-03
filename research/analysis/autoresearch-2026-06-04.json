@@ -641,6 +641,17 @@
         "repo-tutor list --level beginner|junior|senior|all",
         "learner level column in Markdown session lists"
       ]
+    },
+    {
+      "name": "resume mode and level context",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor resume JSON mode and level fields",
+        "Study mode and Learner level lines in Markdown resume output"
+      ]
     }
   ],
   "verification": {
@@ -717,6 +728,7 @@
     "cliListRepoSmoke": "PASS",
     "cliListSortSmoke": "PASS",
     "cliListLevelSmoke": "PASS",
+    "cliResumeLevelSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
