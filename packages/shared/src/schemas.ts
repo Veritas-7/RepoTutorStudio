@@ -414,6 +414,43 @@ export const TutorialAbstractionReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DecisionRecordReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  statusCounts: z.record(z.string(), z.number().int().nonnegative()),
+  packageScopes: z.array(z.object({
+    name: z.string(),
+    path: z.string(),
+    adrFolder: z.string(),
+    recordCount: z.number().int().nonnegative()
+  })),
+  records: z.array(z.object({
+    id: z.string(),
+    title: z.string(),
+    status: z.enum(["draft", "proposed", "rejected", "accepted", "deprecated", "superseded"]),
+    scope: z.string(),
+    context: z.string(),
+    decision: z.string(),
+    consequences: z.object({
+      positive: z.array(z.string()),
+      negative: z.array(z.string())
+    }),
+    relatedReports: z.array(z.object({
+      label: z.string(),
+      href: z.string()
+    })),
+    tags: z.array(z.string())
+  })),
+  timeline: z.array(z.object({
+    sequence: z.number().int().positive(),
+    recordId: z.string(),
+    title: z.string(),
+    status: z.string(),
+    scope: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -630,6 +667,7 @@ export type McpHandoffReport = z.infer<typeof McpHandoffReportSchema>;
 export type AgentMemoryReport = z.infer<typeof AgentMemoryReportSchema>;
 export type GraphQueryReport = z.infer<typeof GraphQueryReportSchema>;
 export type TutorialAbstractionReport = z.infer<typeof TutorialAbstractionReportSchema>;
+export type DecisionRecordReport = z.infer<typeof DecisionRecordReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

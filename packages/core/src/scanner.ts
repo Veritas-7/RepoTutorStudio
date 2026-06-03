@@ -27,6 +27,7 @@ import {
   AgentMemoryReport,
   GraphQueryReport,
   TutorialAbstractionReport,
+  DecisionRecordReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -51,6 +52,7 @@ export interface AnalysisBundle {
   agentMemoryReport: AgentMemoryReport;
   graphQueryReport: GraphQueryReport;
   tutorialAbstractionReport: TutorialAbstractionReport;
+  decisionRecordReport: DecisionRecordReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -82,10 +84,11 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const componentGraphReport = buildComponentGraphReport(folderLessons, fileLessons, glossary, rebuildRoadmap);
   const graphQueryReport = buildGraphQueryReport(componentGraphReport);
   const tutorialAbstractionReport = buildTutorialAbstractionReport(fileLessons, suggestedReadsReport, componentGraphReport);
+  const decisionRecordReport = buildDecisionRecordReport(repoMap, architectureReport, runtimeEnvironmentReport, interfaceMapReport, contextPackReport, tutorialAbstractionReport);
   const agentMemoryReport = buildAgentMemoryReport(repoMap, languageReport, purposeReport, contextPackReport, mcpHandoffReport, componentGraphReport);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -1029,6 +1032,115 @@ function abstractionNameForFile(filePath: string): string {
     .filter(Boolean)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1));
   return `${words.join(" ") || "Source"} Abstraction`;
+}
+
+function buildDecisionRecordReport(
+  repoMap: RepoMap,
+  architectureReport: ArchitectureReport,
+  runtimeEnvironmentReport: RuntimeEnvironmentReport,
+  interfaceMapReport: InterfaceMapReport,
+  contextPackReport: ContextPackReport,
+  tutorialAbstractionReport: TutorialAbstractionReport
+): DecisionRecordReport {
+  const records: DecisionRecordReport["records"] = [
+    {
+      id: "adr-architecture-style",
+      title: `Adopt ${architectureReport.architectureStyle} as the teaching model`,
+      status: "accepted",
+      scope: "global",
+      context: architectureReport.explanation,
+      decision: `Explain the repository as ${architectureReport.architectureStyle} and keep the architecture evidence attached to learner-facing pages.`,
+      consequences: {
+        positive: ["Learners start from a named architecture shape instead of isolated files.", "Architecture evidence stays linked to source-backed reports."],
+        negative: ["The style is inferred statically and should be revisited after runtime verification."]
+      },
+      relatedReports: [{ label: "Architecture", href: "html/architecture.html" }],
+      tags: ["architecture", "onboarding"]
+    },
+    {
+      id: "adr-runtime-signals",
+      title: "Document runtime setup from manifests and setup signals",
+      status: runtimeEnvironmentReport.detectedManifests.length > 0 ? "accepted" : "proposed",
+      scope: "global",
+      context: runtimeEnvironmentReport.summary,
+      decision: "Treat detected manifests, setup files, and container files as the first runtime decision record for a new maintainer.",
+      consequences: {
+        positive: ["Setup decisions are visible before a learner runs commands.", "Missing runtime signals become explicit follow-up work."],
+        negative: ["Static setup signals cannot prove the app actually starts."]
+      },
+      relatedReports: [{ label: "Runtime Environment", href: "html/runtime-environment.html" }],
+      tags: ["runtime", "setup"]
+    },
+    {
+      id: "adr-interface-onboarding",
+      title: "Use interface signals to orient user-facing entry points",
+      status: interfaceMapReport.routeSignals.length + interfaceMapReport.apiSignals.length > 0 ? "accepted" : "proposed",
+      scope: "global",
+      context: interfaceMapReport.summary,
+      decision: "Keep route, page, API, and component signals grouped as an onboarding decision surface.",
+      consequences: {
+        positive: ["Learners can connect code structure to user-visible behavior.", "API and component hints reduce blind source browsing."],
+        negative: ["Projects with unconventional routing may need manual confirmation."]
+      },
+      relatedReports: [{ label: "Interface Map", href: "html/interface-map.html" }],
+      tags: ["interface", "data-flow"]
+    },
+    {
+      id: "adr-context-budget",
+      title: "Budget AI handoff context before reading raw source",
+      status: "accepted",
+      scope: "global",
+      context: contextPackReport.summary,
+      decision: "Use context pack size, split plans, and excluded paths as a decision record before sending code to another AI tool.",
+      consequences: {
+        positive: ["Context-heavy files and excluded files are visible before handoff.", "Large repos can be split without losing directory grouping."],
+        negative: ["Token estimates are approximate and should not replace target-tool validation."]
+      },
+      relatedReports: [{ label: "Context Pack", href: "html/context-pack.html" }],
+      tags: ["ai-handoff", "context-budget"]
+    },
+    {
+      id: "adr-tutorial-order",
+      title: "Teach core abstractions in a fixed chapter order",
+      status: tutorialAbstractionReport.abstractions.length > 0 ? "accepted" : "draft",
+      scope: "global",
+      context: tutorialAbstractionReport.summary,
+      decision: "Use identified abstractions, relationships, and chapter order as the tutorial decision record for source reading.",
+      consequences: {
+        positive: ["Learners get a stable order through the most important source concepts.", "Relationships explain why one chapter follows another."],
+        negative: ["Static chapter order may need adjustment after human domain review."]
+      },
+      relatedReports: [{ label: "Tutorial Abstractions", href: "html/tutorial-abstractions.html" }],
+      tags: ["tutorial", "learning-path"]
+    }
+  ];
+  const topScopes = repoMap.folders.slice(0, 5).map((folder) => ({
+    name: folder.folderPath.split("/")[0] || "root",
+    path: folder.folderPath,
+    adrFolder: folder.folderPath === "." ? "docs/adr" : `${folder.folderPath}/docs/adr`,
+    recordCount: records.filter((record) => record.scope === folder.folderPath).length
+  }));
+  const packageScopes = [{ name: "global", path: ".", adrFolder: "docs/adr", recordCount: records.length }, ...topScopes];
+  const timeline = records.map((record, index) => ({
+    sequence: index + 1,
+    recordId: record.id,
+    title: record.title,
+    status: record.status,
+    scope: record.scope
+  }));
+  return {
+    summary: `Log4brains식 decision record report: ${records.length}개 ADR 후보를 status, context, decision, consequences, timeline, package scope로 정리했습니다.`,
+    sourcePattern: "Log4brains ADR docs-as-code status context decision consequences timeline package-specific records",
+    statusCounts: countBy(records.map((record) => record.status)),
+    packageScopes,
+    records,
+    timeline,
+    learnerNextSteps: [
+      "accepted record는 현재 분석 근거로 설명하고 proposed/draft record는 사람 검토 대상으로 표시하세요.",
+      "Context, Decision, Consequences를 한 문장씩 읽고 관련 report 링크에서 근거를 확인하세요.",
+      "package scope가 있는 저장소라면 각 패키지의 docs/adr 위치에 실제 ADR을 둘지 결정하세요."
+    ]
+  };
 }
 
 function suggestedReadScore(lesson: FileLesson, index: number): number {

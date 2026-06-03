@@ -23,6 +23,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "graph-query-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "tutorial-abstraction-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "decision-record-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "session-verification-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "overview.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "component-graph.md"))).resolves.toBeUndefined();
@@ -37,6 +38,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "graph-query.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "tutorial-abstractions.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "decision-records.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "session-verification.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "index.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "learning-path.html"))).resolves.toBeUndefined();
@@ -54,6 +56,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "graph-query.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "tutorial-abstractions.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "decision-records.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "session-verification.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "quiz-print.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.codex, "events.jsonl"))).resolves.toBeUndefined();
@@ -214,6 +217,21 @@ describe("RepoTutor core pipeline", () => {
     expect(tutorialAbstractionMarkdown).toContain("# Tutorial Abstractions");
     expect(tutorialAbstractionMarkdown).toContain("Source pattern: PocketFlow");
     expect(tutorialAbstractionMarkdown).toContain("## Chapter Order");
+    const decisionRecordText = await fs.readFile(path.join(result.session.outputPaths.analysis, "decision-record-report.json"), "utf8");
+    expect(decisionRecordText).toContain("Log4brains ADR docs-as-code status context decision consequences timeline package-specific records");
+    expect(decisionRecordText).toContain("\"records\"");
+    expect(decisionRecordText).toContain("\"statusCounts\"");
+    expect(decisionRecordText).toContain("\"timeline\"");
+    expect(decisionRecordText).toContain("\"packageScopes\"");
+    const decisionRecordsHtml = await fs.readFile(path.join(result.session.outputPaths.html, "decision-records.html"), "utf8");
+    expect(decisionRecordsHtml).toContain("Decision Records");
+    expect(decisionRecordsHtml).toContain("decision-record-card");
+    expect(decisionRecordsHtml).toContain("data-source-pattern=\"Log4brains\"");
+    expect(decisionRecordsHtml).toContain("Positive Consequences");
+    const decisionRecordsMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "decision-records.md"), "utf8");
+    expect(decisionRecordsMarkdown).toContain("# Decision Records");
+    expect(decisionRecordsMarkdown).toContain("Source pattern: Log4brains");
+    expect(decisionRecordsMarkdown).toContain("## Timeline");
     const exportManifestText = await fs.readFile(path.join(result.session.outputPaths.html, "manifest.json"), "utf8");
     expect(exportManifestText).toContain("\"entrypoints\"");
     expect(exportManifestText).toContain("html/learning-path.html");
@@ -227,6 +245,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/agent-memory.html");
     expect(exportManifestText).toContain("html/graph-query.html");
     expect(exportManifestText).toContain("html/tutorial-abstractions.html");
+    expect(exportManifestText).toContain("html/decision-records.html");
     expect(exportManifestText).toContain("\"integrity\"");
     expect(exportManifestText).toContain("\"bytes\"");
     expect(exportManifestText).toContain("\"sha256\"");
@@ -294,6 +313,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("agent-memory.html");
     expect(learningPathHtml).toContain("graph-query.html");
     expect(learningPathHtml).toContain("tutorial-abstractions.html");
+    expect(learningPathHtml).toContain("decision-records.html");
     const sessionVerificationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "session-verification.html"), "utf8");
     expect(sessionVerificationHtml).toContain("세션 검증");
     expect(sessionVerificationHtml).toContain("../analysis/session-verification-report.json");

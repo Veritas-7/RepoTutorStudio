@@ -1238,6 +1238,30 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`: PASS, 13/13 audit reports
 - 2026-06-04: Pushed AutoResearch Upgrade 114:
   - `a6772e6` tutorial abstraction report
+- 2026-06-04: AutoResearch Upgrade 115 candidate selected:
+  `thomvaill/log4brains` (`https://github.com/thomvaill/log4brains`;
+  public Apache-2.0; 1,482 stars; 111 forks; updated
+  2026-06-02T19:03:24Z). Cloned ignored external source to
+  `research/external-src/thomvaill-log4brains` and inspected README, ADR
+  template, ADR status/relation domain code, config schema, and CLI new/list
+  commands without executing it.
+- 2026-06-04: RED decision-records smoke generated
+  `/tmp/repotutor-decision-records-red-studies.bLIq5o/...`; old build was
+  missing `analysis/decision-record-report.json` as expected.
+- 2026-06-04: Implemented Log4brains-style decision record report:
+  `DecisionRecordReportSchema`, `analysis/decision-record-report.json`,
+  `markdown/decision-records.md`, `html/decision-records.html`,
+  status/timeline/package-scope fields, manifest/session-verification coverage,
+  learning-path linkage, and `open --target decision-records`.
+- 2026-06-04: GREEN decision-records smoke generated
+  `/tmp/repotutor-decision-records-green-studies.1HGBOe/...`; confirmed
+  `records`, `statusCounts`, `timeline`, `packageScopes`,
+  `decision-record-card`, `data-source-pattern="Log4brains"`, and
+  `open --target decision-records` -> `html/decision-records.html`.
+- 2026-06-04: Verification for Upgrade 115:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 13/13 audit reports
 
 ## Next Actions
 
