@@ -126,6 +126,19 @@
         "markdown/incremental.md coverage-change section",
         "html/incremental.html coverage-change panel"
       ]
+    },
+    {
+      "name": "component graph filters",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "html/component-graph.html node-type filter toolbar",
+        "html/component-graph.html data-node-type cards",
+        "html/assets/app.js data-graph-filter handler"
+      ]
     }
   ],
   "verification": {
@@ -138,10 +151,13 @@
     "fixtureIncrementalBaseline": "PASS",
     "fixtureCoverageDelta": "PASS",
     "cliCoverageDeltaSmoke": "PASS",
+    "fixtureGraphFilters": "PASS",
+    "cliGraphFilterSmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },
   "candidateBacklog": [
-    "component graph filters for large repositories"
+    "richer large-repo graph summaries",
+    "export usability polish"
   ]
 }
