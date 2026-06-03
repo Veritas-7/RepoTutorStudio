@@ -344,6 +344,20 @@
         "html/files.html source-link anchors",
         "html/files.html original source open links"
       ]
+    },
+    {
+      "name": "source evidence index pages",
+      "filesChanged": [
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "markdown/evidence.md source evidence index",
+        "html/evidence.html source evidence index",
+        "html/manifest.json evidence entrypoint"
+      ]
     }
   ],
   "verification": {
@@ -385,6 +399,8 @@
     "cliEvidenceKindSmoke": "PASS",
     "fixtureSourceEvidenceLinks": "PASS",
     "cliSourceLinkSmoke": "PASS",
+    "fixtureEvidenceIndex": "PASS",
+    "cliEvidenceIndexSmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },

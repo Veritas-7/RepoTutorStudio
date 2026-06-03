@@ -316,6 +316,17 @@ Transferable patterns:
 - `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
   verify source-file link markers.
 
+### Upgrade 22: Source Evidence Index Pages
+
+- `packages/core/src/markdown.ts`: emits `markdown/evidence.md` with a
+  repository-wide source evidence index.
+- `packages/html/src/templates.ts`: emits `html/evidence.html`, adds Evidence
+  navigation, and links evidence cards to file lessons and copied source files.
+- `packages/html/src/templates.ts`: includes `html/evidence.html` as a portable
+  export manifest entrypoint.
+- `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
+  verify evidence index artifacts.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -402,6 +413,11 @@ Local verification:
   `/tmp/repotutor-source-link-smoke.5z54ZK/2026-06-04/local__simple-ts-app__main__946bc81d`
   with HTML `source-link`, `원본 열기`, `../source/src/main.ts`, Markdown
   `[원본](../source/src/main.ts)`, and copied `source/src/main.ts` present.
+- Temp CLI evidence-index smoke generated:
+  `/tmp/repotutor-evidence-index-smoke.8xjsZh/2026-06-04/local__simple-ts-app__main__8a6f5e80`
+  with `html/evidence.html`, `markdown/evidence.md`, `evidence-index-cards`,
+  links to `files.html#src-main.ts`, `../source/src/main.ts`, and manifest
+  entrypoint `html/evidence.html`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

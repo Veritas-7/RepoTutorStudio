@@ -16,11 +16,13 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "overview.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "component-graph.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "incremental.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "evidence.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "index.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "manifest.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "EXPORT-README.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "component-graph.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "incremental.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "evidence.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.codex, "events.jsonl"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.source, ".env"))).rejects.toThrow();
     const snapshotText = await fs.readFile(path.join(result.session.outputPaths.analysis, "source-snapshot-report.json"), "utf8");
@@ -79,6 +81,14 @@ describe("RepoTutor core pipeline", () => {
     const filesMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "files.md"), "utf8");
     expect(filesMarkdown).toContain("### 소스 근거");
     expect(filesMarkdown).toContain("[원본](../source/src/main.ts)");
+    const evidenceMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "evidence.md"), "utf8");
+    expect(evidenceMarkdown).toContain("# 소스 근거 인덱스");
+    expect(evidenceMarkdown).toContain("[src/main.ts](files.md#src-main-ts)");
+    const evidenceHtml = await fs.readFile(path.join(result.session.outputPaths.html, "evidence.html"), "utf8");
+    expect(evidenceHtml).toContain("소스 근거 인덱스");
+    expect(evidenceHtml).toContain("evidence-index-cards");
+    expect(evidenceHtml).toContain("files.html#src-main.ts");
+    expect(evidenceHtml).toContain("../source/src/main.ts");
     const fileLessonsText = await fs.readFile(path.join(result.session.outputPaths.analysis, "file-lessons.json"), "utf8");
     expect(fileLessonsText).toContain("\"sourceEvidence\"");
     expect(fileLessonsText).toContain("\"snippet\"");

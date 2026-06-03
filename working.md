@@ -123,6 +123,10 @@ to a private repository, and preserve resumable state in this file.
   source-file links. `files.md` and `files.html` now link each source evidence
   snippet back to the copied `source/` file, so learners can jump from the
   lesson evidence to the original project file.
+- 2026-06-04: Applied a twenty-second AutoResearch upgrade: source evidence
+  index pages. RepoTutor now emits `markdown/evidence.md` and
+  `html/evidence.html`, adds Evidence navigation, and includes an HTML manifest
+  entrypoint for the evidence index.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -197,6 +201,11 @@ to a private repository, and preserve resumable state in this file.
     with HTML `source-link`, `원본 열기`, `../source/src/main.ts`, Markdown
     `[원본](../source/src/main.ts)`, and copied
     `source/src/main.ts` present
+  - temp CLI evidence-index smoke generated
+    `/tmp/repotutor-evidence-index-smoke.8xjsZh/2026-06-04/local__simple-ts-app__main__8a6f5e80`
+    with `html/evidence.html`, `markdown/evidence.md`,
+    `evidence-index-cards`, links to `files.html#src-main.ts`,
+    `../source/src/main.ts`, and manifest entrypoint `html/evidence.html`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -221,6 +230,7 @@ to a private repository, and preserve resumable state in this file.
   - `eb9b601` source evidence coverage summaries
   - `63a77df` source evidence drilldown filters
   - `946bc81` source evidence kind summaries
+  - `8a6f5e8` source evidence source-file links
 
 ## Next Actions
 
