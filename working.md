@@ -50,6 +50,11 @@ to a private repository, and preserve resumable state in this file.
   graph. RepoTutor now emits `analysis/component-graph-report.json`,
   `markdown/component-graph.md`, and `html/component-graph.html`, linking folders,
   files, glossary terms, and rebuild-roadmap steps.
+- 2026-06-04: Applied a fifth AutoResearch upgrade: incremental re-analysis.
+  RepoTutor now emits `analysis/source-snapshot-report.json`,
+  `analysis/incremental-report.json`, `markdown/incremental.md`, and
+  `html/incremental.html`, comparing each completed same-repo session against
+  the previous source snapshot by file hash and size.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -57,14 +62,19 @@ to a private repository, and preserve resumable state in this file.
   - `gitleaks dir . --no-banner --redact`
   - fixture study generated `analysis/coverage-report.json`,
     `markdown/coverage.md`, `html/coverage.html`, interactive `html/quiz.html`,
-    and component graph artifacts
+    component graph artifacts, source snapshot artifacts, and incremental
+    re-analysis artifacts
+  - second fixture study generated a non-null incremental baseline:
+    `studies/2026-06-04/local__simple-ts-app__main__a30cec65-2/analysis/incremental-report.json`
   - `pnpm audit:brief` produced 13/13 PASS
 - 2026-06-04: Pushed AutoResearch upgrades:
   - `dc34c88` coverage report upgrade
   - `e7ac6c5` offline quiz review mode
   - `15d0897` Tauri quiz attempt flow
+  - `a30cec6` source-backed component graph
 
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops:
-   incremental re-analysis or component graph filters for large repositories.
+   component graph filters for large repositories or coverage-delta summaries
+   across repeated sessions.

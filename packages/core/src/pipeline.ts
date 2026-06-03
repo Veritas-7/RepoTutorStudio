@@ -9,6 +9,8 @@ import { ensureDir, pathExists } from "./fs-utils.js";
 import { materializeSession, prepareSession, readJson, updateSessionIndex, writeJson } from "./storage.js";
 import { generateQuiz, writeRenderedHtml } from "./quiz.js";
 import { markdownFiles, readmeStudy } from "./markdown.js";
+import { buildIncrementalReport, findPreviousSnapshot } from "./incremental.js";
+export { listSessions } from "./sessions.js";
 
 export interface StudyOptions {
   source: string;
@@ -47,6 +49,8 @@ export async function runStudy(options: StudyOptions): Promise<StudyResult> {
   });
 
   const analysis = await analyzeRepository(session.outputPaths.source);
+  const previousSnapshot = await findPreviousSnapshot(studiesRoot, session);
+  analysis.incrementalReport = buildIncrementalReport(analysis.sourceSnapshotReport, previousSnapshot);
   const quiz = generateQuiz(session, analysis.folderLessons, analysis.fileLessons, analysis.glossary);
   const wrongNotes: WrongNote[] = [];
   const attempts: QuizAttempt[] = [];
@@ -67,27 +71,6 @@ export async function runStudy(options: StudyOptions): Promise<StudyResult> {
   return { session, analysis };
 }
 
-export async function listSessions(studiesRoot = path.join(process.cwd(), "studies")): Promise<StudySession[]> {
-  const indexJson = path.join(studiesRoot, "index.json");
-  const sessions: StudySession[] = [];
-  if (await pathExists(indexJson)) {
-    sessions.push(...await readJson<StudySession[]>(indexJson));
-  }
-  const byDate = await fs.readdir(studiesRoot, { withFileTypes: true }).catch(() => []);
-  for (const dateDir of byDate.filter((entry) => entry.isDirectory() && /^\d{4}-\d{2}-\d{2}$/.test(entry.name))) {
-    const datePath = path.join(studiesRoot, dateDir.name);
-    const entries = await fs.readdir(datePath, { withFileTypes: true });
-    for (const entry of entries.filter((item) => item.isDirectory())) {
-      const sessionPath = path.join(datePath, entry.name, "session.json");
-      if (await pathExists(sessionPath)) {
-        const session = await readJson<StudySession>(sessionPath);
-        if (!sessions.some((existing) => existing.sessionId === session.sessionId)) sessions.push(session);
-      }
-    }
-  }
-  return sessions.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-}
-
 export async function loadStudyHtmlInput(sessionRoot: string): Promise<Parameters<typeof renderStudyHtml>[0]> {
   const session = await readJson<StudySession>(path.join(sessionRoot, "session.json"));
   return {
@@ -101,6 +84,8 @@ export async function loadStudyHtmlInput(sessionRoot: string): Promise<Parameter
     fileLessons: await readJson(path.join(sessionRoot, "analysis", "file-lessons.json")),
     coverageReport: await readJson(path.join(sessionRoot, "analysis", "coverage-report.json")),
     componentGraphReport: await readJson(path.join(sessionRoot, "analysis", "component-graph-report.json")),
+    sourceSnapshotReport: await readJson(path.join(sessionRoot, "analysis", "source-snapshot-report.json")),
+    incrementalReport: await readJson(path.join(sessionRoot, "analysis", "incremental-report.json")),
     flowReport: await readJson(path.join(sessionRoot, "analysis", "flow-report.json")),
     glossary: await readJson(path.join(sessionRoot, "analysis", "glossary.json")),
     rebuildRoadmap: await readJson(path.join(sessionRoot, "analysis", "rebuild-roadmap.json")),
@@ -122,6 +107,8 @@ async function writeAllArtifacts(session: StudySession, analysis: AnalysisBundle
     writeJson(path.join(session.outputPaths.analysis, "file-lessons.json"), analysis.fileLessons),
     writeJson(path.join(session.outputPaths.analysis, "coverage-report.json"), analysis.coverageReport),
     writeJson(path.join(session.outputPaths.analysis, "component-graph-report.json"), analysis.componentGraphReport),
+    writeJson(path.join(session.outputPaths.analysis, "source-snapshot-report.json"), analysis.sourceSnapshotReport),
+    writeJson(path.join(session.outputPaths.analysis, "incremental-report.json"), analysis.incrementalReport),
     writeJson(path.join(session.outputPaths.analysis, "flow-report.json"), analysis.flowReport),
     writeJson(path.join(session.outputPaths.analysis, "glossary.json"), analysis.glossary),
     writeJson(path.join(session.outputPaths.analysis, "rebuild-roadmap.json"), analysis.rebuildRoadmap),

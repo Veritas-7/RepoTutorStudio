@@ -69,6 +69,15 @@ const checks = [
     "packages/core/src/markdown.ts",
     "packages/html/src/templates.ts"
   ], ["ComponentGraphReportSchema", "component-graph-report.json", "component-graph.md", "component-graph.html", "mermaid"]),
+  check("incremental re-analysis", [
+    "packages/shared/src/schemas.ts",
+    "packages/core/src/scanner.ts",
+    "packages/core/src/incremental.ts",
+    "packages/core/src/sessions.ts",
+    "packages/core/src/pipeline.ts",
+    "packages/core/src/markdown.ts",
+    "packages/html/src/templates.ts"
+  ], ["SourceSnapshotReportSchema", "IncrementalReportSchema", "source-snapshot-report.json", "incremental-report.json", "incremental.md", "incremental.html", "baselineSessionId"]),
   check("codex sdk boundary", [
     "packages/codex/src/index.ts",
     "apps/desktop-tauri/src/App.tsx"

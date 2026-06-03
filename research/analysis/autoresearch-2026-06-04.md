@@ -93,6 +93,25 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs` and `packages/core/src/pipeline.test.ts` now
   verify the component graph artifacts.
 
+### Upgrade 5: Incremental Re-analysis
+
+- `packages/shared/src/schemas.ts`: added `SourceSnapshotReportSchema` and
+  `IncrementalReportSchema`.
+- `packages/core/src/scanner.ts`: builds a source snapshot of safe text files
+  using file path, byte size, and SHA-256.
+- `packages/core/src/sessions.ts`: isolates session listing so incremental
+  comparison can reuse it without circular imports.
+- `packages/core/src/incremental.ts`: finds the previous completed same-repo
+  session and compares added, changed, removed, and unchanged files.
+- `packages/core/src/pipeline.ts`: writes and reloads
+  `analysis/source-snapshot-report.json` and
+  `analysis/incremental-report.json`.
+- `packages/core/src/markdown.ts`: writes `markdown/incremental.md`.
+- `packages/html/src/templates.ts`: writes `html/incremental.html` and links it
+  from navigation and the index summary.
+- `scripts/compliance-audit.mjs` and `packages/core/src/pipeline.test.ts` now
+  verify the incremental artifacts and previous-snapshot comparison behavior.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -103,12 +122,18 @@ Local verification:
 - Later fixture study generated:
   `studies/2026-06-04/local__simple-ts-app__main__c0316b25/analysis/component-graph-report.json`
   plus `markdown/component-graph.md` and `html/component-graph.html`
+- Latest fixture study generated:
+  `studies/2026-06-04/local__simple-ts-app__main__a30cec65/analysis/source-snapshot-report.json`
+  plus `analysis/incremental-report.json`, `markdown/incremental.md`, and
+  `html/incremental.html`
+- Second latest fixture study generated:
+  `studies/2026-06-04/local__simple-ts-app__main__a30cec65-2/analysis/incremental-report.json`
+  with baseline session `mpy9kgb5-91d5524a`
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks dir . --no-banner --redact`: PASS after cleaning generated Rust
   target artifacts.
 
 ## Deferred Candidate Backlog
 
-1. Add incremental re-analysis using file hashes and coverage deltas.
-2. Add incremental re-analysis using file hashes and coverage deltas.
-3. Add component graph filters for large repositories.
+1. Add component graph filters for large repositories.
+2. Add coverage-delta summaries across repeated sessions.

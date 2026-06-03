@@ -88,6 +88,26 @@
         "markdown/component-graph.md",
         "html/component-graph.html"
       ]
+    },
+    {
+      "name": "incremental re-analysis",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/incremental.ts",
+        "packages/core/src/sessions.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/source-snapshot-report.json",
+        "analysis/incremental-report.json",
+        "markdown/incremental.md",
+        "html/incremental.html"
+      ]
     }
   ],
   "verification": {
@@ -96,11 +116,13 @@
     "cargoCheck": "PASS",
     "fixtureCoverageReport": "PASS",
     "fixtureComponentGraphReport": "PASS",
+    "fixtureIncrementalReport": "PASS",
+    "fixtureIncrementalBaseline": "PASS",
     "briefAudit13": "PASS",
     "gitleaksDir": "PASS"
   },
   "candidateBacklog": [
-    "incremental re-analysis using file hashes and coverage deltas",
-    "component graph filters for large repositories"
+    "component graph filters for large repositories",
+    "coverage-delta summaries across repeated sessions"
   ]
 }
