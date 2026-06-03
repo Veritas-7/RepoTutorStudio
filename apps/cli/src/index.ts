@@ -91,13 +91,21 @@ async function quiz(parsed: ParsedArgs): Promise<void> {
 
 async function resume(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
-  const session = JSON.parse(await fs.readFile(path.join(sessionRoot, "session.json"), "utf8")) as { sessionId: string; repo: string; outputPaths: { html: string } };
+  const session = JSON.parse(await fs.readFile(path.join(sessionRoot, "session.json"), "utf8")) as {
+    sessionId: string;
+    repo: string;
+    studyMode: string;
+    learnerLevel: string;
+    outputPaths: { html: string };
+  };
   const verification = await sessionVerificationSummary(sessionRoot);
   const format = stringFlag(parsed.flags.format) ?? "json";
   if (!["json", "markdown"].includes(format)) throw new Error("resume supports --format json or markdown.");
   const payload = {
     sessionId: session.sessionId,
     repo: session.repo,
+    mode: session.studyMode,
+    level: session.learnerLevel,
     root: sessionRoot,
     html: path.join(session.outputPaths.html, "index.html"),
     htmlTargets: openTargetPaths(session.outputPaths.html),
@@ -441,6 +449,8 @@ function evidenceMarkdown(payload: {
 function resumeMarkdown(payload: {
   sessionId: string;
   repo: string;
+  mode: string;
+  level: string;
   root: string;
   html: string;
   htmlTargets: Record<string, string>;
@@ -463,6 +473,8 @@ function resumeMarkdown(payload: {
     "",
     `- Session ID: ${payload.sessionId}`,
     `- Repo: ${payload.repo}`,
+    `- Study mode: ${payload.mode}`,
+    `- Learner level: ${payload.level}`,
     `- Root: ${payload.root}`,
     `- Main HTML: ${payload.html}`,
     `- Verification status: ${payload.verificationStatus}`,
