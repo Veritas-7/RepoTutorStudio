@@ -1019,6 +1019,18 @@
         "verify-list-output schemaVersion JSON",
         "verify-list-output schema version Markdown"
       ]
+    },
+    {
+      "name": "saved session list manifest schema gate",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "verify-list-output supportedSchemaVersion result",
+        "unsupported-schema-version failure",
+        "supported schema version Markdown"
+      ]
     }
   ],
   "verification": {
@@ -1129,6 +1141,7 @@
     "cliListCustomManifestSmoke": "PASS",
     "cliListManifestMetadataSmoke": "PASS",
     "cliListManifestSchemaSmoke": "PASS",
+    "cliListManifestSchemaGateSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

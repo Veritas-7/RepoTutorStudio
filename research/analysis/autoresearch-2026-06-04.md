@@ -1268,6 +1268,21 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 81: Saved Session List Manifest Schema Gate
+
+- Added `supportedSchemaVersion` to `repo-tutor verify-list-output` results.
+- Future manifest schema versions now fail closed with
+  `unsupported-schema-version` instead of being silently accepted.
+- Temp CLI list-manifest-schema-gate smoke generated
+  `/tmp/repotutor-list-manifest-schema-gate-smoke.MLa7HU`; one fixture session
+  was created, schema version `1` verified with `supportedSchemaVersion: true`,
+  verifier Markdown reported `Supported schema version: yes`, and a copied
+  future manifest with `schemaVersion: 999` failed closed with
+  `unsupported-schema-version`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

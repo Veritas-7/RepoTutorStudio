@@ -260,6 +260,10 @@ to a private repository, and preserve resumable state in this file.
   manifest schema versioning. New list output manifests now record
   `schemaVersion: 1`, and `verify-list-output` reports the schema version in
   JSON and Markdown outputs.
+- 2026-06-04: Applied an eighty-first AutoResearch upgrade: saved session list
+  manifest schema gate. `verify-list-output` now reports
+  `supportedSchemaVersion` and fails closed with `unsupported-schema-version`
+  for future manifest schema versions instead of silently accepting them.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -620,6 +624,12 @@ to a private repository, and preserve resumable state in this file.
     created, saved JSONL output wrote `schemaVersion: 1`, `verify-list-output`
     JSON reported `schemaVersion: 1`, and verifier Markdown included
     `Schema version: 1`
+  - temp CLI list-manifest-schema-gate smoke generated
+    `/tmp/repotutor-list-manifest-schema-gate-smoke.MLa7HU`; one fixture
+    session was created, schema version `1` verified with
+    `supportedSchemaVersion: true`, verifier Markdown reported
+    `Supported schema version: yes`, and a copied future manifest with
+    `schemaVersion: 999` failed closed with `unsupported-schema-version`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -768,6 +778,7 @@ to a private repository, and preserve resumable state in this file.
   - `fd1b60b` saved session list output verification
   - `d71ac45` custom saved list output manifest paths
   - `6877d93` saved session list manifest selection metadata
+  - `b399160` saved session list manifest schema versioning
 
 ## Next Actions
 
