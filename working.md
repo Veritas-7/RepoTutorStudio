@@ -46,14 +46,18 @@ to a private repository, and preserve resumable state in this file.
   attempts. Tauri now loads `analysis/quiz.json`, renders A/B/C/D choices, and
   submits answers through `repo-tutor quiz`, preserving shared core attempt and
   wrong-note behavior.
+- 2026-06-04: Applied a fourth AutoResearch upgrade: source-backed component
+  graph. RepoTutor now emits `analysis/component-graph-report.json`,
+  `markdown/component-graph.md`, and `html/component-graph.html`, linking folders,
+  files, glossary terms, and rebuild-roadmap steps.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
   - `cargo check` in `apps/desktop-tauri/src-tauri`
   - `gitleaks dir . --no-banner --redact`
   - fixture study generated `analysis/coverage-report.json`,
-    `markdown/coverage.md`, `html/coverage.html`, and interactive
-    `html/quiz.html`
+    `markdown/coverage.md`, `html/coverage.html`, interactive `html/quiz.html`,
+    and component graph artifacts
   - `pnpm audit:brief` produced 13/13 PASS
 - 2026-06-04: Pushed AutoResearch upgrades:
   - `dc34c88` coverage report upgrade
@@ -63,4 +67,4 @@ to a private repository, and preserve resumable state in this file.
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops:
-   incremental re-analysis or source-backed component graph.
+   incremental re-analysis or component graph filters for large repositories.

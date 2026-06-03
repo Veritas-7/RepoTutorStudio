@@ -62,6 +62,13 @@ const checks = [
   check("offline html export", [
     "packages/html/src/templates.ts"
   ], ["index.html", "quiz.html", "wrong-notes.html", "assets/style.css", "assets/app.js"]),
+  check("source-backed component graph", [
+    "packages/shared/src/schemas.ts",
+    "packages/core/src/scanner.ts",
+    "packages/core/src/pipeline.ts",
+    "packages/core/src/markdown.ts",
+    "packages/html/src/templates.ts"
+  ], ["ComponentGraphReportSchema", "component-graph-report.json", "component-graph.md", "component-graph.html", "mermaid"]),
   check("codex sdk boundary", [
     "packages/codex/src/index.ts",
     "apps/desktop-tauri/src/App.tsx"

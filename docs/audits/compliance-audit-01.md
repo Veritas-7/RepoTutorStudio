@@ -1,6 +1,6 @@
 # Compliance Audit 1
 
-Created: 2026-06-03T16:02:59.596Z
+Created: 2026-06-03T16:06:49.552Z
 
 Status: PASS
 
@@ -65,6 +65,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - offline html export
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - source-backed component graph
 
 - missing files: none
 - missing strings: none
