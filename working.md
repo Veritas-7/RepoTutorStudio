@@ -40,7 +40,8 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Ran external GitHub research with `$autoresearch` workflow:
   cloned `CodeBoarding/CodeBoarding` and `google/html-quiz` under
   `research/external-src/`, wrote analysis under `research/analysis/`, and
-  applied the CodeBoarding-inspired learning coverage report upgrade.
+  applied the CodeBoarding-inspired learning coverage report upgrade plus the
+  google/html-quiz-inspired offline quiz interaction upgrade.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -52,5 +53,5 @@ to a private repository, and preserve resumable state in this file.
 
 1. Commit and push the research/coverage upgrade.
 2. Continue next AutoResearch upgrade candidate unless the user stops:
-   incremental re-analysis, interactive offline quiz board, or source-backed
+   persisted Tauri quiz attempts, incremental re-analysis, or source-backed
    component graph.
