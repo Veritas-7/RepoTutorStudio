@@ -1091,6 +1091,18 @@
         "doctor defaultStudyCommand metadata",
         "default study help usage"
       ]
+    },
+    {
+      "name": "studies root runtime option discovery",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "help --studies-root option",
+        "doctor runtimeOptions metadata",
+        "doctor Runtime Options Markdown"
+      ]
     }
   ],
   "verification": {
@@ -1207,6 +1219,7 @@
     "cliVerifyListReportSmoke": "PASS",
     "cliVerifyListDefaultReportSmoke": "PASS",
     "cliDefaultStudySmoke": "PASS",
+    "cliStudiesRootOptionSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
