@@ -338,6 +338,18 @@ Transferable patterns:
 - `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
   verify evidence kind filter markers.
 
+### Upgrade 24: Normalized Source Evidence Index Reports
+
+- `packages/shared/src/schemas.ts`: adds `EvidenceIndexReportSchema`.
+- `packages/core/src/scanner.ts`: builds a normalized evidence index from file
+  lesson source evidence rows.
+- `packages/core/src/pipeline.ts`: writes
+  `analysis/evidence-index-report.json`.
+- `packages/core/src/pipeline.test.ts`: verifies evidence index counts and
+  lesson/source links.
+- `scripts/compliance-audit.mjs`: verifies the new report and includes
+  `packages/core/src/pipeline.ts` in the lesson-generation audit scope.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -434,6 +446,14 @@ Local verification:
   with `evidence-kind-toolbar`, six `data-evidence-kind-filter` buttons,
   `data-evidence-kind="import"`, and matching `evidenceKind` / `evidenceOk`
   logic in `html/assets/app.js`.
+- Temp CLI evidence-report smoke generated:
+  `/tmp/repotutor-evidence-report-smoke.YejPLz/2026-06-04/local__simple-ts-app__main__020887fb`
+  with `analysis/evidence-index-report.json`, `totalEvidenceItems: 9`,
+  `evidenceByKind`, `lessonHref: html/files.html#src-main.ts`,
+  `sourcePath: source/src/main.ts`, and `sourceHref: source/src/main.ts`.
+- `pnpm audit:brief` initially caught the new artifact token outside the audit
+  file scope; after adding `packages/core/src/pipeline.ts` to the
+  lesson-generation audit, `pnpm audit:brief` passed 13/13.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

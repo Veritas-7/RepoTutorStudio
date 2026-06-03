@@ -9,6 +9,7 @@ import {
   FlowReport,
   FolderLesson,
   GlossaryTerm,
+  EvidenceIndexReport,
   LANGUAGE_BY_EXTENSION,
   LanguageReport,
   PurposeReport,
@@ -31,6 +32,7 @@ export interface AnalysisBundle {
   folderLessons: FolderLesson[];
   fileLessons: FileLesson[];
   coverageReport: CoverageReport;
+  evidenceIndexReport: EvidenceIndexReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -49,13 +51,14 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const folderLessons = buildFolderLessons(repoMap);
   const fileLessons = await buildFileLessons(sourceRoot, walk);
   const coverageReport = buildCoverageReport(repoMap, fileLessons);
+  const evidenceIndexReport = buildEvidenceIndexReport(fileLessons);
   const flowReport = buildFlowReport(fileLessons, dependencyReport);
   const glossary = buildGlossary(languageReport, dependencyReport, fileLessons);
   const rebuildRoadmap = buildRebuildRoadmap(repoMap, fileLessons);
   const componentGraphReport = buildComponentGraphReport(folderLessons, fileLessons, glossary, rebuildRoadmap);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -253,6 +256,24 @@ function buildCoverageReport(repoMap: RepoMap, fileLessons: FileLesson[]): Cover
     uncoveredImportantFiles,
     highPriorityFolders,
     beginnerExplanation: "coverage report는 전체 파일 중 학습 리포트가 자세히 설명한 핵심 파일의 비율을 보여줍니다. 낮으면 빠진 핵심 파일이 없는지 다시 살펴봐야 합니다."
+  };
+}
+
+function buildEvidenceIndexReport(fileLessons: FileLesson[]): EvidenceIndexReport {
+  const items = fileLessons.flatMap((lesson) => lesson.sourceEvidence.map((item) => ({
+    filePath: lesson.filePath,
+    line: item.line,
+    kind: item.kind,
+    snippet: item.snippet,
+    lessonHref: `html/files.html#${htmlAnchor(lesson.filePath)}`,
+    sourcePath: `source/${lesson.filePath}`,
+    sourceHref: `source/${lesson.filePath.split("/").map(encodeURIComponent).join("/")}`
+  })));
+  return {
+    totalEvidenceItems: items.length,
+    evidenceByKind: countBy(items.map((item) => item.kind)),
+    evidenceByFile: countBy(items.map((item) => item.filePath)),
+    items
   };
 }
 

@@ -131,6 +131,10 @@ to a private repository, and preserve resumable state in this file.
   filters. `html/evidence.html` now includes evidence-kind filter buttons, and
   `assets/app.js` filters evidence cards by import, export, entry, config,
   test, or text.
+- 2026-06-04: Applied a twenty-fourth AutoResearch upgrade: normalized source
+  evidence index reports. RepoTutor now writes
+  `analysis/evidence-index-report.json` with total evidence count, counts by
+  kind, counts by file, lesson links, copied source paths, and source hrefs.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -215,6 +219,14 @@ to a private repository, and preserve resumable state in this file.
     with `evidence-kind-toolbar`, six `data-evidence-kind-filter` buttons,
     `data-evidence-kind="import"`, and matching `evidenceKind` /
     `evidenceOk` logic in `html/assets/app.js`
+  - temp CLI evidence-report smoke generated
+    `/tmp/repotutor-evidence-report-smoke.YejPLz/2026-06-04/local__simple-ts-app__main__020887fb`
+    with `analysis/evidence-index-report.json`, `totalEvidenceItems: 9`,
+    `evidenceByKind`, `lessonHref: html/files.html#src-main.ts`,
+    `sourcePath: source/src/main.ts`, and `sourceHref: source/src/main.ts`
+  - `pnpm audit:brief` initially caught the new artifact token outside the
+    audit file scope; `scripts/compliance-audit.mjs` was corrected to include
+    `packages/core/src/pipeline.ts`, then `pnpm audit:brief` passed 13/13
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -241,6 +253,7 @@ to a private repository, and preserve resumable state in this file.
   - `946bc81` source evidence kind summaries
   - `8a6f5e8` source evidence source-file links
   - `a3e504a` source evidence index pages
+  - `020887f` source evidence kind filters
 
 ## Next Actions
 

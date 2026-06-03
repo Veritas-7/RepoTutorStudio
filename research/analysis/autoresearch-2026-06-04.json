@@ -371,6 +371,21 @@
         "html/evidence.html data-evidence-kind-filter buttons",
         "html/assets/app.js evidence kind filter handler"
       ]
+    },
+    {
+      "name": "normalized source evidence index reports",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/evidence-index-report.json totalEvidenceItems",
+        "analysis/evidence-index-report.json evidenceByKind and evidenceByFile",
+        "analysis/evidence-index-report.json lessonHref and sourceHref rows"
+      ]
     }
   ],
   "verification": {
@@ -416,6 +431,9 @@
     "cliEvidenceIndexSmoke": "PASS",
     "fixtureEvidenceKindFilters": "PASS",
     "cliEvidenceKindFilterSmoke": "PASS",
+    "fixtureEvidenceIndexReport": "PASS",
+    "cliEvidenceIndexReportSmoke": "PASS",
+    "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },

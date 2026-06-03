@@ -13,6 +13,7 @@ describe("RepoTutor core pipeline", () => {
     expect(result.session.status).toBe("complete");
     expect(result.session.quizSummary.totalQuestions).toBeGreaterThanOrEqual(5);
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "repo-map.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "evidence-index-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "overview.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "component-graph.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "incremental.md"))).resolves.toBeUndefined();
@@ -97,6 +98,13 @@ describe("RepoTutor core pipeline", () => {
     const fileLessonsText = await fs.readFile(path.join(result.session.outputPaths.analysis, "file-lessons.json"), "utf8");
     expect(fileLessonsText).toContain("\"sourceEvidence\"");
     expect(fileLessonsText).toContain("\"snippet\"");
+    const evidenceIndexText = await fs.readFile(path.join(result.session.outputPaths.analysis, "evidence-index-report.json"), "utf8");
+    expect(evidenceIndexText).toContain("\"totalEvidenceItems\"");
+    expect(evidenceIndexText).toContain("\"evidenceByKind\"");
+    expect(evidenceIndexText).toContain("\"lessonHref\"");
+    expect(evidenceIndexText).toContain("\"sourceHref\"");
+    expect(evidenceIndexText).toContain("html/files.html#src-main.ts");
+    expect(evidenceIndexText).toContain("source/src/main.ts");
     const zip = await writeHtmlZipBundle(result.session.outputPaths.root);
     expect(zip.fileCount).toBeGreaterThan(5);
     expect(zip.bytes).toBeGreaterThan(100);
