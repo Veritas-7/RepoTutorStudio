@@ -762,6 +762,17 @@
         "repo-tutor quiz --format markdown",
         "doctor quiz format metadata"
       ]
+    },
+    {
+      "name": "study result markdown",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor study --format markdown",
+        "doctor study format metadata"
+      ]
     }
   ],
   "verification": {
@@ -849,6 +860,7 @@
     "cliVerifyExportMarkdownSmoke": "PASS",
     "cliVerifyEvidenceMarkdownSmoke": "PASS",
     "cliQuizMarkdownSmoke": "PASS",
+    "cliStudyMarkdownSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
