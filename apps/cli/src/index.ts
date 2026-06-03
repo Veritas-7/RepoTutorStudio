@@ -39,6 +39,7 @@ async function study(parsed: ParsedArgs): Promise<void> {
     mode: flagEnum(parsed.flags.mode, ["quick", "standard", "deep"], "standard") as StudyMode,
     level: flagEnum(parsed.flags.level, ["beginner", "junior", "senior"], "beginner") as LearnerLevel,
     studiesRoot: studiesRoot(parsed.flags),
+    sourceBaseDir: commandBaseDir(),
     enableCodex: parsed.flags["enable-codex"] === true
   });
   console.log(JSON.stringify({
@@ -206,6 +207,10 @@ function studiesRoot(flags: Record<string, string | boolean>): string {
       ?? process.env.REPOTUTOR_STUDIES_ROOT
       ?? path.join(process.env.INIT_CWD ?? process.cwd(), "studies")
   );
+}
+
+function commandBaseDir(): string {
+  return path.resolve(process.env.INIT_CWD ?? process.cwd());
 }
 
 function help(): void {

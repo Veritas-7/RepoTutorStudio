@@ -181,6 +181,19 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs`: includes the ZIP bundle writer and
   `html-report.zip` in the offline export compliance check.
 
+### Upgrade 11: Relative Local-Path Intake for Filtered CLI Dev Runs
+
+- `packages/core/src/intake.ts`: resolves local path candidates against an
+  explicit base directory before falling back to `process.cwd()`.
+- `packages/core/src/pipeline.ts`: adds optional `sourceBaseDir` to `runStudy`.
+- `apps/cli/src/index.ts`: passes `INIT_CWD` as the command base directory so
+  `pnpm --filter @repotutor/cli dev -- study packages/...` resolves from the
+  user's shell directory.
+- `packages/core/src/pipeline.test.ts`: proves a relative local source can be
+  resolved from a base directory different from the process CWD.
+- `scripts/compliance-audit.mjs`: includes the path-base handoff in the safe
+  intake compliance check.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -221,6 +234,9 @@ Local verification:
   with 18 files, 72,114 bytes, signature `504b0304`, 14 pages, 2 assets, and
   `unzip -l` entries for `index.html`, `manifest.json`, and
   `EXPORT-README.md`.
+- Temp CLI relative-path smoke generated:
+  `/tmp/repotutor-relative-cli-smoke.iLBw7a/2026-06-04/local__simple-ts-app__main__d3264425/html/index.html`
+  from `packages/core/tests/fixtures/simple-ts-app` with 15 quiz questions.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
@@ -229,5 +245,3 @@ Local verification:
 ## Deferred Candidate Backlog
 
 1. Add additional large-repo navigation polish.
-2. Accept relative local paths when the CLI is launched through a filtered pnpm
-   dev runner whose package CWD differs from the user's shell CWD.

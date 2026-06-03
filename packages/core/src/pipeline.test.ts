@@ -77,6 +77,24 @@ describe("RepoTutor core pipeline", () => {
     expect(second.analysis.incrementalReport.coverageDelta.coverageRatioDelta).toBeGreaterThan(0);
   });
 
+  it("resolves relative local sources against an explicit source base directory", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-relative-studies-"));
+    const sourceBaseDir = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-relative-source-base-"));
+    await fs.cp(fixtureRoot, path.join(sourceBaseDir, "relative-app"), { recursive: true });
+
+    const result = await runStudy({
+      source: "relative-app",
+      sourceBaseDir,
+      mode: "quick",
+      level: "beginner",
+      studiesRoot
+    });
+
+    expect(result.session.status).toBe("complete");
+    expect(result.session.localSourcePath).toBe(path.join(sourceBaseDir, "relative-app"));
+    await expect(fs.access(path.join(result.session.outputPaths.html, "index.html"))).resolves.toBeUndefined();
+  });
+
   it("uses the required quiz count formula bounds", () => {
     expect(calculateQuizCount({ mode: "quick", folderCount: 1, fileCount: 1, glossaryCount: 1, sectionCount: 1 })).toBeGreaterThanOrEqual(5);
     expect(calculateQuizCount({ mode: "standard", folderCount: 100, fileCount: 100, glossaryCount: 100, sectionCount: 12 })).toBeLessThanOrEqual(35);
