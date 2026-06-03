@@ -502,6 +502,28 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`
 - 2026-06-04: Pushed Upgrade 111 at `e4bf95e` with HEAD and `origin/main`
   matching.
+- 2026-06-04: Cloned `lucasrosati/claude-code-memory-setup` under
+  `research/external-src/lucasrosati-claude-code-memory-setup` for read-only
+  AutoResearch source inspection. Source pattern: persistent Obsidian memory,
+  Graphify codebase knowledge graph, token-saving context navigation, and
+  session save/resume notes.
+- 2026-06-04: Started a hundred-twelfth AutoResearch upgrade: agent memory
+  report. RepoTutor now targets `analysis/agent-memory-report.json`,
+  `markdown/agent-memory.md`, `html/agent-memory.html`, and CLI
+  `open --target agent-memory`.
+- 2026-06-04: RED smoke for Upgrade 112 failed as expected at
+  `/tmp/repotutor-agent-memory-red.*` with
+  `missing analysis/agent-memory-report.json`.
+- 2026-06-04: GREEN smoke for Upgrade 112 generated
+  `/tmp/repotutor-agent-memory-smoke.XIDqRo`; generated Agent Memory JSON,
+  Markdown, and HTML artifacts, included `tokenSavings`, `memoryNotes`,
+  `project-context`, `agent-memory-card`,
+  `data-source-pattern="Obsidian Graphify"`, and `Agent Memory`, and
+  `open --target agent-memory` returned the new page.
+- 2026-06-04: Upgrade 112 verification passed:
+  - `pnpm build`
+  - `pnpm test`
+  - `pnpm audit:brief`
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`

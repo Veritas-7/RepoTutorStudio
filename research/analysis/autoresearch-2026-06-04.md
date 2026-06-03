@@ -1999,6 +1999,33 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 112: Agent Memory Report
+
+- Cloned and inspected `lucasrosati/claude-code-memory-setup` under
+  `research/external-src/lucasrosati-claude-code-memory-setup` without
+  executing external source.
+- Added `AgentMemoryReportSchema` and
+  `analysis/agent-memory-report.json` with Obsidian/Graphify-style persistent
+  memory layers, token-saving estimates, generated memory notes, and context
+  navigation rules.
+- Added `markdown/agent-memory.md`, `html/agent-memory.html`,
+  manifest/verification coverage, learning-path linkage, and
+  `open --target agent-memory`.
+- Source pattern: the Claude Code memory setup uses a persistent Obsidian vault
+  for decisions/progress and a Graphify codebase knowledge graph before raw-code
+  reads; RepoTutor maps that to a static Agent Memory report that tells the next
+  AI session what to read before opening source files.
+- RED smoke `/tmp/repotutor-agent-memory-red.*` failed on the old behavior with
+  `missing analysis/agent-memory-report.json`.
+- GREEN smoke generated `/tmp/repotutor-agent-memory-smoke.XIDqRo`; generated
+  the JSON, Markdown, and HTML artifacts, included `tokenSavings`,
+  `memoryNotes`, `project-context`, `agent-memory-card`,
+  `data-source-pattern="Obsidian Graphify"`, and `Agent Memory`, and
+  `open --target agent-memory` returned `html/agent-memory.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
