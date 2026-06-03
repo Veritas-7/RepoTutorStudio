@@ -1286,6 +1286,20 @@
         "learningProgress browser state",
         "reload-persistent learning path completion"
       ]
+    },
+    {
+      "name": "learning path progress reset",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "learning-progress-toolbar",
+        "data-reset-learning-progress button",
+        "learningProgress.clear() reset handler",
+        "reload-safe learning path progress reset"
+      ]
     }
   ],
   "verification": {
@@ -1425,6 +1439,8 @@
     "cliLearningPathTourAssetSmoke": "PASS",
     "fixtureLearningPathProgress": "PASS",
     "cliLearningPathProgressSmoke": "PASS",
+    "fixtureLearningPathProgressReset": "PASS",
+    "cliLearningPathProgressResetSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

@@ -330,6 +330,11 @@ to a private repository, and preserve resumable state in this file.
   progress persistence. `html/learning-path.html` now has
   `data-learning-step-complete` checkboxes and offline JS persists completed
   steps in browser localStorage under `repotutor:learning-path:<path>`.
+- 2026-06-04: Applied a hundredth AutoResearch upgrade: learning path progress
+  reset controls. `html/learning-path.html` now has a
+  `data-reset-learning-progress` button labeled `진도 초기화`, and offline JS
+  clears `learningProgress`, persists the cleared state, and unchecks all
+  learning-step completion boxes without a reload.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -860,6 +865,11 @@ to a private repository, and preserve resumable state in this file.
     `학습 완료`, while `html/assets/app.js` contained
     `repotutor:learning-path`, `localStorage`, `learningProgress`, and
     `[data-learning-step-complete]`.
+  - temp CLI learning-reset smoke generated
+    `/tmp/repotutor-learning-reset-smoke.hW6IZB`; generated
+    `html/learning-path.html` contained `data-reset-learning-progress` and
+    `진도 초기화`, while `html/assets/app.js` contained
+    `[data-reset-learning-progress]` and `learningProgress.clear()`.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -962,6 +972,7 @@ to a private repository, and preserve resumable state in this file.
   - `3f4267c` offline quiz reset controls
   - `da775e1` guided learning path report
   - `9454f79` learning path tour asset
+  - `86762b2` learning path progress persistence
 
 ## Next Actions
 

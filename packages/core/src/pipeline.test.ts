@@ -125,6 +125,8 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("learning-path-step");
     expect(learningPathHtml).toContain("data-learning-step");
     expect(learningPathHtml).toContain("data-learning-step-complete");
+    expect(learningPathHtml).toContain("data-reset-learning-progress");
+    expect(learningPathHtml).toContain("진도 초기화");
     expect(learningPathHtml).toContain("학습 완료");
     expect(learningPathHtml).toContain("data-source-pattern=\"CodeTour\"");
     expect(learningPathHtml).toContain("component-graph.html");
@@ -152,6 +154,8 @@ describe("RepoTutor core pipeline", () => {
     expect(appJs).toContain("[data-quiz-section-filter]");
     expect(appJs).toContain("repotutor:learning-path");
     expect(appJs).toContain("learningProgress");
+    expect(appJs).toContain("[data-reset-learning-progress]");
+    expect(appJs).toContain("learningProgress.clear()");
     expect(appJs).toContain("localStorage");
     expect(appJs).toContain("[data-reset-quiz]");
     expect(appJs).toContain("picked.clear()");
