@@ -68,17 +68,31 @@ Transferable patterns:
 - Persistence remains in CLI/Tauri as required; the static page is for offline
   review and does not pretend to save attempts.
 
+### Upgrade 3: Persisted Tauri Quiz Attempts
+
+- `apps/desktop-tauri/src-tauri/src/lib.rs`: added `load_quiz` and
+  `submit_quiz` commands.
+- `apps/desktop-tauri/src/App.tsx`: renders session quiz questions in the Tauri
+  UI, collects A/B/C/D answers, and submits them.
+- `apps/desktop-tauri/src/styles.css`: added stable quiz layout and selected
+  answer state.
+- Scoring still uses `repo-tutor quiz`, so `quiz-attempts.jsonl`,
+  `wrong-notes.json`, Markdown, and HTML refresh stay on the shared core path.
+
 Local verification:
 
 - `pnpm build`: PASS
 - `pnpm test`: PASS
+- `cargo check`: PASS
 - Fixture study generated:
   `studies/2026-06-04/local__simple-ts-app__main__e47698ac/analysis/coverage-report.json`
 - `pnpm audit:brief`: PASS, 13/13 audit reports
+- `gitleaks dir . --no-banner --redact`: PASS after cleaning generated Rust
+  target artifacts.
 
 ## Deferred Candidate Backlog
 
 1. Add incremental re-analysis using file hashes and coverage deltas.
-2. Add persisted Tauri quiz attempt submission using the same core scoring API.
-3. Add a source-backed component graph page that links folders, files, glossary
+2. Add a source-backed component graph page that links folders, files, glossary
    terms, and rebuild roadmap steps.
+3. Add incremental re-analysis using file hashes and coverage deltas.

@@ -42,6 +42,10 @@ to a private repository, and preserve resumable state in this file.
   `research/external-src/`, wrote analysis under `research/analysis/`, and
   applied the CodeBoarding-inspired learning coverage report upgrade plus the
   google/html-quiz-inspired offline quiz interaction upgrade.
+- 2026-06-04: Applied a third AutoResearch upgrade: persisted Tauri quiz
+  attempts. Tauri now loads `analysis/quiz.json`, renders A/B/C/D choices, and
+  submits answers through `repo-tutor quiz`, preserving shared core attempt and
+  wrong-note behavior.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -53,5 +57,4 @@ to a private repository, and preserve resumable state in this file.
 
 1. Commit and push the research/coverage upgrade.
 2. Continue next AutoResearch upgrade candidate unless the user stops:
-   persisted Tauri quiz attempts, incremental re-analysis, or source-backed
-   component graph.
+   incremental re-analysis or source-backed component graph.

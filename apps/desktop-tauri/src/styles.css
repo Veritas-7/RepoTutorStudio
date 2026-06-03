@@ -157,7 +157,8 @@ button:disabled {
 .status-strip div,
 .report-pane,
 .tutor-pane,
-.log-panel {
+.log-panel,
+.quiz-workspace {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -236,6 +237,44 @@ button:disabled {
 .log-panel p {
   margin: 4px 0;
   color: var(--muted);
+}
+
+.quiz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.quiz-list {
+  display: grid;
+  gap: 12px;
+}
+
+.quiz-item {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.choice-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.choice-grid button {
+  text-align: left;
+}
+
+.choice-grid button.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.attempt-result {
+  color: var(--accent-strong);
+  font-weight: 700;
 }
 
 @media (max-width: 980px) {

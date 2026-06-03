@@ -23,6 +23,26 @@ interface StudyResponse {
   quizQuestions: number;
 }
 
+interface QuizQuestion {
+  id: string;
+  question: string;
+  choices: Record<"A" | "B" | "C" | "D", string>;
+}
+
+interface QuizPayload {
+  sessionId: string;
+  totalQuestions: number;
+  questions: QuizQuestion[];
+}
+
+interface AttemptResponse {
+  attemptId: string;
+  score: number;
+  correct: number;
+  wrong: number;
+  wrongNotes: string;
+}
+
 const tabs = ["Overview", "Language", "Architecture", "Folders", "Files", "Flow", "Glossary", "Rebuild", "Quiz", "Wrong Notes", "HTML Preview", "Raw Logs"];
 
 export default function App() {
@@ -34,6 +54,9 @@ export default function App() {
   const [current, setCurrent] = useState<StudyResponse | null>(null);
   const [log, setLog] = useState<string[]>(["RepoTutor Studio ready."]);
   const [running, setRunning] = useState(false);
+  const [quiz, setQuiz] = useState<QuizPayload | null>(null);
+  const [answers, setAnswers] = useState<Record<string, "A" | "B" | "C" | "D">>({});
+  const [attempt, setAttempt] = useState<AttemptResponse | null>(null);
 
   const selectedSession = useMemo(() => sessions.find((session) => current?.path === session.path), [sessions, current]);
 
@@ -58,6 +81,36 @@ export default function App() {
       setSessions(result);
     } catch (error) {
       setLog((items) => [`세션 목록 오류: ${String(error)}`, ...items]);
+    }
+  }
+
+  async function loadCurrentQuiz() {
+    if (!current) return;
+    try {
+      const result = await invoke<QuizPayload>("load_quiz", { sessionPath: current.path });
+      setQuiz(result);
+      setAnswers({});
+      setAttempt(null);
+      setActiveTab("Quiz");
+      setLog((items) => [`퀴즈 로드: ${result.totalQuestions}문제`, ...items]);
+    } catch (error) {
+      setLog((items) => [`퀴즈 로드 오류: ${String(error)}`, ...items]);
+    }
+  }
+
+  async function submitCurrentQuiz() {
+    if (!current || !quiz) return;
+    if (Object.keys(answers).length !== quiz.questions.length) {
+      setLog((items) => ["퀴즈 제출 전 모든 문제를 선택해야 합니다.", ...items]);
+      return;
+    }
+    try {
+      const result = await invoke<AttemptResponse>("submit_quiz", { sessionPath: current.path, answers });
+      setAttempt(result);
+      setLog((items) => [`퀴즈 제출 완료: ${result.score}점, 오답 ${result.wrong}개`, ...items]);
+      await refreshSessions();
+    } catch (error) {
+      setLog((items) => [`퀴즈 제출 오류: ${String(error)}`, ...items]);
     }
   }
 
@@ -148,9 +201,34 @@ export default function App() {
             <button>선택한 용어 설명</button>
             <button>특정 폴더 더 자세히</button>
             <button>특정 파일 다시 만들기</button>
+            <button onClick={loadCurrentQuiz} disabled={!current}>퀴즈 풀기</button>
             <button>현재 대화를 HTML에 추가</button>
           </aside>
         </section>
+
+        {activeTab === "Quiz" && quiz ? (
+          <section className="quiz-workspace">
+            <div className="quiz-header">
+              <h2>퀴즈 응시</h2>
+              <button className="primary" onClick={submitCurrentQuiz}>제출</button>
+            </div>
+            <div className="quiz-list">
+              {quiz.questions.map((question, index) => (
+                <article key={question.id} className="quiz-item">
+                  <h3>{index + 1}. {question.question}</h3>
+                  <div className="choice-grid">
+                    {(Object.entries(question.choices) as Array<["A" | "B" | "C" | "D", string]>).map(([key, value]) => (
+                      <button key={key} className={answers[question.id] === key ? "selected" : ""} onClick={() => setAnswers((currentAnswers) => ({ ...currentAnswers, [question.id]: key }))}>
+                        <strong>{key}</strong>. {value}
+                      </button>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+            {attempt ? <p className="attempt-result">최근 제출: {attempt.score}점 · 정답 {attempt.correct} · 오답 {attempt.wrong} · {attempt.wrongNotes}</p> : null}
+          </section>
+        ) : null}
 
         <section className="log-panel">
           <h2>진행 로그</h2>
