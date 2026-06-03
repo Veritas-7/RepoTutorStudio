@@ -1458,6 +1458,27 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 91: Quiz Section And Difficulty Filters
+
+- Added section and difficulty filter toolbars to `html/quiz.html` so larger
+  quiz sets can be narrowed without leaving the offline browser report.
+- Quiz cards now expose `data-quiz-section` and `data-quiz-difficulty`; the
+  shared offline JS combines those filters with global search and the existing
+  graph/file/evidence filters.
+- Source pattern: google/html-quiz builds a category board from question groups;
+  RepoTutor maps that idea to its existing `section` and `difficulty` quiz
+  metadata.
+- RED smoke `/tmp/repotutor-quiz-filter-red.ko2HXz` failed on the old behavior
+  with `quiz missing quiz-section-toolbar`.
+- GREEN smoke generated `/tmp/repotutor-quiz-filter-smoke.vFPca8`; generated
+  `quiz.html` included `quiz-section-toolbar`, `quiz-difficulty-toolbar`,
+  `data-quiz-section-filter`, `data-quiz-difficulty-filter`,
+  `data-quiz-section`, and `data-quiz-difficulty`, while `assets/app.js`
+  included the matching quiz section and difficulty handlers.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

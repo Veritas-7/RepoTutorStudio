@@ -1144,6 +1144,20 @@
         "quiz-print manifest entrypoint",
         "quiz-print open target"
       ]
+    },
+    {
+      "name": "quiz section and difficulty filters",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "quiz-section-toolbar",
+        "quiz-difficulty-toolbar",
+        "data-quiz-section filter metadata",
+        "data-quiz-difficulty filter metadata"
+      ]
     }
   ],
   "verification": {
@@ -1265,6 +1279,8 @@
     "cliPrintCssSmoke": "PASS",
     "fixtureQuizPrintPage": "PASS",
     "cliQuizPrintSmoke": "PASS",
+    "fixtureQuizFilters": "PASS",
+    "cliQuizFilterSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
