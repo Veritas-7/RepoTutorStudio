@@ -82,6 +82,10 @@ to a private repository, and preserve resumable state in this file.
   `study` passes `INIT_CWD`, and relative local sources now resolve from the
   user's shell directory even when `pnpm --filter` runs the package from
   `apps/cli`.
+- 2026-06-04: Applied a twelfth AutoResearch upgrade: large-repo file
+  navigation filters. `files.html` now includes extension and top-folder
+  toolbars, file cards expose `data-file-ext` and `data-file-dir`, and the
+  offline JS combines these filters with the existing global search.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -111,6 +115,11 @@ to a private repository, and preserve resumable state in this file.
     `packages/core/tests/fixtures/simple-ts-app` under
     `/tmp/repotutor-relative-cli-smoke.iLBw7a/2026-06-04/local__simple-ts-app__main__d3264425`
     with `html/index.html` and 15 quiz questions
+  - temp CLI file-navigation smoke generated
+    `/tmp/repotutor-file-nav-smoke.YlVkai/2026-06-04/local__simple-ts-app__main__df6a42da/html/files.html`
+    with `file-nav-toolbar`, extension buttons, directory buttons,
+    `data-file-ext=".ts"`, `data-file-dir="src"`, and matching handlers in
+    `html/assets/app.js`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -125,8 +134,8 @@ to a private repository, and preserve resumable state in this file.
   - `c8fa07e` component graph summaries
   - `8f7c2b9` portable HTML export guide
   - `d326442` zipped HTML export bundle
+  - `df6a42d` CLI relative local-source resolution
 
 ## Next Actions
 
-1. Continue next AutoResearch upgrade candidate unless the user stops:
-   additional large-repo navigation polish.
+1. Continue next AutoResearch upgrade candidate unless the user stops.
