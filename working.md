@@ -526,6 +526,28 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`
 - 2026-06-04: Pushed Upgrade 112 at `f96b54d` with HEAD and `origin/main`
   matching.
+- 2026-06-04: Cloned `safishamsi/graphify` under
+  `research/external-src/safishamsi-graphify` for read-only AutoResearch source
+  inspection. Source pattern: query/path/explain graph traversal commands,
+  query-first assistant guidance, node explanation cards, and shortest-path
+  prompts.
+- 2026-06-04: Started a hundred-thirteenth AutoResearch upgrade: graph query
+  guide. RepoTutor now targets `analysis/graph-query-report.json`,
+  `markdown/graph-query.md`, `html/graph-query.html`, and CLI
+  `open --target graph-query`.
+- 2026-06-04: RED smoke for Upgrade 113 failed as expected at
+  `/tmp/repotutor-graph-query-red.*` with
+  `missing analysis/graph-query-report.json`.
+- 2026-06-04: GREEN smoke for Upgrade 113 generated
+  `/tmp/repotutor-graph-query-smoke.VPMkZu`; generated Graph Query JSON,
+  Markdown, and HTML artifacts, included `queryModes`, `nodeExplanations`,
+  `pathPrompts`, `graph-query-card`, `data-source-pattern="Graphify"`,
+  `graphify query`, `graphify path`, and `graphify explain`, and
+  `open --target graph-query` returned the new page.
+- 2026-06-04: Upgrade 113 verification passed:
+  - `pnpm build`
+  - `pnpm test`
+  - `pnpm audit:brief`
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`

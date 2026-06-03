@@ -25,6 +25,7 @@ import {
   ContextPackReport,
   McpHandoffReport,
   AgentMemoryReport,
+  GraphQueryReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -47,6 +48,7 @@ export interface AnalysisBundle {
   contextPackReport: ContextPackReport;
   mcpHandoffReport: McpHandoffReport;
   agentMemoryReport: AgentMemoryReport;
+  graphQueryReport: GraphQueryReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -76,10 +78,11 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const glossary = buildGlossary(languageReport, dependencyReport, fileLessons);
   const rebuildRoadmap = buildRebuildRoadmap(repoMap, fileLessons);
   const componentGraphReport = buildComponentGraphReport(folderLessons, fileLessons, glossary, rebuildRoadmap);
+  const graphQueryReport = buildGraphQueryReport(componentGraphReport);
   const agentMemoryReport = buildAgentMemoryReport(repoMap, languageReport, purposeReport, contextPackReport, mcpHandoffReport, componentGraphReport);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, mcpHandoffReport, agentMemoryReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -871,6 +874,56 @@ function memoryFrontmatter(title: string, tags: string[], status: string): Agent
     { key: "status", value: status },
     { key: "type", value: "agent-memory" }
   ];
+}
+
+function buildGraphQueryReport(componentGraphReport: ComponentGraphReport): GraphQueryReport {
+  const topNodes = componentGraphReport.summary.topConnectedNodes.slice(0, 5);
+  const nodesById = new Map(componentGraphReport.nodes.map((node) => [node.id, node]));
+  const nodeExplanations = topNodes.map((node) => ({
+    nodeId: node.id,
+    label: node.label,
+    type: node.type,
+    question: `graphify explain "${node.label}"`,
+    href: nodesById.get(node.id)?.href ?? null
+  }));
+  const entryNode = componentGraphReport.entryNodeIds[0] ?? componentGraphReport.nodes[0]?.id ?? "root";
+  const pathPrompts = componentGraphReport.summary.topConnectedNodes.slice(0, 4).map((node) => ({
+    from: entryNode,
+    to: node.id,
+    question: `graphify path "${entryNode}" "${node.id}"`,
+    reason: `${node.label}까지 이어지는 최단 경로를 먼저 보면 raw file 탐색 범위를 줄일 수 있습니다.`
+  }));
+  return {
+    summary: `Graphify식 graph query guide: ${componentGraphReport.summary.totalNodes}개 노드와 ${componentGraphReport.summary.totalEdges}개 관계를 query/path/explain 방식으로 탐색할 질문을 준비했습니다.`,
+    sourcePattern: "Graphify query path explain graph traversal command guide",
+    queryModes: [
+      {
+        name: "query",
+        commandShape: "graphify query \"How does this area work?\" --budget 1500",
+        purpose: "넓은 질문을 BFS 스타일로 훑어 관련 노드 묶음을 찾습니다.",
+        useWhen: "기능의 전체 흐름이나 개념 묶음을 처음 이해할 때"
+      },
+      {
+        name: "path",
+        commandShape: "graphify path \"EntryNode\" \"TargetNode\"",
+        purpose: "두 노드 사이의 짧은 연결 경로를 확인합니다.",
+        useWhen: "진입점에서 핵심 컴포넌트까지의 연결만 좁혀 보고 싶을 때"
+      },
+      {
+        name: "explain",
+        commandShape: "graphify explain \"NodeName\"",
+        purpose: "한 노드를 평문 설명으로 풀어 다음 읽을 파일을 결정합니다.",
+        useWhen: "god node, hub node, 낯선 용어를 먼저 해석할 때"
+      }
+    ],
+    nodeExplanations,
+    pathPrompts,
+    learnerNextSteps: [
+      "먼저 query mode로 넓게 묻고, path mode로 연결을 좁힌 뒤, explain mode로 핵심 노드를 해석하세요.",
+      "generated component graph에서 href가 있는 노드는 바로 관련 학습 페이지로 이동하세요.",
+      "질문 결과를 raw source 읽기 전에 비교하면 불필요한 파일 탐색을 줄일 수 있습니다."
+    ]
+  };
 }
 
 function suggestedReadScore(lesson: FileLesson, index: number): number {

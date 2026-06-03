@@ -2026,6 +2026,33 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 113: Graph Query Guide
+
+- Cloned and inspected `safishamsi/graphify` under
+  `research/external-src/safishamsi-graphify` without executing external
+  source.
+- Added `GraphQueryReportSchema` and
+  `analysis/graph-query-report.json` with Graphify-style `query`, `path`, and
+  `explain` modes, node explanation commands, and shortest-path prompts.
+- Added `markdown/graph-query.md`, `html/graph-query.html`,
+  manifest/verification coverage, learning-path linkage, and
+  `open --target graph-query`.
+- Source pattern: Graphify tells agents to query the existing graph before
+  grepping or reading raw files, and exposes `graphify query`, `graphify path`,
+  and `graphify explain`; RepoTutor maps those ideas to static graph traversal
+  questions over the generated component graph.
+- RED smoke `/tmp/repotutor-graph-query-red.*` failed on the old behavior with
+  `missing analysis/graph-query-report.json`.
+- GREEN smoke generated `/tmp/repotutor-graph-query-smoke.VPMkZu`; generated
+  the JSON, Markdown, and HTML artifacts, included `queryModes`,
+  `nodeExplanations`, `pathPrompts`, `graph-query-card`,
+  `data-source-pattern="Graphify"`, `graphify query`, `graphify path`, and
+  `graphify explain`, and `open --target graph-query` returned
+  `html/graph-query.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
