@@ -416,21 +416,23 @@ async function list(parsed: ParsedArgs): Promise<void> {
     if (parsed.flags.fields !== undefined || parsed.flags["field-preset"] !== undefined) throw new Error("list cannot combine --summary with --fields or --field-preset.");
     if (!["json", "markdown"].includes(format)) throw new Error("list --summary supports --format json or markdown.");
     const summary = listSummary(filtered);
-    console.log(format === "markdown" ? listSummaryMarkdown(summary) : JSON.stringify(summary, null, 2));
+    await emitListOutput(format === "markdown" ? listSummaryMarkdown(summary) : jsonText(summary), parsed.flags.output);
     return;
   }
   const fields = listFieldSelection(parsed.flags.fields, parsed.flags["field-preset"]);
   const projected = fields ? projectListRows(filtered, fields) : filtered;
   if (!["json", "markdown", "jsonl", "csv"].includes(format)) throw new Error("list supports --format json, markdown, jsonl, or csv.");
+  let rendered: string;
   if (format === "markdown") {
-    console.log(fields ? listFieldsMarkdown(projected, fields) : listMarkdown(filtered));
+    rendered = fields ? listFieldsMarkdown(projected, fields) : listMarkdown(filtered);
   } else if (format === "jsonl") {
-    process.stdout.write(listJsonl(projected));
+    rendered = listJsonl(projected);
   } else if (format === "csv") {
-    process.stdout.write(listCsv(filtered, fields ?? [...DEFAULT_LIST_CSV_FIELDS]));
+    rendered = listCsv(filtered, fields ?? [...DEFAULT_LIST_CSV_FIELDS]);
   } else {
-    console.log(JSON.stringify(projected, null, 2));
+    rendered = jsonText(projected);
   }
+  await emitListOutput(rendered, parsed.flags.output);
 }
 
 async function openSession(parsed: ParsedArgs): Promise<void> {
@@ -507,6 +509,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       fields: [...LIST_FIELDS],
       fieldPresets: LIST_FIELD_PRESET_NAMES,
       summary: true,
+      output: true,
       repo: true,
       createdFrom: true,
       createdTo: true,
@@ -1003,6 +1006,23 @@ function listJsonl(rows: unknown[]): string {
   return rows.map((row) => JSON.stringify(row)).join("\n") + (rows.length > 0 ? "\n" : "");
 }
 
+async function emitListOutput(text: string, outputValue: string | boolean | undefined): Promise<void> {
+  const outputFile = optionalStringFlag(outputValue, "output");
+  const normalizedText = text.endsWith("\n") ? text : `${text}\n`;
+  if (outputFile === null) {
+    process.stdout.write(normalizedText);
+    return;
+  }
+  const outputPath = path.resolve(outputFile);
+  await fs.mkdir(path.dirname(outputPath), { recursive: true });
+  await fs.writeFile(outputPath, normalizedText);
+  console.log(outputPath);
+}
+
+function jsonText(value: unknown): string {
+  return `${JSON.stringify(value, null, 2)}\n`;
+}
+
 function listSummary(rows: ListRow[]): ListSummary {
   const scores = rows.map((row) => row.score).filter((score): score is number => score !== null);
   return {
@@ -1387,7 +1407,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
+  list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --output reports/list.json --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);

@@ -948,6 +948,17 @@
         "repo-tutor list --summary --format json|markdown",
         "doctor listFilters.summary metadata"
       ]
+    },
+    {
+      "name": "saved session list output",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --output <file>",
+        "doctor listFilters.output metadata"
+      ]
     }
   ],
   "verification": {
@@ -1052,6 +1063,7 @@
     "cliListFieldsSmoke": "PASS",
     "cliListFieldPresetSmoke": "PASS",
     "cliListSummarySmoke": "PASS",
+    "cliListOutputSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
