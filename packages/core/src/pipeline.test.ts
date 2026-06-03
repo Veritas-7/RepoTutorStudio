@@ -16,6 +16,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "evidence-index-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "suggested-reads-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "runtime-environment-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "interface-map-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "session-verification-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "overview.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "component-graph.md"))).resolves.toBeUndefined();
@@ -23,6 +24,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "evidence.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "suggested-reads.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "runtime-environment.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "interface-map.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "session-verification.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "index.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "learning-path.html"))).resolves.toBeUndefined();
@@ -33,6 +35,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "evidence.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "suggested-reads.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "runtime-environment.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "interface-map.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "session-verification.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "quiz-print.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.codex, "events.jsonl"))).resolves.toBeUndefined();
@@ -102,12 +105,23 @@ describe("RepoTutor core pipeline", () => {
     const runtimeEnvironmentMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "runtime-environment.md"), "utf8");
     expect(runtimeEnvironmentMarkdown).toContain("# 실행 환경");
     expect(runtimeEnvironmentMarkdown).toContain("Source pattern: docSmith");
+    const interfaceMapText = await fs.readFile(path.join(result.session.outputPaths.analysis, "interface-map-report.json"), "utf8");
+    expect(interfaceMapText).toContain("repomap page routes GraphQL REST data flow analysis");
+    expect(interfaceMapText).toContain("\"routeSignals\"");
+    const interfaceMapHtml = await fs.readFile(path.join(result.session.outputPaths.html, "interface-map.html"), "utf8");
+    expect(interfaceMapHtml).toContain("인터페이스 맵");
+    expect(interfaceMapHtml).toContain("interface-map-card");
+    expect(interfaceMapHtml).toContain("data-source-pattern=\"repomap\"");
+    const interfaceMapMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "interface-map.md"), "utf8");
+    expect(interfaceMapMarkdown).toContain("# 인터페이스 맵");
+    expect(interfaceMapMarkdown).toContain("Source pattern: repomap");
     const exportManifestText = await fs.readFile(path.join(result.session.outputPaths.html, "manifest.json"), "utf8");
     expect(exportManifestText).toContain("\"entrypoints\"");
     expect(exportManifestText).toContain("html/learning-path.html");
     expect(exportManifestText).toContain("html/quiz-print.html");
     expect(exportManifestText).toContain("html/suggested-reads.html");
     expect(exportManifestText).toContain("html/runtime-environment.html");
+    expect(exportManifestText).toContain("html/interface-map.html");
     expect(exportManifestText).toContain("\"integrity\"");
     expect(exportManifestText).toContain("\"bytes\"");
     expect(exportManifestText).toContain("\"sha256\"");
@@ -168,6 +182,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("data-source-pattern=\"CodeTour\"");
     expect(learningPathHtml).toContain("component-graph.html");
     expect(learningPathHtml).toContain("runtime-environment.html");
+    expect(learningPathHtml).toContain("interface-map.html");
     const sessionVerificationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "session-verification.html"), "utf8");
     expect(sessionVerificationHtml).toContain("세션 검증");
     expect(sessionVerificationHtml).toContain("../analysis/session-verification-report.json");

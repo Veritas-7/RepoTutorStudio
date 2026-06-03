@@ -102,6 +102,24 @@ Transferable patterns:
 - Give learners a checklist for what to verify before attempting local or
   container execution.
 
+### wtdlee/repomap
+
+- URL: https://github.com/wtdlee/repomap
+- Local source: `research/external-src/wtdlee-repomap`
+- Stars at check: 2
+- Forks at check: 0
+- License: MIT
+- Updated: 2026-01-07T05:11:45Z
+- Relevance: interactive repository map for pages, routes, components,
+  GraphQL, REST API detection, and data-flow diagrams.
+
+Transferable patterns:
+
+- Treat route/page files as first-class learner entry points.
+- Extract API call and handler signals separately from generic file lessons.
+- Surface component and data-flow hints so a learner can trace UI entry to data
+  movement.
+
 ## Adopted Upgrade
 
 ### Upgrade 1: CodeBoarding-Inspired Coverage Report
@@ -1821,6 +1839,30 @@ Local verification:
   `docSmith`, `실행 환경`, and `data-source-pattern="docSmith"`, and
   `open --target runtime-environment` returned
   `html/runtime-environment.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
+### Upgrade 106: Interface Map Report
+
+- Added `InterfaceMapReportSchema` and `analysis/interface-map-report.json`
+  with repomap-style route/page/API/component/data-flow signals.
+- The scanner now detects page/router/controller/App Router file patterns,
+  fetch/axios/router/FastAPI-style API signals, and named React component
+  signals from safe text files.
+- Added `markdown/interface-map.md`, `html/interface-map.html`,
+  manifest/verification coverage, learning-path linkage, and
+  `open --target interface-map`.
+- Source pattern: repomap maps pages, routes, REST APIs, GraphQL operations,
+  components, and data flows; RepoTutor maps the transferable static subset to
+  learner-facing interface and data-flow hints.
+- RED smoke `/tmp/repotutor-interface-map-red.*` failed on the old behavior
+  with `missing analysis/interface-map-report.json`.
+- GREEN smoke generated `/tmp/repotutor-interface-map-smoke.CNPJhA`;
+  generated the JSON, Markdown, and HTML artifacts, included
+  `interface-map-card`, `repomap`, `인터페이스 맵`, and
+  `data-source-pattern="repomap"`, and `open --target interface-map` returned
+  `html/interface-map.html`.
 - `pnpm build`: PASS
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
