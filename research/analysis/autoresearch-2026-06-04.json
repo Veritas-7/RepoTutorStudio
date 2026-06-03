@@ -33,21 +33,33 @@
       ]
     }
   ],
-  "upgradeApplied": {
-    "name": "learning coverage report",
-    "filesChanged": [
-      "packages/shared/src/schemas.ts",
-      "packages/core/src/scanner.ts",
-      "packages/core/src/pipeline.ts",
-      "packages/core/src/markdown.ts",
-      "packages/html/src/templates.ts"
-    ],
-    "newArtifacts": [
-      "analysis/coverage-report.json",
-      "markdown/coverage.md",
-      "html/coverage.html"
-    ]
-  },
+  "upgradesApplied": [
+    {
+      "name": "learning coverage report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts"
+      ],
+      "newArtifacts": [
+        "analysis/coverage-report.json",
+        "markdown/coverage.md",
+        "html/coverage.html"
+      ]
+    },
+    {
+      "name": "offline quiz interaction",
+      "filesChanged": [
+        "packages/html/src/templates.ts"
+      ],
+      "newArtifacts": [
+        "html/quiz.html browser-only answer feedback",
+        "html/assets/app.js live review score"
+      ]
+    }
+  ],
   "verification": {
     "pnpmBuild": "PASS",
     "pnpmTest": "PASS",
@@ -56,7 +68,7 @@
   },
   "candidateBacklog": [
     "incremental re-analysis using file hashes and coverage deltas",
-    "offline interactive quiz board inspired by google/html-quiz",
+    "persisted Tauri quiz attempt submission using the same core scoring API",
     "source-backed component graph page"
   ]
 }

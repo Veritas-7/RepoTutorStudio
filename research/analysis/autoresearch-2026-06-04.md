@@ -49,7 +49,7 @@ Transferable patterns:
 
 ## Adopted Upgrade
 
-Implemented a CodeBoarding-inspired learning coverage report:
+### Upgrade 1: CodeBoarding-Inspired Coverage Report
 
 - `packages/shared/src/schemas.ts`: added `CoverageReportSchema`.
 - `packages/core/src/scanner.ts`: added coverage calculation based on scanned
@@ -58,6 +58,15 @@ Implemented a CodeBoarding-inspired learning coverage report:
 - `packages/core/src/markdown.ts`: writes `markdown/coverage.md`.
 - `packages/html/src/templates.ts`: writes `html/coverage.html` and links it
   from the report navigation and index summary.
+
+### Upgrade 2: google/html-quiz-Inspired Offline Quiz Interaction
+
+- `packages/html/src/templates.ts`: `quiz.html` now renders each 4-choice
+  question as offline browser buttons.
+- `html/assets/app.js`: marks selected answers correct/wrong and updates a
+  live browser-only review score.
+- Persistence remains in CLI/Tauri as required; the static page is for offline
+  review and does not pretend to save attempts.
 
 Local verification:
 
@@ -70,7 +79,6 @@ Local verification:
 ## Deferred Candidate Backlog
 
 1. Add incremental re-analysis using file hashes and coverage deltas.
-2. Add a more interactive offline quiz board inspired by `google/html-quiz`,
-   while preserving 4-choice RepoTutor quiz schema and attempt history.
+2. Add persisted Tauri quiz attempt submission using the same core scoring API.
 3. Add a source-backed component graph page that links folders, files, glossary
    terms, and rebuild roadmap steps.
