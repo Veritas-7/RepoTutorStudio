@@ -743,6 +743,11 @@ to a private repository, and preserve resumable state in this file.
     reported `studiesRootExists: false` and writable parent, existing studies
     root reported readable/writable true, and Markdown included
     `## Runtime Health`.
+  - temp CLI print CSS smoke generated
+    `/tmp/repotutor-print-css-smoke.KvSOCH`; generated `assets/style.css`
+    included `@media print`, `print-color-adjust`, hidden sidebar/toolbar/choice
+    rules, and printable link target rules, and `EXPORT-README.md` included
+    browser print-preview guidance.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -834,6 +839,7 @@ to a private repository, and preserve resumable state in this file.
   - `db5312b` default saved list verification report paths
   - `d361825` default study target command
   - `7c2ee7a` studies root runtime option discovery
+  - `524c9f1` doctor runtime health checks
 
 ## Next Actions
 

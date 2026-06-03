@@ -1414,6 +1414,28 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 89: Print-Friendly Offline HTML Reports
+
+- Added print media CSS to `html/assets/style.css` so offline learning reports
+  can be printed or saved as PDFs with navigation, filter toolbars, and quiz
+  buttons hidden.
+- Print mode switches the report to a single-column page, keeps panels together
+  with `break-inside: avoid`, preserves print colors with
+  `print-color-adjust`, and prints link targets with `a[href]::after`.
+- Added export README guidance telling users to use browser print preview for
+  PDF or paper handouts.
+- Source pattern: google/html-quiz recommends checking print preview because
+  its offline quiz can double as a printable question/answer handout.
+- RED smoke `/tmp/repotutor-print-css-red.*` failed on the old generated
+  `style.css` because it lacked `@media print`.
+- GREEN smoke generated `/tmp/repotutor-print-css-smoke.KvSOCH`; generated
+  `style.css` included `@media print`, `print-color-adjust`,
+  hidden sidebar/toolbar/choice rules, and printable link targets, while
+  `EXPORT-README.md` included print preview guidance.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

@@ -1115,6 +1115,19 @@
         "doctor Runtime Health Markdown",
         "studies root access checks"
       ]
+    },
+    {
+      "name": "print-friendly offline html reports",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/quiz.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "offline report print CSS",
+        "print preview export README guidance",
+        "printable link target rules"
+      ]
     }
   ],
   "verification": {
@@ -1233,6 +1246,7 @@
     "cliDefaultStudySmoke": "PASS",
     "cliStudiesRootOptionSmoke": "PASS",
     "cliDoctorRuntimeHealthSmoke": "PASS",
+    "cliPrintCssSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
