@@ -49,8 +49,10 @@ const checks = [
   ], ["git", "clone", "--depth", "isSecretLikePath", "readTextIfSafe", "sourceBaseDir"]),
   check("lesson generation outputs", [
     "packages/core/src/scanner.ts",
-    "packages/core/src/markdown.ts"
-  ], ["PurposeReport", "FolderLesson", "FileLesson", "FlowReport", "RebuildRoadmap"]),
+    "packages/core/src/markdown.ts",
+    "packages/html/src/templates.ts",
+    "packages/shared/src/schemas.ts"
+  ], ["PurposeReport", "FolderLesson", "FileLesson", "FlowReport", "RebuildRoadmap", "sourceEvidence", "source-evidence", "소스 근거"]),
   check("quiz engine", [
     "packages/core/src/quiz.ts",
     "packages/shared/src/constants.ts"

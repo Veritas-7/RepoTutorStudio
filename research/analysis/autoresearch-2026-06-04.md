@@ -251,6 +251,19 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs`: includes the export integrity JSON fields in
   the offline export compliance check.
 
+### Upgrade 17: Source Evidence Snippets for File Lessons
+
+- `packages/shared/src/schemas.ts`: extends `FileLessonSchema` with
+  `sourceEvidence` entries containing line, kind, and snippet.
+- `packages/core/src/scanner.ts`: extracts short source-backed
+  import/export/config/entry/test/text snippets from safe text files.
+- `packages/core/src/markdown.ts`: renders `### 소스 근거` under each file
+  lesson in `markdown/files.md`.
+- `packages/html/src/templates.ts`: renders source evidence snippets in
+  `html/files.html`.
+- `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
+  verify source evidence artifacts.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -314,6 +327,11 @@ Local verification:
   `/tmp/repotutor-export-integrity-json-smoke.dkSgoj/2026-06-04/local__simple-ts-app__main__f5a93a48`
   and returned `integrityOk: true`, `integrityCheckedFiles: 16`, 18 ZIP files,
   and 76,489 ZIP bytes.
+- Temp CLI source-evidence smoke generated:
+  `/tmp/repotutor-source-evidence-smoke.9DljR1/2026-06-04/local__simple-ts-app__main__25cfde25`
+  with `sourceEvidence` JSON, Markdown `### 소스 근거`, HTML
+  `source-evidence`, and source snippets such as
+  `import { createGreeting } from "./message.js";`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

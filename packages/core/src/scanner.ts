@@ -199,6 +199,7 @@ async function buildFileLessons(sourceRoot: string, walk: WalkResult): Promise<F
       role: inferFileRole(file.relPath),
       beginnerExplanation: `${file.relPath} 파일은 ${inferFileRole(file.relPath)} 역할을 합니다. 초보자는 이 파일을 프로젝트가 어디서 시작하고 무엇을 의존하는지 알려주는 표지판으로 보면 됩니다.`,
       whyItExists: "설정, 진입점(entry point), 도메인 로직(domain logic), 또는 테스트 근거를 명시하기 위해 존재합니다.",
+      sourceEvidence: extractSourceEvidence(text, file.relPath),
       keyExports: extractRegex(text, /export\s+(?:class|function|const|interface|type)\s+([A-Za-z0-9_]+)/g),
       keyImports: extractRegex(text, /import\s+.*?\s+from\s+["']([^"']+)["']/g),
       relatedFiles: relatedByFolder(file.relPath, important.map((candidate) => candidate.relPath)),
@@ -555,6 +556,48 @@ function inferFlowPosition(filePath: string): string {
 function extractRegex(text: string | null, regex: RegExp): string[] {
   if (!text) return [];
   return [...text.matchAll(regex)].map((match) => match[1]).filter(Boolean).slice(0, 20);
+}
+
+function extractSourceEvidence(text: string | null, filePath: string): FileLesson["sourceEvidence"] {
+  if (!text) return [];
+  const rows = text.split(/\r?\n/).map((line, index) => ({
+    line: index + 1,
+    snippet: line.trim()
+  })).filter((row) => row.snippet.length > 0);
+  const scored = rows.map((row) => ({ ...row, kind: evidenceKind(row.snippet, filePath), score: evidenceScore(row.snippet, filePath) }))
+    .filter((row) => row.score > 0)
+    .sort((a, b) => b.score - a.score || a.line - b.line)
+    .slice(0, 4)
+    .sort((a, b) => a.line - b.line);
+  const selected = scored.length > 0 ? scored : rows.slice(0, 2).map((row) => ({ ...row, kind: "text" as const, score: 1 }));
+  return selected.map((row) => ({
+    line: row.line,
+    kind: row.kind,
+    snippet: truncateSnippet(row.snippet)
+  }));
+}
+
+function evidenceKind(snippet: string, filePath: string): FileLesson["sourceEvidence"][number]["kind"] {
+  if (/^import\s/.test(snippet)) return "import";
+  if (/^export\s/.test(snippet)) return "export";
+  if (/\b(console\.|main\(|createRoot\(|app\.listen|run\(|invoke\(|Command::)/.test(snippet) || /main|index|cli|app|server/i.test(path.basename(filePath))) return "entry";
+  if (/^"(scripts|dependencies|devDependencies|name|version)"\s*:/.test(snippet) || /=\s*["']/.test(snippet)) return "config";
+  if (/\b(describe|it|test|expect)\s*\(/.test(snippet)) return "test";
+  return "text";
+}
+
+function evidenceScore(snippet: string, filePath: string): number {
+  if (/^import\s/.test(snippet)) return 8;
+  if (/^export\s/.test(snippet)) return 8;
+  if (/\b(console\.|main\(|createRoot\(|app\.listen|run\(|invoke\(|Command::)/.test(snippet)) return 7;
+  if (/^"(scripts|dependencies|devDependencies|name|version)"\s*:/.test(snippet)) return 6;
+  if (/\b(describe|it|test|expect)\s*\(/.test(snippet)) return 6;
+  if (/main|index|cli|app|server/i.test(path.basename(filePath))) return 3;
+  return 0;
+}
+
+function truncateSnippet(value: string): string {
+  return value.length <= 160 ? value : `${value.slice(0, 157)}...`;
 }
 
 function relatedByFolder(filePath: string, candidates: string[]): string[] {
