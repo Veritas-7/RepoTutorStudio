@@ -119,6 +119,7 @@ interface ListOutputVerification {
   outputPath: string;
   manifestPath: string;
   schemaVersion: number | null;
+  supportedSchemaVersion: boolean;
   format: string | null;
   summary: boolean | null;
   rows: number | null;
@@ -183,6 +184,7 @@ const LIST_FIELD_PRESETS = {
 } as const satisfies Record<string, readonly ListField[]>;
 
 const LIST_FIELD_PRESET_NAMES = Object.keys(LIST_FIELD_PRESETS) as Array<keyof typeof LIST_FIELD_PRESETS>;
+const LIST_OUTPUT_MANIFEST_SCHEMA_VERSION = 1;
 
 async function main(): Promise<void> {
   const parsed = parseArgs(process.argv.slice(2));
@@ -1168,7 +1170,7 @@ function outputManifestPath(value: string | boolean | undefined, outputPath: str
 
 function createListOutputManifest(text: string, outputPath: string, manifestPath: string, context: ListOutputContext): ListOutputManifest {
   return {
-    schemaVersion: 1,
+    schemaVersion: LIST_OUTPUT_MANIFEST_SCHEMA_VERSION,
     outputPath,
     manifestPath,
     format: context.format,
@@ -1200,6 +1202,7 @@ async function verifyListOutputManifest(outputPath: string, manifestPath: string
   const expectedBytes = typeof manifest?.bytes === "number" ? manifest.bytes : null;
   const expectedSha256 = typeof manifest?.sha256 === "string" ? manifest.sha256 : null;
   const schemaVersion = typeof manifest?.schemaVersion === "number" ? manifest.schemaVersion : null;
+  const supportedSchemaVersion = schemaVersion === null || schemaVersion === LIST_OUTPUT_MANIFEST_SCHEMA_VERSION;
   const format = typeof manifest?.format === "string" ? manifest.format : null;
   const summary = typeof manifest?.summary === "boolean" ? manifest.summary : null;
   const rows = typeof manifest?.rows === "number" ? manifest.rows : null;
@@ -1216,6 +1219,9 @@ async function verifyListOutputManifest(outputPath: string, manifestPath: string
     if (rows === null) failures.push({ reason: "rows-missing", path: manifestPath, expected: "number", actual: null });
     if (expectedBytes === null) failures.push({ reason: "bytes-missing", path: manifestPath, expected: "number", actual: null });
     if (expectedSha256 === null) failures.push({ reason: "sha256-missing", path: manifestPath, expected: "string", actual: null });
+    if (!supportedSchemaVersion) {
+      failures.push({ reason: "unsupported-schema-version", path: manifestPath, expected: LIST_OUTPUT_MANIFEST_SCHEMA_VERSION, actual: schemaVersion });
+    }
   }
 
   let actualBytes: number | null = null;
@@ -1245,6 +1251,7 @@ async function verifyListOutputManifest(outputPath: string, manifestPath: string
     outputPath,
     manifestPath,
     schemaVersion,
+    supportedSchemaVersion,
     format,
     summary,
     rows,
@@ -1517,6 +1524,7 @@ function listOutputVerificationMarkdown(payload: ListOutputVerification): string
     `- Output: ${payload.outputPath}`,
     `- Manifest: ${payload.manifestPath}`,
     `- Schema version: ${payload.schemaVersion ?? "unknown"}`,
+    `- Supported schema version: ${payload.supportedSchemaVersion ? "yes" : "no"}`,
     `- Format: ${payload.format ?? "unknown"}`,
     `- Summary: ${payload.summary ?? "unknown"}`,
     `- Rows: ${payload.rows ?? "unknown"}`,
