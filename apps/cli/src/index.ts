@@ -428,7 +428,8 @@ async function verifyListOutput(parsed: ParsedArgs): Promise<void> {
   const result = await verifyListOutputManifest(outputPath, manifestPath);
   const format = stringFlag(parsed.flags.format) ?? "json";
   if (!["json", "markdown"].includes(format)) throw new Error("verify-list-output supports --format json or markdown.");
-  console.log(format === "markdown" ? listOutputVerificationMarkdown(result) : JSON.stringify(result, null, 2));
+  const rendered = format === "markdown" ? listOutputVerificationMarkdown(result) : jsonText(result);
+  await emitVerifyListOutputReport(rendered, parsed.flags.report);
   if (!result.ok) process.exitCode = 1;
 }
 
@@ -712,6 +713,12 @@ function stringFlag(value: string | boolean | undefined): string | undefined {
 function optionalStringFlag(value: string | boolean | undefined, name: string): string | null {
   if (value === undefined) return null;
   if (typeof value !== "string" || value.trim() === "") throw new Error(`${name} must be a non-empty string.`);
+  return value.trim();
+}
+
+function reportPathFlag(value: string | boolean | undefined): string | null {
+  if (value === undefined) return null;
+  if (typeof value !== "string" || value.trim() === "") throw new Error("report must be a non-empty string.");
   return value.trim();
 }
 
@@ -1161,6 +1168,19 @@ async function emitListOutput(
 
 function jsonText(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
+}
+
+async function emitVerifyListOutputReport(text: string, reportValue: string | boolean | undefined): Promise<void> {
+  const reportFile = reportPathFlag(reportValue);
+  const normalizedText = text.endsWith("\n") ? text : `${text}\n`;
+  if (reportFile === null) {
+    process.stdout.write(normalizedText);
+    return;
+  }
+  const reportPath = path.resolve(reportFile);
+  await fs.mkdir(path.dirname(reportPath), { recursive: true });
+  await fs.writeFile(reportPath, normalizedText);
+  console.log(reportPath);
 }
 
 function outputManifestPath(value: string | boolean | undefined, outputPath: string): string | null {
@@ -1757,7 +1777,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  verify-list-output <output-file> --manifest output.manifest.json --format json|markdown
+  verify-list-output <output-file> --manifest output.manifest.json --report verification.json --format json|markdown
   list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --output reports/list.json --output-manifest [manifest.json] --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown

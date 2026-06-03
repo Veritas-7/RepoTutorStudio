@@ -1055,6 +1055,18 @@
         "fields-mismatch failure",
         "Actual fields Markdown"
       ]
+    },
+    {
+      "name": "saved session list verification report files",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor verify-list-output --report <file>",
+        "saved JSON verification report",
+        "saved Markdown verification report"
+      ]
     }
   ],
   "verification": {
@@ -1168,6 +1180,7 @@
     "cliListManifestSchemaGateSmoke": "PASS",
     "cliListRowCountSmoke": "PASS",
     "cliListFieldCountSmoke": "PASS",
+    "cliVerifyListReportSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

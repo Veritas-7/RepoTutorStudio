@@ -1314,6 +1314,24 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 84: Saved Session List Verification Report Files
+
+- Added `repo-tutor verify-list-output <output-file> --report <file>` so list
+  output verification reports can be saved to caller-selected JSON or Markdown
+  paths.
+- The report writer creates parent directories, prints the saved report path to
+  stdout, and preserves fail-closed non-zero exit behavior when the saved
+  report contains verification failures.
+- Temp CLI verify-list-report smoke generated
+  `/tmp/repotutor-verify-list-report-smoke.51ZnNB`; an isolated fixture study
+  was created, JSON and Markdown verification reports were saved under nested
+  report directories, stdout returned the saved paths, tampering manifest fields
+  saved a failure report and exited non-zero with `fields-mismatch`, and missing
+  `--report` value exited non-zero with `report must be a non-empty string.`
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
