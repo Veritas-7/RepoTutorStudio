@@ -330,6 +330,20 @@
         "markdown/coverage.md source evidence kind section",
         "html/coverage.html source evidence kind section"
       ]
+    },
+    {
+      "name": "source evidence source-file links",
+      "filesChanged": [
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "markdown/files.md source links to copied source files",
+        "html/files.html source-link anchors",
+        "html/files.html original source open links"
+      ]
     }
   ],
   "verification": {
@@ -369,6 +383,8 @@
     "cliEvidenceFilterSmoke": "PASS",
     "fixtureEvidenceKindCounts": "PASS",
     "cliEvidenceKindSmoke": "PASS",
+    "fixtureSourceEvidenceLinks": "PASS",
+    "cliSourceLinkSmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },

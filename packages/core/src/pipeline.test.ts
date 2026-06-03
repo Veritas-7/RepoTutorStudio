@@ -72,9 +72,13 @@ describe("RepoTutor core pipeline", () => {
     expect(filesHtml).toContain("근거 있음");
     expect(filesHtml).toContain("소스 근거");
     expect(filesHtml).toContain("source-evidence");
+    expect(filesHtml).toContain("source-link");
+    expect(filesHtml).toContain("원본 열기");
+    expect(filesHtml).toContain("../source/src/main.ts");
     expect(filesHtml).toContain("import { createGreeting }");
     const filesMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "files.md"), "utf8");
     expect(filesMarkdown).toContain("### 소스 근거");
+    expect(filesMarkdown).toContain("[원본](../source/src/main.ts)");
     const fileLessonsText = await fs.readFile(path.join(result.session.outputPaths.analysis, "file-lessons.json"), "utf8");
     expect(fileLessonsText).toContain("\"sourceEvidence\"");
     expect(fileLessonsText).toContain("\"snippet\"");

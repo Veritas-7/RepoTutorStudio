@@ -305,6 +305,17 @@ Transferable patterns:
 - `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
   verify evidence kind breakdown artifacts.
 
+### Upgrade 21: Source Evidence Source-File Links
+
+- `packages/core/src/markdown.ts`: links each source evidence bullet in
+  `markdown/files.md` back to the copied `../source/...` file.
+- `packages/html/src/templates.ts`: adds `원본 열기` source links under each
+  source evidence snippet in `html/files.html`.
+- `packages/html/src/templates.ts`: adds a compact `source-link` style for
+  source traceability links.
+- `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
+  verify source-file link markers.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -387,6 +398,10 @@ Local verification:
   `/tmp/repotutor-evidence-kind-smoke.qk4tIy/2026-06-04/local__simple-ts-app__main__63a77df2`
   with `evidenceKindCounts` `{text: 2, config: 4, import: 1, entry: 1, export:
   1}`, Markdown `## 소스 근거 종류`, and HTML `근거 종류` / `소스 근거 종류`.
+- Temp CLI source-link smoke generated:
+  `/tmp/repotutor-source-link-smoke.5z54ZK/2026-06-04/local__simple-ts-app__main__946bc81d`
+  with HTML `source-link`, `원본 열기`, `../source/src/main.ts`, Markdown
+  `[원본](../source/src/main.ts)`, and copied `source/src/main.ts` present.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
