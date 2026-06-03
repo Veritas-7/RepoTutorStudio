@@ -1623,6 +1623,29 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 98: Portable Learning Path Tour Asset
+
+- Added `html/assets/learning-path.tour.json`, a CodeTour-style JSON asset
+  generated from the same ordered learning path used by `learning-path.html`.
+- The asset includes a `RepoTutor Learning Path` title, `isPrimary: true`, the
+  session commit hash as `ref`, and file-linked steps such as
+  `html/component-graph.html`.
+- The asset is included in `manifest.json`, `EXPORT-README.md`, integrity
+  verification, and ZIP export because it is emitted through the shared HTML
+  asset pipeline.
+- Source pattern: microsoft/codetour persists walkthroughs as simple JSON tour
+  files with ordered steps and file targets; RepoTutor now exports an
+  inspectable tour artifact beside its static HTML pages.
+- RED smoke `/tmp/repotutor-tour-asset-red.*` failed on the old behavior with
+  `missing learning-path.tour.json`.
+- GREEN smoke generated `/tmp/repotutor-tour-asset-smoke.FzAzmz`; generated
+  `learning-path.tour.json` parsed as JSON, had `isPrimary: true`, contained a
+  component graph file step, and was listed by `manifest.json` plus
+  `EXPORT-README.md`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

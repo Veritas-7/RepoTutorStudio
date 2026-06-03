@@ -260,7 +260,8 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
   const assets = {
     "assets/style.css": styleCss(),
     "assets/app.js": appJs(),
-    "assets/component-graph.mmd": input.componentGraphReport.mermaid
+    "assets/component-graph.mmd": input.componentGraphReport.mermaid,
+    "assets/learning-path.tour.json": learningPathTourJson(input, learningPath)
   };
   const pageEntries = pages.map((page) => ({
     name: page.name,
@@ -460,6 +461,20 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       evidence: `퀴즈 ${input.quiz.totalQuestions}문제`
     }
   ];
+}
+
+function learningPathTourJson(input: StudyHtmlInput, steps: Array<{ title: string; href: string; goal: string; evidence: string }>): string {
+  return `${JSON.stringify({
+    title: `${input.session.repo} RepoTutor Learning Path`,
+    description: "Portable ordered tour generated from RepoTutor analysis pages.",
+    isPrimary: true,
+    ref: input.session.commitHash,
+    steps: steps.map((step) => ({
+      title: step.title,
+      description: `${step.goal}\n\nEvidence: ${step.evidence}`,
+      file: `html/${step.href}`
+    }))
+  }, null, 2)}\n`;
 }
 
 function quizFilterButtons(questions: Quiz["questions"]): { sectionButtons: string; difficultyButtons: string } {
