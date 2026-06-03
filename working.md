@@ -738,6 +738,11 @@ to a private repository, and preserve resumable state in this file.
     `/tmp/repotutor-studies-root-doc-smoke.M26C1G`; help listed
     `--studies-root <dir>`, doctor JSON returned runtime option metadata, and
     doctor Markdown included `## Runtime Options`.
+  - temp CLI doctor runtime-health smoke generated
+    `/tmp/repotutor-runtime-health-smoke.oY71Py`; absent custom studies root
+    reported `studiesRootExists: false` and writable parent, existing studies
+    root reported readable/writable true, and Markdown included
+    `## Runtime Health`.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -828,6 +833,7 @@ to a private repository, and preserve resumable state in this file.
   - `b94218d` saved session list verification report files
   - `db5312b` default saved list verification report paths
   - `d361825` default study target command
+  - `7c2ee7a` studies root runtime option discovery
 
 ## Next Actions
 

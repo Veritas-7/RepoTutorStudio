@@ -1394,6 +1394,26 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 88: Doctor Runtime Health Checks
+
+- Added non-mutating runtime health checks to `repo-tutor doctor` so scripted
+  users can see whether the selected studies root exists, is readable, is
+  writable, and whether its parent directory is writable before running studies.
+- Added `runtimeHealth` to doctor JSON and a Markdown `## Runtime Health`
+  section.
+- Source pattern: CodeBoarding has a standalone health check flow that writes
+  health reports; RepoTutor now exposes a smaller local runtime-health surface
+  for its output root.
+- RED smoke `/tmp/repotutor-runtime-health-red.*` failed on the old behavior
+  because doctor JSON had no `runtimeHealth`.
+- GREEN smoke generated `/tmp/repotutor-runtime-health-smoke.oY71Py`;
+  absent custom studies root reported `studiesRootExists: false` and
+  `studiesRootParentWritable: true`, existing root reported readable/writable
+  true, and Markdown included `## Runtime Health`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

@@ -1103,6 +1103,18 @@
         "doctor runtimeOptions metadata",
         "doctor Runtime Options Markdown"
       ]
+    },
+    {
+      "name": "doctor runtime health checks",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "doctor runtimeHealth metadata",
+        "doctor Runtime Health Markdown",
+        "studies root access checks"
+      ]
     }
   ],
   "verification": {
@@ -1220,6 +1232,7 @@
     "cliVerifyListDefaultReportSmoke": "PASS",
     "cliDefaultStudySmoke": "PASS",
     "cliStudiesRootOptionSmoke": "PASS",
+    "cliDoctorRuntimeHealthSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
