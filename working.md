@@ -399,6 +399,21 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm build`
   - `pnpm test`
   - `pnpm audit:brief`
+- 2026-06-04: Pushed Upgrade 106 at `04ac644` with HEAD and `origin/main`
+  matching.
+- 2026-06-04: Applied a hundred-seventh AutoResearch upgrade: interface map
+  source links. `html/interface-map.html` now renders `interface-source-link`
+  anchors for route/page, API, and component signals.
+- 2026-06-04: RED smoke for Upgrade 107 failed as expected at
+  `/tmp/repotutor-interface-links-red.*` with
+  `interface links missing interface-source-link`.
+- 2026-06-04: GREEN smoke for Upgrade 107 generated
+  `/tmp/repotutor-interface-links-smoke.eYV9Wk` and confirmed source links to
+  `../source/src/pages/index.tsx` and `../source/src/api/client.ts`.
+- 2026-06-04: Upgrade 107 verification passed:
+  - `pnpm build`
+  - `pnpm test`
+  - `pnpm audit:brief`
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`

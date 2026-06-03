@@ -1451,6 +1451,20 @@
         "InterfaceMapReportSchema",
         "repomap-style route page API data-flow signals"
       ]
+    },
+    {
+      "name": "interface map source links",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "interface-source-link HTML anchors",
+        "source links for route/page signals",
+        "source links for API signals",
+        "source links for component signals"
+      ]
     }
   ],
   "verification": {
@@ -1607,6 +1621,8 @@
     "fixtureInterfaceMapReport": "PASS",
     "cliInterfaceMapSmoke": "PASS",
     "cliInterfaceMapOpenTargetSmoke": "PASS",
+    "fixtureInterfaceMapSourceLinks": "PASS",
+    "cliInterfaceMapSourceLinksSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

@@ -230,7 +230,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     {
       name: "interface-map.html",
       title: "인터페이스 맵",
-      html: pageShell("인터페이스 맵", "interface-map.html", `<section class="panel" data-source-pattern="repomap"><h2>Route/Page/API 신호</h2><p>${escapeHtml(input.interfaceMapReport.summary)}</p><p class="muted">${escapeHtml(input.interfaceMapReport.sourcePattern)}</p></section><section class="grid"><article class="interface-map-card"><h3>Route/Page</h3>${list(input.interfaceMapReport.routeSignals.map((item) => `${item.filePath}: ${item.kind} · ${item.signal}`))}</article><article class="interface-map-card"><h3>API</h3>${list(input.interfaceMapReport.apiSignals.map((item) => `${item.filePath}: ${item.method} ${item.pattern}`))}</article><article class="interface-map-card"><h3>Components</h3>${list(input.interfaceMapReport.componentSignals.map((item) => `${item.componentName}: ${item.filePath}`))}</article><article class="interface-map-card"><h3>Data Flow</h3>${list(input.interfaceMapReport.dataFlowHints)}</article></section><section class="panel"><h2>다음 확인 단계</h2>${list(input.interfaceMapReport.learnerNextSteps)}</section>`, input)
+      html: pageShell("인터페이스 맵", "interface-map.html", `<section class="panel" data-source-pattern="repomap"><h2>Route/Page/API 신호</h2><p>${escapeHtml(input.interfaceMapReport.summary)}</p><p class="muted">${escapeHtml(input.interfaceMapReport.sourcePattern)}</p></section><section class="grid"><article class="interface-map-card"><h3>Route/Page</h3>${interfaceSourceList(input.interfaceMapReport.routeSignals.map((item) => ({ text: `${item.filePath}: ${item.kind} · ${item.signal}`, sourceHref: item.sourceHref })))}</article><article class="interface-map-card"><h3>API</h3>${interfaceSourceList(input.interfaceMapReport.apiSignals.map((item) => ({ text: `${item.filePath}: ${item.method} ${item.pattern}`, sourceHref: item.sourceHref })))}</article><article class="interface-map-card"><h3>Components</h3>${interfaceSourceList(input.interfaceMapReport.componentSignals.map((item) => ({ text: `${item.componentName}: ${item.filePath}`, sourceHref: item.sourceHref })))}</article><article class="interface-map-card"><h3>Data Flow</h3>${list(input.interfaceMapReport.dataFlowHints)}</article></section><section class="panel"><h2>다음 확인 단계</h2>${list(input.interfaceMapReport.learnerNextSteps)}</section>`, input)
     },
     {
       name: "session-verification.html",
@@ -569,6 +569,11 @@ function evidenceKindFilterButtons(fileLessons: FileLesson[]): string {
 function linkedFileList(items: string[]): string {
   if (items.length === 0) return "<p class=\"muted\">기록된 항목이 없습니다.</p>";
   return `<ul>${items.map((item) => `<li><a href="files.html#${htmlAnchor(item)}">${escapeHtml(item)}</a></li>`).join("")}</ul>`;
+}
+
+function interfaceSourceList(items: Array<{ text: string; sourceHref: string }>): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 항목이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li>${escapeHtml(item.text)} <a class="interface-source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></li>`).join("")}</ul>`;
 }
 
 function sourceEvidenceState(file: FileLesson): "present" | "missing" {

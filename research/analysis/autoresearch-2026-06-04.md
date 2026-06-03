@@ -1867,6 +1867,21 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 107: Interface Map Source Links
+
+- Added `interface-source-link` anchors in `html/interface-map.html` so
+  route/page, API, and component signals can jump to copied source files.
+- Source pattern: repomap detail views expose evidence chains for operations;
+  RepoTutor maps that to direct source links for each static interface signal.
+- RED smoke `/tmp/repotutor-interface-links-red.*` failed on the old behavior
+  with `interface links missing interface-source-link`.
+- GREEN smoke generated `/tmp/repotutor-interface-links-smoke.eYV9Wk` and
+  confirmed `interface-source-link`, `../source/src/pages/index.tsx`, and
+  `../source/src/api/client.ts`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
