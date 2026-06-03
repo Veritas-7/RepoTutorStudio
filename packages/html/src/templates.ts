@@ -20,6 +20,7 @@ import type {
   ContextPackReport,
   McpHandoffReport,
   AgentMemoryReport,
+  GraphQueryReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -46,6 +47,7 @@ export interface StudyHtmlInput {
   contextPackReport: ContextPackReport;
   mcpHandoffReport: McpHandoffReport;
   agentMemoryReport: AgentMemoryReport;
+  graphQueryReport: GraphQueryReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -99,6 +101,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
+    ["graph-query.html", "Graph Query"],
     ["session-verification.html", "Verification"],
     ["coverage.html", "Coverage"],
     ["component-graph.html", "Component Graph"],
@@ -180,6 +183,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
+          <article><h3>Graph Query</h3><p>${escapeHtml(input.graphQueryReport.summary)}</p><p>Graphify 패턴으로 query/path/explain 질문을 준비합니다.</p><a href="graph-query.html">Graph Query 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -267,6 +271,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "agent-memory.html",
       title: "Agent Memory",
       html: pageShell("Agent Memory", "agent-memory.html", `<section class="panel" data-source-pattern="Obsidian Graphify"><h2>Persistent Agent Memory</h2><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p class="muted">${escapeHtml(input.agentMemoryReport.sourcePattern)}</p><dl class="meta"><div><dt>raw tokens</dt><dd>${input.agentMemoryReport.tokenSavings.rawCodeReadTokens}</dd></div><div><dt>graph query target</dt><dd>${input.agentMemoryReport.tokenSavings.graphQueryTokenTarget}</dd></div><div><dt>estimated reduction</dt><dd>${input.agentMemoryReport.tokenSavings.estimatedReductionX}x</dd></div><div><dt>memory notes</dt><dd>${input.agentMemoryReport.memoryNotes.length}</dd></div></dl></section><section class="cards agent-memory-layer-cards">${agentMemoryLayerCards(input.agentMemoryReport.layers)}</section><section class="cards agent-memory-note-cards">${agentMemoryNoteCards(input.agentMemoryReport.memoryNotes)}</section><section class="grid"><article class="agent-memory-card"><h3>Context Navigation Rules</h3>${list(input.agentMemoryReport.contextNavigationRules)}</article><article class="agent-memory-card"><h3>다음 확인 단계</h3>${list(input.agentMemoryReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "graph-query.html",
+      title: "Graph Query",
+      html: pageShell("Graph Query", "graph-query.html", `<section class="panel" data-source-pattern="Graphify"><h2>Graph Query Guide</h2><p>${escapeHtml(input.graphQueryReport.summary)}</p><p class="muted">${escapeHtml(input.graphQueryReport.sourcePattern)}</p></section><section class="cards graph-query-mode-cards">${graphQueryModeCards(input.graphQueryReport.queryModes)}</section><section class="cards graph-explain-cards">${input.graphQueryReport.nodeExplanations.map((item) => `<article class="graph-query-card"><h3>${escapeHtml(item.label)}</h3><p class="muted">${escapeHtml(item.type)}</p><code>${escapeHtml(item.question)}</code>${item.href ? `<p><a href="${escapeHtml(item.href)}">관련 페이지 열기</a></p>` : ""}</article>`).join("")}</section><section class="cards graph-path-cards">${input.graphQueryReport.pathPrompts.map((item) => `<article class="graph-query-card"><h3>${escapeHtml(item.from)} -> ${escapeHtml(item.to)}</h3><code>${escapeHtml(item.question)}</code><p>${escapeHtml(item.reason)}</p></article>`).join("")}</section><section class="panel"><h2>다음 확인 단계</h2>${list(input.graphQueryReport.learnerNextSteps)}</section>`, input)
     },
     {
       name: "session-verification.html",
@@ -357,6 +366,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
+      { label: "Graph Query", path: "html/graph-query.html", description: "Graphify식 query, path, explain 질문으로 그래프 탐색 순서를 정합니다." },
       { label: "세션 검증", path: "html/session-verification.html", description: "생성 산출물과 무결성 검증 리포트를 확인합니다." },
       { label: "컴포넌트 그래프", path: "html/component-graph.html", description: "큰 저장소의 폴더, 파일, 용어, 재구현 단계를 탐색합니다." }
     ],
@@ -537,6 +547,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       evidence: `memory notes ${input.agentMemoryReport.memoryNotes.length}개, reduction ${input.agentMemoryReport.tokenSavings.estimatedReductionX}x`
     },
     {
+      title: "그래프 질의 방식 확인",
+      href: "graph-query.html",
+      goal: "query, path, explain 질문으로 컴포넌트 그래프를 먼저 탐색합니다.",
+      evidence: `query modes ${input.graphQueryReport.queryModes.length}개, explain nodes ${input.graphQueryReport.nodeExplanations.length}개`
+    },
+    {
       title: "폴더와 핵심 파일 훑기",
       href: "files.html",
       goal: "핵심 파일 수업으로 진입점과 주변 파일을 연결합니다.",
@@ -668,6 +684,11 @@ function agentMemoryLayerCards(layers: AgentMemoryReport["layers"]): string {
 function agentMemoryNoteCards(notes: AgentMemoryReport["memoryNotes"]): string {
   if (notes.length === 0) return "<article><h3>기록된 memory note가 없습니다.</h3><p>agent memory report를 다시 생성하세요.</p></article>";
   return notes.map((note) => `<article class="agent-memory-card"><h3>${escapeHtml(note.title)}</h3><p class="muted">${escapeHtml(note.noteType)}</p><pre>${escapeHtml(note.frontmatter.map((entry) => `${entry.key}: ${entry.value}`).join("\n"))}</pre><p>${escapeHtml(note.body)}</p><a href="${escapeHtml(htmlPageHref(note.relatedReportHref))}">관련 리포트 열기</a></article>`).join("");
+}
+
+function graphQueryModeCards(modes: GraphQueryReport["queryModes"]): string {
+  if (modes.length === 0) return "<article><h3>기록된 graph query mode가 없습니다.</h3><p>graph query report를 다시 생성하세요.</p></article>";
+  return modes.map((mode) => `<article class="graph-query-card"><h3>${escapeHtml(mode.name)}</h3><code>${escapeHtml(mode.commandShape)}</code><p>${escapeHtml(mode.purpose)}</p><p class="muted">${escapeHtml(mode.useWhen)}</p></article>`).join("");
 }
 
 function sourceEvidenceState(file: FileLesson): "present" | "missing" {

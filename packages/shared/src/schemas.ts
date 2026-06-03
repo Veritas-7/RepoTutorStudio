@@ -358,6 +358,31 @@ export const AgentMemoryReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const GraphQueryReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  queryModes: z.array(z.object({
+    name: z.enum(["query", "path", "explain"]),
+    commandShape: z.string(),
+    purpose: z.string(),
+    useWhen: z.string()
+  })),
+  nodeExplanations: z.array(z.object({
+    nodeId: z.string(),
+    label: z.string(),
+    type: z.string(),
+    question: z.string(),
+    href: z.string().nullable()
+  })),
+  pathPrompts: z.array(z.object({
+    from: z.string(),
+    to: z.string(),
+    question: z.string(),
+    reason: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -572,6 +597,7 @@ export type SymbolMapReport = z.infer<typeof SymbolMapReportSchema>;
 export type ContextPackReport = z.infer<typeof ContextPackReportSchema>;
 export type McpHandoffReport = z.infer<typeof McpHandoffReportSchema>;
 export type AgentMemoryReport = z.infer<typeof AgentMemoryReportSchema>;
+export type GraphQueryReport = z.infer<typeof GraphQueryReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
