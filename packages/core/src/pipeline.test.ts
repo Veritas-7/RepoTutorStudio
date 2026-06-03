@@ -50,6 +50,9 @@ describe("RepoTutor core pipeline", () => {
     expect(componentGraphHtml).toContain("큰 그래프 요약");
     expect(componentGraphHtml).toContain("data-graph-filter");
     expect(componentGraphHtml).toContain("data-node-type");
+    expect(componentGraphHtml).toContain("component-graph-download-toolbar");
+    expect(componentGraphHtml).toContain("data-download-mermaid");
+    expect(componentGraphHtml).toContain("component-graph-mermaid");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -117,6 +120,7 @@ describe("RepoTutor core pipeline", () => {
     const appJs = await fs.readFile(path.join(result.session.outputPaths.html, "assets", "app.js"), "utf8");
     expect(appJs).toContain("[data-evidence-kind-filter]");
     expect(appJs).toContain("[data-quiz-section-filter]");
+    expect(appJs).toContain("[data-download-mermaid]");
     const fileLessonsText = await fs.readFile(path.join(result.session.outputPaths.analysis, "file-lessons.json"), "utf8");
     expect(fileLessonsText).toContain("\"sourceEvidence\"");
     expect(fileLessonsText).toContain("\"snippet\"");

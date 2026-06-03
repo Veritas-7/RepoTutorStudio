@@ -1479,6 +1479,27 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 92: Component Graph Mermaid Download
+
+- Added a component graph download toolbar to `html/component-graph.html` so the
+  generated Mermaid source can be saved as `component-graph.mmd` from the
+  offline report.
+- The graph Mermaid `<pre>` now has a stable `component-graph-mermaid` id, and
+  `assets/app.js` attaches a dependency-free Blob download handler to
+  `data-download-mermaid` buttons.
+- Source pattern: CodeBoarding's HTML output exposes diagram export controls;
+  RepoTutor now offers a lightweight local equivalent for its Mermaid graph.
+- RED smoke `/tmp/repotutor-graph-download-red.PQEqc4` failed on the old
+  behavior with `graph html missing component-graph-download-toolbar`.
+- GREEN smoke generated `/tmp/repotutor-graph-download-smoke.nkHqGQ`; generated
+  `component-graph.html` included `component-graph-download-toolbar`,
+  `data-download-mermaid`, `component-graph-mermaid`, and `Mermaid 다운로드`,
+  while `assets/app.js` included `[data-download-mermaid]`,
+  `component-graph.mmd`, `URL.createObjectURL`, and `new Blob`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

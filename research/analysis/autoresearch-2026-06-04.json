@@ -1158,6 +1158,20 @@
         "data-quiz-section filter metadata",
         "data-quiz-difficulty filter metadata"
       ]
+    },
+    {
+      "name": "component graph mermaid download",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "component-graph-download-toolbar",
+        "data-download-mermaid button",
+        "component-graph-mermaid source id",
+        "component-graph.mmd browser download"
+      ]
     }
   ],
   "verification": {
@@ -1281,6 +1295,8 @@
     "cliQuizPrintSmoke": "PASS",
     "fixtureQuizFilters": "PASS",
     "cliQuizFilterSmoke": "PASS",
+    "fixtureComponentGraphDownload": "PASS",
+    "cliGraphDownloadSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
