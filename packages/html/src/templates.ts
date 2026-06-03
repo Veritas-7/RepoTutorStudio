@@ -122,6 +122,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
 export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
   const latestAttempt = input.attempts.at(-1);
   const weakConcepts = input.wrongNotes.flatMap((note) => note.relatedConcepts).slice(0, 5);
+  const coverageDelta = coverageDeltaFor(input.incrementalReport);
   const pages: RenderedPage[] = [
     {
       name: "index.html",
@@ -138,7 +139,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>학습 지도</h3>${list(["Overview", "Language", "Folders", "Files", "Flow", "Glossary", "Rebuild", "Quiz"])}</article>
           <article><h3>커버리지</h3><p>${(input.coverageReport.coverageRatio * 100).toFixed(1)}% · 핵심 파일 ${input.coverageReport.coveredImportantFiles}개 설명</p><a href="coverage.html">커버리지 열기</a></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${input.componentGraphReport.nodes.length}개 · 관계 ${input.componentGraphReport.edges.length}개</p><a href="component-graph.html">그래프 열기</a></article>
-          <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
+          <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
           <article><h3>퀴즈 요약</h3><p>총 ${input.quiz.totalQuestions}문제</p><p>최근 점수: ${latestAttempt ? latestAttempt.score.toFixed(1) : "미응시"}</p></article>
           <article><h3>오답노트</h3><p>오답 ${input.wrongNotes.length}개</p><p>취약 개념: ${weakConcepts.map(escapeHtml).join(", ") || "아직 없음"}</p><a href="wrong-notes.html">오답노트 열기</a></article>
         </section>
@@ -192,7 +193,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     {
       name: "incremental.html",
       title: "증분 분석",
-      html: pageShell("증분 분석", "incremental.html", `<section class="panel"><h2>변화 요약</h2><p>${escapeHtml(input.incrementalReport.beginnerExplanation)}</p><p class="lead">${escapeHtml(input.incrementalReport.summary)}</p><dl class="meta"><div><dt>baseline</dt><dd>${escapeHtml(input.incrementalReport.baselineSessionId ?? "none")}</dd></div><div><dt>tracked files</dt><dd>${input.sourceSnapshotReport.totalFiles}</dd></div></dl></section><section class="grid"><article><h3>추가</h3>${list(input.incrementalReport.addedFiles)}</article><article><h3>변경</h3>${list(input.incrementalReport.changedFiles)}</article><article><h3>삭제</h3>${list(input.incrementalReport.removedFiles)}</article><article><h3>유지</h3><p>${input.incrementalReport.unchangedFiles.length}개 파일</p></article></section>`, input)
+      html: pageShell("증분 분석", "incremental.html", `<section class="panel"><h2>변화 요약</h2><p>${escapeHtml(input.incrementalReport.beginnerExplanation)}</p><p class="lead">${escapeHtml(input.incrementalReport.summary)}</p><dl class="meta"><div><dt>baseline</dt><dd>${escapeHtml(input.incrementalReport.baselineSessionId ?? "none")}</dd></div><div><dt>tracked files</dt><dd>${input.sourceSnapshotReport.totalFiles}</dd></div></dl></section><section class="panel"><h2>커버리지 변화</h2><p>${escapeHtml(coverageDelta.summary)}</p><dl class="meta"><div><dt>이전 비율</dt><dd>${escapeHtml(formatPercentOrNone(coverageDelta.baselineCoverageRatio))}</dd></div><div><dt>현재 비율</dt><dd>${escapeHtml(formatPercentOrNone(coverageDelta.currentCoverageRatio))}</dd></div><div><dt>변화</dt><dd>${escapeHtml(formatPointDelta(coverageDelta.coverageRatioDelta))}</dd></div><div><dt>핵심 파일</dt><dd>${coverageDelta.currentCoveredImportantFiles}</dd></div></dl></section><section class="grid"><article><h3>추가</h3>${list(input.incrementalReport.addedFiles)}</article><article><h3>변경</h3>${list(input.incrementalReport.changedFiles)}</article><article><h3>삭제</h3>${list(input.incrementalReport.removedFiles)}</article><article><h3>유지</h3><p>${input.incrementalReport.unchangedFiles.length}개 파일</p></article></section>`, input)
     },
     {
       name: "flow.html",
@@ -234,6 +235,29 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
   };
 
   return { pages, assets, manifest };
+}
+
+function coverageDeltaFor(report: IncrementalReport): IncrementalReport["coverageDelta"] {
+  return report.coverageDelta ?? {
+    baselineCoverageRatio: null,
+    currentCoverageRatio: 0,
+    coverageRatioDelta: null,
+    baselineCoveredImportantFiles: null,
+    currentCoveredImportantFiles: 0,
+    coveredImportantFilesDelta: null,
+    baselineTotalScannedFiles: null,
+    currentTotalScannedFiles: 0,
+    totalScannedFilesDelta: null,
+    summary: "이 세션은 coverage delta 필드가 추가되기 전에 생성되어 커버리지 변화량을 표시하지 않습니다."
+  };
+}
+
+function formatPercentOrNone(value: number | null): string {
+  return value === null ? "없음" : `${(value * 100).toFixed(1)}%`;
+}
+
+function formatPointDelta(value: number | null): string {
+  return value === null ? "없음" : `${(value * 100).toFixed(1)}%p`;
 }
 
 export function styleCss(): string {

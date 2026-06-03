@@ -77,7 +77,7 @@ const checks = [
     "packages/core/src/pipeline.ts",
     "packages/core/src/markdown.ts",
     "packages/html/src/templates.ts"
-  ], ["SourceSnapshotReportSchema", "IncrementalReportSchema", "source-snapshot-report.json", "incremental-report.json", "incremental.md", "incremental.html", "baselineSessionId"]),
+  ], ["SourceSnapshotReportSchema", "IncrementalReportSchema", "source-snapshot-report.json", "incremental-report.json", "incremental.md", "incremental.html", "baselineSessionId", "coverageDelta"]),
   check("codex sdk boundary", [
     "packages/codex/src/index.ts",
     "apps/desktop-tauri/src/App.tsx"

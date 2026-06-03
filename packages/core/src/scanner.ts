@@ -54,7 +54,7 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const rebuildRoadmap = buildRebuildRoadmap(repoMap, fileLessons);
   const componentGraphReport = buildComponentGraphReport(folderLessons, fileLessons, glossary, rebuildRoadmap);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
-  const incrementalReport = emptyIncrementalReport();
+  const incrementalReport = emptyIncrementalReport(coverageReport);
   return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
@@ -342,7 +342,7 @@ async function buildSourceSnapshotReport(walk: WalkResult): Promise<SourceSnapsh
   };
 }
 
-function emptyIncrementalReport(): IncrementalReport {
+function emptyIncrementalReport(coverageReport: CoverageReport): IncrementalReport {
   return {
     baselineSessionId: null,
     baselinePath: null,
@@ -350,6 +350,18 @@ function emptyIncrementalReport(): IncrementalReport {
     changedFiles: [],
     removedFiles: [],
     unchangedFiles: [],
+    coverageDelta: {
+      baselineCoverageRatio: null,
+      currentCoverageRatio: coverageReport.coverageRatio,
+      coverageRatioDelta: null,
+      baselineCoveredImportantFiles: null,
+      currentCoveredImportantFiles: coverageReport.coveredImportantFiles,
+      coveredImportantFilesDelta: null,
+      baselineTotalScannedFiles: null,
+      currentTotalScannedFiles: coverageReport.totalScannedFiles,
+      totalScannedFilesDelta: null,
+      summary: "분석 중에는 이전 세션 비교를 아직 적용하지 않았습니다."
+    },
     summary: "이 저장소의 비교 기준 이전 세션이 아직 없습니다.",
     beginnerExplanation: "incremental report는 같은 repo를 다시 분석했을 때 어떤 파일이 추가, 변경, 삭제, 유지되었는지 알려줍니다. 첫 분석에서는 비교할 기준이 없으므로 baseline 없음으로 저장됩니다."
   };
