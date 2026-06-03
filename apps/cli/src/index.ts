@@ -22,6 +22,7 @@ async function main(): Promise<void> {
     else if (parsed.command === "evidence") await evidence(parsed);
     else if (parsed.command === "export") await exportSession(parsed);
     else if (parsed.command === "verify-export") await verifyExport(parsed);
+    else if (parsed.command === "verify-evidence") await verifyEvidence(parsed);
     else if (parsed.command === "list") await list(parsed);
     else if (parsed.command === "open") await openSession(parsed);
     else if (parsed.command === "doctor") await doctor();
@@ -163,6 +164,14 @@ async function verifyExport(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const { verifyHtmlExportManifest } = await import("@repotutor/core");
   const result = await verifyHtmlExportManifest(sessionRoot);
+  console.log(JSON.stringify(result, null, 2));
+  if (!result.ok) process.exitCode = 1;
+}
+
+async function verifyEvidence(parsed: ParsedArgs): Promise<void> {
+  const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
+  const { verifyEvidenceIndexReport } = await import("@repotutor/core");
+  const result = await verifyEvidenceIndexReport(sessionRoot);
   console.log(JSON.stringify(result, null, 2));
   if (!result.ok) process.exitCode = 1;
 }
@@ -310,6 +319,7 @@ function help(): void {
   evidence <session-id-or-path> --kind import --file src/main.ts --limit 20 --format json|markdown
   export <session-id-or-path> --format html|zip
   verify-export <session-id-or-path>
+  verify-evidence <session-id-or-path>
   list
   open <session-id-or-path>
   doctor`);

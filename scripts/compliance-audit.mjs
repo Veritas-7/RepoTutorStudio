@@ -17,13 +17,14 @@ const checks = [
   ]),
   check("shared core engine", [
     "packages/core/src/pipeline.ts",
+    "packages/core/src/evidence.ts",
     "packages/core/src/scanner.ts",
     "packages/core/src/storage.ts",
     "packages/shared/src/schemas.ts"
   ], ["packages/core/src/pipeline.ts:runStudy", "packages/shared/src/schemas.ts:StudySessionSchema"]),
   check("headless cli commands", [
     "apps/cli/src/index.ts"
-  ], ["study", "quiz", "resume", "evidence", "export", "verify-export", "process.exitCode", "list", "open", "doctor", "filteredKind", "filteredFile", "--file", "--format json|markdown", "evidenceMarkdown", "returnedItems"]),
+  ], ["study", "quiz", "resume", "evidence", "export", "verify-export", "verify-evidence", "verifyEvidenceIndexReport", "process.exitCode", "list", "open", "doctor", "filteredKind", "filteredFile", "--file", "--format json|markdown", "evidenceMarkdown", "returnedItems"]),
   check("codex skill mode", [
     "skills/repo-tutor/SKILL.md",
     ".agents/skills/repo-tutor/SKILL.md",
@@ -49,11 +50,12 @@ const checks = [
   ], ["git", "clone", "--depth", "isSecretLikePath", "readTextIfSafe", "sourceBaseDir"]),
   check("lesson generation outputs", [
     "packages/core/src/pipeline.ts",
+    "packages/core/src/evidence.ts",
     "packages/core/src/scanner.ts",
     "packages/core/src/markdown.ts",
     "packages/html/src/templates.ts",
     "packages/shared/src/schemas.ts"
-  ], ["PurposeReport", "FolderLesson", "FileLesson", "FlowReport", "RebuildRoadmap", "EvidenceIndexReport", "evidence-index-report.json", "sourceEvidence", "source-evidence", "source-link", "../source/", "원본 열기", "evidence.md", "evidence.html", "evidence-index-cards", "evidence-kind-toolbar", "data-evidence-kind-filter", "소스 근거", "evidenceBackedFiles", "evidenceCoverageRatio", "evidenceKindCounts", "filesWithoutEvidence", "소스 근거 종류"]),
+  ], ["PurposeReport", "FolderLesson", "FileLesson", "FlowReport", "RebuildRoadmap", "EvidenceIndexReport", "evidence-index-report.json", "verifyEvidenceIndexReport", "checkedLessonLinks", "missing-lesson-anchor", "sourceEvidence", "source-evidence", "source-link", "../source/", "원본 열기", "evidence.md", "evidence.html", "evidence-index-cards", "evidence-kind-toolbar", "data-evidence-kind-filter", "소스 근거", "evidenceBackedFiles", "evidenceCoverageRatio", "evidenceKindCounts", "filesWithoutEvidence", "소스 근거 종류"]),
   check("quiz engine", [
     "packages/core/src/quiz.ts",
     "packages/shared/src/constants.ts"
