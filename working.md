@@ -186,6 +186,9 @@ to a private repository, and preserve resumable state in this file.
   command. CLI `repo-tutor open` now supports
   `--target verification|evidence|quiz` and other generated HTML pages so users
   can print direct paths to learning pages without manually composing paths.
+- 2026-06-04: Applied a thirty-seventh AutoResearch upgrade: open target
+  discovery. CLI `repo-tutor open --list-targets` now prints the supported
+  HTML target names and filenames as JSON without requiring a session path.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -348,6 +351,11 @@ to a private repository, and preserve resumable state in this file.
     `repo-tutor open --target verification|evidence|quiz` returned existing
     HTML page paths, and unsupported target `nope` exited 1 with
     `Unsupported open target: nope`
+  - temp CLI open-target-list smoke generated
+    `/tmp/repotutor-open-target-list-smoke.WK6yKx/2026-06-04/local__simple-ts-app__main__fc9d7184`;
+    `repo-tutor open --list-targets` returned 17 targets including
+    `verification`, `evidence`, `quiz`, and `component-graph`, and
+    `open --target verification|evidence|quiz` returned existing HTML files
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -387,6 +395,7 @@ to a private repository, and preserve resumable state in this file.
   - `8acedea` HTML session verification entrypoint
   - `cca0b13` study completion verification output
   - `e9a3fc9` list verification summaries
+  - `fc9d718` target-aware open command
 
 ## Next Actions
 
