@@ -521,6 +521,16 @@ Transferable patterns:
   `resume supports --format json or markdown`.
 - `scripts/compliance-audit.mjs`: verifies the Markdown resume output surface.
 
+### Upgrade 41: Markdown Session Listing
+
+- `apps/cli/src/index.ts`: `repo-tutor list --format markdown` now renders a
+  human-readable session table.
+- `apps/cli/src/index.ts`: the Markdown list includes session id, repo,
+  creation time, mode, score, wrong count, verification status, and HTML path.
+- `apps/cli/src/index.ts`: `list --verified-only --format markdown` filters
+  before rendering.
+- `scripts/compliance-audit.mjs`: verifies the Markdown list output surface.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -713,6 +723,10 @@ Local verification:
   `repo-tutor resume --format markdown` returned `# RepoTutor Resume`,
   `Verification status: passed`, direct verification/evidence/quiz paths, and
   `session: PASS`.
+- Temp CLI list-markdown smoke generated:
+  `/tmp/repotutor-list-md-smoke.wN4Bip`; `repo-tutor list --verified-only
+  --format markdown` returned `# RepoTutor Sessions`, `Returned sessions: 1`, a
+  session table, `passed`, and `html/index.html`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
