@@ -728,6 +728,12 @@ to a private repository, and preserve resumable state in this file.
     reports for bare `--report`, stdout returned those default paths, and
     explicit `--report ""` failed closed with
     `report must be a non-empty string.`
+  - temp CLI default-study smoke generated
+    `/tmp/repotutor-default-study-smoke.WEdkrL`; passing a local source path as
+    the first argument ran the `study` pipeline, `resume` confirmed
+    `mode: quick` and `level: beginner`, doctor JSON/Markdown exposed the
+    default study command, help listed default target usage, and typo command
+    `lisst` still showed help.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -816,6 +822,7 @@ to a private repository, and preserve resumable state in this file.
   - `91dd874` saved session list row-count verification
   - `a141f33` saved session list field verification
   - `b94218d` saved session list verification report files
+  - `db5312b` default saved list verification report paths
 
 ## Next Actions
 

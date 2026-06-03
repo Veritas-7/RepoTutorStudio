@@ -1079,6 +1079,18 @@
         "repo-tutor verify-list-output --report default Markdown path",
         "empty string flag value validation"
       ]
+    },
+    {
+      "name": "default study target command",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor <github-url-or-path> default study command",
+        "doctor defaultStudyCommand metadata",
+        "default study help usage"
+      ]
     }
   ],
   "verification": {
@@ -1194,6 +1206,7 @@
     "cliListFieldCountSmoke": "PASS",
     "cliVerifyListReportSmoke": "PASS",
     "cliVerifyListDefaultReportSmoke": "PASS",
+    "cliDefaultStudySmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

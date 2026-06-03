@@ -1353,6 +1353,26 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 86: Default Study Target Command
+
+- Added a CodeBoarding-inspired default subcommand flow: when the first argument
+  looks like a GitHub URL or local path, RepoTutor injects `study` and runs the
+  normal study pipeline.
+- Kept typo safety by applying the default only to URL/path-shaped targets;
+  unknown words such as `lisst` still show help instead of being treated as a
+  source path.
+- Added `defaultStudyCommand: true` to `repo-tutor doctor` JSON and a Markdown
+  `Default study command: enabled` line.
+- RED smoke `/tmp/repotutor-default-study-red.*` failed on the old behavior
+  because the CLI printed help instead of JSON.
+- GREEN smoke generated `/tmp/repotutor-default-study-smoke.WEdkrL`; bare
+  target study produced a complete session, `resume` confirmed `mode: quick`
+  and `level: beginner`, doctor JSON/Markdown exposed the default command, help
+  listed the default target usage, and typo command `lisst` still showed help.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

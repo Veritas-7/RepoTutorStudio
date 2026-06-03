@@ -18,6 +18,7 @@ interface DoctorPayload {
   ok: boolean;
   product: string;
   commands: string[];
+  defaultStudyCommand: boolean;
   formats: Record<string, string[]>;
   runtime: {
     cwd: string;
@@ -188,6 +189,22 @@ const LIST_FIELD_PRESETS = {
 
 const LIST_FIELD_PRESET_NAMES = Object.keys(LIST_FIELD_PRESETS) as Array<keyof typeof LIST_FIELD_PRESETS>;
 const LIST_OUTPUT_MANIFEST_SCHEMA_VERSION = 1;
+const CLI_COMMANDS = [
+  "study",
+  "quiz",
+  "resume",
+  "evidence",
+  "export",
+  "verify-export",
+  "verify-evidence",
+  "verify-session",
+  "verify-list-output",
+  "list",
+  "open",
+  "doctor"
+] as const;
+const CLI_COMMAND_SET = new Set<string>(CLI_COMMANDS);
+const HELP_COMMANDS = new Set(["help", "--help", "-h"]);
 
 async function main(): Promise<void> {
   const parsed = parseArgs(process.argv.slice(2));
@@ -578,20 +595,8 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
   const payload: DoctorPayload = {
     ok: true,
     product: "RepoTutor Studio",
-    commands: [
-      "study",
-      "quiz",
-      "resume",
-      "evidence",
-      "export",
-      "verify-export",
-      "verify-evidence",
-      "verify-session",
-      "verify-list-output",
-      "list",
-      "open",
-      "doctor"
-    ],
+    commands: [...CLI_COMMANDS],
+    defaultStudyCommand: true,
     formats: {
       study: ["json", "markdown"],
       quiz: ["json", "markdown"],
@@ -681,6 +686,7 @@ async function askAnswers(questions: Array<{ id: string; question: string; choic
 
 function parseArgs(args: string[]): ParsedArgs {
   args = args.filter((arg) => arg !== "--");
+  args = injectDefaultStudyCommand(args);
   const command = args[0] ?? "help";
   const rest: string[] = [];
   const flags: Record<string, string | boolean> = {};
@@ -700,6 +706,23 @@ function parseArgs(args: string[]): ParsedArgs {
     }
   }
   return { command, rest, flags };
+}
+
+function injectDefaultStudyCommand(args: string[]): string[] {
+  if (args.length === 0) return args;
+  const first = args[0];
+  if (CLI_COMMAND_SET.has(first) || HELP_COMMANDS.has(first) || first.startsWith("-")) return args;
+  return isStudyTargetCandidate(first) ? ["study", ...args] : args;
+}
+
+function isStudyTargetCandidate(value: string): boolean {
+  return value.startsWith("http://")
+    || value.startsWith("https://")
+    || value.startsWith("git@")
+    || value.startsWith("/")
+    || value.startsWith(".")
+    || value.includes("/")
+    || value.endsWith(".git");
 }
 
 function flagEnum(value: string | boolean | undefined, allowed: string[], fallback: string): string {
@@ -1494,6 +1517,7 @@ function doctorMarkdown(payload: DoctorPayload): string {
     `- OK: ${String(payload.ok)}`,
     `- Modes: ${payload.modes.join(", ")}`,
     `- Commands: ${payload.commands.join(", ")}`,
+    `- Default study command: ${payload.defaultStudyCommand ? "enabled" : "disabled"}`,
     `- Open targets: ${payload.openTargets.join(", ")}`,
     "",
     "## Formats",
@@ -1769,6 +1793,7 @@ function commandBaseDir(): string {
 
 function help(): void {
   console.log(`repo-tutor commands:
+  <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown
   study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior --format json|markdown
   quiz <session-id-or-path> --interactive --format json|markdown
   quiz <session-id-or-path> --answers answers.json --format json|markdown
