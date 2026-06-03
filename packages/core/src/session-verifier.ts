@@ -49,6 +49,7 @@ const REQUIRED_ARTIFACTS = [
   "analysis/mcp-handoff-report.json",
   "analysis/agent-memory-report.json",
   "analysis/graph-query-report.json",
+  "analysis/tutorial-abstraction-report.json",
   "markdown/overview.md",
   "markdown/evidence.md",
   "markdown/suggested-reads.md",
@@ -59,6 +60,7 @@ const REQUIRED_ARTIFACTS = [
   "markdown/mcp-handoff.md",
   "markdown/agent-memory.md",
   "markdown/graph-query.md",
+  "markdown/tutorial-abstractions.md",
   "html/index.html",
   "html/learning-path.html",
   "html/files.html",
@@ -71,6 +73,7 @@ const REQUIRED_ARTIFACTS = [
   "html/mcp-handoff.html",
   "html/agent-memory.html",
   "html/graph-query.html",
+  "html/tutorial-abstractions.html",
   "html/quiz-print.html",
   "html/manifest.json",
   "html/EXPORT-README.md"

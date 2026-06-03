@@ -22,6 +22,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "graph-query-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "tutorial-abstraction-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "session-verification-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "overview.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "component-graph.md"))).resolves.toBeUndefined();
@@ -35,6 +36,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "graph-query.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "tutorial-abstractions.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "session-verification.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "index.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "learning-path.html"))).resolves.toBeUndefined();
@@ -51,6 +53,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "graph-query.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "tutorial-abstractions.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "session-verification.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "quiz-print.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.codex, "events.jsonl"))).resolves.toBeUndefined();
@@ -197,6 +200,20 @@ describe("RepoTutor core pipeline", () => {
     expect(graphQueryMarkdown).toContain("# Graph Query");
     expect(graphQueryMarkdown).toContain("Source pattern: Graphify");
     expect(graphQueryMarkdown).toContain("## Path Prompts");
+    const tutorialAbstractionText = await fs.readFile(path.join(result.session.outputPaths.analysis, "tutorial-abstraction-report.json"), "utf8");
+    expect(tutorialAbstractionText).toContain("PocketFlow codebase tutorial identify abstractions analyze relationships order chapters");
+    expect(tutorialAbstractionText).toContain("\"abstractions\"");
+    expect(tutorialAbstractionText).toContain("\"relationships\"");
+    expect(tutorialAbstractionText).toContain("\"chapterOrder\"");
+    const tutorialAbstractionHtml = await fs.readFile(path.join(result.session.outputPaths.html, "tutorial-abstractions.html"), "utf8");
+    expect(tutorialAbstractionHtml).toContain("Tutorial Abstractions");
+    expect(tutorialAbstractionHtml).toContain("tutorial-abstraction-card");
+    expect(tutorialAbstractionHtml).toContain("data-source-pattern=\"PocketFlow\"");
+    expect(tutorialAbstractionHtml).toContain("Chapter Order");
+    const tutorialAbstractionMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "tutorial-abstractions.md"), "utf8");
+    expect(tutorialAbstractionMarkdown).toContain("# Tutorial Abstractions");
+    expect(tutorialAbstractionMarkdown).toContain("Source pattern: PocketFlow");
+    expect(tutorialAbstractionMarkdown).toContain("## Chapter Order");
     const exportManifestText = await fs.readFile(path.join(result.session.outputPaths.html, "manifest.json"), "utf8");
     expect(exportManifestText).toContain("\"entrypoints\"");
     expect(exportManifestText).toContain("html/learning-path.html");
@@ -209,6 +226,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
     expect(exportManifestText).toContain("html/graph-query.html");
+    expect(exportManifestText).toContain("html/tutorial-abstractions.html");
     expect(exportManifestText).toContain("\"integrity\"");
     expect(exportManifestText).toContain("\"bytes\"");
     expect(exportManifestText).toContain("\"sha256\"");
@@ -275,6 +293,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");
     expect(learningPathHtml).toContain("graph-query.html");
+    expect(learningPathHtml).toContain("tutorial-abstractions.html");
     const sessionVerificationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "session-verification.html"), "utf8");
     expect(sessionVerificationHtml).toContain("세션 검증");
     expect(sessionVerificationHtml).toContain("../analysis/session-verification-report.json");

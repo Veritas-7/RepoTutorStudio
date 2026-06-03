@@ -164,6 +164,21 @@
         "plain-language node explanation cards",
         "shortest-path prompts between graph nodes"
       ]
+    },
+    {
+      "repo": "The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge",
+      "url": "https://github.com/The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge",
+      "localPath": "research/external-src/The-Pocket-PocketFlow-Tutorial-Codebase-Knowledge",
+      "stars": 12367,
+      "forks": 1408,
+      "license": "MIT",
+      "updatedAt": "2026-06-03T16:14:05Z",
+      "adoptedPatterns": [
+        "identify core abstractions for codebase tutorials",
+        "analyze relationships between abstractions",
+        "order chapters from foundational to implementation details",
+        "combine tutorial index with chapter links and visualization cues"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1667,6 +1682,28 @@
         "GraphQueryReportSchema",
         "Graphify query/path/explain graph traversal guide"
       ]
+    },
+    {
+      "name": "Tutorial abstraction report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/tutorial-abstraction-report.json",
+        "markdown/tutorial-abstractions.md",
+        "html/tutorial-abstractions.html",
+        "open --target tutorial-abstractions",
+        "TutorialAbstractionReportSchema",
+        "PocketFlow abstraction relationship chapter-order tutorial guide"
+      ]
     }
   ],
   "verification": {
@@ -1844,7 +1881,13 @@
     "cliAgentMemoryOpenTargetSmoke": "PASS",
     "fixtureGraphQueryReport": "PASS",
     "cliGraphQuerySmoke": "PASS",
-    "cliGraphQueryOpenTargetSmoke": "PASS"
+    "cliGraphQueryOpenTargetSmoke": "PASS",
+    "fixtureTutorialAbstractionReport": "PASS",
+    "cliTutorialAbstractionsSmoke": "PASS",
+    "cliTutorialAbstractionsOpenTargetSmoke": "PASS",
+    "buildTutorialAbstractions": "PASS",
+    "testTutorialAbstractions": "PASS",
+    "auditBriefTutorialAbstractions13": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"

@@ -26,6 +26,7 @@ import {
   McpHandoffReport,
   AgentMemoryReport,
   GraphQueryReport,
+  TutorialAbstractionReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -49,6 +50,7 @@ export interface AnalysisBundle {
   mcpHandoffReport: McpHandoffReport;
   agentMemoryReport: AgentMemoryReport;
   graphQueryReport: GraphQueryReport;
+  tutorialAbstractionReport: TutorialAbstractionReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -79,10 +81,11 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const rebuildRoadmap = buildRebuildRoadmap(repoMap, fileLessons);
   const componentGraphReport = buildComponentGraphReport(folderLessons, fileLessons, glossary, rebuildRoadmap);
   const graphQueryReport = buildGraphQueryReport(componentGraphReport);
+  const tutorialAbstractionReport = buildTutorialAbstractionReport(fileLessons, suggestedReadsReport, componentGraphReport);
   const agentMemoryReport = buildAgentMemoryReport(repoMap, languageReport, purposeReport, contextPackReport, mcpHandoffReport, componentGraphReport);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -924,6 +927,108 @@ function buildGraphQueryReport(componentGraphReport: ComponentGraphReport): Grap
       "질문 결과를 raw source 읽기 전에 비교하면 불필요한 파일 탐색을 줄일 수 있습니다."
     ]
   };
+}
+
+function buildTutorialAbstractionReport(
+  fileLessons: FileLesson[],
+  suggestedReadsReport: SuggestedReadsReport,
+  componentGraphReport: ComponentGraphReport
+): TutorialAbstractionReport {
+  const lessonByPath = new Map(fileLessons.map((lesson) => [lesson.filePath, lesson]));
+  const orderedLessons = suggestedReadsReport.items
+    .map((item) => lessonByPath.get(item.filePath))
+    .filter((lesson): lesson is FileLesson => Boolean(lesson));
+  const candidates = (orderedLessons.length > 0 ? orderedLessons : fileLessons).slice(0, 7);
+  const rawAbstractions = candidates.map((lesson, index) => {
+    const id = `abstraction-${index + 1}`;
+    const relatedLessons = [lesson, ...lesson.relatedFiles.map((filePath) => lessonByPath.get(filePath)).filter((item): item is FileLesson => Boolean(item))]
+      .filter((item, itemIndex, items) => items.findIndex((candidate) => candidate.filePath === item.filePath) === itemIndex)
+      .slice(0, 4);
+    return {
+      id,
+      name: abstractionNameForFile(lesson.filePath),
+      description: `${lesson.role}: ${lesson.beginnerExplanation}`,
+      chapterNumber: index + 1,
+      chapterGoal: `이 장에서는 ${lesson.filePath}의 책임과 주변 파일을 연결해 ${lesson.executionFlowPosition} 흐름을 이해합니다.`,
+      relevantFiles: relatedLessons.map((item) => ({
+        filePath: item.filePath,
+        lessonHref: `html/files.html#${htmlAnchor(item.filePath)}`,
+        sourceHref: `source/${encodedPath(item.filePath)}`
+      })),
+      relationshipCount: 0
+    };
+  });
+
+  const abstractionByFile = new Map<string, string>();
+  for (const abstraction of rawAbstractions) {
+    for (const file of abstraction.relevantFiles) abstractionByFile.set(file.filePath, abstraction.id);
+  }
+  const graphFileByNode = new Map(componentGraphReport.nodes.filter((node) => node.type === "file" && node.path).map((node) => [node.id, node.path as string]));
+  const relationships: TutorialAbstractionReport["relationships"] = [];
+  const seenRelationships = new Set<string>();
+  for (const edge of componentGraphReport.edges) {
+    const fromFile = graphFileByNode.get(edge.from);
+    const toFile = graphFileByNode.get(edge.to);
+    const fromId = fromFile ? abstractionByFile.get(fromFile) : null;
+    const toId = toFile ? abstractionByFile.get(toFile) : null;
+    if (!fromId || !toId || fromId === toId) continue;
+    const key = `${fromId}:${toId}:${edge.label}`;
+    if (seenRelationships.has(key)) continue;
+    seenRelationships.add(key);
+    relationships.push({
+      fromId,
+      toId,
+      label: edge.label,
+      reason: `component graph에서 ${fromFile}와 ${toFile}가 ${edge.label} 관계로 이어집니다.`
+    });
+    if (relationships.length >= 12) break;
+  }
+  for (let index = 0; relationships.length < Math.max(0, rawAbstractions.length - 1) && index < rawAbstractions.length - 1; index += 1) {
+    const from = rawAbstractions[index];
+    const to = rawAbstractions[index + 1];
+    const key = `${from.id}:${to.id}:chapter-order`;
+    if (seenRelationships.has(key)) continue;
+    seenRelationships.add(key);
+    relationships.push({
+      fromId: from.id,
+      toId: to.id,
+      label: "chapter-order",
+      reason: `${from.name}를 먼저 읽은 뒤 ${to.name}로 넘어가면 튜토리얼 순서가 자연스럽습니다.`
+    });
+  }
+  const abstractions = rawAbstractions.map((abstraction) => ({
+    ...abstraction,
+    relationshipCount: relationships.filter((relationship) => relationship.fromId === abstraction.id || relationship.toId === abstraction.id).length
+  }));
+  const chapterOrder = abstractions.map((abstraction, index) => ({
+    chapterNumber: abstraction.chapterNumber,
+    abstractionId: abstraction.id,
+    title: abstraction.name,
+    whyNow: index === 0
+      ? "가장 먼저 읽을 핵심 파일에서 프로젝트의 출발점을 잡습니다."
+      : "앞 장에서 잡은 책임과 관계를 바탕으로 다음 구현 단위를 확장합니다."
+  }));
+  return {
+    summary: `PocketFlow식 codebase tutorial: ${abstractions.length}개 핵심 추상화를 찾고 ${relationships.length}개 관계와 장 순서로 재배열했습니다.`,
+    sourcePattern: "PocketFlow codebase tutorial identify abstractions analyze relationships order chapters",
+    abstractions,
+    relationships,
+    chapterOrder,
+    learnerNextSteps: [
+      "chapter order를 따라 첫 장의 관련 파일부터 원본과 파일 수업을 함께 여세요.",
+      "relationship label을 보며 두 추상화가 왜 같은 튜토리얼 흐름에 들어가는지 설명해 보세요.",
+      "각 추상화의 relevant files를 작은 코드 읽기 범위로 삼고, 필요한 경우 component graph에서 더 좁혀 보세요."
+    ]
+  };
+}
+
+function abstractionNameForFile(filePath: string): string {
+  const base = path.basename(filePath).replace(/\.[^.]+$/, "");
+  const words = base
+    .split(/[-_\s.]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+  return `${words.join(" ") || "Source"} Abstraction`;
 }
 
 function suggestedReadScore(lesson: FileLesson, index: number): number {

@@ -2053,6 +2053,35 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 114: Tutorial Abstraction Report
+
+- Cloned and inspected `The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge`
+  under `research/external-src/The-Pocket-PocketFlow-Tutorial-Codebase-Knowledge`
+  without executing external source.
+- Added `TutorialAbstractionReportSchema` and
+  `analysis/tutorial-abstraction-report.json` with PocketFlow-style core
+  abstractions, relationship rows, and chapter order.
+- Added `markdown/tutorial-abstractions.md`,
+  `html/tutorial-abstractions.html`, manifest/verification coverage,
+  learning-path linkage, and `open --target tutorial-abstractions`.
+- Source pattern: PocketFlow turns a codebase into a beginner tutorial by
+  identifying core abstractions, analyzing relationships, ordering chapters,
+  writing chapters, and combining a tutorial index; RepoTutor maps that to a
+  deterministic static report over existing file lessons and the component
+  graph.
+- RED smoke `/tmp/repotutor-tutorial-abstractions-red.*` failed on the old
+  behavior with `missing analysis/tutorial-abstraction-report.json`.
+- GREEN smoke generated
+  `/tmp/repotutor-tutorial-abstractions-green-studies.0D2g33`; generated the
+  JSON, Markdown, and HTML artifacts, included `abstractions`,
+  `relationships`, `chapterOrder`, `tutorial-abstraction-card`,
+  `data-source-pattern="PocketFlow"`, and `Tutorial Abstractions`, and
+  `open --target tutorial-abstractions` returned
+  `html/tutorial-abstractions.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
