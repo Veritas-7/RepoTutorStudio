@@ -189,6 +189,9 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Applied a thirty-seventh AutoResearch upgrade: open target
   discovery. CLI `repo-tutor open --list-targets` now prints the supported
   HTML target names and filenames as JSON without requiring a session path.
+- 2026-06-04: Applied a thirty-eighth AutoResearch upgrade: fail-closed open
+  targets. CLI `repo-tutor open` now verifies the selected HTML target exists
+  before printing the path, returning a clear error if the page is missing.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -356,6 +359,11 @@ to a private repository, and preserve resumable state in this file.
     `repo-tutor open --list-targets` returned 17 targets including
     `verification`, `evidence`, `quiz`, and `component-graph`, and
     `open --target verification|evidence|quiz` returned existing HTML files
+  - temp CLI open-exists smoke generated
+    `/tmp/repotutor-open-exists-smoke.oXYr5x/2026-06-04/local__simple-ts-app__main__35d90f7a`;
+    `open --target verification` returned an existing file, then deleting
+    `html/session-verification.html` made the same command exit 1 with
+    `Open target file not found`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -396,6 +404,7 @@ to a private repository, and preserve resumable state in this file.
   - `cca0b13` study completion verification output
   - `e9a3fc9` list verification summaries
   - `fc9d718` target-aware open command
+  - `35d90f7` open target discovery
 
 ## Next Actions
 

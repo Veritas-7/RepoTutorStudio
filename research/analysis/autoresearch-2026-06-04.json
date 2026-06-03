@@ -542,6 +542,17 @@
         "repo-tutor open --list-targets",
         "JSON target table for generated HTML pages"
       ]
+    },
+    {
+      "name": "fail-closed open targets",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor open readable target validation",
+        "Open target file not found error for missing generated pages"
+      ]
     }
   ],
   "verification": {
@@ -609,6 +620,7 @@
     "cliListVerificationSummarySmoke": "PASS",
     "cliOpenTargetSmoke": "PASS",
     "cliOpenTargetListSmoke": "PASS",
+    "cliOpenTargetExistsSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
