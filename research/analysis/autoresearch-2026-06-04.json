@@ -971,6 +971,18 @@
         "sidecar .manifest.json with bytes and sha256",
         "doctor listFilters.outputManifest metadata"
       ]
+    },
+    {
+      "name": "saved session list output verification",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor verify-list-output <output-file>",
+        "repo-tutor verify-list-output --manifest <file>",
+        "RepoTutor List Output Verification markdown"
+      ]
     }
   ],
   "verification": {
@@ -1077,6 +1089,7 @@
     "cliListSummarySmoke": "PASS",
     "cliListOutputSmoke": "PASS",
     "cliListOutputManifestSmoke": "PASS",
+    "cliVerifyListOutputSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

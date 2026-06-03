@@ -1201,6 +1201,24 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 77: Saved Session List Output Verification
+
+- Added `repo-tutor verify-list-output <output-file>` so saved list artifacts
+  can be validated against their `.manifest.json` sidecars after handoff or
+  tamper-prone transport.
+- Added optional `--manifest <file>` and `--format json|markdown` support.
+- Added `verify-list-output` command and `verifyListOutput` format metadata to
+  `repo-tutor doctor`.
+- Temp CLI verify-list-output smoke generated
+  `/tmp/repotutor-verify-list-output-smoke.JB1fqu`; two fixture sessions were
+  created, saved JSONL score-preset output verified cleanly in JSON and
+  Markdown using the default and explicit manifest paths, tampering with the
+  output failed closed with both `bytes-mismatch` and `sha256-mismatch`, and
+  `doctor` reported `verify-list-output` plus JSON/Markdown formats.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
