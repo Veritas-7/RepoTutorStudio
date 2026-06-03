@@ -1136,6 +1136,19 @@ Local verification:
   JSON and JSONL, CSV used those headers, Markdown rendered a selected-field
   table, `doctor` reported the supported field list, invalid `--fields nope`
   failed closed, and duplicate fields were de-duplicated in output order.
+
+### Upgrade 73: Field Preset Session List Output
+
+- Added `repo-tutor list --field-preset compact|scores|handoff|verification|paths`
+  so common field selections can be reused without spelling every column.
+- Added `fieldPresets` metadata to `repo-tutor doctor`.
+- Temp CLI list-field-preset smoke generated
+  `/tmp/repotutor-list-field-preset-smoke.Io8yRb`; one fixture session was
+  created, the `scores` preset returned `sessionId,repo,score,wrong,path` in
+  JSON, the `paths` preset produced matching CSV headers, the `compact` preset
+  rendered selected Markdown fields, `doctor` reported all preset names,
+  invalid `--field-preset nope` failed closed, and combining `--fields` with
+  `--field-preset` failed closed with an explicit conflict message.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

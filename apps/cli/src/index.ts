@@ -91,6 +91,16 @@ const DEFAULT_LIST_CSV_FIELDS = [
   "html"
 ] as const satisfies readonly ListField[];
 
+const LIST_FIELD_PRESETS = {
+  compact: ["sessionId", "repo", "createdAt", "verificationStatus"],
+  scores: ["sessionId", "repo", "score", "wrong", "path"],
+  handoff: ["sessionId", "repo", "mode", "level", "verificationStatus", "path", "html"],
+  verification: ["sessionId", "repo", "verificationStatus", "verificationOk", "verificationReport", "verificationHtml"],
+  paths: ["sessionId", "repo", "path", "html"]
+} as const satisfies Record<string, readonly ListField[]>;
+
+const LIST_FIELD_PRESET_NAMES = Object.keys(LIST_FIELD_PRESETS) as Array<keyof typeof LIST_FIELD_PRESETS>;
+
 async function main(): Promise<void> {
   const parsed = parseArgs(process.argv.slice(2));
   try {
@@ -381,7 +391,7 @@ async function list(parsed: ParsedArgs): Promise<void> {
   const sortedRows = sort ? sortSessionRows(targetRows, sort) : targetRows;
   const limit = optionalPositiveIntegerFlag(parsed.flags.limit, "limit");
   const filtered = limit === null ? sortedRows : sortedRows.slice(0, limit);
-  const fields = listFieldsFlag(parsed.flags.fields);
+  const fields = listFieldSelection(parsed.flags.fields, parsed.flags["field-preset"]);
   const projected = fields ? projectListRows(filtered, fields) : filtered;
   const format = stringFlag(parsed.flags.format) ?? "json";
   if (!["json", "markdown", "jsonl", "csv"].includes(format)) throw new Error("list supports --format json, markdown, jsonl, or csv.");
@@ -468,6 +478,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       htmlTargets: ["complete", "missing", "all"],
       sort: ["newest", "oldest", "score-desc", "score-asc"],
       fields: [...LIST_FIELDS],
+      fieldPresets: LIST_FIELD_PRESET_NAMES,
       repo: true,
       createdFrom: true,
       createdTo: true,
@@ -605,6 +616,22 @@ function listFieldsFlag(value: string | boolean | undefined): ListField[] | null
   }
   if (fields.length === 0) throw new Error(`fields must be a comma-separated list of: ${LIST_FIELDS.join(", ")}.`);
   return fields;
+}
+
+function listFieldPresetFlag(value: string | boolean | undefined): ListField[] | null {
+  if (value === undefined) return null;
+  if (typeof value !== "string" || value.trim() === "") throw new Error(`field-preset must be one of: ${LIST_FIELD_PRESET_NAMES.join(", ")}.`);
+  if (!LIST_FIELD_PRESET_NAMES.includes(value as keyof typeof LIST_FIELD_PRESETS)) {
+    throw new Error(`list supports --field-preset ${LIST_FIELD_PRESET_NAMES.join(", ")}.`);
+  }
+  return [...LIST_FIELD_PRESETS[value as keyof typeof LIST_FIELD_PRESETS]];
+}
+
+function listFieldSelection(fieldsValue: string | boolean | undefined, presetValue: string | boolean | undefined): ListField[] | null {
+  const fields = listFieldsFlag(fieldsValue);
+  const preset = listFieldPresetFlag(presetValue);
+  if (fields && preset) throw new Error("list cannot combine --fields and --field-preset.");
+  return fields ?? preset;
 }
 
 function projectListRows(rows: ListRow[], fields: ListField[]): Array<Partial<ListRow>> {
@@ -1263,7 +1290,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --fields sessionId,repo,score,path --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
+  list --repo owner/name --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);
