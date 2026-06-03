@@ -1774,6 +1774,7 @@ function openTargetEntries(): Array<{ target: string; fileName: string }> {
     { target: "glossary", fileName: "glossary.html" },
     { target: "rebuild", fileName: "rebuild.html" },
     { target: "quiz", fileName: "quiz.html" },
+    { target: "quiz-print", fileName: "quiz-print.html" },
     { target: "wrong-notes", fileName: "wrong-notes.html" }
   ];
 }
@@ -1848,7 +1849,7 @@ function help(): void {
   verify-session <session-id-or-path> --format json|markdown
   verify-list-output <output-file> --manifest output.manifest.json --report [verification.json] --format json|markdown
   list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --output reports/list.json --output-manifest [manifest.json] --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
-  open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
+  open <session-id-or-path> --target verification|evidence|quiz|quiz-print|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown
   study/list/doctor option: --studies-root <dir>`);

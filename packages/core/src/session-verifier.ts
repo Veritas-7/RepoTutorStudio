@@ -46,6 +46,7 @@ const REQUIRED_ARTIFACTS = [
   "html/index.html",
   "html/files.html",
   "html/evidence.html",
+  "html/quiz-print.html",
   "html/manifest.json",
   "html/EXPORT-README.md"
 ];
