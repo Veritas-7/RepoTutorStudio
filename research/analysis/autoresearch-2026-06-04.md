@@ -130,6 +130,18 @@ Transferable patterns:
   verify `coverageDelta`; the test uses a first session with an unimportant
   scratch file and a second session without it to prove a positive ratio delta.
 
+### Upgrade 7: Component Graph Filters
+
+- `packages/html/src/templates.ts`: adds a node-type toolbar to
+  `html/component-graph.html` with counts for all, root, folder, file, term,
+  and rebuild-step nodes.
+- `packages/html/src/templates.ts`: marks graph node cards with
+  `data-node-type` and renders them inside `component-node-cards`.
+- `html/assets/app.js`: applies graph-type filtering and global text search
+  through one visibility function so large graphs can be narrowed offline.
+- `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
+  verify the graph filter markers.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -151,6 +163,11 @@ Local verification:
   `/tmp/repotutor-delta-studies-lJgVZf/2026-06-04/local__repotutor-delta-source-p1n5wA__local__eb48ab36/analysis/incremental-report.json`
   with `coverageRatioDelta: 0.19999999999999996` and summary
   `커버리지 비율은 80.0%에서 100.0%로 20.0%p 변했습니다.`
+- Temp CLI graph-filter smoke generated:
+  `/tmp/repotutor-graph-filter-studies-90McrL/2026-06-04/local__simple-ts-app__main__6aeb168b/html/component-graph.html`
+  with `data-graph-filter`, `data-node-type`, `graph-filter-toolbar`, and
+  `component-node-cards`; `assets/app.js` includes the `[data-graph-filter]`
+  handler.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
@@ -158,4 +175,5 @@ Local verification:
 
 ## Deferred Candidate Backlog
 
-1. Add component graph filters for large repositories.
+1. Add richer large-repo graph summaries.
+2. Add export usability polish.

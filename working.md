@@ -60,6 +60,10 @@ to a private repository, and preserve resumable state in this file.
   `incremental.html` now show previous/current coverage ratio, ratio delta, and
   covered important file deltas when the previous same-repo session has
   `coverage-report.json`.
+- 2026-06-04: Applied a seventh AutoResearch upgrade: component graph filters
+  for large repositories. `component-graph.html` now renders node-type filter
+  controls for root, folder, file, term, and rebuild-step nodes; `assets/app.js`
+  applies graph filters together with the global search filter.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -73,6 +77,9 @@ to a private repository, and preserve resumable state in this file.
     `studies/2026-06-04/local__simple-ts-app__main__a30cec65-2/analysis/incremental-report.json`
   - temp CLI delta smoke generated coverageRatioDelta `0.19999999999999996`
     with summary `80.0%에서 100.0%로 20.0%p`
+  - temp CLI graph-filter smoke generated `component-graph.html` with
+    `data-graph-filter`, `data-node-type`, `graph-filter-toolbar`, and
+    `component-node-cards`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -82,8 +89,9 @@ to a private repository, and preserve resumable state in this file.
   - `15d0897` Tauri quiz attempt flow
   - `a30cec6` source-backed component graph
   - `6e56360` incremental re-analysis reports
+  - `6aeb168` coverage delta summaries
 
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops:
-   component graph filters for large repositories.
+   richer large-repo graph summaries or export usability polish.

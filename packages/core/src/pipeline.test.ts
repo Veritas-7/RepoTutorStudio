@@ -29,6 +29,9 @@ describe("RepoTutor core pipeline", () => {
     const graphText = await fs.readFile(path.join(result.session.outputPaths.analysis, "component-graph-report.json"), "utf8");
     expect(graphText).toContain("\"nodes\"");
     expect(graphText).toContain("\"edges\"");
+    const componentGraphHtml = await fs.readFile(path.join(result.session.outputPaths.html, "component-graph.html"), "utf8");
+    expect(componentGraphHtml).toContain("data-graph-filter");
+    expect(componentGraphHtml).toContain("data-node-type");
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
   });
