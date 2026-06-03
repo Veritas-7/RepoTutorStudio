@@ -324,9 +324,19 @@ export const HtmlExportManifestSchema = z.object({
   pages: z.array(z.object({
     name: z.string(),
     path: z.string(),
-    title: z.string()
+    title: z.string(),
+    bytes: z.number().int().nonnegative(),
+    sha256: z.string()
   })),
-  assets: z.array(z.string())
+  assets: z.array(z.object({
+    path: z.string(),
+    bytes: z.number().int().nonnegative(),
+    sha256: z.string()
+  })),
+  integrity: z.object({
+    algorithm: z.literal("sha256"),
+    coveredFiles: z.number().int().nonnegative()
+  })
 });
 
 export const CodexRunLogSchema = z.object({

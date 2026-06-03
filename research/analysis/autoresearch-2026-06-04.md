@@ -208,6 +208,19 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs`: includes the file navigation markers in the
   offline HTML export compliance check.
 
+### Upgrade 13: Portable Export Integrity Metadata
+
+- `packages/shared/src/schemas.ts`: extends `HtmlExportManifestSchema` page and
+  asset records with `bytes` and `sha256`, plus an `integrity` summary.
+- `packages/html/src/templates.ts`: computes byte counts and SHA-256 hashes
+  while rendering the portable HTML manifest.
+- `packages/core/src/quiz.ts`: renders integrity coverage and short hashes in
+  `html/EXPORT-README.md`.
+- `packages/core/src/pipeline.test.ts`: verifies manifest integrity fields and
+  README integrity text.
+- `scripts/compliance-audit.mjs`: includes `integrity`, `sha256`, and `bytes`
+  in the offline export compliance check.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -256,6 +269,10 @@ Local verification:
   with `file-nav-toolbar`, `data-file-ext-filter`, `data-file-dir-filter`,
   `data-file-ext=".ts"`, `data-file-dir="src"`, and matching handlers in
   `html/assets/app.js`.
+- Temp CLI manifest-integrity smoke generated:
+  `/tmp/repotutor-manifest-integrity-smoke.DSvUWT/2026-06-04/local__simple-ts-app__main__3a2cb784/html/manifest.json`
+  with 16 covered files, `index.html` byte count 3,684, and verified
+  `index.html` SHA-256 prefix `a34286246376`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
@@ -263,4 +280,5 @@ Local verification:
 
 ## Deferred Candidate Backlog
 
-1. Continue source-backed usability and verification upgrades.
+1. Add a direct export integrity verification command.
+2. Continue source-backed usability upgrades.

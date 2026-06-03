@@ -130,13 +130,17 @@ function renderExportReadme(manifest: HtmlExportManifest): string {
   const entrypoints = manifest.entrypoints
     .map((entry) => `- ${entry.label}: ${insideHtmlPath(entry.path)} - ${entry.description}`)
     .join("\n");
-  const pages = manifest.pages.map((page) => `- ${page.title}: ${insideHtmlPath(page.path)}`).join("\n");
-  const assets = manifest.assets.map((asset) => `- ${asset}`).join("\n");
-  return `# RepoTutor HTML Export\n\nOpen \`index.html\` in a browser to start. This folder is portable and can be copied as one offline report bundle.\n\n## Entry Points\n\n${entrypoints}\n\n## Pages\n\n${pages}\n\n## Assets\n\n${assets}\n`;
+  const pages = manifest.pages.map((page) => `- ${page.title}: ${insideHtmlPath(page.path)} (${page.bytes} bytes, sha256 ${shortHash(page.sha256)})`).join("\n");
+  const assets = manifest.assets.map((asset) => `- ${insideHtmlPath(asset.path)} (${asset.bytes} bytes, sha256 ${shortHash(asset.sha256)})`).join("\n");
+  return `# RepoTutor HTML Export\n\nOpen \`index.html\` in a browser to start. This folder is portable and can be copied as one offline report bundle.\n\nIntegrity metadata uses ${manifest.integrity.algorithm} for ${manifest.integrity.coveredFiles} files. Full hashes are in \`manifest.json\`.\n\n## Entry Points\n\n${entrypoints}\n\n## Pages\n\n${pages}\n\n## Assets\n\n${assets}\n`;
 }
 
 function insideHtmlPath(filePath: string): string {
   return filePath.startsWith("html/") ? filePath.slice("html/".length) : filePath;
+}
+
+function shortHash(value: string): string {
+  return value.slice(0, 12);
 }
 
 function buildWrongNote(question: QuizQuestion, selectedChoice: "A" | "B" | "C" | "D", attemptNumber: number): WrongNote {

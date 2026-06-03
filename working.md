@@ -86,6 +86,10 @@ to a private repository, and preserve resumable state in this file.
   navigation filters. `files.html` now includes extension and top-folder
   toolbars, file cards expose `data-file-ext` and `data-file-dir`, and the
   offline JS combines these filters with the existing global search.
+- 2026-06-04: Applied a thirteenth AutoResearch upgrade: portable export
+  integrity metadata. `manifest.json` now records page/asset byte counts,
+  SHA-256 hashes, and an integrity summary; `EXPORT-README.md` explains the
+  hash coverage and shows short hashes for quick inspection.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -120,6 +124,10 @@ to a private repository, and preserve resumable state in this file.
     with `file-nav-toolbar`, extension buttons, directory buttons,
     `data-file-ext=".ts"`, `data-file-dir="src"`, and matching handlers in
     `html/assets/app.js`
+  - temp CLI manifest-integrity smoke generated
+    `/tmp/repotutor-manifest-integrity-smoke.DSvUWT/2026-06-04/local__simple-ts-app__main__3a2cb784/html/manifest.json`
+    with 16 covered files, `index.html` byte count 3,684, and verified
+    `index.html` SHA-256 prefix `a34286246376`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -135,6 +143,7 @@ to a private repository, and preserve resumable state in this file.
   - `8f7c2b9` portable HTML export guide
   - `d326442` zipped HTML export bundle
   - `df6a42d` CLI relative local-source resolution
+  - `3a2cb78` file navigation filters
 
 ## Next Actions
 
