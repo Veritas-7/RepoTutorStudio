@@ -1045,6 +1045,19 @@ Local verification:
   returned exactly that scored JSON row, Markdown output included `Score` as
   `100` and `Wrong` as `0`, and `doctor` reported
   `listFilters.scoredOnly: true`.
+
+### Upgrade 66: Score Range Session Lists
+
+- Added `repo-tutor list --min-score N --max-score N` so operators can isolate
+  high-scoring or low-scoring quiz attempts without reading every session row.
+- Added `minScore` and `maxScore` filter metadata to `repo-tutor doctor`.
+- Temp CLI list-score-range smoke generated
+  `/tmp/repotutor-list-score-range-smoke.ppUrvq`; two fixture sessions were
+  scored at `0` and `100`, `list --min-score 50` returned only the `100` row,
+  `list --max-score 50` returned only the `0` row, Markdown output included
+  `Score` as `100`, `doctor` reported `minScore` and `maxScore` filters, and
+  invalid `--min-score 101` exited 1 with `min-score must be a number from 0 to
+  100`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

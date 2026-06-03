@@ -303,10 +303,14 @@ async function list(parsed: ParsedArgs): Promise<void> {
     : parsed.flags["scored-only"] === true
       ? wrongRows.filter((row) => row.score !== null)
       : wrongRows;
+  const minScore = optionalScoreFlag(parsed.flags["min-score"], "min-score");
+  const minScoreRows = minScore === null ? quizRows : quizRows.filter((row) => row.score !== null && row.score >= minScore);
+  const maxScore = optionalScoreFlag(parsed.flags["max-score"], "max-score");
+  const scoreRows = maxScore === null ? minScoreRows : minScoreRows.filter((row) => row.score !== null && row.score <= maxScore);
   const htmlTargets = htmlTargetsFlag(parsed.flags["html-targets"]);
   const targetRows = htmlTargets === "all"
-    ? quizRows
-    : quizRows.filter((row) => htmlTargets === "complete" ? row.htmlTargetsComplete : !row.htmlTargetsComplete);
+    ? scoreRows
+    : scoreRows.filter((row) => htmlTargets === "complete" ? row.htmlTargetsComplete : !row.htmlTargetsComplete);
   const sort = listSortFlag(parsed.flags.sort);
   const sortedRows = sort ? sortSessionRows(targetRows, sort) : targetRows;
   const limit = optionalPositiveIntegerFlag(parsed.flags.limit, "limit");
@@ -396,6 +400,8 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       wrongOnly: true,
       unattemptedOnly: true,
       scoredOnly: true,
+      minScore: true,
+      maxScore: true,
       limit: true
     },
     openTargets: [...openTargetEntries().map((entry) => entry.target), "all"],
@@ -488,6 +494,14 @@ function optionalPositiveIntegerFlag(value: string | boolean | undefined, name: 
   if (typeof value !== "string") throw new Error(`${name} must be a positive integer.`);
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed <= 0) throw new Error(`${name} must be a positive integer.`);
+  return parsed;
+}
+
+function optionalScoreFlag(value: string | boolean | undefined, name: string): number | null {
+  if (value === undefined) return null;
+  if (typeof value !== "string") throw new Error(`${name} must be a number from 0 to 100.`);
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0 || parsed > 100) throw new Error(`${name} must be a number from 0 to 100.`);
   return parsed;
 }
 
@@ -1060,7 +1074,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --wrong-only --unattempted-only --scored-only --limit 10 --format json|markdown
+  list --repo owner/name --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);
