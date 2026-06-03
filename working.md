@@ -302,6 +302,10 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Applied a ninety-second AutoResearch upgrade: component graph
   Mermaid download. `html/component-graph.html` now exposes a Mermaid download
   toolbar and offline JS saves the graph source as `component-graph.mmd`.
+- 2026-06-04: Applied a ninety-third AutoResearch upgrade: manifested component
+  graph Mermaid asset. Generated HTML exports now include
+  `html/assets/component-graph.mmd`, and manifest, export README, integrity
+  verification, and ZIP export all track it.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -795,6 +799,11 @@ to a private repository, and preserve resumable state in this file.
     `html/component-graph.html` contained `component-graph-download-toolbar`,
     `data-download-mermaid`, `component-graph-mermaid`, and
     `Mermaid 다운로드`, with Blob download logic in `html/assets/app.js`.
+  - temp CLI graph-asset smoke generated
+    `/tmp/repotutor-graph-asset-smoke.NCKVXv`; generated
+    `html/assets/component-graph.mmd` contained `flowchart`, `manifest.json`
+    and `EXPORT-README.md` listed `assets/component-graph.mmd`,
+    `verify-export` checked the asset, and ZIP export included it.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.

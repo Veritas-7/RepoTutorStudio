@@ -1500,6 +1500,26 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 93: Manifested Component Graph Mermaid Asset
+
+- Added `html/assets/component-graph.mmd` as a generated portable export asset
+  containing the component graph Mermaid source.
+- The asset is now included in `manifest.json`, `EXPORT-README.md`, HTML export
+  integrity verification, and the ZIP bundle, so the graph source survives
+  offline handoff even without clicking the browser download button.
+- Source pattern: CodeBoarding preserves generated diagram artifacts alongside
+  HTML output; RepoTutor now keeps the Mermaid graph as a first-class portable
+  asset.
+- RED smoke `/tmp/repotutor-graph-asset-red.nJ27gn` failed on the old behavior
+  with `missing component-graph.mmd asset`.
+- GREEN smoke generated `/tmp/repotutor-graph-asset-smoke.NCKVXv`; generated
+  `assets/component-graph.mmd` contained `flowchart`, `manifest.json` and
+  `EXPORT-README.md` listed the asset, `verify-export` checked at least 20
+  files, and ZIP export included `assets/component-graph.mmd`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

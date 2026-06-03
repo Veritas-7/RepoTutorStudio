@@ -74,14 +74,14 @@ const checks = [
     "packages/core/src/session-verifier.ts",
     "apps/cli/src/index.ts",
     "packages/shared/src/schemas.ts"
-  ], ["index.html", "quiz.html", "quiz-print.html", "print-answer-key", "정답지", "quiz-section-toolbar", "data-quiz-section-filter", "data-quiz-difficulty-filter", "data-quiz-section", "data-quiz-difficulty", "wrong-notes.html", "evidence.html", "session-verification.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints", "writeHtmlZipBundle", "verifyHtmlExportManifest", "verifyStudySessionArtifacts", "integrityOk", "integrityCheckedFiles", "--format html|zip", "--summary-format json|markdown", "html-report.zip", "file-nav-toolbar", "data-file-ext-filter", "data-file-dir-filter", "data-source-evidence-filter", "data-source-evidence", "data-evidence-kind-filter", "@media print", "print-color-adjust", "Use browser print preview", "integrity", "sha256", "bytes"]),
+  ], ["index.html", "quiz.html", "quiz-print.html", "print-answer-key", "정답지", "quiz-section-toolbar", "data-quiz-section-filter", "data-quiz-difficulty-filter", "data-quiz-section", "data-quiz-difficulty", "wrong-notes.html", "evidence.html", "session-verification.html", "assets/style.css", "assets/app.js", "assets/component-graph.mmd", "manifest.json", "EXPORT-README.md", "entrypoints", "writeHtmlZipBundle", "verifyHtmlExportManifest", "verifyStudySessionArtifacts", "integrityOk", "integrityCheckedFiles", "--format html|zip", "--summary-format json|markdown", "html-report.zip", "file-nav-toolbar", "data-file-ext-filter", "data-file-dir-filter", "data-source-evidence-filter", "data-source-evidence", "data-evidence-kind-filter", "@media print", "print-color-adjust", "Use browser print preview", "integrity", "sha256", "bytes"]),
   check("source-backed component graph", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
     "packages/core/src/pipeline.ts",
     "packages/core/src/markdown.ts",
     "packages/html/src/templates.ts"
-  ], ["ComponentGraphReportSchema", "component-graph-report.json", "component-graph.md", "component-graph.html", "mermaid", "component-graph-download-toolbar", "data-download-mermaid", "component-graph-mermaid", "data-graph-filter", "data-node-type", "nodeTypeCounts", "topConnectedNodes"]),
+  ], ["ComponentGraphReportSchema", "component-graph-report.json", "component-graph.md", "component-graph.html", "component-graph.mmd", "mermaid", "component-graph-download-toolbar", "data-download-mermaid", "component-graph-mermaid", "data-graph-filter", "data-node-type", "nodeTypeCounts", "topConnectedNodes"]),
   check("incremental re-analysis", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
