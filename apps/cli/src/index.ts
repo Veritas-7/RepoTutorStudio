@@ -51,6 +51,26 @@ interface ListRow {
   verificationChecks: Record<string, boolean> | null;
 }
 
+interface ListSummary {
+  total: number;
+  verificationStatus: Record<string, number>;
+  modes: Record<string, number>;
+  levels: Record<string, number>;
+  htmlTargets: {
+    complete: number;
+    missing: number;
+  };
+  quiz: {
+    scored: number;
+    unattempted: number;
+    wrong: number;
+    averageScore: number | null;
+    minScore: number | null;
+    maxScore: number | null;
+  };
+  repos: Record<string, number>;
+}
+
 const LIST_FIELDS = [
   "sessionId",
   "repo",
@@ -391,9 +411,16 @@ async function list(parsed: ParsedArgs): Promise<void> {
   const sortedRows = sort ? sortSessionRows(targetRows, sort) : targetRows;
   const limit = optionalPositiveIntegerFlag(parsed.flags.limit, "limit");
   const filtered = limit === null ? sortedRows : sortedRows.slice(0, limit);
+  const format = stringFlag(parsed.flags.format) ?? "json";
+  if (parsed.flags.summary === true) {
+    if (parsed.flags.fields !== undefined || parsed.flags["field-preset"] !== undefined) throw new Error("list cannot combine --summary with --fields or --field-preset.");
+    if (!["json", "markdown"].includes(format)) throw new Error("list --summary supports --format json or markdown.");
+    const summary = listSummary(filtered);
+    console.log(format === "markdown" ? listSummaryMarkdown(summary) : JSON.stringify(summary, null, 2));
+    return;
+  }
   const fields = listFieldSelection(parsed.flags.fields, parsed.flags["field-preset"]);
   const projected = fields ? projectListRows(filtered, fields) : filtered;
-  const format = stringFlag(parsed.flags.format) ?? "json";
   if (!["json", "markdown", "jsonl", "csv"].includes(format)) throw new Error("list supports --format json, markdown, jsonl, or csv.");
   if (format === "markdown") {
     console.log(fields ? listFieldsMarkdown(projected, fields) : listMarkdown(filtered));
@@ -479,6 +506,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       sort: ["newest", "oldest", "score-desc", "score-asc"],
       fields: [...LIST_FIELDS],
       fieldPresets: LIST_FIELD_PRESET_NAMES,
+      summary: true,
       repo: true,
       createdFrom: true,
       createdTo: true,
@@ -975,6 +1003,75 @@ function listJsonl(rows: unknown[]): string {
   return rows.map((row) => JSON.stringify(row)).join("\n") + (rows.length > 0 ? "\n" : "");
 }
 
+function listSummary(rows: ListRow[]): ListSummary {
+  const scores = rows.map((row) => row.score).filter((score): score is number => score !== null);
+  return {
+    total: rows.length,
+    verificationStatus: countBy(rows, (row) => row.verificationStatus),
+    modes: countBy(rows, (row) => row.mode),
+    levels: countBy(rows, (row) => row.level),
+    htmlTargets: {
+      complete: rows.filter((row) => row.htmlTargetsComplete).length,
+      missing: rows.filter((row) => !row.htmlTargetsComplete).length
+    },
+    quiz: {
+      scored: scores.length,
+      unattempted: rows.length - scores.length,
+      wrong: rows.filter((row) => row.wrong > 0).length,
+      averageScore: scores.length === 0 ? null : Number((scores.reduce((sum, score) => sum + score, 0) / scores.length).toFixed(2)),
+      minScore: scores.length === 0 ? null : Math.min(...scores),
+      maxScore: scores.length === 0 ? null : Math.max(...scores)
+    },
+    repos: countBy(rows, (row) => row.repo)
+  };
+}
+
+function countBy<T>(items: T[], key: (item: T) => string): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const item of items) {
+    const value = key(item);
+    counts[value] = (counts[value] ?? 0) + 1;
+  }
+  return counts;
+}
+
+function listSummaryMarkdown(summary: ListSummary): string {
+  return [
+    "# RepoTutor Session Summary",
+    "",
+    `- Total sessions: ${summary.total}`,
+    `- HTML targets complete: ${summary.htmlTargets.complete}`,
+    `- HTML targets missing: ${summary.htmlTargets.missing}`,
+    `- Scored sessions: ${summary.quiz.scored}`,
+    `- Unattempted sessions: ${summary.quiz.unattempted}`,
+    `- Wrong-answer sessions: ${summary.quiz.wrong}`,
+    `- Average score: ${summary.quiz.averageScore ?? "none"}`,
+    `- Min score: ${summary.quiz.minScore ?? "none"}`,
+    `- Max score: ${summary.quiz.maxScore ?? "none"}`,
+    "",
+    "## Verification Status",
+    "",
+    countMarkdown(summary.verificationStatus),
+    "",
+    "## Modes",
+    "",
+    countMarkdown(summary.modes),
+    "",
+    "## Levels",
+    "",
+    countMarkdown(summary.levels),
+    "",
+    "## Repositories",
+    "",
+    countMarkdown(summary.repos)
+  ].join("\n");
+}
+
+function countMarkdown(counts: Record<string, number>): string {
+  const entries = Object.entries(counts).sort(([left], [right]) => left.localeCompare(right));
+  return entries.length === 0 ? "- none" : entries.map(([key, value]) => `- ${key}: ${value}`).join("\n");
+}
+
 function listFieldsMarkdown(rows: Array<Partial<ListRow>>, fields: ListField[]): string {
   const body = rows.length === 0
     ? "_No sessions found._"
@@ -1290,7 +1387,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
+  list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);
