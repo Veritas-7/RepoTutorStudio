@@ -805,6 +805,17 @@
         "repo-tutor doctor runtime metadata",
         "repo-tutor doctor --format markdown Runtime section"
       ]
+    },
+    {
+      "name": "mode-filtered session lists",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --mode quick|standard|deep|all",
+        "doctor listFilters mode metadata"
+      ]
     }
   ],
   "verification": {
@@ -896,6 +907,7 @@
     "cliExportSummaryMarkdownSmoke": "PASS",
     "cliListPathMarkdownSmoke": "PASS",
     "cliDoctorRuntimeSmoke": "PASS",
+    "cliListModeSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
