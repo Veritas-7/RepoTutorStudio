@@ -239,6 +239,10 @@ to a private repository, and preserve resumable state in this file.
   output. CLI `repo-tutor list --output <file>` now writes JSON, JSONL, CSV,
   Markdown, or summary output directly to a file and returns the absolute output
   path.
+- 2026-06-04: Applied a seventy-sixth AutoResearch upgrade: saved session list
+  output manifests. CLI `repo-tutor list --output <file> --output-manifest` now
+  writes a sidecar manifest with format, summary mode, row count, byte count,
+  SHA-256, and timestamp metadata, and returns JSON receipt paths.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -567,6 +571,14 @@ to a private repository, and preserve resumable state in this file.
     output path, saved file contents matched expected headers/totals, `doctor`
     reported output support, and bare `--output` failed closed with
     `output must be a non-empty string`
+  - temp CLI list-output-manifest smoke generated
+    `/tmp/repotutor-list-output-manifest-smoke.glkRlb`; two fixture sessions
+    were created, JSONL score-preset output and Markdown summary output wrote
+    `.manifest.json` sidecars, receipt JSON returned absolute output and
+    manifest paths, manifest `bytes` and `sha256` matched recomputed file
+    contents, summary manifests set `summary: true`, `doctor` reported
+    `outputManifest: true`, and `--output-manifest` without `--output` failed
+    closed with `list requires --output when --output-manifest is used`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -710,6 +722,7 @@ to a private repository, and preserve resumable state in this file.
   - `219c480` field-selected session list output
   - `44730b7` field preset session list output
   - `7935087` session list summary output
+  - `8f09c26` saved session list outputs
 
 ## Next Actions
 

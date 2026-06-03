@@ -1182,6 +1182,25 @@ Local verification:
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
   `cargo check`; pushed content is guarded with staged gitleaks.
 
+### Upgrade 76: Saved Session List Output Manifests
+
+- Added `repo-tutor list --output <file> --output-manifest` so saved list
+  artifacts can carry reproducible sidecar metadata.
+- Manifest sidecars record absolute output and manifest paths, format, summary
+  mode, row count, byte count, SHA-256, and creation timestamp.
+- Added `outputManifest` list-filter metadata to `repo-tutor doctor`.
+- Temp CLI list-output-manifest smoke generated
+  `/tmp/repotutor-list-output-manifest-smoke.glkRlb`; two fixture sessions were
+  created, JSONL score-preset output and Markdown summary output wrote
+  `.manifest.json` sidecars, receipt JSON returned absolute output and manifest
+  paths, manifest `bytes` and `sha256` matched recomputed file contents,
+  summary manifests set `summary: true`, `doctor` reported
+  `outputManifest: true`, and `--output-manifest` without `--output` failed
+  closed with `list requires --output when --output-manifest is used`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
