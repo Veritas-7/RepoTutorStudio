@@ -1666,6 +1666,26 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 100: Learning Path Progress Reset
+
+- Added a `learning-progress-toolbar` reset control to `learning-path.html`
+  with a `data-reset-learning-progress` button labeled `진도 초기화`.
+- The offline JavaScript now clears the learning path progress set with
+  `learningProgress.clear()`, persists the cleared state, and unchecks all
+  `data-learning-step-complete` boxes without requiring a page reload.
+- Source pattern: microsoft/codetour exposes progress reset behavior through
+  `progress.reset(...)`; RepoTutor maps that to a reload-safe browser-local
+  reset action for its static learning path.
+- RED smoke `/tmp/repotutor-learning-reset-red.*` failed on the old behavior
+  with `learning path missing data-reset-learning-progress`.
+- GREEN smoke generated `/tmp/repotutor-learning-reset-smoke.hW6IZB`;
+  generated `learning-path.html` included `data-reset-learning-progress` and
+  `진도 초기화`, while `assets/app.js` included
+  `[data-reset-learning-progress]` and `learningProgress.clear()`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
