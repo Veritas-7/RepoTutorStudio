@@ -321,11 +321,13 @@ async function list(parsed: ParsedArgs): Promise<void> {
   const limit = optionalPositiveIntegerFlag(parsed.flags.limit, "limit");
   const filtered = limit === null ? sortedRows : sortedRows.slice(0, limit);
   const format = stringFlag(parsed.flags.format) ?? "json";
-  if (!["json", "markdown", "jsonl"].includes(format)) throw new Error("list supports --format json, markdown, or jsonl.");
+  if (!["json", "markdown", "jsonl", "csv"].includes(format)) throw new Error("list supports --format json, markdown, jsonl, or csv.");
   if (format === "markdown") {
     console.log(listMarkdown(filtered));
   } else if (format === "jsonl") {
     process.stdout.write(listJsonl(filtered));
+  } else if (format === "csv") {
+    process.stdout.write(listCsv(filtered));
   } else {
     console.log(JSON.stringify(filtered, null, 2));
   }
@@ -384,7 +386,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       verifyExport: ["json", "markdown"],
       verifyEvidence: ["json", "markdown"],
       verifySession: ["json", "markdown"],
-      list: ["json", "markdown", "jsonl"],
+      list: ["json", "markdown", "jsonl", "csv"],
       openTargets: ["json", "markdown"],
       openAll: ["json", "markdown"],
       export: ["html", "zip"],
@@ -865,6 +867,55 @@ function listJsonl(rows: unknown[]): string {
   return rows.map((row) => JSON.stringify(row)).join("\n") + (rows.length > 0 ? "\n" : "");
 }
 
+function listCsv(rows: Array<{
+  sessionId: string;
+  repo: string;
+  createdAt: string;
+  mode: string;
+  level: string;
+  score: number | null;
+  wrong: number;
+  path: string;
+  html: string;
+  htmlTargetsComplete: boolean;
+  missingHtmlTargets: string[];
+  verificationStatus: string;
+}>): string {
+  const header = [
+    "sessionId",
+    "repo",
+    "createdAt",
+    "mode",
+    "level",
+    "score",
+    "wrong",
+    "verificationStatus",
+    "htmlTargetsComplete",
+    "missingHtmlTargets",
+    "path",
+    "html"
+  ];
+  const lines = rows.map((row) => [
+    row.sessionId,
+    row.repo,
+    row.createdAt,
+    row.mode,
+    row.level,
+    row.score === null ? "" : String(row.score),
+    String(row.wrong),
+    row.verificationStatus,
+    String(row.htmlTargetsComplete),
+    row.missingHtmlTargets.join(";"),
+    row.path,
+    row.html
+  ].map(csvCell).join(","));
+  return [header.join(","), ...lines].join("\n") + "\n";
+}
+
+function csvCell(value: string): string {
+  return /[",\n\r]/.test(value) ? `"${value.replaceAll('"', '""')}"` : value;
+}
+
 function doctorMarkdown(payload: DoctorPayload): string {
   const formats = Object.entries(payload.formats)
     .map(([command, values]) => `- ${command}: ${values.join(", ")}`)
@@ -1139,7 +1190,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl
+  list --repo owner/name --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);

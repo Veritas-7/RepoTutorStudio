@@ -1111,6 +1111,18 @@ Local verification:
   rows with session, repo, path, HTML, and passed verification fields, `doctor`
   reported `formats.list` including `jsonl`, and invalid `--format yaml`
   exited 1 with the expanded list format error.
+
+### Upgrade 71: CSV Session List Output
+
+- Added `repo-tutor list --format csv` so session inventories can be opened in
+  spreadsheets or imported into reporting tools without post-processing JSON.
+- Added CSV list format metadata to `repo-tutor doctor`.
+- Temp CLI list-csv smoke generated
+  `/tmp/repotutor-list-csv-smoke,sqqzVc`; two fixture sessions were created
+  under a comma-containing studies root, `list --sort newest --format csv`
+  returned the expected header plus two passed rows, path cells were quoted,
+  `doctor` reported `formats.list` including `csv`, and invalid
+  `--format yaml` exited 1 with the expanded list format error.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
