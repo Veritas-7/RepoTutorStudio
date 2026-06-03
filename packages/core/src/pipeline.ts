@@ -1,0 +1,152 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import { renderStudyHtml } from "@repotutor/html";
+import type { LearnerLevel, QuizAttempt, StudyMode, StudySession, WrongNote } from "@repotutor/shared";
+import { StructuredRunner } from "@repotutor/codex";
+import { analyzeRepository, type AnalysisBundle } from "./scanner.js";
+import { parseSource } from "./intake.js";
+import { ensureDir, pathExists } from "./fs-utils.js";
+import { materializeSession, prepareSession, readJson, updateSessionIndex, writeJson } from "./storage.js";
+import { generateQuiz, writeRenderedHtml } from "./quiz.js";
+import { markdownFiles, readmeStudy } from "./markdown.js";
+
+export interface StudyOptions {
+  source: string;
+  mode?: StudyMode;
+  level?: LearnerLevel;
+  studiesRoot?: string;
+  enableCodex?: boolean;
+}
+
+export interface StudyResult {
+  session: StudySession;
+  analysis: AnalysisBundle;
+}
+
+export async function runStudy(options: StudyOptions): Promise<StudyResult> {
+  const studiesRoot = path.resolve(options.studiesRoot ?? path.join(process.cwd(), "studies"));
+  const source = await parseSource(options.source);
+  const prepared = await prepareSession({ source, studiesRoot, mode: options.mode, level: options.level });
+  await materializeSession(prepared);
+  let session: StudySession = { ...prepared.session, status: "running" };
+  await writeJson(path.join(session.outputPaths.root, "session.json"), session);
+  await ensureSessionDirs(session);
+
+  const codexRunner = new StructuredRunner({ codexDir: session.outputPaths.codex, enableSdk: options.enableCodex });
+  await codexRunner.run({
+    taskName: "PurposeTask",
+    prompt: `Analyze ${session.owner}/${session.repo} for beginner learning. Source files are already filtered for secrets.`,
+    schema: {
+      parse(value: unknown) {
+        return value as { ok: boolean };
+      },
+      safeParse(value: unknown) {
+        return { success: true, data: value as { ok: boolean } };
+      }
+    } as never
+  });
+
+  const analysis = await analyzeRepository(session.outputPaths.source);
+  const quiz = generateQuiz(session, analysis.folderLessons, analysis.fileLessons, analysis.glossary);
+  const wrongNotes: WrongNote[] = [];
+  const attempts: QuizAttempt[] = [];
+  session = {
+    ...session,
+    status: "complete",
+    updatedAt: new Date().toISOString(),
+    quizSummary: {
+      totalQuestions: quiz.totalQuestions,
+      attempts: 0,
+      latestScore: null,
+      wrongCount: 0
+    }
+  };
+
+  await writeAllArtifacts(session, analysis, quiz, wrongNotes, attempts);
+  await updateSessionIndex(studiesRoot, session);
+  return { session, analysis };
+}
+
+export async function listSessions(studiesRoot = path.join(process.cwd(), "studies")): Promise<StudySession[]> {
+  const indexJson = path.join(studiesRoot, "index.json");
+  const sessions: StudySession[] = [];
+  if (await pathExists(indexJson)) {
+    sessions.push(...await readJson<StudySession[]>(indexJson));
+  }
+  const byDate = await fs.readdir(studiesRoot, { withFileTypes: true }).catch(() => []);
+  for (const dateDir of byDate.filter((entry) => entry.isDirectory() && /^\d{4}-\d{2}-\d{2}$/.test(entry.name))) {
+    const datePath = path.join(studiesRoot, dateDir.name);
+    const entries = await fs.readdir(datePath, { withFileTypes: true });
+    for (const entry of entries.filter((item) => item.isDirectory())) {
+      const sessionPath = path.join(datePath, entry.name, "session.json");
+      if (await pathExists(sessionPath)) {
+        const session = await readJson<StudySession>(sessionPath);
+        if (!sessions.some((existing) => existing.sessionId === session.sessionId)) sessions.push(session);
+      }
+    }
+  }
+  return sessions.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export async function loadStudyHtmlInput(sessionRoot: string): Promise<Parameters<typeof renderStudyHtml>[0]> {
+  const session = await readJson<StudySession>(path.join(sessionRoot, "session.json"));
+  return {
+    session,
+    repoMap: await readJson(path.join(sessionRoot, "analysis", "repo-map.json")),
+    languageReport: await readJson(path.join(sessionRoot, "analysis", "language-report.json")),
+    dependencyReport: await readJson(path.join(sessionRoot, "analysis", "dependency-report.json")),
+    purposeReport: await readJson(path.join(sessionRoot, "analysis", "purpose-report.json")),
+    architectureReport: await readJson(path.join(sessionRoot, "analysis", "architecture-report.json")),
+    folderLessons: await readJson(path.join(sessionRoot, "analysis", "folder-lessons.json")),
+    fileLessons: await readJson(path.join(sessionRoot, "analysis", "file-lessons.json")),
+    flowReport: await readJson(path.join(sessionRoot, "analysis", "flow-report.json")),
+    glossary: await readJson(path.join(sessionRoot, "analysis", "glossary.json")),
+    rebuildRoadmap: await readJson(path.join(sessionRoot, "analysis", "rebuild-roadmap.json")),
+    quiz: await readJson(path.join(sessionRoot, "analysis", "quiz.json")),
+    wrongNotes: await pathExists(path.join(sessionRoot, "analysis", "wrong-notes.json")) ? await readJson(path.join(sessionRoot, "analysis", "wrong-notes.json")) : [],
+    attempts: await readAttempts(path.join(sessionRoot, "analysis", "quiz-attempts.jsonl"))
+  };
+}
+
+async function writeAllArtifacts(session: StudySession, analysis: AnalysisBundle, quiz: ReturnType<typeof generateQuiz>, wrongNotes: WrongNote[], attempts: QuizAttempt[]): Promise<void> {
+  await Promise.all([
+    writeJson(path.join(session.outputPaths.root, "session.json"), session),
+    writeJson(path.join(session.outputPaths.analysis, "repo-map.json"), analysis.repoMap),
+    writeJson(path.join(session.outputPaths.analysis, "language-report.json"), analysis.languageReport),
+    writeJson(path.join(session.outputPaths.analysis, "dependency-report.json"), analysis.dependencyReport),
+    writeJson(path.join(session.outputPaths.analysis, "purpose-report.json"), analysis.purposeReport),
+    writeJson(path.join(session.outputPaths.analysis, "architecture-report.json"), analysis.architectureReport),
+    writeJson(path.join(session.outputPaths.analysis, "folder-lessons.json"), analysis.folderLessons),
+    writeJson(path.join(session.outputPaths.analysis, "file-lessons.json"), analysis.fileLessons),
+    writeJson(path.join(session.outputPaths.analysis, "flow-report.json"), analysis.flowReport),
+    writeJson(path.join(session.outputPaths.analysis, "glossary.json"), analysis.glossary),
+    writeJson(path.join(session.outputPaths.analysis, "rebuild-roadmap.json"), analysis.rebuildRoadmap),
+    writeJson(path.join(session.outputPaths.analysis, "quiz.json"), quiz),
+    writeJson(path.join(session.outputPaths.analysis, "wrong-notes.json"), wrongNotes),
+    fs.writeFile(path.join(session.outputPaths.codex, "thread.json"), JSON.stringify({ sessionId: session.sessionId, codexThreadId: session.codexThreadId }, null, 2))
+  ]);
+
+  const markdown = markdownFiles(session, analysis, quiz, wrongNotes);
+  for (const [fileName, content] of Object.entries(markdown)) {
+    await fs.writeFile(path.join(session.outputPaths.markdown, fileName), content);
+  }
+  await fs.writeFile(path.join(session.outputPaths.root, "README.study.md"), readmeStudy(session));
+  const htmlInput = { session, ...analysis, quiz, wrongNotes, attempts };
+  const rendered = renderStudyHtml(htmlInput);
+  await writeRenderedHtml(session.outputPaths.root, rendered);
+}
+
+async function ensureSessionDirs(session: StudySession): Promise<void> {
+  await Promise.all([
+    ensureDir(session.outputPaths.analysis),
+    ensureDir(session.outputPaths.markdown),
+    ensureDir(session.outputPaths.codex),
+    ensureDir(path.join(session.outputPaths.html, "assets"))
+  ]);
+}
+
+async function readAttempts(filePath: string): Promise<QuizAttempt[]> {
+  if (!await pathExists(filePath)) return [];
+  const text = await fs.readFile(filePath, "utf8");
+  return text.split(/\r?\n/).filter(Boolean).map((line) => JSON.parse(line) as QuizAttempt);
+}

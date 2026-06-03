@@ -1,0 +1,30 @@
+{
+  "name": "@repotutor/desktop-tauri",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.node.json && vite build",
+    "typecheck": "tsc -p tsconfig.node.json --noEmit && tsc -p tsconfig.app.json --noEmit",
+    "dev": "vite",
+    "tauri": "tauri",
+    "sidecar": "tsx sidecar/bridge.ts"
+  },
+  "dependencies": {
+    "@repotutor/core": "workspace:*",
+    "@repotutor/shared": "workspace:*",
+    "@tauri-apps/api": "^2.11.0",
+    "lucide-react": "^0.555.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.2",
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.0.16"
+  }
+}

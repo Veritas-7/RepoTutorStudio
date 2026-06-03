@@ -1,0 +1,1388 @@
+# RepoTutor Studio 최종 설계·개발 지시서
+
+너는 지금부터 “RepoTutor Studio”라는 TypeScript + Tauri + Codex 기반 개발자 양성 학습앱을 설계하고 구현해야 한다.
+
+이 문서는 최상위 지시서다. 구현 중 이 문서와 충돌하는 결정을 하지 마라. 애매한 부분은 사용자에게 다시 묻지 말고, 이 문서의 기본값을 따른다. 단, 보안상 위험하거나 사용자의 비밀정보·인증정보가 노출될 수 있는 동작은 반드시 차단하고 안전한 방식으로 대체한다.
+
+============================================================
+0. 제품의 본질
+============================================================
+
+이 앱은 단순 GitHub 요약기가 아니다.
+
+사용자가 GitHub 주소, 로컬 프로젝트 폴더, SKILL.md, 오픈소스 앱, CLI-Anything 대상 프로젝트를 입력하면, 앱은 해당 프로젝트를 분석하고 사용자가 맨땅에서 비슷한 프로젝트를 다시 만들 수 있을 정도로 자세히 가르쳐주는 “개발자 옆자리 튜터” 역할을 해야 한다.
+
+앱은 다음 질문에 반드시 답해야 한다.
+
+1. 이 GitHub 프로젝트의 목적은 무엇인가?
+2. 누가, 어떤 문제를 해결하려고 이 프로젝트를 쓰는가?
+3. 사용된 언어는 무엇인가?
+4. 예를 들어 Python이면 Python은 어떤 언어이며, 다른 언어와 비교한 장단점은 무엇인가?
+5. 이 폴더 구조는 왜 이렇게 생겼는가?
+6. 각 폴더는 어떤 역할을 하는가?
+7. 각 핵심 파일은 왜 존재하며 어떤 책임을 갖는가?
+8. 설정 파일, 의존성 파일, 진입점 파일은 무엇을 의미하는가?
+9. 프로그램 실행 흐름은 어떻게 이어지는가?
+10. 이 프로젝트에 등장하는 개발 용어, 프레임워크, 패턴은 무엇인가?
+11. 사용자가 맨땅에서 비슷한 프로젝트를 만든다면 어떤 순서로 만들어야 하는가?
+12. 학습이 끝난 뒤 무엇을 이해했는지 확인하기 위한 퀴즈는 무엇인가?
+13. 사용자가 틀린 문제는 어떤 개념을 놓친 것이며, 오답노트로 어떻게 복습해야 하는가?
+14. 모든 학습 결과를 날짜별 폴더에 HTML로 저장하여 나중에 이어서 볼 수 있는가?
+
+============================================================
+1. 절대 요구사항
+============================================================
+
+다음 요구사항은 절대 생략하지 마라.
+
+[필수 1] Codex 앱/CLI/IDE에서도 작동해야 한다.
+- 이 제품은 Tauri 앱만 있어서는 안 된다.
+- 반드시 Codex Skill 모드를 제공해야 한다.
+- `.agents/skills/repo-tutor/SKILL.md`를 제공한다.
+- Codex 앱, Codex CLI, Codex IDE extension에서 사용자가 자연어로 “이 GitHub를 학습 리포트로 분석해줘”라고 요청하면 작동해야 한다.
+- Skill은 내부적으로 `repo-tutor` CLI를 호출할 수 있어야 한다.
+- Codex app mode는 GUI 없이도 동작해야 한다.
+
+[필수 2] 단독 Tauri 앱으로도 작동해야 한다.
+- 사용자는 Codex 앱을 직접 열지 않아도 Tauri 데스크톱 앱만으로 학습 분석을 실행할 수 있어야 한다.
+- Tauri WebView 안에서 Codex SDK를 직접 실행하지 마라.
+- Codex SDK는 Node sidecar에서 실행한다.
+- Tauri UI는 Rust command 또는 shell sidecar bridge를 통해 Node sidecar와 통신한다.
+- 단독 앱은 GitHub URL 입력, 분석 실행, 학습 리포트 보기, 퀴즈 풀기, 오답노트 HTML 반영까지 지원해야 한다.
+
+[필수 3] 하나의 분석 엔진을 공유해야 한다.
+- Codex Skill 모드와 Tauri 앱 모드는 서로 다른 구현을 갖지 않는다.
+- 공통 패키지 `packages/core`가 repo 분석, lesson 생성, quiz 생성, HTML export를 담당한다.
+- Tauri 앱은 이 core를 Node sidecar를 통해 호출한다.
+- Codex Skill은 CLI를 통해 같은 core를 호출한다.
+- 같은 입력은 가능한 한 같은 output schema를 만들어야 한다.
+
+[필수 4] 최종 산출물은 날짜별 폴더에 저장해야 한다.
+- 학습 세션마다 독립 폴더를 생성한다.
+- 폴더명은 날짜, GitHub owner, repo, branch, commit hash 일부를 포함한다.
+- 예:
+  `studies/2026-06-03/openai__codex__main__a1b2c3d4/`
+- HTML만 저장하지 말고 JSON 원본, Markdown 중간 결과, Codex 로그도 저장한다.
+- 최종 HTML은 나중에 해당 폴더명과 repo 이름만 봐도 이어서 학습할 수 있어야 한다.
+
+[필수 5] 퀴즈와 오답노트를 구현해야 한다.
+- 학습 분석이 끝나면 자동으로 선택지형 퀴즈를 생성한다.
+- 문제 수는 학습 내용 길이, 폴더 수, 핵심 파일 수, 용어 수, 난이도에 따라 자동 증가해야 한다.
+- 사용자는 Tauri 앱 또는 CLI에서 퀴즈를 풀 수 있어야 한다.
+- 각 문제는 4지선다를 기본으로 한다.
+- 정답, 해설, 관련 학습 섹션 링크를 포함한다.
+- 틀린 문제는 오답노트로 저장한다.
+- 오답노트는 `analysis/wrong-notes.json`, `markdown/wrong-notes.md`, `html/wrong-notes.html`에 반영한다.
+- `html/index.html`에도 오답노트 요약을 추가한다.
+- 사용자가 다시 퀴즈를 풀면 attempt history를 보존한다.
+
+[필수 6] 초보자 친화적으로 설명해야 한다.
+- 모든 설명은 “처음 배우는 사람도 이해할 수 있게” 작성한다.
+- 단, 기술 용어는 피하지 말고 반드시 한국어 설명과 영어 원어를 함께 제공한다.
+- 예:
+  “진입점(entry point)”
+  “의존성(dependency)”
+  “상태 관리(state management)”
+  “샌드박스(sandbox)”
+- 어려운 개념은 비유, 작은 예시, 왜 필요한지, 없으면 어떤 문제가 생기는지를 함께 설명한다.
+
+[필수 7] 임의 오픈소스 코드는 기본적으로 실행하지 않는다.
+- 기본 분석은 read-only static analysis다.
+- `npm install`, `pip install`, `cargo run`, `make`, `docker compose up` 같은 명령은 자동 실행 금지다.
+- 사용자가 명시적으로 승인한 경우에만 실행한다.
+- 실행 전 위험도를 설명하고 승인 로그를 남긴다.
+- `.env`, secret, token, key, credential 파일은 분석·전송·HTML 저장 대상에서 제외한다.
+
+============================================================
+2. 제품명과 기본값
+============================================================
+
+제품명:
+- RepoTutor Studio
+
+기본 언어:
+- UI: 한국어
+- 기술 용어: 한국어 + 영어 병기
+- HTML 리포트: 한국어 기본
+
+기본 학습자 레벨:
+- 완전 초보자
+- 설정에서 초급자, 주니어, 시니어로 변경 가능하게 설계한다.
+
+기본 분석 모드:
+- Standard Study Mode
+
+분석 모드:
+1. Quick Mode
+   - README, package metadata, 상위 폴더 구조 중심
+   - 문제 수 적음
+2. Standard Study Mode
+   - 목적, 언어, 폴더, 핵심 파일, 의존성, 실행 흐름, 용어, 퀴즈 포함
+   - 기본값
+3. Deep Study Mode
+   - 더 많은 파일, 코드 흐름, 재구현 로드맵, 심화 퀴즈 포함
+4. Approved Execution Mode
+   - 사용자가 승인한 명령만 실행
+   - MVP에서는 옵션만 설계하고 기본 비활성화
+
+지원 입력:
+1. GitHub public URL
+2. Local folder
+3. ZIP file
+4. SKILL.md folder
+5. CLI-Anything target app 또는 repo
+6. Private repo는 2차 기능으로 설계만 하고 MVP 필수에서 제외
+
+지원 실행 환경:
+1. Codex app / Codex CLI / Codex IDE extension
+2. Tauri standalone desktop app
+3. Headless CLI
+
+지원 OS:
+- MVP: Windows + macOS
+- 2차: Linux
+
+============================================================
+3. 전체 아키텍처
+============================================================
+
+반드시 다음 구조를 따른다.
+
+RepoTutor Studio
+├─ apps/
+│  ├─ desktop-tauri/
+│  │  ├─ Tauri v2 app
+│  │  ├─ React + TypeScript UI
+│  │  ├─ Rust backend commands
+│  │  └─ Node sidecar 실행
+│  │
+│  └─ cli/
+│     ├─ repo-tutor CLI
+│     ├─ Codex app/CLI/IDE에서 호출 가능
+│     └─ headless 분석 및 퀴즈 실행
+│
+├─ packages/
+│  ├─ core/
+│  │  ├─ repo intake
+│  │  ├─ repo scanner
+│  │  ├─ language detector
+│  │  ├─ dependency detector
+│  │  ├─ architecture analyzer
+│  │  ├─ lesson model builder
+│  │  ├─ quiz generator
+│  │  ├─ wrong-note generator
+│  │  └─ HTML exporter
+│  │
+│  ├─ codex/
+│  │  ├─ @openai/codex-sdk wrapper
+│  │  ├─ thread manager
+│  │  ├─ structured output runner
+│  │  ├─ prompt templates
+│  │  └─ streaming event bridge
+│  │
+│  ├─ shared/
+│  │  ├─ schemas
+│  │  ├─ types
+│  │  ├─ constants
+│  │  └─ path utilities
+│  │
+│  └─ html/
+│     ├─ HTML templates
+│     ├─ CSS
+│     ├─ Mermaid diagram rendering support
+│     └─ static asset builder
+│
+├─ skills/
+│  └─ repo-tutor/
+│     ├─ SKILL.md
+│     ├─ scripts/
+│     ├─ references/
+│     └─ assets/
+│
+├─ adapters/
+│  └─ cli-anything/
+│     ├─ CLI-Anything detection
+│     ├─ generated harness inspection
+│     └─ agent-native CLI learning bridge
+│
+├─ studies/
+│  └─ generated study sessions
+│
+├─ AGENTS.md
+├─ package.json
+├─ pnpm-workspace.yaml
+└─ README.md
+
+============================================================
+4. 실행 모드 상세
+============================================================
+
+4.1 Codex Skill Mode
+
+목표:
+- 사용자가 Codex app, Codex CLI, Codex IDE extension에서 자연어로 이 기능을 호출할 수 있어야 한다.
+
+필수 구성:
+- `skills/repo-tutor/SKILL.md`
+- `.agents/skills/repo-tutor/SKILL.md` 설치 지원
+- `repo-tutor` CLI
+- `repo-tutor study <source>` 명령
+- `repo-tutor quiz <session-id>` 명령
+- `repo-tutor resume <session-id>` 명령
+- `repo-tutor export <session-id>` 명령
+
+Codex 사용 예:
+- “$repo-tutor 이 저장소를 초보자용 학습 리포트로 분석해줘.”
+- “$repo-tutor https://github.com/owner/repo 를 분석하고 퀴즈까지 만들어줘.”
+- “$repo-tutor 이전 학습 세션을 이어서 오답노트 포함 HTML을 갱신해줘.”
+
+SKILL.md는 다음 원칙을 따른다.
+- description은 짧고 명확하게 작성한다.
+- 이 skill이 언제 발동해야 하는지 명확히 쓴다.
+- 본문에는 repo 분석 절차, 출력 형식, 금지사항을 쓴다.
+- 긴 템플릿은 references 폴더로 분리한다.
+- 실행 가능한 반복 작업은 scripts 폴더에 둔다.
+- Skill은 Codex가 판단해서 CLI를 호출하도록 안내해야 한다.
+
+4.2 Tauri Standalone App Mode
+
+목표:
+- 사용자는 Codex app을 따로 조작하지 않고도 Tauri 앱 안에서 모든 작업을 수행할 수 있어야 한다.
+
+구성:
+- Frontend: React + Vite + TypeScript
+- Desktop shell: Tauri v2
+- Backend bridge: Rust commands
+- AI backend: Node sidecar
+- Codex integration: `@openai/codex-sdk`
+- Storage: local filesystem + SQLite
+- Export: HTML + Markdown + JSON
+
+중요 규칙:
+- Codex SDK는 WebView에서 실행하지 않는다.
+- Node sidecar에서 실행한다.
+- Tauri는 sidecar 실행 권한을 최소화한다.
+- 파일 시스템 접근은 앱 workspace와 사용자가 선택한 폴더로 제한한다.
+- 모든 long-running job은 progress event를 UI로 stream한다.
+
+4.3 Headless CLI Mode
+
+목표:
+- GUI 없이도 분석, 퀴즈, HTML export가 가능해야 한다.
+- Codex app/CLI/IDE에서 Skill이 이 CLI를 호출할 수 있어야 한다.
+
+명령어:
+- `repo-tutor study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior`
+- `repo-tutor quiz <session-id> --interactive`
+- `repo-tutor quiz <session-id> --answers answers.json`
+- `repo-tutor resume <session-id>`
+- `repo-tutor export <session-id> --format html`
+- `repo-tutor list`
+- `repo-tutor open <session-id>`
+- `repo-tutor doctor`
+
+============================================================
+5. 데이터 저장 구조
+============================================================
+
+학습 세션 폴더 구조는 반드시 다음 형태를 따른다.
+
+studies/
+└─ YYYY-MM-DD/
+   └─ owner__repo__branch__commit8/
+      ├─ session.json
+      ├─ source/
+      │  └─ cloned or copied source snapshot
+      ├─ analysis/
+      │  ├─ repo-map.json
+      │  ├─ language-report.json
+      │  ├─ dependency-report.json
+      │  ├─ purpose-report.json
+      │  ├─ architecture-report.json
+      │  ├─ folder-lessons.json
+      │  ├─ file-lessons.json
+      │  ├─ flow-report.json
+      │  ├─ glossary.json
+      │  ├─ rebuild-roadmap.json
+      │  ├─ quiz.json
+      │  ├─ quiz-attempts.jsonl
+      │  └─ wrong-notes.json
+      ├─ markdown/
+      │  ├─ overview.md
+      │  ├─ language.md
+      │  ├─ architecture.md
+      │  ├─ folders.md
+      │  ├─ files.md
+      │  ├─ flow.md
+      │  ├─ glossary.md
+      │  ├─ rebuild.md
+      │  ├─ quiz.md
+      │  └─ wrong-notes.md
+      ├─ codex/
+      │  ├─ thread.json
+      │  ├─ prompts.jsonl
+      │  ├─ events.jsonl
+      │  └─ structured-outputs.jsonl
+      ├─ html/
+      │  ├─ index.html
+      │  ├─ overview.html
+      │  ├─ language.html
+      │  ├─ architecture.html
+      │  ├─ folders.html
+      │  ├─ files.html
+      │  ├─ flow.html
+      │  ├─ glossary.html
+      │  ├─ rebuild.html
+      │  ├─ quiz.html
+      │  ├─ wrong-notes.html
+      │  └─ assets/
+      │     ├─ style.css
+      │     └─ app.js
+      └─ README.study.md
+
+session.json 필수 필드:
+- sessionId
+- createdAt
+- updatedAt
+- sourceType
+- sourceUrl
+- localSourcePath
+- owner
+- repo
+- branch
+- commitHash
+- studyMode
+- learnerLevel
+- language
+- status
+- outputPaths
+- codexThreadId
+- quizSummary
+- wrongNoteSummary
+
+============================================================
+6. 분석 파이프라인
+============================================================
+
+분석은 반드시 다음 순서로 진행한다.
+
+STEP 1. Intake
+- 입력이 GitHub URL인지, 로컬 폴더인지, ZIP인지, SKILL.md인지 판별한다.
+- GitHub URL이면 owner/repo/branch를 파싱한다.
+- sessionId를 생성한다.
+- 저장 폴더를 만든다.
+
+STEP 2. Fetch / Copy
+- GitHub public repo는 shallow clone을 기본으로 한다.
+- local folder는 source 폴더로 복사하거나 read-only reference로 연결한다.
+- ZIP은 압축 해제 후 source 폴더로 저장한다.
+- 실패 시 사용자가 이해 가능한 오류를 낸다.
+
+STEP 3. Pre-scan
+- 총 파일 수
+- 총 폴더 수
+- 총 크기
+- 확장자 분포
+- 언어 후보
+- 제외 대상 파일
+- lockfile, binary, image, minified file 탐지
+- secret 후보 파일 탐지
+
+제외 기본 규칙:
+- `.git`
+- `node_modules`
+- `.venv`
+- `venv`
+- `dist`
+- `build`
+- `target`
+- `.next`
+- `.turbo`
+- `.cache`
+- binary files
+- images
+- videos
+- large lockfiles는 요약만
+- `.env`
+- `.env.*`
+- `*.pem`
+- `*.key`
+- `id_rsa`
+- credential/token/secret이 의심되는 파일
+
+STEP 4. Repo Map 생성
+- 폴더 트리를 생성한다.
+- depth 기본값은 4다.
+- 너무 큰 repo는 중요 폴더 중심으로 축약한다.
+- 각 폴더에 파일 수, 대표 파일, 추정 역할을 붙인다.
+
+STEP 5. Language Detection
+- 확장자 기반 1차 분석
+- package/config 기반 2차 분석
+- 주요 언어와 보조 언어를 구분한다.
+- 각 언어가 프로젝트에서 맡는 역할을 설명한다.
+- 예:
+  TypeScript: UI와 앱 로직
+  Rust: Tauri backend
+  Python: 분석 스크립트
+  HTML/CSS: 리포트 출력
+
+STEP 6. Dependency Detection
+- package.json
+- pnpm-lock.yaml
+- yarn.lock
+- package-lock.json
+- pyproject.toml
+- requirements.txt
+- Cargo.toml
+- go.mod
+- composer.json
+- Gemfile
+- Dockerfile
+- docker-compose.yml
+- Makefile
+- GitHub Actions workflow
+등을 분석한다.
+
+각 의존성에 대해:
+- 이름
+- 역할
+- 왜 필요한지
+- 초보자용 설명
+- 없으면 무엇이 불편한지
+를 정리한다.
+
+STEP 7. Purpose Analysis
+- README
+- docs
+- package metadata
+- repository description
+- examples
+- tests
+- 주요 entrypoint
+를 기반으로 프로젝트 목적을 분석한다.
+
+출력:
+- 한 줄 요약
+- 긴 설명
+- 대상 사용자
+- 해결하는 문제
+- 주요 기능
+- 비슷한 앱/라이브러리 유형
+- 초보자용 비유
+
+STEP 8. Architecture Analysis
+- 폴더 구조가 왜 그렇게 설계되었는지 설명한다.
+- 계층형 구조, feature-based 구조, package-based 구조, monorepo 구조, MVC, clean architecture, plugin architecture 등을 추론하되 단정하지 말고 근거를 함께 쓴다.
+- 폴더 이름만 보고 억지 해석하지 말고 파일과 설정 근거를 같이 사용한다.
+
+STEP 9. Folder Lessons
+각 폴더에 대해 다음 필드를 생성한다.
+- folderPath
+- role
+- beginnerExplanation
+- whyItExists
+- whatWouldBreakIfRemoved
+- relatedFolders
+- importantFiles
+- designReasoning
+- rebuildAdvice
+
+STEP 10. File Lessons
+모든 파일을 분석하지 않는다.
+중요 파일을 선별한다.
+
+중요 파일 기준:
+- entrypoint
+- config
+- package/dependency manifest
+- routing file
+- main component
+- core domain logic
+- API handler
+- state management
+- build/deploy config
+- tests showing behavior
+- Skill files
+- agent instructions
+- CLI entry files
+
+각 파일에 대해:
+- filePath
+- role
+- beginnerExplanation
+- whyItExists
+- keyExports
+- keyImports
+- relatedFiles
+- executionFlowPosition
+- rebuildAdvice
+- glossaryTerms
+를 생성한다.
+
+STEP 11. Flow Analysis
+- 앱 시작 흐름
+- CLI 실행 흐름
+- 주요 함수 호출 흐름
+- 데이터 흐름
+- 사용자 입력 → 처리 → 출력 흐름
+을 설명한다.
+
+가능하면 Mermaid 다이어그램을 생성한다.
+
+STEP 12. Glossary
+학습 중 나온 모든 주요 용어를 정리한다.
+
+각 용어는 다음 구조를 갖는다.
+- termKo
+- termEn
+- simpleDefinition
+- projectSpecificMeaning
+- exampleFromRepo
+- relatedTerms
+- difficulty
+- reviewPriority
+
+STEP 13. Rebuild Roadmap
+사용자가 맨땅에서 비슷한 프로젝트를 만들 수 있도록 단계별 계획을 만든다.
+
+로드맵은 다음 레벨로 나눈다.
+1. 개념 이해
+2. 최소 프로젝트 생성
+3. 폴더 구조 설계
+4. 핵심 기능 1개 구현
+5. 설정 파일 작성
+6. 실행 흐름 연결
+7. 테스트 추가
+8. 문서화
+9. 확장 기능 추가
+10. 원본 repo와 비교
+
+각 단계는:
+- 목표
+- 해야 할 일
+- 왜 필요한지
+- 관련 원본 폴더/파일
+- 예상 실수
+- 완료 기준
+을 포함한다.
+
+STEP 14. Quiz Generation
+- 모든 학습 결과를 바탕으로 선택지형 퀴즈를 생성한다.
+- 문제 수는 학습량에 따라 자동 조정한다.
+- 퀴즈는 학습 리포트 생성 후 반드시 생성한다.
+
+STEP 15. HTML Export
+- 모든 JSON/Markdown 결과를 HTML로 변환한다.
+- index.html은 전체 목차와 요약을 제공한다.
+- 각 섹션별 HTML 페이지를 만든다.
+- quiz.html과 wrong-notes.html을 포함한다.
+- HTML은 인터넷 연결 없이 열려야 한다.
+- CSS와 필요한 JS는 html/assets에 저장한다.
+
+STEP 16. Resume Index
+- 앱 전체 index DB에 세션을 등록한다.
+- repo 이름, 날짜, owner, branch, commit, 학습 모드, 퀴즈 점수, 오답 개수를 검색 가능하게 한다.
+
+============================================================
+7. 퀴즈 엔진 상세 설계
+============================================================
+
+7.1 문제 수 산정
+
+문제 수는 고정값이 아니다. 학습량에 따라 늘어나야 한다.
+
+기본 공식:
+- base = 5
+- folderFactor = 중요한 폴더 수 * 0.8
+- fileFactor = 핵심 파일 수 * 0.6
+- glossaryFactor = 용어 수 * 0.35
+- sectionFactor = 학습 섹션 수 * 1.2
+- modeFactor:
+  quick = 0.7
+  standard = 1.0
+  deep = 1.4
+
+rawCount = ceil((base + folderFactor + fileFactor + glossaryFactor + sectionFactor) * modeFactor)
+
+최종 문제 수:
+- quick: 최소 5, 최대 15
+- standard: 최소 10, 최대 35
+- deep: 최소 20, 최대 60
+
+예:
+- 작은 repo: 5~10문제
+- 중간 repo: 15~25문제
+- 큰 repo: 30~60문제
+
+7.2 문제 유형 비율
+
+퀴즈는 다음 비율로 만든다.
+
+- 프로젝트 목적 이해: 10%
+- 언어/기술 스택 이해: 15%
+- 폴더 구조 이해: 20%
+- 핵심 파일 역할 이해: 20%
+- 실행 흐름 이해: 15%
+- 용어 이해: 10%
+- 재구현 판단: 10%
+
+7.3 문제 난이도
+
+난이도는 3단계로 구성한다.
+
+- easy:
+  용어, 역할, 단순 개념 확인
+- medium:
+  왜 그렇게 설계했는지, 어떤 파일과 연결되는지 확인
+- hard:
+  맨땅에서 만들 때 어떤 순서로 구현해야 하는지, 구조를 바꾸면 어떤 문제가 생기는지 확인
+
+기본 비율:
+- easy 40%
+- medium 40%
+- hard 20%
+
+7.4 문제 형식
+
+모든 문제는 기본적으로 4지선다다.
+
+QuizQuestion schema:
+- id
+- section
+- difficulty
+- question
+- choices
+  - A
+  - B
+  - C
+  - D
+- correctChoice
+- explanation
+- whyOtherChoicesAreWrong
+- relatedLessonPath
+- relatedHtmlAnchor
+- glossaryTerms
+- reviewPriority
+
+7.5 퀴즈 응시
+
+Tauri 앱:
+- 사용자는 UI에서 선택지를 클릭한다.
+- 제출 후 즉시 채점한다.
+- 틀린 문제는 오답노트 후보로 표시한다.
+- 전체 제출 후 HTML을 갱신한다.
+
+CLI:
+- `repo-tutor quiz <session-id> --interactive`
+- 터미널에서 A/B/C/D를 입력한다.
+- 완료 후 점수와 오답노트 경로를 출력한다.
+- HTML을 자동 갱신한다.
+
+7.6 오답노트 생성
+
+틀린 문제마다 다음 정보를 저장한다.
+
+WrongNote schema:
+- questionId
+- question
+- selectedChoice
+- correctChoice
+- explanation
+- mistakeReason
+- relatedConcepts
+- relatedFolderOrFile
+- relatedLessonPath
+- reviewText
+- miniLesson
+- retryQuestion
+- createdAt
+- attemptNumber
+- resolved
+
+mistakeReason은 다음 중 하나 이상으로 분류한다.
+- 용어 이해 부족
+- 폴더 역할 혼동
+- 파일 책임 혼동
+- 실행 흐름 이해 부족
+- 언어/프레임워크 개념 부족
+- 설계 의도 이해 부족
+- 재구현 순서 이해 부족
+
+오답노트 HTML에는 다음을 포함한다.
+- 틀린 문제
+- 내가 고른 답
+- 정답
+- 왜 틀렸는지
+- 다시 읽어야 할 학습 섹션
+- 3~7문장 미니 강의
+- 다시 풀어볼 유사 문제
+- 복습 체크박스
+
+7.7 HTML 반영
+
+퀴즈 결과 후 반드시 다음 파일을 갱신한다.
+- `analysis/quiz-attempts.jsonl`
+- `analysis/wrong-notes.json`
+- `markdown/wrong-notes.md`
+- `html/wrong-notes.html`
+- `html/quiz.html`
+- `html/index.html`
+
+index.html에는 다음 요약을 추가한다.
+- 총 문제 수
+- 맞힌 문제 수
+- 틀린 문제 수
+- 점수
+- 취약 개념 Top 5
+- 오답노트 링크
+- 다시 볼 폴더/파일 추천
+
+============================================================
+8. HTML 리포트 상세 설계
+============================================================
+
+HTML은 보기 좋아야 하며, 나중에 이어서 학습하기 쉬워야 한다.
+
+index.html 구성:
+1. 학습 세션 정보
+   - repo 이름
+   - URL
+   - 날짜
+   - branch
+   - commit
+   - 학습 모드
+   - 학습자 레벨
+
+2. 프로젝트 요약
+   - 한 줄 설명
+   - 긴 설명
+   - 대상 사용자
+   - 해결하는 문제
+
+3. 학습 지도
+   - 전체 목차
+   - 추천 학습 순서
+   - 중요도 높은 폴더/파일
+
+4. 언어와 기술 스택
+   - 언어 비율
+   - 각 언어 역할
+   - 다른 언어와 비교한 장단점
+
+5. 폴더 구조
+   - 폴더 트리
+   - 설계 의도
+   - 폴더별 역할
+
+6. 핵심 파일
+   - 파일별 역할
+   - 왜 존재하는지
+   - 관련 파일
+
+7. 실행 흐름
+   - 시작점
+   - 주요 흐름
+   - Mermaid 다이어그램
+
+8. 용어 사전
+   - 한국어/영어 병기
+   - 쉬운 설명
+   - 프로젝트 안에서의 의미
+
+9. 맨땅에서 따라 만들기
+   - 단계별 로드맵
+   - 각 단계 완료 기준
+   - 예상 실수
+
+10. 퀴즈
+   - 문제 수
+   - 응시 상태
+   - 점수
+   - quiz.html 링크
+
+11. 오답노트
+   - 틀린 문제 요약
+   - 취약 개념
+   - wrong-notes.html 링크
+
+HTML 디자인 원칙:
+- 왼쪽에 목차
+- 오른쪽 또는 상단에 검색
+- 코드 블록은 syntax highlighting 지원
+- 긴 설명은 접기/펼치기 지원
+- 폴더 트리는 시각적으로 구분
+- 초보자 설명과 기술 설명을 분리
+- 각 섹션마다 “왜 중요한가?”를 포함
+- 모든 파일/폴더는 anchor link를 가진다.
+
+정적 HTML 제한:
+- 일반 브라우저에서 열린 HTML은 로컬 파일을 직접 수정할 수 없다.
+- 따라서 퀴즈 응시 후 HTML 갱신은 Tauri 앱 또는 CLI가 담당한다.
+- HTML 자체는 결과 보기와 복습용으로 설계한다.
+
+============================================================
+9. Codex SDK 통합 설계
+============================================================
+
+Codex SDK는 packages/codex에서만 직접 사용한다.
+
+필수 컴포넌트:
+- CodexClient
+- CodexThreadManager
+- StructuredRunner
+- StreamingEventBridge
+- PromptTemplateRegistry
+- OutputSchemaValidator
+
+Codex 실행 원칙:
+- 한 번에 repo 전체를 던지지 않는다.
+- 작은 task로 나누어 실행한다.
+- 각 task는 structured JSON output을 요구한다.
+- 결과는 schema validation을 통과해야 한다.
+- 실패하면 retry하되, 같은 프롬프트를 무한 반복하지 않는다.
+- Codex event는 codex/events.jsonl에 저장한다.
+- prompt와 output은 codex/prompts.jsonl, codex/structured-outputs.jsonl에 저장한다.
+
+Codex task 목록:
+1. PurposeTask
+2. LanguageTutorTask
+3. DependencyTutorTask
+4. ArchitectureTask
+5. FolderLessonTask
+6. FileLessonTask
+7. FlowTask
+8. GlossaryTask
+9. RebuildRoadmapTask
+10. QuizGenerationTask
+11. WrongNoteGenerationTask
+12. HtmlReviewTask
+
+중요:
+- Codex에게 secret 파일 내용을 보내지 마라.
+- 대형 파일 전체를 보내지 마라.
+- 분석 근거 파일 경로를 함께 제공하라.
+- 추론한 내용은 “추론”임을 표시하라.
+- 확실한 내용과 추론을 구분하라.
+
+============================================================
+10. CLI-Anything 어댑터 설계
+============================================================
+
+CLI-Anything은 core dependency가 아니다.
+선택 기능이다.
+
+사용 목적:
+- GUI 중심 오픈소스 앱이나 복잡한 소프트웨어를 agent가 제어 가능한 CLI harness로 만들고 싶을 때 사용한다.
+- 생성된 CLI harness 자체도 학습 대상이 된다.
+- CLI-Anything으로 만든 명령어 구조, wrapper 구조, 자동화 가능성을 설명한다.
+
+어댑터 기능:
+- CLI-Anything 설치 여부 확인
+- CLI-Hub 사용 가능 여부 확인
+- 대상 repo가 CLI harness 생성에 적합한지 판단
+- 생성된 `agent-harness` 폴더 분석
+- 생성된 CLI 명령어를 학습 리포트에 포함
+
+금지:
+- RepoTutor의 기본 GitHub 학습 분석을 CLI-Anything에 의존시키지 마라.
+- CLI-Anything이 없어도 RepoTutor는 정상 작동해야 한다.
+
+============================================================
+11. Tauri 앱 UI 설계
+============================================================
+
+11.1 메인 레이아웃
+
+좌측 사이드바:
+- 학습 세션 목록
+- 날짜
+- repo 이름
+- 점수
+- 오답 수
+- 검색
+
+상단 입력 영역:
+- GitHub URL 입력
+- Local folder 선택
+- ZIP 선택
+- SKILL.md 폴더 선택
+- 분석 모드 선택
+- 학습자 레벨 선택
+- 시작 버튼
+
+중앙:
+- 현재 학습 리포트
+- 단계별 진행 상태
+- HTML preview
+
+우측:
+- 튜터 패널
+- 선택한 용어 설명
+- 선택한 폴더/파일 질문
+- “HTML에 추가” 버튼
+
+하단:
+- 진행 로그
+- Codex event summary
+- 오류 메시지
+- 취소 버튼
+
+11.2 탭
+
+- Overview
+- Language
+- Architecture
+- Folders
+- Files
+- Flow
+- Glossary
+- Rebuild
+- Quiz
+- Wrong Notes
+- HTML Preview
+- Raw Logs
+
+11.3 주요 버튼
+
+- 분석 시작
+- 분석 중지
+- HTML 열기
+- 퀴즈 풀기
+- 오답노트 보기
+- 다시 학습하기
+- 특정 폴더 더 자세히 설명
+- 특정 파일 더 자세히 설명
+- 이 부분을 맨땅에서 만드는 법 설명
+- 현재 대화를 HTML에 추가
+
+============================================================
+12. 보안 정책
+============================================================
+
+보안은 제품 기능보다 우선한다.
+
+기본 정책:
+- repo 분석은 read-only
+- 임의 명령 자동 실행 금지
+- secret 파일 제외
+- 민감 파일 HTML 저장 금지
+- Codex에 secret 전송 금지
+- 사용자가 선택한 workspace 밖 파일 접근 금지
+- Tauri fs scope 최소화
+- Tauri shell scope 최소화
+- sidecar argument allowlist 사용
+- 모든 승인 명령은 로그 저장
+- 네트워크 요청은 GitHub fetch와 Codex 호출 등 필요한 범위로 제한
+
+위험 명령 예:
+- npm install
+- pnpm install
+- yarn install
+- pip install
+- poetry install
+- cargo run
+- cargo test
+- make
+- docker
+- docker compose
+- curl | sh
+- powershell irm | iex
+- rm -rf
+- chmod +x unknown script
+
+위험 명령은 반드시 다음 UI를 거쳐야 한다.
+1. 실행하려는 명령 표시
+2. 왜 필요한지 설명
+3. 위험도 표시
+4. 실행 경로 표시
+5. 사용자 승인
+6. 실행 로그 저장
+
+============================================================
+13. 주요 TypeScript Schema
+============================================================
+
+반드시 schema-first로 개발한다.
+Zod 또는 동등한 validator를 사용한다.
+
+핵심 schema:
+- StudySession
+- SourceInput
+- RepoMap
+- LanguageReport
+- DependencyReport
+- PurposeReport
+- ArchitectureReport
+- FolderLesson
+- FileLesson
+- FlowReport
+- GlossaryTerm
+- RebuildRoadmap
+- Quiz
+- QuizQuestion
+- QuizAttempt
+- WrongNote
+- HtmlExportManifest
+- CodexRunLog
+
+모든 Codex structured output은 schema validation을 통과해야 저장한다.
+Validation 실패 시:
+1. 오류를 기록한다.
+2. Codex에게 schema 오류를 제공하고 수정 요청한다.
+3. 2회 실패하면 partial result로 저장하고 사용자에게 표시한다.
+
+============================================================
+14. 개발 순서
+============================================================
+
+Phase 0. Repository Setup
+- pnpm workspace 구성
+- apps/desktop-tauri 생성
+- apps/cli 생성
+- packages/core 생성
+- packages/codex 생성
+- packages/shared 생성
+- packages/html 생성
+- skills/repo-tutor 생성
+- AGENTS.md 작성
+- lint/test/build script 작성
+
+완료 기준:
+- `pnpm install`
+- `pnpm build`
+- `pnpm test`
+가 기본 통과해야 한다.
+
+Phase 1. Core Static Analyzer
+- 입력 판별
+- GitHub clone
+- local folder scan
+- ignore rule
+- repo-map 생성
+- language-report 생성
+- dependency-report 생성
+
+완료 기준:
+- 작은 public GitHub repo를 넣으면 analysis JSON이 생성된다.
+- secret 파일이 제외된다.
+- 대형 폴더가 제한된다.
+
+Phase 2. Session Storage
+- 날짜별 폴더 생성
+- session.json 저장
+- analysis JSON 저장
+- markdown 폴더 생성
+- html 폴더 생성
+- session list index 저장
+
+완료 기준:
+- 같은 repo를 여러 번 분석해도 세션이 충돌하지 않는다.
+- repo 이름만 보고 이어서 열 수 있다.
+
+Phase 3. Codex Integration
+- @openai/codex-sdk wrapper 작성
+- thread 생성
+- thread resume
+- runStreamed event 처리
+- structured output 처리
+- prompts/events 로그 저장
+
+완료 기준:
+- PurposeTask 하나가 structured JSON으로 성공한다.
+- 실패 시 retry와 validation error logging이 작동한다.
+
+Phase 4. Lesson Generation
+- PurposeTask
+- LanguageTutorTask
+- DependencyTutorTask
+- ArchitectureTask
+- FolderLessonTask
+- FileLessonTask
+- FlowTask
+- GlossaryTask
+- RebuildRoadmapTask 구현
+
+완료 기준:
+- Standard mode에서 overview, language, architecture, folders, files, flow, glossary, rebuild 결과가 생성된다.
+
+Phase 5. HTML Export
+- HTML templates
+- CSS
+- index.html
+- section pages
+- anchor links
+- Mermaid text rendering
+- README.study.md 생성
+
+완료 기준:
+- HTML을 브라우저에서 열면 전체 학습 자료를 볼 수 있다.
+- 인터넷 없이도 기본 스타일이 적용된다.
+
+Phase 6. Quiz Engine
+- quiz count calculator
+- QuizGenerationTask
+- quiz.json
+- Tauri quiz UI
+- CLI quiz interactive mode
+- scoring
+- quiz-attempts.jsonl 저장
+
+완료 기준:
+- 학습량에 따라 문제 수가 증가한다.
+- 4지선다 문제가 생성된다.
+- 사용자가 답을 제출하면 채점된다.
+
+Phase 7. Wrong Notes
+- WrongNoteGenerationTask
+- wrong-notes.json
+- wrong-notes.md
+- wrong-notes.html
+- index.html summary update
+
+완료 기준:
+- 틀린 문제만 오답노트로 저장된다.
+- 오답 원인과 미니 강의가 포함된다.
+- HTML에 자동 반영된다.
+
+Phase 8. Codex Skill Mode
+- skills/repo-tutor/SKILL.md 작성
+- install script 작성
+- `.agents/skills/repo-tutor` 배포 구조 작성
+- Codex에서 자연어 호출 시 CLI 사용하도록 안내
+- repo-tutor CLI와 연결
+
+완료 기준:
+- Codex app/CLI/IDE 환경에서 skill을 통해 `repo-tutor study`를 실행할 수 있다.
+- GUI 없이 HTML 리포트와 퀴즈가 생성된다.
+
+Phase 9. Tauri Standalone App
+- React UI
+- Rust command
+- Node sidecar spawn
+- progress streaming
+- session browser
+- HTML preview
+- quiz UI
+- wrong note UI
+
+완료 기준:
+- 사용자는 Tauri 앱만으로 GitHub URL 분석, 학습, 퀴즈, 오답노트 HTML 갱신을 수행할 수 있다.
+
+Phase 10. CLI-Anything Adapter
+- CLI-Anything 설치 감지
+- CLI-Hub 감지
+- agent-harness 분석
+- 결과를 HTML에 포함
+
+완료 기준:
+- CLI-Anything이 있으면 확장 분석 가능
+- 없어도 기본 분석은 정상 작동
+
+Phase 11. Packaging
+- Windows build
+- macOS build
+- sidecar packaging
+- app data path 처리
+- update strategy 초안
+
+완료 기준:
+- 새 PC에서 설치 후 앱 실행 가능
+- Node sidecar가 정상 실행됨
+- Codex 인증이 없으면 친절한 설정 안내 표시
+
+============================================================
+15. AGENTS.md 지시
+============================================================
+
+프로젝트 루트에 AGENTS.md를 반드시 둔다.
+
+AGENTS.md에는 다음을 포함한다.
+- 이 프로젝트의 목적
+- 절대 요구사항
+- 금지사항
+- 코드 스타일
+- 테스트 명령
+- 빌드 명령
+- 보안 정책
+- Codex Skill 모드와 Tauri 앱 모드를 모두 유지해야 한다는 지시
+- 한 모드만 구현하고 끝내면 안 된다는 지시
+- quiz/wrong-note/html export를 누락하면 안 된다는 지시
+
+============================================================
+16. 테스트 전략
+============================================================
+
+16.1 Unit Test
+- GitHub URL parser
+- ignore rule
+- language detector
+- dependency detector
+- quiz count calculator
+- schema validator
+- path sanitizer
+- HTML manifest generator
+
+16.2 Integration Test
+- small fixture repo 분석
+- TypeScript fixture repo 분석
+- Python fixture repo 분석
+- Tauri sidecar protocol mock
+- Codex structured output mock
+- quiz attempt 저장
+- wrong-note HTML 갱신
+
+16.3 E2E Test
+- CLI:
+  `repo-tutor study fixtures/simple-ts-app`
+  `repo-tutor quiz <session-id> --answers fixtures/answers.json`
+  `repo-tutor export <session-id>`
+
+- Tauri:
+  GitHub URL 입력
+  분석 시작
+  progress 표시
+  HTML preview 확인
+  Quiz tab에서 응시
+  Wrong Notes tab 확인
+  index.html 갱신 확인
+
+16.4 Security Test
+- `.env` 제외 확인
+- secret-looking file 제외 확인
+- path traversal 차단
+- workspace 밖 파일 접근 차단
+- dangerous command approval 요구 확인
+
+============================================================
+17. 완료 기준
+============================================================
+
+MVP 완료 기준:
+1. Tauri 앱에서 public GitHub URL 입력 가능
+2. repo clone 또는 fetch 가능
+3. repo-map, language-report, dependency-report 생성
+4. Codex 기반 학습 설명 생성
+5. 폴더별 역할 설명 생성
+6. 핵심 파일별 역할 설명 생성
+7. 용어 사전 생성
+8. 재구현 로드맵 생성
+9. 학습량 기반 퀴즈 생성
+10. Tauri UI에서 퀴즈 응시 가능
+11. 틀린 문제 오답노트 생성
+12. 오답노트가 HTML에 반영
+13. 날짜별 폴더에 HTML 저장
+14. Codex Skill 모드에서 CLI로 동일 기능 실행 가능
+15. 단독 CLI 모드에서 동일 기능 실행 가능
+16. secret 파일 제외
+17. 앱 workspace 밖 접근 차단
+18. README.study.md 생성
+19. 세션 목록에서 이전 학습 이어보기 가능
+
+절대 미완료로 간주해야 하는 경우:
+- Tauri 앱만 있고 Codex Skill 모드가 없음
+- Codex Skill만 있고 Tauri 단독 앱이 없음
+- HTML export가 없음
+- 퀴즈가 없음
+- 오답노트가 없음
+- Codex SDK가 WebView에서 직접 실행됨
+- 분석 결과가 날짜별 세션 폴더에 저장되지 않음
+- secret 파일 제외 로직이 없음
+- 사용자 승인 없이 임의 명령을 실행함
+- core 로직이 두 모드에서 중복 구현됨
+
+============================================================
+18. 구현 시 금지사항
+============================================================
+
+절대 하지 마라.
+
+1. “나중에 구현”이라고 하고 quiz/wrong-note를 빼지 마라.
+2. “Tauri 앱부터 만들자”라며 Codex Skill 구조를 빼지 마라.
+3. “Codex Skill만 있으면 된다”라며 단독 앱을 빼지 마라.
+4. Codex SDK를 브라우저 WebView에서 직접 실행하지 마라.
+5. repo 전체 파일을 무조건 LLM에 보내지 마라.
+6. `.env`나 secret을 읽어서 저장하거나 전송하지 마라.
+7. 사용자가 승인하지 않은 install/build/run 명령을 실행하지 마라.
+8. HTML만 만들고 JSON 원본을 버리지 마라.
+9. 퀴즈 결과를 메모리에만 두고 저장하지 마라.
+10. 오답노트를 별도 파일로 만들지 않고 화면에만 표시하지 마라.
+11. 대형 repo에서 전체 파일을 무제한 분석하지 마라.
+12. CLI-Anything을 필수 의존성으로 만들지 마라.
+13. 하나의 거대한 프롬프트로 모든 분석을 끝내려 하지 마라.
+14. schema validation 없이 Codex 결과를 저장하지 마라.
+15. 초보자 설명 없이 전문가용 요약만 만들지 마라.
+
+============================================================
+19. 최종 사용자 경험
+============================================================
+
+사용자가 기대하는 흐름은 다음과 같아야 한다.
+
+[단독 Tauri 앱]
+1. 앱 실행
+2. GitHub URL 입력
+3. 분석 모드 선택
+4. “학습 시작” 클릭
+5. 진행 상태 확인
+6. 프로젝트 목적 이해
+7. 언어 설명 보기
+8. 폴더 구조 설명 보기
+9. 파일 역할 설명 보기
+10. 용어 사전 보기
+11. 맨땅에서 따라 만들기 로드맵 보기
+12. 퀴즈 풀기
+13. 틀린 문제 확인
+14. 오답노트 생성
+15. 최종 HTML 열기
+16. 나중에 세션 목록에서 이어서 학습
+
+[Codex app/CLI/IDE]
+1. 사용자가 Codex에서 repo-tutor skill을 호출
+2. GitHub URL 또는 현재 repo를 대상으로 분석 요청
+3. Codex가 repo-tutor CLI를 실행
+4. 학습 리포트 생성
+5. 퀴즈 생성
+6. 사용자가 CLI 또는 Codex 대화로 퀴즈 응시
+7. 오답노트 생성
+8. HTML 갱신
+9. 결과 폴더 경로 출력
+
+[Headless CLI]
+1. `repo-tutor study <source>`
+2. HTML 생성
+3. `repo-tutor quiz <session-id> --interactive`
+4. 오답노트 생성
+5. `repo-tutor export <session-id>`
+
+============================================================
+20. 최종 산출물
+============================================================
+
+최종적으로 다음을 제공해야 한다.
+
+1. 동작하는 Tauri 데스크톱 앱
+2. 동작하는 repo-tutor CLI
+3. Codex Skill 폴더
+4. 공통 core 분석 엔진
+5. Codex SDK wrapper
+6. HTML exporter
+7. Quiz engine
+8. Wrong-note engine
+9. CLI-Anything adapter
+10. 날짜별 저장 시스템
+11. SQLite session index
+12. 테스트 코드
+13. README
+14. AGENTS.md
+15. 보안 정책 문서
+16. 예제 fixture repo
+17. 예제 생성 HTML
+
+이 문서를 기준으로 개발을 시작하라.
+기능을 축소해야 한다면 MVP 범위 안에서도 반드시 다음 5개는 남겨라.
+- Codex Skill mode
+- Tauri standalone mode
+- shared core engine
+- HTML export
+- quiz + wrong notes
