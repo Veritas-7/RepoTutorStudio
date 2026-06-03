@@ -1032,6 +1032,19 @@ Local verification:
   --unattempted-only` returned exactly the unattempted JSON row with
   `score: null`, Markdown output included `Score` as `none` and `Wrong` as
   `0`, and `doctor` reported `listFilters.unattemptedOnly: true`.
+
+### Upgrade 65: Scored Session Lists
+
+- Added `repo-tutor list --scored-only` so operators can find sessions with a
+  recorded quiz attempt and review score-bearing study runs separately from
+  untouched sessions.
+- Added `scoredOnly` filter metadata to `repo-tutor doctor`.
+- Temp CLI list-scored smoke generated
+  `/tmp/repotutor-list-scored-smoke.pkn8ux`; two fixture sessions were created,
+  one senior session was scored with all correct answers, `list --scored-only`
+  returned exactly that scored JSON row, Markdown output included `Score` as
+  `100` and `Wrong` as `0`, and `doctor` reported
+  `listFilters.scoredOnly: true`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

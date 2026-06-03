@@ -468,6 +468,12 @@ to a private repository, and preserve resumable state in this file.
     --unattempted-only` returned exactly the unattempted JSON row with
     `score: null`, Markdown output included `Score` as `none` and `Wrong` as
     `0`, and `doctor` reported `listFilters.unattemptedOnly: true`
+  - temp CLI list-scored smoke generated
+    `/tmp/repotutor-list-scored-smoke.pkn8ux`; two fixture sessions were
+    created, one senior session was scored with all correct answers, `list
+    --scored-only` returned exactly that scored JSON row, Markdown output
+    included `Score` as `100` and `Wrong` as `0`, and `doctor` reported
+    `listFilters.scoredOnly: true`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -600,6 +606,7 @@ to a private repository, and preserve resumable state in this file.
   - `e3a123a` doctor runtime metadata
   - `0f9b92b` study-mode session list filters
   - `de92329` quiz-mistake session list filters
+  - `30e48f2` unattempted session list filters
 
 ## Next Actions
 
