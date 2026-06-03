@@ -227,6 +227,10 @@ to a private repository, and preserve resumable state in this file.
   session list output. CLI `repo-tutor list --fields <comma-list>` now projects
   filtered session rows across JSON, JSONL, CSV, and Markdown outputs, and
   `repo-tutor doctor` reports the supported list fields.
+- 2026-06-04: Applied a seventy-third AutoResearch upgrade: field preset
+  session list output. CLI `repo-tutor list --field-preset
+  compact|scores|handoff|verification|paths` now reuses common field
+  selections, and `repo-tutor doctor` reports the supported preset names.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -533,6 +537,14 @@ to a private repository, and preserve resumable state in this file.
     table, `doctor` reported supported `listFilters.fields`, invalid
     `--fields nope` failed closed, and duplicate fields were de-duplicated in
     output order
+  - temp CLI list-field-preset smoke generated
+    `/tmp/repotutor-list-field-preset-smoke.Io8yRb`; one fixture session was
+    created, the `scores` preset returned `sessionId,repo,score,wrong,path` in
+    JSON, the `paths` preset produced matching CSV headers, the `compact`
+    preset rendered selected Markdown fields, `doctor` reported all preset
+    names, invalid `--field-preset nope` failed closed, and combining
+    `--fields` with `--field-preset` failed closed with an explicit conflict
+    message
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -673,6 +685,7 @@ to a private repository, and preserve resumable state in this file.
   - `4023fc6` score-sorted session list filters
   - `ffc98e5` JSONL session list output
   - `cacc71c` CSV session list output
+  - `219c480` field-selected session list output
 
 ## Next Actions
 
