@@ -209,6 +209,21 @@
         "module graph with dependencies and dependents for fan-in/fan-out review",
         "rule violation report that links structural risk to concrete source files"
       ]
+    },
+    {
+      "repo": "TypeStrong/typedoc",
+      "url": "https://github.com/TypeStrong/typedoc",
+      "localPath": "research/external-src/TypeStrong-typedoc",
+      "stars": 8405,
+      "forks": 766,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-02T13:47:49Z",
+      "adoptedPatterns": [
+        "entry point discovery for API documentation roots",
+        "ProjectReflection and DeclarationReflection model for public API objects",
+        "ReflectionKind grouping for functions classes interfaces types and values",
+        "export validation warnings for referenced or API-adjacent symbols"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1778,6 +1793,28 @@
         "DependencyHealthReportSchema",
         "dependency-cruiser no-circular no-orphans dependency graph validation report"
       ]
+    },
+    {
+      "name": "API reference report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/api-reference-report.json",
+        "markdown/api-reference.md",
+        "html/api-reference.html",
+        "open --target api-reference",
+        "ApiReferenceReportSchema",
+        "TypeDoc entry points reflections ReflectionKind public API reference report"
+      ]
     }
   ],
   "verification": {
@@ -1973,7 +2010,13 @@
     "cliDependencyHealthOpenTargetSmoke": "PASS",
     "buildDependencyHealth": "PASS",
     "testDependencyHealth": "PASS",
-    "auditBriefDependencyHealth13": "PASS"
+    "auditBriefDependencyHealth13": "PASS",
+    "fixtureApiReferenceReport": "PASS",
+    "cliApiReferenceSmoke": "PASS",
+    "cliApiReferenceOpenTargetSmoke": "PASS",
+    "buildApiReference": "PASS",
+    "testApiReference": "PASS",
+    "auditBriefApiReference13": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"

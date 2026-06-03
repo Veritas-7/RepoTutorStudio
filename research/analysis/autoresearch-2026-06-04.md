@@ -2140,6 +2140,34 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 117: API Reference Report
+
+- Cloned and inspected `TypeStrong/typedoc` under
+  `research/external-src/TypeStrong-typedoc` without executing external
+  source.
+- Added `ApiReferenceReportSchema` and `analysis/api-reference-report.json`
+  with TypeDoc-style entry points, public symbols, ReflectionKind categories,
+  kind/category counts, and export warnings.
+- Added `markdown/api-reference.md`, `html/api-reference.html`,
+  manifest/verification coverage, learning-path linkage, and
+  `open --target api-reference`.
+- Source pattern: TypeDoc starts from configured entry points, converts source
+  into ProjectReflection/DeclarationReflection objects, groups declarations by
+  ReflectionKind, and validates exports; RepoTutor maps that to a deterministic
+  static API reference over the generated symbol map and file lessons.
+- RED smoke
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-api-reference-red-studies.ALp7FF8Pin`
+  failed on the old behavior with `missing analysis/api-reference-report.json`.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-api-reference-green-studies.C2R90GpBXb`;
+  generated the JSON, Markdown, and HTML artifacts, included `entryPoints`,
+  `publicSymbols`, `exportWarnings`, `api-reference-card`,
+  `data-source-pattern="TypeDoc"`, and `ReflectionKind`, and
+  `open --target api-reference` returned `html/api-reference.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

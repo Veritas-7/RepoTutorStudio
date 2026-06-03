@@ -267,6 +267,36 @@ export const SymbolMapReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ApiReferenceReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  entryPoints: z.array(z.object({
+    filePath: z.string(),
+    reason: z.string(),
+    lessonHref: z.string(),
+    sourceHref: z.string()
+  })),
+  publicSymbols: z.array(z.object({
+    name: z.string(),
+    kind: z.enum(["function", "class", "constant", "interface", "type"]),
+    category: z.enum(["value", "type", "class", "module"]),
+    filePath: z.string(),
+    signature: z.string(),
+    lessonHref: z.string(),
+    sourceHref: z.string()
+  })),
+  kindCounts: z.record(z.string(), z.number().int().nonnegative()),
+  categoryCounts: z.record(z.string(), z.number().int().nonnegative()),
+  exportWarnings: z.array(z.object({
+    filePath: z.string(),
+    symbolName: z.string(),
+    message: z.string(),
+    suggestion: z.string(),
+    sourceHref: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ContextPackReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -711,6 +741,7 @@ export type SuggestedReadsReport = z.infer<typeof SuggestedReadsReportSchema>;
 export type RuntimeEnvironmentReport = z.infer<typeof RuntimeEnvironmentReportSchema>;
 export type InterfaceMapReport = z.infer<typeof InterfaceMapReportSchema>;
 export type SymbolMapReport = z.infer<typeof SymbolMapReportSchema>;
+export type ApiReferenceReport = z.infer<typeof ApiReferenceReportSchema>;
 export type ContextPackReport = z.infer<typeof ContextPackReportSchema>;
 export type McpHandoffReport = z.infer<typeof McpHandoffReportSchema>;
 export type AgentMemoryReport = z.infer<typeof AgentMemoryReportSchema>;
