@@ -1283,6 +1283,21 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 82: Saved Session List Row-Count Verification
+
+- Added `actualRows` to `repo-tutor verify-list-output` results.
+- Verifier now compares manifest `rows` with JSON, JSONL, and CSV output
+  content and fails closed with `rows-mismatch` when row metadata drifts.
+- Temp CLI list-row-count smoke generated
+  `/tmp/repotutor-list-row-count-smoke.gQgKb1`; two fixture sessions were
+  created, JSON and CSV saved list outputs reported `actualRows: 2`, JSONL
+  verifier Markdown included `Actual rows: 2`, and tampering manifest `rows` to
+  `999` failed closed with `rows-mismatch` while output bytes and SHA-256
+  remained unchanged.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

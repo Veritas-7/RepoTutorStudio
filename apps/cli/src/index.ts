@@ -123,6 +123,7 @@ interface ListOutputVerification {
   format: string | null;
   summary: boolean | null;
   rows: number | null;
+  actualRows: number | null;
   expectedBytes: number | null;
   actualBytes: number | null;
   expectedSha256: string | null;
@@ -1226,17 +1227,37 @@ async function verifyListOutputManifest(outputPath: string, manifestPath: string
 
   let actualBytes: number | null = null;
   let actualSha256: string | null = null;
+  let actualRows: number | null = null;
   try {
     const outputText = await fs.readFile(outputPath, "utf8");
     actualBytes = Buffer.byteLength(outputText);
     actualSha256 = createHash("sha256").update(outputText).digest("hex");
+    actualRows = listOutputRowCount(outputText, format, summary);
   } catch {
-    failures.push({
-      reason: "output-read-failed",
-      path: outputPath,
-      expected: "readable output file",
-      actual: null
-    });
+    if (actualBytes !== null) {
+      failures.push({
+        reason: "output-format-parse-failed",
+        path: outputPath,
+        expected: format ?? "known list format",
+        actual: null
+      });
+    }
+  }
+  if (actualBytes === null) {
+    try {
+      await fs.access(outputPath);
+    } catch {
+      failures.push({
+        reason: "output-read-failed",
+        path: outputPath,
+        expected: "readable output file",
+        actual: null
+      });
+    }
+  }
+
+  if (rows !== null && actualRows !== null && rows !== actualRows) {
+    failures.push({ reason: "rows-mismatch", path: outputPath, expected: rows, actual: actualRows });
   }
 
   if (expectedBytes !== null && actualBytes !== null && expectedBytes !== actualBytes) {
@@ -1255,12 +1276,31 @@ async function verifyListOutputManifest(outputPath: string, manifestPath: string
     format,
     summary,
     rows,
+    actualRows,
     expectedBytes,
     actualBytes,
     expectedSha256,
     actualSha256,
     failures
   };
+}
+
+function listOutputRowCount(text: string, format: string | null, summary: boolean | null): number | null {
+  if (summary === true) return null;
+  if (format === "json") {
+    const parsed = JSON.parse(text) as unknown;
+    return Array.isArray(parsed) ? parsed.length : null;
+  }
+  if (format === "jsonl") {
+    const lines = text.split("\n").filter((line) => line.trim() !== "");
+    for (const line of lines) JSON.parse(line);
+    return lines.length;
+  }
+  if (format === "csv") {
+    const lines = text.split("\n").filter((line) => line.trim() !== "");
+    return Math.max(0, lines.length - 1);
+  }
+  return null;
 }
 
 function listSummary(rows: ListRow[]): ListSummary {
@@ -1528,6 +1568,7 @@ function listOutputVerificationMarkdown(payload: ListOutputVerification): string
     `- Format: ${payload.format ?? "unknown"}`,
     `- Summary: ${payload.summary ?? "unknown"}`,
     `- Rows: ${payload.rows ?? "unknown"}`,
+    `- Actual rows: ${payload.actualRows ?? "unknown"}`,
     `- Expected bytes: ${payload.expectedBytes ?? "unknown"}`,
     `- Actual bytes: ${payload.actualBytes ?? "missing"}`,
     `- Expected sha256: ${payload.expectedSha256 ?? "unknown"}`,
