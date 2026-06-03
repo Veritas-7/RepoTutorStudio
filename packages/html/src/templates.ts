@@ -252,7 +252,8 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
 
   const assets = {
     "assets/style.css": styleCss(),
-    "assets/app.js": appJs()
+    "assets/app.js": appJs(),
+    "assets/component-graph.mmd": input.componentGraphReport.mermaid
   };
   const pageEntries = pages.map((page) => ({
     name: page.name,

@@ -1172,6 +1172,20 @@
         "component-graph-mermaid source id",
         "component-graph.mmd browser download"
       ]
+    },
+    {
+      "name": "manifested component graph mermaid asset",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "html/assets/component-graph.mmd",
+        "manifest asset entry",
+        "EXPORT-README asset entry",
+        "ZIP-bundled Mermaid source"
+      ]
     }
   ],
   "verification": {
@@ -1297,6 +1311,8 @@
     "cliQuizFilterSmoke": "PASS",
     "fixtureComponentGraphDownload": "PASS",
     "cliGraphDownloadSmoke": "PASS",
+    "fixtureComponentGraphMermaidAsset": "PASS",
+    "cliGraphAssetSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
