@@ -1219,6 +1219,22 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 78: Custom Saved List Output Manifest Paths
+
+- Extended `repo-tutor list --output <file> --output-manifest` so callers can
+  pass a custom manifest path as `--output-manifest <manifest-file>`.
+- Bare `--output-manifest` still writes the default `<output>.manifest.json`
+  sidecar.
+- Temp CLI custom-manifest smoke generated
+  `/tmp/repotutor-list-custom-manifest-smoke.kMVXye`; two fixture sessions were
+  created, JSONL score-preset output wrote a custom manifest under
+  `manifests/custom-scores.json`, no default sidecar was created for that
+  output, `verify-list-output --manifest` passed against the custom path, and
+  bare `--output-manifest` still wrote the default summary sidecar.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
