@@ -959,6 +959,21 @@ Local verification:
   `# RepoTutor Study`, `Verification OK: true`, `Quiz questions: 15`, and
   `Verification Checks`, `doctor` reported Markdown support for `study`, and
   invalid `--format text` exited 1 with `study supports --format`.
+
+### Upgrade 59: Export Summary Markdown
+
+- Added `repo-tutor export <session> --format html|zip --summary-format
+  markdown` so regenerated HTML and ZIP exports can produce a portable handoff
+  summary without overloading the existing artifact `--format` flag.
+- Added `exportSummary` format metadata to `repo-tutor doctor` and fail-closed
+  validation for `--summary-format`.
+- Temp CLI export-summary-markdown smoke generated
+  `/tmp/repotutor-export-summary-md-smoke.HFdHEH`; HTML Markdown output
+  included `# RepoTutor Export`, `Exported: html`, `Integrity OK: true`, and
+  `Entry Points`; ZIP Markdown output included `Exported: zip`,
+  `ZIP files: 20`, and `html-report.zip`; `doctor` reported Markdown support
+  for `exportSummary`; invalid `--summary-format text` exited 1 with
+  `export supports --summary-format`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
