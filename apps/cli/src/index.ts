@@ -297,10 +297,11 @@ async function list(parsed: ParsedArgs): Promise<void> {
   const status = verificationStatusFlag(parsed.flags.status);
   const statusRows = status === "all" ? modeRows : modeRows.filter((row) => row.verificationStatus === status);
   const verifiedRows = parsed.flags["verified-only"] === true ? statusRows.filter((row) => row.verificationOk === true) : statusRows;
+  const wrongRows = parsed.flags["wrong-only"] === true ? verifiedRows.filter((row) => row.wrong > 0) : verifiedRows;
   const htmlTargets = htmlTargetsFlag(parsed.flags["html-targets"]);
   const targetRows = htmlTargets === "all"
-    ? verifiedRows
-    : verifiedRows.filter((row) => htmlTargets === "complete" ? row.htmlTargetsComplete : !row.htmlTargetsComplete);
+    ? wrongRows
+    : wrongRows.filter((row) => htmlTargets === "complete" ? row.htmlTargetsComplete : !row.htmlTargetsComplete);
   const sort = listSortFlag(parsed.flags.sort);
   const sortedRows = sort ? sortSessionRows(targetRows, sort) : targetRows;
   const limit = optionalPositiveIntegerFlag(parsed.flags.limit, "limit");
@@ -387,6 +388,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       sort: ["newest", "oldest"],
       repo: true,
       verifiedOnly: true,
+      wrongOnly: true,
       limit: true
     },
     openTargets: [...openTargetEntries().map((entry) => entry.target), "all"],
@@ -1051,7 +1053,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
+  list --repo owner/name --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --wrong-only --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);

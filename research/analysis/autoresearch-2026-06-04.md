@@ -1008,6 +1008,18 @@ Local verification:
   `list --mode quick --format markdown` returned one Markdown row with `quick`,
   `doctor` reported list filter support for `mode`, and invalid `--mode slow`
   exited 1 with `list supports --mode`.
+
+### Upgrade 63: Wrong-Only Session Lists
+
+- Added `repo-tutor list --wrong-only` so operators can jump directly to
+  learning sessions that still need quiz review.
+- Added `wrongOnly` filter metadata to `repo-tutor doctor`.
+- Temp CLI list-wrong-only smoke generated
+  `/tmp/repotutor-list-wrong-smoke.FlvSHS`; two fixture sessions were created,
+  one session was scored with 15 wrong answers, `list --wrong-only` returned
+  exactly that one JSON row, Markdown output included the `Wrong` column with
+  score `0` and wrong count `15`, and `doctor` reported
+  `listFilters.wrongOnly: true`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

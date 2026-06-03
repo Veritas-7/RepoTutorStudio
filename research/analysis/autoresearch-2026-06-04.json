@@ -816,6 +816,17 @@
         "repo-tutor list --mode quick|standard|deep|all",
         "doctor listFilters mode metadata"
       ]
+    },
+    {
+      "name": "wrong-only session lists",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --wrong-only",
+        "doctor listFilters wrongOnly metadata"
+      ]
     }
   ],
   "verification": {
@@ -908,6 +919,7 @@
     "cliListPathMarkdownSmoke": "PASS",
     "cliDoctorRuntimeSmoke": "PASS",
     "cliListModeSmoke": "PASS",
+    "cliListWrongOnlySmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
