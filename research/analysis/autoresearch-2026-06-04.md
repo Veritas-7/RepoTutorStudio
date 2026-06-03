@@ -425,6 +425,17 @@ Transferable patterns:
   and records `ok: true`, `checkedRequiredArtifacts`, and evidence-index status.
 - `scripts/compliance-audit.mjs`: verifies the persistent report artifact.
 
+### Upgrade 32: Markdown Session Verification Reports
+
+- `packages/core/src/markdown.ts`: adds `renderSessionVerificationMarkdown`.
+- `packages/core/src/pipeline.ts`: writes
+  `markdown/session-verification.md` after the aggregate verifier runs.
+- `packages/core/src/markdown.ts`: updates `README.study.md` to point to both
+  JSON and Markdown session verification reports.
+- `packages/core/src/pipeline.test.ts`: verifies the Markdown report contains
+  PASS status and sub-check statuses.
+- `scripts/compliance-audit.mjs`: verifies the Markdown report artifact.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -571,6 +582,10 @@ Local verification:
   with `analysis/session-verification-report.json` containing `ok: true`,
   `checkedRequiredArtifacts: 11`, `htmlExport: true`, `evidenceIndex: true`,
   and zero failures.
+- Temp CLI session verification Markdown report smoke generated:
+  `/tmp/repotutor-session-md-report-smoke.wybixW/2026-06-04/local__simple-ts-app__main__10a43db1`
+  with `markdown/session-verification.md` containing `# 세션 검증`,
+  `상태: PASS`, all four sub-checks as PASS, and `실패 항목` as `없음`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

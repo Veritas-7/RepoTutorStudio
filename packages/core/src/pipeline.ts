@@ -8,7 +8,7 @@ import { parseSource } from "./intake.js";
 import { ensureDir, pathExists } from "./fs-utils.js";
 import { materializeSession, prepareSession, readJson, updateSessionIndex, writeJson } from "./storage.js";
 import { generateQuiz, writeRenderedHtml } from "./quiz.js";
-import { markdownFiles, readmeStudy } from "./markdown.js";
+import { markdownFiles, readmeStudy, renderSessionVerificationMarkdown } from "./markdown.js";
 import { buildIncrementalReport, findPreviousSnapshot } from "./incremental.js";
 import { verifyStudySessionArtifacts } from "./session-verifier.js";
 export { listSessions } from "./sessions.js";
@@ -130,6 +130,7 @@ async function writeAllArtifacts(session: StudySession, analysis: AnalysisBundle
   await writeRenderedHtml(session.outputPaths.root, rendered);
   const sessionVerification = await verifyStudySessionArtifacts(session.outputPaths.root);
   await writeJson(path.join(session.outputPaths.analysis, "session-verification-report.json"), sessionVerification);
+  await fs.writeFile(path.join(session.outputPaths.markdown, "session-verification.md"), renderSessionVerificationMarkdown(sessionVerification));
   if (!sessionVerification.ok) throw new Error("Session artifact verification failed.");
 }
 

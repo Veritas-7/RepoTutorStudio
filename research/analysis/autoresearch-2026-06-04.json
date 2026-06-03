@@ -473,6 +473,19 @@
         "analysis/session-verification-report.json",
         "fail-closed study artifact verification after render"
       ]
+    },
+    {
+      "name": "markdown session verification reports",
+      "filesChanged": [
+        "packages/core/src/markdown.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "markdown/session-verification.md",
+        "README.study.md verification report pointers"
+      ]
     }
   ],
   "verification": {
@@ -532,6 +545,8 @@
     "cliVerifySessionMarkdownSmoke": "PASS",
     "fixtureSessionVerificationReport": "PASS",
     "cliSessionVerificationReportSmoke": "PASS",
+    "fixtureSessionVerificationMarkdownReport": "PASS",
+    "cliSessionVerificationMarkdownReportSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

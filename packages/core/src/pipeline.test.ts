@@ -19,6 +19,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "component-graph.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "incremental.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "evidence.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "session-verification.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "index.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "manifest.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "EXPORT-README.md"))).resolves.toBeUndefined();
@@ -110,6 +111,10 @@ describe("RepoTutor core pipeline", () => {
     expect(sessionVerificationText).toContain("\"ok\": true");
     expect(sessionVerificationText).toContain("\"checkedRequiredArtifacts\"");
     expect(sessionVerificationText).toContain("\"evidenceIndex\"");
+    const sessionVerificationMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "session-verification.md"), "utf8");
+    expect(sessionVerificationMarkdown).toContain("# 세션 검증");
+    expect(sessionVerificationMarkdown).toContain("상태: PASS");
+    expect(sessionVerificationMarkdown).toContain("evidenceIndex: PASS");
     const evidenceVerification = await verifyEvidenceIndexReport(result.session.outputPaths.root);
     expect(evidenceVerification.ok).toBe(true);
     expect(evidenceVerification.checkedItems).toBeGreaterThan(0);
