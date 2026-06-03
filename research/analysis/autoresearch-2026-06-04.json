@@ -860,6 +860,17 @@
         "repo-tutor list --min-score N --max-score N",
         "doctor listFilters minScore maxScore metadata"
       ]
+    },
+    {
+      "name": "list filter conflict validation",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list filter conflict validation",
+        "doctor listFilters filterConflictValidation metadata"
+      ]
     }
   ],
   "verification": {
@@ -956,6 +967,7 @@
     "cliListUnattemptedSmoke": "PASS",
     "cliListScoredSmoke": "PASS",
     "cliListScoreRangeSmoke": "PASS",
+    "cliListFilterConflictSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
