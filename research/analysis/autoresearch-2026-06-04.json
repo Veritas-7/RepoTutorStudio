@@ -271,6 +271,22 @@
         "architecture decision prompts linked to risky files",
         "MCP-oriented risk handoff without executing external source"
       ]
+    },
+    {
+      "repo": "licensee/licensee",
+      "url": "https://github.com/licensee/licensee",
+      "localPath": "research/external-src/licensee-licensee",
+      "stars": 899,
+      "forks": 331,
+      "license": "MIT",
+      "updatedAt": "2026-06-01T01:51:54Z",
+      "adoptedPatterns": [
+        "license file candidate scoring",
+        "matched_files confidence output",
+        "package manager license metadata as optional review signal",
+        "README license references as optional low-confidence hints",
+        "human compliance review warnings"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1930,6 +1946,28 @@
         "ProjectActivityReportSchema",
         "Repowise git analytics code health hotspots ownership co-change dead code architectural decisions MCP risk"
       ]
+    },
+    {
+      "name": "License rights report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/license-rights-report.json",
+        "markdown/license-rights.md",
+        "html/license-rights.html",
+        "open --target license-rights",
+        "LicenseRightsReportSchema",
+        "Licensee license file detection filename score SPDX confidence matched_files package metadata README references human compliance review"
+      ]
     }
   ],
   "verification": {
@@ -2149,7 +2187,13 @@
     "cliProjectActivityOpenTargetSmoke": "PASS",
     "buildProjectActivity": "PASS",
     "testProjectActivity": "PASS",
-    "auditBriefProjectActivity13": "PASS"
+    "auditBriefProjectActivity13": "PASS",
+    "fixtureLicenseRightsReport": "PASS",
+    "cliLicenseRightsSmoke": "PASS",
+    "cliLicenseRightsOpenTargetSmoke": "PASS",
+    "buildLicenseRights": "PASS",
+    "testLicenseRights": "PASS",
+    "auditBriefLicenseRights13": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"

@@ -28,6 +28,7 @@ import type {
   DependencyHealthReport,
   LearningJournalReport,
   ProjectActivityReport,
+  LicenseRightsReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -62,6 +63,7 @@ export interface StudyHtmlInput {
   dependencyHealthReport: DependencyHealthReport;
   learningJournalReport: LearningJournalReport;
   projectActivityReport: ProjectActivityReport;
+  licenseRightsReport: LicenseRightsReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -116,6 +118,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["search-index.html", "Search Index"],
     ["learning-journal.html", "Learning Journal"],
     ["project-activity.html", "Project Activity"],
+    ["license-rights.html", "License Rights"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -205,6 +208,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Search Index</h3><p>${escapeHtml(input.searchIndexReport.summary)}</p><p>Pagefind 패턴으로 generated page, file lesson, folder lesson을 검색 가능한 문서 단위로 나눕니다.</p><a href="search-index.html">Search Index 열기</a></article>
           <article><h3>Learning Journal</h3><p>${escapeHtml(input.learningJournalReport.summary)}</p><p>learn-codebase 패턴으로 예측 질문, mastery map, spaced review queue를 남깁니다.</p><a href="learning-journal.html">Learning Journal 열기</a></article>
           <article><h3>Project Activity</h3><p>${escapeHtml(input.projectActivityReport.summary)}</p><p>Repowise 패턴으로 snapshot-only activity, hotspot, dead-code, decision queue를 묶습니다.</p><a href="project-activity.html">Project Activity 열기</a></article>
+          <article><h3>License Rights</h3><p>${escapeHtml(input.licenseRightsReport.summary)}</p><p>Licensee 패턴으로 license file, package metadata, README 참조를 분리합니다.</p><a href="license-rights.html">License Rights 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -304,6 +308,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "project-activity.html",
       title: "Project Activity",
       html: pageShell("Project Activity", "project-activity.html", `<section class="panel" data-source-pattern="Repowise"><h2>Project Activity Snapshot</h2><p>${escapeHtml(input.projectActivityReport.summary)}</p><p class="muted">${escapeHtml(input.projectActivityReport.sourcePattern)}</p><dl class="meta"><div><dt>history mode</dt><dd>${escapeHtml(input.projectActivityReport.historyAvailability.mode)}</dd></div><div><dt>branch</dt><dd>${escapeHtml(input.projectActivityReport.historyAvailability.branch ?? "unknown")}</dd></div><div><dt>commit</dt><dd>${escapeHtml(input.projectActivityReport.historyAvailability.commitHash?.slice(0, 12) ?? "unknown")}</dd></div><div><dt>hotspots</dt><dd>${input.projectActivityReport.hotspotCandidates.length}</dd></div></dl><p>${escapeHtml(input.projectActivityReport.historyAvailability.reason)}</p></section><section class="grid"><article class="project-activity-card"><h3>Activity Signals</h3>${projectActivitySignalList(input.projectActivityReport.activitySignals)}</article><article class="project-activity-card"><h3>Review Queues</h3>${projectActivityQueueList(input.projectActivityReport.reviewQueues)}</article><article class="project-activity-card"><h3>Decision Prompts</h3>${projectActivityDecisionPromptList(input.projectActivityReport.architectureDecisionPrompts)}</article><article class="project-activity-card"><h3>다음 확인 단계</h3>${list(input.projectActivityReport.learnerNextSteps)}</article></section><section class="cards project-activity-hotspots">${projectActivityHotspotCards(input.projectActivityReport.hotspotCandidates)}</section><section class="cards project-activity-dead-code">${projectActivityDeadCodeCards(input.projectActivityReport.deadCodeCandidates)}</section>`, input)
+    },
+    {
+      name: "license-rights.html",
+      title: "License Rights",
+      html: pageShell("License Rights", "license-rights.html", `<section class="panel" data-source-pattern="Licensee"><h2>License Rights Snapshot</h2><p>${escapeHtml(input.licenseRightsReport.summary)}</p><p class="muted">${escapeHtml(input.licenseRightsReport.sourcePattern)}</p><dl class="meta"><div><dt>detected</dt><dd>${escapeHtml(input.licenseRightsReport.detectedProjectLicense.spdxId ?? "unknown")}</dd></div><div><dt>confidence</dt><dd>${input.licenseRightsReport.detectedProjectLicense.confidence}</dd></div><div><dt>license files</dt><dd>${input.licenseRightsReport.licenseFiles.length}</dd></div><div><dt>warnings</dt><dd>${input.licenseRightsReport.reviewWarnings.length}</dd></div></dl><p>${escapeHtml(input.licenseRightsReport.detectedProjectLicense.evidence)}</p></section><section class="grid"><article class="license-rights-card"><h3>Rights Checklist</h3>${licenseChecklistList(input.licenseRightsReport.rightsChecklist)}</article><article class="license-rights-card"><h3>Review Warnings</h3>${licenseWarningList(input.licenseRightsReport.reviewWarnings)}</article><article class="license-rights-card"><h3>Package Metadata</h3>${packageLicenseList(input.licenseRightsReport.packageLicenseSignals)}</article><article class="license-rights-card"><h3>README References</h3>${readmeLicenseList(input.licenseRightsReport.readmeLicenseReferences)}</article></section><section class="cards license-file-cards">${licenseFileCards(input.licenseRightsReport.licenseFiles)}</section><section class="panel"><h2>다음 확인 단계</h2>${list(input.licenseRightsReport.learnerNextSteps)}</section>`, input)
     },
     {
       name: "context-pack.html",
@@ -434,6 +443,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Search Index", path: "html/search-index.html", description: "Pagefind식 document, filter, metadata, term index를 확인합니다." },
       { label: "Learning Journal", path: "html/learning-journal.html", description: "learn-codebase식 active recall 질문, mastery map, spaced review queue를 확인합니다." },
       { label: "Project Activity", path: "html/project-activity.html", description: "Repowise식 activity snapshot, hotspot, dead-code, decision review queue를 확인합니다." },
+      { label: "License Rights", path: "html/license-rights.html", description: "Licensee식 license file, package metadata, README license reference 검토 상태를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -625,6 +635,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "project-activity.html",
       goal: "snapshot-only activity, hotspot 후보, dead-code 후보, decision prompt를 변경 전 검토 queue로 정리합니다.",
       evidence: `hotspots ${input.projectActivityReport.hotspotCandidates.length}개, dead-code candidates ${input.projectActivityReport.deadCodeCandidates.length}개`
+    },
+    {
+      title: "라이선스와 소스 권리 확인",
+      href: "license-rights.html",
+      goal: "Licensee식 license file, package metadata, README license reference를 분리해 공개/재사용 전 검토 상태를 확인합니다.",
+      evidence: `license files ${input.licenseRightsReport.licenseFiles.length}개, warnings ${input.licenseRightsReport.reviewWarnings.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -860,6 +876,31 @@ function projectActivityHotspotCards(items: ProjectActivityReport["hotspotCandid
 function projectActivityDeadCodeCards(items: ProjectActivityReport["deadCodeCandidates"]): string {
   if (items.length === 0) return "<article class=\"project-activity-card\"><h3>Dead-code 후보가 없습니다.</h3><p>dependency graph에서 no-orphans 후보를 찾지 못했습니다.</p></article>";
   return items.map((item) => `<article class="project-activity-card"><h3>${escapeHtml(item.filePath)}</h3><p class="muted">dead-code confidence ${item.confidence}</p><p>${escapeHtml(item.reason)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 수업</a> · <a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></p></article>`).join("");
+}
+
+function licenseChecklistList(items: LicenseRightsReport["rightsChecklist"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 checklist가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.label)}</strong> [${escapeHtml(item.status)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 근거 열기</a></li>`).join("")}</ul>`;
+}
+
+function licenseWarningList(items: LicenseRightsReport["reviewWarnings"]): string {
+  if (items.length === 0) return "<p class=\"muted\">검토 경고가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.severity)}</strong>: ${escapeHtml(item.message)} <a href="${escapeHtml(htmlPageHref(item.relatedHref))}">related</a></li>`).join("")}</ul>`;
+}
+
+function packageLicenseList(items: LicenseRightsReport["packageLicenseSignals"]): string {
+  if (items.length === 0) return "<p class=\"muted\">package license metadata가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li>${escapeHtml(item.filePath)}: ${escapeHtml(item.packageName ?? "unnamed")} declares ${escapeHtml(item.licenseText)} -> ${escapeHtml(item.detectedSpdxId ?? "unknown")} <a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function readmeLicenseList(items: LicenseRightsReport["readmeLicenseReferences"]): string {
+  if (items.length === 0) return "<p class=\"muted\">README license reference가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li>${escapeHtml(item.filePath)}: ${escapeHtml(item.detectedSpdxId ?? "unknown")} / confidence ${item.confidence}<br><code>${escapeHtml(item.snippet)}</code><br><a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function licenseFileCards(items: LicenseRightsReport["licenseFiles"]): string {
+  if (items.length === 0) return "<article class=\"license-rights-card\"><h3>License file 후보가 없습니다.</h3><p>배포나 외부 공개 전에 LICENSE 파일을 추가할지 검토하세요.</p></article>";
+  return items.map((item) => `<article class="license-rights-card"><h3>${escapeHtml(item.filePath)}</h3><p class="muted">${escapeHtml(item.detectedSpdxId ?? "unknown")} · confidence ${item.confidence} · filename score ${item.filenameScore}</p><p>${escapeHtml(item.evidence)}</p><p>matcher: ${escapeHtml(item.matcher)}</p><a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></article>`).join("");
 }
 
 function contextPackCards(files: ContextPackReport["topFiles"]): string {

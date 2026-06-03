@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-03T23:31:21.575Z",
+  "createdAt": "2026-06-03T23:45:00.353Z",
   "checks": [
     {
       "name": "project setup",
@@ -95,6 +95,13 @@
     },
     {
       "name": "project activity risk report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "license rights report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
