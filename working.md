@@ -413,6 +413,14 @@ to a private repository, and preserve resumable state in this file.
     `--format text` exited 1 with `verify-export supports --format`, and a
     tampered `html/index.html` made Markdown output return exit 1 with
     `OK: FAIL` and `html/index.html`
+  - temp CLI verify-evidence-markdown smoke generated
+    `/tmp/repotutor-verify-evidence-md-smoke.BBWQSx`;
+    `verify-evidence --format markdown` returned
+    `# RepoTutor Evidence Verification`, `OK: PASS`, and `Checked items: 9`,
+    `doctor` reported Markdown support for `verifyEvidence`, invalid
+    `--format text` exited 1 with `verify-evidence supports --format`, and
+    removing `source/src/main.ts` made Markdown output return exit 1 with
+    `OK: FAIL` and `missing-source-path`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -536,6 +544,7 @@ to a private repository, and preserve resumable state in this file.
   - `095090a` list HTML target status filters
   - `171e62f` open target Markdown discovery
   - `4feced9` open all target Markdown paths
+  - `4788d27` export verification Markdown output
 
 ## Next Actions
 

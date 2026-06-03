@@ -740,6 +740,17 @@
         "repo-tutor verify-export --format markdown",
         "doctor verifyExport format metadata"
       ]
+    },
+    {
+      "name": "evidence verification markdown",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor verify-evidence --format markdown",
+        "doctor verifyEvidence format metadata"
+      ]
     }
   ],
   "verification": {
@@ -825,6 +836,7 @@
     "cliOpenTargetsMarkdownSmoke": "PASS",
     "cliOpenAllMarkdownSmoke": "PASS",
     "cliVerifyExportMarkdownSmoke": "PASS",
+    "cliVerifyEvidenceMarkdownSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

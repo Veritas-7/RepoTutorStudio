@@ -224,7 +224,9 @@ async function verifyEvidence(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const { verifyEvidenceIndexReport } = await import("@repotutor/core");
   const result = await verifyEvidenceIndexReport(sessionRoot);
-  console.log(JSON.stringify(result, null, 2));
+  const format = stringFlag(parsed.flags.format) ?? "json";
+  if (!["json", "markdown"].includes(format)) throw new Error("verify-evidence supports --format json or markdown.");
+  console.log(format === "markdown" ? evidenceVerificationMarkdown(result) : JSON.stringify(result, null, 2));
   if (!result.ok) process.exitCode = 1;
 }
 
@@ -344,6 +346,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       resume: ["json", "markdown"],
       evidence: ["json", "markdown"],
       verifyExport: ["json", "markdown"],
+      verifyEvidence: ["json", "markdown"],
       verifySession: ["json", "markdown"],
       list: ["json", "markdown"],
       openTargets: ["json", "markdown"],
@@ -734,6 +737,45 @@ function exportVerificationMarkdown(payload: {
   ].join("\n");
 }
 
+function evidenceVerificationMarkdown(payload: {
+  ok: boolean;
+  reportPath: string;
+  checkedItems: number;
+  checkedSourceFiles: number;
+  checkedSourceLinks: number;
+  checkedLessonLinks: number;
+  failures: Array<{
+    reason: string;
+    path: string;
+    filePath?: string;
+    line?: number;
+    detail?: string;
+  }>;
+}): string {
+  const failures = payload.failures.length === 0
+    ? "- none"
+    : payload.failures.map((failure) => [
+      `- ${failure.reason}: ${failure.path}`,
+      failure.filePath ? `  - File: ${failure.filePath}` : null,
+      failure.line === undefined ? null : `  - Line: ${failure.line}`,
+      failure.detail ? `  - Detail: ${failure.detail}` : null
+    ].filter(Boolean).join("\n")).join("\n");
+  return [
+    "# RepoTutor Evidence Verification",
+    "",
+    `- OK: ${payload.ok ? "PASS" : "FAIL"}`,
+    `- Report: ${payload.reportPath}`,
+    `- Checked items: ${payload.checkedItems}`,
+    `- Checked source files: ${payload.checkedSourceFiles}`,
+    `- Checked source links: ${payload.checkedSourceLinks}`,
+    `- Checked lesson links: ${payload.checkedLessonLinks}`,
+    "",
+    "## Failures",
+    "",
+    failures
+  ].join("\n");
+}
+
 function markdownTableCell(value: string): string {
   return value.replaceAll("|", "\\|").replaceAll("\n", " ");
 }
@@ -870,7 +912,7 @@ function help(): void {
   evidence <session-id-or-path> --kind import --file src/main.ts --limit 20 --format json|markdown
   export <session-id-or-path> --format html|zip
   verify-export <session-id-or-path> --format json|markdown
-  verify-evidence <session-id-or-path>
+  verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
   list --repo owner/name --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
