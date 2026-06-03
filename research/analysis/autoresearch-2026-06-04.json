@@ -586,6 +586,17 @@
         "repo-tutor list --format markdown",
         "human-readable session table"
       ]
+    },
+    {
+      "name": "bounded session listing",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --limit N",
+        "fail-closed positive integer validation for list limits"
+      ]
     }
   ],
   "verification": {
@@ -657,6 +668,7 @@
     "cliResumeTargetsSmoke": "PASS",
     "cliResumeMarkdownSmoke": "PASS",
     "cliListMarkdownSmoke": "PASS",
+    "cliListLimitSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

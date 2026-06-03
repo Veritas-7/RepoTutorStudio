@@ -531,6 +531,16 @@ Transferable patterns:
   before rendering.
 - `scripts/compliance-audit.mjs`: verifies the Markdown list output surface.
 
+### Upgrade 42: Bounded Session Listing
+
+- `apps/cli/src/index.ts`: `repo-tutor list --limit N` now limits returned rows
+  after `--verified-only` filtering.
+- `apps/cli/src/index.ts`: the limit applies to both JSON and Markdown list
+  output.
+- `apps/cli/src/index.ts`: invalid limits fail closed with
+  `limit must be a positive integer`.
+- `scripts/compliance-audit.mjs`: verifies the list limit CLI surface.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -727,6 +737,12 @@ Local verification:
   `/tmp/repotutor-list-md-smoke.wN4Bip`; `repo-tutor list --verified-only
   --format markdown` returned `# RepoTutor Sessions`, `Returned sessions: 1`, a
   session table, `passed`, and `html/index.html`.
+- Temp CLI list-limit smoke generated:
+  `/tmp/repotutor-list-limit-smoke.Getzel`; two fixture sessions were created,
+  `list --verified-only --limit 1` returned one JSON row,
+  `list --verified-only --limit 1 --format markdown` returned
+  `Returned sessions: 1`, and `--limit 0` exited 1 with
+  `limit must be a positive integer`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
