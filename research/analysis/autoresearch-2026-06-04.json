@@ -1043,6 +1043,18 @@
         "rows-mismatch failure",
         "Actual rows Markdown"
       ]
+    },
+    {
+      "name": "saved session list field verification",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "verify-list-output actualFields result",
+        "fields-mismatch failure",
+        "Actual fields Markdown"
+      ]
     }
   ],
   "verification": {
@@ -1155,6 +1167,7 @@
     "cliListManifestSchemaSmoke": "PASS",
     "cliListManifestSchemaGateSmoke": "PASS",
     "cliListRowCountSmoke": "PASS",
+    "cliListFieldCountSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
