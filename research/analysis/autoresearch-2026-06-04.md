@@ -388,6 +388,21 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs`: verifies the new core verifier and CLI
   command surface.
 
+### Upgrade 29: Session-Level Readiness Verification
+
+- `packages/core/src/session-verifier.ts`: adds
+  `verifyStudySessionArtifacts` as an aggregate readiness gate.
+- `packages/core/src/session-verifier.ts`: checks `session.json`, required
+  analysis/Markdown/HTML artifacts, HTML export integrity, and source evidence
+  integrity without hiding the underlying verifier results.
+- `apps/cli/src/index.ts`: adds
+  `repo-tutor verify-session <session-id-or-path>` with JSON output and
+  non-zero exit on any failed sub-check.
+- `packages/core/src/pipeline.test.ts`: verifies the complete-session pass path
+  and a combined tampered HTML plus missing source negative path.
+- `scripts/compliance-audit.mjs`: verifies the aggregate verifier and CLI
+  command surface.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -515,6 +530,15 @@ Local verification:
 - Temp CLI verify-evidence negative smoke removed `source/src/main.ts` from
   that temp session and confirmed `repo-tutor verify-evidence <session>` exited
   1 with `ok: false`, `missing-source-path`, and `missing-source-href`.
+- Temp CLI verify-session smoke generated:
+  `/tmp/repotutor-verify-session-smoke.dNZW6T/2026-06-04/local__simple-ts-app__main__02727b8a`
+  and `repo-tutor verify-session <session>` returned `ok: true`,
+  `checkedRequiredArtifacts: 11`, `checks.htmlExport: true`, and
+  `checks.evidenceIndex: true`.
+- Temp CLI verify-session negative smoke appended to `html/index.html`, removed
+  `source/src/main.ts`, and confirmed `repo-tutor verify-session <session>`
+  exited 1 with `htmlExport: false`, `evidenceIndex: false`,
+  `html-export-failed`, and `evidence-index-failed`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

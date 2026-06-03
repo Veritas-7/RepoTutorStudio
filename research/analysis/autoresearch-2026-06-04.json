@@ -435,6 +435,21 @@
         "repo-tutor verify-evidence command",
         "fail-closed source evidence link verification"
       ]
+    },
+    {
+      "name": "session-level readiness verification",
+      "filesChanged": [
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/index.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "verifyStudySessionArtifacts core API",
+        "repo-tutor verify-session command",
+        "aggregate session readiness JSON gate"
+      ]
     }
   ],
   "verification": {
@@ -488,6 +503,9 @@
     "fixtureEvidenceVerification": "PASS",
     "cliVerifyEvidenceSmoke": "PASS",
     "cliVerifyEvidenceNegativeSmoke": "PASS",
+    "fixtureSessionVerification": "PASS",
+    "cliVerifySessionSmoke": "PASS",
+    "cliVerifySessionNegativeSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

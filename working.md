@@ -150,6 +150,11 @@ to a private repository, and preserve resumable state in this file.
   `repo-tutor verify-evidence <session>` checks the normalized evidence report,
   copied source paths, source hrefs, lesson HTML files, and lesson anchors with
   fail-closed JSON output.
+- 2026-06-04: Applied a twenty-ninth AutoResearch upgrade: session-level
+  readiness verification. Core now exports `verifyStudySessionArtifacts`, and
+  CLI `repo-tutor verify-session <session>` checks `session.json`, required
+  report artifacts, HTML export integrity, and source evidence integrity in one
+  fail-closed JSON result.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -266,6 +271,15 @@ to a private repository, and preserve resumable state in this file.
     `source/src/main.ts` from that temp session and confirmed
     `repo-tutor verify-evidence <session>` exited 1 with `ok: false`,
     `missing-source-path`, and `missing-source-href`
+  - temp CLI verify-session smoke generated
+    `/tmp/repotutor-verify-session-smoke.dNZW6T/2026-06-04/local__simple-ts-app__main__02727b8a`
+    and `repo-tutor verify-session <session>` returned `ok: true`,
+    `checkedRequiredArtifacts: 11`, `htmlExport: true`, and
+    `evidenceIndex: true`
+  - temp CLI verify-session negative smoke appended to `html/index.html`,
+    removed `source/src/main.ts`, and confirmed
+    `repo-tutor verify-session <session>` exited 1 with `htmlExport: false`,
+    `evidenceIndex: false`, `html-export-failed`, and `evidence-index-failed`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -297,6 +311,7 @@ to a private repository, and preserve resumable state in this file.
   - `f54b60e` CLI evidence report command
   - `b9bf2e5` CLI evidence file filtering
   - `625d78d` Markdown output for CLI evidence
+  - `02727b8` source evidence integrity verification
 
 ## Next Actions
 
