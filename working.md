@@ -722,6 +722,12 @@ to a private repository, and preserve resumable state in this file.
     fields saved a failure report and exited non-zero with `fields-mismatch`,
     and missing `--report` value exited non-zero with
     `report must be a non-empty string.`
+  - temp CLI default verify-list-report smoke generated
+    `/tmp/repotutor-verify-list-default-report-smoke.uYu5Lv`; an isolated JSONL
+    list output wrote default `.verification.json` and `.verification.md`
+    reports for bare `--report`, stdout returned those default paths, and
+    explicit `--report ""` failed closed with
+    `report must be a non-empty string.`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -809,6 +815,7 @@ to a private repository, and preserve resumable state in this file.
   - `04eba07` saved session list manifest schema gate
   - `91dd874` saved session list row-count verification
   - `a141f33` saved session list field verification
+  - `b94218d` saved session list verification report files
 
 ## Next Actions
 

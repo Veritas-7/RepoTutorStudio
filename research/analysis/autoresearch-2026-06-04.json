@@ -1067,6 +1067,18 @@
         "saved JSON verification report",
         "saved Markdown verification report"
       ]
+    },
+    {
+      "name": "default saved list verification report paths",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor verify-list-output --report default JSON path",
+        "repo-tutor verify-list-output --report default Markdown path",
+        "empty string flag value validation"
+      ]
     }
   ],
   "verification": {
@@ -1181,6 +1193,7 @@
     "cliListRowCountSmoke": "PASS",
     "cliListFieldCountSmoke": "PASS",
     "cliVerifyListReportSmoke": "PASS",
+    "cliVerifyListDefaultReportSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
