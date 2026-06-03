@@ -882,6 +882,17 @@
         "repo-tutor list --created-from YYYY-MM-DD --created-to YYYY-MM-DD",
         "doctor listFilters createdFrom createdTo createdRangeValidation metadata"
       ]
+    },
+    {
+      "name": "score-sorted session lists",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --sort score-desc|score-asc",
+        "doctor listFilters sort score metadata"
+      ]
     }
   ],
   "verification": {
@@ -980,6 +991,7 @@
     "cliListScoreRangeSmoke": "PASS",
     "cliListFilterConflictSmoke": "PASS",
     "cliListDateRangeSmoke": "PASS",
+    "cliListScoreSortSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
