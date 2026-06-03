@@ -51,6 +51,7 @@ const REQUIRED_ARTIFACTS = [
   "analysis/graph-query-report.json",
   "analysis/tutorial-abstraction-report.json",
   "analysis/decision-record-report.json",
+  "analysis/dependency-health-report.json",
   "markdown/overview.md",
   "markdown/evidence.md",
   "markdown/suggested-reads.md",
@@ -63,6 +64,7 @@ const REQUIRED_ARTIFACTS = [
   "markdown/graph-query.md",
   "markdown/tutorial-abstractions.md",
   "markdown/decision-records.md",
+  "markdown/dependency-health.md",
   "html/index.html",
   "html/learning-path.html",
   "html/files.html",
@@ -77,6 +79,7 @@ const REQUIRED_ARTIFACTS = [
   "html/graph-query.html",
   "html/tutorial-abstractions.html",
   "html/decision-records.html",
+  "html/dependency-health.html",
   "html/quiz-print.html",
   "html/manifest.json",
   "html/EXPORT-README.md"

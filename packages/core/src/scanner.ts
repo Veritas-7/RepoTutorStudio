@@ -28,6 +28,7 @@ import {
   GraphQueryReport,
   TutorialAbstractionReport,
   DecisionRecordReport,
+  DependencyHealthReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -53,6 +54,7 @@ export interface AnalysisBundle {
   graphQueryReport: GraphQueryReport;
   tutorialAbstractionReport: TutorialAbstractionReport;
   decisionRecordReport: DecisionRecordReport;
+  dependencyHealthReport: DependencyHealthReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -85,10 +87,11 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const graphQueryReport = buildGraphQueryReport(componentGraphReport);
   const tutorialAbstractionReport = buildTutorialAbstractionReport(fileLessons, suggestedReadsReport, componentGraphReport);
   const decisionRecordReport = buildDecisionRecordReport(repoMap, architectureReport, runtimeEnvironmentReport, interfaceMapReport, contextPackReport, tutorialAbstractionReport);
+  const dependencyHealthReport = buildDependencyHealthReport(fileLessons);
   const agentMemoryReport = buildAgentMemoryReport(repoMap, languageReport, purposeReport, contextPackReport, mcpHandoffReport, componentGraphReport);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -1141,6 +1144,169 @@ function buildDecisionRecordReport(
       "package scope가 있는 저장소라면 각 패키지의 docs/adr 위치에 실제 ADR을 둘지 결정하세요."
     ]
   };
+}
+
+function buildDependencyHealthReport(fileLessons: FileLesson[]): DependencyHealthReport {
+  const fileSet = new Set(fileLessons.map((lesson) => lesson.filePath));
+  const resolvedEdges: DependencyHealthReport["localDependencyEdges"] = [];
+  const unresolvedEdges: DependencyHealthReport["localDependencyEdges"] = [];
+
+  for (const lesson of fileLessons) {
+    for (const importText of lesson.keyImports.filter(isRelativeImport)) {
+      const resolved = resolveLocalImport(lesson.filePath, importText, fileSet);
+      const edge = {
+        fromFile: lesson.filePath,
+        toFile: resolved ?? unresolvedLocalPath(lesson.filePath, importText),
+        importText,
+        dependencyType: resolved ? "local-import" as const : "unresolved-local-import" as const,
+        lessonHref: `html/files.html#${htmlAnchor(lesson.filePath)}`,
+        sourceHref: `source/${encodedPath(lesson.filePath)}`
+      };
+      if (resolved) resolvedEdges.push(edge);
+      else unresolvedEdges.push(edge);
+    }
+  }
+
+  const outgoing = new Map(fileLessons.map((lesson) => [lesson.filePath, [] as string[]]));
+  const incoming = new Map(fileLessons.map((lesson) => [lesson.filePath, [] as string[]]));
+  for (const edge of resolvedEdges) {
+    outgoing.get(edge.fromFile)?.push(edge.toFile);
+    incoming.get(edge.toFile)?.push(edge.fromFile);
+  }
+
+  const cycles = detectDependencyCycles(outgoing).slice(0, 8).map((files, index) => ({
+    id: `cycle-${index + 1}`,
+    files,
+    severity: "error" as const,
+    suggestion: "dependency-cruiser의 no-circular 규칙처럼 책임을 나누거나 dependency inversion으로 한쪽 방향 의존성으로 바꾸세요."
+  }));
+  const orphanModules = fileLessons
+    .filter((lesson) => isDependencyHealthModule(lesson.filePath))
+    .filter((lesson) => (incoming.get(lesson.filePath)?.length ?? 0) === 0 && (outgoing.get(lesson.filePath)?.length ?? 0) === 0)
+    .slice(0, 12)
+    .map((lesson) => ({
+      filePath: lesson.filePath,
+      reason: "다른 핵심 파일에서 import하지 않고 이 파일도 핵심 파일을 import하지 않아 고립된 모듈 후보입니다.",
+      lessonHref: `html/files.html#${htmlAnchor(lesson.filePath)}`,
+      sourceHref: `source/${encodedPath(lesson.filePath)}`
+    }));
+  const ruleViolations: DependencyHealthReport["ruleViolations"] = [
+    ...cycles.map((cycle) => ({
+      ruleName: "no-circular",
+      severity: "error" as const,
+      fromFile: cycle.files[0] ?? "unknown",
+      toFile: cycle.files[1] ?? cycle.files[0] ?? null,
+      message: `Circular dependency path: ${cycle.files.join(" -> ")}`,
+      suggestion: cycle.suggestion
+    })),
+    ...orphanModules.map((module) => ({
+      ruleName: "no-orphans",
+      severity: "warn" as const,
+      fromFile: module.filePath,
+      toFile: null,
+      message: `${module.filePath} is not connected to the local dependency graph.`,
+      suggestion: "사용 중인 entry/config/test 파일이면 예외로 문서화하고, 아니라면 제거 또는 연결 여부를 검토하세요."
+    })),
+    ...unresolvedEdges.slice(0, 12).map((edge) => ({
+      ruleName: "no-unresolved-local",
+      severity: "warn" as const,
+      fromFile: edge.fromFile,
+      toFile: edge.toFile,
+      message: `${edge.importText} could not be resolved inside the analyzed lesson files.`,
+      suggestion: "확장자, index 파일, alias 설정, 또는 RepoTutor 핵심 파일 선정 범위를 확인하세요."
+    }))
+  ];
+  const fanIn = rankFan(incoming);
+  const fanOut = rankFan(outgoing);
+  const graphMetrics = {
+    nodeCount: fileLessons.length,
+    edgeCount: resolvedEdges.length,
+    maxFanIn: fanIn[0]?.count ?? 0,
+    maxFanOut: fanOut[0]?.count ?? 0,
+    topFanIn: fanIn.slice(0, 8),
+    topFanOut: fanOut.slice(0, 8)
+  };
+
+  return {
+    summary: `dependency-cruiser식 dependency health report: 핵심 파일 ${fileLessons.length}개에서 로컬 의존성 ${resolvedEdges.length}개, 순환 ${cycles.length}개, 고아 모듈 ${orphanModules.length}개, 미해결 로컬 import ${unresolvedEdges.length}개를 확인했습니다.`,
+    sourcePattern: "dependency-cruiser no-circular no-orphans forbidden rules dependency graph validation",
+    totalLocalDependencies: resolvedEdges.length,
+    localDependencyEdges: [...resolvedEdges, ...unresolvedEdges],
+    cycles,
+    orphanModules,
+    ruleViolations,
+    graphMetrics,
+    learnerNextSteps: [
+      "cycles가 있으면 no-circular 항목의 파일 순서를 따라가며 한 방향 의존성으로 바꿀 수 있는지 확인하세요.",
+      "orphanModules는 의도된 entry/config/test 예외인지, 실제로 제거 가능한 죽은 코드인지 구분하세요.",
+      "topFanIn과 topFanOut이 큰 파일은 변경 영향도가 크므로 파일 수업과 원본을 함께 열어 책임을 나누세요."
+    ]
+  };
+}
+
+function isRelativeImport(importText: string): boolean {
+  return importText.startsWith("./") || importText.startsWith("../");
+}
+
+function resolveLocalImport(fromFile: string, importText: string, fileSet: Set<string>): string | null {
+  const base = unresolvedLocalPath(fromFile, importText);
+  const candidates = [
+    base,
+    ...[".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".py", ".json"].map((ext) => `${base}${ext}`),
+    ...["index.ts", "index.tsx", "index.js", "index.jsx", "index.mjs", "index.cjs", "__init__.py"].map((fileName) => `${base}/${fileName}`)
+  ];
+  return candidates.find((candidate) => fileSet.has(candidate)) ?? null;
+}
+
+function unresolvedLocalPath(fromFile: string, importText: string): string {
+  return path.posix.normalize(path.posix.join(path.posix.dirname(fromFile), importText));
+}
+
+function detectDependencyCycles(graph: Map<string, string[]>): string[][] {
+  const cycles: string[][] = [];
+  const seen = new Set<string>();
+  for (const start of graph.keys()) {
+    walkDependencyCycle(start, start, graph, [], seen, cycles);
+  }
+  return cycles;
+}
+
+function walkDependencyCycle(start: string, current: string, graph: Map<string, string[]>, pathStack: string[], seen: Set<string>, cycles: string[][]): void {
+  if (pathStack.length > 30 || cycles.length >= 20) return;
+  const nextPath = [...pathStack, current];
+  for (const next of graph.get(current) ?? []) {
+    if (next === start && nextPath.length > 1) {
+      const normalized = normalizeCycle(nextPath);
+      const key = normalized.join(">");
+      if (!seen.has(key)) {
+        seen.add(key);
+        cycles.push(normalized);
+      }
+      continue;
+    }
+    if (!nextPath.includes(next)) walkDependencyCycle(start, next, graph, nextPath, seen, cycles);
+  }
+}
+
+function normalizeCycle(files: string[]): string[] {
+  const unique = files.slice(0, files.findIndex((file, index) => files.indexOf(file) !== index) === -1 ? files.length : files.findIndex((file, index) => files.indexOf(file) !== index));
+  const smallestIndex = unique.reduce((best, file, index) => file.localeCompare(unique[best]) < 0 ? index : best, 0);
+  return [...unique.slice(smallestIndex), ...unique.slice(0, smallestIndex)];
+}
+
+function isDependencyHealthModule(filePath: string): boolean {
+  const base = path.basename(filePath).toLowerCase();
+  if (!/\.(cjs|js|jsx|mjs|py|ts|tsx)$/.test(base)) return false;
+  if (/^(main|index|app|cli|server|lib)\./.test(base)) return false;
+  if (/(test|spec|config|setup|mock|fixture|stories)\./.test(base)) return false;
+  return true;
+}
+
+function rankFan(graph: Map<string, string[]>): Array<{ filePath: string; count: number }> {
+  return [...graph.entries()]
+    .map(([filePath, files]) => ({ filePath, count: new Set(files).size }))
+    .filter((item) => item.count > 0)
+    .sort((a, b) => b.count - a.count || a.filePath.localeCompare(b.filePath));
 }
 
 function suggestedReadScore(lesson: FileLesson, index: number): number {

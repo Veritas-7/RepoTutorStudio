@@ -2109,6 +2109,37 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 116: Dependency Health Report
+
+- Cloned and inspected `sverweij/dependency-cruiser` under
+  `research/external-src/sverweij-dependency-cruiser` without executing
+  external source.
+- Added `DependencyHealthReportSchema` and
+  `analysis/dependency-health-report.json` with dependency-cruiser-style local
+  dependency edges, cycles, orphan modules, rule violations, and fan-in/fan-out
+  metrics.
+- Added `markdown/dependency-health.md`, `html/dependency-health.html`,
+  manifest/verification coverage, learning-path linkage, and
+  `open --target dependency-health`.
+- Source pattern: dependency-cruiser validates dependencies with forbidden
+  rules like `no-circular` and `no-orphans`, indexes modules as dependencies
+  and dependents, and reports concrete violations; RepoTutor maps that to a
+  deterministic static report over existing file lessons and relative imports.
+- RED smoke
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-dependency-health-red-studies.ElcnGI8FyZ`
+  failed on the old behavior with
+  `missing analysis/dependency-health-report.json`.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-dependency-health-green-studies.h1ibguTvLv`;
+  generated the JSON, Markdown, and HTML artifacts, included
+  `localDependencyEdges`, `cycles`, `orphanModules`, `ruleViolations`,
+  `dependency-health-card`, `data-source-pattern="dependency-cruiser"`,
+  `no-circular`, and `no-orphans`, and `open --target dependency-health`
+  returned `html/dependency-health.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

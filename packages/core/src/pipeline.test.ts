@@ -24,6 +24,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "graph-query-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "tutorial-abstraction-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "decision-record-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "dependency-health-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "session-verification-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "overview.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "component-graph.md"))).resolves.toBeUndefined();
@@ -39,6 +40,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "graph-query.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "tutorial-abstractions.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "decision-records.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "dependency-health.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "session-verification.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "index.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "learning-path.html"))).resolves.toBeUndefined();
@@ -57,6 +59,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "graph-query.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "tutorial-abstractions.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "decision-records.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "dependency-health.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "session-verification.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "quiz-print.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.codex, "events.jsonl"))).resolves.toBeUndefined();
@@ -97,6 +100,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("RepoTutor Learning Path");
     expect(learningPathTourText).toContain("\"isPrimary\": true");
     expect(learningPathTourText).toContain("\"file\": \"html/component-graph.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/dependency-health.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -232,6 +236,22 @@ describe("RepoTutor core pipeline", () => {
     expect(decisionRecordsMarkdown).toContain("# Decision Records");
     expect(decisionRecordsMarkdown).toContain("Source pattern: Log4brains");
     expect(decisionRecordsMarkdown).toContain("## Timeline");
+    const dependencyHealthText = await fs.readFile(path.join(result.session.outputPaths.analysis, "dependency-health-report.json"), "utf8");
+    expect(dependencyHealthText).toContain("dependency-cruiser no-circular no-orphans forbidden rules dependency graph validation");
+    expect(dependencyHealthText).toContain("\"localDependencyEdges\"");
+    expect(dependencyHealthText).toContain("\"cycles\"");
+    expect(dependencyHealthText).toContain("\"orphanModules\"");
+    expect(dependencyHealthText).toContain("\"ruleViolations\"");
+    const dependencyHealthHtml = await fs.readFile(path.join(result.session.outputPaths.html, "dependency-health.html"), "utf8");
+    expect(dependencyHealthHtml).toContain("Dependency Health");
+    expect(dependencyHealthHtml).toContain("dependency-health-card");
+    expect(dependencyHealthHtml).toContain("data-source-pattern=\"dependency-cruiser\"");
+    expect(dependencyHealthHtml).toContain("no-circular");
+    expect(dependencyHealthHtml).toContain("no-orphans");
+    const dependencyHealthMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "dependency-health.md"), "utf8");
+    expect(dependencyHealthMarkdown).toContain("# Dependency Health");
+    expect(dependencyHealthMarkdown).toContain("Source pattern: dependency-cruiser");
+    expect(dependencyHealthMarkdown).toContain("## Rule Violations");
     const exportManifestText = await fs.readFile(path.join(result.session.outputPaths.html, "manifest.json"), "utf8");
     expect(exportManifestText).toContain("\"entrypoints\"");
     expect(exportManifestText).toContain("html/learning-path.html");
@@ -246,6 +266,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/graph-query.html");
     expect(exportManifestText).toContain("html/tutorial-abstractions.html");
     expect(exportManifestText).toContain("html/decision-records.html");
+    expect(exportManifestText).toContain("html/dependency-health.html");
     expect(exportManifestText).toContain("\"integrity\"");
     expect(exportManifestText).toContain("\"bytes\"");
     expect(exportManifestText).toContain("\"sha256\"");
@@ -314,6 +335,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("graph-query.html");
     expect(learningPathHtml).toContain("tutorial-abstractions.html");
     expect(learningPathHtml).toContain("decision-records.html");
+    expect(learningPathHtml).toContain("dependency-health.html");
     const sessionVerificationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "session-verification.html"), "utf8");
     expect(sessionVerificationHtml).toContain("세션 검증");
     expect(sessionVerificationHtml).toContain("../analysis/session-verification-report.json");
