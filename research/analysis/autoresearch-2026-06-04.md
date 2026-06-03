@@ -500,6 +500,17 @@ Transferable patterns:
   not require target file existence.
 - `scripts/compliance-audit.mjs`: verifies the fail-closed open target tokens.
 
+### Upgrade 39: Resume Page Targets
+
+- `apps/cli/src/index.ts`: `repo-tutor resume` now includes
+  `verificationStatus`, verification report paths, checked artifact counts, and
+  verification checks.
+- `apps/cli/src/index.ts`: `repo-tutor resume` returns `htmlTargets` for all
+  generated pages using the same target table as `open`.
+- `apps/cli/src/index.ts`: resume output now points directly to evidence,
+  verification, quiz, component graph, and other learning pages.
+- `scripts/compliance-audit.mjs`: verifies the resume target metadata tokens.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -683,6 +694,10 @@ Local verification:
   `open --target verification` returned an existing file, then deleting
   `html/session-verification.html` made the same command exit 1 with
   `Open target file not found`.
+- Temp CLI resume-targets smoke generated:
+  `/tmp/repotutor-resume-targets-smoke.nVkVm8/2026-06-04/local__simple-ts-app__main__643161c4`;
+  `repo-tutor resume` returned `verificationStatus: passed`, 17 `htmlTargets`,
+  and direct `verification`, `evidence`, and `quiz` page paths.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
