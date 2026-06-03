@@ -396,6 +396,10 @@ to a private repository, and preserve resumable state in this file.
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
     and open targets including `verification` and `all`
+  - temp CLI doctor-markdown smoke generated
+    `/tmp/repotutor-doctor-md-smoke.1a0B3j`; `repo-tutor doctor --format markdown`
+    returned `# RepoTutor Doctor`, commands, open targets, list filters, and
+    invalid `--format text` exited 1 with `doctor supports --format`
   - temp CLI resume-targets smoke generated
     `/tmp/repotutor-resume-targets-smoke.nVkVm8/2026-06-04/local__simple-ts-app__main__643161c4`;
     `repo-tutor resume` returned `verificationStatus: passed`, 17
@@ -493,6 +497,7 @@ to a private repository, and preserve resumable state in this file.
   - `d4ae5b8` learner-level session filters
   - `c44f095` resume learning context
   - `082056d` open all study targets
+  - `29e98b2` doctor capability metadata
 
 ## Next Actions
 

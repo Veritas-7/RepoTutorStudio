@@ -13,6 +13,17 @@ interface ParsedArgs {
   flags: Record<string, string | boolean>;
 }
 
+interface DoctorPayload {
+  ok: boolean;
+  product: string;
+  commands: string[];
+  formats: Record<string, string[]>;
+  listFilters: Record<string, string[] | boolean>;
+  openTargets: string[];
+  modes: string[];
+  security: Record<string, boolean>;
+}
+
 async function main(): Promise<void> {
   const parsed = parseArgs(process.argv.slice(2));
   try {
@@ -26,7 +37,7 @@ async function main(): Promise<void> {
     else if (parsed.command === "verify-session") await verifySession(parsed);
     else if (parsed.command === "list") await list(parsed);
     else if (parsed.command === "open") await openSession(parsed);
-    else if (parsed.command === "doctor") await doctor();
+    else if (parsed.command === "doctor") await doctor(parsed);
     else help();
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -291,8 +302,10 @@ async function openSession(parsed: ParsedArgs): Promise<void> {
   console.log(htmlPath);
 }
 
-async function doctor(): Promise<void> {
-  console.log(JSON.stringify({
+async function doctor(parsed: ParsedArgs): Promise<void> {
+  const format = stringFlag(parsed.flags.format) ?? "json";
+  if (!["json", "markdown"].includes(format)) throw new Error("doctor supports --format json or markdown.");
+  const payload: DoctorPayload = {
     ok: true,
     product: "RepoTutor Studio",
     commands: [
@@ -330,7 +343,12 @@ async function doctor(): Promise<void> {
       arbitraryCommandExecution: false,
       secretExclusion: true
     }
-  }, null, 2));
+  };
+  if (format === "markdown") {
+    console.log(doctorMarkdown(payload));
+  } else {
+    console.log(JSON.stringify(payload, null, 2));
+  }
 }
 
 async function resolveSessionRoot(value: string | undefined, flags: Record<string, string | boolean>): Promise<string> {
@@ -572,6 +590,39 @@ function listMarkdown(rows: Array<{
   ].join("\n");
 }
 
+function doctorMarkdown(payload: DoctorPayload): string {
+  const formats = Object.entries(payload.formats)
+    .map(([command, values]) => `- ${command}: ${values.join(", ")}`)
+    .join("\n");
+  const filters = Object.entries(payload.listFilters)
+    .map(([name, value]) => `- ${name}: ${Array.isArray(value) ? value.join(", ") : String(value)}`)
+    .join("\n");
+  const security = Object.entries(payload.security)
+    .map(([name, ok]) => `- ${name}: ${ok ? "true" : "false"}`)
+    .join("\n");
+  return [
+    "# RepoTutor Doctor",
+    "",
+    `- Product: ${payload.product}`,
+    `- OK: ${String(payload.ok)}`,
+    `- Modes: ${payload.modes.join(", ")}`,
+    `- Commands: ${payload.commands.join(", ")}`,
+    `- Open targets: ${payload.openTargets.join(", ")}`,
+    "",
+    "## Formats",
+    "",
+    formats,
+    "",
+    "## List Filters",
+    "",
+    filters,
+    "",
+    "## Security",
+    "",
+    security
+  ].join("\n");
+}
+
 function markdownTableCell(value: string): string {
   return value.replaceAll("|", "\\|").replaceAll("\n", " ");
 }
@@ -713,7 +764,7 @@ function help(): void {
   list --repo owner/name --level beginner|junior|senior|all --status passed|failed|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz|all
   open --list-targets
-  doctor`);
+  doctor --format json|markdown`);
 }
 
 await main();
