@@ -295,6 +295,35 @@ async function doctor(): Promise<void> {
   console.log(JSON.stringify({
     ok: true,
     product: "RepoTutor Studio",
+    commands: [
+      "study",
+      "quiz",
+      "resume",
+      "evidence",
+      "export",
+      "verify-export",
+      "verify-evidence",
+      "verify-session",
+      "list",
+      "open",
+      "doctor"
+    ],
+    formats: {
+      resume: ["json", "markdown"],
+      evidence: ["json", "markdown"],
+      verifySession: ["json", "markdown"],
+      list: ["json", "markdown"],
+      export: ["html", "zip"]
+    },
+    listFilters: {
+      level: ["beginner", "junior", "senior", "all"],
+      status: ["passed", "failed", "missing", "all"],
+      sort: ["newest", "oldest"],
+      repo: true,
+      verifiedOnly: true,
+      limit: true
+    },
+    openTargets: [...openTargetEntries().map((entry) => entry.target), "all"],
     modes: ["cli", "codex-skill", "tauri-sidecar"],
     security: {
       staticAnalysisDefault: true,
