@@ -223,6 +223,10 @@ to a private repository, and preserve resumable state in this file.
   output. CLI `repo-tutor list --format csv` now writes filtered session rows
   with stable CSV headers and escaped path cells, and `repo-tutor doctor`
   advertises CSV support for list output.
+- 2026-06-04: Applied a seventy-second AutoResearch upgrade: field-selected
+  session list output. CLI `repo-tutor list --fields <comma-list>` now projects
+  filtered session rows across JSON, JSONL, CSV, and Markdown outputs, and
+  `repo-tutor doctor` reports the supported list fields.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -522,6 +526,13 @@ to a private repository, and preserve resumable state in this file.
     returned the expected header plus two passed rows, comma-containing path
     cells were quoted, `doctor` reported `formats.list` including `csv`, and
     invalid `--format yaml` exited 1 with the expanded list format error
+  - temp CLI list-fields smoke generated
+    `/tmp/repotutor-list-fields-smoke.nsSYI7`; one fixture session was created,
+    `list --fields sessionId,repo,score,path` returned exactly those keys in
+    JSON and JSONL, CSV used those headers, Markdown rendered a selected-field
+    table, `doctor` reported supported `listFilters.fields`, invalid
+    `--fields nope` failed closed, and duplicate fields were de-duplicated in
+    output order
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -661,6 +672,7 @@ to a private repository, and preserve resumable state in this file.
   - `c445345` created-date session list filters
   - `4023fc6` score-sorted session list filters
   - `ffc98e5` JSONL session list output
+  - `cacc71c` CSV session list output
 
 ## Next Actions
 
