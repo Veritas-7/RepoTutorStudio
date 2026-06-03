@@ -1686,6 +1686,27 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 101: Learning Path Progress Summary
+
+- Added a `data-learning-progress-summary` status line to
+  `learning-path.html` showing `완료 0 / N` before any local browser progress
+  is restored.
+- The offline JavaScript now updates the summary through
+  `updateLearningProgressSummary()` after initial restore, step checkbox
+  changes, and progress reset.
+- Source pattern: microsoft/codetour publishes current-step status as
+  `#current of total`; RepoTutor maps that to a browser-local completed-step
+  counter for the static learning path.
+- RED smoke `/tmp/repotutor-learning-summary-red.*` failed on the old behavior
+  with `learning path missing data-learning-progress-summary`.
+- GREEN smoke generated `/tmp/repotutor-learning-summary-smoke.m3SHE4`;
+  generated `learning-path.html` included `data-learning-progress-summary` and
+  `완료 0 /`, while `assets/app.js` included
+  `updateLearningProgressSummary` and `[data-learning-progress-summary]`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

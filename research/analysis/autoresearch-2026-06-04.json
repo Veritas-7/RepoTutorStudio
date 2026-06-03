@@ -1300,6 +1300,20 @@
         "learningProgress.clear() reset handler",
         "reload-safe learning path progress reset"
       ]
+    },
+    {
+      "name": "learning path progress summary",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "data-learning-progress-summary status text",
+        "완료 X / N learning path counter",
+        "updateLearningProgressSummary browser handler",
+        "CodeTour-style current-of-total progress signal"
+      ]
     }
   ],
   "verification": {
@@ -1441,6 +1455,8 @@
     "cliLearningPathProgressSmoke": "PASS",
     "fixtureLearningPathProgressReset": "PASS",
     "cliLearningPathProgressResetSmoke": "PASS",
+    "fixtureLearningPathProgressSummary": "PASS",
+    "cliLearningPathProgressSummarySmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
