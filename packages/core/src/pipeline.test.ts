@@ -45,6 +45,11 @@ describe("RepoTutor core pipeline", () => {
     const exportReadmeText = await fs.readFile(path.join(result.session.outputPaths.html, "EXPORT-README.md"), "utf8");
     expect(exportReadmeText).toContain("RepoTutor HTML Export");
     expect(exportReadmeText).toContain("Entry Points");
+    const filesHtml = await fs.readFile(path.join(result.session.outputPaths.html, "files.html"), "utf8");
+    expect(filesHtml).toContain("file-nav-toolbar");
+    expect(filesHtml).toContain("data-file-ext-filter");
+    expect(filesHtml).toContain("data-file-dir-filter");
+    expect(filesHtml).toContain("data-file-dir");
     const zip = await writeHtmlZipBundle(result.session.outputPaths.root);
     expect(zip.fileCount).toBeGreaterThan(5);
     expect(zip.bytes).toBeGreaterThan(100);

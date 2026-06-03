@@ -201,6 +201,19 @@
         "CLI commandBaseDir from INIT_CWD",
         "relative local source fixture test"
       ]
+    },
+    {
+      "name": "large-repo file navigation filters",
+      "filesChanged": [
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "html/files.html extension filter toolbar",
+        "html/files.html top-folder filter toolbar",
+        "html/assets/app.js fileExt and fileDir filter handlers"
+      ]
     }
   ],
   "verification": {
@@ -223,10 +236,12 @@
     "cliZipExportSmoke": "PASS",
     "fixtureRelativeSourceBaseDir": "PASS",
     "cliRelativePathSmoke": "PASS",
+    "fixtureFileNavigationFilters": "PASS",
+    "cliFileNavigationSmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },
   "candidateBacklog": [
-    "additional large-repo navigation polish"
+    "continue source-backed usability and verification upgrades"
   ]
 }

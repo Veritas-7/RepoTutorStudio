@@ -194,6 +194,20 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs`: includes the path-base handoff in the safe
   intake compliance check.
 
+### Upgrade 12: Large-Repo File Navigation Filters
+
+- `packages/html/src/templates.ts`: adds extension and top-folder filter
+  toolbars to `files.html`.
+- `packages/html/src/templates.ts`: marks file lesson cards with
+  `data-file-ext` and `data-file-dir` so large file lists can be narrowed
+  offline.
+- `html/assets/app.js`: combines file filters with the existing global search
+  and component-graph filters.
+- `packages/core/src/pipeline.test.ts`: verifies file navigation markers in the
+  generated fixture `files.html`.
+- `scripts/compliance-audit.mjs`: includes the file navigation markers in the
+  offline HTML export compliance check.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -237,6 +251,11 @@ Local verification:
 - Temp CLI relative-path smoke generated:
   `/tmp/repotutor-relative-cli-smoke.iLBw7a/2026-06-04/local__simple-ts-app__main__d3264425/html/index.html`
   from `packages/core/tests/fixtures/simple-ts-app` with 15 quiz questions.
+- Temp CLI file-navigation smoke generated:
+  `/tmp/repotutor-file-nav-smoke.YlVkai/2026-06-04/local__simple-ts-app__main__df6a42da/html/files.html`
+  with `file-nav-toolbar`, `data-file-ext-filter`, `data-file-dir-filter`,
+  `data-file-ext=".ts"`, `data-file-dir="src"`, and matching handlers in
+  `html/assets/app.js`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
@@ -244,4 +263,4 @@ Local verification:
 
 ## Deferred Candidate Backlog
 
-1. Add additional large-repo navigation polish.
+1. Continue source-backed usability and verification upgrades.
