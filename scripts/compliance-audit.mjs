@@ -18,13 +18,15 @@ const checks = [
   check("shared core engine", [
     "packages/core/src/pipeline.ts",
     "packages/core/src/evidence.ts",
+    "packages/core/src/session-verifier.ts",
     "packages/core/src/scanner.ts",
     "packages/core/src/storage.ts",
     "packages/shared/src/schemas.ts"
   ], ["packages/core/src/pipeline.ts:runStudy", "packages/shared/src/schemas.ts:StudySessionSchema"]),
   check("headless cli commands", [
-    "apps/cli/src/index.ts"
-  ], ["study", "quiz", "resume", "evidence", "export", "verify-export", "verify-evidence", "verifyEvidenceIndexReport", "process.exitCode", "list", "open", "doctor", "filteredKind", "filteredFile", "--file", "--format json|markdown", "evidenceMarkdown", "returnedItems"]),
+    "apps/cli/src/index.ts",
+    "packages/core/src/session-verifier.ts"
+  ], ["study", "quiz", "resume", "evidence", "export", "verify-export", "verify-evidence", "verify-session", "verifyEvidenceIndexReport", "verifyStudySessionArtifacts", "checkedRequiredArtifacts", "html-export-failed", "evidence-index-failed", "process.exitCode", "list", "open", "doctor", "filteredKind", "filteredFile", "--file", "--format json|markdown", "evidenceMarkdown", "returnedItems"]),
   check("codex skill mode", [
     "skills/repo-tutor/SKILL.md",
     ".agents/skills/repo-tutor/SKILL.md",
@@ -69,9 +71,10 @@ const checks = [
     "packages/html/src/templates.ts",
     "packages/core/src/quiz.ts",
     "packages/core/src/exporter.ts",
+    "packages/core/src/session-verifier.ts",
     "apps/cli/src/index.ts",
     "packages/shared/src/schemas.ts"
-  ], ["index.html", "quiz.html", "wrong-notes.html", "evidence.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints", "writeHtmlZipBundle", "verifyHtmlExportManifest", "integrityOk", "integrityCheckedFiles", "--format html|zip", "html-report.zip", "file-nav-toolbar", "data-file-ext-filter", "data-file-dir-filter", "data-source-evidence-filter", "data-source-evidence", "data-evidence-kind-filter", "integrity", "sha256", "bytes"]),
+  ], ["index.html", "quiz.html", "wrong-notes.html", "evidence.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints", "writeHtmlZipBundle", "verifyHtmlExportManifest", "verifyStudySessionArtifacts", "integrityOk", "integrityCheckedFiles", "--format html|zip", "html-report.zip", "file-nav-toolbar", "data-file-ext-filter", "data-file-dir-filter", "data-source-evidence-filter", "data-source-evidence", "data-evidence-kind-filter", "integrity", "sha256", "bytes"]),
   check("source-backed component graph", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

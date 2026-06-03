@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { calculateQuizCount, runStudy, verifyEvidenceIndexReport, verifyHtmlExportManifest, writeHtmlZipBundle } from "./index.js";
+import { calculateQuizCount, runStudy, verifyEvidenceIndexReport, verifyHtmlExportManifest, verifyStudySessionArtifacts, writeHtmlZipBundle } from "./index.js";
 
 const fixtureRoot = path.resolve("packages/core/tests/fixtures/simple-ts-app");
 
@@ -121,6 +121,14 @@ describe("RepoTutor core pipeline", () => {
     expect(exportVerification.ok).toBe(true);
     expect(exportVerification.checkedFiles).toBeGreaterThan(5);
     expect(exportVerification.failures).toHaveLength(0);
+    const sessionVerification = await verifyStudySessionArtifacts(result.session.outputPaths.root);
+    expect(sessionVerification.ok).toBe(true);
+    expect(sessionVerification.checks.session).toBe(true);
+    expect(sessionVerification.checks.requiredArtifacts).toBe(true);
+    expect(sessionVerification.checks.htmlExport).toBe(true);
+    expect(sessionVerification.checks.evidenceIndex).toBe(true);
+    expect(sessionVerification.checkedRequiredArtifacts).toBeGreaterThan(5);
+    expect(sessionVerification.failures).toHaveLength(0);
     await fs.appendFile(path.join(result.session.outputPaths.html, "index.html"), "\n<!-- tampered -->\n");
     const tamperedVerification = await verifyHtmlExportManifest(result.session.outputPaths.root);
     expect(tamperedVerification.ok).toBe(false);
@@ -129,6 +137,12 @@ describe("RepoTutor core pipeline", () => {
     const missingSourceVerification = await verifyEvidenceIndexReport(result.session.outputPaths.root);
     expect(missingSourceVerification.ok).toBe(false);
     expect(missingSourceVerification.failures.some((failure) => failure.reason === "missing-source-path" && failure.path === "source/src/main.ts")).toBe(true);
+    const failedSessionVerification = await verifyStudySessionArtifacts(result.session.outputPaths.root);
+    expect(failedSessionVerification.ok).toBe(false);
+    expect(failedSessionVerification.checks.htmlExport).toBe(false);
+    expect(failedSessionVerification.checks.evidenceIndex).toBe(false);
+    expect(failedSessionVerification.failures.some((failure) => failure.check === "html-export" && failure.path === "html/index.html")).toBe(true);
+    expect(failedSessionVerification.failures.some((failure) => failure.check === "evidence-index" && failure.path === "source/src/main.ts")).toBe(true);
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
   });

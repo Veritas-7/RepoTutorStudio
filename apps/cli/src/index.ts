@@ -23,6 +23,7 @@ async function main(): Promise<void> {
     else if (parsed.command === "export") await exportSession(parsed);
     else if (parsed.command === "verify-export") await verifyExport(parsed);
     else if (parsed.command === "verify-evidence") await verifyEvidence(parsed);
+    else if (parsed.command === "verify-session") await verifySession(parsed);
     else if (parsed.command === "list") await list(parsed);
     else if (parsed.command === "open") await openSession(parsed);
     else if (parsed.command === "doctor") await doctor();
@@ -176,6 +177,14 @@ async function verifyEvidence(parsed: ParsedArgs): Promise<void> {
   if (!result.ok) process.exitCode = 1;
 }
 
+async function verifySession(parsed: ParsedArgs): Promise<void> {
+  const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
+  const { verifyStudySessionArtifacts } = await import("@repotutor/core");
+  const result = await verifyStudySessionArtifacts(sessionRoot);
+  console.log(JSON.stringify(result, null, 2));
+  if (!result.ok) process.exitCode = 1;
+}
+
 async function list(parsed: ParsedArgs): Promise<void> {
   const sessions = await listSessions(studiesRoot(parsed.flags));
   console.log(JSON.stringify(sessions.map((session) => ({
@@ -320,6 +329,7 @@ function help(): void {
   export <session-id-or-path> --format html|zip
   verify-export <session-id-or-path>
   verify-evidence <session-id-or-path>
+  verify-session <session-id-or-path>
   list
   open <session-id-or-path>
   doctor`);
