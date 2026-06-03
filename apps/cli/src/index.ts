@@ -115,7 +115,9 @@ async function exportSession(parsed: ParsedArgs): Promise<void> {
 async function verifyExport(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const { verifyHtmlExportManifest } = await import("@repotutor/core");
-  console.log(JSON.stringify(await verifyHtmlExportManifest(sessionRoot), null, 2));
+  const result = await verifyHtmlExportManifest(sessionRoot);
+  console.log(JSON.stringify(result, null, 2));
+  if (!result.ok) process.exitCode = 1;
 }
 
 async function list(parsed: ParsedArgs): Promise<void> {

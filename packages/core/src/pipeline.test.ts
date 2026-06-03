@@ -63,6 +63,10 @@ describe("RepoTutor core pipeline", () => {
     expect(exportVerification.ok).toBe(true);
     expect(exportVerification.checkedFiles).toBeGreaterThan(5);
     expect(exportVerification.failures).toHaveLength(0);
+    await fs.appendFile(path.join(result.session.outputPaths.html, "index.html"), "\n<!-- tampered -->\n");
+    const tamperedVerification = await verifyHtmlExportManifest(result.session.outputPaths.root);
+    expect(tamperedVerification.ok).toBe(false);
+    expect(tamperedVerification.failures[0]?.path).toBe("html/index.html");
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
   });

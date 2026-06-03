@@ -23,7 +23,7 @@ const checks = [
   ], ["packages/core/src/pipeline.ts:runStudy", "packages/shared/src/schemas.ts:StudySessionSchema"]),
   check("headless cli commands", [
     "apps/cli/src/index.ts"
-  ], ["study", "quiz", "resume", "export", "verify-export", "list", "open", "doctor"]),
+  ], ["study", "quiz", "resume", "export", "verify-export", "process.exitCode", "list", "open", "doctor"]),
   check("codex skill mode", [
     "skills/repo-tutor/SKILL.md",
     ".agents/skills/repo-tutor/SKILL.md",

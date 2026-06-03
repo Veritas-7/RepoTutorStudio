@@ -232,6 +232,15 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs`: includes `verify-export` and
   `verifyHtmlExportManifest` in the CLI/export compliance checks.
 
+### Upgrade 15: Tamper-Negative Export Verification
+
+- `apps/cli/src/index.ts`: `repo-tutor verify-export` now sets a non-zero exit
+  code when manifest verification fails.
+- `packages/core/src/pipeline.test.ts`: appends to generated `html/index.html`
+  and verifies `verifyHtmlExportManifest` reports `ok: false` for that file.
+- `scripts/compliance-audit.mjs`: checks the CLI failure path includes
+  `process.exitCode`.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -287,6 +296,10 @@ Local verification:
 - Temp CLI verify-export smoke generated:
   `/tmp/repotutor-verify-export-smoke.1jhUun/2026-06-04/local__simple-ts-app__main__bf88883f`
   and verified 16 manifest files with `ok: true` and no failures.
+- Temp CLI tamper-verify smoke generated:
+  `/tmp/repotutor-tamper-verify-smoke.BRu06X/2026-06-04/local__simple-ts-app__main__67bd1c8e`,
+  appended to `html/index.html`, and confirmed `verify-export` returned exit
+  code 1, `ok: false`, and failure path `html/index.html`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
@@ -294,5 +307,4 @@ Local verification:
 
 ## Deferred Candidate Backlog
 
-1. Add a tamper-negative integrity test.
-2. Continue source-backed usability upgrades.
+1. Continue source-backed usability upgrades.

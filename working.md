@@ -94,6 +94,10 @@ to a private repository, and preserve resumable state in this file.
   integrity verification. CLI `repo-tutor verify-export <session>` now checks
   every manifest-listed page and asset against recorded byte counts and
   SHA-256 hashes, returning PASS/FAIL JSON with failure details.
+- 2026-06-04: Applied a fifteenth AutoResearch upgrade: tamper-negative export
+  verification. `verify-export` now returns a non-zero CLI exit when integrity
+  verification fails, and tests/smoke prove a changed `html/index.html` is
+  reported as `ok: false`.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -135,6 +139,10 @@ to a private repository, and preserve resumable state in this file.
   - temp CLI verify-export smoke generated a completed fixture study under
     `/tmp/repotutor-verify-export-smoke.1jhUun/2026-06-04/local__simple-ts-app__main__bf88883f`
     and verified 16 manifest files with `ok: true` and no failures
+  - temp CLI tamper-verify smoke generated a completed fixture study under
+    `/tmp/repotutor-tamper-verify-smoke.BRu06X/2026-06-04/local__simple-ts-app__main__67bd1c8e`,
+    appended to `html/index.html`, and confirmed `verify-export` returned exit
+    code 1, `ok: false`, and failure path `html/index.html`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -152,6 +160,7 @@ to a private repository, and preserve resumable state in this file.
   - `df6a42d` CLI relative local-source resolution
   - `3a2cb78` file navigation filters
   - `bf88883` export manifest integrity metadata
+  - `67bd1c8` export integrity verifier
 
 ## Next Actions
 
