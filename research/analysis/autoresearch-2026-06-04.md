@@ -854,6 +854,17 @@ Local verification:
   `/tmp/repotutor-doctor-md-smoke.1a0B3j`; Markdown output included
   `# RepoTutor Doctor`, commands, open targets, and list filters, and invalid
   `--format text` exited 1 with `doctor supports --format`.
+
+### Upgrade 51: Resume HTML Target Status
+
+- Added `htmlTargetStatus` to `repo-tutor resume` JSON so each known HTML target
+  is reported as present or missing without requiring a separate open command.
+- Added an `HTML Target Status` section to Markdown resume output for handoff
+  reports.
+- Temp CLI resume-target-status smoke generated
+  `/tmp/repotutor-resume-target-status-smoke.WosgZN`; `repo-tutor resume`
+  reported `quiz: true`, deleting `html/quiz.html` changed that target to
+  `false`, and Markdown output included `quiz: missing` and `index: present`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

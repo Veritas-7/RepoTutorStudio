@@ -413,6 +413,11 @@ to a private repository, and preserve resumable state in this file.
     `/tmp/repotutor-resume-level-smoke.5JYl1L`; `repo-tutor resume` returned
     `mode: deep` and `level: junior`, and `repo-tutor resume --format markdown`
     returned `Study mode: deep` and `Learner level: junior`
+  - temp CLI resume-target-status smoke generated
+    `/tmp/repotutor-resume-target-status-smoke.WosgZN`; `repo-tutor resume`
+    returned `htmlTargetStatus.quiz: true`, deleting `html/quiz.html` changed
+    that status to `false`, and Markdown output included `HTML Target Status`,
+    `quiz: missing`, and `index: present`
   - temp CLI list-markdown smoke generated
     `/tmp/repotutor-list-md-smoke.wN4Bip`; `repo-tutor list --verified-only
     --format markdown` returned `# RepoTutor Sessions`, `Returned sessions: 1`,
@@ -498,6 +503,7 @@ to a private repository, and preserve resumable state in this file.
   - `c44f095` resume learning context
   - `082056d` open all study targets
   - `29e98b2` doctor capability metadata
+  - `1221061` doctor Markdown output
 
 ## Next Actions
 
