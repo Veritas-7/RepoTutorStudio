@@ -383,6 +383,37 @@ export const GraphQueryReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const TutorialAbstractionReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  abstractions: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    chapterNumber: z.number().int().positive(),
+    chapterGoal: z.string(),
+    relevantFiles: z.array(z.object({
+      filePath: z.string(),
+      lessonHref: z.string(),
+      sourceHref: z.string()
+    })),
+    relationshipCount: z.number().int().nonnegative()
+  })),
+  relationships: z.array(z.object({
+    fromId: z.string(),
+    toId: z.string(),
+    label: z.string(),
+    reason: z.string()
+  })),
+  chapterOrder: z.array(z.object({
+    chapterNumber: z.number().int().positive(),
+    abstractionId: z.string(),
+    title: z.string(),
+    whyNow: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -598,6 +629,7 @@ export type ContextPackReport = z.infer<typeof ContextPackReportSchema>;
 export type McpHandoffReport = z.infer<typeof McpHandoffReportSchema>;
 export type AgentMemoryReport = z.infer<typeof AgentMemoryReportSchema>;
 export type GraphQueryReport = z.infer<typeof GraphQueryReportSchema>;
+export type TutorialAbstractionReport = z.infer<typeof TutorialAbstractionReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

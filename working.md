@@ -1212,6 +1212,30 @@ to a private repository, and preserve resumable state in this file.
   - `65d92d1` learning path progress summary
   - `3d0b4ea` learning path step navigation
   - `46b15e3` learning path primary marker
+- 2026-06-04: AutoResearch Upgrade 114 candidate selected:
+  `The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge`
+  (`https://github.com/The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge`;
+  public MIT; 12,367 stars; 1,408 forks; updated 2026-06-03T16:14:05Z).
+  Cloned ignored external source to
+  `research/external-src/The-Pocket-PocketFlow-Tutorial-Codebase-Knowledge`
+  and inspected `flow.py`, `nodes.py`, and `main.py` without executing it.
+- 2026-06-04: RED tutorial-abstractions smoke generated
+  `/tmp/repotutor-tutorial-abstractions-red-studies.hcQfdw/...`; old build
+  was missing `analysis/tutorial-abstraction-report.json` as expected.
+- 2026-06-04: Implemented PocketFlow-style tutorial abstraction report:
+  `TutorialAbstractionReportSchema`, `analysis/tutorial-abstraction-report.json`,
+  `markdown/tutorial-abstractions.md`, `html/tutorial-abstractions.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target tutorial-abstractions`.
+- 2026-06-04: GREEN tutorial-abstractions smoke generated
+  `/tmp/repotutor-tutorial-abstractions-green-studies.0D2g33/...`; confirmed
+  `abstractions`, `relationships`, `chapterOrder`,
+  `tutorial-abstraction-card`, `data-source-pattern="PocketFlow"`, and
+  `open --target tutorial-abstractions` -> `html/tutorial-abstractions.html`.
+- 2026-06-04: Verification for Upgrade 114:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 13/13 audit reports
 
 ## Next Actions
 
