@@ -1149,6 +1149,20 @@ Local verification:
   rendered selected Markdown fields, `doctor` reported all preset names,
   invalid `--field-preset nope` failed closed, and combining `--fields` with
   `--field-preset` failed closed with an explicit conflict message.
+
+### Upgrade 74: Session List Summary Output
+
+- Added `repo-tutor list --summary --format json|markdown` so filtered session
+  inventories can be summarized by verification status, mode, level, HTML
+  target completeness, quiz score state, and repository.
+- Added `summary` list-filter metadata to `repo-tutor doctor`.
+- Temp CLI list-summary smoke generated
+  `/tmp/repotutor-list-summary-smoke.MHi2AF`; two fixture sessions were
+  created, one session was scored at `100`, JSON summary reported total `2`,
+  two passed sessions, one scored session, one unattempted session, average
+  score `100`, and complete HTML target counts, Markdown summary rendered the
+  same totals, `--summary --format csv` failed closed, and combining
+  `--summary` with `--fields` failed closed with an explicit conflict message.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

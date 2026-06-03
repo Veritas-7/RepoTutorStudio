@@ -937,6 +937,17 @@
         "repo-tutor list --field-preset compact|scores|handoff|verification|paths",
         "doctor listFilters.fieldPresets metadata"
       ]
+    },
+    {
+      "name": "session list summary output",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --summary --format json|markdown",
+        "doctor listFilters.summary metadata"
+      ]
     }
   ],
   "verification": {
@@ -1040,6 +1051,7 @@
     "cliListCsvSmoke": "PASS",
     "cliListFieldsSmoke": "PASS",
     "cliListFieldPresetSmoke": "PASS",
+    "cliListSummarySmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
