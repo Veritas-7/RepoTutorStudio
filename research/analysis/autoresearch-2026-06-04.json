@@ -707,6 +707,17 @@
         "repo-tutor list --html-targets complete|missing|all",
         "htmlTargetsComplete and missingHtmlTargets in session list rows"
       ]
+    },
+    {
+      "name": "open target markdown discovery",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor open --list-targets --format markdown",
+        "doctor openTargets format metadata"
+      ]
     }
   ],
   "verification": {
@@ -789,6 +800,7 @@
     "cliDoctorMarkdownSmoke": "PASS",
     "cliResumeTargetStatusSmoke": "PASS",
     "cliListTargetStatusSmoke": "PASS",
+    "cliOpenTargetsMarkdownSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

@@ -382,6 +382,13 @@ to a private repository, and preserve resumable state in this file.
     `repo-tutor open --list-targets` returned 17 targets including
     `verification`, `evidence`, `quiz`, and `component-graph`, and
     `open --target verification|evidence|quiz` returned existing HTML files
+  - temp CLI open-targets-markdown smoke generated
+    `/tmp/repotutor-open-targets-md-smoke.hUWyo4`;
+    `open --list-targets --format markdown` returned
+    `# RepoTutor Open Targets`, verification and component-graph rows,
+    `doctor` reported Markdown support for open target discovery, and invalid
+    `--format text` exited 1 with
+    `open --list-targets supports --format`
   - temp CLI open-exists smoke generated
     `/tmp/repotutor-open-exists-smoke.oXYr5x/2026-06-04/local__simple-ts-app__main__35d90f7a`;
     `open --target verification` returned an existing file, then deleting
@@ -512,6 +519,7 @@ to a private repository, and preserve resumable state in this file.
   - `29e98b2` doctor capability metadata
   - `1221061` doctor Markdown output
   - `eb633c4` resume HTML target status
+  - `095090a` list HTML target status filters
 
 ## Next Actions
 

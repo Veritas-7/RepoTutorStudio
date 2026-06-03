@@ -878,6 +878,18 @@ Local verification:
   returned one row with `quiz` in `missingHtmlTargets`, `--html-targets complete`
   returned the intact session, Markdown output included `missing: quiz`, and
   invalid `--html-targets stale` exited 1 with `list supports --html-targets`.
+
+### Upgrade 53: Open Target Markdown Discovery
+
+- Added `repo-tutor open --list-targets --format markdown` for portable target
+  discovery in handoff notes.
+- Added fail-closed format validation for open-target discovery and exposed
+  Markdown support in `repo-tutor doctor` format metadata.
+- Temp CLI open-targets-markdown smoke generated
+  `/tmp/repotutor-open-targets-md-smoke.hUWyo4`; Markdown output included
+  `# RepoTutor Open Targets`, verification and component-graph rows, `doctor`
+  reported Markdown support for `openTargets`, and invalid `--format text`
+  exited 1 with `open --list-targets supports --format`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
