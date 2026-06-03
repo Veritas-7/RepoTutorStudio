@@ -487,6 +487,14 @@ to a private repository, and preserve resumable state in this file.
     `--unattempted-only --min-score 1`, and `--min-score 90 --max-score 10`
     all exited 1 with explicit conflict messages, and `doctor` reported
     `listFilters.filterConflictValidation: true`
+  - temp CLI list-date-range smoke generated
+    `/tmp/repotutor-list-date-range-smoke.U4NaZ6`; two fixture sessions had
+    `createdAt` set to `2001-01-01T12:00:00.000Z` and
+    `2099-01-01T12:00:00.000Z`, `list --created-from 2099-01-01` returned
+    only the senior 2099 row, `list --created-to 2001-01-01` returned only the
+    beginner 2001 row, Markdown output included the 2099 timestamp, `doctor`
+    reported created-date filters, and invalid date/range flags exited 1 with
+    explicit messages
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -622,6 +630,7 @@ to a private repository, and preserve resumable state in this file.
   - `30e48f2` unattempted session list filters
   - `5d937fc` scored session list filters
   - `3f86f3a` quiz-score session list filters
+  - `d97b75b` list filter conflict validation
 
 ## Next Actions
 

@@ -290,8 +290,12 @@ async function list(parsed: ParsedArgs): Promise<void> {
   }));
   const repoFilter = optionalStringFlag(parsed.flags.repo, "repo");
   const repoRows = repoFilter ? rows.filter((row) => repoMatches(row.repo, repoFilter)) : rows;
+  const createdFrom = optionalCreatedAtBoundFlag(parsed.flags["created-from"], "created-from", "start");
+  const createdTo = optionalCreatedAtBoundFlag(parsed.flags["created-to"], "created-to", "end");
+  validateCreatedAtRange(createdFrom, createdTo);
+  const dateRows = rowsByCreatedAtRange(repoRows, createdFrom, createdTo);
   const level = learnerLevelFlag(parsed.flags.level);
-  const levelRows = level === "all" ? repoRows : repoRows.filter((row) => row.level === level);
+  const levelRows = level === "all" ? dateRows : dateRows.filter((row) => row.level === level);
   const mode = studyModeFlag(parsed.flags.mode);
   const modeRows = mode === "all" ? levelRows : levelRows.filter((row) => row.mode === mode);
   const status = verificationStatusFlag(parsed.flags.status);
@@ -397,6 +401,9 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       htmlTargets: ["complete", "missing", "all"],
       sort: ["newest", "oldest"],
       repo: true,
+      createdFrom: true,
+      createdTo: true,
+      createdRangeValidation: true,
       verifiedOnly: true,
       wrongOnly: true,
       unattemptedOnly: true,
@@ -505,6 +512,35 @@ function optionalScoreFlag(value: string | boolean | undefined, name: string): n
   const parsed = Number(value);
   if (!Number.isFinite(parsed) || parsed < 0 || parsed > 100) throw new Error(`${name} must be a number from 0 to 100.`);
   return parsed;
+}
+
+function optionalCreatedAtBoundFlag(value: string | boolean | undefined, name: string, dateOnlyBoundary: "start" | "end"): number | null {
+  if (value === undefined) return null;
+  if (typeof value !== "string") throw new Error(`${name} must be an ISO date or timestamp.`);
+  const trimmed = value.trim();
+  const normalized = /^\d{4}-\d{2}-\d{2}$/.test(trimmed)
+    ? `${trimmed}T${dateOnlyBoundary === "start" ? "00:00:00.000" : "23:59:59.999"}Z`
+    : trimmed;
+  const parsed = Date.parse(normalized);
+  if (Number.isNaN(parsed)) throw new Error(`${name} must be an ISO date or timestamp.`);
+  return parsed;
+}
+
+function validateCreatedAtRange(createdFrom: number | null, createdTo: number | null): void {
+  if (createdFrom !== null && createdTo !== null && createdFrom > createdTo) {
+    throw new Error("created-from must be less than or equal to created-to.");
+  }
+}
+
+function rowsByCreatedAtRange<T extends { createdAt: string }>(rows: T[], createdFrom: number | null, createdTo: number | null): T[] {
+  if (createdFrom === null && createdTo === null) return rows;
+  return rows.filter((row) => {
+    const createdAt = Date.parse(row.createdAt);
+    if (Number.isNaN(createdAt)) return false;
+    if (createdFrom !== null && createdAt < createdFrom) return false;
+    if (createdTo !== null && createdAt > createdTo) return false;
+    return true;
+  });
 }
 
 function validateListFilterCombinations(flags: Record<string, string | boolean>, minScore: number | null, maxScore: number | null): void {
@@ -1087,7 +1123,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown
+  list --repo owner/name --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);

@@ -1070,6 +1070,21 @@ Local verification:
   `--unattempted-only --min-score 1`, and `--min-score 90 --max-score 10` all
   exited 1 with explicit conflict messages, and `doctor` reported
   `listFilters.filterConflictValidation: true`.
+
+### Upgrade 68: Created-Date Session Lists
+
+- Added `repo-tutor list --created-from YYYY-MM-DD --created-to YYYY-MM-DD` so
+  operators can split old and recent study sessions by creation time.
+- Added created-date filter metadata and range validation metadata to
+  `repo-tutor doctor`.
+- Temp CLI list-date-range smoke generated
+  `/tmp/repotutor-list-date-range-smoke.U4NaZ6`; two fixture sessions had
+  `createdAt` set to `2001-01-01T12:00:00.000Z` and
+  `2099-01-01T12:00:00.000Z`, `list --created-from 2099-01-01` returned only
+  the senior 2099 row, `list --created-to 2001-01-01` returned only the
+  beginner 2001 row, Markdown output included the 2099 timestamp, `doctor`
+  reported created-date filters, and invalid date/range flags exited 1 with
+  explicit messages.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
