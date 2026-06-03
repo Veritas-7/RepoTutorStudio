@@ -215,6 +215,10 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Applied a forty-fifth AutoResearch upgrade: sorted session
   listing. CLI `repo-tutor list --sort newest|oldest` now sorts filtered
   sessions by `createdAt` before limit and output rendering.
+- 2026-06-04: Applied a seventieth AutoResearch upgrade: JSONL session list
+  output. CLI `repo-tutor list --format jsonl` now streams filtered session
+  rows as one JSON object per line, and `repo-tutor doctor` advertises JSONL
+  support for list output.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -502,6 +506,12 @@ to a private repository, and preserve resumable state in this file.
     `null` order, Markdown output included the `100` score row, `doctor`
     reported `score-desc` and `score-asc` sort support, and invalid
     `--sort score` exited 1 with the expanded sort error
+  - temp CLI list-jsonl smoke generated
+    `/tmp/repotutor-list-jsonl-smoke.0aMoEN`; two fixture sessions were
+    created, `list --sort newest --format jsonl` returned exactly two parseable
+    JSONL rows with expected session fields and passed verification status,
+    `doctor` reported `formats.list` including `jsonl`, and invalid
+    `--format yaml` exited 1 with the expanded list format error
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -639,6 +649,7 @@ to a private repository, and preserve resumable state in this file.
   - `3f86f3a` quiz-score session list filters
   - `d97b75b` list filter conflict validation
   - `c445345` created-date session list filters
+  - `4023fc6` score-sorted session list filters
 
 ## Next Actions
 

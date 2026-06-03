@@ -1098,6 +1098,19 @@ Local verification:
   `null` order, Markdown output included the `100` score row, `doctor`
   reported `score-desc` and `score-asc` sort support, and invalid
   `--sort score` exited 1 with the expanded sort error.
+
+### Upgrade 70: JSONL Session List Output
+
+- Added `repo-tutor list --format jsonl` so large session inventories can be
+  streamed one JSON object per line into shell pipelines, log collectors, or
+  handoff automation without loading a full JSON array.
+- Added JSONL list format metadata to `repo-tutor doctor`.
+- Temp CLI list-jsonl smoke generated
+  `/tmp/repotutor-list-jsonl-smoke.0aMoEN`; two fixture sessions were created,
+  `list --sort newest --format jsonl` returned exactly two parseable JSONL
+  rows with session, repo, path, HTML, and passed verification fields, `doctor`
+  reported `formats.list` including `jsonl`, and invalid `--format yaml`
+  exited 1 with the expanded list format error.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

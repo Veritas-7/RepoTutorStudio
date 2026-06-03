@@ -321,9 +321,11 @@ async function list(parsed: ParsedArgs): Promise<void> {
   const limit = optionalPositiveIntegerFlag(parsed.flags.limit, "limit");
   const filtered = limit === null ? sortedRows : sortedRows.slice(0, limit);
   const format = stringFlag(parsed.flags.format) ?? "json";
-  if (!["json", "markdown"].includes(format)) throw new Error("list supports --format json or markdown.");
+  if (!["json", "markdown", "jsonl"].includes(format)) throw new Error("list supports --format json, markdown, or jsonl.");
   if (format === "markdown") {
     console.log(listMarkdown(filtered));
+  } else if (format === "jsonl") {
+    process.stdout.write(listJsonl(filtered));
   } else {
     console.log(JSON.stringify(filtered, null, 2));
   }
@@ -382,7 +384,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       verifyExport: ["json", "markdown"],
       verifyEvidence: ["json", "markdown"],
       verifySession: ["json", "markdown"],
-      list: ["json", "markdown"],
+      list: ["json", "markdown", "jsonl"],
       openTargets: ["json", "markdown"],
       openAll: ["json", "markdown"],
       export: ["html", "zip"],
@@ -859,6 +861,10 @@ function listMarkdown(rows: Array<{
   ].join("\n");
 }
 
+function listJsonl(rows: unknown[]): string {
+  return rows.map((row) => JSON.stringify(row)).join("\n") + (rows.length > 0 ? "\n" : "");
+}
+
 function doctorMarkdown(payload: DoctorPayload): string {
   const formats = Object.entries(payload.formats)
     .map(([command, values]) => `- ${command}: ${values.join(", ")}`)
@@ -1133,7 +1139,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  list --repo owner/name --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown
+  list --repo owner/name --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);
