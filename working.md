@@ -462,6 +462,12 @@ to a private repository, and preserve resumable state in this file.
     returned exactly that one JSON row, Markdown output included the `Wrong`
     column with score `0` and wrong count `15`, and `doctor` reported
     `listFilters.wrongOnly: true`
+  - temp CLI list-unattempted smoke generated
+    `/tmp/repotutor-list-unattempted-smoke.usbNPL`; two fixture sessions were
+    created, one session was scored with all correct answers, `list
+    --unattempted-only` returned exactly the unattempted JSON row with
+    `score: null`, Markdown output included `Score` as `none` and `Wrong` as
+    `0`, and `doctor` reported `listFilters.unattemptedOnly: true`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -593,6 +599,7 @@ to a private repository, and preserve resumable state in this file.
   - `5cfe507` list Markdown session paths
   - `e3a123a` doctor runtime metadata
   - `0f9b92b` study-mode session list filters
+  - `de92329` quiz-mistake session list filters
 
 ## Next Actions
 

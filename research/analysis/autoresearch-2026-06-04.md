@@ -1020,6 +1020,18 @@ Local verification:
   exactly that one JSON row, Markdown output included the `Wrong` column with
   score `0` and wrong count `15`, and `doctor` reported
   `listFilters.wrongOnly: true`.
+
+### Upgrade 64: Unattempted Session Lists
+
+- Added `repo-tutor list --unattempted-only` so operators can find sessions
+  that have generated quiz material but no recorded quiz attempt yet.
+- Added `unattemptedOnly` filter metadata to `repo-tutor doctor`.
+- Temp CLI list-unattempted smoke generated
+  `/tmp/repotutor-list-unattempted-smoke.usbNPL`; two fixture sessions were
+  created, one session was scored with all correct answers, `list
+  --unattempted-only` returned exactly the unattempted JSON row with
+  `score: null`, Markdown output included `Score` as `none` and `Wrong` as
+  `0`, and `doctor` reported `listFilters.unattemptedOnly: true`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
