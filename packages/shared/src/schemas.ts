@@ -194,6 +194,33 @@ export const SuggestedReadsReportSchema = z.object({
   }))
 });
 
+export const RuntimeEnvironmentReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  detectedManifests: z.array(z.object({
+    filePath: z.string(),
+    ecosystem: z.string(),
+    signal: z.string()
+  })),
+  setupSignals: z.array(z.object({
+    filePath: z.string(),
+    signal: z.string(),
+    beginnerExplanation: z.string()
+  })),
+  containerSignals: z.array(z.object({
+    filePath: z.string(),
+    signal: z.string(),
+    beginnerExplanation: z.string()
+  })),
+  serviceHints: z.array(z.object({
+    name: z.string(),
+    reason: z.string(),
+    sourcePath: z.string()
+  })),
+  missingSignals: z.array(z.string()),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -402,6 +429,7 @@ export type FileLesson = z.infer<typeof FileLessonSchema>;
 export type CoverageReport = z.infer<typeof CoverageReportSchema>;
 export type EvidenceIndexReport = z.infer<typeof EvidenceIndexReportSchema>;
 export type SuggestedReadsReport = z.infer<typeof SuggestedReadsReportSchema>;
+export type RuntimeEnvironmentReport = z.infer<typeof RuntimeEnvironmentReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

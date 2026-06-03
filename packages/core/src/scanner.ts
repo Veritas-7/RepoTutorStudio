@@ -19,6 +19,7 @@ import {
   SourceSnapshotReport,
   IncrementalReport,
   SuggestedReadsReport,
+  RuntimeEnvironmentReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -35,6 +36,7 @@ export interface AnalysisBundle {
   coverageReport: CoverageReport;
   evidenceIndexReport: EvidenceIndexReport;
   suggestedReadsReport: SuggestedReadsReport;
+  runtimeEnvironmentReport: RuntimeEnvironmentReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -55,13 +57,14 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const coverageReport = buildCoverageReport(repoMap, fileLessons);
   const evidenceIndexReport = buildEvidenceIndexReport(fileLessons);
   const suggestedReadsReport = buildSuggestedReadsReport(fileLessons);
+  const runtimeEnvironmentReport = buildRuntimeEnvironmentReport(walk, dependencyReport);
   const flowReport = buildFlowReport(fileLessons, dependencyReport);
   const glossary = buildGlossary(languageReport, dependencyReport, fileLessons);
   const rebuildRoadmap = buildRebuildRoadmap(repoMap, fileLessons);
   const componentGraphReport = buildComponentGraphReport(folderLessons, fileLessons, glossary, rebuildRoadmap);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -303,6 +306,76 @@ function buildSuggestedReadsReport(fileLessons: FileLesson[]): SuggestedReadsRep
     sourcePattern: "Repo Baby suggested_reads importance-ranked next reads",
     items
   };
+}
+
+function buildRuntimeEnvironmentReport(walk: WalkResult, dependencyReport: DependencyReport): RuntimeEnvironmentReport {
+  const detectedManifests = dependencyReport.manifests.map((manifest) => ({
+    filePath: manifest.filePath,
+    ecosystem: manifest.ecosystem,
+    signal: `${manifest.dependencies.length}개 의존성 또는 설정 항목을 확인했습니다.`
+  }));
+  const setupFiles = walk.files.filter((file) => setupSignalFor(file.relPath) !== null);
+  const containerFiles = walk.files.filter((file) => containerSignalFor(file.relPath) !== null);
+  const setupSignals = setupFiles.slice(0, 12).map((file) => ({
+    filePath: file.relPath,
+    signal: setupSignalFor(file.relPath) ?? "setup file",
+    beginnerExplanation: `${file.relPath} 파일은 실행 전에 필요한 설치, 스크립트, 환경 변수 단서를 제공합니다.`
+  }));
+  const containerSignals = containerFiles.slice(0, 12).map((file) => ({
+    filePath: file.relPath,
+    signal: containerSignalFor(file.relPath) ?? "container file",
+    beginnerExplanation: `${file.relPath} 파일은 컨테이너 또는 서비스 실행 방식을 추정하는 근거입니다.`
+  }));
+  const serviceHints = [
+    ...detectedManifests.map((manifest) => ({
+      name: manifest.ecosystem,
+      reason: `${manifest.filePath} 기준으로 ${manifest.ecosystem} 런타임 준비가 필요합니다.`,
+      sourcePath: manifest.filePath
+    })),
+    ...containerSignals.map((signal) => ({
+      name: signal.filePath.toLowerCase().includes("compose") ? "Docker Compose" : "Docker",
+      reason: signal.signal,
+      sourcePath: signal.filePath
+    }))
+  ].slice(0, 12);
+  const missingSignals = [
+    setupSignals.length === 0 ? "설치/실행 매니페스트를 찾지 못했습니다." : null,
+    containerSignals.length === 0 ? "Dockerfile 또는 Compose 파일을 찾지 못했습니다." : null,
+    walk.files.some((file) => /\.env\.example$|\.env\.sample$/i.test(file.relPath)) ? null : ".env.example 또는 .env.sample 예시 파일이 보이지 않습니다."
+  ].filter(Boolean) as string[];
+  return {
+    summary: `docSmith식 실행 환경 점검: manifest ${detectedManifests.length}개, container signal ${containerSignals.length}개, setup signal ${setupSignals.length}개를 정적으로 확인했습니다.`,
+    sourcePattern: "docSmith Dockerfile and Docker Compose generation prompts",
+    detectedManifests,
+    setupSignals,
+    containerSignals,
+    serviceHints,
+    missingSignals,
+    learnerNextSteps: [
+      "manifest 파일에서 설치 명령과 런타임 버전을 먼저 확인하세요.",
+      "Dockerfile이나 Compose 파일이 있으면 로컬 실행 방식과 컨테이너 실행 방식을 비교하세요.",
+      ".env.example이 없으면 필요한 환경 변수를 README와 config 파일에서 따로 추적하세요."
+    ]
+  };
+}
+
+function setupSignalFor(filePath: string): string | null {
+  const base = path.basename(filePath).toLowerCase();
+  if (base === "package.json") return "Node package scripts/dependencies";
+  if (base === "requirements.txt") return "Python pip requirements";
+  if (base === "pyproject.toml") return "Python project metadata";
+  if (base === "cargo.toml") return "Rust cargo manifest";
+  if (base === "go.mod") return "Go module manifest";
+  if (/^readme\.(md|txt)$/i.test(base)) return "README setup instructions";
+  if (/\.env\.example$|\.env\.sample$/i.test(filePath)) return "environment variable example";
+  return null;
+}
+
+function containerSignalFor(filePath: string): string | null {
+  const base = path.basename(filePath).toLowerCase();
+  if (base === "dockerfile" || base.endsWith(".dockerfile")) return "Dockerfile container recipe";
+  if (base === "docker-compose.yml" || base === "docker-compose.yaml" || base === "compose.yml" || base === "compose.yaml") return "Docker Compose service map";
+  return null;
 }
 
 function suggestedReadScore(lesson: FileLesson, index: number): number {
