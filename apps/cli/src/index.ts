@@ -1075,19 +1075,19 @@ async function emitListOutput(
   context: ListOutputContext
 ): Promise<void> {
   const outputFile = optionalStringFlag(outputValue, "output");
-  const outputManifest = outputManifestFlag(outputManifestValue);
   const normalizedText = text.endsWith("\n") ? text : `${text}\n`;
   if (outputFile === null) {
-    if (outputManifest) throw new Error("list requires --output when --output-manifest is used.");
+    if (outputManifestValue !== undefined) throw new Error("list requires --output when --output-manifest is used.");
     process.stdout.write(normalizedText);
     return;
   }
   const outputPath = path.resolve(outputFile);
+  const manifestPath = outputManifestPath(outputManifestValue, outputPath);
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
   await fs.writeFile(outputPath, normalizedText);
-  if (outputManifest) {
-    const manifestPath = `${outputPath}.manifest.json`;
+  if (manifestPath !== null) {
     const manifest = createListOutputManifest(normalizedText, outputPath, manifestPath, context);
+    await fs.mkdir(path.dirname(manifestPath), { recursive: true });
     await fs.writeFile(manifestPath, jsonText(manifest));
     process.stdout.write(jsonText({ outputPath, manifestPath }));
     return;
@@ -1099,10 +1099,12 @@ function jsonText(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
-function outputManifestFlag(value: string | boolean | undefined): boolean {
-  if (value === undefined) return false;
-  if (value === true) return true;
-  throw new Error("output-manifest is a boolean flag.");
+function outputManifestPath(value: string | boolean | undefined, outputPath: string): string | null {
+  if (value === undefined) return null;
+  if (value === true) return `${outputPath}.manifest.json`;
+  if (typeof value !== "string") throw new Error("output-manifest must be a non-empty manifest path.");
+  if (value.trim() === "") throw new Error("output-manifest must be a non-empty manifest path.");
+  return path.resolve(value.trim());
 }
 
 function createListOutputManifest(text: string, outputPath: string, manifestPath: string, context: ListOutputContext): ListOutputManifest {
@@ -1602,7 +1604,7 @@ function help(): void {
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
   verify-list-output <output-file> --manifest output.manifest.json --format json|markdown
-  list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --output reports/list.json --output-manifest --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
+  list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --output reports/list.json --output-manifest [manifest.json] --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown`);

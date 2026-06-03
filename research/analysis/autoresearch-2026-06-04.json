@@ -983,6 +983,18 @@
         "repo-tutor verify-list-output --manifest <file>",
         "RepoTutor List Output Verification markdown"
       ]
+    },
+    {
+      "name": "custom saved list output manifest paths",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --output <file> --output-manifest <manifest-file>",
+        "custom manifest directory creation",
+        "default sidecar preservation for bare --output-manifest"
+      ]
     }
   ],
   "verification": {
@@ -1090,6 +1102,7 @@
     "cliListOutputSmoke": "PASS",
     "cliListOutputManifestSmoke": "PASS",
     "cliVerifyListOutputSmoke": "PASS",
+    "cliListCustomManifestSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
