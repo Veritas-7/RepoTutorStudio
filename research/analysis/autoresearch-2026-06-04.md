@@ -561,6 +561,16 @@ Transferable patterns:
   `repo must be a non-empty string`.
 - `scripts/compliance-audit.mjs`: verifies the repo-filter list CLI surface.
 
+### Upgrade 45: Sorted Session Listing
+
+- `apps/cli/src/index.ts`: `repo-tutor list --sort newest|oldest` now sorts
+  sessions by `createdAt`.
+- `apps/cli/src/index.ts`: sorting happens after repo/status/verified filters
+  and before `--limit`, JSON, and Markdown rendering.
+- `apps/cli/src/index.ts`: invalid sort values fail closed with
+  `list supports --sort newest or oldest.`
+- `scripts/compliance-audit.mjs`: verifies the list sort CLI surface.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -774,6 +784,13 @@ Local verification:
   for `local/repo-alpha`, `list --repo local/repo-beta --format markdown`
   returned one Markdown row, and missing `--repo` value exited 1 with
   `repo must be a non-empty string`.
+- Temp CLI list-sort smoke generated:
+  `/tmp/repotutor-list-sort-smoke.rLGkoH`; two fixture sessions had
+  `createdAt` set to `2001-01-01T00:00:00.000Z` and
+  `2099-01-01T00:00:00.000Z`; `list --sort newest --limit 1` returned the 2099
+  row, `list --sort oldest --limit 1` returned the 2001 row, Markdown oldest
+  output included the 2001 timestamp, and `--sort random` exited 1 with
+  `list supports --sort`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

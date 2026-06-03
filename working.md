@@ -212,6 +212,9 @@ to a private repository, and preserve resumable state in this file.
   session listing. CLI `repo-tutor list --repo <owner/name-or-name>` now
   filters sessions by full repo id or repo basename before status, verified,
   limit, and output rendering.
+- 2026-06-04: Applied a forty-fifth AutoResearch upgrade: sorted session
+  listing. CLI `repo-tutor list --sort newest|oldest` now sorts filtered
+  sessions by `createdAt` before limit and output rendering.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -412,6 +415,12 @@ to a private repository, and preserve resumable state in this file.
     `list --repo repo-alpha` returned one JSON row for `local/repo-alpha`,
     `list --repo local/repo-beta --format markdown` returned one Markdown row,
     and missing `--repo` value exited 1 with `repo must be a non-empty string`
+  - temp CLI list-sort smoke generated `/tmp/repotutor-list-sort-smoke.rLGkoH`;
+    two fixture sessions had `createdAt` set to `2001-01-01T00:00:00.000Z`
+    and `2099-01-01T00:00:00.000Z`; `list --sort newest --limit 1` returned
+    the 2099 row, `list --sort oldest --limit 1` returned the 2001 row,
+    Markdown oldest output included the 2001 timestamp, and `--sort random`
+    exited 1 with `list supports --sort`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -459,6 +468,7 @@ to a private repository, and preserve resumable state in this file.
   - `9e52046` Markdown session list
   - `0544e48` bounded session list output
   - `f5f1cf0` verification-status session filters
+  - `1411f76` repo-filtered session list
 
 ## Next Actions
 
