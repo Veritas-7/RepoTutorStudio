@@ -386,6 +386,18 @@
         "analysis/evidence-index-report.json evidenceByKind and evidenceByFile",
         "analysis/evidence-index-report.json lessonHref and sourceHref rows"
       ]
+    },
+    {
+      "name": "cli source evidence report access",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor evidence command",
+        "repo-tutor evidence --kind filter",
+        "repo-tutor evidence --limit row cap"
+      ]
     }
   ],
   "verification": {
@@ -433,6 +445,7 @@
     "cliEvidenceKindFilterSmoke": "PASS",
     "fixtureEvidenceIndexReport": "PASS",
     "cliEvidenceIndexReportSmoke": "PASS",
+    "cliEvidenceCommandSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

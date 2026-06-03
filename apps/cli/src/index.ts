@@ -19,6 +19,7 @@ async function main(): Promise<void> {
     if (parsed.command === "study") await study(parsed);
     else if (parsed.command === "quiz") await quiz(parsed);
     else if (parsed.command === "resume") await resume(parsed);
+    else if (parsed.command === "evidence") await evidence(parsed);
     else if (parsed.command === "export") await exportSession(parsed);
     else if (parsed.command === "verify-export") await verifyExport(parsed);
     else if (parsed.command === "list") await list(parsed);
@@ -82,6 +83,38 @@ async function resume(parsed: ParsedArgs): Promise<void> {
     repo: session.repo,
     root: sessionRoot,
     html: path.join(session.outputPaths.html, "index.html")
+  }, null, 2));
+}
+
+async function evidence(parsed: ParsedArgs): Promise<void> {
+  const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
+  const report = JSON.parse(await fs.readFile(path.join(sessionRoot, "analysis", "evidence-index-report.json"), "utf8")) as {
+    totalEvidenceItems: number;
+    evidenceByKind: Record<string, number>;
+    evidenceByFile: Record<string, number>;
+    items: Array<{
+      filePath: string;
+      line: number;
+      kind: string;
+      snippet: string;
+      lessonHref: string;
+      sourcePath: string;
+      sourceHref: string;
+    }>;
+  };
+  const kind = stringFlag(parsed.flags.kind);
+  const limit = numberFlag(parsed.flags.limit, 20);
+  const items = report.items
+    .filter((item) => !kind || item.kind === kind)
+    .slice(0, limit);
+  console.log(JSON.stringify({
+    sessionRoot,
+    totalEvidenceItems: report.totalEvidenceItems,
+    evidenceByKind: report.evidenceByKind,
+    evidenceByFile: report.evidenceByFile,
+    filteredKind: kind ?? null,
+    returnedItems: items.length,
+    items
   }, null, 2));
 }
 
@@ -214,6 +247,12 @@ function stringFlag(value: string | boolean | undefined): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
+function numberFlag(value: string | boolean | undefined, fallback: number): number {
+  if (typeof value !== "string") return fallback;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
 function studiesRoot(flags: Record<string, string | boolean>): string {
   return path.resolve(
     stringFlag(flags["studies-root"])
@@ -232,6 +271,7 @@ function help(): void {
   quiz <session-id-or-path> --interactive
   quiz <session-id-or-path> --answers answers.json
   resume <session-id-or-path>
+  evidence <session-id-or-path> --kind import --limit 20
   export <session-id-or-path> --format html|zip
   verify-export <session-id-or-path>
   list
