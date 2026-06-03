@@ -235,6 +235,10 @@ to a private repository, and preserve resumable state in this file.
   summary output. CLI `repo-tutor list --summary --format json|markdown` now
   summarizes filtered sessions by verification status, mode, level, HTML target
   completeness, quiz score state, and repository.
+- 2026-06-04: Applied a seventy-fifth AutoResearch upgrade: saved session list
+  output. CLI `repo-tutor list --output <file>` now writes JSON, JSONL, CSV,
+  Markdown, or summary output directly to a file and returns the absolute output
+  path.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -556,6 +560,13 @@ to a private repository, and preserve resumable state in this file.
     score `100`, and complete HTML target counts, Markdown summary rendered the
     same totals, `--summary --format csv` failed closed, and combining
     `--summary` with `--fields` failed closed with an explicit conflict message
+  - temp CLI list-output smoke generated
+    `/tmp/repotutor-list-output-smoke.sHVw9m`; two fixture sessions were
+    created, JSONL score-preset output, CSV paths-preset output, and Markdown
+    summary output were written under `reports/`, stdout returned each absolute
+    output path, saved file contents matched expected headers/totals, `doctor`
+    reported output support, and bare `--output` failed closed with
+    `output must be a non-empty string`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -698,6 +709,7 @@ to a private repository, and preserve resumable state in this file.
   - `cacc71c` CSV session list output
   - `219c480` field-selected session list output
   - `44730b7` field preset session list output
+  - `7935087` session list summary output
 
 ## Next Actions
 

@@ -1163,6 +1163,20 @@ Local verification:
   score `100`, and complete HTML target counts, Markdown summary rendered the
   same totals, `--summary --format csv` failed closed, and combining
   `--summary` with `--fields` failed closed with an explicit conflict message.
+
+### Upgrade 75: Saved Session List Output
+
+- Added `repo-tutor list --output <file>` so JSON, JSONL, CSV, Markdown, and
+  summary outputs can be saved directly for handoff notes or automation
+  artifacts.
+- Added `output` list metadata to `repo-tutor doctor`.
+- Temp CLI list-output smoke generated
+  `/tmp/repotutor-list-output-smoke.sHVw9m`; two fixture sessions were created,
+  JSONL score-preset output, CSV paths-preset output, and Markdown summary
+  output were written under `reports/`, stdout returned each absolute output
+  path, saved file contents matched expected headers/totals, `doctor` reported
+  output support, and bare `--output` failed closed with `output must be a
+  non-empty string`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
