@@ -685,6 +685,17 @@
         "repo-tutor doctor --format markdown",
         "fail-closed doctor format validation"
       ]
+    },
+    {
+      "name": "resume html target status",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor resume htmlTargetStatus",
+        "HTML Target Status section in Markdown resume output"
+      ]
     }
   ],
   "verification": {
@@ -765,6 +776,7 @@
     "cliOpenAllSmoke": "PASS",
     "cliDoctorMetadataSmoke": "PASS",
     "cliDoctorMarkdownSmoke": "PASS",
+    "cliResumeTargetStatusSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

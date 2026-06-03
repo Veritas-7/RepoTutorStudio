@@ -112,6 +112,7 @@ async function resume(parsed: ParsedArgs): Promise<void> {
   const verification = await sessionVerificationSummary(sessionRoot);
   const format = stringFlag(parsed.flags.format) ?? "json";
   if (!["json", "markdown"].includes(format)) throw new Error("resume supports --format json or markdown.");
+  const htmlTargets = openTargetPaths(session.outputPaths.html);
   const payload = {
     sessionId: session.sessionId,
     repo: session.repo,
@@ -119,7 +120,8 @@ async function resume(parsed: ParsedArgs): Promise<void> {
     level: session.learnerLevel,
     root: sessionRoot,
     html: path.join(session.outputPaths.html, "index.html"),
-    htmlTargets: openTargetPaths(session.outputPaths.html),
+    htmlTargets,
+    htmlTargetStatus: await htmlTargetStatus(htmlTargets),
     verificationStatus: verification.status,
     verificationOk: verification.ok,
     verificationReport: verification.reportPath,
@@ -475,6 +477,22 @@ async function assertReadableFile(filePath: string, message: string): Promise<vo
   }
 }
 
+async function readableFileExists(filePath: string): Promise<boolean> {
+  try {
+    const stat = await fs.stat(filePath);
+    return stat.isFile();
+  } catch {
+    return false;
+  }
+}
+
+async function htmlTargetStatus(targets: Record<string, string>): Promise<Record<string, boolean>> {
+  const statuses = await Promise.all(
+    Object.entries(targets).map(async ([target, filePath]) => [target, await readableFileExists(filePath)] as const)
+  );
+  return Object.fromEntries(statuses);
+}
+
 function evidenceMarkdown(payload: {
   sessionRoot: string;
   totalEvidenceItems: number;
@@ -509,6 +527,7 @@ function resumeMarkdown(payload: {
   root: string;
   html: string;
   htmlTargets: Record<string, string>;
+  htmlTargetStatus: Record<string, boolean>;
   verificationStatus: string;
   verificationOk: boolean | null;
   verificationReport: string;
@@ -522,6 +541,9 @@ function resumeMarkdown(payload: {
     : "- none";
   const targets = Object.entries(payload.htmlTargets)
     .map(([target, filePath]) => `- ${target}: ${filePath}`)
+    .join("\n");
+  const targetStatus = Object.entries(payload.htmlTargetStatus)
+    .map(([target, exists]) => `- ${target}: ${exists ? "present" : "missing"}`)
     .join("\n");
   return [
     "# RepoTutor Resume",
@@ -542,6 +564,10 @@ function resumeMarkdown(payload: {
     "## HTML Targets",
     "",
     targets,
+    "",
+    "## HTML Target Status",
+    "",
+    targetStatus,
     "",
     "## Verification Checks",
     "",
