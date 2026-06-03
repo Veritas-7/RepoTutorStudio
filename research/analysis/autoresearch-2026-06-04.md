@@ -1707,6 +1707,23 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 102: Learning Path Step Navigation
+
+- Added stable `learning-step-N` anchors to each `learning-path.html` card.
+- Added `learning-step-nav` previous/next intra-page links so learners can move
+  between generated tour steps without returning to the top of the page.
+- Source pattern: microsoft/codetour appends Previous/Next step links to tour
+  content; RepoTutor maps that to portable static anchors in its learning path.
+- RED smoke `/tmp/repotutor-learning-nav-red.*` failed on the old behavior with
+  `learning path missing id="learning-step-1"`.
+- GREEN smoke generated `/tmp/repotutor-learning-nav-smoke.UIf7oU`; generated
+  `learning-path.html` included `id="learning-step-1"`, `learning-step-nav`,
+  `href="#learning-step-2"`, `다음 단계`, and `이전 단계`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports after source-token audit
+  adjustment for dynamic step IDs and links
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
