@@ -409,6 +409,17 @@
         "repo-tutor evidence --file filter",
         "repo-tutor evidence filteredFile JSON field"
       ]
+    },
+    {
+      "name": "markdown output for cli source evidence",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor evidence --format markdown",
+        "human-readable evidence summary output"
+      ]
     }
   ],
   "verification": {
@@ -458,6 +469,7 @@
     "cliEvidenceIndexReportSmoke": "PASS",
     "cliEvidenceCommandSmoke": "PASS",
     "cliEvidenceFileFilterSmoke": "PASS",
+    "cliEvidenceMarkdownSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
