@@ -132,7 +132,7 @@ function renderExportReadme(manifest: HtmlExportManifest): string {
     .join("\n");
   const pages = manifest.pages.map((page) => `- ${page.title}: ${insideHtmlPath(page.path)} (${page.bytes} bytes, sha256 ${shortHash(page.sha256)})`).join("\n");
   const assets = manifest.assets.map((asset) => `- ${insideHtmlPath(asset.path)} (${asset.bytes} bytes, sha256 ${shortHash(asset.sha256)})`).join("\n");
-  return `# RepoTutor HTML Export\n\nOpen \`index.html\` in a browser to start. This folder is portable and can be copied as one offline report bundle.\n\nIntegrity metadata uses ${manifest.integrity.algorithm} for ${manifest.integrity.coveredFiles} files. Full hashes are in \`manifest.json\`.\n\n## Entry Points\n\n${entrypoints}\n\n## Pages\n\n${pages}\n\n## Assets\n\n${assets}\n`;
+  return `# RepoTutor HTML Export\n\nOpen \`index.html\` in a browser to start. This folder is portable and can be copied as one offline report bundle.\n\nUse browser print preview when you need a PDF or paper handout; \`assets/style.css\` includes print rules that hide navigation and expand the report content.\n\nIntegrity metadata uses ${manifest.integrity.algorithm} for ${manifest.integrity.coveredFiles} files. Full hashes are in \`manifest.json\`.\n\n## Entry Points\n\n${entrypoints}\n\n## Pages\n\n${pages}\n\n## Assets\n\n${assets}\n`;
 }
 
 function insideHtmlPath(filePath: string): string {
