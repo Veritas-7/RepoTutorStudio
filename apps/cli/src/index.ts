@@ -205,15 +205,28 @@ async function verifySession(parsed: ParsedArgs): Promise<void> {
 
 async function list(parsed: ParsedArgs): Promise<void> {
   const sessions = await listSessions(studiesRoot(parsed.flags));
-  console.log(JSON.stringify(sessions.map((session) => ({
-    sessionId: session.sessionId,
-    repo: `${session.owner}/${session.repo}`,
-    createdAt: session.createdAt,
-    mode: session.studyMode,
-    score: session.quizSummary.latestScore,
-    wrong: session.quizSummary.wrongCount,
-    path: session.outputPaths.root
-  })), null, 2));
+  const rows = await Promise.all(sessions.map(async (session) => {
+    const verification = await sessionVerificationSummary(session.outputPaths.root);
+    return {
+      sessionId: session.sessionId,
+      repo: `${session.owner}/${session.repo}`,
+      createdAt: session.createdAt,
+      mode: session.studyMode,
+      score: session.quizSummary.latestScore,
+      wrong: session.quizSummary.wrongCount,
+      path: session.outputPaths.root,
+      html: path.join(session.outputPaths.html, "index.html"),
+      verificationStatus: verification.status,
+      verificationOk: verification.ok,
+      verificationReport: verification.reportPath,
+      verificationMarkdown: verification.markdownPath,
+      verificationHtml: verification.htmlPath,
+      verificationCheckedRequiredArtifacts: verification.checkedRequiredArtifacts,
+      verificationChecks: verification.checks
+    };
+  }));
+  const filtered = parsed.flags["verified-only"] === true ? rows.filter((row) => row.verificationOk === true) : rows;
+  console.log(JSON.stringify(filtered, null, 2));
 }
 
 async function openSession(parsed: ParsedArgs): Promise<void> {
@@ -325,6 +338,44 @@ function evidenceMarkdown(payload: {
   ].join("\n");
 }
 
+async function sessionVerificationSummary(sessionRoot: string): Promise<{
+  status: "passed" | "failed" | "missing";
+  ok: boolean | null;
+  reportPath: string;
+  markdownPath: string;
+  htmlPath: string;
+  checkedRequiredArtifacts: number | null;
+  checks: Record<string, boolean> | null;
+}> {
+  const reportPath = path.join(sessionRoot, "analysis", "session-verification-report.json");
+  try {
+    const report = JSON.parse(await fs.readFile(reportPath, "utf8")) as {
+      ok: boolean;
+      checkedRequiredArtifacts: number;
+      checks: Record<string, boolean>;
+    };
+    return {
+      status: report.ok ? "passed" : "failed",
+      ok: report.ok,
+      reportPath,
+      markdownPath: path.join(sessionRoot, "markdown", "session-verification.md"),
+      htmlPath: path.join(sessionRoot, "html", "session-verification.html"),
+      checkedRequiredArtifacts: report.checkedRequiredArtifacts,
+      checks: report.checks
+    };
+  } catch {
+    return {
+      status: "missing",
+      ok: null,
+      reportPath,
+      markdownPath: path.join(sessionRoot, "markdown", "session-verification.md"),
+      htmlPath: path.join(sessionRoot, "html", "session-verification.html"),
+      checkedRequiredArtifacts: null,
+      checks: null
+    };
+  }
+}
+
 function sessionVerificationMarkdown(payload: {
   ok: boolean;
   sessionRoot: string;
@@ -388,7 +439,7 @@ function help(): void {
   verify-export <session-id-or-path>
   verify-evidence <session-id-or-path>
   verify-session <session-id-or-path> --format json|markdown
-  list
+  list --verified-only
   open <session-id-or-path>
   doctor`);
 }

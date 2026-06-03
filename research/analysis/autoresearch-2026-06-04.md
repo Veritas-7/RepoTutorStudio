@@ -458,6 +458,17 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs`: verifies the study output verification
   fields.
 
+### Upgrade 35: List Verification Summaries
+
+- `apps/cli/src/index.ts`: `repo-tutor list` now reads each session's
+  `analysis/session-verification-report.json`.
+- `apps/cli/src/index.ts`: list rows include `verificationStatus`,
+  `verificationOk`, verification report paths, checked artifact count, and
+  sub-check statuses.
+- `apps/cli/src/index.ts`: adds `repo-tutor list --verified-only` to show only
+  sessions whose aggregate verification passed.
+- `scripts/compliance-audit.mjs`: verifies the list verification output surface.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -619,6 +630,12 @@ Local verification:
   `verificationReport`, `verificationMarkdown`, `verificationHtml`,
   `verificationCheckedRequiredArtifacts: 11`, and all four `verificationChecks`
   as true.
+- Temp CLI list verification smoke generated:
+  `/tmp/repotutor-list-verification-smoke.7R2dO9/2026-06-04/local__simple-ts-app__main__cca0b13a`
+  and `repo-tutor list --verified-only` returned one verified session with
+  `verificationStatus: passed`, `verificationOk: true`, verification
+  report/Markdown/HTML paths, `verificationCheckedRequiredArtifacts: 11`,
+  `htmlExport: true`, and `evidenceIndex: true`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

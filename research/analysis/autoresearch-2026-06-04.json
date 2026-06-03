@@ -509,6 +509,17 @@
         "repo-tutor study verificationOk output",
         "repo-tutor study verification report paths"
       ]
+    },
+    {
+      "name": "list verification summaries",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list verificationStatus output",
+        "repo-tutor list --verified-only filter"
+      ]
     }
   ],
   "verification": {
@@ -573,6 +584,7 @@
     "fixtureSessionVerificationHtmlEntrypoint": "PASS",
     "cliSessionVerificationHtmlEntrypointSmoke": "PASS",
     "cliStudyVerificationOutputSmoke": "PASS",
+    "cliListVerificationSummarySmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
