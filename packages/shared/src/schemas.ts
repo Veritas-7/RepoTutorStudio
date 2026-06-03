@@ -180,6 +180,20 @@ export const EvidenceIndexReportSchema = z.object({
   }))
 });
 
+export const SuggestedReadsReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  items: z.array(z.object({
+    rank: z.number().int().positive(),
+    filePath: z.string(),
+    reason: z.string(),
+    evidenceCount: z.number().int().nonnegative(),
+    relatedFileCount: z.number().int().nonnegative(),
+    lessonHref: z.string(),
+    sourceHref: z.string()
+  }))
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -387,6 +401,7 @@ export type FolderLesson = z.infer<typeof FolderLessonSchema>;
 export type FileLesson = z.infer<typeof FileLessonSchema>;
 export type CoverageReport = z.infer<typeof CoverageReportSchema>;
 export type EvidenceIndexReport = z.infer<typeof EvidenceIndexReportSchema>;
+export type SuggestedReadsReport = z.infer<typeof SuggestedReadsReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

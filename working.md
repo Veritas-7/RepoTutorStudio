@@ -345,6 +345,13 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Applied a hundred-third AutoResearch upgrade: learning path
   primary marker. `html/learning-path.html` now marks the generated tour with
   `data-learning-primary` and `기본 투어`.
+- 2026-06-04: Cloned `k3-2o/pi-repo-baby` under
+  `research/external-src/k3-2o-pi-repo-baby` for read-only AutoResearch source
+  inspection.
+- 2026-06-04: Applied a hundred-fourth AutoResearch upgrade: suggested reads
+  report. RepoTutor now writes `analysis/suggested-reads-report.json`,
+  `markdown/suggested-reads.md`, and `html/suggested-reads.html`, and CLI
+  `open --target suggested-reads` returns the new page.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -894,6 +901,12 @@ to a private repository, and preserve resumable state in this file.
     `/tmp/repotutor-learning-primary-smoke.wnerUs`; generated
     `html/learning-path.html` contained `data-learning-primary` and
     `기본 투어`.
+  - temp CLI suggested-reads smoke generated
+    `/tmp/repotutor-suggested-reads-smoke.lyMXF2`; generated
+    `analysis/suggested-reads-report.json`, `markdown/suggested-reads.md`, and
+    `html/suggested-reads.html`, contained `suggested-read-card`, `Repo Baby`,
+    and `추천 읽기`, and `open --target suggested-reads` returned the new HTML
+    page path.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -1000,6 +1013,7 @@ to a private repository, and preserve resumable state in this file.
   - `cc64368` learning path progress reset
   - `65d92d1` learning path progress summary
   - `3d0b4ea` learning path step navigation
+  - `46b15e3` learning path primary marker
 
 ## Next Actions
 
