@@ -531,6 +531,17 @@
         "repo-tutor open --target verification|evidence|quiz",
         "direct HTML page path output for generated study pages"
       ]
+    },
+    {
+      "name": "open target discovery",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor open --list-targets",
+        "JSON target table for generated HTML pages"
+      ]
     }
   ],
   "verification": {
@@ -597,6 +608,7 @@
     "cliStudyVerificationOutputSmoke": "PASS",
     "cliListVerificationSummarySmoke": "PASS",
     "cliOpenTargetSmoke": "PASS",
+    "cliOpenTargetListSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

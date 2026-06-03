@@ -230,6 +230,10 @@ async function list(parsed: ParsedArgs): Promise<void> {
 }
 
 async function openSession(parsed: ParsedArgs): Promise<void> {
+  if (parsed.flags["list-targets"] === true) {
+    console.log(JSON.stringify(openTargetEntries(), null, 2));
+    return;
+  }
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const target = stringFlag(parsed.flags.target) ?? "index";
   const fileName = openTargetFile(target);
@@ -378,28 +382,32 @@ async function sessionVerificationSummary(sessionRoot: string): Promise<{
 }
 
 function openTargetFile(target: string): string {
-  const targets: Record<string, string> = {
-    index: "index.html",
-    overview: "overview.html",
-    language: "language.html",
-    architecture: "architecture.html",
-    folders: "folders.html",
-    files: "files.html",
-    evidence: "evidence.html",
-    verification: "session-verification.html",
-    coverage: "coverage.html",
-    graph: "component-graph.html",
-    "component-graph": "component-graph.html",
-    incremental: "incremental.html",
-    flow: "flow.html",
-    glossary: "glossary.html",
-    rebuild: "rebuild.html",
-    quiz: "quiz.html",
-    "wrong-notes": "wrong-notes.html"
-  };
+  const targets = Object.fromEntries(openTargetEntries().map((entry) => [entry.target, entry.fileName]));
   const fileName = targets[target];
   if (!fileName) throw new Error(`Unsupported open target: ${target}`);
   return fileName;
+}
+
+function openTargetEntries(): Array<{ target: string; fileName: string }> {
+  return [
+    { target: "index", fileName: "index.html" },
+    { target: "overview", fileName: "overview.html" },
+    { target: "language", fileName: "language.html" },
+    { target: "architecture", fileName: "architecture.html" },
+    { target: "folders", fileName: "folders.html" },
+    { target: "files", fileName: "files.html" },
+    { target: "evidence", fileName: "evidence.html" },
+    { target: "verification", fileName: "session-verification.html" },
+    { target: "coverage", fileName: "coverage.html" },
+    { target: "graph", fileName: "component-graph.html" },
+    { target: "component-graph", fileName: "component-graph.html" },
+    { target: "incremental", fileName: "incremental.html" },
+    { target: "flow", fileName: "flow.html" },
+    { target: "glossary", fileName: "glossary.html" },
+    { target: "rebuild", fileName: "rebuild.html" },
+    { target: "quiz", fileName: "quiz.html" },
+    { target: "wrong-notes", fileName: "wrong-notes.html" }
+  ];
 }
 
 function sessionVerificationMarkdown(payload: {
@@ -467,6 +475,7 @@ function help(): void {
   verify-session <session-id-or-path> --format json|markdown
   list --verified-only
   open <session-id-or-path> --target verification|evidence|quiz
+  open --list-targets
   doctor`);
 }
 

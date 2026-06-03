@@ -480,6 +480,16 @@ Transferable patterns:
   `Unsupported open target: <target>`.
 - `scripts/compliance-audit.mjs`: verifies the open-target CLI tokens.
 
+### Upgrade 37: Open Target Discovery
+
+- `apps/cli/src/index.ts`: `repo-tutor open --list-targets` prints all
+  supported HTML target names and filenames as JSON.
+- `apps/cli/src/index.ts`: target discovery works without resolving a session
+  path, so users can inspect available pages before choosing a session.
+- `apps/cli/src/index.ts`: `openTargetFile` now reuses the same target table as
+  `--list-targets`.
+- `scripts/compliance-audit.mjs`: verifies the list-targets CLI surface.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -652,6 +662,12 @@ Local verification:
   `repo-tutor open --target verification`, `--target evidence`, and
   `--target quiz` returned existing HTML page paths, while `--target nope`
   exited 1 with `Unsupported open target: nope`.
+- Temp CLI open-target-list smoke generated:
+  `/tmp/repotutor-open-target-list-smoke.WK6yKx/2026-06-04/local__simple-ts-app__main__fc9d7184`;
+  `repo-tutor open --list-targets` returned 17 targets including
+  `verification`, `evidence`, `quiz`, and `component-graph`, and
+  `open --target verification`, `--target evidence`, and `--target quiz`
+  returned existing files.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
