@@ -81,6 +81,8 @@ async function study(parsed: ParsedArgs): Promise<void> {
 async function quiz(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const htmlInput = await loadStudyHtmlInput(sessionRoot);
+  const format = stringFlag(parsed.flags.format) ?? "json";
+  if (!["json", "markdown"].includes(format)) throw new Error("quiz supports --format json or markdown.");
   let answers: Record<string, "A" | "B" | "C" | "D">;
   const answersFile = stringFlag(parsed.flags.answers);
   if (answersFile) {
@@ -91,13 +93,14 @@ async function quiz(parsed: ParsedArgs): Promise<void> {
     throw new Error("quiz requires --interactive or --answers answers.json");
   }
   const attempt = await scoreQuizAttempt(sessionRoot, answers, htmlInput);
-  console.log(JSON.stringify({
+  const payload = {
     attemptId: attempt.attemptId,
     score: attempt.score,
     correct: attempt.correctCount,
     wrong: attempt.wrongCount,
     wrongNotes: path.join(sessionRoot, "html", "wrong-notes.html")
-  }, null, 2));
+  };
+  console.log(format === "markdown" ? quizAttemptMarkdown(payload) : JSON.stringify(payload, null, 2));
 }
 
 async function resume(parsed: ParsedArgs): Promise<void> {
@@ -343,6 +346,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       "doctor"
     ],
     formats: {
+      quiz: ["json", "markdown"],
       resume: ["json", "markdown"],
       evidence: ["json", "markdown"],
       verifyExport: ["json", "markdown"],
@@ -547,6 +551,24 @@ function evidenceMarkdown(payload: {
     `- Kinds: ${Object.entries(payload.evidenceByKind).map(([kind, count]) => `${kind} ${count}`).join(", ") || "none"}`,
     "",
     ...payload.items.map((item) => `## ${item.filePath}:L${item.line}\n\n- Kind: ${item.kind}\n- Lesson: ${item.lessonHref}\n- Source: ${item.sourceHref}\n\n\`${item.snippet.replaceAll("`", "'")}\`\n`)
+  ].join("\n");
+}
+
+function quizAttemptMarkdown(payload: {
+  attemptId: string;
+  score: number;
+  correct: number;
+  wrong: number;
+  wrongNotes: string;
+}): string {
+  return [
+    "# RepoTutor Quiz Attempt",
+    "",
+    `- Attempt ID: ${payload.attemptId}`,
+    `- Score: ${payload.score}`,
+    `- Correct: ${payload.correct}`,
+    `- Wrong: ${payload.wrong}`,
+    `- Wrong notes: ${payload.wrongNotes}`
   ].join("\n");
 }
 
@@ -906,8 +928,8 @@ function commandBaseDir(): string {
 function help(): void {
   console.log(`repo-tutor commands:
   study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior
-  quiz <session-id-or-path> --interactive
-  quiz <session-id-or-path> --answers answers.json
+  quiz <session-id-or-path> --interactive --format json|markdown
+  quiz <session-id-or-path> --answers answers.json --format json|markdown
   resume <session-id-or-path> --format json|markdown
   evidence <session-id-or-path> --kind import --file src/main.ts --limit 20 --format json|markdown
   export <session-id-or-path> --format html|zip
