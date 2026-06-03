@@ -451,6 +451,55 @@ export const DecisionRecordReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DependencyHealthReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  totalLocalDependencies: z.number().int().nonnegative(),
+  localDependencyEdges: z.array(z.object({
+    fromFile: z.string(),
+    toFile: z.string(),
+    importText: z.string(),
+    dependencyType: z.enum(["local-import", "unresolved-local-import"]),
+    lessonHref: z.string(),
+    sourceHref: z.string()
+  })),
+  cycles: z.array(z.object({
+    id: z.string(),
+    files: z.array(z.string()),
+    severity: z.enum(["warn", "error"]),
+    suggestion: z.string()
+  })),
+  orphanModules: z.array(z.object({
+    filePath: z.string(),
+    reason: z.string(),
+    lessonHref: z.string(),
+    sourceHref: z.string()
+  })),
+  ruleViolations: z.array(z.object({
+    ruleName: z.string(),
+    severity: z.enum(["info", "warn", "error"]),
+    fromFile: z.string(),
+    toFile: z.string().nullable(),
+    message: z.string(),
+    suggestion: z.string()
+  })),
+  graphMetrics: z.object({
+    nodeCount: z.number().int().nonnegative(),
+    edgeCount: z.number().int().nonnegative(),
+    maxFanIn: z.number().int().nonnegative(),
+    maxFanOut: z.number().int().nonnegative(),
+    topFanIn: z.array(z.object({
+      filePath: z.string(),
+      count: z.number().int().nonnegative()
+    })),
+    topFanOut: z.array(z.object({
+      filePath: z.string(),
+      count: z.number().int().nonnegative()
+    }))
+  }),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -668,6 +717,7 @@ export type AgentMemoryReport = z.infer<typeof AgentMemoryReportSchema>;
 export type GraphQueryReport = z.infer<typeof GraphQueryReportSchema>;
 export type TutorialAbstractionReport = z.infer<typeof TutorialAbstractionReportSchema>;
 export type DecisionRecordReport = z.infer<typeof DecisionRecordReportSchema>;
+export type DependencyHealthReport = z.infer<typeof DependencyHealthReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

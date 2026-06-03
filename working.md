@@ -1264,6 +1264,33 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`: PASS, 13/13 audit reports
 - 2026-06-04: Pushed AutoResearch Upgrade 115:
   - `5451ce5` decision record report
+- 2026-06-04: AutoResearch Upgrade 116 candidate selected:
+  `sverweij/dependency-cruiser`
+  (`https://github.com/sverweij/dependency-cruiser`; public MIT; 6,719 stars;
+  284 forks; updated 2026-06-03T14:12:03Z). Cloned ignored external source to
+  `research/external-src/sverweij-dependency-cruiser` and inspected README,
+  `configs/rules/no-circular.cjs`, `configs/rules/no-orphans.cjs`,
+  `src/graph-utl/indexed-module-graph.mjs`, and `types/cruise-result.d.mts`
+  without executing it.
+- 2026-06-04: RED dependency-health smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-dependency-health-red-studies.ElcnGI8FyZ/...`;
+  old build was missing `analysis/dependency-health-report.json` as expected.
+- 2026-06-04: Implemented dependency-cruiser-style dependency health report:
+  `DependencyHealthReportSchema`, `analysis/dependency-health-report.json`,
+  `markdown/dependency-health.md`, `html/dependency-health.html`,
+  local dependency edges, cycle/orphan/rule-violation fields,
+  fan-in/fan-out graph metrics, manifest/session-verification coverage,
+  learning-path linkage, and `open --target dependency-health`.
+- 2026-06-04: GREEN dependency-health smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-dependency-health-green-studies.h1ibguTvLv/...`;
+  confirmed `localDependencyEdges`, `cycles`, `orphanModules`,
+  `ruleViolations`, `dependency-health-card`,
+  `data-source-pattern="dependency-cruiser"`, `no-circular`, `no-orphans`,
+  and `open --target dependency-health` -> `html/dependency-health.html`.
+- 2026-06-04: Verification for Upgrade 116:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 13/13 audit reports
 
 ## Next Actions
 
