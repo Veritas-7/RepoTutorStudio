@@ -93,7 +93,9 @@ async function resume(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const session = JSON.parse(await fs.readFile(path.join(sessionRoot, "session.json"), "utf8")) as { sessionId: string; repo: string; outputPaths: { html: string } };
   const verification = await sessionVerificationSummary(sessionRoot);
-  console.log(JSON.stringify({
+  const format = stringFlag(parsed.flags.format) ?? "json";
+  if (!["json", "markdown"].includes(format)) throw new Error("resume supports --format json or markdown.");
+  const payload = {
     sessionId: session.sessionId,
     repo: session.repo,
     root: sessionRoot,
@@ -106,7 +108,12 @@ async function resume(parsed: ParsedArgs): Promise<void> {
     verificationHtml: verification.htmlPath,
     verificationCheckedRequiredArtifacts: verification.checkedRequiredArtifacts,
     verificationChecks: verification.checks
-  }, null, 2));
+  };
+  if (format === "markdown") {
+    console.log(resumeMarkdown(payload));
+  } else {
+    console.log(JSON.stringify(payload, null, 2));
+  }
 }
 
 async function evidence(parsed: ParsedArgs): Promise<void> {
@@ -363,6 +370,50 @@ function evidenceMarkdown(payload: {
   ].join("\n");
 }
 
+function resumeMarkdown(payload: {
+  sessionId: string;
+  repo: string;
+  root: string;
+  html: string;
+  htmlTargets: Record<string, string>;
+  verificationStatus: string;
+  verificationOk: boolean | null;
+  verificationReport: string;
+  verificationMarkdown: string;
+  verificationHtml: string;
+  verificationCheckedRequiredArtifacts: number | null;
+  verificationChecks: Record<string, boolean> | null;
+}): string {
+  const verificationChecks = payload.verificationChecks
+    ? Object.entries(payload.verificationChecks).map(([name, ok]) => `- ${name}: ${ok ? "PASS" : "FAIL"}`).join("\n")
+    : "- none";
+  const targets = Object.entries(payload.htmlTargets)
+    .map(([target, filePath]) => `- ${target}: ${filePath}`)
+    .join("\n");
+  return [
+    "# RepoTutor Resume",
+    "",
+    `- Session ID: ${payload.sessionId}`,
+    `- Repo: ${payload.repo}`,
+    `- Root: ${payload.root}`,
+    `- Main HTML: ${payload.html}`,
+    `- Verification status: ${payload.verificationStatus}`,
+    `- Verification OK: ${payload.verificationOk === null ? "unknown" : String(payload.verificationOk)}`,
+    `- Required artifacts checked: ${payload.verificationCheckedRequiredArtifacts ?? "unknown"}`,
+    `- Verification report: ${payload.verificationReport}`,
+    `- Verification markdown: ${payload.verificationMarkdown}`,
+    `- Verification HTML: ${payload.verificationHtml}`,
+    "",
+    "## HTML Targets",
+    "",
+    targets,
+    "",
+    "## Verification Checks",
+    "",
+    verificationChecks
+  ].join("\n");
+}
+
 async function sessionVerificationSummary(sessionRoot: string): Promise<{
   status: "passed" | "failed" | "missing";
   ok: boolean | null;
@@ -491,7 +542,7 @@ function help(): void {
   study <github-url-or-path> --mode quick|standard|deep --level beginner|junior|senior
   quiz <session-id-or-path> --interactive
   quiz <session-id-or-path> --answers answers.json
-  resume <session-id-or-path>
+  resume <session-id-or-path> --format json|markdown
   evidence <session-id-or-path> --kind import --file src/main.ts --limit 20 --format json|markdown
   export <session-id-or-path> --format html|zip
   verify-export <session-id-or-path>
