@@ -330,6 +330,34 @@ export const McpHandoffReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const AgentMemoryReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  tokenSavings: z.object({
+    rawCodeReadTokens: z.number().int().nonnegative(),
+    graphQueryTokenTarget: z.number().int().positive(),
+    estimatedReductionX: z.number().nonnegative()
+  }),
+  layers: z.array(z.object({
+    name: z.string(),
+    role: z.string(),
+    generatedArtifact: z.string(),
+    useBefore: z.string()
+  })),
+  memoryNotes: z.array(z.object({
+    title: z.string(),
+    noteType: z.enum(["project-context", "context-navigation", "session-log"]),
+    frontmatter: z.array(z.object({
+      key: z.string(),
+      value: z.string()
+    })),
+    body: z.string(),
+    relatedReportHref: z.string()
+  })),
+  contextNavigationRules: z.array(z.string()),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -543,6 +571,7 @@ export type InterfaceMapReport = z.infer<typeof InterfaceMapReportSchema>;
 export type SymbolMapReport = z.infer<typeof SymbolMapReportSchema>;
 export type ContextPackReport = z.infer<typeof ContextPackReportSchema>;
 export type McpHandoffReport = z.infer<typeof McpHandoffReportSchema>;
+export type AgentMemoryReport = z.infer<typeof AgentMemoryReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

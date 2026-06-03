@@ -134,6 +134,21 @@
         "getRemoteCodebase public repository comparison",
         "saveCodebase persistent analysis snapshot"
       ]
+    },
+    {
+      "repo": "lucasrosati/claude-code-memory-setup",
+      "url": "https://github.com/lucasrosati/claude-code-memory-setup",
+      "localPath": "research/external-src/lucasrosati-claude-code-memory-setup",
+      "stars": 731,
+      "forks": 61,
+      "license": "MIT",
+      "updatedAt": "2026-06-03T22:11:20Z",
+      "adoptedPatterns": [
+        "Obsidian-style persistent project memory",
+        "Graphify codebase knowledge graph before raw-code reads",
+        "token-saving context navigation rules",
+        "session save and resume memory notes"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -1593,6 +1608,28 @@
         "McpHandoffReportSchema",
         "Codebase MCP-style tool and prompt handoff report"
       ]
+    },
+    {
+      "name": "Agent memory report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/agent-memory-report.json",
+        "markdown/agent-memory.md",
+        "html/agent-memory.html",
+        "open --target agent-memory",
+        "AgentMemoryReportSchema",
+        "Obsidian/Graphify-style persistent memory and context navigation report"
+      ]
     }
   ],
   "verification": {
@@ -1764,7 +1801,10 @@
     "cliMcpHandoffOpenTargetSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
-    "gitleaksStaged": "PASS"
+    "gitleaksStaged": "PASS",
+    "fixtureAgentMemoryReport": "PASS",
+    "cliAgentMemorySmoke": "PASS",
+    "cliAgentMemoryOpenTargetSmoke": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"

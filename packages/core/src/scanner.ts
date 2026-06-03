@@ -24,6 +24,7 @@ import {
   SymbolMapReport,
   ContextPackReport,
   McpHandoffReport,
+  AgentMemoryReport,
   RepoMap,
   htmlAnchor
 } from "@repotutor/shared";
@@ -45,6 +46,7 @@ export interface AnalysisBundle {
   symbolMapReport: SymbolMapReport;
   contextPackReport: ContextPackReport;
   mcpHandoffReport: McpHandoffReport;
+  agentMemoryReport: AgentMemoryReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -74,9 +76,10 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const glossary = buildGlossary(languageReport, dependencyReport, fileLessons);
   const rebuildRoadmap = buildRebuildRoadmap(repoMap, fileLessons);
   const componentGraphReport = buildComponentGraphReport(folderLessons, fileLessons, glossary, rebuildRoadmap);
+  const agentMemoryReport = buildAgentMemoryReport(repoMap, languageReport, purposeReport, contextPackReport, mcpHandoffReport, componentGraphReport);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, mcpHandoffReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, mcpHandoffReport, agentMemoryReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -698,7 +701,7 @@ function topDirectoryForContextPack(filePath: string): string {
 
 function buildMcpHandoffReport(repoMap: RepoMap, contextPackReport: ContextPackReport): McpHandoffReport {
   return {
-    summary: `codebase-mcp식 AI handoff: ${repoMap.totalFiles}개 파일 저장소를 다른 AI/MCP 도구에 넘길 때 쓸 tool 3개와 prompt ${3}개를 준비했습니다.`,
+    summary: `codebase-mcp식 AI handoff: ${repoMap.totalFiles}개 파일 저장소를 다른 AI/MCP 도구에 넘길 때 쓸 tool 3개와 prompt 3개를 준비했습니다.`,
     sourcePattern: "Codebase MCP getCodebase getRemoteCodebase saveCodebase tool handoff",
     tools: [
       {
@@ -764,6 +767,110 @@ function buildMcpHandoffReport(repoMap: RepoMap, contextPackReport: ContextPackR
       "Before sharing externally, compare the context pack excluded list with project policy."
     ]
   };
+}
+
+function buildAgentMemoryReport(
+  repoMap: RepoMap,
+  languageReport: LanguageReport,
+  purposeReport: PurposeReport,
+  contextPackReport: ContextPackReport,
+  mcpHandoffReport: McpHandoffReport,
+  componentGraphReport: ComponentGraphReport
+): AgentMemoryReport {
+  const graphQueryTokenTarget = 280;
+  const estimatedReductionX = Number(Math.max(1, contextPackReport.totalEstimatedTokens / graphQueryTokenTarget).toFixed(1));
+  const topFolders = repoMap.folders.slice(0, 4).map((folder) => folder.folderPath || "root");
+  return {
+    summary: `Claude Code memory setup식 재진입 가이드: ${repoMap.totalFiles}개 파일 저장소를 원본 재독해 전에 memory note, graph, context pack 순서로 확인하도록 정리했습니다.`,
+    sourcePattern: "Claude Code Obsidian Graphify persistent memory token-saving context navigation",
+    tokenSavings: {
+      rawCodeReadTokens: contextPackReport.totalEstimatedTokens,
+      graphQueryTokenTarget,
+      estimatedReductionX
+    },
+    layers: [
+      {
+        name: "Persistent project memory",
+        role: "결정, 진행상태, 재진입 규칙을 짧은 노트로 보존합니다.",
+        generatedArtifact: "markdown/agent-memory.md",
+        useBefore: "새 AI 세션을 시작하거나 작업을 이어받기 전"
+      },
+      {
+        name: "Codebase knowledge graph",
+        role: "파일/폴더/용어/재구현 관계를 구조 그래프로 먼저 탐색합니다.",
+        generatedArtifact: "html/component-graph.html",
+        useBefore: "원본 파일을 대량으로 열기 전"
+      },
+      {
+        name: "Context budget",
+        role: "token-heavy file과 split plan으로 공유 범위를 정합니다.",
+        generatedArtifact: "html/context-pack.html",
+        useBefore: "외부 AI 도구에 파일 묶음을 넘기기 전"
+      },
+      {
+        name: "Tool handoff",
+        role: "getCodebase, getRemoteCodebase, saveCodebase형 prompt를 준비합니다.",
+        generatedArtifact: "html/mcp-handoff.html",
+        useBefore: "다른 MCP/AI 도구에 분석을 맡기기 전"
+      }
+    ],
+    memoryNotes: [
+      {
+        title: `${repoMap.root} project context`,
+        noteType: "project-context",
+        frontmatter: memoryFrontmatter(`${repoMap.root} project context`, ["repo-tutor", "project-context"], "active"),
+        body: [
+          `Purpose: ${purposeReport.oneLineSummary}`,
+          `Primary language: ${languageReport.primaryLanguage}`,
+          `Files: ${repoMap.totalFiles}, folders: ${repoMap.totalFolders}`,
+          `Top folders: ${topFolders.join(", ") || "root"}`
+        ].join("\n"),
+        relatedReportHref: "html/overview.html"
+      },
+      {
+        title: `${repoMap.root} context navigation`,
+        noteType: "context-navigation",
+        frontmatter: memoryFrontmatter(`${repoMap.root} context navigation`, ["repo-tutor", "graphify", "context-navigation"], "active"),
+        body: [
+          "Read generated memory first, then inspect the component graph, then open raw files only for edit targets.",
+          `Graph nodes: ${componentGraphReport.summary.totalNodes}, graph edges: ${componentGraphReport.summary.totalEdges}`,
+          `Context pack tokens: ${contextPackReport.totalEstimatedTokens}, graph query target: ${graphQueryTokenTarget}`
+        ].join("\n"),
+        relatedReportHref: "html/component-graph.html"
+      },
+      {
+        title: `${repoMap.root} session handoff`,
+        noteType: "session-log",
+        frontmatter: memoryFrontmatter(`${repoMap.root} session handoff`, ["repo-tutor", "session-log"], "draft"),
+        body: [
+          "Record what changed, what was verified, and what remains before ending the session.",
+          `Reusable handoff tools: ${mcpHandoffReport.tools.map((tool) => tool.name).join(", ")}`,
+          "Keep source links and generated report paths attached to every follow-up."
+        ].join("\n"),
+        relatedReportHref: "html/session-verification.html"
+      }
+    ],
+    contextNavigationRules: [
+      "First read agent-memory.md for current purpose, top folders, and handoff state.",
+      "Second inspect component-graph.html or symbol-map.html for structure.",
+      "Third use context-pack.html to choose only the files that fit the target context window.",
+      "Open raw source files only after the generated memory and graph identify the edit target."
+    ],
+    learnerNextSteps: [
+      "Use the project-context note as the first paragraph of a new AI handoff.",
+      "Use the context-navigation note when deciding which report to open next.",
+      "Use the session-handoff note before committing or pausing work."
+    ]
+  };
+}
+
+function memoryFrontmatter(title: string, tags: string[], status: string): AgentMemoryReport["memoryNotes"][number]["frontmatter"] {
+  return [
+    { key: "title", value: title },
+    { key: "tags", value: tags.join(", ") },
+    { key: "status", value: status },
+    { key: "type", value: "agent-memory" }
+  ];
 }
 
 function suggestedReadScore(lesson: FileLesson, index: number): number {
