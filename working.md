@@ -252,6 +252,10 @@ to a private repository, and preserve resumable state in this file.
   --output-manifest <manifest-file>` now writes manifests to caller-selected
   paths while preserving the default sidecar behavior for bare
   `--output-manifest`.
+- 2026-06-04: Applied a seventy-ninth AutoResearch upgrade: saved session list
+  manifest selection metadata. List output manifests now record selected
+  fields, field presets, filters, sort, and limit metadata so saved inventories
+  can be reproduced and audited after handoff.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -600,6 +604,13 @@ to a private repository, and preserve resumable state in this file.
     `manifests/custom-scores.json`, no default sidecar was created for that
     output, `verify-list-output --manifest` passed against the custom path, and
     bare `--output-manifest` still wrote the default summary sidecar
+  - temp CLI list-manifest-metadata smoke generated
+    `/tmp/repotutor-list-manifest-metadata-smoke.4M0xZA`; two fixture sessions
+    were created, filtered JSONL score-preset output wrote manifest `fields`,
+    `fieldPreset`, `filters.mode`, `filters.level`, `filters.status`,
+    `filters.sort`, and `filters.limit` metadata matching the CLI invocation,
+    output row count matched manifest `rows`, and summary manifests recorded
+    `fields: null`, `fieldPreset: null`, and `filters.wrongOnly: true`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -746,6 +757,7 @@ to a private repository, and preserve resumable state in this file.
   - `8f09c26` saved session list outputs
   - `05fdb53` saved session list output manifests
   - `fd1b60b` saved session list output verification
+  - `d71ac45` custom saved list output manifest paths
 
 ## Next Actions
 

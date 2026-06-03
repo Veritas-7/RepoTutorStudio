@@ -995,6 +995,18 @@
         "custom manifest directory creation",
         "default sidecar preservation for bare --output-manifest"
       ]
+    },
+    {
+      "name": "saved session list manifest selection metadata",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "manifest fields metadata",
+        "manifest fieldPreset metadata",
+        "manifest filters metadata"
+      ]
     }
   ],
   "verification": {
@@ -1103,6 +1115,7 @@
     "cliListOutputManifestSmoke": "PASS",
     "cliVerifyListOutputSmoke": "PASS",
     "cliListCustomManifestSmoke": "PASS",
+    "cliListManifestMetadataSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
