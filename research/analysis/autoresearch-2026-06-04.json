@@ -696,6 +696,17 @@
         "repo-tutor resume htmlTargetStatus",
         "HTML Target Status section in Markdown resume output"
       ]
+    },
+    {
+      "name": "list html target status filters",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor list --html-targets complete|missing|all",
+        "htmlTargetsComplete and missingHtmlTargets in session list rows"
+      ]
     }
   ],
   "verification": {
@@ -777,6 +788,7 @@
     "cliDoctorMetadataSmoke": "PASS",
     "cliDoctorMarkdownSmoke": "PASS",
     "cliResumeTargetStatusSmoke": "PASS",
+    "cliListTargetStatusSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

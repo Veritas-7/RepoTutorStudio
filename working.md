@@ -450,6 +450,13 @@ to a private repository, and preserve resumable state in this file.
     `level: senior`, `list --level beginner --format markdown` returned the
     `Level` column and `beginner`, and `--level expert` exited 1 with
     `list supports --level`
+  - temp CLI list-target-status smoke generated
+    `/tmp/repotutor-list-target-status-smoke.Lc24EP`; one complete and one
+    missing-target fixture session were created, deleting `html/quiz.html` made
+    `list --html-targets missing` return one row with `missingHtmlTargets`
+    containing `quiz`, `list --html-targets complete` returned the intact row,
+    Markdown output included `HTML Targets` and `missing: quiz`, and invalid
+    `--html-targets stale` exited 1 with `list supports --html-targets`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -504,6 +511,7 @@ to a private repository, and preserve resumable state in this file.
   - `082056d` open all study targets
   - `29e98b2` doctor capability metadata
   - `1221061` doctor Markdown output
+  - `eb633c4` resume HTML target status
 
 ## Next Actions
 

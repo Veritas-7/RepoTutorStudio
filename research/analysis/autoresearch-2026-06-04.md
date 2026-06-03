@@ -865,6 +865,19 @@ Local verification:
   `/tmp/repotutor-resume-target-status-smoke.WosgZN`; `repo-tutor resume`
   reported `quiz: true`, deleting `html/quiz.html` changed that target to
   `false`, and Markdown output included `quiz: missing` and `index: present`.
+
+### Upgrade 52: List HTML Target Status Filters
+
+- Added `htmlTargetsComplete` and `missingHtmlTargets` to `repo-tutor list`
+  JSON rows so multi-session triage can detect incomplete HTML exports.
+- Added `repo-tutor list --html-targets complete|missing|all` with fail-closed
+  validation and a Markdown `HTML Targets` column.
+- Temp CLI list-target-status smoke generated
+  `/tmp/repotutor-list-target-status-smoke.Lc24EP`; after deleting
+  `html/quiz.html` in one fixture session, `list --html-targets missing`
+  returned one row with `quiz` in `missingHtmlTargets`, `--html-targets complete`
+  returned the intact session, Markdown output included `missing: quiz`, and
+  invalid `--html-targets stale` exited 1 with `list supports --html-targets`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
