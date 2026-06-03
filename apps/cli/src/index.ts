@@ -89,6 +89,25 @@ interface ListOutputManifest {
   createdAt: string;
 }
 
+interface ListOutputVerification {
+  ok: boolean;
+  outputPath: string;
+  manifestPath: string;
+  format: string | null;
+  summary: boolean | null;
+  rows: number | null;
+  expectedBytes: number | null;
+  actualBytes: number | null;
+  expectedSha256: string | null;
+  actualSha256: string | null;
+  failures: Array<{
+    reason: string;
+    path: string;
+    expected: string | number | boolean | null;
+    actual: string | number | boolean | null;
+  }>;
+}
+
 const LIST_FIELDS = [
   "sessionId",
   "repo",
@@ -150,6 +169,7 @@ async function main(): Promise<void> {
     else if (parsed.command === "verify-export") await verifyExport(parsed);
     else if (parsed.command === "verify-evidence") await verifyEvidence(parsed);
     else if (parsed.command === "verify-session") await verifySession(parsed);
+    else if (parsed.command === "verify-list-output") await verifyListOutput(parsed);
     else if (parsed.command === "list") await list(parsed);
     else if (parsed.command === "open") await openSession(parsed);
     else if (parsed.command === "doctor") await doctor(parsed);
@@ -368,6 +388,19 @@ async function verifySession(parsed: ParsedArgs): Promise<void> {
   if (!result.ok) process.exitCode = 1;
 }
 
+async function verifyListOutput(parsed: ParsedArgs): Promise<void> {
+  const outputFile = parsed.rest[0];
+  if (!outputFile) throw new Error("verify-list-output requires an output file.");
+  const outputPath = path.resolve(outputFile);
+  const manifestFile = optionalStringFlag(parsed.flags.manifest, "manifest");
+  const manifestPath = path.resolve(manifestFile ?? `${outputPath}.manifest.json`);
+  const result = await verifyListOutputManifest(outputPath, manifestPath);
+  const format = stringFlag(parsed.flags.format) ?? "json";
+  if (!["json", "markdown"].includes(format)) throw new Error("verify-list-output supports --format json or markdown.");
+  console.log(format === "markdown" ? listOutputVerificationMarkdown(result) : JSON.stringify(result, null, 2));
+  if (!result.ok) process.exitCode = 1;
+}
+
 async function list(parsed: ParsedArgs): Promise<void> {
   const sessions = await listSessions(studiesRoot(parsed.flags));
   const rows: ListRow[] = await Promise.all(sessions.map(async (session) => {
@@ -502,6 +535,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       "verify-export",
       "verify-evidence",
       "verify-session",
+      "verify-list-output",
       "list",
       "open",
       "doctor"
@@ -514,6 +548,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
       verifyExport: ["json", "markdown"],
       verifyEvidence: ["json", "markdown"],
       verifySession: ["json", "markdown"],
+      verifyListOutput: ["json", "markdown"],
       list: ["json", "markdown", "jsonl", "csv"],
       openTargets: ["json", "markdown"],
       openAll: ["json", "markdown"],
@@ -1083,6 +1118,77 @@ function createListOutputManifest(text: string, outputPath: string, manifestPath
   };
 }
 
+async function verifyListOutputManifest(outputPath: string, manifestPath: string): Promise<ListOutputVerification> {
+  const failures: ListOutputVerification["failures"] = [];
+  let manifest: Partial<ListOutputManifest> | null = null;
+  try {
+    manifest = JSON.parse(await fs.readFile(manifestPath, "utf8")) as Partial<ListOutputManifest>;
+  } catch {
+    failures.push({
+      reason: "manifest-read-failed",
+      path: manifestPath,
+      expected: "readable JSON manifest",
+      actual: null
+    });
+  }
+
+  const expectedBytes = typeof manifest?.bytes === "number" ? manifest.bytes : null;
+  const expectedSha256 = typeof manifest?.sha256 === "string" ? manifest.sha256 : null;
+  const format = typeof manifest?.format === "string" ? manifest.format : null;
+  const summary = typeof manifest?.summary === "boolean" ? manifest.summary : null;
+  const rows = typeof manifest?.rows === "number" ? manifest.rows : null;
+
+  if (manifest) {
+    if (manifest.outputPath !== outputPath) {
+      failures.push({ reason: "output-path-mismatch", path: manifestPath, expected: outputPath, actual: manifest.outputPath ?? null });
+    }
+    if (manifest.manifestPath !== manifestPath) {
+      failures.push({ reason: "manifest-path-mismatch", path: manifestPath, expected: manifestPath, actual: manifest.manifestPath ?? null });
+    }
+    if (format === null) failures.push({ reason: "format-missing", path: manifestPath, expected: "string", actual: null });
+    if (summary === null) failures.push({ reason: "summary-missing", path: manifestPath, expected: "boolean", actual: null });
+    if (rows === null) failures.push({ reason: "rows-missing", path: manifestPath, expected: "number", actual: null });
+    if (expectedBytes === null) failures.push({ reason: "bytes-missing", path: manifestPath, expected: "number", actual: null });
+    if (expectedSha256 === null) failures.push({ reason: "sha256-missing", path: manifestPath, expected: "string", actual: null });
+  }
+
+  let actualBytes: number | null = null;
+  let actualSha256: string | null = null;
+  try {
+    const outputText = await fs.readFile(outputPath, "utf8");
+    actualBytes = Buffer.byteLength(outputText);
+    actualSha256 = createHash("sha256").update(outputText).digest("hex");
+  } catch {
+    failures.push({
+      reason: "output-read-failed",
+      path: outputPath,
+      expected: "readable output file",
+      actual: null
+    });
+  }
+
+  if (expectedBytes !== null && actualBytes !== null && expectedBytes !== actualBytes) {
+    failures.push({ reason: "bytes-mismatch", path: outputPath, expected: expectedBytes, actual: actualBytes });
+  }
+  if (expectedSha256 !== null && actualSha256 !== null && expectedSha256 !== actualSha256) {
+    failures.push({ reason: "sha256-mismatch", path: outputPath, expected: expectedSha256, actual: actualSha256 });
+  }
+
+  return {
+    ok: failures.length === 0,
+    outputPath,
+    manifestPath,
+    format,
+    summary,
+    rows,
+    expectedBytes,
+    actualBytes,
+    expectedSha256,
+    actualSha256,
+    failures
+  };
+}
+
 function listSummary(rows: ListRow[]): ListSummary {
   const scores = rows.map((row) => row.score).filter((score): score is number => score !== null);
   return {
@@ -1329,6 +1435,34 @@ function evidenceVerificationMarkdown(payload: {
   ].join("\n");
 }
 
+function listOutputVerificationMarkdown(payload: ListOutputVerification): string {
+  const failures = payload.failures.length === 0
+    ? "- none"
+    : payload.failures.map((failure) => [
+      `- ${failure.reason}: ${failure.path}`,
+      `  - Expected: ${failure.expected ?? "none"}`,
+      `  - Actual: ${failure.actual ?? "none"}`
+    ].join("\n")).join("\n");
+  return [
+    "# RepoTutor List Output Verification",
+    "",
+    `- OK: ${payload.ok ? "PASS" : "FAIL"}`,
+    `- Output: ${payload.outputPath}`,
+    `- Manifest: ${payload.manifestPath}`,
+    `- Format: ${payload.format ?? "unknown"}`,
+    `- Summary: ${payload.summary ?? "unknown"}`,
+    `- Rows: ${payload.rows ?? "unknown"}`,
+    `- Expected bytes: ${payload.expectedBytes ?? "unknown"}`,
+    `- Actual bytes: ${payload.actualBytes ?? "missing"}`,
+    `- Expected sha256: ${payload.expectedSha256 ?? "unknown"}`,
+    `- Actual sha256: ${payload.actualSha256 ?? "missing"}`,
+    "",
+    "## Failures",
+    "",
+    failures
+  ].join("\n");
+}
+
 function markdownTableCell(value: string): string {
   return value.replaceAll("|", "\\|").replaceAll("\n", " ");
 }
@@ -1467,6 +1601,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
+  verify-list-output <output-file> --manifest output.manifest.json --format json|markdown
   list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --output reports/list.json --output-manifest --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown

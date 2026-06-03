@@ -243,6 +243,10 @@ to a private repository, and preserve resumable state in this file.
   output manifests. CLI `repo-tutor list --output <file> --output-manifest` now
   writes a sidecar manifest with format, summary mode, row count, byte count,
   SHA-256, and timestamp metadata, and returns JSON receipt paths.
+- 2026-06-04: Applied a seventy-seventh AutoResearch upgrade: saved session
+  list output verification. CLI `repo-tutor verify-list-output <output-file>`
+  now validates a saved list output against its `.manifest.json` sidecar,
+  supports Markdown output, and fails closed on byte or SHA-256 drift.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -579,6 +583,12 @@ to a private repository, and preserve resumable state in this file.
     contents, summary manifests set `summary: true`, `doctor` reported
     `outputManifest: true`, and `--output-manifest` without `--output` failed
     closed with `list requires --output when --output-manifest is used`
+  - temp CLI verify-list-output smoke generated
+    `/tmp/repotutor-verify-list-output-smoke.JB1fqu`; two fixture sessions were
+    created, saved JSONL score-preset output verified cleanly in JSON and
+    Markdown using the default and explicit `--manifest` paths, tampering with
+    the output failed closed with both `bytes-mismatch` and `sha256-mismatch`,
+    and `doctor` reported `verify-list-output` plus JSON/Markdown formats
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -723,6 +733,7 @@ to a private repository, and preserve resumable state in this file.
   - `44730b7` field preset session list output
   - `7935087` session list summary output
   - `8f09c26` saved session list outputs
+  - `05fdb53` saved session list output manifests
 
 ## Next Actions
 
