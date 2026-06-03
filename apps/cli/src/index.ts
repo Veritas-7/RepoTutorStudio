@@ -104,12 +104,14 @@ async function evidence(parsed: ParsedArgs): Promise<void> {
   };
   const kind = stringFlag(parsed.flags.kind);
   const file = stringFlag(parsed.flags.file);
+  const format = stringFlag(parsed.flags.format) ?? "json";
+  if (!["json", "markdown"].includes(format)) throw new Error("evidence supports --format json or markdown.");
   const limit = numberFlag(parsed.flags.limit, 20);
   const items = report.items
     .filter((item) => !kind || item.kind === kind)
     .filter((item) => !file || item.filePath === file)
     .slice(0, limit);
-  console.log(JSON.stringify({
+  const payload = {
     sessionRoot,
     totalEvidenceItems: report.totalEvidenceItems,
     evidenceByKind: report.evidenceByKind,
@@ -118,7 +120,12 @@ async function evidence(parsed: ParsedArgs): Promise<void> {
     filteredFile: file ?? null,
     returnedItems: items.length,
     items
-  }, null, 2));
+  };
+  if (format === "markdown") {
+    console.log(evidenceMarkdown(payload));
+  } else {
+    console.log(JSON.stringify(payload, null, 2));
+  }
 }
 
 async function exportSession(parsed: ParsedArgs): Promise<void> {
@@ -256,6 +263,32 @@ function numberFlag(value: string | boolean | undefined, fallback: number): numb
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
 
+function evidenceMarkdown(payload: {
+  sessionRoot: string;
+  totalEvidenceItems: number;
+  evidenceByKind: Record<string, number>;
+  filteredKind: string | null;
+  filteredFile: string | null;
+  returnedItems: number;
+  items: Array<{ filePath: string; line: number; kind: string; snippet: string; sourceHref: string; lessonHref: string }>;
+}): string {
+  const filters = [
+    payload.filteredKind ? `kind=${payload.filteredKind}` : null,
+    payload.filteredFile ? `file=${payload.filteredFile}` : null
+  ].filter(Boolean).join(", ") || "none";
+  return [
+    "# RepoTutor Evidence",
+    "",
+    `- Session: ${payload.sessionRoot}`,
+    `- Total evidence items: ${payload.totalEvidenceItems}`,
+    `- Returned items: ${payload.returnedItems}`,
+    `- Filters: ${filters}`,
+    `- Kinds: ${Object.entries(payload.evidenceByKind).map(([kind, count]) => `${kind} ${count}`).join(", ") || "none"}`,
+    "",
+    ...payload.items.map((item) => `## ${item.filePath}:L${item.line}\n\n- Kind: ${item.kind}\n- Lesson: ${item.lessonHref}\n- Source: ${item.sourceHref}\n\n\`${item.snippet.replaceAll("`", "'")}\`\n`)
+  ].join("\n");
+}
+
 function studiesRoot(flags: Record<string, string | boolean>): string {
   return path.resolve(
     stringFlag(flags["studies-root"])
@@ -274,7 +307,7 @@ function help(): void {
   quiz <session-id-or-path> --interactive
   quiz <session-id-or-path> --answers answers.json
   resume <session-id-or-path>
-  evidence <session-id-or-path> --kind import --file src/main.ts --limit 20
+  evidence <session-id-or-path> --kind import --file src/main.ts --limit 20 --format json|markdown
   export <session-id-or-path> --format html|zip
   verify-export <session-id-or-path>
   list

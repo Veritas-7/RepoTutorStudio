@@ -365,6 +365,14 @@ Transferable patterns:
 - `apps/cli/src/index.ts`: returns `filteredFile` in evidence command JSON.
 - `scripts/compliance-audit.mjs`: verifies the file-filter CLI surface.
 
+### Upgrade 27: Markdown Output for CLI Source Evidence
+
+- `apps/cli/src/index.ts`: adds `--format json|markdown` to
+  `repo-tutor evidence`.
+- `apps/cli/src/index.ts`: renders human-readable Markdown evidence summaries
+  with filters, kind counts, lesson links, source links, and snippets.
+- `scripts/compliance-audit.mjs`: verifies the Markdown CLI output surface.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -479,6 +487,11 @@ Local verification:
   and `repo-tutor evidence <session> --kind import --file src/main.ts --limit 5`
   returned `filteredKind: import`, `filteredFile: src/main.ts`,
   `returnedItems: 1`, and `sourceHref: source/src/main.ts`.
+- Temp CLI evidence markdown smoke generated:
+  `/tmp/repotutor-evidence-md-cli-smoke.T4Yahz/2026-06-04/local__simple-ts-app__main__b9bf2e51`
+  and `repo-tutor evidence <session> --kind import --file src/main.ts --limit 5 --format markdown`
+  returned `# RepoTutor Evidence`, `Filters: kind=import, file=src/main.ts`,
+  `src/main.ts:L1`, and `Source: source/src/main.ts`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
