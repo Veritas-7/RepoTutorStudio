@@ -794,6 +794,17 @@
       "newArtifacts": [
         "repo-tutor list --format markdown Session Path column"
       ]
+    },
+    {
+      "name": "doctor runtime metadata",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor doctor runtime metadata",
+        "repo-tutor doctor --format markdown Runtime section"
+      ]
     }
   ],
   "verification": {
@@ -884,6 +895,7 @@
     "cliStudyMarkdownSmoke": "PASS",
     "cliExportSummaryMarkdownSmoke": "PASS",
     "cliListPathMarkdownSmoke": "PASS",
+    "cliDoctorRuntimeSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
