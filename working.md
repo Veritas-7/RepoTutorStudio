@@ -463,6 +463,21 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`
 - 2026-06-04: Pushed Upgrade 109 at `303713d` with HEAD and `origin/main`
   matching.
+- 2026-06-04: Started a hundred-tenth AutoResearch upgrade: context pack split
+  output plan. RepoTutor now extends `analysis/context-pack-report.json` with
+  `splitPlans` and renders split output plans in `markdown/context-pack.md` and
+  `html/context-pack.html`.
+- 2026-06-04: RED smoke for Upgrade 110 failed as expected at
+  `/tmp/repotutor-split-plan-red.*` with `missing splitPlans`.
+- 2026-06-04: GREEN smoke for Upgrade 110 generated
+  `/tmp/repotutor-split-plan-smoke.VLPZde`; generated splitPlans with
+  `google-ai-studio-1mb`, `repomix-output.1.xml`, top-level directory grouping,
+  and rendered `Split Output Plan` in HTML/Markdown while
+  `open --target context-pack` still returned the context pack page.
+- 2026-06-04: Upgrade 110 verification passed:
+  - `pnpm build`
+  - `pnpm test`
+  - `pnpm audit:brief`
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`

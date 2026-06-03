@@ -1539,6 +1539,23 @@
         "ContextPackReportSchema",
         "Repomix-style token budget and context pack report"
       ]
+    },
+    {
+      "name": "context pack split output plan",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/context-pack-report.json splitPlans",
+        "markdown/context-pack.md split output plan section",
+        "html/context-pack.html split output plan panel",
+        "Repomix-style top-level directory preserving split plan"
+      ]
     }
   ],
   "verification": {
@@ -1703,6 +1720,8 @@
     "fixtureContextPackReport": "PASS",
     "cliContextPackSmoke": "PASS",
     "cliContextPackOpenTargetSmoke": "PASS",
+    "fixtureContextSplitPlan": "PASS",
+    "cliContextSplitPlanSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

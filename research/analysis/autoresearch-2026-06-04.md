@@ -1951,6 +1951,28 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 110: Context Pack Split Output Plan
+
+- Extended `analysis/context-pack-report.json` with `splitPlans` that preserve
+  top-level directory groups while estimating numbered output parts.
+- Added split output planning to `markdown/context-pack.md` and
+  `html/context-pack.html`, including `google-ai-studio-1mb`,
+  `repomix-20mb`, `repomix-output.N.xml`, part byte/token totals, and
+  oversized-directory warnings.
+- Source pattern: Repomix `--split-output` creates numbered output files and
+  explicitly keeps files grouped by top-level directory so context is not split
+  mid-directory; RepoTutor maps that to a static learner planning report.
+- RED smoke `/tmp/repotutor-split-plan-red.*` failed on the old behavior with
+  `missing splitPlans`.
+- GREEN smoke generated `/tmp/repotutor-split-plan-smoke.VLPZde`; generated
+  `splitPlans`, included `google-ai-studio-1mb`,
+  `repomix-output.1.xml`, top-level directory grouping, and rendered
+  `Split Output Plan` in HTML/Markdown while `open --target context-pack`
+  still returned `html/context-pack.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
