@@ -102,6 +102,10 @@ to a private repository, and preserve resumable state in this file.
   reporting. CLI `repo-tutor export --format html|zip` now verifies the freshly
   rendered HTML manifest before returning, fails closed if verification fails,
   and includes `integrityOk` plus `integrityCheckedFiles` in export JSON.
+- 2026-06-04: Applied a seventeenth AutoResearch upgrade: source evidence
+  snippets for file lessons. `analysis/file-lessons.json`, `markdown/files.md`,
+  and `html/files.html` now show short source-backed import/export/config/entry
+  evidence with line numbers for each core file lesson.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -151,6 +155,11 @@ to a private repository, and preserve resumable state in this file.
     `/tmp/repotutor-export-integrity-json-smoke.dkSgoj/2026-06-04/local__simple-ts-app__main__f5a93a48`
     and returned `integrityOk: true`, `integrityCheckedFiles: 16`, 18 ZIP files,
     and 76,489 ZIP bytes
+  - temp CLI source-evidence smoke generated
+    `/tmp/repotutor-source-evidence-smoke.9DljR1/2026-06-04/local__simple-ts-app__main__25cfde25`
+    with `sourceEvidence` JSON, Markdown `### 소스 근거`, HTML
+    `source-evidence`, and source snippets such as
+    `import { createGreeting } from "./message.js";`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -170,6 +179,7 @@ to a private repository, and preserve resumable state in this file.
   - `bf88883` export manifest integrity metadata
   - `67bd1c8` export integrity verifier
   - `f5a93a4` tamper-negative export verification
+  - `25cfde2` export integrity reporting
 
 ## Next Actions
 

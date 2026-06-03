@@ -268,6 +268,22 @@
         "repo-tutor export integrityCheckedFiles JSON field",
         "fail-closed export integrity verification"
       ]
+    },
+    {
+      "name": "source evidence snippets for file lessons",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/file-lessons.json sourceEvidence entries",
+        "markdown/files.md source evidence section",
+        "html/files.html source-evidence snippets"
+      ]
     }
   ],
   "verification": {
@@ -299,6 +315,8 @@
     "fixtureTamperNegativeVerify": "PASS",
     "cliTamperVerifySmoke": "PASS",
     "cliExportIntegrityJsonSmoke": "PASS",
+    "fixtureSourceEvidence": "PASS",
+    "cliSourceEvidenceSmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },

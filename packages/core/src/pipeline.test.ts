@@ -54,6 +54,14 @@ describe("RepoTutor core pipeline", () => {
     expect(filesHtml).toContain("data-file-ext-filter");
     expect(filesHtml).toContain("data-file-dir-filter");
     expect(filesHtml).toContain("data-file-dir");
+    expect(filesHtml).toContain("소스 근거");
+    expect(filesHtml).toContain("source-evidence");
+    expect(filesHtml).toContain("import { createGreeting }");
+    const filesMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "files.md"), "utf8");
+    expect(filesMarkdown).toContain("### 소스 근거");
+    const fileLessonsText = await fs.readFile(path.join(result.session.outputPaths.analysis, "file-lessons.json"), "utf8");
+    expect(fileLessonsText).toContain("\"sourceEvidence\"");
+    expect(fileLessonsText).toContain("\"snippet\"");
     const zip = await writeHtmlZipBundle(result.session.outputPaths.root);
     expect(zip.fileCount).toBeGreaterThan(5);
     expect(zip.bytes).toBeGreaterThan(100);

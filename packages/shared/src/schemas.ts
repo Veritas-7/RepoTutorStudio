@@ -136,6 +136,11 @@ export const FileLessonSchema = z.object({
   role: z.string(),
   beginnerExplanation: z.string(),
   whyItExists: z.string(),
+  sourceEvidence: z.array(z.object({
+    line: z.number().int().positive(),
+    kind: z.enum(["import", "export", "entry", "config", "test", "text"]),
+    snippet: z.string()
+  })),
   keyExports: z.array(z.string()),
   keyImports: z.array(z.string()),
   relatedFiles: z.array(z.string()),
