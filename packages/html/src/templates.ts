@@ -123,6 +123,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
 export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
   const latestAttempt = input.attempts.at(-1);
   const weakConcepts = input.wrongNotes.flatMap((note) => note.relatedConcepts).slice(0, 5);
+  const coverageEvidence = coverageEvidenceFor(input.coverageReport);
   const coverageDelta = coverageDeltaFor(input.incrementalReport);
   const graphSummary = graphSummaryFor(input.componentGraphReport);
   const graphFilters = graphFilterButtons(input.componentGraphReport.nodes);
@@ -141,7 +142,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
         </section>
         <section class="grid">
           <article><h3>학습 지도</h3>${list(["Overview", "Language", "Folders", "Files", "Flow", "Glossary", "Rebuild", "Quiz"])}</article>
-          <article><h3>커버리지</h3><p>${(input.coverageReport.coverageRatio * 100).toFixed(1)}% · 핵심 파일 ${input.coverageReport.coveredImportantFiles}개 설명</p><a href="coverage.html">커버리지 열기</a></article>
+          <article><h3>커버리지</h3><p>${(input.coverageReport.coverageRatio * 100).toFixed(1)}% · 핵심 파일 ${input.coverageReport.coveredImportantFiles}개 설명</p><p>소스 근거 ${coverageEvidence.evidenceBackedFiles}개 · ${(coverageEvidence.evidenceCoverageRatio * 100).toFixed(1)}%</p><a href="coverage.html">커버리지 열기</a></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
           <article><h3>퀴즈 요약</h3><p>총 ${input.quiz.totalQuestions}문제</p><p>최근 점수: ${latestAttempt ? latestAttempt.score.toFixed(1) : "미응시"}</p></article>
@@ -187,7 +188,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     {
       name: "coverage.html",
       title: "학습 커버리지",
-      html: pageShell("학습 커버리지", "coverage.html", `<section class="panel"><h2>커버리지 요약</h2><p>${escapeHtml(input.coverageReport.beginnerExplanation)}</p><dl class="meta"><div><dt>전체 파일</dt><dd>${input.coverageReport.totalScannedFiles}</dd></div><div><dt>핵심 파일 설명</dt><dd>${input.coverageReport.coveredImportantFiles}</dd></div><div><dt>비율</dt><dd>${(input.coverageReport.coverageRatio * 100).toFixed(1)}%</dd></div></dl></section><section class="grid"><article><h3>우선 확인 폴더</h3>${list(input.coverageReport.highPriorityFolders.map((folder) => `${folder.folderPath}: ${folder.reason}`))}</article><article><h3>미커버 후보</h3>${list(input.coverageReport.uncoveredImportantFiles)}</article></section>`, input)
+      html: pageShell("학습 커버리지", "coverage.html", `<section class="panel"><h2>커버리지 요약</h2><p>${escapeHtml(input.coverageReport.beginnerExplanation)}</p><dl class="meta"><div><dt>전체 파일</dt><dd>${input.coverageReport.totalScannedFiles}</dd></div><div><dt>핵심 파일 설명</dt><dd>${input.coverageReport.coveredImportantFiles}</dd></div><div><dt>비율</dt><dd>${(input.coverageReport.coverageRatio * 100).toFixed(1)}%</dd></div><div><dt>소스 근거 파일</dt><dd>${coverageEvidence.evidenceBackedFiles}</dd></div><div><dt>근거 비율</dt><dd>${(coverageEvidence.evidenceCoverageRatio * 100).toFixed(1)}%</dd></div></dl></section><section class="grid"><article><h3>우선 확인 폴더</h3>${list(input.coverageReport.highPriorityFolders.map((folder) => `${folder.folderPath}: ${folder.reason}`))}</article><article><h3>미커버 후보</h3>${list(input.coverageReport.uncoveredImportantFiles)}</article><article><h3>소스 근거 부족</h3>${list(coverageEvidence.filesWithoutEvidence)}</article></section>`, input)
     },
     {
       name: "component-graph.html",
@@ -271,6 +272,15 @@ function byteLength(value: string): number {
 
 function sha256(value: string): string {
   return crypto.createHash("sha256").update(value, "utf8").digest("hex");
+}
+
+function coverageEvidenceFor(report: CoverageReport): Pick<CoverageReport, "evidenceBackedFiles" | "evidenceCoverageRatio" | "filesWithoutEvidence"> {
+  const maybeReport = report as CoverageReport & Partial<Pick<CoverageReport, "evidenceBackedFiles" | "evidenceCoverageRatio" | "filesWithoutEvidence">>;
+  return {
+    evidenceBackedFiles: maybeReport.evidenceBackedFiles ?? 0,
+    evidenceCoverageRatio: maybeReport.evidenceCoverageRatio ?? 0,
+    filesWithoutEvidence: maybeReport.filesWithoutEvidence ?? []
+  };
 }
 
 function coverageDeltaFor(report: IncrementalReport): IncrementalReport["coverageDelta"] {

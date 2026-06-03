@@ -153,6 +153,9 @@ export const CoverageReportSchema = z.object({
   totalScannedFiles: z.number().int().nonnegative(),
   coveredImportantFiles: z.number().int().nonnegative(),
   coverageRatio: z.number().min(0).max(1),
+  evidenceBackedFiles: z.number().int().nonnegative(),
+  evidenceCoverageRatio: z.number().min(0).max(1),
+  filesWithoutEvidence: z.array(z.string()),
   uncoveredImportantFiles: z.array(z.string()),
   highPriorityFolders: z.array(z.object({
     folderPath: z.string(),

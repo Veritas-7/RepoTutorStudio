@@ -225,6 +225,8 @@ function buildFlowReport(fileLessons: FileLesson[], dependencyReport: Dependency
 
 function buildCoverageReport(repoMap: RepoMap, fileLessons: FileLesson[]): CoverageReport {
   const covered = new Set(fileLessons.map((lesson) => lesson.filePath));
+  const evidenceBackedFiles = fileLessons.filter((lesson) => lesson.sourceEvidence.length > 0).length;
+  const filesWithoutEvidence = fileLessons.filter((lesson) => lesson.sourceEvidence.length === 0).map((lesson) => lesson.filePath);
   const importantCandidates = [
     ...repoMap.folders.flatMap((folder) => folder.representativeFiles.map((file) => `${folder.folderPath}/${file}`)),
     ...fileLessons.map((lesson) => lesson.filePath)
@@ -243,6 +245,9 @@ function buildCoverageReport(repoMap: RepoMap, fileLessons: FileLesson[]): Cover
     totalScannedFiles: repoMap.totalFiles,
     coveredImportantFiles: fileLessons.length,
     coverageRatio: repoMap.totalFiles === 0 ? 0 : Math.min(1, fileLessons.length / repoMap.totalFiles),
+    evidenceBackedFiles,
+    evidenceCoverageRatio: fileLessons.length === 0 ? 0 : evidenceBackedFiles / fileLessons.length,
+    filesWithoutEvidence: filesWithoutEvidence.slice(0, 30),
     uncoveredImportantFiles,
     highPriorityFolders,
     beginnerExplanation: "coverage report는 전체 파일 중 학습 리포트가 자세히 설명한 핵심 파일의 비율을 보여줍니다. 낮으면 빠진 핵심 파일이 없는지 다시 살펴봐야 합니다."
