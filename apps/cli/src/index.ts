@@ -231,8 +231,9 @@ async function list(parsed: ParsedArgs): Promise<void> {
 
 async function openSession(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
-  const html = path.join(sessionRoot, "html", "index.html");
-  console.log(html);
+  const target = stringFlag(parsed.flags.target) ?? "index";
+  const fileName = openTargetFile(target);
+  console.log(path.join(sessionRoot, "html", fileName));
 }
 
 async function doctor(): Promise<void> {
@@ -376,6 +377,31 @@ async function sessionVerificationSummary(sessionRoot: string): Promise<{
   }
 }
 
+function openTargetFile(target: string): string {
+  const targets: Record<string, string> = {
+    index: "index.html",
+    overview: "overview.html",
+    language: "language.html",
+    architecture: "architecture.html",
+    folders: "folders.html",
+    files: "files.html",
+    evidence: "evidence.html",
+    verification: "session-verification.html",
+    coverage: "coverage.html",
+    graph: "component-graph.html",
+    "component-graph": "component-graph.html",
+    incremental: "incremental.html",
+    flow: "flow.html",
+    glossary: "glossary.html",
+    rebuild: "rebuild.html",
+    quiz: "quiz.html",
+    "wrong-notes": "wrong-notes.html"
+  };
+  const fileName = targets[target];
+  if (!fileName) throw new Error(`Unsupported open target: ${target}`);
+  return fileName;
+}
+
 function sessionVerificationMarkdown(payload: {
   ok: boolean;
   sessionRoot: string;
@@ -440,7 +466,7 @@ function help(): void {
   verify-evidence <session-id-or-path>
   verify-session <session-id-or-path> --format json|markdown
   list --verified-only
-  open <session-id-or-path>
+  open <session-id-or-path> --target verification|evidence|quiz
   doctor`);
 }
 

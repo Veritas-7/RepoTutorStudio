@@ -520,6 +520,17 @@
         "repo-tutor list verificationStatus output",
         "repo-tutor list --verified-only filter"
       ]
+    },
+    {
+      "name": "target-aware open command",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor open --target verification|evidence|quiz",
+        "direct HTML page path output for generated study pages"
+      ]
     }
   ],
   "verification": {
@@ -585,6 +596,7 @@
     "cliSessionVerificationHtmlEntrypointSmoke": "PASS",
     "cliStudyVerificationOutputSmoke": "PASS",
     "cliListVerificationSummarySmoke": "PASS",
+    "cliOpenTargetSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"

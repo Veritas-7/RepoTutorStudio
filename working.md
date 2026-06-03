@@ -182,6 +182,10 @@ to a private repository, and preserve resumable state in this file.
   `analysis/session-verification-report.json`, returns verification status,
   report paths, checked artifact count, and sub-check statuses, and supports
   `--verified-only`.
+- 2026-06-04: Applied a thirty-sixth AutoResearch upgrade: target-aware open
+  command. CLI `repo-tutor open` now supports
+  `--target verification|evidence|quiz` and other generated HTML pages so users
+  can print direct paths to learning pages without manually composing paths.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -339,6 +343,11 @@ to a private repository, and preserve resumable state in this file.
     `verificationStatus: passed`, `verificationOk: true`, verification
     report/Markdown/HTML paths, `verificationCheckedRequiredArtifacts: 11`,
     `htmlExport: true`, and `evidenceIndex: true`
+  - temp CLI open-target smoke generated
+    `/tmp/repotutor-open-target-smoke.5JnnCP/2026-06-04/local__simple-ts-app__main__e9a3fc98`;
+    `repo-tutor open --target verification|evidence|quiz` returned existing
+    HTML page paths, and unsupported target `nope` exited 1 with
+    `Unsupported open target: nope`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -377,6 +386,7 @@ to a private repository, and preserve resumable state in this file.
   - `3a4153c` Markdown session verification reports
   - `8acedea` HTML session verification entrypoint
   - `cca0b13` study completion verification output
+  - `e9a3fc9` list verification summaries
 
 ## Next Actions
 

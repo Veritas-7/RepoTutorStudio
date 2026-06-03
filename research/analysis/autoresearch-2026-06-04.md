@@ -469,6 +469,17 @@ Transferable patterns:
   sessions whose aggregate verification passed.
 - `scripts/compliance-audit.mjs`: verifies the list verification output surface.
 
+### Upgrade 36: Target-Aware Open Command
+
+- `apps/cli/src/index.ts`: `repo-tutor open` now accepts `--target` and
+  defaults to `index`.
+- `apps/cli/src/index.ts`: maps target names including `verification`,
+  `evidence`, `quiz`, `coverage`, `component-graph`, `wrong-notes`, and other
+  generated pages to their HTML filenames.
+- `apps/cli/src/index.ts`: fails closed for unsupported targets with
+  `Unsupported open target: <target>`.
+- `scripts/compliance-audit.mjs`: verifies the open-target CLI tokens.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -636,6 +647,11 @@ Local verification:
   `verificationStatus: passed`, `verificationOk: true`, verification
   report/Markdown/HTML paths, `verificationCheckedRequiredArtifacts: 11`,
   `htmlExport: true`, and `evidenceIndex: true`.
+- Temp CLI open-target smoke generated:
+  `/tmp/repotutor-open-target-smoke.5JnnCP/2026-06-04/local__simple-ts-app__main__e9a3fc98`;
+  `repo-tutor open --target verification`, `--target evidence`, and
+  `--target quiz` returned existing HTML page paths, while `--target nope`
+  exited 1 with `Unsupported open target: nope`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
