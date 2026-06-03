@@ -268,6 +268,10 @@ to a private repository, and preserve resumable state in this file.
   row-count verification. `verify-list-output` now reports `actualRows`,
   validates manifest `rows` against JSON, JSONL, and CSV output content, and
   fails closed with `rows-mismatch` when manifest row metadata drifts.
+- 2026-06-04: Applied an eighty-third AutoResearch upgrade: saved session list
+  field verification. `verify-list-output` now reports `actualFields`, compares
+  manifest `fields` against JSON, JSONL, and CSV output keys or headers, and
+  fails closed with `fields-mismatch` when field metadata drifts.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -640,6 +644,12 @@ to a private repository, and preserve resumable state in this file.
     JSONL verifier Markdown included `Actual rows: 2`, and tampering manifest
     `rows` to `999` failed closed with `rows-mismatch` while output bytes and
     SHA-256 remained unchanged
+  - temp CLI list-field-count smoke generated
+    `/tmp/repotutor-list-field-count-smoke.96Q5Mn`; two fixture sessions were
+    created, JSONL verifier Markdown reported matching `Fields` and
+    `Actual fields`, CSV verification returned matching `fields` and
+    `actualFields`, and tampering manifest fields to include `missingField`
+    failed closed with `fields-mismatch`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -790,6 +800,7 @@ to a private repository, and preserve resumable state in this file.
   - `6877d93` saved session list manifest selection metadata
   - `b399160` saved session list manifest schema versioning
   - `04eba07` saved session list manifest schema gate
+  - `91dd874` saved session list row-count verification
 
 ## Next Actions
 

@@ -124,6 +124,8 @@ interface ListOutputVerification {
   summary: boolean | null;
   rows: number | null;
   actualRows: number | null;
+  fields: string[] | null;
+  actualFields: string[] | null;
   expectedBytes: number | null;
   actualBytes: number | null;
   expectedSha256: string | null;
@@ -1207,6 +1209,9 @@ async function verifyListOutputManifest(outputPath: string, manifestPath: string
   const format = typeof manifest?.format === "string" ? manifest.format : null;
   const summary = typeof manifest?.summary === "boolean" ? manifest.summary : null;
   const rows = typeof manifest?.rows === "number" ? manifest.rows : null;
+  const fields = Array.isArray(manifest?.fields) && manifest.fields.every((field) => typeof field === "string")
+    ? manifest.fields
+    : null;
 
   if (manifest) {
     if (manifest.outputPath !== outputPath) {
@@ -1228,11 +1233,13 @@ async function verifyListOutputManifest(outputPath: string, manifestPath: string
   let actualBytes: number | null = null;
   let actualSha256: string | null = null;
   let actualRows: number | null = null;
+  let actualFields: string[] | null = null;
   try {
     const outputText = await fs.readFile(outputPath, "utf8");
     actualBytes = Buffer.byteLength(outputText);
     actualSha256 = createHash("sha256").update(outputText).digest("hex");
     actualRows = listOutputRowCount(outputText, format, summary);
+    actualFields = listOutputFields(outputText, format, summary);
   } catch {
     if (actualBytes !== null) {
       failures.push({
@@ -1259,6 +1266,9 @@ async function verifyListOutputManifest(outputPath: string, manifestPath: string
   if (rows !== null && actualRows !== null && rows !== actualRows) {
     failures.push({ reason: "rows-mismatch", path: outputPath, expected: rows, actual: actualRows });
   }
+  if (fields !== null && actualFields !== null && fieldListKey(fields) !== fieldListKey(actualFields)) {
+    failures.push({ reason: "fields-mismatch", path: outputPath, expected: fieldListKey(fields), actual: fieldListKey(actualFields) });
+  }
 
   if (expectedBytes !== null && actualBytes !== null && expectedBytes !== actualBytes) {
     failures.push({ reason: "bytes-mismatch", path: outputPath, expected: expectedBytes, actual: actualBytes });
@@ -1277,6 +1287,8 @@ async function verifyListOutputManifest(outputPath: string, manifestPath: string
     summary,
     rows,
     actualRows,
+    fields,
+    actualFields,
     expectedBytes,
     actualBytes,
     expectedSha256,
@@ -1301,6 +1313,31 @@ function listOutputRowCount(text: string, format: string | null, summary: boolea
     return Math.max(0, lines.length - 1);
   }
   return null;
+}
+
+function listOutputFields(text: string, format: string | null, summary: boolean | null): string[] | null {
+  if (summary === true) return null;
+  if (format === "json") {
+    const parsed = JSON.parse(text) as unknown;
+    if (!Array.isArray(parsed)) return null;
+    const first = parsed[0] as unknown;
+    return first && typeof first === "object" && !Array.isArray(first) ? Object.keys(first) : [];
+  }
+  if (format === "jsonl") {
+    const firstLine = text.split("\n").find((line) => line.trim() !== "");
+    if (!firstLine) return [];
+    const first = JSON.parse(firstLine) as unknown;
+    return first && typeof first === "object" && !Array.isArray(first) ? Object.keys(first) : null;
+  }
+  if (format === "csv") {
+    const header = text.split("\n").find((line) => line.trim() !== "");
+    return header ? header.split(",") : [];
+  }
+  return null;
+}
+
+function fieldListKey(fields: readonly string[]): string {
+  return fields.join(",");
 }
 
 function listSummary(rows: ListRow[]): ListSummary {
@@ -1569,6 +1606,8 @@ function listOutputVerificationMarkdown(payload: ListOutputVerification): string
     `- Summary: ${payload.summary ?? "unknown"}`,
     `- Rows: ${payload.rows ?? "unknown"}`,
     `- Actual rows: ${payload.actualRows ?? "unknown"}`,
+    `- Fields: ${payload.fields ? fieldListKey(payload.fields) : "unknown"}`,
+    `- Actual fields: ${payload.actualFields ? fieldListKey(payload.actualFields) : "unknown"}`,
     `- Expected bytes: ${payload.expectedBytes ?? "unknown"}`,
     `- Actual bytes: ${payload.actualBytes ?? "missing"}`,
     `- Expected sha256: ${payload.expectedSha256 ?? "unknown"}`,

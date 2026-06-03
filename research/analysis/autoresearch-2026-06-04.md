@@ -1298,6 +1298,22 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 83: Saved Session List Field Verification
+
+- Added `actualFields` to `repo-tutor verify-list-output` results.
+- Verifier now compares manifest `fields` with JSON, JSONL, and CSV output
+  keys or headers and fails closed with `fields-mismatch` when field metadata
+  drifts.
+- Temp CLI list-field-count smoke generated
+  `/tmp/repotutor-list-field-count-smoke.96Q5Mn`; two fixture sessions were
+  created, JSONL verifier Markdown reported matching `Fields` and
+  `Actual fields`, CSV verification returned matching `fields` and
+  `actualFields`, and tampering manifest fields to include `missingField`
+  failed closed with `fields-mismatch`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
