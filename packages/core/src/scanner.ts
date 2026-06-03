@@ -22,6 +22,7 @@ import {
   RuntimeEnvironmentReport,
   InterfaceMapReport,
   SymbolMapReport,
+  ApiReferenceReport,
   ContextPackReport,
   McpHandoffReport,
   AgentMemoryReport,
@@ -48,6 +49,7 @@ export interface AnalysisBundle {
   runtimeEnvironmentReport: RuntimeEnvironmentReport;
   interfaceMapReport: InterfaceMapReport;
   symbolMapReport: SymbolMapReport;
+  apiReferenceReport: ApiReferenceReport;
   contextPackReport: ContextPackReport;
   mcpHandoffReport: McpHandoffReport;
   agentMemoryReport: AgentMemoryReport;
@@ -78,6 +80,7 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const runtimeEnvironmentReport = buildRuntimeEnvironmentReport(walk, dependencyReport);
   const interfaceMapReport = await buildInterfaceMapReport(walk);
   const symbolMapReport = await buildSymbolMapReport(walk, fileLessons);
+  const apiReferenceReport = buildApiReferenceReport(fileLessons, symbolMapReport);
   const contextPackReport = buildContextPackReport(walk, fileLessons);
   const mcpHandoffReport = buildMcpHandoffReport(repoMap, contextPackReport);
   const flowReport = buildFlowReport(fileLessons, dependencyReport);
@@ -91,7 +94,7 @@ export async function analyzeRepository(sourceRoot: string): Promise<AnalysisBun
   const agentMemoryReport = buildAgentMemoryReport(repoMap, languageReport, purposeReport, contextPackReport, mcpHandoffReport, componentGraphReport);
   const sourceSnapshotReport = await buildSourceSnapshotReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -581,6 +584,71 @@ function dedupeSymbols(symbols: SymbolMapReport["symbols"]): SymbolMapReport["sy
     seen.add(key);
     return true;
   });
+}
+
+function buildApiReferenceReport(fileLessons: FileLesson[], symbolMapReport: SymbolMapReport): ApiReferenceReport {
+  const entryPoints = fileLessons
+    .filter((lesson) => /(^|\/)(index|main|cli|app|server|lib)\.[^.]+$/.test(lesson.filePath) || lesson.keyExports.length > 0)
+    .slice(0, 10)
+    .map((lesson) => ({
+      filePath: lesson.filePath,
+      reason: lesson.keyExports.length > 0
+        ? `TypeDoc entry point처럼 ${lesson.keyExports.length}개 export 신호를 문서 시작점으로 삼습니다.`
+        : "파일명과 역할상 API 문서의 entry point 후보입니다.",
+      lessonHref: `html/files.html#${htmlAnchor(lesson.filePath)}`,
+      sourceHref: `source/${encodedPath(lesson.filePath)}`
+    }));
+  const exportedSymbols = symbolMapReport.symbols.filter((symbol) => symbol.exported);
+  const fallbackSymbols = exportedSymbols.length > 0 ? exportedSymbols : symbolMapReport.symbols.slice(0, 20);
+  const publicSymbols = fallbackSymbols.slice(0, 80).map((symbol) => ({
+    name: symbol.name,
+    kind: symbol.kind,
+    category: apiCategory(symbol.kind),
+    filePath: symbol.filePath,
+    signature: apiSignature(symbol),
+    lessonHref: symbol.lessonHref,
+    sourceHref: symbol.sourceHref
+  }));
+  const entryPointPaths = new Set(entryPoints.map((entry) => entry.filePath));
+  const exportWarnings = symbolMapReport.symbols
+    .filter((symbol) => !symbol.exported && (entryPointPaths.has(symbol.filePath) || /(^|\/)(index|main|lib)\.[^.]+$/.test(symbol.filePath)))
+    .slice(0, 12)
+    .map((symbol) => ({
+      filePath: symbol.filePath,
+      symbolName: symbol.name,
+      message: `${symbol.name} appears in an API-adjacent file but is not exported in the static symbol map.`,
+      suggestion: "공개 API라면 export하고, 내부 helper라면 파일 수업에서 internal로 설명하세요.",
+      sourceHref: symbol.sourceHref
+    }));
+  return {
+    summary: `TypeDoc식 API reference report: entry point ${entryPoints.length}개와 public symbol ${publicSymbols.length}개를 ReflectionKind 스타일 category로 정리했습니다.`,
+    sourcePattern: "TypeDoc entry points reflections ReflectionKind public API documentation export validation",
+    entryPoints,
+    publicSymbols,
+    kindCounts: countBy(publicSymbols.map((symbol) => symbol.kind)),
+    categoryCounts: countBy(publicSymbols.map((symbol) => symbol.category)),
+    exportWarnings,
+    learnerNextSteps: [
+      "entryPoints에서 시작해 공개 symbol이 어느 파일에서 export되는지 확인하세요.",
+      "function/class/interface/type category를 나누어 값 API와 타입 API를 따로 읽으세요.",
+      "exportWarnings는 공개 API 후보인지 내부 helper인지 사람 검토로 확정하세요."
+    ]
+  };
+}
+
+function apiCategory(kind: SymbolMapReport["symbols"][number]["kind"]): ApiReferenceReport["publicSymbols"][number]["category"] {
+  if (kind === "class") return "class";
+  if (kind === "interface" || kind === "type") return "type";
+  return "value";
+}
+
+function apiSignature(symbol: SymbolMapReport["symbols"][number]): string {
+  const prefix = symbol.exported ? "export " : "";
+  if (symbol.kind === "function") return `${prefix}function ${symbol.name}(...)`;
+  if (symbol.kind === "class") return `${prefix}class ${symbol.name}`;
+  if (symbol.kind === "interface") return `${prefix}interface ${symbol.name}`;
+  if (symbol.kind === "type") return `${prefix}type ${symbol.name} = ...`;
+  return `${prefix}const ${symbol.name}`;
 }
 
 function buildContextPackReport(walk: WalkResult, fileLessons: FileLesson[]): ContextPackReport {

@@ -17,6 +17,7 @@ import type {
   RuntimeEnvironmentReport,
   InterfaceMapReport,
   SymbolMapReport,
+  ApiReferenceReport,
   ContextPackReport,
   McpHandoffReport,
   AgentMemoryReport,
@@ -47,6 +48,7 @@ export interface StudyHtmlInput {
   runtimeEnvironmentReport: RuntimeEnvironmentReport;
   interfaceMapReport: InterfaceMapReport;
   symbolMapReport: SymbolMapReport;
+  apiReferenceReport: ApiReferenceReport;
   contextPackReport: ContextPackReport;
   mcpHandoffReport: McpHandoffReport;
   agentMemoryReport: AgentMemoryReport;
@@ -104,6 +106,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["runtime-environment.html", "Runtime Environment"],
     ["interface-map.html", "Interface Map"],
     ["symbol-map.html", "Symbol Map"],
+    ["api-reference.html", "API Reference"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -189,6 +192,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>실행 환경</h3><p>${escapeHtml(input.runtimeEnvironmentReport.summary)}</p><p>docSmith 패턴으로 Docker와 setup 신호를 정리합니다.</p><a href="runtime-environment.html">실행 환경 열기</a></article>
           <article><h3>인터페이스 맵</h3><p>${escapeHtml(input.interfaceMapReport.summary)}</p><p>repomap 패턴으로 route/page/API 신호를 모읍니다.</p><a href="interface-map.html">인터페이스 맵 열기</a></article>
           <article><h3>심볼 맵</h3><p>${escapeHtml(input.symbolMapReport.summary)}</p><p>codebase-map 패턴으로 함수/클래스/상수 신호를 모읍니다.</p><a href="symbol-map.html">심볼 맵 열기</a></article>
+          <article><h3>API Reference</h3><p>${escapeHtml(input.apiReferenceReport.summary)}</p><p>TypeDoc 패턴으로 entry point, ReflectionKind, public export surface를 정리합니다.</p><a href="api-reference.html">API Reference 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -268,6 +272,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "symbol-map.html",
       title: "심볼 맵",
       html: pageShell("심볼 맵", "symbol-map.html", `<section class="panel" data-source-pattern="codebase-map"><h2>함수/클래스/상수 인덱스</h2><p>${escapeHtml(input.symbolMapReport.summary)}</p><p class="muted">${escapeHtml(input.symbolMapReport.sourcePattern)}</p></section><section class="grid"><article class="symbol-map-card"><h3>종류별 개수</h3>${list(Object.entries(input.symbolMapReport.symbolsByKind).map(([kind, count]) => `${kind}: ${count}`))}</article><article class="symbol-map-card"><h3>심볼이 많은 파일</h3>${list(input.symbolMapReport.filesWithSymbols.map((item) => `${item.filePath}: ${item.count}개`))}</article><article class="symbol-map-card"><h3>다음 확인 단계</h3>${list(input.symbolMapReport.learnerNextSteps)}</article></section><section class="cards symbol-map-cards">${symbolCards(input.symbolMapReport.symbols)}</section>`, input)
+    },
+    {
+      name: "api-reference.html",
+      title: "API Reference",
+      html: pageShell("API Reference", "api-reference.html", `<section class="panel" data-source-pattern="TypeDoc"><h2>Public API Reference</h2><p>${escapeHtml(input.apiReferenceReport.summary)}</p><p class="muted">${escapeHtml(input.apiReferenceReport.sourcePattern)}</p><dl class="meta"><div><dt>entry points</dt><dd>${input.apiReferenceReport.entryPoints.length}</dd></div><div><dt>public symbols</dt><dd>${input.apiReferenceReport.publicSymbols.length}</dd></div><div><dt>ReflectionKind</dt><dd>${Object.keys(input.apiReferenceReport.kindCounts).length}</dd></div><div><dt>export warnings</dt><dd>${input.apiReferenceReport.exportWarnings.length}</dd></div></dl></section><section class="grid"><article class="api-reference-card"><h3>Entry Points</h3>${apiEntryPointList(input.apiReferenceReport.entryPoints)}</article><article class="api-reference-card"><h3>Kind Counts</h3>${list(Object.entries(input.apiReferenceReport.kindCounts).map(([kind, count]) => `${kind}: ${count}`))}</article><article class="api-reference-card"><h3>Category Counts</h3>${list(Object.entries(input.apiReferenceReport.categoryCounts).map(([category, count]) => `${category}: ${count}`))}</article><article class="api-reference-card"><h3>Export Warnings</h3>${apiWarningList(input.apiReferenceReport.exportWarnings)}</article></section><section class="cards api-reference-cards">${apiReferenceCards(input.apiReferenceReport.publicSymbols)}</section><section class="panel"><h2>다음 확인 단계</h2>${list(input.apiReferenceReport.learnerNextSteps)}</section>`, input)
     },
     {
       name: "context-pack.html",
@@ -390,6 +399,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "실행 환경", path: "html/runtime-environment.html", description: "설치, 런타임, Docker/Compose 신호를 확인합니다." },
       { label: "인터페이스 맵", path: "html/interface-map.html", description: "Route/page/API/component 신호와 data-flow 힌트를 확인합니다." },
       { label: "심볼 맵", path: "html/symbol-map.html", description: "함수, 클래스, 상수, 타입 신호를 원본 소스와 함께 확인합니다." },
+      { label: "API Reference", path: "html/api-reference.html", description: "TypeDoc식 entry point, public symbol, export warning을 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -559,6 +569,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       evidence: `symbol ${input.symbolMapReport.totalSymbols}개`
     },
     {
+      title: "공개 API reference 확인",
+      href: "api-reference.html",
+      goal: "entry point와 exported symbol을 TypeDoc식 API 문서 순서로 확인합니다.",
+      evidence: `entry points ${input.apiReferenceReport.entryPoints.length}개, public symbols ${input.apiReferenceReport.publicSymbols.length}개`
+    },
+    {
       title: "LLM Context Pack 예산 확인",
       href: "context-pack.html",
       goal: "AI 도구에 공유할 파일 묶음의 token-heavy file과 context limit 적합성을 확인합니다.",
@@ -707,6 +723,21 @@ function interfaceSourceList(items: Array<{ text: string; sourceHref: string }>)
 function symbolCards(symbols: SymbolMapReport["symbols"]): string {
   if (symbols.length === 0) return "<article><h3>기록된 심볼이 없습니다.</h3><p>지원되는 코드 파일이 적거나 선언 패턴을 찾지 못했습니다.</p></article>";
   return symbols.map((symbol) => `<article class="symbol-map-card" data-symbol-kind="${escapeHtml(symbol.kind)}" data-symbol-exported="${symbol.exported}"><h3>${escapeHtml(symbol.name)}</h3><p class="muted">${escapeHtml(symbol.kind)}${symbol.exported ? " · exported" : ""}</p><p>${escapeHtml(symbol.filePath)}</p><a href="${escapeHtml(symbol.lessonHref.replace(/^html\//, ""))}">파일 수업</a> <a class="symbol-source-link" href="../${escapeHtml(symbol.sourceHref)}">원본 열기</a></article>`).join("");
+}
+
+function apiEntryPointList(items: ApiReferenceReport["entryPoints"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 entry point가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><a href="${escapeHtml(item.lessonHref.replace(/^html\//, ""))}">${escapeHtml(item.filePath)}</a>: ${escapeHtml(item.reason)} <a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function apiReferenceCards(symbols: ApiReferenceReport["publicSymbols"]): string {
+  if (symbols.length === 0) return "<article><h3>기록된 public symbol이 없습니다.</h3><p>export 신호가 있는 파일을 다시 확인하세요.</p></article>";
+  return symbols.map((symbol) => `<article class="api-reference-card" data-api-kind="${escapeHtml(symbol.kind)}" data-api-category="${escapeHtml(symbol.category)}"><h3>${escapeHtml(symbol.name)}</h3><p class="muted">ReflectionKind ${escapeHtml(symbol.kind)} · ${escapeHtml(symbol.category)}</p><code>${escapeHtml(symbol.signature)}</code><p>${escapeHtml(symbol.filePath)}</p><a href="${escapeHtml(symbol.lessonHref.replace(/^html\//, ""))}">파일 수업</a> <a class="api-reference-source-link" href="../${escapeHtml(symbol.sourceHref)}">원본 열기</a></article>`).join("");
+}
+
+function apiWarningList(items: ApiReferenceReport["exportWarnings"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 export warning이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.symbolName)}</strong> in ${escapeHtml(item.filePath)}: ${escapeHtml(item.message)} ${escapeHtml(item.suggestion)} <a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></li>`).join("")}</ul>`;
 }
 
 function contextPackCards(files: ContextPackReport["topFiles"]): string {

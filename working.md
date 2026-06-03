@@ -1293,6 +1293,32 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`: PASS, 13/13 audit reports
 - 2026-06-04: Pushed AutoResearch Upgrade 116:
   - `3d16f0e` dependency health report
+- 2026-06-04: AutoResearch Upgrade 117 candidate selected:
+  `TypeStrong/typedoc` (`https://github.com/TypeStrong/typedoc`; public
+  Apache-2.0; 8,405 stars; 766 forks; updated 2026-06-02T13:47:49Z). Cloned
+  ignored external source to `research/external-src/TypeStrong-typedoc` and
+  inspected README, `package.json`, `src/index.ts`,
+  `src/lib/models/DeclarationReflection.ts`,
+  `src/lib/models/ProjectReflection.ts`, `src/lib/models/kind.ts`, and
+  `src/lib/validation/exports.ts` without executing it.
+- 2026-06-04: RED api-reference smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-api-reference-red-studies.ALp7FF8Pin/...`;
+  old build was missing `analysis/api-reference-report.json` as expected.
+- 2026-06-04: Implemented TypeDoc-style API reference report:
+  `ApiReferenceReportSchema`, `analysis/api-reference-report.json`,
+  `markdown/api-reference.md`, `html/api-reference.html`, entry point rows,
+  public symbols, ReflectionKind-style categories, export warnings,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target api-reference`.
+- 2026-06-04: GREEN api-reference smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-api-reference-green-studies.C2R90GpBXb/...`;
+  confirmed `entryPoints`, `publicSymbols`, `exportWarnings`,
+  `api-reference-card`, `data-source-pattern="TypeDoc"`, `ReflectionKind`, and
+  `open --target api-reference` -> `html/api-reference.html`.
+- 2026-06-04: Verification for Upgrade 117:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 13/13 audit reports
 
 ## Next Actions
 
