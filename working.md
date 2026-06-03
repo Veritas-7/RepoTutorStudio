@@ -405,6 +405,14 @@ to a private repository, and preserve resumable state in this file.
     `# RepoTutor Open Target Paths`, verification and quiz path rows, `doctor`
     reported Markdown support for `openAll`, and invalid `--format text`
     exited 1 with `open --target all supports --format`
+  - temp CLI verify-export-markdown smoke generated
+    `/tmp/repotutor-verify-export-md-smoke.4JKJLi`;
+    `verify-export --format markdown` returned
+    `# RepoTutor Export Verification`, `OK: PASS`, and `Checked files: 18`,
+    `doctor` reported Markdown support for `verifyExport`, invalid
+    `--format text` exited 1 with `verify-export supports --format`, and a
+    tampered `html/index.html` made Markdown output return exit 1 with
+    `OK: FAIL` and `html/index.html`
   - temp CLI doctor-metadata smoke generated
     `/tmp/repotutor-doctor-metadata-smoke.I5Ezqp`; `repo-tutor doctor`
     returned command metadata, list filters, Markdown-capable resume formats,
@@ -527,6 +535,7 @@ to a private repository, and preserve resumable state in this file.
   - `eb633c4` resume HTML target status
   - `095090a` list HTML target status filters
   - `171e62f` open target Markdown discovery
+  - `4feced9` open all target Markdown paths
 
 ## Next Actions
 

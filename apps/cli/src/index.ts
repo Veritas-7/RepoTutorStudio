@@ -214,7 +214,9 @@ async function verifyExport(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const { verifyHtmlExportManifest } = await import("@repotutor/core");
   const result = await verifyHtmlExportManifest(sessionRoot);
-  console.log(JSON.stringify(result, null, 2));
+  const format = stringFlag(parsed.flags.format) ?? "json";
+  if (!["json", "markdown"].includes(format)) throw new Error("verify-export supports --format json or markdown.");
+  console.log(format === "markdown" ? exportVerificationMarkdown(result) : JSON.stringify(result, null, 2));
   if (!result.ok) process.exitCode = 1;
 }
 
@@ -341,6 +343,7 @@ async function doctor(parsed: ParsedArgs): Promise<void> {
     formats: {
       resume: ["json", "markdown"],
       evidence: ["json", "markdown"],
+      verifyExport: ["json", "markdown"],
       verifySession: ["json", "markdown"],
       list: ["json", "markdown"],
       openTargets: ["json", "markdown"],
@@ -697,6 +700,40 @@ function openTargetPathsMarkdown(paths: Record<string, string>): string {
   ].join("\n");
 }
 
+function exportVerificationMarkdown(payload: {
+  ok: boolean;
+  manifestPath: string;
+  checkedFiles: number;
+  failures: Array<{
+    path: string;
+    expectedBytes: number;
+    actualBytes: number | null;
+    expectedSha256: string;
+    actualSha256: string | null;
+  }>;
+}): string {
+  const failures = payload.failures.length === 0
+    ? "- none"
+    : payload.failures.map((failure) => [
+      `- ${failure.path}`,
+      `  - Expected bytes: ${failure.expectedBytes}`,
+      `  - Actual bytes: ${failure.actualBytes ?? "missing"}`,
+      `  - Expected sha256: ${failure.expectedSha256}`,
+      `  - Actual sha256: ${failure.actualSha256 ?? "missing"}`
+    ].join("\n")).join("\n");
+  return [
+    "# RepoTutor Export Verification",
+    "",
+    `- OK: ${payload.ok ? "PASS" : "FAIL"}`,
+    `- Manifest: ${payload.manifestPath}`,
+    `- Checked files: ${payload.checkedFiles}`,
+    "",
+    "## Failures",
+    "",
+    failures
+  ].join("\n");
+}
+
 function markdownTableCell(value: string): string {
   return value.replaceAll("|", "\\|").replaceAll("\n", " ");
 }
@@ -832,7 +869,7 @@ function help(): void {
   resume <session-id-or-path> --format json|markdown
   evidence <session-id-or-path> --kind import --file src/main.ts --limit 20 --format json|markdown
   export <session-id-or-path> --format html|zip
-  verify-export <session-id-or-path>
+  verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path>
   verify-session <session-id-or-path> --format json|markdown
   list --repo owner/name --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest --verified-only --limit 10 --format json|markdown
