@@ -272,6 +272,29 @@ to a private repository, and preserve resumable state in this file.
   field verification. `verify-list-output` now reports `actualFields`, compares
   manifest `fields` against JSON, JSONL, and CSV output keys or headers, and
   fails closed with `fields-mismatch` when field metadata drifts.
+- 2026-06-04: Applied an eighty-fourth AutoResearch upgrade: saved list
+  verification report files. `verify-list-output --report <file>` now writes
+  JSON or Markdown verification reports while preserving fail-closed exits.
+- 2026-06-04: Applied an eighty-fifth AutoResearch upgrade: default saved list
+  verification report paths. Bare `--report` now writes
+  `<output>.verification.json` or `<output>.verification.md`, and explicit empty
+  report values fail closed.
+- 2026-06-04: Applied an eighty-sixth AutoResearch upgrade: default study
+  target command. Passing a source path or GitHub URL as the first argument now
+  runs `study`, while typo commands still show help.
+- 2026-06-04: Applied an eighty-seventh AutoResearch upgrade: studies-root
+  runtime option discovery. CLI help and doctor output now expose
+  `--studies-root <dir>` and runtime option metadata.
+- 2026-06-04: Applied an eighty-eighth AutoResearch upgrade: doctor runtime
+  health checks. `repo-tutor doctor` now reports studies-root existence,
+  readability, writability, and parent-writability without mutating state.
+- 2026-06-04: Applied an eighty-ninth AutoResearch upgrade: print-friendly
+  offline HTML reports. Generated HTML includes print media rules and export
+  README print-preview guidance for PDF or paper handouts.
+- 2026-06-04: Applied a ninetieth AutoResearch upgrade: printable quiz answer
+  key. Generated HTML now includes `html/quiz-print.html`, a manifest
+  entrypoint, required-artifact verification, and CLI `open --target quiz-print`
+  support.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -748,6 +771,12 @@ to a private repository, and preserve resumable state in this file.
     included `@media print`, `print-color-adjust`, hidden sidebar/toolbar/choice
     rules, and printable link target rules, and `EXPORT-README.md` included
     browser print-preview guidance.
+  - temp CLI quiz-print smoke generated
+    `/tmp/repotutor-quiz-print-smoke.inb4sR`; generated `html/quiz-print.html`
+    contained `정답지`, `print-answer-key`, `<strong>정답:</strong>`,
+    `<strong>해설:</strong>`, and `연결 수업`; `manifest.json`,
+    `verify-session`, `open --target quiz-print`, and `open --list-targets`
+    all recognized the page.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -840,6 +869,8 @@ to a private repository, and preserve resumable state in this file.
   - `d361825` default study target command
   - `7c2ee7a` studies root runtime option discovery
   - `524c9f1` doctor runtime health checks
+  - `82a4c3c` printable html reports
+  - `4c7afb3` printable quiz answer key
 
 ## Next Actions
 

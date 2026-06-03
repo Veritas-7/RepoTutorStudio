@@ -1436,6 +1436,28 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 90: Printable Quiz Answer Key
+
+- Added `html/quiz-print.html`, a static printable answer-key page that lists
+  each question, all choices, the correct answer, explanation, and linked
+  lesson path.
+- Added the page to sidebar navigation, HTML manifest pages, manifest
+  entrypoints, session required-artifact verification, and CLI open target
+  discovery as `quiz-print`.
+- Source pattern: google/html-quiz's offline quiz can be reviewed in print
+  preview as a question/answer handout; RepoTutor now makes that handout an
+  explicit generated page instead of depending on hidden interactive answers.
+- RED smoke `/tmp/repotutor-quiz-print-red.*` failed on the old behavior with
+  `missing quiz-print.html`.
+- GREEN smoke generated `/tmp/repotutor-quiz-print-smoke.inb4sR`; generated
+  `quiz-print.html` included `정답지`, `print-answer-key`, `<strong>정답:</strong>`,
+  `<strong>해설:</strong>`, and `연결 수업`, while manifest pages,
+  manifest entrypoints, `verify-session`, `open --target quiz-print`, and
+  `open --list-targets` all recognized the page.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
