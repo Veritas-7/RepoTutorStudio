@@ -377,6 +377,28 @@ to a private repository, and preserve resumable state in this file.
   - `jq empty research/analysis/autoresearch-2026-06-04.json`
   - `jq empty docs/audits/compliance-audit-summary.json`
   - `git diff --check`
+- 2026-06-04: Pushed Upgrade 105 at `dc84793` with HEAD and `origin/main`
+  matching.
+- 2026-06-04: Cloned `wtdlee/repomap` under
+  `research/external-src/wtdlee-repomap` for read-only AutoResearch source
+  inspection. Source pattern: page map, route/API detection, component tracking,
+  and data-flow hints.
+- 2026-06-04: Started a hundred-sixth AutoResearch upgrade: interface map
+  report. RepoTutor now targets `analysis/interface-map-report.json`,
+  `markdown/interface-map.md`, `html/interface-map.html`, and CLI
+  `open --target interface-map`.
+- 2026-06-04: RED smoke for Upgrade 106 failed as expected at
+  `/tmp/repotutor-interface-map-red.*` with
+  `missing analysis/interface-map-report.json`.
+- 2026-06-04: GREEN smoke for Upgrade 106 generated
+  `/tmp/repotutor-interface-map-smoke.CNPJhA`; generated interface map JSON,
+  Markdown, and HTML artifacts, included `interface-map-card`, `repomap`,
+  `인터페이스 맵`, and `data-source-pattern="repomap"`, and
+  `open --target interface-map` returned the new page.
+- 2026-06-04: Upgrade 106 verification passed:
+  - `pnpm build`
+  - `pnpm test`
+  - `pnpm audit:brief`
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
