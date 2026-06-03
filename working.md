@@ -299,6 +299,9 @@ to a private repository, and preserve resumable state in this file.
   difficulty filters. `html/quiz.html` now exposes section and difficulty
   filter toolbars, per-card quiz metadata, and offline JS handlers that combine
   with global search.
+- 2026-06-04: Applied a ninety-second AutoResearch upgrade: component graph
+  Mermaid download. `html/component-graph.html` now exposes a Mermaid download
+  toolbar and offline JS saves the graph source as `component-graph.mmd`.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -787,6 +790,11 @@ to a private repository, and preserve resumable state in this file.
     `data-quiz-section-filter`, `data-quiz-difficulty-filter`,
     `data-quiz-section`, and `data-quiz-difficulty`, with matching handlers in
     `html/assets/app.js`.
+  - temp CLI graph-download smoke generated
+    `/tmp/repotutor-graph-download-smoke.nkHqGQ`; generated
+    `html/component-graph.html` contained `component-graph-download-toolbar`,
+    `data-download-mermaid`, `component-graph-mermaid`, and
+    `Mermaid 다운로드`, with Blob download logic in `html/assets/app.js`.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
