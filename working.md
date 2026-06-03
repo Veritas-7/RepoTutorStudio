@@ -322,6 +322,10 @@ to a private repository, and preserve resumable state in this file.
   path HTML. `html/learning-path.html` now provides a CodeTour-inspired ordered
   tour over generated report pages and is included in manifest, session
   verification, and `open --target learning-path`.
+- 2026-06-04: Applied a ninety-eighth AutoResearch upgrade: portable learning
+  path tour asset. Generated HTML now includes
+  `html/assets/learning-path.tour.json`, a CodeTour-style ordered JSON tour
+  asset with `isPrimary: true` and file-linked report steps.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -841,6 +845,11 @@ to a private repository, and preserve resumable state in this file.
     `open --target learning-path` returned the page path. An earlier smoke
     script at `/tmp/repotutor-learning-path-smoke.9p9xjX` exposed a test-script
     issue because single-target `open` returns a plain path, not JSON.
+  - temp CLI learning-path tour asset smoke generated
+    `/tmp/repotutor-tour-asset-smoke.FzAzmz`; generated
+    `html/assets/learning-path.tour.json` parsed as JSON, had
+    `isPrimary: true`, included a component graph file step, and appeared in
+    `manifest.json` plus `EXPORT-README.md`.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -941,6 +950,7 @@ to a private repository, and preserve resumable state in this file.
   - `2a96d42` component node relation lists
   - `3e82dac` component node anchor links
   - `3f4267c` offline quiz reset controls
+  - `da775e1` guided learning path report
 
 ## Next Actions
 

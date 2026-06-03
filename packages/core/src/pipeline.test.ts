@@ -63,6 +63,10 @@ describe("RepoTutor core pipeline", () => {
     expect(componentGraphHtml).toContain("href=\"#component-node-");
     const componentGraphMermaid = await fs.readFile(path.join(result.session.outputPaths.html, "assets", "component-graph.mmd"), "utf8");
     expect(componentGraphMermaid).toContain("flowchart");
+    const learningPathTourText = await fs.readFile(path.join(result.session.outputPaths.html, "assets", "learning-path.tour.json"), "utf8");
+    expect(learningPathTourText).toContain("RepoTutor Learning Path");
+    expect(learningPathTourText).toContain("\"isPrimary\": true");
+    expect(learningPathTourText).toContain("\"file\": \"html/component-graph.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -81,11 +85,13 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("\"sha256\"");
     expect(exportManifestText).toContain("\"readmePath\"");
     expect(exportManifestText).toContain("assets/component-graph.mmd");
+    expect(exportManifestText).toContain("assets/learning-path.tour.json");
     const exportReadmeText = await fs.readFile(path.join(result.session.outputPaths.html, "EXPORT-README.md"), "utf8");
     expect(exportReadmeText).toContain("RepoTutor HTML Export");
     expect(exportReadmeText).toContain("Entry Points");
     expect(exportReadmeText).toContain("Integrity metadata uses sha256");
     expect(exportReadmeText).toContain("assets/component-graph.mmd");
+    expect(exportReadmeText).toContain("assets/learning-path.tour.json");
     const filesHtml = await fs.readFile(path.join(result.session.outputPaths.html, "files.html"), "utf8");
     expect(filesHtml).toContain("file-nav-toolbar");
     expect(filesHtml).toContain("data-file-ext-filter");
@@ -177,6 +183,7 @@ describe("RepoTutor core pipeline", () => {
     expect(zipSignature).toBe("504b0304");
     const zipText = await fs.readFile(zip.zipPath, "latin1");
     expect(zipText).toContain("assets/component-graph.mmd");
+    expect(zipText).toContain("assets/learning-path.tour.json");
     const exportVerification = await verifyHtmlExportManifest(result.session.outputPaths.root);
     expect(exportVerification.ok).toBe(true);
     expect(exportVerification.checkedFiles).toBeGreaterThan(5);
