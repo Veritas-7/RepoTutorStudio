@@ -1031,6 +1031,18 @@
         "unsupported-schema-version failure",
         "supported schema version Markdown"
       ]
+    },
+    {
+      "name": "saved session list row-count verification",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "verify-list-output actualRows result",
+        "rows-mismatch failure",
+        "Actual rows Markdown"
+      ]
     }
   ],
   "verification": {
@@ -1142,6 +1154,7 @@
     "cliListManifestMetadataSmoke": "PASS",
     "cliListManifestSchemaSmoke": "PASS",
     "cliListManifestSchemaGateSmoke": "PASS",
+    "cliListRowCountSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
