@@ -326,6 +326,10 @@ to a private repository, and preserve resumable state in this file.
   path tour asset. Generated HTML now includes
   `html/assets/learning-path.tour.json`, a CodeTour-style ordered JSON tour
   asset with `isPrimary: true` and file-linked report steps.
+- 2026-06-04: Applied a ninety-ninth AutoResearch upgrade: learning path
+  progress persistence. `html/learning-path.html` now has
+  `data-learning-step-complete` checkboxes and offline JS persists completed
+  steps in browser localStorage under `repotutor:learning-path:<path>`.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -850,6 +854,12 @@ to a private repository, and preserve resumable state in this file.
     `html/assets/learning-path.tour.json` parsed as JSON, had
     `isPrimary: true`, included a component graph file step, and appeared in
     `manifest.json` plus `EXPORT-README.md`.
+  - temp CLI learning-progress smoke generated
+    `/tmp/repotutor-learning-progress-smoke.6p1hD6`; generated
+    `html/learning-path.html` contained `data-learning-step-complete` and
+    `학습 완료`, while `html/assets/app.js` contained
+    `repotutor:learning-path`, `localStorage`, `learningProgress`, and
+    `[data-learning-step-complete]`.
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -951,6 +961,7 @@ to a private repository, and preserve resumable state in this file.
   - `3e82dac` component node anchor links
   - `3f4267c` offline quiz reset controls
   - `da775e1` guided learning path report
+  - `9454f79` learning path tour asset
 
 ## Next Actions
 
