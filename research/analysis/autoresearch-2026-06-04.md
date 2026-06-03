@@ -490,6 +490,16 @@ Transferable patterns:
   `--list-targets`.
 - `scripts/compliance-audit.mjs`: verifies the list-targets CLI surface.
 
+### Upgrade 38: Fail-Closed Open Targets
+
+- `apps/cli/src/index.ts`: `repo-tutor open` now checks that the selected HTML
+  target exists and is a readable file before printing the path.
+- `apps/cli/src/index.ts`: missing target files fail with
+  `Open target file not found: <path>`.
+- `apps/cli/src/index.ts`: `open --list-targets` remains session-free and does
+  not require target file existence.
+- `scripts/compliance-audit.mjs`: verifies the fail-closed open target tokens.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -668,6 +678,11 @@ Local verification:
   `verification`, `evidence`, `quiz`, and `component-graph`, and
   `open --target verification`, `--target evidence`, and `--target quiz`
   returned existing files.
+- Temp CLI open-exists smoke generated:
+  `/tmp/repotutor-open-exists-smoke.oXYr5x/2026-06-04/local__simple-ts-app__main__35d90f7a`;
+  `open --target verification` returned an existing file, then deleting
+  `html/session-verification.html` made the same command exit 1 with
+  `Open target file not found`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

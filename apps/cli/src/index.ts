@@ -237,7 +237,9 @@ async function openSession(parsed: ParsedArgs): Promise<void> {
   const sessionRoot = await resolveSessionRoot(parsed.rest[0], parsed.flags);
   const target = stringFlag(parsed.flags.target) ?? "index";
   const fileName = openTargetFile(target);
-  console.log(path.join(sessionRoot, "html", fileName));
+  const htmlPath = path.join(sessionRoot, "html", fileName);
+  await assertReadableFile(htmlPath, `Open target file not found: ${htmlPath}`);
+  console.log(htmlPath);
 }
 
 async function doctor(): Promise<void> {
@@ -315,6 +317,15 @@ function numberFlag(value: string | boolean | undefined, fallback: number): numb
   if (typeof value !== "string") return fallback;
   const parsed = Number(value);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+async function assertReadableFile(filePath: string, message: string): Promise<void> {
+  try {
+    const stat = await fs.stat(filePath);
+    if (!stat.isFile()) throw new Error(message);
+  } catch {
+    throw new Error(message);
+  }
 }
 
 function evidenceMarkdown(payload: {
