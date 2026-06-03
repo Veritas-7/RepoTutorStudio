@@ -413,6 +413,18 @@ Transferable patterns:
 - `scripts/compliance-audit.mjs`: verifies the Markdown session verification
   output surface.
 
+### Upgrade 31: Persistent Session Verification Reports
+
+- `packages/core/src/pipeline.ts`: runs `verifyStudySessionArtifacts` after the
+  study artifacts and HTML export are written.
+- `packages/core/src/pipeline.ts`: writes
+  `analysis/session-verification-report.json` for every completed study run.
+- `packages/core/src/pipeline.ts`: fails closed if the generated artifact set
+  does not pass aggregate session verification.
+- `packages/core/src/pipeline.test.ts`: verifies the persistent report exists
+  and records `ok: true`, `checkedRequiredArtifacts`, and evidence-index status.
+- `scripts/compliance-audit.mjs`: verifies the persistent report artifact.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -554,6 +566,11 @@ Local verification:
   and `repo-tutor verify-session <session> --format markdown` returned
   `# RepoTutor Session Verification`, `Status: PASS`, four PASS sub-checks, and
   `Failures` as `none`.
+- Temp CLI persistent session report smoke generated:
+  `/tmp/repotutor-session-report-smoke.oxj2h3/2026-06-04/local__simple-ts-app__main__a5bc3b3f`
+  with `analysis/session-verification-report.json` containing `ok: true`,
+  `checkedRequiredArtifacts: 11`, `htmlExport: true`, `evidenceIndex: true`,
+  and zero failures.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
