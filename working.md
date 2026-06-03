@@ -196,6 +196,9 @@ to a private repository, and preserve resumable state in this file.
   CLI `repo-tutor resume` now returns verification status and all generated
   HTML target paths so a learner can resume directly into evidence,
   verification, quiz, or graph pages.
+- 2026-06-04: Applied a fortieth AutoResearch upgrade: Markdown resume output.
+  CLI `repo-tutor resume --format markdown` now renders a human-readable resume
+  summary with verification status, target page paths, and verification checks.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -372,6 +375,11 @@ to a private repository, and preserve resumable state in this file.
     `/tmp/repotutor-resume-targets-smoke.nVkVm8/2026-06-04/local__simple-ts-app__main__643161c4`;
     `repo-tutor resume` returned `verificationStatus: passed`, 17
     `htmlTargets`, and direct `verification`, `evidence`, and `quiz` page paths
+  - temp CLI resume-markdown smoke generated
+    `/tmp/repotutor-resume-md-smoke.2S1j83/2026-06-04/local__simple-ts-app__main__5fc5ecdd`;
+    `repo-tutor resume --format markdown` returned `# RepoTutor Resume`,
+    `Verification status: passed`, direct verification/evidence/quiz paths, and
+    `session: PASS`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -414,6 +422,7 @@ to a private repository, and preserve resumable state in this file.
   - `fc9d718` target-aware open command
   - `35d90f7` open target discovery
   - `643161c` fail-closed open targets
+  - `5fc5ecd` enriched resume output
 
 ## Next Actions
 

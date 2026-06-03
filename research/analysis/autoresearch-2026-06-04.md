@@ -511,6 +511,16 @@ Transferable patterns:
   verification, quiz, component graph, and other learning pages.
 - `scripts/compliance-audit.mjs`: verifies the resume target metadata tokens.
 
+### Upgrade 40: Markdown Resume Output
+
+- `apps/cli/src/index.ts`: `repo-tutor resume --format markdown` now renders a
+  human-readable session resume.
+- `apps/cli/src/index.ts`: the Markdown output includes verification status,
+  verification report paths, all HTML targets, and verification check statuses.
+- `apps/cli/src/index.ts`: unsupported resume formats fail with
+  `resume supports --format json or markdown`.
+- `scripts/compliance-audit.mjs`: verifies the Markdown resume output surface.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -698,6 +708,11 @@ Local verification:
   `/tmp/repotutor-resume-targets-smoke.nVkVm8/2026-06-04/local__simple-ts-app__main__643161c4`;
   `repo-tutor resume` returned `verificationStatus: passed`, 17 `htmlTargets`,
   and direct `verification`, `evidence`, and `quiz` page paths.
+- Temp CLI resume-markdown smoke generated:
+  `/tmp/repotutor-resume-md-smoke.2S1j83/2026-06-04/local__simple-ts-app__main__5fc5ecdd`;
+  `repo-tutor resume --format markdown` returned `# RepoTutor Resume`,
+  `Verification status: passed`, direct verification/evidence/quiz paths, and
+  `session: PASS`.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after

@@ -564,6 +564,17 @@
         "repo-tutor resume htmlTargets output",
         "repo-tutor resume verificationStatus metadata"
       ]
+    },
+    {
+      "name": "markdown resume output",
+      "filesChanged": [
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "repo-tutor resume --format markdown",
+        "human-readable resume summary with HTML targets"
+      ]
     }
   ],
   "verification": {
@@ -633,6 +644,7 @@
     "cliOpenTargetListSmoke": "PASS",
     "cliOpenTargetExistsSmoke": "PASS",
     "cliResumeTargetsSmoke": "PASS",
+    "cliResumeMarkdownSmoke": "PASS",
     "briefAuditScopeCorrection": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
