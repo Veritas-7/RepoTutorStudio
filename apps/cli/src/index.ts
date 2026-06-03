@@ -429,7 +429,7 @@ async function verifyListOutput(parsed: ParsedArgs): Promise<void> {
   const format = stringFlag(parsed.flags.format) ?? "json";
   if (!["json", "markdown"].includes(format)) throw new Error("verify-list-output supports --format json or markdown.");
   const rendered = format === "markdown" ? listOutputVerificationMarkdown(result) : jsonText(result);
-  await emitVerifyListOutputReport(rendered, parsed.flags.report);
+  await emitVerifyListOutputReport(rendered, parsed.flags.report, outputPath, format);
   if (!result.ok) process.exitCode = 1;
 }
 
@@ -689,7 +689,7 @@ function parseArgs(args: string[]): ParsedArgs {
     if (arg.startsWith("--")) {
       const key = arg.slice(2);
       const next = args[index + 1];
-      if (next && !next.startsWith("--")) {
+      if (next !== undefined && !next.startsWith("--")) {
         flags[key] = next;
         index += 1;
       } else {
@@ -716,8 +716,9 @@ function optionalStringFlag(value: string | boolean | undefined, name: string): 
   return value.trim();
 }
 
-function reportPathFlag(value: string | boolean | undefined): string | null {
+function verifyListOutputReportPath(value: string | boolean | undefined, outputPath: string, format: string): string | null {
   if (value === undefined) return null;
+  if (value === true) return `${outputPath}${format === "markdown" ? ".verification.md" : ".verification.json"}`;
   if (typeof value !== "string" || value.trim() === "") throw new Error("report must be a non-empty string.");
   return value.trim();
 }
@@ -1170,8 +1171,8 @@ function jsonText(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
-async function emitVerifyListOutputReport(text: string, reportValue: string | boolean | undefined): Promise<void> {
-  const reportFile = reportPathFlag(reportValue);
+async function emitVerifyListOutputReport(text: string, reportValue: string | boolean | undefined, outputPath: string, format: string): Promise<void> {
+  const reportFile = verifyListOutputReportPath(reportValue, outputPath, format);
   const normalizedText = text.endsWith("\n") ? text : `${text}\n`;
   if (reportFile === null) {
     process.stdout.write(normalizedText);
@@ -1777,7 +1778,7 @@ function help(): void {
   verify-export <session-id-or-path> --format json|markdown
   verify-evidence <session-id-or-path> --format json|markdown
   verify-session <session-id-or-path> --format json|markdown
-  verify-list-output <output-file> --manifest output.manifest.json --report verification.json --format json|markdown
+  verify-list-output <output-file> --manifest output.manifest.json --report [verification.json] --format json|markdown
   list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --output reports/list.json --output-manifest [manifest.json] --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
   open <session-id-or-path> --target verification|evidence|quiz|all --format json|markdown
   open --list-targets --format json|markdown

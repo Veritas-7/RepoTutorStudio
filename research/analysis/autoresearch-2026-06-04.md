@@ -1332,6 +1332,27 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 85: Default Saved List Verification Report Paths
+
+- Extended bare `repo-tutor verify-list-output <output-file> --report` to save
+  reports beside the output as `<output>.verification.json` or
+  `<output>.verification.md`, matching the requested `--format`.
+- Preserved explicit empty string validation by fixing CLI flag parsing so
+  `--report ""` is treated as an empty value instead of a bare flag.
+- Source pattern: CodeBoarding writes fixed health artifacts such as
+  `.codeboarding/health/health_report.json`; RepoTutor now offers the same kind
+  of convention-based report path for saved list verification.
+- RED smoke `/tmp/repotutor-verify-list-default-report-red.*` failed on the old
+  behavior with `report must be a non-empty string.`
+- GREEN smoke generated
+  `/tmp/repotutor-verify-list-default-report-smoke.uYu5Lv`; isolated JSONL
+  list output wrote default JSON and Markdown verification reports, stdout
+  returned the default paths, and `--report ""` failed closed with
+  `report must be a non-empty string.`
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
