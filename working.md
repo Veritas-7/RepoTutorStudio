@@ -127,6 +127,10 @@ to a private repository, and preserve resumable state in this file.
   index pages. RepoTutor now emits `markdown/evidence.md` and
   `html/evidence.html`, adds Evidence navigation, and includes an HTML manifest
   entrypoint for the evidence index.
+- 2026-06-04: Applied a twenty-third AutoResearch upgrade: source evidence kind
+  filters. `html/evidence.html` now includes evidence-kind filter buttons, and
+  `assets/app.js` filters evidence cards by import, export, entry, config,
+  test, or text.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -206,6 +210,11 @@ to a private repository, and preserve resumable state in this file.
     with `html/evidence.html`, `markdown/evidence.md`,
     `evidence-index-cards`, links to `files.html#src-main.ts`,
     `../source/src/main.ts`, and manifest entrypoint `html/evidence.html`
+  - temp CLI evidence-kind-filter smoke generated
+    `/tmp/repotutor-evidence-kind-filter-smoke.HkAyVZ/2026-06-04/local__simple-ts-app__main__a3e504ae`
+    with `evidence-kind-toolbar`, six `data-evidence-kind-filter` buttons,
+    `data-evidence-kind="import"`, and matching `evidenceKind` /
+    `evidenceOk` logic in `html/assets/app.js`
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -231,6 +240,7 @@ to a private repository, and preserve resumable state in this file.
   - `63a77df` source evidence drilldown filters
   - `946bc81` source evidence kind summaries
   - `8a6f5e8` source evidence source-file links
+  - `a3e504a` source evidence index pages
 
 ## Next Actions
 

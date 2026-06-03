@@ -87,8 +87,13 @@ describe("RepoTutor core pipeline", () => {
     const evidenceHtml = await fs.readFile(path.join(result.session.outputPaths.html, "evidence.html"), "utf8");
     expect(evidenceHtml).toContain("소스 근거 인덱스");
     expect(evidenceHtml).toContain("evidence-index-cards");
+    expect(evidenceHtml).toContain("evidence-kind-toolbar");
+    expect(evidenceHtml).toContain("data-evidence-kind-filter");
+    expect(evidenceHtml).toContain("data-evidence-kind=\"import\"");
     expect(evidenceHtml).toContain("files.html#src-main.ts");
     expect(evidenceHtml).toContain("../source/src/main.ts");
+    const appJs = await fs.readFile(path.join(result.session.outputPaths.html, "assets", "app.js"), "utf8");
+    expect(appJs).toContain("[data-evidence-kind-filter]");
     const fileLessonsText = await fs.readFile(path.join(result.session.outputPaths.analysis, "file-lessons.json"), "utf8");
     expect(fileLessonsText).toContain("\"sourceEvidence\"");
     expect(fileLessonsText).toContain("\"snippet\"");
