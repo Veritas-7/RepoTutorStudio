@@ -284,6 +284,22 @@
         "markdown/files.md source evidence section",
         "html/files.html source-evidence snippets"
       ]
+    },
+    {
+      "name": "source evidence coverage summaries",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/coverage-report.json evidenceBackedFiles",
+        "analysis/coverage-report.json evidenceCoverageRatio",
+        "html/coverage.html source evidence coverage summary"
+      ]
     }
   ],
   "verification": {
@@ -317,6 +333,8 @@
     "cliExportIntegrityJsonSmoke": "PASS",
     "fixtureSourceEvidence": "PASS",
     "cliSourceEvidenceSmoke": "PASS",
+    "fixtureEvidenceCoverage": "PASS",
+    "cliEvidenceCoverageSmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },

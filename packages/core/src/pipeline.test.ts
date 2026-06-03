@@ -25,6 +25,9 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.source, ".env"))).rejects.toThrow();
     const snapshotText = await fs.readFile(path.join(result.session.outputPaths.analysis, "source-snapshot-report.json"), "utf8");
     expect(snapshotText).toContain("\"sha256\"");
+    const coverageText = await fs.readFile(path.join(result.session.outputPaths.analysis, "coverage-report.json"), "utf8");
+    expect(coverageText).toContain("\"evidenceBackedFiles\"");
+    expect(coverageText).toContain("\"evidenceCoverageRatio\"");
     const incrementalText = await fs.readFile(path.join(result.session.outputPaths.analysis, "incremental-report.json"), "utf8");
     expect(incrementalText).toContain("\"baselineSessionId\"");
     expect(incrementalText).toContain("\"coverageDelta\"");
@@ -39,6 +42,9 @@ describe("RepoTutor core pipeline", () => {
     expect(componentGraphHtml).toContain("큰 그래프 요약");
     expect(componentGraphHtml).toContain("data-graph-filter");
     expect(componentGraphHtml).toContain("data-node-type");
+    const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
+    expect(coverageHtml).toContain("소스 근거 파일");
+    expect(coverageHtml).toContain("근거 비율");
     const exportManifestText = await fs.readFile(path.join(result.session.outputPaths.html, "manifest.json"), "utf8");
     expect(exportManifestText).toContain("\"entrypoints\"");
     expect(exportManifestText).toContain("\"integrity\"");

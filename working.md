@@ -106,6 +106,10 @@ to a private repository, and preserve resumable state in this file.
   snippets for file lessons. `analysis/file-lessons.json`, `markdown/files.md`,
   and `html/files.html` now show short source-backed import/export/config/entry
   evidence with line numbers for each core file lesson.
+- 2026-06-04: Applied an eighteenth AutoResearch upgrade: source evidence
+  coverage summaries. `coverage-report.json`, `coverage.md`, and
+  `coverage.html` now show how many core file lessons have source evidence,
+  the evidence coverage ratio, and any files that still lack source evidence.
 - 2026-06-04: Post-upgrade verification passed:
   - `pnpm build`
   - `pnpm test`
@@ -160,6 +164,11 @@ to a private repository, and preserve resumable state in this file.
     with `sourceEvidence` JSON, Markdown `### 소스 근거`, HTML
     `source-evidence`, and source snippets such as
     `import { createGreeting } from "./message.js";`
+  - temp CLI evidence-coverage smoke generated
+    `/tmp/repotutor-evidence-coverage-smoke.9WcFv0/2026-06-04/local__simple-ts-app__main__d687db03`
+    with 4 evidence-backed files, evidence coverage ratio 1.0, HTML
+    `소스 근거 파일` / `근거 비율`, and Markdown source-evidence coverage
+    sections
   - `pnpm audit:brief` produced 13/13 PASS
   - full-dir gitleaks can flag ignored Cargo `target/` artifacts after
     `cargo check`; those artifacts are not tracked or staged.
@@ -180,6 +189,7 @@ to a private repository, and preserve resumable state in this file.
   - `67bd1c8` export integrity verifier
   - `f5a93a4` tamper-negative export verification
   - `25cfde2` export integrity reporting
+  - `d687db0` source evidence snippets
 
 ## Next Actions
 

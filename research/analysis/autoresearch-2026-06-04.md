@@ -264,6 +264,20 @@ Transferable patterns:
 - `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
   verify source evidence artifacts.
 
+### Upgrade 18: Source Evidence Coverage Summaries
+
+- `packages/shared/src/schemas.ts`: extends `CoverageReportSchema` with
+  evidence-backed file counts, evidence coverage ratio, and files without
+  evidence.
+- `packages/core/src/scanner.ts`: calculates source evidence coverage from file
+  lessons.
+- `packages/core/src/markdown.ts`: renders evidence coverage in
+  `markdown/coverage.md`.
+- `packages/html/src/templates.ts`: renders evidence coverage in the index
+  summary and `html/coverage.html`.
+- `packages/core/src/pipeline.test.ts` and `scripts/compliance-audit.mjs` now
+  verify evidence coverage artifacts.
+
 Local verification:
 
 - `pnpm build`: PASS
@@ -332,6 +346,11 @@ Local verification:
   with `sourceEvidence` JSON, Markdown `### 소스 근거`, HTML
   `source-evidence`, and source snippets such as
   `import { createGreeting } from "./message.js";`.
+- Temp CLI evidence-coverage smoke generated:
+  `/tmp/repotutor-evidence-coverage-smoke.9WcFv0/2026-06-04/local__simple-ts-app__main__d687db03`
+  with 4 evidence-backed files, evidence coverage ratio 1.0, HTML
+  `소스 근거 파일` / `근거 비율`, and Markdown source-evidence coverage
+  sections.
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 - `gitleaks protect --staged --no-banner --redact`: PASS before pushed commits.
 - Full-dir gitleaks can flag ignored Cargo `target/` artifacts after
