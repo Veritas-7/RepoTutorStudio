@@ -41,10 +41,14 @@ describe("RepoTutor core pipeline", () => {
     expect(componentGraphHtml).toContain("data-node-type");
     const exportManifestText = await fs.readFile(path.join(result.session.outputPaths.html, "manifest.json"), "utf8");
     expect(exportManifestText).toContain("\"entrypoints\"");
+    expect(exportManifestText).toContain("\"integrity\"");
+    expect(exportManifestText).toContain("\"bytes\"");
+    expect(exportManifestText).toContain("\"sha256\"");
     expect(exportManifestText).toContain("\"readmePath\"");
     const exportReadmeText = await fs.readFile(path.join(result.session.outputPaths.html, "EXPORT-README.md"), "utf8");
     expect(exportReadmeText).toContain("RepoTutor HTML Export");
     expect(exportReadmeText).toContain("Entry Points");
+    expect(exportReadmeText).toContain("Integrity metadata uses sha256");
     const filesHtml = await fs.readFile(path.join(result.session.outputPaths.html, "files.html"), "utf8");
     expect(filesHtml).toContain("file-nav-toolbar");
     expect(filesHtml).toContain("data-file-ext-filter");

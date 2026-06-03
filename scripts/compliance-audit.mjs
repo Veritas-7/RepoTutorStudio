@@ -66,7 +66,7 @@ const checks = [
     "packages/core/src/exporter.ts",
     "apps/cli/src/index.ts",
     "packages/shared/src/schemas.ts"
-  ], ["index.html", "quiz.html", "wrong-notes.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints", "writeHtmlZipBundle", "--format html|zip", "html-report.zip", "file-nav-toolbar", "data-file-ext-filter", "data-file-dir-filter"]),
+  ], ["index.html", "quiz.html", "wrong-notes.html", "assets/style.css", "assets/app.js", "manifest.json", "EXPORT-README.md", "entrypoints", "writeHtmlZipBundle", "--format html|zip", "html-report.zip", "file-nav-toolbar", "data-file-ext-filter", "data-file-dir-filter", "integrity", "sha256", "bytes"]),
   check("source-backed component graph", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

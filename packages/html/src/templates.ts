@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import type {
   ArchitectureReport,
   DependencyReport,
@@ -229,6 +230,18 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
     "assets/style.css": styleCss(),
     "assets/app.js": appJs()
   };
+  const pageEntries = pages.map((page) => ({
+    name: page.name,
+    path: `html/${page.name}`,
+    title: page.title,
+    bytes: byteLength(page.html),
+    sha256: sha256(page.html)
+  }));
+  const assetEntries = Object.entries(assets).map(([assetPath, content]) => ({
+    path: assetPath,
+    bytes: byteLength(content),
+    sha256: sha256(content)
+  }));
 
   const manifest: HtmlExportManifest = {
     sessionId: input.session.sessionId,
@@ -241,11 +254,23 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "오답노트", path: "html/wrong-notes.html", description: "틀린 문제를 다시 보는 페이지입니다." },
       { label: "컴포넌트 그래프", path: "html/component-graph.html", description: "큰 저장소의 폴더, 파일, 용어, 재구현 단계를 탐색합니다." }
     ],
-    pages: pages.map((page) => ({ name: page.name, path: `html/${page.name}`, title: page.title })),
-    assets: Object.keys(assets)
+    pages: pageEntries,
+    assets: assetEntries,
+    integrity: {
+      algorithm: "sha256",
+      coveredFiles: pageEntries.length + assetEntries.length
+    }
   };
 
   return { pages, assets, manifest };
+}
+
+function byteLength(value: string): number {
+  return Buffer.byteLength(value, "utf8");
+}
+
+function sha256(value: string): string {
+  return crypto.createHash("sha256").update(value, "utf8").digest("hex");
 }
 
 function coverageDeltaFor(report: IncrementalReport): IncrementalReport["coverageDelta"] {

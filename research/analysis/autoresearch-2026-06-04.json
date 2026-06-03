@@ -214,6 +214,21 @@
         "html/files.html top-folder filter toolbar",
         "html/assets/app.js fileExt and fileDir filter handlers"
       ]
+    },
+    {
+      "name": "portable export integrity metadata",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/html/src/templates.ts",
+        "packages/core/src/quiz.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "html/manifest.json page and asset bytes",
+        "html/manifest.json page and asset sha256 hashes",
+        "html/EXPORT-README.md integrity coverage summary"
+      ]
     }
   ],
   "verification": {
@@ -238,10 +253,13 @@
     "cliRelativePathSmoke": "PASS",
     "fixtureFileNavigationFilters": "PASS",
     "cliFileNavigationSmoke": "PASS",
+    "fixtureManifestIntegrity": "PASS",
+    "cliManifestIntegritySmoke": "PASS",
     "briefAudit13": "PASS",
     "gitleaksStaged": "PASS"
   },
   "candidateBacklog": [
-    "continue source-backed usability and verification upgrades"
+    "direct export integrity verification command",
+    "continue source-backed usability upgrades"
   ]
 }
