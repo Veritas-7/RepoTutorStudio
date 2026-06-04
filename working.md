@@ -3081,6 +3081,48 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 166:
   - `1926092` feature flag readiness report
 
+- 2026-06-04: AutoResearch Upgrade 167 candidate selected:
+  `animir/node-rate-limiter-flexible`
+  (`https://github.com/animir/node-rate-limiter-flexible`; public ISC;
+  3,552 stars; 189 forks; updated 2026-06-03T21:18:56Z). Compared with
+  `express-rate-limit/express-rate-limit`, `fastify/fastify-rate-limit`, and
+  `upstash/ratelimit-js`; selected `rate-limiter-flexible` because it directly
+  models generic, store-backed rate-limit readiness: `RateLimiterMemory`,
+  `RateLimiterRedis`, `points`, `duration`, `blockDuration`, `keyPrefix`,
+  `storeClient`, `consume`, `penalty`, `reward`, `insuranceLimiter`,
+  `msBeforeNext`, `remainingPoints`, `Retry-After`, `X-RateLimit-*`,
+  in-memory block, queue wrappers, and Redis/Valkey/Mongo/Postgres/MySQL/
+  SQLite/Prisma/Memcached/DynamoDB stores. Cloned ignored external source to
+  `research/external-src/animir-node-rate-limiter-flexible` and inspected
+  README, license, package metadata, lib, wrappers, and tests without
+  executing external source. Clone HEAD was `3c9c826`; tracked-file count for
+  `research/external-src/animir-node-rate-limiter-flexible` returned `0`.
+- 2026-06-04: RED rate-limit-readiness smoke generated
+  `/tmp/repotutor-rate-limit-readiness-red-studies.eBKq0F/2026-06-04/local__simple-ts-app__main__9732f9ec`;
+  old build was missing `analysis/rate-limit-readiness-report.json`,
+  `markdown/rate-limit-readiness.md`, and
+  `html/rate-limit-readiness.html`, and `open --target rate-limit-readiness`
+  failed as expected.
+- 2026-06-04: Implemented rate-limiter-flexible-style
+  rate-limit-readiness report: `RateLimitReadinessReportSchema`,
+  `analysis/rate-limit-readiness-report.json`,
+  `markdown/rate-limit-readiness.md`, `html/rate-limit-readiness.html`,
+  rate-limit setups, quota signals, identity signals, store signals, response
+  signals, resilience signals, package signals, recommended commands, risk
+  queue, manifest/session-verification coverage, learning-path linkage, nav
+  entry, and `open --target rate-limit-readiness`.
+- 2026-06-04: GREEN rate-limit-readiness smoke generated
+  `/tmp/repotutor-rate-limit-readiness-green-studies.ShKmIf/2026-06-04/local__simple-ts-app__main__9732f9ec`;
+  confirmed `verificationCheckedRequiredArtifacts=201`, rate-limit setups 0,
+  quota signals 8, identity signals 8, store signals 10, response signals 8,
+  resilience signals 8, package signals 6, risk queue 2,
+  manifest/learning-path entries, and `open --target rate-limit-readiness` ->
+  `html/rate-limit-readiness.html`.
+- 2026-06-04: Verification for Upgrade 167:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 65/65 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

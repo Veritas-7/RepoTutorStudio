@@ -79,6 +79,7 @@ import {
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
+  RateLimitReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -164,6 +165,7 @@ export interface AnalysisBundle {
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
+  rateLimitReadinessReport: RateLimitReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -249,8 +251,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const cacheReadinessReport = await buildCacheReadinessReport(walk);
   const loggingReadinessReport = await buildLoggingReadinessReport(walk);
   const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
+  const rateLimitReadinessReport = await buildRateLimitReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -14303,6 +14306,292 @@ function featureFlagReadinessSignalFromSpecs<T extends Record<K, string> & { pat
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/feature-flag-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildRateLimitReadinessReport(walk: WalkResult): Promise<RateLimitReadinessReport> {
+  const sourceFiles = await rateLimitReadinessSourceFiles(walk);
+  const rateLimitSetups = rateLimitReadinessSetups(sourceFiles);
+  const quotaSignals = rateLimitReadinessQuotaSignals(sourceFiles);
+  const identitySignals = rateLimitReadinessIdentitySignals(sourceFiles);
+  const storeSignals = rateLimitReadinessStoreSignals(sourceFiles);
+  const responseSignals = rateLimitReadinessResponseSignals(sourceFiles);
+  const resilienceSignals = rateLimitReadinessResilienceSignals(sourceFiles);
+  const packageSignals = rateLimitReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasFlexiblePackage = packageSignals.some((item) => item.signal === "rate-limiter-flexible" && item.readiness === "ready");
+  const hasSetup = rateLimitSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = rateLimitSetups.some((item) => item.readiness === "ready");
+  const hasConsume = rateLimitSetups.some((item) => item.consumeCount > 0) || resilienceSignals.some((item) => item.signal === "penalty" && item.readiness === "ready");
+  const hasQuota = quotaSignals.some((item) => ["points", "duration", "limit", "window"].includes(item.signal) && item.readiness === "ready");
+  const hasIdentity = identitySignals.some((item) => ["ip", "user-id", "authorization-token", "api-route", "key-prefix", "get-key"].includes(item.signal) && item.readiness === "ready");
+  const hasStore = storeSignals.some((item) => item.readiness === "ready");
+  const hasDistributedStore = storeSignals.some((item) => item.readiness === "ready" && item.signal !== "memory");
+  const hasRetryResponse = responseSignals.some((item) => ["retry-after", "x-ratelimit-limit", "x-ratelimit-remaining", "x-ratelimit-reset", "too-many-requests"].includes(item.signal) && item.readiness === "ready");
+  const hasResilience = resilienceSignals.some((item) => ["insurance-limiter", "reject-if-not-ready", "atomic-increment", "store-client"].includes(item.signal) && item.readiness === "ready");
+  const hasBlocking = quotaSignals.some((item) => ["block-duration", "in-memory-block"].includes(item.signal) && item.readiness === "ready") || resilienceSignals.some((item) => item.signal === "block" && item.readiness === "ready");
+
+  const riskQueue: RateLimitReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasConsume) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the rate-limit strategy before claiming rate-limit readiness.",
+      why: "Rate-limit readiness starts with an explicit limiter package, limiter construction, quota/window policy, identity key, store, consume path, or response headers.",
+      relatedHref: "html/rate-limit-readiness.html"
+    });
+  }
+  if (hasFlexiblePackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair each rate-limiter-flexible package signal with limiter construction, quota options, and consume calls.",
+      why: "rate-limiter-flexible readiness requires an instantiated limiter and a guarded code path that consumes points for a stable key.",
+      relatedHref: "html/rate-limit-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup || hasConsume) && !hasQuota) {
+    riskQueue.push({
+      priority: "high",
+      action: "Define quota and window policy with points, duration, limit, or window settings.",
+      why: "A limiter without an explicit quota/window is hard to reason about and may silently allow or deny too much traffic.",
+      relatedHref: "html/rate-limit-readiness.html"
+    });
+  }
+  if ((hasPackage || hasReadySetup || hasConsume) && !hasIdentity) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Bind every limiter to a stable identity key such as IP, user ID, token, API route, or keyPrefix/getKey.",
+      why: "Rate limits are only useful when the key matches the abuse boundary being protected.",
+      relatedHref: "html/rate-limit-readiness.html"
+    });
+  }
+  if (hasReadySetup && !hasStore) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document whether rate limiting is in-memory only or backed by a shared store.",
+      why: "In-memory limiters reset on restart and do not coordinate across multiple instances unless a shared store or cluster wrapper is present.",
+      relatedHref: "html/rate-limit-readiness.html"
+    });
+  }
+  if (hasDistributedStore && !hasResilience) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review store readiness, atomic increment behavior, not-ready rejection, and insurance fallback.",
+      why: "Distributed rate limits depend on the backing store staying available and updating counters atomically.",
+      relatedHref: "html/rate-limit-readiness.html"
+    });
+  }
+  if ((hasSetup || hasConsume || hasBlocking) && !hasRetryResponse) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Return Retry-After, X-RateLimit headers, or a clear 429 response for limited requests.",
+      why: "Clients need deterministic feedback when a limiter blocks or delays requests.",
+      relatedHref: "html/rate-limit-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run rate-limit integration checks only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not initialize limiters, consume points, mutate Redis or other stores, sleep for windows, emit responses, or run the analyzed project's tests.",
+    relatedHref: "html/rate-limit-readiness.html"
+  });
+
+  return {
+    summary: `rate-limiter-flexible식 rate-limit readiness report: setup ${rateLimitSetups.length}개, quota signal ${quotaSignals.length}개, identity signal ${identitySignals.length}개, store signal ${storeSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "rate-limiter-flexible RateLimiterMemory RateLimiterRedis points duration blockDuration keyPrefix storeClient consume penalty reward insuranceLimiter msBeforeNext remainingPoints Retry-After X-RateLimit",
+    rateLimitSetups,
+    quotaSignals,
+    identitySignals,
+    storeSignals,
+    responseSignals,
+    resilienceSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"rate-limiter-flexible|RateLimiterMemory|RateLimiterRedis|RateLimiterQueue|express-rate-limit|@fastify/rate-limit|@upstash/ratelimit\" src app pages packages", purpose: "Inventory limiter packages, constructors, framework middleware, and queue wrappers." },
+      { command: "rg \"points|duration|blockDuration|windowMs|max|limit|execEvenly|inMemoryBlock\" src app pages packages", purpose: "Review quota, time window, blocking, smoothing, and in-memory block policy." },
+      { command: "rg \"consume\\(|penalty\\(|reward\\(|remainingPoints|msBeforeNext|Retry-After|X-RateLimit|429|Too Many Requests\" src app pages packages", purpose: "Trace consume paths, response shaping, retry timing, headers, and blocked-request handling." },
+      { command: "rg \"keyPrefix|getKey|req\\.ip|remoteAddress|userId|authorization|apiKey|skip|black|white\" src app pages packages", purpose: "Check limiter identity keys, skip rules, API route scoping, and allow/deny lists." },
+      { command: "rg \"storeClient|insuranceLimiter|redis|valkey|mongo|postgres|mysql|sqlite|dynamodb|memcached|prisma|rejectIfRedisNotReady\" src app pages packages package.json", purpose: "Inspect backing stores, store readiness, failover, and not-ready behavior." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise quota exhaustion, identity scoping, response headers, store fallback, and recovery behavior." }
+    ],
+    learnerNextSteps: [
+      "먼저 limiter setup 파일에서 RateLimiterMemory/Redis, express-rate-limit, @fastify/rate-limit, @upstash/ratelimit가 어디서 생성되는지 확인하세요.",
+      "points, duration, blockDuration, windowMs, max, limit 같은 quota/window 값을 찾아 실제 보호하려는 요청량과 맞는지 비교하세요.",
+      "consume, penalty, reward, block 호출을 따라가며 IP, userId, token, route, keyPrefix/getKey가 올바른 abuse boundary를 나타내는지 확인하세요.",
+      "Redis, Valkey, Mongo, Postgres, MySQL, SQLite, DynamoDB, Memcached, Prisma 같은 store가 있으면 atomic increment, not-ready reject, insuranceLimiter를 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 point 소비, store mutation, window sleep, 429/Retry-After 응답은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type RateLimitReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function rateLimitReadinessSourceFiles(walk: WalkResult): Promise<RateLimitReadinessSourceFile[]> {
+  const files: RateLimitReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !rateLimitReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!rateLimitReadinessPathSignal(file.relPath) && !rateLimitReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function rateLimitReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return rateLimitReadinessPathSignal(filePath)
+    || /^(package\.json|\.env\.example|\.env\.sample|docker-compose\.ya?ml|compose\.ya?ml|Dockerfile|next\.config\.[cm]?[jt]s|vite\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env|toml)$/i.test(filePath);
+}
+
+function rateLimitReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(rate[-_ ]?limits?|ratelimits?|throttle|throttling|quota|abuse|bruteforce|rate-limiter-flexible|limiters?)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function rateLimitReadinessContentSignal(text: string): boolean {
+  return /\b(rate-limiter-flexible|RateLimiter(Memory|Redis|Cluster|Queue|Union)|BurstyRateLimiter|express-rate-limit|@fastify\/rate-limit|@upstash\/ratelimit|points\s*:|duration\s*:|blockDuration|keyPrefix|storeClient|consume\s*\(|penalty\s*\(|reward\s*\(|insuranceLimiter|msBeforeNext|remainingPoints|Retry-After|X-RateLimit)\b/i.test(text);
+}
+
+function rateLimitReadinessSetups(sourceFiles: RateLimitReadinessSourceFile[]): RateLimitReadinessReport["rateLimitSetups"] {
+  const rows: RateLimitReadinessReport["rateLimitSetups"] = [];
+  for (const source of sourceFiles) {
+    const limiterSetupCount = countMatches(source.text, /\bnew\s+RateLimiter\w+\b|\bRateLimiter(Memory|Redis|Cluster|Queue|Union)\s*\(|rateLimit\s*\(|new\s+Ratelimit\b|Ratelimit\s*\(/gi);
+    const windowCount = countMatches(source.text, /\bpoints\s*:|\bduration\s*:|\bblockDuration\s*:|\bwindowMs\s*:|\bmax\s*:|\blimit\s*:|\bslidingWindow\s*\(|\bfixedWindow\s*\(/gi);
+    const storeCount = countMatches(source.text, /\bstoreClient\s*:|\bRedis\b|\bValkey\b|\bMongo\b|\bPostgres\b|\bMySQL\b|\bSQLite\b|\bDynamoDB\b|\bMemcached\b|\bPrisma\b|\bstore\s*:/gi);
+    const consumeCount = countMatches(source.text, /\.consume\s*\(|\bconsume\s*\(|\.penalty\s*\(|\.reward\s*\(|\.block\s*\(/gi);
+    const headerCount = countMatches(source.text, /Retry-After|X-RateLimit-(Limit|Remaining|Reset)|remainingPoints|msBeforeNext|Too Many Requests|\b429\b/gi);
+    const hasSetupSignal = limiterSetupCount + windowCount + storeCount + consumeCount + headerCount > 0 || /\b(rate limit|rate-limit|ratelimit|throttle|quota|bruteforce)\b/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: rateLimitReadinessProvider(source),
+      limiterSetupCount,
+      windowCount,
+      storeCount,
+      consumeCount,
+      headerCount,
+      readiness: limiterSetupCount > 0 && windowCount > 0 && consumeCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains limiter setup ${limiterSetupCount}, quota/window signals ${windowCount}, store signals ${storeCount}, consume paths ${consumeCount}, response headers ${headerCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function rateLimitReadinessProvider(source: RateLimitReadinessSourceFile): RateLimitReadinessReport["rateLimitSetups"][number]["provider"] {
+  if (/rate-limiter-flexible|RateLimiter(Memory|Redis|Cluster|Queue|Union)|BurstyRateLimiter/i.test(source.text)) return "rate-limiter-flexible";
+  if (/express-rate-limit|\brateLimit\s*\(/i.test(source.text)) return "express-rate-limit";
+  if (/@fastify\/rate-limit|fastify-rate-limit/i.test(source.text)) return "fastify-rate-limit";
+  if (/@upstash\/ratelimit|new\s+Ratelimit\b|Ratelimit\s*\(/i.test(source.text)) return "upstash-ratelimit";
+  if (/\b(rate limit|rate-limit|ratelimit|throttle|quota|bruteforce)\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function rateLimitReadinessQuotaSignals(sourceFiles: RateLimitReadinessSourceFile[]): RateLimitReadinessReport["quotaSignals"] {
+  const specs: Array<{ signal: RateLimitReadinessReport["quotaSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "points", pattern: /\bpoints\s*:|consumedPoints|remainingPoints/i, evidence: "points/remaining-points quota evidence was detected." },
+    { signal: "duration", pattern: /\bduration\s*:|msBeforeNext|resetTime|durationMs/i, evidence: "duration/window timing evidence was detected." },
+    { signal: "limit", pattern: /\blimit\s*:|\bmax\s*:|RateLimit-Limit|X-RateLimit-Limit/i, evidence: "limit/max evidence was detected." },
+    { signal: "window", pattern: /\bwindowMs\s*:|slidingWindow|fixedWindow|window\s*:/i, evidence: "window policy evidence was detected." },
+    { signal: "block-duration", pattern: /\bblockDuration\s*:|\.block\s*\(|blocked|blocklist/i, evidence: "block duration evidence was detected." },
+    { signal: "exec-evenly", pattern: /\bexecEvenly\b|execEvenlyMinDelayMs|evenly/i, evidence: "even execution/delay smoothing evidence was detected." },
+    { signal: "in-memory-block", pattern: /inMemoryBlockOnConsumed|inMemoryBlockDuration|deleteInMemoryBlockedAll/i, evidence: "in-memory block evidence was detected." },
+    { signal: "queue", pattern: /RateLimiterQueue|limiterQueue|queueLimiter/i, evidence: "rate-limit queue evidence was detected." }
+  ];
+  return rateLimitReadinessSignalFromSpecs(sourceFiles, specs, "quota", "signal");
+}
+
+function rateLimitReadinessIdentitySignals(sourceFiles: RateLimitReadinessSourceFile[]): RateLimitReadinessReport["identitySignals"] {
+  const specs: Array<{ signal: RateLimitReadinessReport["identitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ip", pattern: /req\.ip|request\.ip|remoteAddress|ipAddress|x-forwarded-for/i, evidence: "IP-based limiter identity evidence was detected." },
+    { signal: "user-id", pattern: /userId|user_id|accountId|tenantId|session\.user|principal/i, evidence: "user/account limiter identity evidence was detected." },
+    { signal: "authorization-token", pattern: /authorization|bearer|api[-_ ]?key|token|jwt/i, evidence: "authorization token identity evidence was detected." },
+    { signal: "api-route", pattern: /route|pathname|path\s*:|req\.path|req\.route|endpoint|method/i, evidence: "API route scoped limiter evidence was detected." },
+    { signal: "key-prefix", pattern: /\bkeyPrefix\s*:|prefix\s*:|namespace/i, evidence: "keyPrefix/namespace evidence was detected." },
+    { signal: "get-key", pattern: /\bgetKey\s*\(|keyGenerator\s*:|identifier\s*:/i, evidence: "custom key generator evidence was detected." },
+    { signal: "black-white-list", pattern: /RLWrapperBlackAndWhite|blacklist|whitelist|allowlist|denylist/i, evidence: "allow/deny list wrapper evidence was detected." },
+    { signal: "skip", pattern: /\bskip\s*:|skipFailedRequests|skipSuccessfulRequests|skipIf/i, evidence: "skip rule evidence was detected." }
+  ];
+  return rateLimitReadinessSignalFromSpecs(sourceFiles, specs, "identity", "signal");
+}
+
+function rateLimitReadinessStoreSignals(sourceFiles: RateLimitReadinessSourceFile[]): RateLimitReadinessReport["storeSignals"] {
+  const specs: Array<{ signal: RateLimitReadinessReport["storeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "memory", pattern: /RateLimiterMemory|MemoryStorage|memory store|inMemoryBlock/i, evidence: "memory limiter/store evidence was detected." },
+    { signal: "redis", pattern: /RateLimiterRedis|ioredis|redis|IORedis/i, evidence: "Redis limiter/store evidence was detected." },
+    { signal: "valkey", pattern: /valkey/i, evidence: "Valkey limiter/store evidence was detected." },
+    { signal: "mongo", pattern: /RateLimiterMongo|mongodb|mongoose|mongo/i, evidence: "Mongo limiter/store evidence was detected." },
+    { signal: "postgres", pattern: /RateLimiterPostgres|postgres|pg\b|postgresql/i, evidence: "Postgres limiter/store evidence was detected." },
+    { signal: "mysql", pattern: /RateLimiterMySQL|mysql|mariadb/i, evidence: "MySQL limiter/store evidence was detected." },
+    { signal: "sqlite", pattern: /RateLimiterSQLite|sqlite/i, evidence: "SQLite limiter/store evidence was detected." },
+    { signal: "dynamodb", pattern: /RateLimiterDynamo|dynamodb|DynamoDB/i, evidence: "DynamoDB limiter/store evidence was detected." },
+    { signal: "memcached", pattern: /RateLimiterMemcache|memcached|memcache/i, evidence: "Memcached limiter/store evidence was detected." },
+    { signal: "prisma", pattern: /RateLimiterPrisma|prisma/i, evidence: "Prisma limiter/store evidence was detected." }
+  ];
+  return rateLimitReadinessSignalFromSpecs(sourceFiles, specs, "store", "signal");
+}
+
+function rateLimitReadinessResponseSignals(sourceFiles: RateLimitReadinessSourceFile[]): RateLimitReadinessReport["responseSignals"] {
+  const specs: Array<{ signal: RateLimitReadinessReport["responseSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ms-before-next", pattern: /msBeforeNext/i, evidence: "msBeforeNext response timing evidence was detected." },
+    { signal: "remaining-points", pattern: /remainingPoints|RateLimit-Remaining|X-RateLimit-Remaining/i, evidence: "remaining points/header evidence was detected." },
+    { signal: "consumed-points", pattern: /consumedPoints/i, evidence: "consumed points evidence was detected." },
+    { signal: "retry-after", pattern: /Retry-After|retryAfter/i, evidence: "Retry-After evidence was detected." },
+    { signal: "x-ratelimit-limit", pattern: /X-RateLimit-Limit|RateLimit-Limit/i, evidence: "X-RateLimit-Limit evidence was detected." },
+    { signal: "x-ratelimit-remaining", pattern: /X-RateLimit-Remaining|RateLimit-Remaining/i, evidence: "X-RateLimit-Remaining evidence was detected." },
+    { signal: "x-ratelimit-reset", pattern: /X-RateLimit-Reset|RateLimit-Reset/i, evidence: "X-RateLimit-Reset evidence was detected." },
+    { signal: "too-many-requests", pattern: /Too Many Requests|\b429\b|status\s*\(\s*429|statusCode\s*=\s*429/i, evidence: "HTTP 429 response evidence was detected." }
+  ];
+  return rateLimitReadinessSignalFromSpecs(sourceFiles, specs, "response", "signal");
+}
+
+function rateLimitReadinessResilienceSignals(sourceFiles: RateLimitReadinessSourceFile[]): RateLimitReadinessReport["resilienceSignals"] {
+  const specs: Array<{ signal: RateLimitReadinessReport["resilienceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "insurance-limiter", pattern: /\binsuranceLimiter\b|insurance limiter/i, evidence: "insurance limiter fallback evidence was detected." },
+    { signal: "store-client", pattern: /\bstoreClient\s*:|store client|StoreClient/i, evidence: "store client evidence was detected." },
+    { signal: "reject-if-not-ready", pattern: /rejectIfRedisNotReady|not ready|isReady|ready check/i, evidence: "not-ready rejection evidence was detected." },
+    { signal: "atomic-increment", pattern: /atomic|incrby|INCRBY|evalsha|lua|upsert/i, evidence: "atomic increment evidence was detected." },
+    { signal: "penalty", pattern: /\.penalty\s*\(|\bpenalty\s*\(/i, evidence: "penalty operation evidence was detected." },
+    { signal: "reward", pattern: /\.reward\s*\(|\breward\s*\(/i, evidence: "reward operation evidence was detected." },
+    { signal: "delete", pattern: /\.delete\s*\(|deleteInMemoryBlockedAll|resetKey/i, evidence: "delete/reset operation evidence was detected." },
+    { signal: "block", pattern: /\.block\s*\(|\bblock\s*\(|blockDuration/i, evidence: "block operation evidence was detected." }
+  ];
+  return rateLimitReadinessSignalFromSpecs(sourceFiles, specs, "resilience", "signal");
+}
+
+function rateLimitReadinessPackageSignals(sourceFiles: RateLimitReadinessSourceFile[]): RateLimitReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: RateLimitReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "rate-limiter-flexible", pattern: /rate-limiter-flexible|RateLimiter(Memory|Redis|Cluster|Queue|Union)/i, evidence: "rate-limiter-flexible package/import evidence was detected." },
+    { signal: "express-rate-limit", pattern: /express-rate-limit/i, evidence: "express-rate-limit package/import evidence was detected." },
+    { signal: "@fastify/rate-limit", pattern: /@fastify\/rate-limit|fastify-rate-limit/i, evidence: "@fastify/rate-limit package/import evidence was detected." },
+    { signal: "@upstash/ratelimit", pattern: /@upstash\/ratelimit/i, evidence: "@upstash/ratelimit package/import evidence was detected." },
+    { signal: "bottleneck", pattern: /["']bottleneck["']|\bBottleneck\b/i, evidence: "Bottleneck package/import evidence was detected." },
+    { signal: "limiter", pattern: /["']limiter["']|\bRateLimiter\b/i, evidence: "limiter package/import evidence was detected." }
+  ];
+  return rateLimitReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function rateLimitReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: RateLimitReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/rate-limit-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
