@@ -5692,6 +5692,53 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 95/95 audit checks across 13 generated reports
 
+### Upgrade 198: Infrastructure Readiness Report
+
+- Cloned and inspected `opentofu/opentofu` under
+  `research/external-src/opentofu-opentofu` without executing external source.
+  Clone HEAD was `50d94e0`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MPL-2.0 license, 28,938 stars, 1,262 forks,
+  updated 2026-06-04T15:07:10Z. Compared with `hashicorp/terraform`,
+  `helm/helm`, `kubernetes-sigs/kustomize`, `gruntwork-io/terragrunt`,
+  `terraform-linters/tflint`, and `aquasecurity/tfsec`; selected OpenTofu
+  because it is the canonical IaC engine surface for `.tf` configuration,
+  providers, resources, modules, variables, backend/state, execution plans,
+  imports, workspaces, and lockfiles. No source code was copied into RepoTutor.
+- Implemented OpenTofu-style infrastructure-readiness report:
+  `InfrastructureReadinessReportSchema`,
+  `analysis/infrastructure-readiness-report.json`,
+  `markdown/infrastructure-readiness.md`, `html/infrastructure-readiness.html`,
+  infrastructure setups, config signals, state signals, workflow signals, module
+  signals, variable signals, policy signals, package signals, recommended
+  commands, risk queue, manifest/session-verification coverage, learning-path
+  linkage, nav entry, and `open --target infrastructure-readiness`.
+- Source pattern: OpenTofu separates `terraform {}`, `required_providers`,
+  `required_version`, `provider`, `resource`, `data`, `module`, `variable`,
+  `output`, `locals`, backend/state, remote state, state locking, `.tfvars`,
+  `.terraform.lock.hcl`, provider aliases, module providers, `tofu init`,
+  `tofu validate`, `tofu plan`, `tofu apply`, `tofu import`, workspaces, and
+  tests. RepoTutor maps that to deterministic static infrastructure readiness
+  and explicitly does not run tofu, terraform, terragrunt, cloud provider,
+  backend, state migration, import, plan, apply, destroy, policy, or cost
+  commands.
+- RED smoke generated
+  `/tmp/repotutor-infra-red-studies.OBwyUH/2026-06-05/local__simple-ts-app__HEAD__d44d9594`;
+  old behavior had `verificationCheckedRequiredArtifacts=291`, was missing
+  `analysis/infrastructure-readiness-report.json`,
+  `markdown/infrastructure-readiness.md`, and
+  `html/infrastructure-readiness.html`, and `open --target
+  infrastructure-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-infra-green-studies.eQrGb9/2026-06-05/local__simple-ts-app__main__d44d9594`;
+  confirmed `verificationCheckedRequiredArtifacts=294`, infrastructure setups
+  0, config signals 11, state signals 7, workflow signals 8, module signals 7,
+  variable signals 7, policy signals 8, package signals 8, risk queue 1, all
+  three new artifacts, and `open --target infrastructure-readiness` ->
+  `html/infrastructure-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 5/5 tests
+- `pnpm audit:brief`: PASS, 96/96 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

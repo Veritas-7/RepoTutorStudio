@@ -4402,6 +4402,49 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 197:
   - `a5e3d51` visual regression readiness report
 
+- 2026-06-04: AutoResearch Upgrade 198 candidate selected:
+  `opentofu/opentofu`
+  (`https://github.com/opentofu/opentofu`; public; MPL-2.0; 28,938 stars;
+  1,262 forks; updated 2026-06-04T15:07:10Z). Compared with
+  `hashicorp/terraform`, `helm/helm`, `kubernetes-sigs/kustomize`,
+  `gruntwork-io/terragrunt`, `terraform-linters/tflint`, and
+  `aquasecurity/tfsec`; selected OpenTofu because it is the canonical IaC
+  engine surface for `.tf` configuration, providers, resources, modules,
+  variables, backend/state, execution plans, imports, workspaces, and lockfiles.
+  Cloned ignored external source to `research/external-src/opentofu-opentofu`
+  and inspected docs/source hits without executing external source. Clone HEAD
+  was `50d94e0`; tracked file count for
+  `research/external-src/opentofu-opentofu` returned `0`.
+- 2026-06-04: RED infrastructure-readiness smoke generated
+  `/tmp/repotutor-infra-red-studies.OBwyUH/2026-06-05/local__simple-ts-app__HEAD__d44d9594`;
+  old build had `verificationCheckedRequiredArtifacts=291`, was missing
+  `analysis/infrastructure-readiness-report.json`,
+  `markdown/infrastructure-readiness.md`, and
+  `html/infrastructure-readiness.html`, and `open --target
+  infrastructure-readiness` failed as expected.
+- 2026-06-04: Implemented OpenTofu-style infrastructure-readiness report:
+  `InfrastructureReadinessReportSchema`,
+  `analysis/infrastructure-readiness-report.json`,
+  `markdown/infrastructure-readiness.md`, `html/infrastructure-readiness.html`,
+  infrastructure setups, config signals, state signals, workflow signals,
+  module signals, variable signals, policy signals, package signals,
+  recommended commands, risk queue, manifest/session verification coverage,
+  learning-path linkage, nav entry, and `open --target
+  infrastructure-readiness`.
+- 2026-06-04: GREEN infrastructure-readiness smoke generated
+  `/tmp/repotutor-infra-green-studies.eQrGb9/2026-06-05/local__simple-ts-app__main__d44d9594`;
+  confirmed `verificationCheckedRequiredArtifacts=294`, infrastructure setups
+  0, config signals 11, state signals 7, workflow signals 8, module signals 7,
+  variable signals 7, policy signals 8, package signals 8, risk queue 1, all
+  three new artifacts, and `open --target infrastructure-readiness` ->
+  `html/infrastructure-readiness.html`.
+- 2026-06-04: Verification for Upgrade 198:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 5/5 tests
+  - `pnpm audit:brief`: PASS, 96/96 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

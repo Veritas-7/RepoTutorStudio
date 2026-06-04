@@ -1512,6 +1512,22 @@
         "HTML diff report, comparison result, JSON/report URL, CI artifact, and publish/notify lifecycle boundaries",
         "keygen, S3/GCS publisher, GitHub/GitLab/Slack/Chatwork notifier, and plugin readiness signals"
       ]
+    },
+    {
+      "repo": "opentofu/opentofu",
+      "url": "https://github.com/opentofu/opentofu",
+      "localPath": "research/external-src/opentofu-opentofu",
+      "stars": 28938,
+      "forks": 1262,
+      "license": "MPL-2.0",
+      "updatedAt": "2026-06-04T15:07:10Z",
+      "cloneHead": "50d94e0",
+      "adoptedPatterns": [
+        "OpenTofu IaC workflow with execution plans, resource graph, init, validate, plan, apply, import, workspace, and test command boundaries",
+        "terraform block, required_providers, required_version, provider, resource, data, module, variable, output, locals, backend, state, and lockfile readiness signals",
+        "state and plan encryption, terraform_remote_state, key_provider, backend blocks, state locking, tfvars, sensitive variables, validation, provider aliases, and module/provider passing",
+        "TFLint, tfsec, Checkov, OPA/Rego, Conftest, Sentinel, Infracost, and Terraform test policy readiness hooks"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -4666,6 +4682,25 @@
         "markdown/visual-regression-readiness.md",
         "html/visual-regression-readiness.html"
       ]
+    },
+    {
+      "name": "infrastructure readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/infrastructure-readiness-report.json",
+        "markdown/infrastructure-readiness.md",
+        "html/infrastructure-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -5178,7 +5213,13 @@
     "visualRegressionReadinessGreenSmoke": "PASS",
     "fixtureVisualRegressionReadinessReport": "PASS",
     "visualRegressionReadinessOpenTarget": "PASS",
-    "complianceAudit95Checks": "PASS"
+    "complianceAudit95Checks": "PASS",
+    "externalOpenTofuCloneIgnored": "PASS",
+    "infrastructureReadinessRedSmoke": "PASS",
+    "infrastructureReadinessGreenSmoke": "PASS",
+    "fixtureInfrastructureReadinessReport": "PASS",
+    "infrastructureReadinessOpenTarget": "PASS",
+    "complianceAudit96Checks": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -5567,6 +5608,12 @@
     "cliVisualRegressionReadinessOpenTargetSmoke": "PASS",
     "buildVisualRegressionReadiness": "PASS",
     "testVisualRegressionReadiness": "PASS",
-    "auditBriefVisualRegressionReadiness95": "PASS"
+    "auditBriefVisualRegressionReadiness95": "PASS",
+    "fixtureInfrastructureReadinessReport": "PASS",
+    "cliInfrastructureReadinessSmoke": "PASS",
+    "cliInfrastructureReadinessOpenTargetSmoke": "PASS",
+    "buildInfrastructureReadiness": "PASS",
+    "testInfrastructureReadiness": "PASS",
+    "auditBriefInfrastructureReadiness96": "PASS"
   }
 }
