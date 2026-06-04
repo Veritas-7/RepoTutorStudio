@@ -3712,6 +3712,49 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 181:
   - `b4e24b0` link integrity readiness report
 
+- 2026-06-04: AutoResearch Upgrade 182 candidate selected:
+  `harlan-zw/nuxt-seo`
+  (`https://github.com/harlan-zw/nuxt-seo`; public; MIT; 1,406 stars; 92
+  forks; updated 2026-06-03T17:25:42Z). Compared with
+  `GoogleChrome/lighthouse`, `vercel/next.js`, and `h5bp/html5-boilerplate`;
+  selected Nuxt SEO because it directly models SEO/AEO readiness:
+  robots.txt, meta robots, X-Robots-Tag, indexable/noindex policy, sitemap.xml,
+  sitemap index, hreflang, canonical URLs, Open Graph, Twitter cards,
+  Schema.org JSON-LD, breadcrumbs, llms.txt, AI crawler policy, and
+  agent-readability. Cloned ignored external source to
+  `research/external-src/harlan-zw-nuxt-seo` and inspected docs/source/test
+  hits without executing external source. Clone HEAD was `51442e0`; tracked
+  file count for `research/external-src/harlan-zw-nuxt-seo` returned `0`.
+- 2026-06-04: RED seo-metadata-readiness smoke generated
+  `/tmp/repotutor-seo-red-studies.bihlLa/2026-06-04/local__simple-ts-app__HEAD__725f7693`;
+  old build had `verificationCheckedRequiredArtifacts=243`, was missing
+  `analysis/seo-metadata-readiness-report.json`,
+  `markdown/seo-metadata-readiness.md`, and
+  `html/seo-metadata-readiness.html`, and `open --target
+  seo-metadata-readiness` failed as expected.
+- 2026-06-04: Implemented Nuxt SEO-style seo-metadata-readiness report:
+  `SeoMetadataReadinessReportSchema`,
+  `analysis/seo-metadata-readiness-report.json`,
+  `markdown/seo-metadata-readiness.md`,
+  `html/seo-metadata-readiness.html`, SEO setups, crawl signals, sitemap
+  signals, metadata signals, structured data signals, AI readiness signals,
+  package signals, recommended commands, risk queue, manifest/session-
+  verification coverage, learning-path linkage, nav entry, and `open --target
+  seo-metadata-readiness`.
+- 2026-06-04: GREEN seo-metadata-readiness smoke generated
+  `/tmp/repotutor-seo-green-studies.5OBYLN/2026-06-04/local__simple-ts-app__main__725f7693`;
+  confirmed `verificationCheckedRequiredArtifacts=246`, SEO setups 0, crawl
+  signals 6, sitemap signals 6, metadata signals 6, structured data signals 6,
+  AI readiness signals 5, package signals 6, risk queue 2, all three new
+  artifacts, and `open --target seo-metadata-readiness` ->
+  `html/seo-metadata-readiness.html`.
+- 2026-06-04: Verification for Upgrade 182:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 80/80 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

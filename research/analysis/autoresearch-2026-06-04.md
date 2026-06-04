@@ -4942,6 +4942,55 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 79/79 audit checks across 13 generated reports
 
+### Upgrade 182: SEO Metadata Readiness Report
+
+- Cloned and inspected `harlan-zw/nuxt-seo` under
+  `research/external-src/harlan-zw-nuxt-seo` without executing external source.
+  Clone HEAD was `51442e0`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 1,406 stars, 92 forks, updated
+  2026-06-03T17:25:42Z. Compared with `GoogleChrome/lighthouse`,
+  `vercel/next.js`, and `h5bp/html5-boilerplate`; selected Nuxt SEO because it
+  directly models SEO/AEO readiness across robots.txt, sitemaps, Schema.org,
+  OG images, meta tags, canonical URLs, breadcrumbs, AI crawler surfaces, and
+  answer-engine readability. No source code was copied into RepoTutor.
+- Implemented Nuxt SEO-style seo-metadata-readiness report:
+  `SeoMetadataReadinessReportSchema`,
+  `analysis/seo-metadata-readiness-report.json`,
+  `markdown/seo-metadata-readiness.md`,
+  `html/seo-metadata-readiness.html`, SEO setups, crawl signals, sitemap
+  signals, metadata signals, structured data signals, AI readiness signals,
+  package signals, recommended commands, risk queue, manifest/session-
+  verification coverage, learning-path linkage, nav entry, and `open --target
+  seo-metadata-readiness`.
+- Source pattern: Nuxt SEO separates crawl control through robots.txt, meta
+  robots, X-Robots-Tag, indexable/noindex policy, and crawler-specific rules;
+  sitemap discovery through sitemap.xml, sitemap indexes, route sources,
+  lastmod, hreflang, and robots Sitemap directives; metadata through title,
+  description, canonical, Open Graph, Twitter cards, and favicons; structured
+  data through JSON-LD, Schema.org, breadcrumbs, Article/Product/FAQ types; and
+  AEO through llms.txt, markdown endpoints, AI crawler policy, and
+  agent-readability signals. RepoTutor maps that to deterministic static SEO
+  metadata readiness and explicitly does not crawl websites, render pages,
+  fetch robots.txt, validate sitemap XML, query search engines, execute Nuxt
+  modules, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-seo-red-studies.bihlLa/2026-06-04/local__simple-ts-app__HEAD__725f7693`;
+  old behavior had `verificationCheckedRequiredArtifacts=243`, was missing
+  `analysis/seo-metadata-readiness-report.json`,
+  `markdown/seo-metadata-readiness.md`, and
+  `html/seo-metadata-readiness.html`, and `open --target
+  seo-metadata-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-seo-green-studies.5OBYLN/2026-06-04/local__simple-ts-app__main__725f7693`;
+  confirmed `verificationCheckedRequiredArtifacts=246`, SEO setups 0, crawl
+  signals 6, sitemap signals 6, metadata signals 6, structured data signals 6,
+  AI readiness signals 5, package signals 6, risk queue 2, all three new
+  artifacts, and `open --target seo-metadata-readiness` ->
+  `html/seo-metadata-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 80/80 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
