@@ -5391,7 +5391,7 @@
         "markdown/object-storage-readiness.md",
         "html/object-storage-readiness.html"
       ],
-      "commit": "pending"
+      "commit": "a38f338"
     }
   ],
   "verification": {
@@ -6503,6 +6503,7 @@
     "cliObjectStorageReadinessOpenTargetSmoke": "PASS",
     "buildObjectStorageReadiness": "PASS",
     "testObjectStorageReadiness": "PASS",
-    "auditBriefObjectStorageReadiness110": "PASS"
+    "auditBriefObjectStorageReadiness110": "PASS",
+    "objectStorageReadinessImplementationPushed": "PASS"
   }
 }
