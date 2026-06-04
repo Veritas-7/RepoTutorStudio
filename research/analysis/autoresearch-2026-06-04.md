@@ -5275,6 +5275,51 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 86/86 audit checks across 13 generated reports
 
+### Upgrade 189: LLM Readiness Report
+
+- Cloned and inspected `langchain-ai/langchainjs` under
+  `research/external-src/langchain-ai-langchainjs` without executing external
+  source. Clone HEAD was `9db45b5`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 17,756 stars, 3,195 forks, updated
+  2026-06-04T12:27:31Z. Compared with `vercel/ai`,
+  `openai/openai-node`, and `run-llama/LlamaIndexTS`; selected LangChain.js
+  because it directly models chat models, prompt templates, tools/agents,
+  retrievers/vector stores, structured output, streaming, callbacks, and
+  LangSmith-style observability. No source code was copied into RepoTutor.
+- Implemented LangChain.js-style llm-readiness report:
+  `LlmReadinessReportSchema`, `analysis/llm-readiness-report.json`,
+  `markdown/llm-readiness.md`, `html/llm-readiness.html`, LLM setups, model
+  signals, prompt signals, tool signals, retrieval signals, structured output
+  signals, streaming signals, safety signals, package signals, recommended
+  commands, risk queue, manifest/session-verification coverage, learning-path
+  linkage, nav entry, and `open --target llm-readiness`.
+- Source pattern: LangChain.js separates `ChatOpenAI`,
+  `ChatPromptTemplate`, `SystemMessage`, `HumanMessage`,
+  `MessagesPlaceholder`, `RunnableSequence`, `tool`, `StructuredTool`,
+  `bindTools`, `createAgent`, `AgentExecutor`, `VectorStore`, `Retriever`,
+  `Embeddings`, `TextSplitter`, `DocumentLoader`, `StructuredOutputParser`,
+  `withStructuredOutput`, `stream`, `streamEvents`, callbacks, LangSmith
+  tracing, token usage, retry/fallback, moderation, and rate-limit handling.
+  RepoTutor maps that to deterministic static LLM readiness and explicitly does
+  not call providers, stream tokens, run agents, fetch vector stores, evaluate
+  prompts, or inspect live traces.
+- RED smoke generated
+  `/tmp/repotutor-llm-red-studies.mXHsJV/2026-06-04/local__simple-ts-app__HEAD__7d24969f`;
+  old behavior had `verificationCheckedRequiredArtifacts=264`, was missing
+  `analysis/llm-readiness-report.json`, `markdown/llm-readiness.md`, and
+  `html/llm-readiness.html`, and `open --target llm-readiness` exited with
+  `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-llm-green-studies.RuSYQO/2026-06-04/local__simple-ts-app__main__7d24969f`;
+  confirmed `verificationCheckedRequiredArtifacts=267`, LLM setups 1, model
+  signals 7, prompt signals 6, tool signals 6, retrieval signals 6,
+  structured output signals 5, streaming signals 6, safety signals 6, package
+  signals 8, risk queue 3, all three new artifacts, and `open --target
+  llm-readiness` -> `html/llm-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 87/87 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

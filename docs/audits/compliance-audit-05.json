@@ -1,6 +1,6 @@
 {
   "iteration": 5,
-  "createdAt": "2026-06-04T12:57:12.015Z",
+  "createdAt": "2026-06-04T13:09:36.994Z",
   "checks": [
     {
       "name": "project setup",
@@ -571,6 +571,13 @@
     },
     {
       "name": "CLI readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "LLM readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

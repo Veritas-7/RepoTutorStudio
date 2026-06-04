@@ -96,6 +96,7 @@ import type {
   SecurityHeadersReadinessReport,
   GraphqlReadinessReport,
   CliReadinessReport,
+  LlmReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -198,6 +199,7 @@ export interface StudyHtmlInput {
   securityHeadersReadinessReport: SecurityHeadersReadinessReport;
   graphqlReadinessReport: GraphqlReadinessReport;
   cliReadinessReport: CliReadinessReport;
+  llmReadinessReport: LlmReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -314,6 +316,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["security-headers-readiness.html", "Security Headers"],
     ["graphql-readiness.html", "GraphQL"],
     ["cli-readiness.html", "CLI"],
+    ["llm-readiness.html", "LLM"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -886,6 +889,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("CLI Readiness", "cli-readiness.html", `<section class="panel" data-source-pattern="Commander.js"><h2>CLI Snapshot</h2><p>${escapeHtml(input.cliReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.cliReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.cliReadinessReport.cliSetups.length}</dd></div><div><dt>commands</dt><dd>${input.cliReadinessReport.commandSignals.length}</dd></div><div><dt>options</dt><dd>${input.cliReadinessReport.optionSignals.length}</dd></div><div><dt>help</dt><dd>${input.cliReadinessReport.helpSignals.length}</dd></div></dl><p class="muted">RepoTutor records CLI readiness only; it does not invoke CLI binaries, parse real argv, spawn subcommands, inspect completions, or verify terminal TTY behavior.</p></section><section class="grid"><article class="cli-readiness-card"><h3>CLI Setups</h3>${cliReadinessSetupList(input.cliReadinessReport.cliSetups)}</article><article class="cli-readiness-card"><h3>Command Signals</h3>${cliReadinessSignalList(input.cliReadinessReport.commandSignals, "signal")}</article><article class="cli-readiness-card"><h3>Option Signals</h3>${cliReadinessSignalList(input.cliReadinessReport.optionSignals, "signal")}</article><article class="cli-readiness-card"><h3>Parse Signals</h3>${cliReadinessSignalList(input.cliReadinessReport.parseSignals, "signal")}</article></section><section class="grid"><article class="cli-readiness-card"><h3>Action Signals</h3>${cliReadinessSignalList(input.cliReadinessReport.actionSignals, "signal")}</article><article class="cli-readiness-card"><h3>Help Signals</h3>${cliReadinessSignalList(input.cliReadinessReport.helpSignals, "signal")}</article><article class="cli-readiness-card"><h3>Error Signals</h3>${cliReadinessSignalList(input.cliReadinessReport.errorSignals, "signal")}</article><article class="cli-readiness-card"><h3>Package Signals</h3>${cliReadinessSignalList(input.cliReadinessReport.packageSignals, "signal")}</article><article class="cli-readiness-card"><h3>Recommended Commands</h3>${cliReadinessCommandList(input.cliReadinessReport.recommendedCommands)}</article><article class="cli-readiness-card"><h3>Risk Queue</h3>${cliReadinessRiskList(input.cliReadinessReport.riskQueue)}</article><article class="cli-readiness-card"><h3>다음 확인 단계</h3>${list(input.cliReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "llm-readiness.html",
+      title: "LLM Readiness",
+      html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -1082,6 +1090,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Security Headers Readiness", path: "html/security-headers-readiness.html", description: "Helmet식 CSP, HSTS, cross-origin, legacy hardening header 준비도를 확인합니다." },
       { label: "GraphQL Readiness", path: "html/graphql-readiness.html", description: "GraphQL.js식 schema, operation, resolver, validation, execution 준비도를 확인합니다." },
       { label: "CLI Readiness", path: "html/cli-readiness.html", description: "Commander.js식 command, option, argument, action, help, error 준비도를 확인합니다." },
+      { label: "LLM Readiness", path: "html/llm-readiness.html", description: "LangChain.js식 model, prompt, tool, RAG, structured output, streaming 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1681,6 +1690,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "cli-readiness.html",
       goal: "Commander.js식 command, option, argument, action, help, error 흐름을 보고 CLI contract를 확인합니다.",
       evidence: `CLI setups ${input.cliReadinessReport.cliSetups.length}개, command signals ${input.cliReadinessReport.commandSignals.length}개`
+    },
+    {
+      title: "LLM readiness 확인",
+      href: "llm-readiness.html",
+      goal: "LangChain.js식 model, prompt, tool, RAG, structured output, streaming 흐름을 보고 LLM integration contract를 확인합니다.",
+      evidence: `LLM setups ${input.llmReadinessReport.llmSetups.length}개, model signals ${input.llmReadinessReport.modelSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3923,6 +3938,31 @@ function cliReadinessRiskList(items: CliReadinessReport["riskQueue"]): string {
 }
 
 function cliReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function llmReadinessSetupList(items: LlmReadinessReport["llmSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">LLM setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>model/prompt/tool/agent/retrieval/embedding/output/streaming/observability ${item.modelCount}/${item.promptCount}/${item.toolCount}/${item.agentCount}/${item.retrievalCount}/${item.embeddingCount}/${item.outputCount}/${item.streamingCount}/${item.observabilityCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(llmReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function llmReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">LLM signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(llmReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function llmReadinessCommandList(items: LlmReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function llmReadinessRiskList(items: LlmReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(llmReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function llmReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
