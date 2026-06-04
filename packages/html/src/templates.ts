@@ -28,6 +28,7 @@ import type {
   DependencyHealthReport,
   LearningJournalReport,
   ProjectActivityReport,
+  CodeMetricsReadinessReport,
   CodeOwnershipReadinessReport,
   LargeAssetReadinessReport,
   LicenseRightsReport,
@@ -168,6 +169,7 @@ export interface StudyHtmlInput {
   dependencyHealthReport: DependencyHealthReport;
   learningJournalReport: LearningJournalReport;
   projectActivityReport: ProjectActivityReport;
+  codeMetricsReadinessReport: CodeMetricsReadinessReport;
   codeOwnershipReadinessReport: CodeOwnershipReadinessReport;
   largeAssetReadinessReport: LargeAssetReadinessReport;
   licenseRightsReport: LicenseRightsReport;
@@ -328,6 +330,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["search-index.html", "Search Index"],
     ["learning-journal.html", "Learning Journal"],
     ["project-activity.html", "Project Activity"],
+    ["code-metrics-readiness.html", "Code Metrics"],
     ["code-ownership-readiness.html", "Code Ownership"],
     ["large-asset-readiness.html", "Large Assets"],
     ["license-rights.html", "License Rights"],
@@ -507,6 +510,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Search Index</h3><p>${escapeHtml(input.searchIndexReport.summary)}</p><p>Pagefind 패턴으로 generated page, file lesson, folder lesson을 검색 가능한 문서 단위로 나눕니다.</p><a href="search-index.html">Search Index 열기</a></article>
           <article><h3>Learning Journal</h3><p>${escapeHtml(input.learningJournalReport.summary)}</p><p>learn-codebase 패턴으로 예측 질문, mastery map, spaced review queue를 남깁니다.</p><a href="learning-journal.html">Learning Journal 열기</a></article>
           <article><h3>Project Activity</h3><p>${escapeHtml(input.projectActivityReport.summary)}</p><p>Repowise 패턴으로 snapshot-only activity, hotspot, dead-code, decision queue를 묶습니다.</p><a href="project-activity.html">Project Activity 열기</a></article>
+          <article><h3>Code Metrics Readiness</h3><p>${escapeHtml(input.codeMetricsReadinessReport.summary)}</p><p>scc/lizard/tokei 패턴으로 LOC, branch token, function-like token, hotspot 읽기 순서를 정리합니다.</p><a href="code-metrics-readiness.html">Code Metrics 열기</a></article>
           <article><h3>Code Ownership Readiness</h3><p>${escapeHtml(input.codeOwnershipReadinessReport.summary)}</p><p>CODEOWNERS, validator, required review, branch protection 신호를 분리해 소유권 리뷰 준비도를 확인합니다.</p><a href="code-ownership-readiness.html">Code Ownership 열기</a></article>
           <article><h3>Large Asset Readiness</h3><p>${escapeHtml(input.largeAssetReadinessReport.summary)}</p><p>Git LFS/DVC 패턴으로 large file, dataset, model, media asset versioning 준비도를 분리합니다.</p><a href="large-asset-readiness.html">Large Assets 열기</a></article>
           <article><h3>License Rights</h3><p>${escapeHtml(input.licenseRightsReport.summary)}</p><p>Licensee 패턴으로 license file, package metadata, README 참조를 분리합니다.</p><a href="license-rights.html">License Rights 열기</a></article>
@@ -684,6 +688,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "project-activity.html",
       title: "Project Activity",
       html: pageShell("Project Activity", "project-activity.html", `<section class="panel" data-source-pattern="Repowise"><h2>Project Activity Snapshot</h2><p>${escapeHtml(input.projectActivityReport.summary)}</p><p class="muted">${escapeHtml(input.projectActivityReport.sourcePattern)}</p><dl class="meta"><div><dt>history mode</dt><dd>${escapeHtml(input.projectActivityReport.historyAvailability.mode)}</dd></div><div><dt>branch</dt><dd>${escapeHtml(input.projectActivityReport.historyAvailability.branch ?? "unknown")}</dd></div><div><dt>commit</dt><dd>${escapeHtml(input.projectActivityReport.historyAvailability.commitHash?.slice(0, 12) ?? "unknown")}</dd></div><div><dt>hotspots</dt><dd>${input.projectActivityReport.hotspotCandidates.length}</dd></div></dl><p>${escapeHtml(input.projectActivityReport.historyAvailability.reason)}</p></section><section class="grid"><article class="project-activity-card"><h3>Activity Signals</h3>${projectActivitySignalList(input.projectActivityReport.activitySignals)}</article><article class="project-activity-card"><h3>Review Queues</h3>${projectActivityQueueList(input.projectActivityReport.reviewQueues)}</article><article class="project-activity-card"><h3>Decision Prompts</h3>${projectActivityDecisionPromptList(input.projectActivityReport.architectureDecisionPrompts)}</article><article class="project-activity-card"><h3>다음 확인 단계</h3>${list(input.projectActivityReport.learnerNextSteps)}</article></section><section class="cards project-activity-hotspots">${projectActivityHotspotCards(input.projectActivityReport.hotspotCandidates)}</section><section class="cards project-activity-dead-code">${projectActivityDeadCodeCards(input.projectActivityReport.deadCodeCandidates)}</section>`, input)
+    },
+    {
+      name: "code-metrics-readiness.html",
+      title: "Code Metrics Readiness",
+      html: pageShell("Code Metrics Readiness", "code-metrics-readiness.html", `<section class="panel" data-source-pattern="scc"><h2>Code Metrics Snapshot</h2><p>${escapeHtml(input.codeMetricsReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.codeMetricsReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>files</dt><dd>${input.codeMetricsReadinessReport.totals.files}</dd></div><div><dt>code lines</dt><dd>${input.codeMetricsReadinessReport.totals.codeLines}</dd></div><div><dt>branch tokens</dt><dd>${input.codeMetricsReadinessReport.totals.branchCount}</dd></div><div><dt>density</dt><dd>${input.codeMetricsReadinessReport.totals.complexityDensity}</dd></div></dl><p class="muted">RepoTutor records code metrics readiness only; it does not run scc, lizard, tokei, cloc, radon, git history hotspot reports, or CI threshold gates.</p></section><section class="grid"><article class="code-metrics-readiness-card"><h3>Language Metrics</h3>${codeMetricsLanguageList(input.codeMetricsReadinessReport.languageMetrics)}</article><article class="code-metrics-readiness-card"><h3>Tool Signals</h3>${codeMetricsSignalList(input.codeMetricsReadinessReport.toolSignals, "signal")}</article><article class="code-metrics-readiness-card"><h3>Metric Signals</h3>${codeMetricsSignalList(input.codeMetricsReadinessReport.metricSignals, "signal")}</article><article class="code-metrics-readiness-card"><h3>Workflow Signals</h3>${codeMetricsSignalList(input.codeMetricsReadinessReport.workflowSignals, "signal")}</article></section><section class="cards code-metrics-hotspots">${codeMetricsHotspotCards(input.codeMetricsReadinessReport.hotspots)}</section><section class="grid"><article class="code-metrics-readiness-card"><h3>Recommended Commands</h3>${codeMetricsCommandList(input.codeMetricsReadinessReport.recommendedCommands)}</article><article class="code-metrics-readiness-card"><h3>Risk Queue</h3>${codeMetricsRiskList(input.codeMetricsReadinessReport.riskQueue)}</article><article class="code-metrics-readiness-card"><h3>다음 확인 단계</h3>${list(input.codeMetricsReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "code-ownership-readiness.html",
@@ -1344,6 +1353,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Search Index", path: "html/search-index.html", description: "Pagefind식 document, filter, metadata, term index를 확인합니다." },
       { label: "Learning Journal", path: "html/learning-journal.html", description: "learn-codebase식 active recall 질문, mastery map, spaced review queue를 확인합니다." },
       { label: "Project Activity", path: "html/project-activity.html", description: "Repowise식 activity snapshot, hotspot, dead-code, decision review queue를 확인합니다." },
+      { label: "Code Metrics Readiness", path: "html/code-metrics-readiness.html", description: "scc/lizard/tokei식 LOC, branch token, hotspot, metric workflow 준비도를 확인합니다." },
       { label: "Code Ownership Readiness", path: "html/code-ownership-readiness.html", description: "CODEOWNERS식 위치, 규칙, owner, validator, required review 준비도를 확인합니다." },
       { label: "Large Asset Readiness", path: "html/large-asset-readiness.html", description: "Git LFS/DVC식 large file, dataset, model, media asset versioning 준비도를 확인합니다." },
       { label: "License Rights", path: "html/license-rights.html", description: "Licensee식 license file, package metadata, README license reference 검토 상태를 확인합니다." },
@@ -1633,6 +1643,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "project-activity.html",
       goal: "snapshot-only activity, hotspot 후보, dead-code 후보, decision prompt를 변경 전 검토 queue로 정리합니다.",
       evidence: `hotspots ${input.projectActivityReport.hotspotCandidates.length}개, dead-code candidates ${input.projectActivityReport.deadCodeCandidates.length}개`
+    },
+    {
+      title: "Code metrics hotspot 확인",
+      href: "code-metrics-readiness.html",
+      goal: "scc/lizard/tokei식 LOC, branch token, function-like token을 보고 읽기 어려운 파일과 metric workflow를 분리합니다.",
+      evidence: `code lines ${input.codeMetricsReadinessReport.totals.codeLines}개, hotspots ${input.codeMetricsReadinessReport.hotspots.length}개`
     },
     {
       title: "Code ownership 준비도 확인",
@@ -2510,6 +2526,37 @@ function projectActivityHotspotCards(items: ProjectActivityReport["hotspotCandid
 function projectActivityDeadCodeCards(items: ProjectActivityReport["deadCodeCandidates"]): string {
   if (items.length === 0) return "<article class=\"project-activity-card\"><h3>Dead-code 후보가 없습니다.</h3><p>dependency graph에서 no-orphans 후보를 찾지 못했습니다.</p></article>";
   return items.map((item) => `<article class="project-activity-card"><h3>${escapeHtml(item.filePath)}</h3><p class="muted">dead-code confidence ${item.confidence}</p><p>${escapeHtml(item.reason)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 수업</a> · <a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></p></article>`).join("");
+}
+
+function codeMetricsLanguageList(items: CodeMetricsReadinessReport["languageMetrics"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 language metric이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.language)}</strong><br>files/code/comments/blanks/branches/functions/density ${item.fileCount}/${item.codeLines}/${item.commentLines}/${item.blankLines}/${item.branchCount}/${item.functionCount}/${item.complexityDensity}<br>${escapeHtml(item.evidence)}</li>`).join("")}</ul>`;
+}
+
+function codeMetricsHotspotCards(items: CodeMetricsReadinessReport["hotspots"]): string {
+  if (items.length === 0) return "<article class=\"code-metrics-readiness-card\"><h3>Metric hotspot 후보가 없습니다.</h3><p>읽을 수 있는 code metric 후보가 충분하지 않습니다.</p></article>";
+  return items.map((item) => `<article class="code-metrics-readiness-card"><h3>${escapeHtml(item.filePath)}</h3><p class="muted">${escapeHtml(item.language)} · ${escapeHtml(item.readingPriority)} priority · score ${item.hotspotScore}</p><p>lines/code/branches/functions/density ${item.lines}/${item.codeLines}/${item.branchCount}/${item.functionCount}/${item.complexityDensity}</p><p>${escapeHtml(item.evidence)}</p><p><a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></p></article>`).join("");
+}
+
+function codeMetricsSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(codeMetricsHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function codeMetricsCommandList(items: CodeMetricsReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">추천 command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function codeMetricsRiskList(items: CodeMetricsReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 risk가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br>${escapeHtml(item.why)}<br><a href="${escapeHtml(codeMetricsHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function codeMetricsHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  if (href.startsWith("html/")) return href.slice("html/".length);
+  return href;
 }
 
 function codeOwnershipFileList(items: CodeOwnershipReadinessReport["codeownerFiles"]): string {

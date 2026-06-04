@@ -22,6 +22,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "search-index-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "learning-journal-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "project-activity-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-metrics-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-ownership-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "large-asset-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "license-rights-report.json"))).resolves.toBeUndefined();
@@ -148,6 +149,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "search-index.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "learning-journal.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "project-activity.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-metrics-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-ownership-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "large-asset-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "license-rights.md"))).resolves.toBeUndefined();
@@ -277,6 +279,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "search-index.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "learning-journal.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "project-activity.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "code-metrics-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "code-ownership-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "large-asset-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "license-rights.html"))).resolves.toBeUndefined();
@@ -433,6 +436,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/search-index.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/learning-journal.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/project-activity.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/code-metrics-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/code-ownership-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/large-asset-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/license-rights.html\"");
@@ -661,6 +665,26 @@ describe("RepoTutor core pipeline", () => {
     expect(projectActivityMarkdown).toContain("Source pattern: Repowise");
     expect(projectActivityMarkdown).toContain("## History Availability");
     expect(projectActivityMarkdown).toContain("## Review Queues");
+    const codeMetricsText = await fs.readFile(path.join(result.session.outputPaths.analysis, "code-metrics-readiness-report.json"), "utf8");
+    expect(codeMetricsText).toContain("scc lizard tokei cloc radon cyclomatic complexity code lines comments blanks hotspots COCOMO LOCOMO JSON CSV HTML OpenMetrics thresholds");
+    expect(codeMetricsText).toContain("\"languageMetrics\"");
+    expect(codeMetricsText).toContain("\"hotspots\"");
+    expect(codeMetricsText).toContain("\"toolSignals\"");
+    expect(codeMetricsText).toContain("\"metricSignals\"");
+    expect(codeMetricsText).toContain("\"workflowSignals\"");
+    expect(codeMetricsText).toContain("\"complexityDensity\"");
+    expect(codeMetricsText).toContain("scc --by-file --wide --format json .");
+    const codeMetricsHtml = await fs.readFile(path.join(result.session.outputPaths.html, "code-metrics-readiness.html"), "utf8");
+    expect(codeMetricsHtml).toContain("Code Metrics Readiness");
+    expect(codeMetricsHtml).toContain("code-metrics-readiness-card");
+    expect(codeMetricsHtml).toContain("data-source-pattern=\"scc\"");
+    expect(codeMetricsHtml).toContain("Code Metrics Snapshot");
+    expect(codeMetricsHtml).toContain("branch tokens");
+    const codeMetricsMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "code-metrics-readiness.md"), "utf8");
+    expect(codeMetricsMarkdown).toContain("# Code Metrics Readiness");
+    expect(codeMetricsMarkdown).toContain("Source pattern: scc");
+    expect(codeMetricsMarkdown).toContain("## Language Metrics");
+    expect(codeMetricsMarkdown).toContain("## Workflow Signals");
     const codeOwnershipText = await fs.readFile(path.join(result.session.outputPaths.analysis, "code-ownership-readiness-report.json"), "utf8");
     expect(codeOwnershipText).toContain("CODEOWNERS standard locations root .github docs gitignore-style patterns owners teams users email last matching rule branch protection required code owner reviews rulesets syntax owner file duplicate not-owned validation");
     expect(codeOwnershipText).toContain("\"codeownerFiles\"");
@@ -2878,6 +2902,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/search-index.html");
     expect(exportManifestText).toContain("html/learning-journal.html");
     expect(exportManifestText).toContain("html/project-activity.html");
+    expect(exportManifestText).toContain("html/code-metrics-readiness.html");
     expect(exportManifestText).toContain("html/code-ownership-readiness.html");
     expect(exportManifestText).toContain("html/large-asset-readiness.html");
     expect(exportManifestText).toContain("html/license-rights.html");
@@ -3027,6 +3052,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("search-index.html");
     expect(learningPathHtml).toContain("learning-journal.html");
     expect(learningPathHtml).toContain("project-activity.html");
+    expect(learningPathHtml).toContain("code-metrics-readiness.html");
     expect(learningPathHtml).toContain("code-ownership-readiness.html");
     expect(learningPathHtml).toContain("large-asset-readiness.html");
     expect(learningPathHtml).toContain("license-rights.html");
@@ -3291,6 +3317,118 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-ownership-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-ownership-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "code-ownership-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects code metrics readiness patterns without running metric tools", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-code-metrics-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-code-metrics-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Code metrics fixture",
+      "",
+      "Use scc --by-file --wide --format json . and scc --hotspots --format json .",
+      "Use lizard -l javascript -l typescript -l python . and tokei --output json .",
+      "Use cloc --json . for a second LOC comparison and scc --by-file --wide --format html --report . for an HTML report.",
+      "The team reviews function length and parameter count thresholds alongside cognitive complexity.",
+      "COCOMO and LOCOMO reports are reviewed as estimates."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "metrics:scc": "scc --by-file --wide --format json .",
+        "metrics:hotspots": "scc --hotspots --format json .",
+        "metrics:lizard": "lizard -l typescript --CCN 8 .",
+        "metrics:tokei": "tokei --output json .",
+        "metrics:cloc": "cloc --json .",
+        "metrics:html": "scc --by-file --wide --format html --report ."
+      },
+      devDependencies: {
+        "complexity-report": "^1.0.0",
+        eslint: "^9.0.0"
+      },
+      eslintConfig: {
+        rules: {
+          complexity: ["error", 8],
+          "sonarjs/cognitive-complexity": ["warn", 10],
+          "max-params": ["warn", 4],
+          "max-lines-per-function": ["warn", 80]
+        }
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".sccignore"), "dist\ncoverage\n");
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "metrics.yml"), [
+      "name: metrics",
+      "on: [pull_request]",
+      "jobs:",
+      "  metrics:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - run: scc --by-file --wide --format json .",
+      "      - run: scc --hotspots --format csv .",
+      "      - run: scc --by-file --wide --format html --report .",
+      "      - run: lizard --CCN 8 src",
+      "      - run: tokei --output json .",
+      "      - run: cloc --json .",
+      "      - run: echo openmetrics threshold baseline diff-check hotspot report"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "complex.ts"), [
+      "// Keep comment lines visible for scc-style reports.",
+      "",
+      "export function complex(value: number) {",
+      "  if (value > 10) {",
+      "    for (let index = 0; index < value; index += 1) {",
+      "      if (index % 2 === 0 && value !== 13) {",
+      "        while (value > index) { break; }",
+      "      } else if (index === 3 || value === 4) {",
+      "        switch (index) { case 1: return value; default: break; }",
+      "      }",
+      "    }",
+      "  }",
+      "  return value > 0 ? value : 0;",
+      "}",
+      "export const arrow = (flag: boolean) => flag ? complex(12) : 0;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "small.py"), [
+      "def helper(value):",
+      "    if value:",
+      "        return value",
+      "    return 0"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const reportText = await fs.readFile(path.join(result.session.outputPaths.analysis, "code-metrics-readiness-report.json"), "utf8");
+    const report = JSON.parse(reportText) as {
+      totals: { codeLines: number; commentLines: number; blankLines: number; branchCount: number };
+      languageMetrics: Array<{ language: string; codeLines: number }>;
+      hotspots: Array<{ filePath: string; branchCount: number; functionCount: number; readingPriority: string }>;
+      toolSignals: Array<{ signal: string; readiness: string }>;
+      metricSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+
+    expect(report.totals.codeLines).toBeGreaterThan(0);
+    expect(report.totals.commentLines).toBeGreaterThan(0);
+    expect(report.totals.blankLines).toBeGreaterThan(0);
+    expect(report.totals.branchCount).toBeGreaterThan(0);
+    expect(report.languageMetrics.some((item) => item.language === "TypeScript" && item.codeLines > 0)).toBe(true);
+    const complex = report.hotspots.find((item) => item.filePath === "src/complex.ts");
+    expect(complex?.branchCount).toBeGreaterThan(0);
+    expect(complex?.functionCount).toBeGreaterThan(0);
+    expect(complex?.readingPriority).toBe("high");
+    expectReady(report.toolSignals, ["scc", "lizard", "tokei", "cloc", "eslint-complexity", "complexity-report", "cocomo", "locomo"]);
+    expectReady(report.metricSignals, ["loc", "blank-lines", "comment-lines", "code-lines", "cognitive", "function-length", "parameter-count"]);
+    expect(report.metricSignals.some((item) => item.signal === "cyclomatic" && item.readiness === "partial")).toBe(true);
+    expect(report.metricSignals.some((item) => item.signal === "function-count" && item.readiness === "partial")).toBe(true);
+    expect(report.metricSignals.some((item) => item.signal === "hotspots" && item.readiness === "partial")).toBe(true);
+    expectReady(report.workflowSignals, ["json-output", "csv-output", "html-report", "openmetrics", "threshold", "ci-complexity", "baseline", "diff-check", "ignore-file", "hotspot-report"]);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-metrics-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-metrics-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "code-metrics-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects large asset readiness patterns without running Git LFS or DVC", async () => {

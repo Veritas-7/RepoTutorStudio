@@ -673,6 +673,75 @@ export const ProjectActivityReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CodeMetricsReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  totals: z.object({
+    files: z.number().int().nonnegative(),
+    lines: z.number().int().nonnegative(),
+    codeLines: z.number().int().nonnegative(),
+    commentLines: z.number().int().nonnegative(),
+    blankLines: z.number().int().nonnegative(),
+    branchCount: z.number().int().nonnegative(),
+    functionCount: z.number().int().nonnegative(),
+    complexityDensity: z.number().nonnegative()
+  }),
+  languageMetrics: z.array(z.object({
+    language: z.string(),
+    fileCount: z.number().int().nonnegative(),
+    lines: z.number().int().nonnegative(),
+    codeLines: z.number().int().nonnegative(),
+    commentLines: z.number().int().nonnegative(),
+    blankLines: z.number().int().nonnegative(),
+    branchCount: z.number().int().nonnegative(),
+    functionCount: z.number().int().nonnegative(),
+    complexityDensity: z.number().nonnegative(),
+    evidence: z.string()
+  })),
+  hotspots: z.array(z.object({
+    filePath: z.string(),
+    language: z.string(),
+    lines: z.number().int().nonnegative(),
+    codeLines: z.number().int().nonnegative(),
+    branchCount: z.number().int().nonnegative(),
+    functionCount: z.number().int().nonnegative(),
+    complexityDensity: z.number().nonnegative(),
+    hotspotScore: z.number().nonnegative(),
+    readingPriority: z.enum(["high", "medium", "low"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  toolSignals: z.array(z.object({
+    signal: z.enum(["scc", "lizard", "tokei", "cloc", "radon", "eslint-complexity", "complexity-report", "locomo", "cocomo", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  metricSignals: z.array(z.object({
+    signal: z.enum(["loc", "blank-lines", "comment-lines", "code-lines", "cyclomatic", "cognitive", "function-count", "function-length", "parameter-count", "halstead", "cocomo", "locomo", "dryness", "hotspots", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["json-output", "csv-output", "html-report", "openmetrics", "threshold", "ci-complexity", "baseline", "diff-check", "ignore-file", "hotspot-report", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CodeOwnershipReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7729,6 +7798,7 @@ export type DependencyHealthReport = z.infer<typeof DependencyHealthReportSchema
 export type SearchIndexReport = z.infer<typeof SearchIndexReportSchema>;
 export type LearningJournalReport = z.infer<typeof LearningJournalReportSchema>;
 export type ProjectActivityReport = z.infer<typeof ProjectActivityReportSchema>;
+export type CodeMetricsReadinessReport = z.infer<typeof CodeMetricsReadinessReportSchema>;
 export type CodeOwnershipReadinessReport = z.infer<typeof CodeOwnershipReadinessReportSchema>;
 export type LargeAssetReadinessReport = z.infer<typeof LargeAssetReadinessReportSchema>;
 export type LicenseRightsReport = z.infer<typeof LicenseRightsReportSchema>;
