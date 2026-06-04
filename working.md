@@ -5318,6 +5318,62 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 217:
   - `093caab` notification readiness report
 
+- 2026-06-05: AutoResearch Upgrade 218 candidate selected:
+  `orestbida/cookieconsent`
+  (`https://github.com/orestbida/cookieconsent`; vanilla cross-browser cookie
+  consent plugin; sparse ignored clone HEAD `8596c79`), compared with
+  `kiprotect/klaro` (privacy manager/CMP consent by purpose and service,
+  script blocking, multilingual consent; sparse ignored clone HEAD `db9f1ac`)
+  and `InteractiveAdvertisingBureau/iabtcf-es` (IAB TCF v2.0/v2.3 `__tcfapi`,
+  TCString, CMP API, GVL, purpose/vendor consent model; sparse ignored clone
+  HEAD `839b955`). Current GitHub metadata: `orestbida/cookieconsent` public,
+  MIT, 5,527 stars, 505 forks, updated 2026-06-04T06:17:26Z;
+  `kiprotect/klaro` public, GitHub API license `Other`, 1,466 stars, 293
+  forks, updated 2026-06-03T19:02:46Z;
+  `InteractiveAdvertisingBureau/iabtcf-es` public, Apache-2.0, 151 stars, 97
+  forks, updated 2026-04-24T19:23:32Z. All three external source paths remained
+  ignored and `git ls-files` returned `0`.
+- 2026-06-05: RED consent-readiness smoke recorded
+  `/tmp/repotutor-consent-redgreen.env`; old behavior at `4077792` had
+  `verificationCheckedRequiredArtifacts=351`, was missing
+  `analysis/consent-readiness-report.json`, `markdown/consent-readiness.md`,
+  and `html/consent-readiness.html`, and `open --target consent-readiness` was
+  unsupported.
+- 2026-06-05: Implemented CookieConsent/Klaro/IAB TCF-style
+  consent-readiness report:
+  `ConsentReadinessReportSchema`, `analysis/consent-readiness-report.json`,
+  `markdown/consent-readiness.md`, `html/consent-readiness.html`, consent setup
+  detection, banner signals, category signals, script blocking signals,
+  privacy signals, TCF signals, package signals, recommended commands, risk
+  queue, manifest/session-verification coverage, learning-path linkage, nav
+  entry, CLI help target, and `open --target consent-readiness`.
+- 2026-06-05: GREEN consent-readiness smoke recorded
+  `/tmp/repotutor-consent-redgreen.env`; confirmed
+  `verificationCheckedRequiredArtifacts=354`, all three new artifacts, risk
+  queue 0, ready providers `klaro|cookieconsent|iab-tcf`, ready banner signals
+  `banner|modal|accept-all|accept-selected|reject-all|settings-button|revision|hide-from-bots`,
+  ready category signals
+  `necessary|analytics|marketing|preferences|functional|performance|services|purposes`,
+  ready script signals
+  `data-src|text-plain|data-type|data-name|autoclear|page-script|disable-page-interaction`,
+  ready privacy signals
+  `privacy-policy|withdraw|opt-out|consent-mode|gpc|do-not-track|legitimate-interest|proof`,
+  ready TCF signals
+  `__tcfapi|tc-string|cmp-id|vendor-list|purpose-consents|vendor-consents|legitimate-interests|gvl`,
+  ready package signals
+  `vanilla-cookieconsent|klaro|@iabtcf/core|@iabtcf/cmpapi|@iabtcf/stub|custom`,
+  and `open --target consent-readiness` -> `html/consent-readiness.html`.
+- 2026-06-05: Verification for Upgrade 218:
+  - `pnpm build`: PASS
+  - focused consent Vitest: PASS, 1/1 selected test
+  - RED/GREEN smoke: PASS
+  - `pnpm test`: PASS, 25/25 tests
+  - `pnpm audit:brief`: PASS, 116/116 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 218:
+  - `f8e2c74` consent readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

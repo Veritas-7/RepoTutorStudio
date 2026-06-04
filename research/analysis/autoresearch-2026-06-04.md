@@ -6743,6 +6743,61 @@ Local verification:
 - `gitleaks protect --staged --redact --no-banner`: PASS
 - Pushed implementation commit: `093caab` notification readiness report
 
+### Upgrade 218: Consent Readiness Report
+
+- Cloned and inspected `orestbida/cookieconsent` under
+  `research/external-src/orestbida-cookieconsent`, `kiprotect/klaro` under
+  `research/external-src/kiprotect-klaro`, and
+  `InteractiveAdvertisingBureau/iabtcf-es` under
+  `research/external-src/InteractiveAdvertisingBureau-iabtcf-es` without
+  executing external source. Clone HEADs were `8596c79`, `db9f1ac`, and
+  `839b955`; all three clones remain ignored by RepoTutor and tracked file
+  count returned `0`.
+- GitHub metadata: `orestbida/cookieconsent` is public, MIT licensed, 5,527
+  stars, 505 forks, updated 2026-06-04T06:17:26Z. `kiprotect/klaro` is public,
+  GitHub API license `Other`, 1,466 stars, 293 forks, updated
+  2026-06-03T19:02:46Z. `InteractiveAdvertisingBureau/iabtcf-es` is public,
+  Apache-2.0 licensed, 151 stars, 97 forks, updated 2026-04-24T19:23:32Z.
+  Selected the three-source slice because together they model cookie consent
+  banner/category controls, privacy manager service/purpose script blocking,
+  and IAB TCF CMP/vendor/purpose consent state. No source code was copied into
+  RepoTutor.
+- Implemented CookieConsent/Klaro/IAB TCF-style consent-readiness report:
+  `ConsentReadinessReportSchema`, `analysis/consent-readiness-report.json`,
+  `markdown/consent-readiness.md`, `html/consent-readiness.html`, consent setup
+  detection, banner signals, category signals, script blocking signals,
+  privacy signals, TCF signals, package signals, recommended commands, risk
+  queue, manifest/session-verification coverage, learning-path linkage, nav
+  entry, and `open --target consent-readiness`.
+- Source pattern: consent readiness separates banner/modal/settings evidence;
+  accept-all, accept-selected, reject-all, revision, and bot handling; category,
+  service, purpose, and vendor evidence; data-src/text-plain/data-type/data-name
+  script blocking, autoclear, page-script, and interaction blocking; privacy
+  policy, withdraw, opt-out, consent mode, GPC/DNT, legitimate interest, and
+  proof evidence; and IAB TCF `__tcfapi`, TCString, cmpId, GVL, purpose consent,
+  vendor consent, and legitimate interest state. RepoTutor maps that to
+  deterministic static readiness and explicitly does not execute CMP scripts,
+  set cookies, mutate local storage, call TCF APIs, load vendors, or verify
+  legal compliance.
+- RED smoke recorded `/tmp/repotutor-consent-redgreen.env`; old behavior at
+  `4077792` had `verificationCheckedRequiredArtifacts=351`, was missing
+  `analysis/consent-readiness-report.json`, `markdown/consent-readiness.md`,
+  and `html/consent-readiness.html`, and `open --target consent-readiness` was
+  unsupported.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-consent-green-studies-ZJOpQE/2026-06-05/local__repotutor-consent-green-source-jIGF7L__local__3fba71d8`;
+  confirmed `verificationCheckedRequiredArtifacts=354`, all three new
+  artifacts, risk queue 0, ready providers `klaro|cookieconsent|iab-tcf`, all
+  banner/category/script/privacy/TCF/package signals ready, and
+  `open --target consent-readiness` -> `html/consent-readiness.html`.
+- `pnpm build`: PASS
+- focused consent Vitest: PASS, 1/1 selected test
+- `pnpm test`: PASS, 25/25 tests
+- `pnpm audit:brief`: PASS, 116/116 audit checks across 13 generated reports
+- `git diff --check`: PASS
+- `gitleaks protect --staged --redact --no-banner`: PASS
+- Pushed implementation commit: `f8e2c74` consent readiness report
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
