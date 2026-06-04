@@ -53,6 +53,7 @@ import type {
   DatabaseReadinessReport,
   CiCdReport,
   UnitTestReport,
+  MutationTestingReadinessReport,
   TypecheckReadinessReport,
   PackageManagerReport,
   GitHooksReport,
@@ -187,6 +188,7 @@ export interface StudyHtmlInput {
   databaseReadinessReport: DatabaseReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
+  mutationTestingReadinessReport: MutationTestingReadinessReport;
   typecheckReadinessReport: TypecheckReadinessReport;
   packageManagerReport: PackageManagerReport;
   gitHooksReport: GitHooksReport;
@@ -341,6 +343,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["database-readiness.html", "Database"],
     ["ci-cd.html", "CI/CD"],
     ["unit-tests.html", "Unit Tests"],
+    ["mutation-testing-readiness.html", "Mutation Testing"],
     ["typecheck-readiness.html", "Typecheck"],
     ["package-manager.html", "Package Manager"],
     ["git-hooks.html", "Git Hooks"],
@@ -515,6 +518,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Database Readiness</h3><p>${escapeHtml(input.databaseReadinessReport.summary)}</p><p>Prisma 패턴으로 schema, datasource, migrations, generated client, seed, env 준비도를 정리합니다.</p><a href="database-readiness.html">Database 열기</a></article>
           <article><h3>CI/CD Readiness</h3><p>${escapeHtml(input.ciCdReport.summary)}</p><p>GitHub Actions 패턴으로 workflow, trigger, job, permission, artifact/cache, deployment 준비도를 정리합니다.</p><a href="ci-cd.html">CI/CD 열기</a></article>
           <article><h3>Unit Test Readiness</h3><p>${escapeHtml(input.unitTestReport.summary)}</p><p>Vitest 패턴으로 test files, assertions, mocks, coverage, environment, reporters 준비도를 정리합니다.</p><a href="unit-tests.html">Unit Tests 열기</a></article>
+          <article><h3>Mutation Testing Readiness</h3><p>${escapeHtml(input.mutationTestingReadinessReport.summary)}</p><p>Stryker/Infection 패턴으로 mutate scope, runner, mutators, thresholds, reporters, survived mutant 준비도를 정리합니다.</p><a href="mutation-testing-readiness.html">Mutation Testing 열기</a></article>
           <article><h3>Typecheck Readiness</h3><p>${escapeHtml(input.typecheckReadinessReport.summary)}</p><p>TypeScript 패턴으로 tsconfig, strict flags, project references, module resolution, declaration emit, tsc scripts를 정리합니다.</p><a href="typecheck-readiness.html">Typecheck 열기</a></article>
           <article><h3>Package Manager Readiness</h3><p>${escapeHtml(input.packageManagerReport.summary)}</p><p>pnpm 패턴으로 packageManager, workspace, lockfile, scripts, install policy를 정리합니다.</p><a href="package-manager.html">Package Manager 열기</a></article>
           <article><h3>Git Hooks Readiness</h3><p>${escapeHtml(input.gitHooksReport.summary)}</p><p>Husky 패턴으로 .husky hook files, install scripts, pre-commit/pre-push policy, lint-staged, bypass signals를 정리합니다.</p><a href="git-hooks.html">Git Hooks 열기</a></article>
@@ -787,6 +791,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "unit-tests.html",
       title: "Unit Test Readiness",
       html: pageShell("Unit Test Readiness", "unit-tests.html", `<section class="panel" data-source-pattern="Vitest"><h2>Unit Test Snapshot</h2><p>${escapeHtml(input.unitTestReport.summary)}</p><p class="muted">${escapeHtml(input.unitTestReport.sourcePattern)}</p><dl class="meta"><div><dt>tests</dt><dd>${input.unitTestReport.testFiles.length}</dd></div><div><dt>configs</dt><dd>${input.unitTestReport.configFiles.length}</dd></div><div><dt>assertions</dt><dd>${input.unitTestReport.assertionSignals.length}</dd></div><div><dt>coverage</dt><dd>${input.unitTestReport.coverageSignals.length}</dd></div></dl><p class="muted">RepoTutor records Vitest-style readiness only. It does not execute tests, measure coverage, update snapshots, or validate jsdom/browser behavior.</p></section><section class="grid"><article class="unit-test-card"><h3>Test Files</h3>${unitTestFileList(input.unitTestReport.testFiles)}</article><article class="unit-test-card"><h3>Config Files</h3>${unitTestConfigList(input.unitTestReport.configFiles)}</article><article class="unit-test-card"><h3>Assertion Signals</h3>${unitTestSignalList(input.unitTestReport.assertionSignals, "assertion")}</article><article class="unit-test-card"><h3>Mock Signals</h3>${unitTestSignalList(input.unitTestReport.mockSignals, "signal")}</article></section><section class="grid"><article class="unit-test-card"><h3>Coverage Signals</h3>${unitTestSignalList(input.unitTestReport.coverageSignals, "signal")}</article><article class="unit-test-card"><h3>Environment Signals</h3>${unitTestSignalList(input.unitTestReport.environmentSignals, "signal")}</article><article class="unit-test-card"><h3>Reporting Signals</h3>${unitTestSignalList(input.unitTestReport.reportingSignals, "signal")}</article><article class="unit-test-card"><h3>Recommended Commands</h3>${unitTestCommandList(input.unitTestReport.recommendedCommands)}</article><article class="unit-test-card"><h3>Risk Queue</h3>${unitTestRiskList(input.unitTestReport.riskQueue)}</article><article class="unit-test-card"><h3>다음 확인 단계</h3>${list(input.unitTestReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "mutation-testing-readiness.html",
+      title: "Mutation Testing Readiness",
+      html: pageShell("Mutation Testing Readiness", "mutation-testing-readiness.html", `<section class="panel" data-source-pattern="Stryker"><h2>Mutation Testing Snapshot</h2><p>${escapeHtml(input.mutationTestingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.mutationTestingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.mutationTestingReadinessReport.mutationSetups.length}</dd></div><div><dt>tools</dt><dd>${input.mutationTestingReadinessReport.toolSignals.length}</dd></div><div><dt>quality</dt><dd>${input.mutationTestingReadinessReport.qualitySignals.length}</dd></div><div><dt>reporters</dt><dd>${input.mutationTestingReadinessReport.reporterSignals.length}</dd></div></dl><p class="muted">RepoTutor records mutation-testing readiness only. It does not execute Stryker, Infection, mutmut, PIT, or project test suites.</p></section><section class="grid"><article class="mutation-testing-readiness-card"><h3>Mutation Setups</h3>${mutationTestingSetupList(input.mutationTestingReadinessReport.mutationSetups)}</article><article class="mutation-testing-readiness-card"><h3>Tool Signals</h3>${mutationTestingSignalList(input.mutationTestingReadinessReport.toolSignals, "signal")}</article><article class="mutation-testing-readiness-card"><h3>Config Signals</h3>${mutationTestingSignalList(input.mutationTestingReadinessReport.configSignals, "signal")}</article><article class="mutation-testing-readiness-card"><h3>Quality Signals</h3>${mutationTestingSignalList(input.mutationTestingReadinessReport.qualitySignals, "signal")}</article></section><section class="grid"><article class="mutation-testing-readiness-card"><h3>Reporter Signals</h3>${mutationTestingSignalList(input.mutationTestingReadinessReport.reporterSignals, "signal")}</article><article class="mutation-testing-readiness-card"><h3>Scope Signals</h3>${mutationTestingSignalList(input.mutationTestingReadinessReport.scopeSignals, "signal")}</article><article class="mutation-testing-readiness-card"><h3>Package Signals</h3>${mutationTestingSignalList(input.mutationTestingReadinessReport.packageSignals, "signal")}</article><article class="mutation-testing-readiness-card"><h3>Recommended Commands</h3>${mutationTestingCommandList(input.mutationTestingReadinessReport.recommendedCommands)}</article><article class="mutation-testing-readiness-card"><h3>Risk Queue</h3>${mutationTestingRiskList(input.mutationTestingReadinessReport.riskQueue)}</article><article class="mutation-testing-readiness-card"><h3>다음 확인 단계</h3>${list(input.mutationTestingReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "typecheck-readiness.html",
@@ -1317,6 +1326,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Database Readiness", path: "html/database-readiness.html", description: "Prisma식 schema, datasource, migration, generated client, seed/env 준비도를 확인합니다." },
       { label: "CI/CD Readiness", path: "html/ci-cd.html", description: "GitHub Actions식 workflow, trigger, job, permission, cache/artifact, deployment 준비도를 확인합니다." },
       { label: "Unit Test Readiness", path: "html/unit-tests.html", description: "Vitest식 test file, assertion, mock, coverage, environment, reporter 준비도를 확인합니다." },
+      { label: "Mutation Testing Readiness", path: "html/mutation-testing-readiness.html", description: "Stryker/Infection식 mutate scope, runner, mutator, threshold, reporter 준비도를 확인합니다." },
       { label: "Typecheck Readiness", path: "html/typecheck-readiness.html", description: "TypeScript식 tsconfig, strict flag, project reference, module resolution, declaration, tsc script 준비도를 확인합니다." },
       { label: "Package Manager Readiness", path: "html/package-manager.html", description: "pnpm식 manifest, workspace, lockfile, script, install policy 준비도를 확인합니다." },
       { label: "Git Hooks Readiness", path: "html/git-hooks.html", description: "Husky식 hook file, install script, pre-commit/pre-push, bypass policy 준비도를 확인합니다." },
@@ -1725,6 +1735,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "unit-tests.html",
       goal: "Vitest식 test file, assertion, mock, coverage, environment, reporter 준비도를 확인합니다.",
       evidence: `test files ${input.unitTestReport.testFiles.length}개, coverage signals ${input.unitTestReport.coverageSignals.length}개`
+    },
+    {
+      title: "Mutation testing 준비도 확인",
+      href: "mutation-testing-readiness.html",
+      goal: "Stryker/Infection식 mutate scope, runner, mutator, threshold, reporter 준비도를 확인합니다.",
+      evidence: `mutation setups ${input.mutationTestingReadinessReport.mutationSetups.length}개, quality signals ${input.mutationTestingReadinessReport.qualitySignals.length}개`
     },
     {
       title: "Typecheck 준비도 확인",
@@ -3293,6 +3309,31 @@ function unitTestRiskList(items: UnitTestReport["riskQueue"]): string {
 }
 
 function unitTestHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function mutationTestingSetupList(items: MutationTestingReadinessReport["mutationSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">mutation testing setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)} / ${escapeHtml(item.readiness)}]<br>scope ${item.mutatePatternCount} · mutators ${item.mutatorCount} · runners ${item.runnerCount} · thresholds ${item.thresholdCount} · reporters ${item.reporterCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(mutationTestingHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function mutationTestingSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">mutation testing signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(mutationTestingHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function mutationTestingCommandList(items: MutationTestingReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function mutationTestingRiskList(items: MutationTestingReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(mutationTestingHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function mutationTestingHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
