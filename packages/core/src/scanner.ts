@@ -103,6 +103,7 @@ import {
   CliReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
+  LlmObservabilityReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -230,6 +231,7 @@ export interface AnalysisBundle {
   cliReadinessReport: CliReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
+  llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -357,6 +359,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const cliReadinessReport = await buildCliReadinessReport(walk);
   const llmReadinessReport = await buildLlmReadinessReport(walk);
   const llmEvalReadinessReport = await buildLlmEvalReadinessReport(walk);
+  const llmObservabilityReadinessReport = await buildLlmObservabilityReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
@@ -376,7 +379,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -21010,6 +21013,350 @@ function llmEvalSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp;
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/llm-eval-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildLlmObservabilityReadinessReport(walk: WalkResult): Promise<LlmObservabilityReadinessReport> {
+  const sourceFiles = await llmObservabilitySourceFiles(walk);
+  const observabilitySetups = llmObservabilitySetups(sourceFiles);
+  const traceSignals = llmObservabilityTraceSignals(sourceFiles);
+  const instrumentationSignals = llmObservabilityInstrumentationSignals(sourceFiles);
+  const identitySignals = llmObservabilityIdentitySignals(sourceFiles);
+  const llmMetricSignals = llmObservabilityMetricSignals(sourceFiles);
+  const feedbackSignals = llmObservabilityFeedbackSignals(sourceFiles);
+  const datasetExperimentSignals = llmObservabilityDatasetExperimentSignals(sourceFiles);
+  const gatewaySignals = llmObservabilityGatewaySignals(sourceFiles);
+  const privacySignals = llmObservabilityPrivacySignals(sourceFiles);
+  const workflowSignals = llmObservabilityWorkflowSignals(sourceFiles);
+  const packageSignals = llmObservabilityPackageSignals(sourceFiles);
+
+  const hasTrace = traceSignals.some((item) => item.readiness === "ready") || observabilitySetups.some((item) => item.traceCount > 0 || item.spanCount > 0 || item.generationCount > 0);
+  const hasInstrumentation = instrumentationSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasIdentity = identitySignals.some((item) => item.readiness === "ready") || observabilitySetups.some((item) => item.sessionCount > 0 || item.userCount > 0 || item.metadataCount > 0);
+  const hasMetrics = llmMetricSignals.some((item) => item.readiness === "ready") || observabilitySetups.some((item) => item.tokenCount > 0 || item.costCount > 0);
+  const hasFeedback = feedbackSignals.some((item) => item.readiness === "ready") || observabilitySetups.some((item) => item.scoreCount > 0 || item.feedbackCount > 0);
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready") || datasetExperimentSignals.some((item) => item.readiness === "ready");
+  const hasGateway = gatewaySignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: LlmObservabilityReadinessReport["riskQueue"] = [];
+  if (!hasInstrumentation) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add Langfuse, Phoenix/OpenInference, Helicone, or OpenTelemetry instrumentation before claiming LLM observability readiness.",
+      why: "LLM provider code alone does not prove prompts, generations, traces, or sessions are observable.",
+      relatedHref: "html/llm-observability-readiness.html"
+    });
+  }
+  if (hasInstrumentation && !hasTrace) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record trace, span, observation, generation, trace ID, or span ID boundaries around LLM calls.",
+      why: "LLM observability needs a visible unit of work so model calls can be debugged across prompts, retrieval, tools, and responses.",
+      relatedHref: "html/llm-observability-readiness.html"
+    });
+  }
+  if (hasTrace && !hasIdentity) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add user, session, conversation, release, environment, tags, or metadata linkage.",
+      why: "Trace lists are hard to investigate when they cannot be grouped by session, user journey, deployment, or tenant.",
+      relatedHref: "html/llm-observability-readiness.html"
+    });
+  }
+  if (hasTrace && !hasMetrics) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Track model, provider, prompt tokens, completion tokens, total tokens, latency, cache, or cost metadata.",
+      why: "LLM observability should explain both quality and operating cost; trace shape alone is not enough for production review.",
+      relatedHref: "html/llm-observability-readiness.html"
+    });
+  }
+  if ((hasTrace || hasGateway) && !hasFeedback) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add scores, feedback, annotations, labels, manual review, or quality fields.",
+      why: "Feedback turns traces from debugging records into reviewable quality signals.",
+      relatedHref: "html/llm-observability-readiness.html"
+    });
+  }
+  if (hasInstrumentation && !hasWorkflow) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document dashboard, export, self-hosting, dataset, experiment, or CI workflow paths.",
+      why: "Learners need to know how captured LLM traces become reviewable reports, prompt versions, datasets, or experiments.",
+      relatedHref: "html/llm-observability-readiness.html"
+    });
+  }
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `LLM observability readiness report: setup ${observabilitySetups.length}개, trace signal ${traceSignals.length}개, identity signal ${identitySignals.length}개, metric signal ${llmMetricSignals.length}개, feedback signal ${feedbackSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "LLM observability readiness Langfuse Phoenix Helicone traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out",
+    observabilitySetups,
+    traceSignals,
+    instrumentationSignals,
+    identitySignals,
+    llmMetricSignals,
+    feedbackSignals,
+    datasetExperimentSignals,
+    gatewaySignals,
+    privacySignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"Langfuse|@observe|langfuse_context|observe\\(|trace|span|generation|session_id|user_id\" .", purpose: "Find Langfuse trace, generation, session, user, metadata, score, and prompt-version boundaries." },
+      { command: "rg \"Phoenix|OpenInference|PHOENIX_COLLECTOR_ENDPOINT|OTLP|TracerProvider|register\\(\" .", purpose: "Map Phoenix/OpenInference/OpenTelemetry setup without exporting spans." },
+      { command: "rg \"Helicone-|ai-gateway.helicone.ai|baseURL|rate limit|retry|fallback|provider routing\" .", purpose: "Review Helicone gateway headers, provider routing, retry, cache, and rate-limit hints." },
+      { command: "rg \"promptTokens|completionTokens|totalTokens|token_usage|usage|cost|latency|duration|model|provider\" .", purpose: "Trace token, cost, latency, model, and provider metadata fields." },
+      { command: "rg \"score|feedback|annotation|label|thumbs|quality|manual review|dataset|experiment|prompt version\" .", purpose: "Find quality feedback, prompt version, dataset, and experiment linkage." },
+      { command: "rg \"redact|mask|PII|telemetry|retention|TELEMETRY_ENABLED\" .", purpose: "Review privacy, redaction, telemetry opt-out, and retention controls before connecting live collectors." }
+    ],
+    learnerNextSteps: [
+      "먼저 Langfuse, Phoenix/OpenInference, Helicone, OpenTelemetry 중 어떤 계층이 LLM 호출을 감싸는지 찾으세요.",
+      "trace, span, observation, generation, trace_id, span_id는 디버깅 가능한 작업 단위를 보여줍니다.",
+      "user_id, session_id, conversation_id, release, environment, tags, metadata는 LLM 호출을 사용자 흐름과 배포 흐름에 연결합니다.",
+      "promptTokens, completionTokens, totalTokens, cost, latency, model, provider, cache 신호로 운영 비용과 성능 경계를 확인하세요.",
+      "score, feedback, annotation, label, quality, dataset, experiment, prompt version은 관측 데이터를 품질 검토로 연결합니다.",
+      "이 리포트는 정적 readiness입니다. RepoTutor는 provider 호출, trace 전송, span export, Langfuse/Phoenix/Helicone collector 접속, dashboard 조회, prompt/dataset/score 업로드를 하지 않습니다."
+    ]
+  };
+}
+
+type LlmObservabilitySourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function llmObservabilitySourceFiles(walk: WalkResult): Promise<LlmObservabilitySourceFile[]> {
+  const files: LlmObservabilitySourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !llmObservabilityInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!llmObservabilityPathSignal(file.relPath) && !llmObservabilityContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 220) break;
+  }
+  return files;
+}
+
+function llmObservabilityInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return llmObservabilityPathSignal(filePath)
+    || /(^|\/)(README|docs?|observability|telemetry|tracing|traces?|spans?|instrumentation|analytics|monitoring|prompts?|datasets?|experiments?|evals?|workflows?|scripts?|ci)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|pyproject\.toml|requirements\.txt|setup\.py|docker-compose\.ya?ml|helmfile\.ya?ml)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|py|json|jsonl|csv|md|mdx|ya?ml|toml|txt|env|example)$/i.test(filePath);
+}
+
+function llmObservabilityPathSignal(filePath: string): boolean {
+  return /(^|\/)(langfuse|phoenix|helicone|openinference|opentelemetry|otel|observability|telemetry|tracing|traces?|spans?|instrumentation)(\/|\.|-|_|$)/i.test(filePath)
+    || /\.github\/workflows\/.*(llm|observability|telemetry|trace|eval|prompt).*\.(ya?ml)$/i.test(filePath);
+}
+
+function llmObservabilityContentSignal(text: string): boolean {
+  return /(Langfuse|langfuse|@observe|langfuse_context|Phoenix|PHOENIX_COLLECTOR_ENDPOINT|OpenInference|openinference|OpenTelemetry|OTLP|TracerProvider|trace_id|span_id|traceId|spanId|generation|observation|Helicone-|helicone|ai-gateway\.helicone\.ai|promptTokens|completionTokens|totalTokens|token_usage|usage|cost|latency|feedback|annotation|prompt version|TELEMETRY_ENABLED|redact|PII)/i.test(text);
+}
+
+function llmObservabilitySetups(sourceFiles: LlmObservabilitySourceFile[]): LlmObservabilityReadinessReport["observabilitySetups"] {
+  const rows: LlmObservabilityReadinessReport["observabilitySetups"] = [];
+  for (const source of sourceFiles) {
+    const traceCount = countMatches(source.text, /\btrace\b|trace_id|traceId|traces|current_trace|update_current_trace/gi);
+    const spanCount = countMatches(source.text, /\bspan\b|span_id|spanId|startSpan|root span|nested span|OTLPTraceExporter/gi);
+    const generationCount = countMatches(source.text, /generation|generations|chat\.completions|responses\.create|llm call|model call/gi);
+    const sessionCount = countMatches(source.text, /session_id|sessionId|Helicone-Session-Id|conversation_id|conversationId|thread_id|threadId/gi);
+    const userCount = countMatches(source.text, /user_id|userId|Helicone-User-Id|enduser|tenant|account_id/gi);
+    const metadataCount = countMatches(source.text, /metadata|tags|release|environment|Helicone-Property-|projectName|project_name/gi);
+    const scoreCount = countMatches(source.text, /\bscore\b|scoreTrace|create_score|quality score|thumbs|rating/gi);
+    const tokenCount = countMatches(source.text, /promptTokens|completionTokens|totalTokens|prompt_tokens|completion_tokens|total_tokens|token_usage|usage/gi);
+    const costCount = countMatches(source.text, /\bcost\b|total_cost|latency|duration|response_time|time_to_first_token/gi);
+    const promptCount = countMatches(source.text, /prompt version|promptVersion|prompt_id|Helicone-Prompt-Id|promptName|prompt template|prompts?\/|langfuse_prompt/gi);
+    const feedbackCount = countMatches(source.text, /feedback|annotation|label|manual review|manual-review|quality|rating|thumbs/gi);
+    const totalSignals = traceCount + spanCount + generationCount + sessionCount + userCount + metadataCount + scoreCount + tokenCount + costCount + promptCount + feedbackCount;
+    if (totalSignals === 0 && !llmObservabilityPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: llmObservabilityPlatform(source),
+      traceCount,
+      spanCount,
+      generationCount,
+      sessionCount,
+      userCount,
+      metadataCount,
+      scoreCount,
+      tokenCount,
+      costCount,
+      promptCount,
+      feedbackCount,
+      readiness: (traceCount > 0 || spanCount > 0 || generationCount > 0) && (sessionCount > 0 || userCount > 0 || metadataCount > 0) && (tokenCount > 0 || costCount > 0 || scoreCount > 0 || feedbackCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} LLM observability signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.traceCount + b.spanCount + b.generationCount + b.sessionCount + b.userCount + b.tokenCount + b.costCount + b.scoreCount + b.feedbackCount;
+    const aScore = a.traceCount + a.spanCount + a.generationCount + a.sessionCount + a.userCount + a.tokenCount + a.costCount + a.scoreCount + a.feedbackCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 90);
+}
+
+function llmObservabilityPlatform(source: LlmObservabilitySourceFile): LlmObservabilityReadinessReport["observabilitySetups"][number]["platform"] {
+  if (/langfuse|@observe|langfuse_context|Langfuse/i.test(source.filePath) || /langfuse|@observe|langfuse_context|Langfuse/i.test(source.text)) return "langfuse";
+  if (/phoenix|PHOENIX_COLLECTOR_ENDPOINT|arize-phoenix/i.test(source.filePath) || /phoenix|PHOENIX_COLLECTOR_ENDPOINT|arize-phoenix/i.test(source.text)) return "phoenix";
+  if (/helicone|Helicone-|ai-gateway\.helicone\.ai/i.test(source.filePath) || /helicone|Helicone-|ai-gateway\.helicone\.ai/i.test(source.text)) return "helicone";
+  if (/openinference|OpenInference/i.test(source.filePath) || /openinference|OpenInference/i.test(source.text)) return "openinference";
+  if (/opentelemetry|OpenTelemetry|OTLP|TracerProvider|@opentelemetry/i.test(source.filePath) || /opentelemetry|OpenTelemetry|OTLP|TracerProvider|@opentelemetry/i.test(source.text)) return "opentelemetry";
+  if (/trace|span|generation|observability|telemetry/i.test(source.filePath) || /trace|span|generation|observability|telemetry/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function llmObservabilityTraceSignals(sourceFiles: LlmObservabilitySourceFile[]): LlmObservabilityReadinessReport["traceSignals"] {
+  const specs: Array<{ signal: LlmObservabilityReadinessReport["traceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "trace", pattern: /\btrace\b|traces|current_trace|update_current_trace/i, evidence: "trace boundary evidence was detected." },
+    { signal: "span", pattern: /\bspan\b|spans|startSpan|withSpan/i, evidence: "span evidence was detected." },
+    { signal: "observation", pattern: /observation|observe\(|@observe|observations/i, evidence: "observation evidence was detected." },
+    { signal: "generation", pattern: /generation|generations|chat\.completions|responses\.create|llm call|model call/i, evidence: "LLM generation evidence was detected." },
+    { signal: "root-span", pattern: /root span|rootSpan|parent_span|parentSpan|parentObservation/i, evidence: "root/parent span evidence was detected." },
+    { signal: "nested-span", pattern: /nested span|child span|childSpan|span\.start|span\.end|with_span/i, evidence: "nested span evidence was detected." },
+    { signal: "trace-id", pattern: /trace_id|traceId|get_current_trace_id|Helicone-Trace-Id/i, evidence: "trace ID evidence was detected." },
+    { signal: "span-id", pattern: /span_id|spanId|SpanContext/i, evidence: "span ID evidence was detected." }
+  ];
+  return llmObservabilitySignalFromSpecs(sourceFiles, specs, "trace", "signal");
+}
+
+function llmObservabilityInstrumentationSignals(sourceFiles: LlmObservabilitySourceFile[]): LlmObservabilityReadinessReport["instrumentationSignals"] {
+  const specs: Array<{ signal: LlmObservabilityReadinessReport["instrumentationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "observe-decorator", pattern: /@observe|observe\(|langfuse\.observe/i, evidence: "observe decorator/API evidence was detected." },
+    { signal: "openai-wrapper", pattern: /from ["']langfuse\.openai|wrapOpenAI|openai\.chat\.completions|responses\.create/i, evidence: "OpenAI wrapper evidence was detected." },
+    { signal: "callback-handler", pattern: /CallbackHandler|callback_handler|LangfuseCallbackHandler|callbacks\s*:/i, evidence: "callback handler evidence was detected." },
+    { signal: "openinference", pattern: /OpenInference|openinference|instrumentation-openai|instrumentation-langchain/i, evidence: "OpenInference instrumentation evidence was detected." },
+    { signal: "opentelemetry", pattern: /OpenTelemetry|opentelemetry|@opentelemetry|otel/i, evidence: "OpenTelemetry evidence was detected." },
+    { signal: "otel-exporter", pattern: /OTLPTraceExporter|OTLPSpanExporter|OTEL_EXPORTER|collector endpoint|PHOENIX_COLLECTOR_ENDPOINT/i, evidence: "OTLP exporter evidence was detected." },
+    { signal: "tracer-provider", pattern: /TracerProvider|NodeTracerProvider|tracer_provider|getTracer|register\(/i, evidence: "tracer provider evidence was detected." },
+    { signal: "auto-instrumentation", pattern: /auto-instrumentation|getNodeAutoInstrumentations|instrument\(|registerInstrumentations/i, evidence: "auto-instrumentation evidence was detected." }
+  ];
+  return llmObservabilitySignalFromSpecs(sourceFiles, specs, "instrumentation", "signal");
+}
+
+function llmObservabilityIdentitySignals(sourceFiles: LlmObservabilitySourceFile[]): LlmObservabilityReadinessReport["identitySignals"] {
+  const specs: Array<{ signal: LlmObservabilityReadinessReport["identitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "user-id", pattern: /user_id|userId|Helicone-User-Id|enduser|tenant/i, evidence: "user identity evidence was detected." },
+    { signal: "session-id", pattern: /session_id|sessionId|Helicone-Session-Id|thread_id|threadId/i, evidence: "session identity evidence was detected." },
+    { signal: "conversation-id", pattern: /conversation_id|conversationId|chat_id|chatId|thread/i, evidence: "conversation identity evidence was detected." },
+    { signal: "release", pattern: /release|version|commit_sha|git_sha/i, evidence: "release/version evidence was detected." },
+    { signal: "environment", pattern: /environment|env|staging|production|development|Helicone-Property-Environment/i, evidence: "environment evidence was detected." },
+    { signal: "tags", pattern: /tags\s*:|tags=|add_tags|Helicone-Property-/i, evidence: "tag/property evidence was detected." },
+    { signal: "metadata", pattern: /metadata|meta|properties|Helicone-Property-|projectName|project_name/i, evidence: "metadata evidence was detected." }
+  ];
+  return llmObservabilitySignalFromSpecs(sourceFiles, specs, "identity", "signal");
+}
+
+function llmObservabilityMetricSignals(sourceFiles: LlmObservabilitySourceFile[]): LlmObservabilityReadinessReport["llmMetricSignals"] {
+  const specs: Array<{ signal: LlmObservabilityReadinessReport["llmMetricSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "prompt-tokens", pattern: /promptTokens|prompt_tokens|input_tokens|inputTokens/i, evidence: "prompt token evidence was detected." },
+    { signal: "completion-tokens", pattern: /completionTokens|completion_tokens|output_tokens|outputTokens/i, evidence: "completion token evidence was detected." },
+    { signal: "total-tokens", pattern: /totalTokens|total_tokens|token_usage|usage\.total|tokens_total/i, evidence: "total token evidence was detected." },
+    { signal: "cost", pattern: /\bcost\b|total_cost|prompt_cost|completion_cost|price|billing/i, evidence: "cost evidence was detected." },
+    { signal: "latency", pattern: /latency|duration|response_time|elapsed|time_to_first_token|ttft/i, evidence: "latency evidence was detected." },
+    { signal: "model-name", pattern: /model\s*:|modelName|model_name|gpt-|claude-|gemini-|llama/i, evidence: "model name evidence was detected." },
+    { signal: "provider", pattern: /provider|openai|anthropic|azure|gemini|vertex|ollama/i, evidence: "provider evidence was detected." },
+    { signal: "cache", pattern: /cache|cached|Helicone-Cache-Enabled|prompt cache|prompt_caching/i, evidence: "cache evidence was detected." }
+  ];
+  return llmObservabilitySignalFromSpecs(sourceFiles, specs, "metric", "signal");
+}
+
+function llmObservabilityFeedbackSignals(sourceFiles: LlmObservabilitySourceFile[]): LlmObservabilityReadinessReport["feedbackSignals"] {
+  const specs: Array<{ signal: LlmObservabilityReadinessReport["feedbackSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "score", pattern: /\bscore\b|scoreTrace|create_score|quality_score|rating/i, evidence: "score evidence was detected." },
+    { signal: "feedback", pattern: /feedback|user feedback|feedbackKey|feedback_key/i, evidence: "feedback evidence was detected." },
+    { signal: "annotation", pattern: /annotation|annotate|annotation_queue|review queue/i, evidence: "annotation evidence was detected." },
+    { signal: "label", pattern: /\blabel\b|labels|manual label|classification/i, evidence: "label evidence was detected." },
+    { signal: "manual-review", pattern: /manual review|manual-review|human review|reviewer|labeling/i, evidence: "manual review evidence was detected." },
+    { signal: "thumbs-up-down", pattern: /thumbs|thumb_up|thumb_down|like|dislike/i, evidence: "thumbs up/down evidence was detected." },
+    { signal: "quality", pattern: /quality|helpfulness|correctness|hallucination|groundedness/i, evidence: "quality evidence was detected." }
+  ];
+  return llmObservabilitySignalFromSpecs(sourceFiles, specs, "feedback", "signal");
+}
+
+function llmObservabilityDatasetExperimentSignals(sourceFiles: LlmObservabilitySourceFile[]): LlmObservabilityReadinessReport["datasetExperimentSignals"] {
+  const specs: Array<{ signal: LlmObservabilityReadinessReport["datasetExperimentSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dataset", pattern: /dataset|datasets|samples\.jsonl|\.csv|golden/i, evidence: "dataset evidence was detected." },
+    { signal: "experiment", pattern: /experiment|experiments|run experiment|experiment_name/i, evidence: "experiment evidence was detected." },
+    { signal: "run", pattern: /\brun\b|run_id|runId|runs\/|experiment run/i, evidence: "run evidence was detected." },
+    { signal: "prompt-version", pattern: /prompt version|promptVersion|prompt_id|Helicone-Prompt-Id|langfuse_prompt|promptName/i, evidence: "prompt version evidence was detected." },
+    { signal: "playground", pattern: /playground|prompt playground|llm playground/i, evidence: "playground evidence was detected." },
+    { signal: "benchmark", pattern: /benchmark|benchmarks|regression|golden set/i, evidence: "benchmark evidence was detected." },
+    { signal: "eval-link", pattern: /eval|evaluation|judge|score|feedback/i, evidence: "eval linkage evidence was detected." }
+  ];
+  return llmObservabilitySignalFromSpecs(sourceFiles, specs, "dataset/experiment", "signal");
+}
+
+function llmObservabilityGatewaySignals(sourceFiles: LlmObservabilitySourceFile[]): LlmObservabilityReadinessReport["gatewaySignals"] {
+  const specs: Array<{ signal: LlmObservabilityReadinessReport["gatewaySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "base-url", pattern: /baseURL|base_url|ai-gateway\.helicone\.ai|oai\.helicone\.ai/i, evidence: "gateway base URL evidence was detected." },
+    { signal: "helicone-auth", pattern: /Helicone-Auth|HELICONE_API_KEY|helicone.*auth/i, evidence: "Helicone auth evidence was detected." },
+    { signal: "request-header", pattern: /defaultHeaders|headers\s*:|Helicone-[A-Za-z-]+/i, evidence: "request header evidence was detected." },
+    { signal: "property-header", pattern: /Helicone-Property-|helicone-property/i, evidence: "Helicone property header evidence was detected." },
+    { signal: "rate-limit", pattern: /rate limit|rate-limit|RateLimit|Helicone-RateLimit/i, evidence: "rate-limit evidence was detected." },
+    { signal: "retry", pattern: /\bretry\b|retries|Helicone-Retry-Enabled|fallback retry/i, evidence: "retry evidence was detected." },
+    { signal: "provider-routing", pattern: /provider routing|provider-routing|router|route provider|helicone.*provider/i, evidence: "provider routing evidence was detected." },
+    { signal: "fallback", pattern: /fallback|fallbacks|backup provider|secondary provider/i, evidence: "fallback evidence was detected." }
+  ];
+  return llmObservabilitySignalFromSpecs(sourceFiles, specs, "gateway", "signal");
+}
+
+function llmObservabilityPrivacySignals(sourceFiles: LlmObservabilitySourceFile[]): LlmObservabilityReadinessReport["privacySignals"] {
+  const specs: Array<{ signal: LlmObservabilityReadinessReport["privacySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "masking", pattern: /mask|masking|masked|scrub/i, evidence: "masking evidence was detected." },
+    { signal: "redaction", pattern: /redact|redaction|redacted|sanitize/i, evidence: "redaction evidence was detected." },
+    { signal: "pii", pattern: /\bPII\b|personal data|sensitive data|privacy/i, evidence: "PII/privacy evidence was detected." },
+    { signal: "prompt-filter", pattern: /prompt filter|prompt_filter|filterPrompt|block prompt/i, evidence: "prompt filter evidence was detected." },
+    { signal: "telemetry-opt-out", pattern: /TELEMETRY_ENABLED\s*=\s*false|telemetry opt|disable telemetry|telemetry_enabled/i, evidence: "telemetry opt-out evidence was detected." },
+    { signal: "data-retention", pattern: /retention|data retention|delete traces|expire traces|TTL/i, evidence: "data retention evidence was detected." }
+  ];
+  return llmObservabilitySignalFromSpecs(sourceFiles, specs, "privacy", "signal");
+}
+
+function llmObservabilityWorkflowSignals(sourceFiles: LlmObservabilitySourceFile[]): LlmObservabilityReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: LlmObservabilityReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "export", pattern: /export|data export|traces export|download traces|PostHog/i, evidence: "export evidence was detected." },
+    { signal: "api-client", pattern: /api client|LangfuseClient|PhoenixClient|phoenix-client|langfuse.*client|client\.datasets|client\.experiments|helicone.*api/i, evidence: "API client evidence was detected." },
+    { signal: "dashboard", pattern: /dashboard|trace view|sessions view|prompt view|analytics/i, evidence: "dashboard evidence was detected." },
+    { signal: "self-host", pattern: /self-host|self hosted|selfhost|docker compose|kubernetes|helm/i, evidence: "self-hosting evidence was detected." },
+    { signal: "docker-compose", pattern: /docker-compose|compose\.ya?ml/i, evidence: "Docker Compose evidence was detected." },
+    { signal: "helm", pattern: /\bhelm\b|Chart\.yaml|values\.yaml/i, evidence: "Helm evidence was detected." },
+    { signal: "ci", pattern: /\.github\/workflows|pull_request|workflow_dispatch|CI=true/i, evidence: "CI evidence was detected." }
+  ];
+  return llmObservabilitySignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function llmObservabilityPackageSignals(sourceFiles: LlmObservabilitySourceFile[]): LlmObservabilityReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: LlmObservabilityReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "langfuse", pattern: /"langfuse"|from ["']langfuse|@langfuse|LANGFUSE/i, evidence: "Langfuse package/config evidence was detected." },
+    { signal: "phoenix", pattern: /"@arizeai\/phoenix|arize-phoenix|from ["']phoenix|PHOENIX_COLLECTOR_ENDPOINT/i, evidence: "Phoenix package/config evidence was detected." },
+    { signal: "arize-phoenix-otel", pattern: /@arizeai\/phoenix-otel|arize-phoenix-otel/i, evidence: "Phoenix OpenTelemetry package evidence was detected." },
+    { signal: "openinference", pattern: /openinference|OpenInference|instrumentation-openai|instrumentation-langchain/i, evidence: "OpenInference package evidence was detected." },
+    { signal: "opentelemetry", pattern: /@opentelemetry|opentelemetry|OTLPTraceExporter|TracerProvider/i, evidence: "OpenTelemetry package evidence was detected." },
+    { signal: "helicone", pattern: /"helicone"|@helicone|Helicone-|HELICONE_API_KEY|ai-gateway\.helicone\.ai/i, evidence: "Helicone package/config evidence was detected." }
+  ];
+  return llmObservabilitySignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function llmObservabilitySignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: LlmObservabilitySourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/llm-observability-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

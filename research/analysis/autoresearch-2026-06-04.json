@@ -1779,6 +1779,48 @@
         "LLM-as-judge readiness that separates judge prompts, scoring keys, choices, continuous scores, and reference outputs",
         "Static-only OpenEvals guardrails that do not instantiate judges, call providers, calculate feedback scores, or upload traces"
       ]
+    },
+    {
+      "repo": "langfuse/langfuse",
+      "url": "https://github.com/langfuse/langfuse",
+      "localPath": "research/external-src/langfuse",
+      "stars": 28506,
+      "forks": 2947,
+      "license": "other",
+      "updatedAt": "2026-06-04T18:08:24Z",
+      "adoptedPatterns": [
+        "LLM trace and generation observability",
+        "sessions users metadata tags release linkage",
+        "prompt management feedback scores datasets experiments"
+      ]
+    },
+    {
+      "repo": "Arize-ai/phoenix",
+      "url": "https://github.com/Arize-ai/phoenix",
+      "localPath": "research/external-src/phoenix",
+      "stars": 9983,
+      "forks": 908,
+      "license": "other",
+      "updatedAt": "2026-06-04T17:37:04Z",
+      "adoptedPatterns": [
+        "OpenInference and OpenTelemetry instrumentation",
+        "OTLP collector endpoint and tracer provider setup",
+        "datasets experiments playground and eval linkage"
+      ]
+    },
+    {
+      "repo": "Helicone/helicone",
+      "url": "https://github.com/Helicone/helicone",
+      "localPath": "research/external-src/helicone",
+      "stars": 5779,
+      "forks": 593,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T16:09:53Z",
+      "adoptedPatterns": [
+        "LLM gateway observability headers",
+        "cost latency cache retry rate-limit and fallback signals",
+        "provider routing and prompt version linkage"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -5147,6 +5189,26 @@
         "html/llm-eval-readiness.html"
       ],
       "commit": "3cb0e04"
+    },
+    {
+      "name": "llm-observability readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/llm-observability-readiness-report.json",
+        "markdown/llm-observability-readiness.md",
+        "html/llm-observability-readiness.html"
+      ],
+      "commit": "pending"
     }
   ],
   "verification": {
@@ -6215,6 +6277,15 @@
     "buildLlmEvalReadiness": "PASS",
     "testLlmEvalReadiness": "PASS",
     "auditBriefLlmEvalReadiness106": "PASS",
-    "llmEvalReadinessImplementationPushed": "PASS"
+    "llmEvalReadinessImplementationPushed": "PASS",
+    "externalLangfuseCloneIgnored": "PASS",
+    "externalPhoenixCloneIgnored": "PASS",
+    "externalHeliconeCloneIgnored": "PASS",
+    "fixtureLlmObservabilityReadinessReport": "PASS",
+    "cliLlmObservabilityReadinessSmoke": "PASS",
+    "cliLlmObservabilityReadinessOpenTargetSmoke": "PASS",
+    "buildLlmObservabilityReadiness": "PASS",
+    "testLlmObservabilityReadiness": "PASS",
+    "auditBriefLlmObservabilityReadiness107": "PASS"
   }
 }

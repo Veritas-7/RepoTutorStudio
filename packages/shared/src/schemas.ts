@@ -4869,6 +4869,100 @@ export const LlmEvalReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const LlmObservabilityReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  observabilitySetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["langfuse", "phoenix", "helicone", "openinference", "opentelemetry", "custom", "unknown"]),
+    traceCount: z.number().int().nonnegative(),
+    spanCount: z.number().int().nonnegative(),
+    generationCount: z.number().int().nonnegative(),
+    sessionCount: z.number().int().nonnegative(),
+    userCount: z.number().int().nonnegative(),
+    metadataCount: z.number().int().nonnegative(),
+    scoreCount: z.number().int().nonnegative(),
+    tokenCount: z.number().int().nonnegative(),
+    costCount: z.number().int().nonnegative(),
+    promptCount: z.number().int().nonnegative(),
+    feedbackCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  traceSignals: z.array(z.object({
+    signal: z.enum(["trace", "span", "observation", "generation", "root-span", "nested-span", "trace-id", "span-id", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  instrumentationSignals: z.array(z.object({
+    signal: z.enum(["observe-decorator", "openai-wrapper", "callback-handler", "openinference", "opentelemetry", "otel-exporter", "tracer-provider", "auto-instrumentation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  identitySignals: z.array(z.object({
+    signal: z.enum(["user-id", "session-id", "conversation-id", "release", "environment", "tags", "metadata", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  llmMetricSignals: z.array(z.object({
+    signal: z.enum(["prompt-tokens", "completion-tokens", "total-tokens", "cost", "latency", "model-name", "provider", "cache", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  feedbackSignals: z.array(z.object({
+    signal: z.enum(["score", "feedback", "annotation", "label", "manual-review", "thumbs-up-down", "quality", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  datasetExperimentSignals: z.array(z.object({
+    signal: z.enum(["dataset", "experiment", "run", "prompt-version", "playground", "benchmark", "eval-link", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  gatewaySignals: z.array(z.object({
+    signal: z.enum(["base-url", "helicone-auth", "request-header", "property-header", "rate-limit", "retry", "provider-routing", "fallback", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  privacySignals: z.array(z.object({
+    signal: z.enum(["masking", "redaction", "pii", "prompt-filter", "telemetry-opt-out", "data-retention", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["export", "api-client", "dashboard", "self-host", "docker-compose", "helm", "ci", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["langfuse", "phoenix", "arize-phoenix-otel", "openinference", "opentelemetry", "helicone", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ServerFrameworkReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -6507,6 +6601,7 @@ export type GraphqlReadinessReport = z.infer<typeof GraphqlReadinessReportSchema
 export type CliReadinessReport = z.infer<typeof CliReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
+export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;

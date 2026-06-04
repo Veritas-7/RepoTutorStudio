@@ -4873,6 +4873,54 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 208:
   - `3cb0e04` llm-eval readiness report
 
+- 2026-06-05: AutoResearch Upgrade 209 candidate selected:
+  `langfuse/langfuse` (`https://github.com/langfuse/langfuse`; public;
+  license key `other`; 28,506 stars; 2,947 forks; updated
+  2026-06-04T18:08:24Z). Compared with `Arize-ai/phoenix`
+  (`https://github.com/Arize-ai/phoenix`; public; license key `other`; 9,983
+  stars; 908 forks; updated 2026-06-04T17:37:04Z) and `Helicone/helicone`
+  (`https://github.com/Helicone/helicone`; public; Apache-2.0; 5,779 stars;
+  593 forks; updated 2026-06-04T16:09:53Z); selected the three-source LLM
+  observability slice because RepoTutor had generic OpenTelemetry
+  observability and LLM eval readiness but no dedicated trace/session/token
+  cost/feedback/gateway readiness target. Cloned sparse ignored external
+  sources to `research/external-src/langfuse`,
+  `research/external-src/phoenix`, and `research/external-src/helicone` and
+  inspected docs/configs/examples without executing external source. Clone
+  HEADs were `1d863d4`, `b1a3c2b`, and `094b210`; tracked file count for all
+  three ignored source paths returned `0`.
+- 2026-06-05: RED llm-observability-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-llm-observability-red-studies.aWoORR/2026-06-05/local__repotutor-llm-observability-red-repo.7U2Pwh__local__7ac1d546`;
+  old behavior had `verificationCheckedRequiredArtifacts=324`, was missing
+  `analysis/llm-observability-readiness-report.json`,
+  `markdown/llm-observability-readiness.md`, and
+  `html/llm-observability-readiness.html`, and
+  `open --target llm-observability-readiness` failed with
+  `Unsupported open target`.
+- 2026-06-05: Implemented Langfuse/Phoenix/Helicone-style
+  llm-observability-readiness report: `LlmObservabilityReadinessReportSchema`,
+  `analysis/llm-observability-readiness-report.json`,
+  `markdown/llm-observability-readiness.md`,
+  `html/llm-observability-readiness.html`, observability setup detection, trace
+  signals, instrumentation signals, identity signals, LLM metric signals,
+  feedback signals, dataset/experiment signals, gateway signals, privacy
+  signals, workflow signals, package signals, recommended commands, risk
+  queue, manifest/session verification coverage, learning-path linkage, nav
+  entry, CLI help target, and `open --target llm-observability-readiness`.
+- 2026-06-05: GREEN llm-observability-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-llm-observability-green-studies.dPWeq3/2026-06-05/local__repotutor-llm-observability-green-repo.fI8p9g__local__f941a870`;
+  confirmed `verificationCheckedRequiredArtifacts=327`, observability setups
+  7, trace ready signals 8, LLM metric ready signals 8, feedback ready signals
+  7, gateway ready signals 8, risk queue 0, all three new artifacts, and
+  `open --target llm-observability-readiness` ->
+  `html/llm-observability-readiness.html`.
+- 2026-06-05: Verification for Upgrade 209:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 16/16 tests
+  - `pnpm audit:brief`: PASS, 107/107 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
