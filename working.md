@@ -1629,6 +1629,35 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 127:
   - `eb4176e` OpenVEX impact readiness report
 
+- 2026-06-04: AutoResearch Upgrade 128 candidate selected:
+  `open-policy-agent/opa` (`https://github.com/open-policy-agent/opa`;
+  public Apache-2.0; 11,817 stars; 1,578 forks; updated
+  2026-06-03T15:45:37Z). Cloned ignored external source to
+  `research/external-src/open-policy-agent-opa` and inspected README, policy
+  language/testing docs, eval/check/build command code, and bundle-related
+  docs without executing external source.
+- 2026-06-04: RED policy-gates smoke generated
+  `/tmp/repotutor-policy-gates-red-studies.9VAWoh/2026-06-04/local__simple-ts-app__main__265e638e`;
+  old build was missing `analysis/policy-gate-report.json`,
+  `markdown/policy-gates.md`, and `html/policy-gates.html` as expected.
+- 2026-06-04: Implemented OPA-style policy gate readiness report:
+  `PolicyGateReportSchema`, `analysis/policy-gate-report.json`,
+  `markdown/policy-gates.md`, `html/policy-gates.html`, policy documents,
+  input documents, gate queries, test coverage, bundle readiness, decision
+  outputs, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, and `open --target policy-gates`.
+- 2026-06-04: GREEN policy-gates smoke generated
+  `/tmp/repotutor-policy-gates-green-studies.ugd9P0/2026-06-04/local__simple-ts-app__main__265e638e`;
+  confirmed `verificationCheckedRequiredArtifacts=84`, policy documents 0,
+  input documents 1, gate queries 0, test coverage rows 4, bundle readiness 6,
+  decision outputs 5, recommended commands 5, risk queue 4,
+  `policy-gate-card`, `data-source-pattern="OPA"`, manifest/learning-path
+  entries, and `open --target policy-gates` -> `html/policy-gates.html`.
+- 2026-06-04: Verification for Upgrade 128:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 26/26 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

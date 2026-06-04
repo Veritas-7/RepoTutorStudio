@@ -40,6 +40,7 @@ import {
   ProvenanceReport,
   AdvisoryReport,
   VexReport,
+  PolicyGateReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -86,6 +87,7 @@ export interface AnalysisBundle {
   provenanceReport: ProvenanceReport;
   advisoryReport: AdvisoryReport;
   vexReport: VexReport;
+  policyGateReport: PolicyGateReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -132,8 +134,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const scorecardReport = await buildScorecardReport(walk, licenseRightsReport, sbomReport, securityReadinessReport);
   const provenanceReport = buildProvenanceReport(context, walk, sbomReport, securityReadinessReport, sourceSnapshotReport);
   const vexReport = buildVexReport(walk, sbomReport, securityReadinessReport, advisoryReport, provenanceReport, sourceSnapshotReport);
+  const policyGateReport = await buildPolicyGateReport(walk, securityReadinessReport);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -2853,6 +2856,299 @@ function vexProductTargets(sbomReport: SbomReport, sourceSnapshotReport: SourceS
     });
   }
   return targets;
+}
+
+async function buildPolicyGateReport(
+  walk: WalkResult,
+  securityReadinessReport: SecurityReadinessReport
+): Promise<PolicyGateReport> {
+  const regoFiles = walk.files.filter((file) => file.relPath.endsWith(".rego"));
+  const policyDocuments: PolicyGateReport["policyDocuments"] = [];
+  for (const file of regoFiles.slice(0, 100)) {
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    const packageName = text?.match(/^\s*package\s+([A-Za-z0-9_./-]+)/m)?.[1] ?? null;
+    const ruleNames = text ? extractRegoRuleNames(text) : [];
+    const testRuleCount = ruleNames.filter((name) => /^test_|^todo_test/.test(name)).length;
+    const decisionRules = ruleNames.filter((name) => /^(allow|deny|violation|warn|warning|errors?|fail|pass|authz|allowed|main)$/i.test(name)).slice(0, 20);
+    policyDocuments.push({
+      filePath: file.relPath,
+      packageName,
+      ruleCount: ruleNames.length,
+      testRuleCount,
+      decisionRules,
+      readiness: packageName && ruleNames.length > 0 ? "ready" : packageName || ruleNames.length > 0 ? "partial" : "missing",
+      sourceHref: `source/${encodedPath(file.relPath)}`
+    });
+  }
+
+  const inputDocuments = policyInputDocuments(walk);
+  const schemaDocuments = inputDocuments.filter((doc) => doc.documentType === "schema");
+  const testRuleTotal = policyDocuments.reduce((sum, doc) => sum + doc.testRuleCount, 0);
+  const decisionDocs = policyDocuments.filter((doc) => doc.packageName && doc.decisionRules.length > 0);
+  const gateQueries: PolicyGateReport["gateQueries"] = decisionDocs.flatMap((doc) => doc.decisionRules.slice(0, 4).map((rule) => ({
+    query: `data.${doc.packageName}.${rule}`,
+    purpose: /deny|violation|warn|fail|error/i.test(rule)
+      ? "Use with --fail-defined when non-empty deny or violation output should fail CI."
+      : "Use with --fail when an allow/pass decision must be defined and truthy.",
+    readiness: "ready" as const,
+    relatedHref: doc.sourceHref
+  }))).slice(0, 24);
+  if (gateQueries.length === 0 && policyDocuments.length > 0) {
+    gateQueries.push({
+      query: "data",
+      purpose: "Inspect loaded policy/data documents before choosing a CI gate entrypoint.",
+      readiness: "partial",
+      relatedHref: policyDocuments[0].sourceHref
+    });
+  }
+
+  const manifestFiles = walk.files.filter((file) => /(^|\/)\.manifest$|(^|\/)manifest\.ya?ml$|(^|\/)manifest\.json$/i.test(file.relPath));
+  const signatureFiles = walk.files.filter((file) => /(^|\/)\.signatures\.json$|\.sig$|signature/i.test(file.relPath));
+  const capabilitiesFiles = walk.files.filter((file) => /capabilities.*\.json$/i.test(file.relPath));
+  const hasIacSignal = securityReadinessReport.securitySignals.some((signal) => signal.kind === "iac-config" || signal.kind === "container-config");
+
+  const testCoverage: PolicyGateReport["testCoverage"] = [
+    {
+      target: "rego-policy-tests",
+      status: testRuleTotal > 0 ? "covered" : policyDocuments.length > 0 ? "missing" : "missing",
+      evidence: testRuleTotal > 0 ? `${testRuleTotal} Rego test/todo test rule(s) were detected.` : "No Rego test_ rules were detected.",
+      relatedHref: policyDocuments.find((doc) => doc.testRuleCount > 0)?.sourceHref ?? "html/policy-gates.html"
+    },
+    {
+      target: "compile-check",
+      status: policyDocuments.length > 0 ? "partial" : "missing",
+      evidence: policyDocuments.length > 0 ? `${policyDocuments.length} Rego policy file(s) can be handed to opa check --strict.` : "No Rego files were detected for opa check.",
+      relatedHref: policyDocuments[0]?.sourceHref ?? "html/policy-gates.html"
+    },
+    {
+      target: "schema-validation",
+      status: schemaDocuments.length > 0 ? "covered" : "missing",
+      evidence: schemaDocuments.length > 0 ? `${schemaDocuments.length} schema document(s) can be supplied with --schema.` : "No schema files were detected for typed input/data validation.",
+      relatedHref: schemaDocuments[0]?.sourceHref ?? "html/policy-gates.html"
+    },
+    {
+      target: "decision-fixtures",
+      status: inputDocuments.length > 0 ? "partial" : "missing",
+      evidence: inputDocuments.length > 0 ? `${inputDocuments.length} input/data/config document(s) can seed policy decision fixtures.` : "No input.json, data.json/yaml, IaC, or manifest fixture was detected.",
+      relatedHref: inputDocuments[0]?.sourceHref ?? "html/policy-gates.html"
+    }
+  ];
+
+  const bundleReadiness: PolicyGateReport["bundleReadiness"] = [
+    {
+      requirement: "policy-files",
+      status: policyDocuments.length > 0 ? "ready" : "missing",
+      evidence: policyDocuments.length > 0 ? `${policyDocuments.length} Rego file(s) are available for opa build.` : "No Rego policy files were found.",
+      relatedHref: policyDocuments[0]?.sourceHref ?? "html/policy-gates.html"
+    },
+    {
+      requirement: "data-files",
+      status: inputDocuments.length > 0 ? "ready" : hasIacSignal ? "partial" : "missing",
+      evidence: inputDocuments.length > 0 ? `${inputDocuments.length} data/input document(s) were detected.` : hasIacSignal ? "IaC/security signals exist, but no explicit OPA data fixture was detected." : "No data/input documents were detected.",
+      relatedHref: inputDocuments[0]?.sourceHref ?? "html/security-readiness.html"
+    },
+    {
+      requirement: "entrypoints",
+      status: gateQueries.length > 0 && gateQueries[0].query !== "data" ? "ready" : policyDocuments.length > 0 ? "partial" : "missing",
+      evidence: gateQueries.length > 0 ? `${gateQueries.length} gate query candidate(s) were inferred.` : "No decision rule entrypoint was detected.",
+      relatedHref: gateQueries[0]?.relatedHref ?? "html/policy-gates.html"
+    },
+    {
+      requirement: "manifest",
+      status: manifestFiles.length > 0 ? "ready" : "missing",
+      evidence: manifestFiles.length > 0 ? `Bundle manifest candidate(s): ${manifestFiles.map((file) => file.relPath).join(", ")}.` : "No OPA bundle .manifest or manifest.yaml/json file was detected.",
+      relatedHref: manifestFiles[0] ? `source/${encodedPath(manifestFiles[0].relPath)}` : "html/policy-gates.html"
+    },
+    {
+      requirement: "signature",
+      status: signatureFiles.length > 0 ? "ready" : "external",
+      evidence: signatureFiles.length > 0 ? `Signature material candidate(s): ${signatureFiles.map((file) => file.relPath).join(", ")}.` : "Bundle signing/verification is an external release step unless .signatures.json is committed.",
+      relatedHref: signatureFiles[0] ? `source/${encodedPath(signatureFiles[0].relPath)}` : "html/provenance.html"
+    },
+    {
+      requirement: "capabilities",
+      status: capabilitiesFiles.length > 0 ? "ready" : "external",
+      evidence: capabilitiesFiles.length > 0 ? `Capabilities file(s): ${capabilitiesFiles.map((file) => file.relPath).join(", ")}.` : "Capabilities constraints are external unless the repository pins an OPA capabilities JSON file.",
+      relatedHref: capabilitiesFiles[0] ? `source/${encodedPath(capabilitiesFiles[0].relPath)}` : "html/policy-gates.html"
+    }
+  ];
+
+  const decisionOutputs: PolicyGateReport["decisionOutputs"] = [
+    {
+      field: "result",
+      purpose: "Contains the raw Rego query value returned by opa eval.",
+      readiness: gateQueries.length > 0 ? "ready" : "partial",
+      evidence: gateQueries.length > 0 ? "Gate query candidates are available for JSON result capture." : "A query entrypoint still needs to be selected.",
+      relatedHref: "html/policy-gates.html"
+    },
+    {
+      field: "errors",
+      purpose: "Captures parse, compile, type, or runtime errors for CI failure handling.",
+      readiness: policyDocuments.length > 0 ? "partial" : "external",
+      evidence: policyDocuments.length > 0 ? "opa check --strict can produce structured errors before eval." : "No policy documents exist to check.",
+      relatedHref: "html/policy-gates.html"
+    },
+    {
+      field: "metrics/profile",
+      purpose: "Records evaluation timing and hot expressions when policy performance matters.",
+      readiness: policyDocuments.length > 0 ? "external" : "partial",
+      evidence: "OPA exposes metrics/profile output, but RepoTutor does not execute policies.",
+      relatedHref: "html/runtime-environment.html"
+    },
+    {
+      field: "coverage",
+      purpose: "Shows which policy expressions were exercised by opa test.",
+      readiness: testRuleTotal > 0 ? "external" : "partial",
+      evidence: testRuleTotal > 0 ? "Test rules exist; run opa test --coverage for exact coverage." : "No test rules were detected for coverage.",
+      relatedHref: "html/policy-gates.html"
+    },
+    {
+      field: "explanation/trace",
+      purpose: "Debugs why a policy decision passed, failed, or was undefined.",
+      readiness: policyDocuments.length > 0 ? "external" : "partial",
+      evidence: "OPA can emit explanation traces, but they require executing a chosen input/query pair.",
+      relatedHref: "html/policy-gates.html"
+    }
+  ];
+
+  const riskQueue: PolicyGateReport["riskQueue"] = [];
+  if (policyDocuments.length === 0) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add Rego policy files before advertising policy-as-code gates.",
+      why: "OPA gates need policy modules with packages and rules.",
+      relatedHref: "html/policy-gates.html"
+    });
+  }
+  if (policyDocuments.length > 0 && testRuleTotal === 0) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add Rego test_ rules and run opa test --fail-on-empty.",
+      why: "Policy gates are risky without tests that prove allow/deny behavior.",
+      relatedHref: "html/policy-gates.html"
+    });
+  }
+  if (inputDocuments.length === 0) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Commit sample input/data fixtures for each policy gate entrypoint.",
+      why: "OPA decisions depend on structured input and data documents.",
+      relatedHref: "html/policy-gates.html"
+    });
+  }
+  if (schemaDocuments.length === 0) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add JSON Schema for important input/data documents.",
+      why: "opa check/eval can use schemas to catch reference mistakes before runtime.",
+      relatedHref: "html/policy-gates.html"
+    });
+  }
+  if (manifestFiles.length === 0) {
+    riskQueue.push({
+      priority: "low",
+      action: "Package release policy as an OPA bundle with manifest and entrypoints.",
+      why: "Bundles make policy distribution, inspection, and signing repeatable.",
+      relatedHref: "html/policy-gates.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run real OPA commands in CI before enforcing deploy or release decisions.",
+    why: "RepoTutor reports readiness only and does not evaluate policy decisions.",
+    relatedHref: "html/policy-gates.html"
+  });
+
+  const primaryQuery = gateQueries.find((query) => query.query !== "data")?.query ?? "data.<package>.<rule>";
+
+  return {
+    summary: `OPA식 policy gate readiness report: policy document ${policyDocuments.length}개, input/data document ${inputDocuments.length}개, gate query ${gateQueries.length}개, bundle requirement ${bundleReadiness.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "OPA Rego policy input data decision eval test bundle schema strict fail gate",
+    policyDocuments,
+    inputDocuments,
+    gateQueries,
+    testCoverage,
+    bundleReadiness,
+    decisionOutputs,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      {
+        command: "opa check --strict <policy-dir>",
+        purpose: "Parse, compile, type-check, and strict-check Rego modules before policy evaluation."
+      },
+      {
+        command: "opa test <policy-dir> --fail-on-empty --format=json",
+        purpose: "Run Rego test_ rules and fail CI when no tests are discovered."
+      },
+      {
+        command: `opa eval --data <policy-dir> --input input.json '${primaryQuery}' --format=json`,
+        purpose: "Evaluate a selected policy decision against an input fixture and capture structured results."
+      },
+      {
+        command: "opa build -b <policy-dir> -e <entrypoint> -o bundle.tar.gz",
+        purpose: "Package policy/data into a distributable bundle with explicit entrypoints."
+      },
+      {
+        command: "opa inspect bundle.tar.gz",
+        purpose: "Inspect bundled packages, data roots, and manifest metadata before deployment."
+      }
+    ],
+    learnerNextSteps: [
+      "먼저 Rego package와 decision rule이 있는지 확인하고, CI gate query를 하나씩 명시하세요.",
+      "deny/violation/warn 계열 rule은 non-empty result가 실패인지 명확히 정하세요.",
+      "policy input fixture와 schema를 함께 두면 undefined decision과 reference typo를 줄일 수 있습니다.",
+      "이 리포트는 OPA 실행 결과가 아닙니다. 실제 allow/deny 판단은 opa check/test/eval을 별도 실행하세요."
+    ]
+  };
+}
+
+function extractRegoRuleNames(text: string): string[] {
+  const names = new Set<string>();
+  for (const line of text.split(/\r?\n/)) {
+    if (/^\s*(package|import|else|some|every|with|not)\b/.test(line)) continue;
+    const match = line.match(/^\s*(?:default\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*(?:\[|\(|contains\b|:=|=|\{|if\b)/);
+    if (!match) continue;
+    names.add(match[1]);
+  }
+  return [...names].sort();
+}
+
+function policyInputDocuments(walk: WalkResult): PolicyGateReport["inputDocuments"] {
+  const docs: PolicyGateReport["inputDocuments"] = [];
+  const seen = new Set<string>();
+  for (const file of walk.files) {
+    const type = policyDocumentType(file.relPath);
+    if (!type || seen.has(file.relPath)) continue;
+    seen.add(file.relPath);
+    docs.push({
+      filePath: file.relPath,
+      documentType: type,
+      readiness: type === "unknown" ? "partial" : "ready",
+      evidence: policyDocumentEvidence(file.relPath, type),
+      sourceHref: `source/${encodedPath(file.relPath)}`
+    });
+  }
+  return docs.slice(0, 80);
+}
+
+function policyDocumentType(filePath: string): PolicyGateReport["inputDocuments"][number]["documentType"] | null {
+  const base = path.basename(filePath).toLowerCase();
+  if (base === "input.json" || base === "input.yaml" || base === "input.yml") return "input";
+  if (base === "data.json" || base === "data.yaml" || base === "data.yml") return "data";
+  if (base.endsWith(".schema.json") || /(^|\/)schemas?\//i.test(filePath)) return "schema";
+  if (isIacConfigFile(filePath)) return "iac";
+  if (["package.json", "Dockerfile", "docker-compose.yml", "docker-compose.yaml", "go.mod", "Cargo.toml", "pyproject.toml"].includes(path.basename(filePath))) return "manifest";
+  if (/policy|gate|admission|terraform|kubernetes|deploy/i.test(filePath) && /\.(json|ya?ml|toml)$/i.test(filePath)) return "unknown";
+  return null;
+}
+
+function policyDocumentEvidence(filePath: string, type: PolicyGateReport["inputDocuments"][number]["documentType"]): string {
+  if (type === "input") return `${filePath} can be passed to opa eval with --input.`;
+  if (type === "data") return `${filePath} can be loaded under data for policy evaluation.`;
+  if (type === "schema") return `${filePath} can validate input/data references with --schema.`;
+  if (type === "iac") return `${filePath} is an IaC/config candidate for policy-as-code gates.`;
+  if (type === "manifest") return `${filePath} is a project/deployment manifest candidate for policy checks.`;
+  return `${filePath} looks policy-related but needs a human to classify its role.`;
 }
 
 function advisoryEcosystemForPackage(packageType: string, fallback: string): string {

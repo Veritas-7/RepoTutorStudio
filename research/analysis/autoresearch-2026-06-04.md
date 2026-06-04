@@ -2498,6 +2498,41 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 25/25 audit checks across 13 generated reports
 
+### Upgrade 128: Policy Gate Readiness Report
+
+- Cloned and inspected `open-policy-agent/opa` under
+  `research/external-src/open-policy-agent-opa` without executing external
+  source.
+- GitHub metadata: public repo, Apache-2.0 license, 11,817 stars, 1,578
+  forks, updated 2026-06-03T15:45:37Z. No source code was copied into
+  RepoTutor.
+- Added `PolicyGateReportSchema` and `analysis/policy-gate-report.json` with
+  OPA-style policy documents, input/data documents, gate queries, test
+  coverage, bundle readiness, decision output model, recommended commands,
+  risk queue, and learner next steps.
+- Added `markdown/policy-gates.md`, `html/policy-gates.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target policy-gates`.
+- Source pattern: OPA separates Rego policy modules, structured input/data,
+  compile checks, `test_` rule discovery, `eval` decision results,
+  schema/strict validation, and bundle build/inspect/signature readiness.
+  RepoTutor maps that to deterministic static policy gate readiness and
+  explicitly does not evaluate allow/deny/violation decisions.
+- RED smoke generated
+  `/tmp/repotutor-policy-gates-red-studies.9VAWoh/2026-06-04/local__simple-ts-app__main__265e638e`;
+  old behavior was missing `analysis/policy-gate-report.json`,
+  `markdown/policy-gates.md`, and `html/policy-gates.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-policy-gates-green-studies.ugd9P0/2026-06-04/local__simple-ts-app__main__265e638e`;
+  confirmed `verificationCheckedRequiredArtifacts=84`, policy documents 0,
+  input documents 1, gate queries 0, test coverage rows 4, bundle readiness 6,
+  decision outputs 5, recommended commands 5, risk queue 4,
+  `policy-gate-card`, `data-source-pattern="OPA"`, manifest/learning path
+  entries, and `open --target policy-gates` -> `html/policy-gates.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 26/26 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
