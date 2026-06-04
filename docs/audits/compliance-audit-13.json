@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-04T04:22:04.929Z",
+  "createdAt": "2026-06-04T04:36:17.348Z",
   "checks": [
     {
       "name": "project setup",
@@ -270,6 +270,13 @@
     },
     {
       "name": "typecheck readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "package manager readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

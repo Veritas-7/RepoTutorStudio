@@ -2258,6 +2258,39 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 145:
   - `20224a5` typecheck readiness report
 
+- 2026-06-04: AutoResearch Upgrade 146 candidate selected:
+  `pnpm/pnpm` (`https://github.com/pnpm/pnpm`; public MIT; 35,358 stars;
+  1,475 forks; updated 2026-06-04T02:33:19Z). Compared with `npm/cli`,
+  `yarnpkg/berry`, and `oven-sh/bun`; selected pnpm for package-manager
+  choice, deterministic lockfiles, monorepo workspaces, package include/exclude
+  globs, catalogs, build-script policy, audit config, packageManager/devEngines,
+  lifecycle hooks, recursive/filter commands, and frozen-lockfile installs.
+  Cloned ignored external source to `research/external-src/pnpm-pnpm` and
+  inspected README, package metadata, workspace file, lockfile, and `.pnpmfile`
+  without executing external source.
+- 2026-06-04: RED package-manager readiness smoke generated
+  `/tmp/repotutor-package-manager-red-studies.8KT87t/2026-06-04/local__simple-ts-app__main__9651bbfc`;
+  old build was missing `analysis/package-manager-report.json`,
+  `markdown/package-manager.md`, and `html/package-manager.html`, and
+  `open --target package-manager` failed as expected.
+- 2026-06-04: Implemented pnpm-style package-manager readiness report:
+  `PackageManagerReportSchema`, `analysis/package-manager-report.json`,
+  `markdown/package-manager.md`, `html/package-manager.html`, manifest files,
+  workspace signals, lockfile signals, script signals, policy signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, and `open --target package-manager`.
+- 2026-06-04: GREEN package-manager readiness smoke generated
+  `/tmp/repotutor-package-manager-green-studies.OjoTZl/2026-06-04/local__simple-ts-app__main__9651bbfc`;
+  confirmed `verificationCheckedRequiredArtifacts=138`, manifest files 1,
+  workspace signals 8, lockfile signals 0, script signals 11, policy signals
+  10, recommended commands 6, risk queue 3, `package-manager-card`,
+  `data-source-pattern="pnpm"`, manifest/learning-path entries, and
+  `open --target package-manager` -> `html/package-manager.html`.
+- 2026-06-04: Verification for Upgrade 146:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 44/44 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

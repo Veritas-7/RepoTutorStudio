@@ -2013,6 +2013,59 @@ export const TypecheckReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PackageManagerReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  manifestFiles: z.array(z.object({
+    filePath: z.string(),
+    packageManager: z.string().nullable(),
+    scriptCount: z.number().int().nonnegative(),
+    dependencyCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  workspaceSignals: z.array(z.object({
+    signal: z.enum(["workspace-file", "packages-include", "packages-exclude", "workspace-protocol", "catalog", "overrides", "patched-dependencies", "shared-workspace-lockfile", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lockfileSignals: z.array(z.object({
+    filePath: z.string(),
+    ecosystem: z.enum(["pnpm", "npm", "yarn", "bun", "unknown"]),
+    version: z.string().nullable(),
+    importerCount: z.number().int().nonnegative(),
+    packageCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  scriptSignals: z.array(z.object({
+    signal: z.enum(["install", "dev", "build", "test", "lint", "typecheck", "workspace-recursive", "filter", "frozen-lockfile", "prepare", "release", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  policySignals: z.array(z.object({
+    signal: z.enum(["packageManager", "devEngines", "engines", "onlyBuiltDependencies", "allowBuilds", "auditConfig", "minimumReleaseAge", "nodeLinker", "configDependencies", "pnpmfile-hook", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2260,6 +2313,7 @@ export type DatabaseReadinessReport = z.infer<typeof DatabaseReadinessReportSche
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type TypecheckReadinessReport = z.infer<typeof TypecheckReadinessReportSchema>;
+export type PackageManagerReport = z.infer<typeof PackageManagerReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

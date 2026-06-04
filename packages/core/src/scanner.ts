@@ -58,6 +58,7 @@ import {
   CiCdReport,
   UnitTestReport,
   TypecheckReadinessReport,
+  PackageManagerReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -122,6 +123,7 @@ export interface AnalysisBundle {
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   typecheckReadinessReport: TypecheckReadinessReport;
+  packageManagerReport: PackageManagerReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -186,8 +188,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
   const typecheckReadinessReport = await buildTypecheckReadinessReport(walk);
+  const packageManagerReport = await buildPackageManagerReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -8455,6 +8458,323 @@ function typecheckSignalFromSpecs<T extends Record<K, string> & { pattern: RegEx
       relatedHref: match?.sourceHref ?? "html/typecheck-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
+}
+
+async function buildPackageManagerReport(walk: WalkResult): Promise<PackageManagerReport> {
+  const sourceFiles = await packageManagerSourceFiles(walk);
+  const manifestFiles = packageManagerManifestFiles(sourceFiles);
+  const workspaceSignals = packageManagerWorkspaceSignals(sourceFiles);
+  const lockfileSignals = packageManagerLockfileSignals(sourceFiles);
+  const scriptSignals = packageManagerScriptSignals(sourceFiles);
+  const policySignals = packageManagerPolicySignals(sourceFiles);
+
+  const hasManifest = manifestFiles.length > 0;
+  const hasPackageManagerField = policySignals.some((item) => item.signal === "packageManager" && item.readiness === "ready");
+  const hasLockfile = lockfileSignals.length > 0;
+  const hasWorkspaceFile = workspaceSignals.some((item) => item.signal === "workspace-file" && item.readiness === "ready");
+  const hasWorkspacePackages = workspaceSignals.some((item) => item.signal === "packages-include" && item.readiness === "ready");
+  const hasFrozenLockfile = scriptSignals.some((item) => item.signal === "frozen-lockfile" && item.readiness === "ready");
+  const hasBuildPolicy = policySignals.some((item) => ["onlyBuiltDependencies", "allowBuilds"].includes(item.signal) && item.readiness === "ready");
+  const hasPnpmfileHook = policySignals.some((item) => item.signal === "pnpmfile-hook" && item.readiness === "ready");
+  const lockfileEcosystems = new Set(lockfileSignals.map((item) => item.ecosystem).filter((ecosystem) => ecosystem !== "unknown"));
+
+  const riskQueue: PackageManagerReport["riskQueue"] = [];
+  if (!hasManifest) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a package manifest before claiming JavaScript package-manager readiness.",
+      why: "Package managers start from manifest files such as package.json, where scripts, dependencies, and packageManager policy are declared.",
+      relatedHref: "html/package-manager.html"
+    });
+  }
+  if (hasManifest && !hasPackageManagerField) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Declare the expected package manager and version in package.json.",
+      why: "pnpm-style repositories use packageManager/devEngines to make install behavior repeatable across machines.",
+      relatedHref: "html/package-manager.html"
+    });
+  }
+  if (hasManifest && !hasLockfile) {
+    riskQueue.push({
+      priority: "high",
+      action: "Commit the matching package-manager lockfile.",
+      why: "pnpm documents deterministic installs through pnpm-lock.yaml; npm, Yarn, and Bun have equivalent lockfiles for resolved dependency state.",
+      relatedHref: "html/package-manager.html"
+    });
+  }
+  if (lockfileEcosystems.size > 1) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Choose one package-manager lockfile family for this repository.",
+      why: "Multiple lockfile ecosystems make it unclear whether contributors should install with pnpm, npm, Yarn, or Bun.",
+      relatedHref: "html/package-manager.html"
+    });
+  }
+  if (hasWorkspacePackages && !hasWorkspaceFile) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Move workspace package globs into an explicit workspace file or root workspace declaration.",
+      why: "Monorepos need a readable workspace package list so beginners can see which folders are linked together.",
+      relatedHref: "html/package-manager.html"
+    });
+  }
+  if (hasWorkspaceFile && !hasFrozenLockfile) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document a frozen-lockfile CI install command for workspace repos.",
+      why: "Workspace lockfiles are useful only if CI refuses accidental lockfile drift during install.",
+      relatedHref: "html/package-manager.html"
+    });
+  }
+  if (hasWorkspaceFile && !hasBuildPolicy) {
+    riskQueue.push({
+      priority: "low",
+      action: "Review dependency build-script policy for packages that run install-time builds.",
+      why: "pnpm workspace files can declare allowBuilds or related controls so install-time build scripts are explicit.",
+      relatedHref: "html/package-manager.html"
+    });
+  }
+  if (hasPnpmfileHook) {
+    riskQueue.push({
+      priority: "low",
+      action: "Review .pnpmfile hooks before trusting install-time dependency rewrites.",
+      why: "pnpm hooks can mutate package manifests during resolution, so they deserve a separate learning and security review.",
+      relatedHref: "html/package-manager.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the real package-manager commands in a trusted workspace before treating this static report as approval.",
+    why: "RepoTutor records package-manager readiness statically; it does not run install, resolve registry metadata, or execute lifecycle scripts.",
+    relatedHref: "html/package-manager.html"
+  });
+
+  return {
+    summary: `pnpm식 package-manager readiness report: manifest ${manifestFiles.length}개, workspace signal ${workspaceSignals.length}개, lockfile ${lockfileSignals.length}개, script signal ${scriptSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "pnpm packageManager devEngines workspace packages catalog lockfile importers allowBuilds auditConfig pnpmfile hooks recursive filter frozen-lockfile",
+    manifestFiles,
+    workspaceSignals,
+    lockfileSignals,
+    scriptSignals,
+    policySignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "corepack enable", purpose: "Use the packageManager field to activate the expected package-manager binary." },
+      { command: "pnpm install --frozen-lockfile", purpose: "Verify the lockfile is reproducible without modifying it." },
+      { command: "pnpm -r build", purpose: "Run build scripts across workspace packages recursively." },
+      { command: "pnpm -r test", purpose: "Run test scripts across workspace packages recursively." },
+      { command: "pnpm audit", purpose: "Review advisory data for the current lockfile in a trusted workspace." },
+      { command: "pnpm list -r --depth 0", purpose: "Inspect workspace package boundaries and direct dependencies." }
+    ],
+    learnerNextSteps: [
+      "Start with package.json: identify packageManager, scripts, dependency groups, and whether the root is private.",
+      "Then read the workspace file and lockfile together; workspace globs define projects, while the lockfile records resolved dependency state.",
+      "Treat lifecycle hooks, .pnpmfile, and build-script allowlists as policy, not ordinary metadata.",
+      "RepoTutor does not execute install commands; use this page as a static map before running package-manager commands yourself."
+    ]
+  };
+}
+
+type PackageManagerSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function packageManagerSourceFiles(walk: WalkResult): Promise<PackageManagerSourceFile[]> {
+  const files: PackageManagerSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !packageManagerInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!packageManagerPathSignal(file.relPath) && !packageManagerContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 240) break;
+  }
+  return files;
+}
+
+function packageManagerInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|package-lock\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml|yarn\.lock|bun\.lockb?|bun\.lock|\.npmrc|\.yarnrc\.ya?ml|\.pnpmfile\.cjs|README\.md)$/i.test(base)
+    || /(package-manager|packageManager|workspace|lockfile|pnpm|npm|yarn|bun|dependencies|devEngines)/i.test(filePath)
+    || /\.(json|md|ya?ml|cjs|mjs|toml)$/i.test(filePath);
+}
+
+function packageManagerPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|package-lock\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml|yarn\.lock|bun\.lockb?|bun\.lock|\.npmrc|\.yarnrc\.ya?ml|\.pnpmfile\.cjs)$/i.test(base)
+    || /(package-manager|packageManager|workspace|lockfile|pnpm|npm|yarn|bun|dependencies|devEngines)/i.test(filePath);
+}
+
+function packageManagerContentSignal(text: string): boolean {
+  return /packageManager|devEngines|workspaces?|pnpm|npm|yarn|bun|lockfileVersion|dependencies|devDependencies|catalog:|allowBuilds|auditConfig|frozen-lockfile|\.pnpmfile|readPackage|beforePacking/i.test(text);
+}
+
+function packageManagerManifestFiles(sourceFiles: PackageManagerSourceFile[]): PackageManagerReport["manifestFiles"] {
+  return sourceFiles
+    .filter((source) => path.basename(source.filePath) === "package.json")
+    .slice(0, 120)
+    .map((source) => {
+      let packageManager: string | null = null;
+      let scriptCount = 0;
+      let dependencyCount = 0;
+      try {
+        const json = JSON.parse(source.text) as {
+          packageManager?: unknown;
+          scripts?: Record<string, unknown>;
+          dependencies?: Record<string, unknown>;
+          devDependencies?: Record<string, unknown>;
+          peerDependencies?: Record<string, unknown>;
+          optionalDependencies?: Record<string, unknown>;
+        };
+        packageManager = typeof json.packageManager === "string" ? json.packageManager : null;
+        scriptCount = Object.keys(json.scripts ?? {}).length;
+        dependencyCount = Object.keys({
+          ...(json.dependencies ?? {}),
+          ...(json.devDependencies ?? {}),
+          ...(json.peerDependencies ?? {}),
+          ...(json.optionalDependencies ?? {})
+        }).length;
+      } catch {
+        // Keep the manifest visible even when JSON parsing fails.
+      }
+      return {
+        filePath: source.filePath,
+        packageManager,
+        scriptCount,
+        dependencyCount,
+        readiness: packageManager || dependencyCount > 0 || scriptCount > 0 ? "ready" : "partial",
+        evidence: `${source.filePath} has packageManager ${packageManager ?? "not declared"}, ${scriptCount} script(s), and ${dependencyCount} dependency declaration(s).`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function packageManagerWorkspaceSignals(sourceFiles: PackageManagerSourceFile[]): PackageManagerReport["workspaceSignals"] {
+  const specs: Array<{ signal: PackageManagerReport["workspaceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "workspace-file", pattern: /pnpm-workspace\.ya?ml|workspaces?\s*:/i, evidence: "workspace file or root workspace declaration evidence was detected." },
+    { signal: "packages-include", pattern: /packages\s*:\s*\n\s*-\s+|workspaces?\s*:\s*\[/i, evidence: "workspace package include glob evidence was detected." },
+    { signal: "packages-exclude", pattern: /^\s*-\s*['"]?!|!\*\*\/|exclude/i, evidence: "workspace package exclude glob evidence was detected." },
+    { signal: "workspace-protocol", pattern: /workspace:\*|workspace:\^|workspace:~/i, evidence: "workspace protocol dependency evidence was detected." },
+    { signal: "catalog", pattern: /\bcatalogs?\s*:|catalog:/i, evidence: "catalog dependency version evidence was detected." },
+    { signal: "overrides", pattern: /\boverrides\s*:|"overrides"\s*:/i, evidence: "dependency override evidence was detected." },
+    { signal: "patched-dependencies", pattern: /patchedDependencies|patches?:|\.patch\b/i, evidence: "patched dependency evidence was detected." },
+    { signal: "shared-workspace-lockfile", pattern: /shared-workspace-lockfile|sharedWorkspaceLockfile/i, evidence: "shared workspace lockfile policy evidence was detected." }
+  ];
+  return packageManagerSignalFromSpecs(sourceFiles, specs, "workspace", "signal");
+}
+
+function packageManagerLockfileSignals(sourceFiles: PackageManagerSourceFile[]): PackageManagerReport["lockfileSignals"] {
+  return sourceFiles
+    .filter((source) => packageManagerLockfileEcosystem(source.filePath) !== null)
+    .slice(0, 20)
+    .map((source) => {
+      const ecosystem = packageManagerLockfileEcosystem(source.filePath) ?? "unknown";
+      const version = ecosystem === "npm" ? firstJsonNumber(source.text, "lockfileVersion") : firstMatch(source.text, /lockfileVersion:\s*['"]?([^'"\n]+)['"]?/i);
+      const importerCount = ecosystem === "pnpm" ? packageManagerPnpmImporterCount(source.text) : packageManagerJsonObjectCount(source.text, "packages");
+      const packageCount = ecosystem === "pnpm" ? packageManagerPnpmPackageCount(source.text) : packageManagerJsonObjectCount(source.text, "packages");
+      return {
+        filePath: source.filePath,
+        ecosystem,
+        version,
+        importerCount,
+        packageCount,
+        readiness: version || packageCount > 0 || importerCount > 0 ? "ready" : "partial",
+        evidence: `${source.filePath} appears to be a ${ecosystem} lockfile with version ${version ?? "unknown"}, ${importerCount} importer signal(s), and ${packageCount} package signal(s).`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function packageManagerScriptSignals(sourceFiles: PackageManagerSourceFile[]): PackageManagerReport["scriptSignals"] {
+  const specs: Array<{ signal: PackageManagerReport["scriptSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "install", pattern: /\b(pnpm|npm|yarn|bun)\s+(install|i|ci)\b/i, evidence: "install command evidence was detected." },
+    { signal: "dev", pattern: /"dev"\s*:|\b(pnpm|npm|yarn|bun)\s+(run\s+)?dev\b/i, evidence: "dev script evidence was detected." },
+    { signal: "build", pattern: /"build"\s*:|\b(pnpm|npm|yarn|bun)\s+(run\s+)?build\b/i, evidence: "build script evidence was detected." },
+    { signal: "test", pattern: /"test[^"]*"\s*:|\b(pnpm|npm|yarn|bun)\s+(run\s+)?test\b/i, evidence: "test script evidence was detected." },
+    { signal: "lint", pattern: /"lint[^"]*"\s*:|\b(pnpm|npm|yarn|bun)\s+(run\s+)?lint\b/i, evidence: "lint script evidence was detected." },
+    { signal: "typecheck", pattern: /"type(check|s)?"\s*:|\b(pnpm|npm|yarn|bun)\s+(run\s+)?type(check|s)?\b/i, evidence: "typecheck script evidence was detected." },
+    { signal: "workspace-recursive", pattern: /\b(pnpm\s+(-r|--recursive)|npm\s+.*--workspaces|yarn\s+workspaces|bun\s+.*--filter)\b/i, evidence: "workspace-recursive command evidence was detected." },
+    { signal: "filter", pattern: /\b(--filter|-F=|-F\s+|--workspace|workspaces? foreach)\b/i, evidence: "workspace filter evidence was detected." },
+    { signal: "frozen-lockfile", pattern: /--frozen-lockfile|npm\s+ci|yarn\s+install\s+--immutable|bun\s+install\s+--frozen-lockfile/i, evidence: "frozen lockfile install evidence was detected." },
+    { signal: "prepare", pattern: /"preinstall"\s*:|"postinstall"\s*:|"prepare"\s*:/i, evidence: "lifecycle prepare/install hook evidence was detected." },
+    { signal: "release", pattern: /"release"\s*:|\b(pnpm|npm|yarn|bun)\s+(run\s+)?release\b|publish\b/i, evidence: "release or publish script evidence was detected." }
+  ];
+  return packageManagerSignalFromSpecs(sourceFiles, specs, "script", "signal");
+}
+
+function packageManagerPolicySignals(sourceFiles: PackageManagerSourceFile[]): PackageManagerReport["policySignals"] {
+  const specs: Array<{ signal: PackageManagerReport["policySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "packageManager", pattern: /"packageManager"\s*:|packageManager:/i, evidence: "packageManager pin evidence was detected." },
+    { signal: "devEngines", pattern: /"devEngines"\s*:|devEngines:/i, evidence: "devEngines policy evidence was detected." },
+    { signal: "engines", pattern: /"engines"\s*:|engines:/i, evidence: "runtime engines policy evidence was detected." },
+    { signal: "onlyBuiltDependencies", pattern: /onlyBuiltDependencies/i, evidence: "onlyBuiltDependencies policy evidence was detected." },
+    { signal: "allowBuilds", pattern: /allowBuilds/i, evidence: "allowBuilds policy evidence was detected." },
+    { signal: "auditConfig", pattern: /auditConfig|ignoreGhsas|audit-level/i, evidence: "audit configuration evidence was detected." },
+    { signal: "minimumReleaseAge", pattern: /minimumReleaseAge|minimum-release-age/i, evidence: "minimum release age policy evidence was detected." },
+    { signal: "nodeLinker", pattern: /nodeLinker|node-linker/i, evidence: "node linker policy evidence was detected." },
+    { signal: "configDependencies", pattern: /configDependencies/i, evidence: "config dependency evidence was detected." },
+    { signal: "pnpmfile-hook", pattern: /\.pnpmfile|readPackage|afterAllResolved|beforePacking/i, evidence: "pnpmfile hook evidence was detected." }
+  ];
+  return packageManagerSignalFromSpecs(sourceFiles, specs, "policy", "signal");
+}
+
+function packageManagerSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: PackageManagerSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/package-manager.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+function packageManagerLockfileEcosystem(filePath: string): PackageManagerReport["lockfileSignals"][number]["ecosystem"] | null {
+  const base = path.basename(filePath).toLowerCase();
+  if (base === "pnpm-lock.yaml") return "pnpm";
+  if (base === "package-lock.json") return "npm";
+  if (base === "yarn.lock") return "yarn";
+  if (base === "bun.lock" || base === "bun.lockb") return "bun";
+  return null;
+}
+
+function packageManagerPnpmImporterCount(text: string): number {
+  const section = text.match(/importers:\n([\s\S]*?)(?:\n[a-zA-Z][A-Za-z0-9_-]*:|\n*$)/)?.[1] ?? "";
+  return countMatches(section, /^  [^\s][^:\n]*:/gm);
+}
+
+function packageManagerPnpmPackageCount(text: string): number {
+  const section = text.match(/packages:\n([\s\S]*?)(?:\n[a-zA-Z][A-Za-z0-9_-]*:|\n*$)/)?.[1] ?? "";
+  return countMatches(section, /^  [^\s][^:\n]*:/gm);
+}
+
+function packageManagerJsonObjectCount(text: string, field: string): number {
+  try {
+    const json = JSON.parse(text) as Record<string, unknown>;
+    const value = json[field];
+    return value && typeof value === "object" && !Array.isArray(value) ? Object.keys(value).length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function firstJsonNumber(text: string, field: string): string | null {
+  try {
+    const json = JSON.parse(text) as Record<string, unknown>;
+    const value = json[field];
+    return typeof value === "number" || typeof value === "string" ? String(value) : null;
+  } catch {
+    return null;
+  }
 }
 
 function firstMatch(text: string, pattern: RegExp): string | null {
