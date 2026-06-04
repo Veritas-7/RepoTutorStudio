@@ -5631,6 +5631,51 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 224:
   - `39c3d6d` integration test environment readiness report
 
+- 2026-06-05: AutoResearch Upgrade 225 candidate selected:
+  `chaos-mesh/chaos-mesh`
+  (`https://github.com/chaos-mesh/chaos-mesh`; Apache-2.0, public,
+  7,730 stars, 995 forks, updated 2026-06-04T08:08:53Z, ignored clone HEAD
+  `73510a6`) with comparison sources `litmuschaos/litmus`
+  (`https://github.com/litmuschaos/litmus`; Apache-2.0, public, 5,424 stars,
+  869 forks, updated 2026-06-04T11:36:52Z, ignored clone HEAD `55e0e0e`)
+  and `Shopify/toxiproxy` (`https://github.com/Shopify/toxiproxy`; MIT,
+  public, 12,065 stars, 500 forks, updated 2026-06-04T06:13:29Z, ignored
+  clone HEAD `0aa2ca7`). Static source inspection only; `git ls-files` for
+  all three external source paths returned `0`, and `git status --ignored`
+  showed the clones only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Chaos Mesh/LitmusChaos/Toxiproxy-style
+  chaos-engineering-readiness report:
+  `ChaosEngineeringReadinessReportSchema`,
+  `analysis/chaos-engineering-readiness-report.json`,
+  `markdown/chaos-engineering-readiness.md`,
+  `html/chaos-engineering-readiness.html`, chaos setup detection,
+  experiment/fault/scope/safety/observability/package signals, bounded
+  static-only risk queue, recommended review commands, manifest/
+  session-verification coverage, learning-path linkage, HTML page/nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target chaos-engineering-readiness`.
+- 2026-06-05: RED/GREEN chaos-engineering-readiness smoke recorded:
+  old behavior at `e0bea34` had no `ChaosEngineeringReadinessReportSchema`
+  and no `chaos-engineering-readiness` CLI target
+  (`RED missing-count=2 expected=2`). GREEN fixture detected Chaos Mesh
+  NetworkChaos/Schedule, Litmus ChaosEngine/ChaosExperiment/ChaosResult,
+  Toxiproxy proxy/toxic/cleanup, network-delay and pod-delete fault signals,
+  selector/namespace/mode/duration/container/service-account scope,
+  probe/steady-state/SOT/EOT/Prometheus/HTTP/cleanup/job-cleanup signals,
+  observability and package signals, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 225:
+  - RED baseline smoke: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - focused chaos Vitest command: PASS, pipeline file 32/32 tests
+  - full pipeline Vitest: PASS, 32/32 tests
+  - `pnpm test`: PASS, 32/32 tests
+  - `pnpm audit:brief`: PASS, 123/123 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 225:
+  - `3949a32` chaos engineering readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
