@@ -1,6 +1,6 @@
 {
   "iteration": 2,
-  "createdAt": "2026-06-04T07:10:58.280Z",
+  "createdAt": "2026-06-04T07:20:48.935Z",
   "checks": [
     {
       "name": "project setup",
@@ -368,6 +368,13 @@
     },
     {
       "name": "form readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "auth readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

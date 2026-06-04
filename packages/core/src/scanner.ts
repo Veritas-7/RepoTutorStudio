@@ -72,6 +72,7 @@ import {
   RoutingReadinessReport,
   StateManagementReadinessReport,
   FormReadinessReport,
+  AuthReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -150,6 +151,7 @@ export interface AnalysisBundle {
   routingReadinessReport: RoutingReadinessReport;
   stateManagementReadinessReport: StateManagementReadinessReport;
   formReadinessReport: FormReadinessReport;
+  authReadinessReport: AuthReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -228,8 +230,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const routingReadinessReport = await buildRoutingReadinessReport(walk);
   const stateManagementReadinessReport = await buildStateManagementReadinessReport(walk);
   const formReadinessReport = await buildFormReadinessReport(walk);
+  const authReadinessReport = await buildAuthReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -12365,6 +12368,294 @@ function formReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: R
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/form-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildAuthReadinessReport(walk: WalkResult): Promise<AuthReadinessReport> {
+  const sourceFiles = await authReadinessSourceFiles(walk);
+  const authSetups = authReadinessAuthSetups(sourceFiles);
+  const sessionSurfaces = authReadinessSessionSurfaces(sourceFiles);
+  const protectionSignals = authReadinessProtectionSignals(sourceFiles);
+  const providerSignals = authReadinessProviderSignals(sourceFiles);
+  const callbackSignals = authReadinessCallbackSignals(sourceFiles);
+  const credentialSignals = authReadinessCredentialSignals(sourceFiles);
+  const packageSignals = authReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasAuthPackage = packageSignals.some((item) => ["next-auth", "@auth/core", "better-auth", "@clerk/nextjs", "@auth0/nextjs-auth0"].includes(item.signal) && item.readiness === "ready");
+  const hasSetup = authSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = authSetups.some((item) => item.readiness === "ready");
+  const hasProvider = providerSignals.some((item) => ["oauth-provider", "credentials-provider", "email-provider", "webauthn-passkey"].includes(item.signal) && item.readiness === "ready");
+  const hasSecret = credentialSignals.some((item) => ["AUTH_SECRET", "NEXTAUTH_SECRET"].includes(item.signal) && item.readiness === "ready");
+  const hasProtection = protectionSignals.some((item) => item.readiness === "ready");
+  const hasSession = sessionSurfaces.some((item) => item.readiness !== "missing");
+  const hasCallbacks = callbackSignals.some((item) => item.readiness === "ready");
+  const hasCredentialProvider = providerSignals.some((item) => item.signal === "credentials-provider" && item.readiness === "ready");
+  const hasCsrf = protectionSignals.some((item) => item.signal === "csrf" && item.readiness === "ready") || credentialSignals.some((item) => item.signal === "csrf-token" && item.readiness === "ready");
+
+  const riskQueue: AuthReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasSession) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the authentication strategy before claiming auth readiness.",
+      why: "Auth readiness starts with an explicit package, auth setup, session surface, route handler, middleware, or custom guard.",
+      relatedHref: "html/auth-readiness.html"
+    });
+  }
+  if (hasAuthPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Expose an auth setup with handlers/auth exports or a clear route handler.",
+      why: "Auth.js-style projects need a visible setup surface that owns request handlers, session helpers, and sign-in/sign-out functions.",
+      relatedHref: "html/auth-readiness.html"
+    });
+  }
+  if (hasSetup && !hasProvider) {
+    riskQueue.push({
+      priority: "high",
+      action: "Define at least one provider or document why authentication is delegated elsewhere.",
+      why: "A setup without OAuth, credentials, email, passkey, or external provider evidence cannot explain how users sign in.",
+      relatedHref: "html/auth-readiness.html"
+    });
+  }
+  if ((hasAuthPackage || hasSetup) && !hasSecret) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document required auth secret environment variables in the deployment checklist.",
+      why: "Auth.js and similar session systems need stable secrets for token, cookie, and callback security.",
+      relatedHref: "html/auth-readiness.html"
+    });
+  }
+  if (hasSession && !hasProtection) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Map which routes, middleware, or server actions require an authenticated session.",
+      why: "Session reads without explicit route protection make it hard to know which user data paths are guarded.",
+      relatedHref: "html/auth-readiness.html"
+    });
+  }
+  if (hasProvider && !hasCallbacks) {
+    riskQueue.push({
+      priority: "low",
+      action: "Review callbacks and events for account linking, profile shaping, and session/JWT claims.",
+      why: "Provider setup often needs callback logic to constrain sign-in, project user roles, or copy claims into sessions.",
+      relatedHref: "html/auth-readiness.html"
+    });
+  }
+  if (hasCredentialProvider && !hasCsrf) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Verify CSRF and rate-limit coverage for credential-style sign-in flows.",
+      why: "Password or credential flows need explicit anti-abuse and CSRF review beyond provider configuration.",
+      relatedHref: "html/auth-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run auth flow tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not start auth servers, call providers, mint tokens, submit credentials, or run the analyzed project's tests.",
+    relatedHref: "html/auth-readiness.html"
+  });
+
+  return {
+    summary: `Auth.js식 auth readiness report: auth setup ${authSetups.length}개, session surface ${sessionSurfaces.length}개, protection signal ${protectionSignals.length}개, provider signal ${providerSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Auth.js NextAuth auth handlers providers callbacks session jwt middleware protected routes env secrets adapter signIn signOut useSession SessionProvider",
+    authSetups,
+    sessionSurfaces,
+    protectionSignals,
+    providerSignals,
+    callbackSignals,
+    credentialSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"NextAuth|auth\\\\(|handlers|GET|POST|middleware|withAuth\" src app pages packages", purpose: "Inventory auth setup files, route handlers, and middleware boundaries." },
+      { command: "rg \"providers|Credentials|GitHub|Google|Email|Passkey|WebAuthn|adapter\" src app pages packages", purpose: "Review sign-in providers, credential flows, passkeys, and database adapter wiring." },
+      { command: "rg \"callbacks|authorized|jwt|session|signIn|redirect|events\" src app pages packages", purpose: "Trace callback logic, session/JWT shaping, and authorization gates." },
+      { command: "rg \"useSession|SessionProvider|getServerSession|getToken|signIn|signOut\" src app pages packages", purpose: "Find client and server session consumers plus sign-in/sign-out entry points." },
+      { command: "rg \"AUTH_SECRET|NEXTAUTH_SECRET|AUTH_URL|NEXTAUTH_URL|clientId|clientSecret|cookies|csrf\" .", purpose: "Check documented environment variables, provider credentials, cookies, and CSRF hints." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise protected routes, callbacks, session reads, and sign-in/sign-out behavior." }
+    ],
+    learnerNextSteps: [
+      "먼저 auth setup 파일에서 NextAuth 또는 auth/handlers export가 어디서 만들어지는지 확인하세요.",
+      "providers 배열을 읽고 OAuth, credentials, email, passkey, adapter 중 어떤 로그인 경로가 실제로 열려 있는지 분리하세요.",
+      "callbacks와 events에서는 signIn, jwt, session, authorized 로직이 사용자 역할과 claim을 어떻게 바꾸는지 확인하세요.",
+      "middleware나 protected route에서 session required, redirect, role check가 어디에 걸려 있는지 원본 링크로 추적하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 로그인, 쿠키, 토큰, provider callback은 원본 프로젝트 테스트나 안전한 개발 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type AuthReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function authReadinessSourceFiles(walk: WalkResult): Promise<AuthReadinessSourceFile[]> {
+  const files: AuthReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !authReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!authReadinessPathSignal(file.relPath) && !authReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function authReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return authReadinessPathSignal(filePath)
+    || /^(package\.json|middleware\.[cm]?[jt]s|middleware\.[jt]sx?|\.env\.example|\.env\.sample|auth\.[cm]?[jt]s|next\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env|prisma)$/i.test(filePath);
+}
+
+function authReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(auth|authentication|session|sessions|signin|sign-in|signout|sign-out|login|logout|middleware|protected|providers?|adapters?|callbacks?)(\/|\.|-|_|$)|next-auth|authjs|better-auth|clerk|auth0/i.test(filePath);
+}
+
+function authReadinessContentSignal(text: string): boolean {
+  return /\b(NextAuth|auth\s*\(|handlers\b|SessionProvider|useSession|getServerSession|getToken|signIn|signOut|providers\s*:|callbacks\s*:|authorized\s*\(|middleware|withAuth|AUTH_SECRET|NEXTAUTH_SECRET|AUTH_URL|NEXTAUTH_URL|clientId|clientSecret|Credentials|OAuth|WebAuthn|Passkey|adapter\s*:|session\s*:|jwt\s*:|csrf|CSRF|ClerkProvider|auth0)\b/i.test(text);
+}
+
+function authReadinessAuthSetups(sourceFiles: AuthReadinessSourceFile[]): AuthReadinessReport["authSetups"] {
+  const rows: AuthReadinessReport["authSetups"] = [];
+  for (const source of sourceFiles) {
+    const handlerCount = countMatches(source.text, /\bhandlers\b|export\s+\{\s*GET\s*,\s*POST\s*\}|export\s+const\s+(GET|POST)\b|\bhandleAuth\s*\(/gi);
+    const hasAuthFunction = /\bNextAuth\s*\(|\bauth\s*\(|\bBetterAuth\s*\(|\bbetterAuth\s*\(|\bClerk\b|\bauth0\b/i.test(source.text);
+    const hasRouteHandler = /app\/api\/auth|pages\/api\/auth|route\.[jt]s|\[\.{3}nextauth\]|export\s+\{\s*GET\s*,\s*POST\s*\}|export\s+const\s+\{[^}]*handlers/i.test(source.filePath) || /\bhandlers\b|export\s+const\s+(GET|POST)\b/i.test(source.text);
+    const hasMiddleware = /(^|\/)middleware\.[cm]?[jt]sx?$/i.test(source.filePath) || /\bauth\s+as\s+middleware\b|\bwithAuth\b|\bexport\s+default\s+auth\b|\bmiddleware\b/i.test(source.text);
+    const hasSetupSignal = handlerCount > 0 || hasAuthFunction || hasRouteHandler || hasMiddleware || /\bproviders\s*:|\bcallbacks\s*:|\bsession\s*:/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework: authReadinessFramework(source),
+      handlerCount,
+      hasAuthFunction,
+      hasRouteHandler,
+      hasMiddleware,
+      readiness: hasAuthFunction && (hasRouteHandler || hasMiddleware || handlerCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains handlers ${handlerCount}, auth function ${hasAuthFunction ? "yes" : "no"}, route handler ${hasRouteHandler ? "yes" : "no"}, middleware ${hasMiddleware ? "yes" : "no"}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function authReadinessFramework(source: AuthReadinessSourceFile): AuthReadinessReport["authSetups"][number]["framework"] {
+  if (/next-auth|NextAuth|@auth\/nextjs/i.test(source.text)) return "next-auth";
+  if (/@auth\/core|Auth\.js|authjs/i.test(source.text)) return "authjs";
+  if (/better-auth|betterAuth/i.test(source.text)) return "better-auth";
+  if (/@clerk\/nextjs|ClerkProvider|clerkMiddleware/i.test(source.text)) return "clerk";
+  if (/@auth0\/nextjs-auth0|handleAuth|auth0/i.test(source.text)) return "auth0";
+  if (/\bauth\s*\(|\bsession\b|\bmiddleware\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function authReadinessSessionSurfaces(sourceFiles: AuthReadinessSourceFile[]): AuthReadinessReport["sessionSurfaces"] {
+  const rows: AuthReadinessReport["sessionSurfaces"] = [];
+  for (const source of sourceFiles) {
+    const clientSessionCount = countMatches(source.text, /\buseSession\s*\(|\bSessionProvider\b|\bgetSession\s*\(|\bsession\s*=/gi);
+    const serverSessionCount = countMatches(source.text, /\bgetServerSession\s*\(|\bgetToken\s*\(|\bauth\s*\(\s*\)|\breq\.auth\b|\bserverSession\b/gi);
+    const providerBoundaryCount = countMatches(source.text, /\bSessionProvider\b|\bAuthProvider\b|\bClerkProvider\b|\bUserProvider\b/gi);
+    const signInOutCount = countMatches(source.text, /\bsignIn\s*\(|\bsignOut\s*\(|\bSignInButton\b|\bSignOutButton\b/gi);
+    if (clientSessionCount + serverSessionCount + providerBoundaryCount + signInOutCount === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      clientSessionCount,
+      serverSessionCount,
+      providerBoundaryCount,
+      signInOutCount,
+      readiness: (clientSessionCount > 0 || serverSessionCount > 0) && signInOutCount > 0 ? "ready" : clientSessionCount + serverSessionCount + providerBoundaryCount + signInOutCount > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains client session ${clientSessionCount}, server session ${serverSessionCount}, provider boundary ${providerBoundaryCount}, sign-in/out ${signInOutCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 120);
+}
+
+function authReadinessProtectionSignals(sourceFiles: AuthReadinessSourceFile[]): AuthReadinessReport["protectionSignals"] {
+  const specs: Array<{ signal: AuthReadinessReport["protectionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "middleware", pattern: /(^|\/)middleware\.[cm]?[jt]sx?$|\bauth\s+as\s+middleware\b|\bwithAuth\b|\bmiddleware\b/i, evidence: "middleware protection evidence was detected." },
+    { signal: "authorized-callback", pattern: /\bauthorized\s*[:(]|\bcallbacks\s*:\s*{[^}]*authorized\b/i, evidence: "authorized callback evidence was detected." },
+    { signal: "protected-route", pattern: /\bprotected\b|\brequireAuth\b|\bensureAuth\b|\bprivateRoute\b|\bauthRequired\b/i, evidence: "protected route naming evidence was detected." },
+    { signal: "redirect", pattern: /\bredirect\s*\(|\bNextResponse\.redirect\b|\bcallbackUrl\b|\bsignIn\([^)]*callbackUrl/i, evidence: "auth redirect evidence was detected." },
+    { signal: "role-check", pattern: /\b(role|roles|permission|permissions|isAdmin|adminOnly|RBAC)\b/i, evidence: "role or permission check evidence was detected." },
+    { signal: "session-required", pattern: /\bif\s*\([^)]*!session|\bif\s*\([^)]*!.*auth|\bsession\s*==\s*null|\bstatus\s*===\s*['\"]unauthenticated/i, evidence: "required session guard evidence was detected." },
+    { signal: "csrf", pattern: /\bcsrf\b|\bCSRF\b|getCsrfToken|Cross-Site Request Forgery/i, evidence: "CSRF protection evidence was detected." }
+  ];
+  return authReadinessSignalFromSpecs(sourceFiles, specs, "protection", "signal");
+}
+
+function authReadinessProviderSignals(sourceFiles: AuthReadinessSourceFile[]): AuthReadinessReport["providerSignals"] {
+  const specs: Array<{ signal: AuthReadinessReport["providerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "oauth-provider", pattern: /\bproviders\s*:\s*\[|next-auth\/providers\/(github|google|keycloak|azure|discord|facebook)|\bOAuth\b|\bOIDC\b/i, evidence: "OAuth/OIDC provider evidence was detected." },
+    { signal: "credentials-provider", pattern: /next-auth\/providers\/credentials|\bCredentials\s*\(|\bcredentials\s*:/i, evidence: "credentials provider evidence was detected." },
+    { signal: "email-provider", pattern: /next-auth\/providers\/(email|resend|sendgrid)|\bEmail\s*\(|\bResend\s*\(|\bpasswordless\b/i, evidence: "email/passwordless provider evidence was detected." },
+    { signal: "webauthn-passkey", pattern: /\bWebAuthn\b|\bPasskey\b|\bpasskeys?\b/i, evidence: "WebAuthn/passkey evidence was detected." },
+    { signal: "adapter", pattern: /\badapter\s*:|@auth\/[a-z0-9-]+-adapter|\bAdapter\b/i, evidence: "database adapter evidence was detected." },
+    { signal: "database-session", pattern: /\bsession\s*:\s*{[^}]*strategy\s*:\s*['\"]database|sessionToken|sessionsTable|AdapterSession/i, evidence: "database session evidence was detected." },
+    { signal: "jwt-session", pattern: /\bsession\s*:\s*{[^}]*strategy\s*:\s*['\"]jwt|\bjwt\s*[:(]|JSON Web Tokens?|JWE/i, evidence: "JWT session evidence was detected." }
+  ];
+  return authReadinessSignalFromSpecs(sourceFiles, specs, "provider", "signal");
+}
+
+function authReadinessCallbackSignals(sourceFiles: AuthReadinessSourceFile[]): AuthReadinessReport["callbackSignals"] {
+  const specs: Array<{ signal: AuthReadinessReport["callbackSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "signIn", pattern: /\bsignIn\s*[:(]/i, evidence: "signIn callback or helper evidence was detected." },
+    { signal: "redirect", pattern: /\bredirect\s*[:(]/i, evidence: "redirect callback evidence was detected." },
+    { signal: "session", pattern: /\bsession\s*[:(]/i, evidence: "session callback evidence was detected." },
+    { signal: "jwt", pattern: /\bjwt\s*[:(]/i, evidence: "jwt callback evidence was detected." },
+    { signal: "authorized", pattern: /\bauthorized\s*[:(]/i, evidence: "authorized callback evidence was detected." },
+    { signal: "account", pattern: /\baccount\s*[:.]|\baccount\)/i, evidence: "account callback/data evidence was detected." },
+    { signal: "profile", pattern: /\bprofile\s*[:.]|\bprofile\)/i, evidence: "profile callback/data evidence was detected." },
+    { signal: "events", pattern: /\bevents\s*:\s*{|\bevents\./i, evidence: "auth event hook evidence was detected." }
+  ];
+  return authReadinessSignalFromSpecs(sourceFiles, specs, "callback", "signal");
+}
+
+function authReadinessCredentialSignals(sourceFiles: AuthReadinessSourceFile[]): AuthReadinessReport["credentialSignals"] {
+  const specs: Array<{ signal: AuthReadinessReport["credentialSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "AUTH_SECRET", pattern: /\bAUTH_SECRET\b/i, evidence: "AUTH_SECRET evidence was detected." },
+    { signal: "NEXTAUTH_SECRET", pattern: /\bNEXTAUTH_SECRET\b/i, evidence: "NEXTAUTH_SECRET evidence was detected." },
+    { signal: "AUTH_URL", pattern: /\bAUTH_URL\b/i, evidence: "AUTH_URL evidence was detected." },
+    { signal: "NEXTAUTH_URL", pattern: /\bNEXTAUTH_URL\b/i, evidence: "NEXTAUTH_URL evidence was detected." },
+    { signal: "provider-client-id", pattern: /\b(clientId|CLIENT_ID|AUTH_[A-Z0-9_]+_ID|NEXT_PUBLIC_[A-Z0-9_]+_ID)\b/i, evidence: "provider client ID evidence was detected." },
+    { signal: "provider-client-secret", pattern: /\b(clientSecret|CLIENT_SECRET|AUTH_[A-Z0-9_]+_SECRET|NEXTAUTH_[A-Z0-9_]+_SECRET)\b/i, evidence: "provider client secret reference evidence was detected." },
+    { signal: "cookie-policy", pattern: /\bcookies?\s*:|\bsameSite\b|\bsecure\s*:|\bhttpOnly\b/i, evidence: "cookie policy evidence was detected." },
+    { signal: "csrf-token", pattern: /\bcsrf\b|\bCSRF\b|getCsrfToken/i, evidence: "CSRF token evidence was detected." }
+  ];
+  return authReadinessSignalFromSpecs(sourceFiles, specs, "credential", "signal");
+}
+
+function authReadinessPackageSignals(sourceFiles: AuthReadinessSourceFile[]): AuthReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: AuthReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "next-auth", pattern: /["']next-auth["']|from\s+["']next-auth|NextAuth\b/i, evidence: "next-auth package/import evidence was detected." },
+    { signal: "@auth/core", pattern: /@auth\/core|Auth\.js/i, evidence: "@auth/core evidence was detected." },
+    { signal: "@auth-adapter", pattern: /@auth\/[a-z0-9-]+-adapter|PrismaAdapter|DrizzleAdapter|Adapter\b/i, evidence: "Auth.js adapter package evidence was detected." },
+    { signal: "better-auth", pattern: /["']better-auth["']|\bbetterAuth\b/i, evidence: "Better Auth package/import evidence was detected." },
+    { signal: "@clerk/nextjs", pattern: /@clerk\/nextjs|ClerkProvider|clerkMiddleware/i, evidence: "Clerk package/import evidence was detected." },
+    { signal: "@auth0/nextjs-auth0", pattern: /@auth0\/nextjs-auth0|handleAuth|auth0/i, evidence: "Auth0 Next.js package/import evidence was detected." }
+  ];
+  return authReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function authReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: AuthReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/auth-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

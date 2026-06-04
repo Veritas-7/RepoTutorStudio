@@ -894,6 +894,22 @@
         "formState errors ErrorMessage setError clearErrors trigger isValid isSubmitting dirtyFields and touchedFields scanning for visible feedback readiness",
         "safe static form readiness that never mounts forms submits values executes schema validators or runs analyzed project tests"
       ]
+    },
+    {
+      "repo": "nextauthjs/next-auth",
+      "url": "https://github.com/nextauthjs/next-auth",
+      "localPath": "research/external-src/nextauthjs-next-auth",
+      "stars": 28268,
+      "forks": 4039,
+      "license": "ISC",
+      "updatedAt": "2026-06-04T05:12:37Z",
+      "adoptedPatterns": [
+        "NextAuth handlers auth signIn signOut and middleware setup discovery for request boundary readiness",
+        "provider adapter and session strategy scanning across OAuth credentials email passkey database session and JWT session evidence",
+        "callback and event scanning for signIn redirect session jwt authorized account profile and event hook review",
+        "session consumer scanning for SessionProvider useSession getServerSession getToken signIn and signOut surfaces",
+        "safe static auth readiness that never starts auth servers calls providers mints tokens submits credentials or runs analyzed project tests"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3326,6 +3342,25 @@
         "markdown/form-readiness.md",
         "html/form-readiness.html"
       ]
+    },
+    {
+      "name": "Auth readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/auth-readiness-report.json",
+        "markdown/auth-readiness.md",
+        "html/auth-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -3683,7 +3718,13 @@
     "cliFormReadinessOpenTargetSmoke": "PASS",
     "buildFormReadiness": "PASS",
     "testFormReadiness": "PASS",
-    "auditBriefFormReadiness57": "PASS"
+    "auditBriefFormReadiness57": "PASS",
+    "fixtureAuthReadinessReport": "PASS",
+    "cliAuthReadinessSmoke": "PASS",
+    "cliAuthReadinessOpenTargetSmoke": "PASS",
+    "buildAuthReadiness": "PASS",
+    "testAuthReadiness": "PASS",
+    "auditBriefAuthReadiness58": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -3868,6 +3909,12 @@
     "cliFormReadinessOpenTargetSmoke": "PASS",
     "buildFormReadiness": "PASS",
     "testFormReadiness": "PASS",
-    "auditBriefFormReadiness57": "PASS"
+    "auditBriefFormReadiness57": "PASS",
+    "fixtureAuthReadinessReport": "PASS",
+    "cliAuthReadinessSmoke": "PASS",
+    "cliAuthReadinessOpenTargetSmoke": "PASS",
+    "buildAuthReadiness": "PASS",
+    "testAuthReadiness": "PASS",
+    "auditBriefAuthReadiness58": "PASS"
   }
 }
