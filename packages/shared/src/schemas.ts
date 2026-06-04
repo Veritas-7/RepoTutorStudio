@@ -5577,6 +5577,80 @@ export const ServerlessReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const MobileReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  mobileSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["expo", "react-native", "eas", "bare-native", "capacitor", "unknown"]),
+    appConfigCount: z.number().int().nonnegative(),
+    platformCount: z.number().int().nonnegative(),
+    navigationCount: z.number().int().nonnegative(),
+    buildProfileCount: z.number().int().nonnegative(),
+    updateCount: z.number().int().nonnegative(),
+    assetCount: z.number().int().nonnegative(),
+    permissionCount: z.number().int().nonnegative(),
+    commandCount: z.number().int().nonnegative(),
+    packageCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["app-json", "app-config", "name", "slug", "version", "scheme", "extra", "plugins", "experiments", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  platformSignals: z.array(z.object({
+    signal: z.enum(["ios", "bundle-identifier", "android", "android-package", "native-ios-dir", "native-android-dir", "web", "permissions", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  navigationSignals: z.array(z.object({
+    signal: z.enum(["expo-router", "app-directory", "typed-routes", "deep-linking", "react-navigation", "entry-point", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  buildSignals: z.array(z.object({
+    signal: z.enum(["eas-json", "eas-build", "development-client", "internal-distribution", "submit", "auto-increment", "prebuild", "run-ios", "run-android", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  updateSignals: z.array(z.object({
+    signal: z.enum(["expo-updates", "runtime-version", "updates-url", "eas-update", "update-branch", "channel", "check-for-update", "fetch-update", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  assetSignals: z.array(z.object({
+    signal: z.enum(["icon", "adaptive-icon", "splash-screen", "favicon", "assets-directory", "font-assets", "image-assets", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["expo", "react-native", "expo-router", "expo-dev-client", "expo-updates", "eas-cli", "react-native-web", "metro-config", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -5879,6 +5953,7 @@ export type VisualRegressionReadinessReport = z.infer<typeof VisualRegressionRea
 export type InfrastructureReadinessReport = z.infer<typeof InfrastructureReadinessReportSchema>;
 export type DeploymentReadinessReport = z.infer<typeof DeploymentReadinessReportSchema>;
 export type ServerlessReadinessReport = z.infer<typeof ServerlessReadinessReportSchema>;
+export type MobileReadinessReport = z.infer<typeof MobileReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

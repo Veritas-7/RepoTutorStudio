@@ -4531,6 +4531,44 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 200:
   - `d841db7` serverless readiness report
 
+- 2026-06-05: AutoResearch Upgrade 201 candidate selected: `expo/expo`
+  (`https://github.com/expo/expo`; public; MIT; 49,870 stars; 12,607 forks;
+  updated 2026-06-04T15:24:02Z). Compared with `facebook/react-native`,
+  `cloudflare/workers-sdk`, and `vercel/edge-runtime`; selected Expo because
+  it directly models mobile app readiness through `app.json`, `app.config`,
+  `eas.json`, Expo Router, platform identifiers, native folders, EAS build,
+  OTA updates, assets, permissions, and package/tooling signals. Cloned sparse
+  ignored external source to `research/external-src/expo-expo` and inspected
+  docs/templates/packages without executing external source. Clone HEAD was
+  `27d742c`; tracked file count for `research/external-src/expo-expo` returned
+  `0`.
+- 2026-06-05: RED mobile-readiness smoke generated
+  `/tmp/repotutor-mobile-red-studies.BVpqQq/2026-06-05/local__repotutor-mobile-red-repo.RXVHwE__local__e2c6e90f`;
+  old build had `verificationCheckedRequiredArtifacts=300`, was missing
+  `analysis/mobile-readiness-report.json`, `markdown/mobile-readiness.md`, and
+  `html/mobile-readiness.html`, and `open --target mobile-readiness` failed as
+  expected.
+- 2026-06-05: Implemented Expo/React Native-style mobile-readiness report:
+  `MobileReadinessReportSchema`, `analysis/mobile-readiness-report.json`,
+  `markdown/mobile-readiness.md`, `html/mobile-readiness.html`, mobile setups,
+  config signals, platform signals, navigation signals, build signals, update
+  signals, asset signals, package signals, recommended commands, risk queue,
+  manifest/session verification coverage, learning-path linkage, nav entry,
+  and `open --target mobile-readiness`.
+- 2026-06-05: GREEN mobile-readiness smoke generated
+  `/tmp/repotutor-mobile-green-studies.xPywfA/2026-06-05/local__repotutor-mobile-green-repo.ZK3Ajc__local__2fbf6b9c`;
+  confirmed `verificationCheckedRequiredArtifacts=303`, mobile setups 7,
+  config signals 9, platform signals 8, navigation signals 6, build signals 9,
+  update signals 8, asset signals 7, package signals 8, risk queue 0, all
+  three new artifacts, and `open --target mobile-readiness` ->
+  `html/mobile-readiness.html`.
+- 2026-06-05: Verification for Upgrade 201:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 8/8 tests
+  - `pnpm audit:brief`: PASS, 99/99 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

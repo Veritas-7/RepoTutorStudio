@@ -102,6 +102,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "infrastructure-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "deployment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "serverless-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "mobile-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -202,6 +203,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "infrastructure-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "deployment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "serverless-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "mobile-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -302,6 +304,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "infrastructure-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "deployment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "serverless-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "mobile-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -433,6 +436,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/infrastructure-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/deployment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/serverless-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/mobile-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -2177,6 +2181,19 @@ describe("RepoTutor core pipeline", () => {
     expect(serverlessReadinessMarkdown).toContain("# Serverless Readiness");
     expect(serverlessReadinessMarkdown).toContain("Source pattern: Serverless Framework");
     expect(serverlessReadinessMarkdown).toContain("## Event Signals");
+    const mobileReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "mobile-readiness-report.json"), "utf8");
+    expect(mobileReadinessText).toContain("Expo app.json app.config eas.json expo start expo run:ios expo run:android eas build eas update expo-updates runtimeVersion scheme plugins assets permissions");
+    expect(mobileReadinessText).toContain("\"mobileSetups\"");
+    expect(mobileReadinessText).toContain("\"platformSignals\"");
+    expect(mobileReadinessText).toContain("\"updateSignals\"");
+    const mobileReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "mobile-readiness.html"), "utf8");
+    expect(mobileReadinessHtml).toContain("Mobile Readiness");
+    expect(mobileReadinessHtml).toContain("mobile-readiness-card");
+    expect(mobileReadinessHtml).toContain("data-source-pattern=\"Expo\"");
+    const mobileReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "mobile-readiness.md"), "utf8");
+    expect(mobileReadinessMarkdown).toContain("# Mobile Readiness");
+    expect(mobileReadinessMarkdown).toContain("Source pattern: Expo");
+    expect(mobileReadinessMarkdown).toContain("## Build Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -2829,6 +2846,119 @@ describe("RepoTutor core pipeline", () => {
     expect(report.packageSignals.some((item) => item.signal === "serverless-offline" && item.readiness === "ready")).toBe(true);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "serverless-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "serverless-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects Expo mobile readiness in app config and EAS profiles", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-mobile-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-mobile-source-"));
+    await fs.mkdir(path.join(sourceRoot, "app"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "assets"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "ios"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "android", "app", "src", "main"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "mobile-demo",
+      version: "1.0.0",
+      main: "expo-router/entry",
+      scripts: {
+        start: "expo start --dev-client",
+        android: "expo run:android",
+        ios: "expo run:ios",
+        web: "expo start --web",
+        "build:android": "eas build --platform android",
+        "build:ios": "eas build --platform ios",
+        update: "eas update --branch production"
+      },
+      dependencies: {
+        expo: "~56.0.0",
+        "expo-dev-client": "~6.0.0",
+        "expo-router": "~6.0.0",
+        "expo-updates": "~30.0.0",
+        react: "19.0.0",
+        "react-native": "0.86.0",
+        "react-native-web": "^0.21.0"
+      },
+      devDependencies: {
+        "eas-cli": "latest",
+        "@expo/metro-config": "^0.22.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "app.json"), JSON.stringify({
+      expo: {
+        name: "Mobile Demo",
+        slug: "mobile-demo",
+        version: "1.0.0",
+        orientation: "portrait",
+        icon: "./assets/icon.png",
+        scheme: "mobile-demo",
+        ios: { bundleIdentifier: "com.example.mobiledemo", supportsTablet: true },
+        android: {
+          package: "com.example.mobiledemo",
+          permissions: ["CAMERA"],
+          adaptiveIcon: {
+            foregroundImage: "./assets/adaptive-icon.png",
+            backgroundColor: "#ffffff"
+          }
+        },
+        web: { bundler: "metro", favicon: "./assets/favicon.png" },
+        plugins: ["expo-router", "expo-dev-client", "expo-updates", ["expo-splash-screen", { image: "./assets/splash.png" }]],
+        updates: { url: "https://u.expo.dev/demo" },
+        runtimeVersion: { policy: "appVersion" },
+        experiments: { typedRoutes: true },
+        extra: { eas: { projectId: "00000000-0000-0000-0000-000000000000" } }
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "eas.json"), JSON.stringify({
+      cli: { version: ">= 13.0.0", appVersionSource: "remote" },
+      build: {
+        development: { developmentClient: true, distribution: "internal" },
+        production: { autoIncrement: true, channel: "production" }
+      },
+      submit: { production: {} }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "app", "_layout.tsx"), "import { Stack } from 'expo-router';\nexport default function RootLayout() { return <Stack />; }\n");
+    await fs.writeFile(path.join(sourceRoot, "ios", "Info.plist"), "<plist><dict><key>NSCameraUsageDescription</key><string>Scan examples</string></dict></plist>\n");
+    await fs.writeFile(path.join(sourceRoot, "android", "app", "src", "main", "AndroidManifest.xml"), "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"><uses-permission android:name=\"android.permission.CAMERA\" /></manifest>\n");
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "eas.yml"), "name: eas\non: [push]\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - run: eas build --platform all --non-interactive\n");
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "mobile-readiness-report.json"), "utf8")) as {
+      mobileSetups: Array<{ filePath: string; framework: string; appConfigCount: number; platformCount: number; buildProfileCount: number; updateCount: number; assetCount: number; permissionCount: number; commandCount: number; packageCount: number }>;
+      configSignals: Array<{ signal: string; readiness: string }>;
+      platformSignals: Array<{ signal: string; readiness: string }>;
+      navigationSignals: Array<{ signal: string; readiness: string }>;
+      buildSignals: Array<{ signal: string; readiness: string }>;
+      updateSignals: Array<{ signal: string; readiness: string }>;
+      assetSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const appSetup = report.mobileSetups.find((item) => item.filePath === "app.json");
+    const easSetup = report.mobileSetups.find((item) => item.filePath === "eas.json");
+    expect(report.mobileSetups.length).toBeGreaterThan(0);
+    expect(appSetup?.framework).toBe("expo");
+    expect(appSetup?.appConfigCount).toBeGreaterThan(0);
+    expect(appSetup?.platformCount).toBeGreaterThan(0);
+    expect(appSetup?.updateCount).toBeGreaterThan(0);
+    expect(appSetup?.assetCount).toBeGreaterThan(0);
+    expect(appSetup?.permissionCount).toBeGreaterThan(0);
+    expect(easSetup?.framework).toBe("eas");
+    expect(easSetup?.buildProfileCount).toBeGreaterThan(0);
+    expect(report.mobileSetups.some((item) => item.commandCount > 0)).toBe(true);
+    expect(report.mobileSetups.some((item) => item.packageCount > 0)).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "app-json" && item.readiness === "ready")).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "plugins" && item.readiness === "ready")).toBe(true);
+    expect(report.platformSignals.some((item) => item.signal === "bundle-identifier" && item.readiness === "ready")).toBe(true);
+    expect(report.platformSignals.some((item) => item.signal === "permissions" && item.readiness === "ready")).toBe(true);
+    expect(report.navigationSignals.some((item) => item.signal === "expo-router" && item.readiness === "ready")).toBe(true);
+    expect(report.navigationSignals.some((item) => item.signal === "typed-routes" && item.readiness === "ready")).toBe(true);
+    expect(report.buildSignals.some((item) => item.signal === "eas-json" && item.readiness === "ready")).toBe(true);
+    expect(report.buildSignals.some((item) => item.signal === "run-ios" && item.readiness === "ready")).toBe(true);
+    expect(report.updateSignals.some((item) => item.signal === "runtime-version" && item.readiness === "ready")).toBe(true);
+    expect(report.updateSignals.some((item) => item.signal === "eas-update" && item.readiness === "ready")).toBe(true);
+    expect(report.assetSignals.some((item) => item.signal === "adaptive-icon" && item.readiness === "ready")).toBe(true);
+    expect(report.packageSignals.some((item) => item.signal === "expo-dev-client" && item.readiness === "ready")).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "mobile-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "mobile-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("compares a new study session against the previous source snapshot", async () => {

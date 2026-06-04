@@ -113,6 +113,7 @@ import {
   InfrastructureReadinessReport,
   DeploymentReadinessReport,
   ServerlessReadinessReport,
+  MobileReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -232,6 +233,7 @@ export interface AnalysisBundle {
   infrastructureReadinessReport: InfrastructureReadinessReport;
   deploymentReadinessReport: DeploymentReadinessReport;
   serverlessReadinessReport: ServerlessReadinessReport;
+  mobileReadinessReport: MobileReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -351,8 +353,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const infrastructureReadinessReport = await buildInfrastructureReadinessReport(walk);
   const deploymentReadinessReport = await buildDeploymentReadinessReport(walk);
   const serverlessReadinessReport = await buildServerlessReadinessReport(walk);
+  const mobileReadinessReport = await buildMobileReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -23910,6 +23913,300 @@ function serverlessSignalFromSpecs<T extends Record<K, string> & { pattern: RegE
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/serverless-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildMobileReadinessReport(walk: WalkResult): Promise<MobileReadinessReport> {
+  const sourceFiles = await mobileSourceFiles(walk);
+  const mobileSetups = mobileSetupFiles(sourceFiles);
+  const configSignals = mobileConfigSignals(sourceFiles);
+  const platformSignals = mobilePlatformSignals(sourceFiles);
+  const navigationSignals = mobileNavigationSignals(sourceFiles);
+  const buildSignals = mobileBuildSignals(sourceFiles);
+  const updateSignals = mobileUpdateSignals(sourceFiles);
+  const assetSignals = mobileAssetSignals(sourceFiles);
+  const packageSignals = mobilePackageSignals(sourceFiles);
+
+  const hasConfig = mobileSetups.length > 0 || configSignals.some((item) => item.readiness === "ready");
+  const hasPlatform = platformSignals.some((item) => ["ios", "android", "native-ios-dir", "native-android-dir"].includes(item.signal) && item.readiness === "ready");
+  const hasNavigation = navigationSignals.some((item) => item.readiness === "ready");
+  const hasBuild = buildSignals.some((item) => ["eas-json", "eas-build", "run-ios", "run-android"].includes(item.signal) && item.readiness === "ready");
+  const hasUpdates = updateSignals.some((item) => ["expo-updates", "runtime-version", "updates-url", "eas-update"].includes(item.signal) && item.readiness === "ready");
+  const hasAssets = assetSignals.some((item) => ["icon", "adaptive-icon", "splash-screen", "assets-directory"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: MobileReadinessReport["riskQueue"] = [];
+  if (!hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add an Expo or React Native app configuration inventory before treating this project as mobile-ready.",
+      why: "Expo-style review starts from app.json/app.config, package dependencies, platform identifiers, plugins, assets, and launch commands.",
+      relatedHref: "html/mobile-readiness.html"
+    });
+  }
+  if (hasConfig && !hasPlatform) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record iOS and Android identifiers or native project ownership.",
+      why: "Bundle IDs, Android package names, permissions, and native directories determine what can be installed, signed, submitted, and updated.",
+      relatedHref: "html/mobile-readiness.html"
+    });
+  }
+  if (hasConfig && !hasNavigation) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document the app entry point, router, and deep-linking scheme.",
+      why: "Learners need a first navigation map before they can understand launch flow, tabs/stacks, and URL routing.",
+      relatedHref: "html/mobile-readiness.html"
+    });
+  }
+  if (hasConfig && !hasBuild) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add repeatable Expo/EAS build, prebuild, and device run commands.",
+      why: "Mobile readiness depends on reproducible simulator/device builds and explicit EAS profiles, not only JavaScript package scripts.",
+      relatedHref: "html/mobile-readiness.html"
+    });
+  }
+  if (hasConfig && !hasUpdates) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document OTA update policy, runtimeVersion, update URL, branch, or channel before publishing updates.",
+      why: "Expo Updates require native runtime compatibility and update routing evidence to avoid shipping incompatible bundles.",
+      relatedHref: "html/mobile-readiness.html"
+    });
+  }
+  if (hasConfig && !hasAssets) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record icon, adaptive icon, splash, favicon, and bundled asset evidence.",
+      why: "Mobile builds fail or look unfinished when required visual assets are implicit or missing from app configuration.",
+      relatedHref: "html/mobile-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Expo/React Native mobile readiness report: setup ${mobileSetups.length}개, config signal ${configSignals.length}개, platform signal ${platformSignals.length}개, build signal ${buildSignals.length}개, update signal ${updateSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Expo app.json app.config eas.json expo start expo run:ios expo run:android eas build eas update expo-updates runtimeVersion scheme plugins assets permissions",
+    mobileSetups,
+    configSignals,
+    platformSignals,
+    navigationSignals,
+    buildSignals,
+    updateSignals,
+    assetSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "npx expo start --dev-client", purpose: "Start Metro for a development build without publishing or building native binaries." },
+      { command: "npx expo prebuild --clean", purpose: "Regenerate native projects from app config when native folders are intentionally managed by Expo." },
+      { command: "npx expo run:ios --configuration Release", purpose: "Build and run the iOS release configuration locally when macOS/Xcode are available." },
+      { command: "npx expo run:android --variant release", purpose: "Build and run the Android release variant locally when the Android toolchain is available." },
+      { command: "eas build --platform all --profile production", purpose: "Run cloud production builds after profiles, credentials, and signing policy are reviewed." },
+      { command: "eas update --branch <branch>", purpose: "Publish an OTA update only after runtimeVersion, update URL, branch, and channel compatibility are confirmed." }
+    ],
+    learnerNextSteps: [
+      "Open Mobile Readiness and identify the app configuration file first.",
+      "Confirm name, slug, version, scheme, plugins, and platform identifiers before reading screens.",
+      "Map Expo Router or React Navigation entry points to the app directory and deep-linking scheme.",
+      "Review EAS build profiles, development client, OTA update runtimeVersion, and visual assets before trusting a release path."
+    ]
+  };
+}
+
+type MobileSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function mobileSourceFiles(walk: WalkResult): Promise<MobileSourceFile[]> {
+  const files: MobileSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !mobileInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath);
+    if (!text) continue;
+    if (!mobilePathSignal(file.relPath) && !mobileContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return files;
+}
+
+function mobileInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return mobilePathSignal(filePath)
+    || /(^|\/)(README|docs?|app|src|screens?|routes?|navigation|navigator|ios|android|assets?|images?|icons?|build|submit|release|updates?|scripts?|ci|workflows?|mobile|native)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|eas\.json|app\.json|app\.config\.[cm]?[jt]s|metro\.config\.[cm]?[jt]s|babel\.config\.[cm]?js|react-native\.config\.[cm]?js)$/i.test(base);
+}
+
+function mobilePathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(app\.json|app\.config\.[cm]?[jt]s|eas\.json|metro\.config\.[cm]?[jt]s|react-native\.config\.[cm]?js)$/i.test(base)
+    || /(^|\/)(ios|android|app|screens|navigation|routes|assets)(\/|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/.*\.(ya?ml)$/i.test(filePath);
+}
+
+function mobileContentSignal(text: string): boolean {
+  return /("expo"\s*:|app\.config|expo-router|expo start|expo run:(ios|android)|expo prebuild|eas\.json|eas\s+(build|submit|update|login|whoami)|expo-updates|runtimeVersion|updates\s*:|ios\s*:|android\s*:|bundleIdentifier|adaptiveIcon|splash|react-native|React Native|registerRootComponent|AppRegistry\.registerComponent|AndroidManifest|NSCameraUsageDescription|uses-permission)/i.test(text);
+}
+
+function mobileSetupFiles(sourceFiles: MobileSourceFile[]): MobileReadinessReport["mobileSetups"] {
+  const rows: MobileReadinessReport["mobileSetups"] = [];
+  for (const source of sourceFiles) {
+    const appConfigCount = countMatches(source.text, /"expo"\s*:|app\.config|name\s*:|"name"\s*:|slug\s*:|"slug"\s*:|version\s*:|"version"\s*:|scheme\s*:|"scheme"\s*:|plugins\s*:|"plugins"\s*:|experiments\s*:|"experiments"\s*:/gi) + (/^(app\.json|app\.config\.[cm]?[jt]s)$/i.test(path.basename(source.filePath)) ? 1 : 0);
+    const platformCount = countMatches(source.text, /ios\s*:|"ios"\s*:|android\s*:|"android"\s*:|bundleIdentifier|package\s*:|"package"\s*:|supportsTablet|permissions|web\s*:|"web"\s*:/gi) + (/(\b|\/)(ios|android)(\/|$)/i.test(source.filePath) ? 1 : 0);
+    const navigationCount = countMatches(source.text, /expo-router|react-navigation|@react-navigation|Stack\s*\/>|Tabs\s*\/>|app\/_layout|typedRoutes|deep linking|scheme\s*:|"scheme"\s*:/gi) + (/(\b|\/)(app|screens|navigation|routes)(\/|$)/i.test(source.filePath) ? 1 : 0);
+    const buildProfileCount = countMatches(source.text, /eas\.json|eas\s+build|developmentClient|distribution|internal|autoIncrement|submit\s*:|"submit"\s*:|expo prebuild|expo run:(ios|android)/gi) + (/^eas\.json$/i.test(path.basename(source.filePath)) ? 1 : 0);
+    const updateCount = countMatches(source.text, /expo-updates|runtimeVersion|updates\s*:|"updates"\s*:|updates\.url|eas\s+update|branch\s*:|"branch"\s*:|channel\s*:|"channel"\s*:/gi);
+    const assetCount = countMatches(source.text, /icon\s*:|"icon"\s*:|adaptiveIcon|splash|expo-splash-screen|favicon|assets?\//gi) + (/(\b|\/)(assets|images|icons)(\/|$)/i.test(source.filePath) ? 1 : 0);
+    const permissionCount = countMatches(source.text, /permissions\s*:|"permissions"\s*:|uses-permission|NS[A-Za-z]+UsageDescription|UIBackgroundModes|android\.permission/gi);
+    const commandCount = countMatches(source.text, /\b(expo|npx expo|yarn expo|pnpm expo|bun expo)\s+(start|prebuild|run:ios|run:android|install)|\beas\s+(build|submit|update|login|whoami|credentials)\b/gi);
+    const packageCount = countMatches(source.text, /"expo"|"react-native"|"expo-router"|"expo-dev-client"|"expo-updates"|"eas-cli"|"react-native-web"|"@expo\/metro-config"/gi);
+    const totalSignals = appConfigCount + platformCount + navigationCount + buildProfileCount + updateCount + assetCount + permissionCount + commandCount + packageCount;
+    if (totalSignals === 0 && !mobilePathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework: mobileFramework(source),
+      appConfigCount,
+      platformCount,
+      navigationCount,
+      buildProfileCount,
+      updateCount,
+      assetCount,
+      permissionCount,
+      commandCount,
+      packageCount,
+      readiness: totalSignals >= 6 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} mobile app signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.appConfigCount + b.platformCount + b.buildProfileCount + b.updateCount + b.packageCount;
+    const aScore = a.appConfigCount + a.platformCount + a.buildProfileCount + a.updateCount + a.packageCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 60);
+}
+
+function mobileFramework(source: MobileSourceFile): MobileReadinessReport["mobileSetups"][number]["framework"] {
+  if (/eas\.json/i.test(source.filePath) || /\beas\s+(build|submit|update|login|whoami)|"eas-cli"/i.test(source.text)) return "eas";
+  if (/app\.json|app\.config|expo-router|"expo"|expo\s+(start|prebuild|run:ios|run:android)|expo-updates/i.test(source.filePath) || /"expo"|expo-router|expo\s+(start|prebuild|run:ios|run:android)|expo-updates/i.test(source.text)) return "expo";
+  if (/react-native|React Native|AppRegistry\.registerComponent|registerRootComponent/i.test(source.text)) return "react-native";
+  if (/(^|\/)(ios|android)(\/|$)/i.test(source.filePath) || /AndroidManifest|Info\.plist|Podfile|Gradle/i.test(source.text)) return "bare-native";
+  if (/capacitor\.config|@capacitor/i.test(source.filePath) || /@capacitor|Capacitor/i.test(source.text)) return "capacitor";
+  return "unknown";
+}
+
+function mobileConfigSignals(sourceFiles: MobileSourceFile[]): MobileReadinessReport["configSignals"] {
+  const specs: Array<{ signal: MobileReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "app-json", pattern: /(^|\/)app\.json$/i, evidence: "app.json evidence was detected." },
+    { signal: "app-config", pattern: /(^|\/)app\.config\.[cm]?[jt]s$/i, evidence: "dynamic app config evidence was detected." },
+    { signal: "name", pattern: /"name"\s*:|name\s*:/i, evidence: "app name evidence was detected." },
+    { signal: "slug", pattern: /"slug"\s*:|slug\s*:/i, evidence: "Expo slug evidence was detected." },
+    { signal: "version", pattern: /"version"\s*:|version\s*:/i, evidence: "app version evidence was detected." },
+    { signal: "scheme", pattern: /"scheme"\s*:|scheme\s*:/i, evidence: "deep-linking scheme evidence was detected." },
+    { signal: "extra", pattern: /"extra"\s*:|extra\s*:/i, evidence: "extra config evidence was detected." },
+    { signal: "plugins", pattern: /"plugins"\s*:|plugins\s*:/i, evidence: "Expo plugin evidence was detected." },
+    { signal: "experiments", pattern: /"experiments"\s*:|experiments\s*:/i, evidence: "Expo experiment config evidence was detected." }
+  ];
+  return mobileSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function mobilePlatformSignals(sourceFiles: MobileSourceFile[]): MobileReadinessReport["platformSignals"] {
+  const specs: Array<{ signal: MobileReadinessReport["platformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ios", pattern: /"ios"\s*:|ios\s*:/i, evidence: "iOS app config evidence was detected." },
+    { signal: "bundle-identifier", pattern: /bundleIdentifier|PRODUCT_BUNDLE_IDENTIFIER/i, evidence: "iOS bundle identifier evidence was detected." },
+    { signal: "android", pattern: /"android"\s*:|android\s*:/i, evidence: "Android app config evidence was detected." },
+    { signal: "android-package", pattern: /"package"\s*:|applicationId|namespace\s*=|android:host/i, evidence: "Android package/application ID evidence was detected." },
+    { signal: "native-ios-dir", pattern: /(^|\/)ios(\/|$)|Podfile|Info\.plist/i, evidence: "native iOS directory evidence was detected." },
+    { signal: "native-android-dir", pattern: /(^|\/)android(\/|$)|AndroidManifest|build\.gradle/i, evidence: "native Android directory evidence was detected." },
+    { signal: "web", pattern: /"web"\s*:|expo start --web|react-native-web/i, evidence: "web target evidence was detected." },
+    { signal: "permissions", pattern: /permissions\s*:|"permissions"\s*:|uses-permission|NS[A-Za-z]+UsageDescription|android\.permission/i, evidence: "mobile permission evidence was detected." }
+  ];
+  return mobileSignalFromSpecs(sourceFiles, specs, "platform", "signal");
+}
+
+function mobileNavigationSignals(sourceFiles: MobileSourceFile[]): MobileReadinessReport["navigationSignals"] {
+  const specs: Array<{ signal: MobileReadinessReport["navigationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "expo-router", pattern: /expo-router/i, evidence: "Expo Router evidence was detected." },
+    { signal: "app-directory", pattern: /(^|\/)app\/(_layout|index|\+html|\[[^\]]+\])\.[cm]?[jt]sx?$|(^|\/)app(\/|$)/i, evidence: "app directory route evidence was detected." },
+    { signal: "typed-routes", pattern: /typedRoutes/i, evidence: "typed routes evidence was detected." },
+    { signal: "deep-linking", pattern: /scheme\s*:|"scheme"\s*:|Linking\.createURL|deep linking/i, evidence: "deep-linking evidence was detected." },
+    { signal: "react-navigation", pattern: /@react-navigation|NavigationContainer|createNativeStackNavigator|createBottomTabNavigator/i, evidence: "React Navigation evidence was detected." },
+    { signal: "entry-point", pattern: /"main"\s*:\s*"expo-router\/entry"|registerRootComponent|AppRegistry\.registerComponent/i, evidence: "mobile app entry point evidence was detected." }
+  ];
+  return mobileSignalFromSpecs(sourceFiles, specs, "navigation", "signal");
+}
+
+function mobileBuildSignals(sourceFiles: MobileSourceFile[]): MobileReadinessReport["buildSignals"] {
+  const specs: Array<{ signal: MobileReadinessReport["buildSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "eas-json", pattern: /(^|\/)eas\.json$/i, evidence: "EAS build profile file evidence was detected." },
+    { signal: "eas-build", pattern: /\beas\s+build\b/i, evidence: "EAS build command evidence was detected." },
+    { signal: "development-client", pattern: /developmentClient|expo-dev-client|--dev-client/i, evidence: "development client evidence was detected." },
+    { signal: "internal-distribution", pattern: /distribution\s*:\s*["']?internal|"distribution"\s*:\s*"internal"/i, evidence: "internal distribution evidence was detected." },
+    { signal: "submit", pattern: /\beas\s+submit\b|"submit"\s*:/i, evidence: "store submission evidence was detected." },
+    { signal: "auto-increment", pattern: /autoIncrement|appVersionSource/i, evidence: "version auto-increment evidence was detected." },
+    { signal: "prebuild", pattern: /expo\s+prebuild|npx\s+expo\s+prebuild/i, evidence: "Expo prebuild evidence was detected." },
+    { signal: "run-ios", pattern: /expo\s+run:ios|npx\s+expo\s+run:ios/i, evidence: "iOS local run command evidence was detected." },
+    { signal: "run-android", pattern: /expo\s+run:android|npx\s+expo\s+run:android/i, evidence: "Android local run command evidence was detected." }
+  ];
+  return mobileSignalFromSpecs(sourceFiles, specs, "build", "signal");
+}
+
+function mobileUpdateSignals(sourceFiles: MobileSourceFile[]): MobileReadinessReport["updateSignals"] {
+  const specs: Array<{ signal: MobileReadinessReport["updateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "expo-updates", pattern: /expo-updates|Updates\./i, evidence: "expo-updates evidence was detected." },
+    { signal: "runtime-version", pattern: /runtimeVersion|EXPO_RUNTIME_VERSION/i, evidence: "runtimeVersion evidence was detected." },
+    { signal: "updates-url", pattern: /updates\s*:|"updates"\s*:|updates\.url|EXPO_UPDATE_URL|u\.expo\.dev/i, evidence: "update URL evidence was detected." },
+    { signal: "eas-update", pattern: /\beas\s+update\b|EAS Update/i, evidence: "EAS Update command evidence was detected." },
+    { signal: "update-branch", pattern: /branch\s*:|"branch"\s*:|--branch/i, evidence: "update branch evidence was detected." },
+    { signal: "channel", pattern: /channel\s*:|"channel"\s*:|--channel/i, evidence: "update channel evidence was detected." },
+    { signal: "check-for-update", pattern: /checkForUpdateAsync/i, evidence: "manual update check evidence was detected." },
+    { signal: "fetch-update", pattern: /fetchUpdateAsync|reloadAsync/i, evidence: "manual update fetch/reload evidence was detected." }
+  ];
+  return mobileSignalFromSpecs(sourceFiles, specs, "update", "signal");
+}
+
+function mobileAssetSignals(sourceFiles: MobileSourceFile[]): MobileReadinessReport["assetSignals"] {
+  const specs: Array<{ signal: MobileReadinessReport["assetSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "icon", pattern: /"icon"\s*:|icon\s*:/i, evidence: "app icon evidence was detected." },
+    { signal: "adaptive-icon", pattern: /adaptiveIcon|android-icon/i, evidence: "Android adaptive icon evidence was detected." },
+    { signal: "splash-screen", pattern: /expo-splash-screen|"splash"\s*:|splash\s*:|splash-icon/i, evidence: "splash screen evidence was detected." },
+    { signal: "favicon", pattern: /favicon/i, evidence: "web favicon evidence was detected." },
+    { signal: "assets-directory", pattern: /(^|\/)assets(\/|$)|assets?\//i, evidence: "asset directory evidence was detected." },
+    { signal: "font-assets", pattern: /expo-font|useFonts|Font\.loadAsync|\.(ttf|otf)/i, evidence: "font asset evidence was detected." },
+    { signal: "image-assets", pattern: /\.(png|jpe?g|webp|gif|svg)|Image\s+from|require\(['\"].*assets/i, evidence: "image asset evidence was detected." }
+  ];
+  return mobileSignalFromSpecs(sourceFiles, specs, "asset", "signal");
+}
+
+function mobilePackageSignals(sourceFiles: MobileSourceFile[]): MobileReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: MobileReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "expo", pattern: /"expo"|from ['"]expo['"]|npx\s+expo/i, evidence: "Expo package/command evidence was detected." },
+    { signal: "react-native", pattern: /"react-native"|from ['"]react-native['"]|React Native/i, evidence: "React Native package evidence was detected." },
+    { signal: "expo-router", pattern: /"expo-router"|expo-router/i, evidence: "Expo Router package evidence was detected." },
+    { signal: "expo-dev-client", pattern: /"expo-dev-client"|expo-dev-client/i, evidence: "Expo development client package evidence was detected." },
+    { signal: "expo-updates", pattern: /"expo-updates"|expo-updates/i, evidence: "Expo Updates package evidence was detected." },
+    { signal: "eas-cli", pattern: /"eas-cli"|\beas\s+(build|submit|update|login|whoami)\b/i, evidence: "EAS CLI evidence was detected." },
+    { signal: "react-native-web", pattern: /"react-native-web"|react-native-web/i, evidence: "React Native Web package evidence was detected." },
+    { signal: "metro-config", pattern: /@expo\/metro-config|expo\/metro-config|metro\.config/i, evidence: "Metro config evidence was detected." }
+  ];
+  return mobileSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function mobileSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: MobileSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/mobile-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
