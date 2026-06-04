@@ -66,6 +66,7 @@ import type {
   DataFetchingReadinessReport,
   RoutingReadinessReport,
   StateManagementReadinessReport,
+  FormReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -138,6 +139,7 @@ export interface StudyHtmlInput {
   dataFetchingReadinessReport: DataFetchingReadinessReport;
   routingReadinessReport: RoutingReadinessReport;
   stateManagementReadinessReport: StateManagementReadinessReport;
+  formReadinessReport: FormReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -230,6 +232,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["data-fetching-readiness.html", "Data Fetching"],
     ["routing-readiness.html", "Routing"],
     ["state-management-readiness.html", "State Management"],
+    ["form-readiness.html", "Forms"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -357,6 +360,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Data Fetching Readiness</h3><p>${escapeHtml(input.dataFetchingReadinessReport.summary)}</p><p>TanStack Query 패턴으로 QueryClient, providers, query hooks, cache policy, invalidation, hydration, devtools를 정리합니다.</p><a href="data-fetching-readiness.html">Data Fetching 열기</a></article>
           <article><h3>Routing Readiness</h3><p>${escapeHtml(input.routingReadinessReport.summary)}</p><p>React Router 패턴으로 router mode, route definitions, navigation APIs, data routes, file routes를 정리합니다.</p><a href="routing-readiness.html">Routing 열기</a></article>
           <article><h3>State Management Readiness</h3><p>${escapeHtml(input.stateManagementReadinessReport.summary)}</p><p>Redux Toolkit 패턴으로 configureStore, slices, selectors, middleware, entity adapters, RTK Query 연결을 정리합니다.</p><a href="state-management-readiness.html">State Management 열기</a></article>
+          <article><h3>Form Readiness</h3><p>${escapeHtml(input.formReadinessReport.summary)}</p><p>React Hook Form 패턴으로 useForm, register, submit, validation, errors, field array 준비도를 정리합니다.</p><a href="form-readiness.html">Forms 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -648,6 +652,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("State Management Readiness", "state-management-readiness.html", `<section class="panel" data-source-pattern="Redux Toolkit"><h2>State Management Snapshot</h2><p>${escapeHtml(input.stateManagementReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.stateManagementReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>stores</dt><dd>${input.stateManagementReadinessReport.storeSetups.length}</dd></div><div><dt>slices</dt><dd>${input.stateManagementReadinessReport.sliceDefinitions.length}</dd></div><div><dt>selectors</dt><dd>${input.stateManagementReadinessReport.selectorSignals.length}</dd></div><div><dt>side effects</dt><dd>${input.stateManagementReadinessReport.sideEffectSignals.length}</dd></div></dl><p class="muted">RepoTutor records state-management readiness only. It does not instantiate stores, dispatch actions, mount providers, or run the analyzed project's tests.</p></section><section class="grid"><article class="state-management-card"><h3>Store Setups</h3>${stateManagementStoreList(input.stateManagementReadinessReport.storeSetups)}</article><article class="state-management-card"><h3>Slice Definitions</h3>${stateManagementSliceList(input.stateManagementReadinessReport.sliceDefinitions)}</article><article class="state-management-card"><h3>Selector Signals</h3>${stateManagementSignalList(input.stateManagementReadinessReport.selectorSignals, "signal")}</article><article class="state-management-card"><h3>Side Effect Signals</h3>${stateManagementSignalList(input.stateManagementReadinessReport.sideEffectSignals, "signal")}</article></section><section class="grid"><article class="state-management-card"><h3>Entity Signals</h3>${stateManagementSignalList(input.stateManagementReadinessReport.entitySignals, "signal")}</article><article class="state-management-card"><h3>Middleware Signals</h3>${stateManagementSignalList(input.stateManagementReadinessReport.middlewareSignals, "signal")}</article><article class="state-management-card"><h3>RTK Query Signals</h3>${stateManagementSignalList(input.stateManagementReadinessReport.rtkQuerySignals, "signal")}</article><article class="state-management-card"><h3>Package Signals</h3>${stateManagementSignalList(input.stateManagementReadinessReport.packageSignals, "signal")}</article><article class="state-management-card"><h3>Recommended Commands</h3>${stateManagementCommandList(input.stateManagementReadinessReport.recommendedCommands)}</article><article class="state-management-card"><h3>Risk Queue</h3>${stateManagementRiskList(input.stateManagementReadinessReport.riskQueue)}</article><article class="state-management-card"><h3>다음 확인 단계</h3>${list(input.stateManagementReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "form-readiness.html",
+      title: "Form Readiness",
+      html: pageShell("Form Readiness", "form-readiness.html", `<section class="panel" data-source-pattern="React Hook Form"><h2>Form Snapshot</h2><p>${escapeHtml(input.formReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.formReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.formReadinessReport.formSetups.length}</dd></div><div><dt>fields</dt><dd>${input.formReadinessReport.fieldRegistrations.length}</dd></div><div><dt>validation</dt><dd>${input.formReadinessReport.validationSignals.length}</dd></div><div><dt>errors</dt><dd>${input.formReadinessReport.errorSignals.length}</dd></div></dl><p class="muted">RepoTutor records form readiness only. It does not mount forms, submit values, execute schema validators, or run the analyzed project's tests.</p></section><section class="grid"><article class="form-readiness-card"><h3>Form Setups</h3>${formReadinessSetupList(input.formReadinessReport.formSetups)}</article><article class="form-readiness-card"><h3>Field Registrations</h3>${formReadinessFieldList(input.formReadinessReport.fieldRegistrations)}</article><article class="form-readiness-card"><h3>Validation Signals</h3>${formReadinessSignalList(input.formReadinessReport.validationSignals, "signal")}</article><article class="form-readiness-card"><h3>Error Signals</h3>${formReadinessSignalList(input.formReadinessReport.errorSignals, "signal")}</article></section><section class="grid"><article class="form-readiness-card"><h3>Value Flow Signals</h3>${formReadinessSignalList(input.formReadinessReport.valueFlowSignals, "signal")}</article><article class="form-readiness-card"><h3>Package Signals</h3>${formReadinessSignalList(input.formReadinessReport.packageSignals, "signal")}</article><article class="form-readiness-card"><h3>Recommended Commands</h3>${formReadinessCommandList(input.formReadinessReport.recommendedCommands)}</article><article class="form-readiness-card"><h3>Risk Queue</h3>${formReadinessRiskList(input.formReadinessReport.riskQueue)}</article><article class="form-readiness-card"><h3>다음 확인 단계</h3>${list(input.formReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -814,6 +823,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Data Fetching Readiness", path: "html/data-fetching-readiness.html", description: "TanStack Query식 QueryClient, hooks, cache, invalidation, hydration 준비도를 확인합니다." },
       { label: "Routing Readiness", path: "html/routing-readiness.html", description: "React Router식 router mode, route definitions, navigation API, data route, file route 준비도를 확인합니다." },
       { label: "State Management Readiness", path: "html/state-management-readiness.html", description: "Redux Toolkit식 store setup, slices, selectors, side effects, middleware, RTK Query 준비도를 확인합니다." },
+      { label: "Form Readiness", path: "html/form-readiness.html", description: "React Hook Form식 useForm, register, submit, validation, errors, field array 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1233,6 +1243,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "state-management-readiness.html",
       goal: "Redux Toolkit식 configureStore, slices, selectors, side effects, middleware, RTK Query 연결을 보고 클라이언트 상태 관리 관문을 확인합니다.",
       evidence: `store setups ${input.stateManagementReadinessReport.storeSetups.length}개, slice definitions ${input.stateManagementReadinessReport.sliceDefinitions.length}개`
+    },
+    {
+      title: "Form readiness 확인",
+      href: "form-readiness.html",
+      goal: "React Hook Form식 useForm, register, submit, validation, errors, field array를 보고 입력 흐름 관문을 확인합니다.",
+      evidence: `form setups ${input.formReadinessReport.formSetups.length}개, field registrations ${input.formReadinessReport.fieldRegistrations.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -2715,6 +2731,36 @@ function stateManagementRiskList(items: StateManagementReadinessReport["riskQueu
 }
 
 function stateManagementHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function formReadinessSetupList(items: FormReadinessReport["formSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">form setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.library)}/${escapeHtml(item.readiness)}]<br>useForm ${item.useFormCount} · submit/defaultValues/provider ${item.hasSubmitHandler ? "yes" : "no"}/${item.hasDefaultValues ? "yes" : "no"}/${item.hasFormProvider ? "yes" : "no"}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(formReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function formReadinessFieldList(items: FormReadinessReport["fieldRegistrations"]): string {
+  if (items.length === 0) return "<p class=\"muted\">field registration이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.readiness)}]<br>registered/controlled/field arrays/nested ${item.registeredFieldCount}/${item.controlledFieldCount}/${item.fieldArrayCount}/${item.nestedFieldSignals}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(formReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function formReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">form signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(formReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function formReadinessCommandList(items: FormReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function formReadinessRiskList(items: FormReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(formReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function formReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

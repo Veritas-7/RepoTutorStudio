@@ -2769,6 +2769,44 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 158:
   - `05c5b41` state management readiness report
 
+- 2026-06-04: AutoResearch Upgrade 159 candidate selected:
+  `react-hook-form/react-hook-form`
+  (`https://github.com/react-hook-form/react-hook-form`; public MIT; 44,754
+  stars; 2,408 forks; updated 2026-06-04T06:47:19Z). Compared with
+  `jaredpalmer/formik`, `TanStack/form`, and `colinhacks/zod`; selected React
+  Hook Form because it directly models form readiness: `useForm`, `register`,
+  `handleSubmit`, `Controller`, `FormProvider`, `useFormContext`,
+  `useFieldArray`, validation rules, schema resolvers, `formState.errors`,
+  default values, value helpers, and package signals. Cloned ignored external
+  source to `research/external-src/react-hook-form-react-hook-form` and
+  inspected README, license, package metadata, examples, and package source
+  without executing external source. Clone HEAD was `6a501e0`;
+  tracked-file count for
+  `research/external-src/react-hook-form-react-hook-form` returned `0`.
+- 2026-06-04: RED form-readiness smoke generated
+  `/tmp/repotutor-form-readiness-red-studies.t4Op5n/2026-06-04/local__simple-ts-app__main__e86e1089`;
+  old build was missing `analysis/form-readiness-report.json`,
+  `markdown/form-readiness.md`, and `html/form-readiness.html`, and
+  `open --target form-readiness` failed as expected.
+- 2026-06-04: Implemented React Hook Form-style form-readiness report:
+  `FormReadinessReportSchema`, `analysis/form-readiness-report.json`,
+  `markdown/form-readiness.md`, `html/form-readiness.html`, form setups, field
+  registrations, validation signals, error signals, value-flow signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, nav entry, and `open --target
+  form-readiness`.
+- 2026-06-04: GREEN form-readiness smoke generated
+  `/tmp/repotutor-form-readiness-green-studies.v0vTVE/2026-06-04/local__simple-ts-app__main__e86e1089`;
+  confirmed `verificationCheckedRequiredArtifacts=177`, form setups 0, field
+  registrations 0, validation signals 11, error signals 9, value-flow signals
+  10, package signals 7, recommended commands 6, risk queue 2,
+  manifest/learning-path entries, and `open --target form-readiness` ->
+  `html/form-readiness.html`.
+- 2026-06-04: Verification for Upgrade 159:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 57/57 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

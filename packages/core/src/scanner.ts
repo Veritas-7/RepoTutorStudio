@@ -71,6 +71,7 @@ import {
   DataFetchingReadinessReport,
   RoutingReadinessReport,
   StateManagementReadinessReport,
+  FormReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -148,6 +149,7 @@ export interface AnalysisBundle {
   dataFetchingReadinessReport: DataFetchingReadinessReport;
   routingReadinessReport: RoutingReadinessReport;
   stateManagementReadinessReport: StateManagementReadinessReport;
+  formReadinessReport: FormReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -225,8 +227,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const dataFetchingReadinessReport = await buildDataFetchingReadinessReport(walk);
   const routingReadinessReport = await buildRoutingReadinessReport(walk);
   const stateManagementReadinessReport = await buildStateManagementReadinessReport(walk);
+  const formReadinessReport = await buildFormReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -12086,6 +12089,282 @@ function stateManagementSignalFromSpecs<T extends Record<K, string> & { pattern:
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/state-management-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildFormReadinessReport(walk: WalkResult): Promise<FormReadinessReport> {
+  const sourceFiles = await formReadinessSourceFiles(walk);
+  const formSetups = formReadinessFormSetups(sourceFiles);
+  const fieldRegistrations = formReadinessFieldRegistrations(sourceFiles);
+  const validationSignals = formReadinessValidationSignals(sourceFiles);
+  const errorSignals = formReadinessErrorSignals(sourceFiles);
+  const valueFlowSignals = formReadinessValueFlowSignals(sourceFiles);
+  const packageSignals = formReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasReactHookForm = packageSignals.some((item) => item.signal === "react-hook-form" && item.readiness === "ready");
+  const hasSetup = formSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = formSetups.some((item) => item.readiness === "ready");
+  const hasSubmitHandler = formSetups.some((item) => item.hasSubmitHandler);
+  const hasFieldRegistration = fieldRegistrations.some((item) => item.registeredFieldCount > 0 || item.controlledFieldCount > 0);
+  const hasControlledFields = fieldRegistrations.some((item) => item.controlledFieldCount > 0);
+  const hasFieldArray = fieldRegistrations.some((item) => item.fieldArrayCount > 0);
+  const hasValidation = validationSignals.some((item) => item.readiness === "ready");
+  const hasResolver = validationSignals.some((item) => ["resolver", "zodResolver", "yupResolver"].includes(item.signal) && item.readiness === "ready");
+  const hasErrors = errorSignals.some((item) => item.readiness === "ready");
+  const hasDefaultValues = formSetups.some((item) => item.hasDefaultValues) || valueFlowSignals.some((item) => item.signal === "defaultValues" && item.readiness === "ready");
+
+  const riskQueue: FormReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasFieldRegistration) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the form strategy before claiming form-readiness.",
+      why: "React Hook Form-style readiness starts with useForm, register, submit handling, controlled components, validation, or an explicit alternative form package.",
+      relatedHref: "html/form-readiness.html"
+    });
+  }
+  if (hasReactHookForm && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Expose a useForm setup with register and handleSubmit before treating the form as production-ready.",
+      why: "React Hook Form centers readiness around a useForm control surface, field registration, and handleSubmit wiring.",
+      relatedHref: "html/form-readiness.html"
+    });
+  }
+  if (hasSetup && !hasSubmitHandler) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect forms to handleSubmit or another explicit submit handler.",
+      why: "Learners need to trace how validated values leave the form and where side effects start.",
+      relatedHref: "html/form-readiness.html"
+    });
+  }
+  if ((hasSetup || hasFieldRegistration) && !hasValidation) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add visible validation rules or schema resolver evidence for important fields.",
+      why: "Field registration without validation leaves required data contracts implicit.",
+      relatedHref: "html/form-readiness.html"
+    });
+  }
+  if (hasValidation && !hasErrors) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Render or expose form errors near the relevant fields.",
+      why: "Validation is only useful to learners and users when errors are surfaced through formState, ErrorMessage, or explicit error helpers.",
+      relatedHref: "html/form-readiness.html"
+    });
+  }
+  if ((hasControlledFields || hasFieldArray || hasResolver) && !hasDefaultValues) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document defaultValues for controlled components, field arrays, or schema-backed forms.",
+      why: "Default values make reset behavior, controlled inputs, and nested field arrays easier to reason about.",
+      relatedHref: "html/form-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run form tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not mount forms, submit values, execute schema validators, or run the analyzed project's tests.",
+    relatedHref: "html/form-readiness.html"
+  });
+
+  return {
+    summary: `React Hook Form식 form readiness report: form setup ${formSetups.length}개, field registration ${fieldRegistrations.length}개, validation signal ${validationSignals.length}개, error signal ${errorSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "React Hook Form useForm register handleSubmit Controller FormProvider useFormContext useFieldArray resolver errors defaultValues watch reset validation",
+    formSetups,
+    fieldRegistrations,
+    validationSignals,
+    errorSignals,
+    valueFlowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"useForm|register|handleSubmit|FormProvider|useFormContext\" src app pages packages", purpose: "Inventory form setup, registration, submit, and provider boundaries." },
+      { command: "rg \"Controller|useController|control=|useFieldArray|fields\\\\.map\" src app pages packages", purpose: "Find controlled inputs and dynamic field array flows." },
+      { command: "rg \"required|minLength|maxLength|pattern|validate|resolver|zodResolver|yupResolver\" src app pages packages", purpose: "Review inline validation rules and schema resolver usage." },
+      { command: "rg \"formState|errors|setError|clearErrors|trigger|isSubmitting|isValid\" src app pages packages", purpose: "Trace error rendering and form state feedback." },
+      { command: "rg \"watch|useWatch|getValues|setValue|reset|resetField|defaultValues|unregister\" src app pages packages", purpose: "Check value-flow helpers, reset behavior, and unregister policy." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise form validation, submit handlers, controlled inputs, and dynamic fields." }
+    ],
+    learnerNextSteps: [
+      "먼저 useForm을 찾고 register, handleSubmit, formState.errors가 같은 흐름 안에서 연결되는지 확인하세요.",
+      "Controller나 useController가 있으면 외부 UI 컴포넌트와 control/defaultValues가 함께 연결되는지 확인하세요.",
+      "useFieldArray가 있으면 append/remove와 중첩 name 경로가 화면 렌더링과 validation에 맞게 유지되는지 확인하세요.",
+      "resolver, zodResolver, yupResolver가 있으면 schema 파일과 실제 field name이 일치하는지 함께 읽으세요.",
+      "이 리포트는 정적 readiness입니다. 실제 submit, validation message, reset 동작은 원본 프로젝트 테스트나 브라우저에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type FormReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function formReadinessSourceFiles(walk: WalkResult): Promise<FormReadinessSourceFile[]> {
+  const files: FormReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !formReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!formReadinessPathSignal(file.relPath) && !formReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function formReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return formReadinessPathSignal(filePath)
+    || /^(package\.json|tsconfig\.json|vite\.config\.[cm]?[jt]s|next\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|ya?ml)$/i.test(filePath);
+}
+
+function formReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(forms?|fields?|validation|validators?|schema|schemas|resolver|resolvers|inputs?|components?)(\/|\.|-|_|$)|react-hook-form|formik|tanstack-form|zod|yup/i.test(filePath);
+}
+
+function formReadinessContentSignal(text: string): boolean {
+  return /\b(useForm|register|handleSubmit|Controller|FormProvider|useFormContext|useFieldArray|useController|useFormState|formState|errors|defaultValues|resolver|zodResolver|yupResolver|setError|clearErrors|trigger|watch|useWatch|getValues|setValue|resetField|unregister|shouldUnregister|Formik|useFormik|FieldArray|FormData|HTMLFormElement)\b/i.test(text);
+}
+
+function formReadinessFormSetups(sourceFiles: FormReadinessSourceFile[]): FormReadinessReport["formSetups"] {
+  const rows: FormReadinessReport["formSetups"] = [];
+  for (const source of sourceFiles) {
+    const useFormCount = countMatches(source.text, /\buseForm\s*(<[^>]+>)?\s*\(/gi);
+    const hasRegister = /\bregister\s*\(/i.test(source.text);
+    const hasSubmitHandler = /\bhandleSubmit\s*\(|onSubmit\s*=\s*{?[^}\n]*handleSubmit|<form\b[^>]*onSubmit|\bfunction\s+onSubmit\b|\bconst\s+onSubmit\b/i.test(source.text);
+    const hasDefaultValues = /\b(defaultValues|values)\s*:/i.test(source.text);
+    const hasFormProvider = /\bFormProvider\b|\buseFormContext\b/i.test(source.text);
+    const hasNativeForm = /<form\b|new\s+FormData\b|\bHTMLFormElement\b/i.test(source.text);
+    const hasSetupSignal = useFormCount > 0 || hasRegister || hasSubmitHandler || hasDefaultValues || hasFormProvider || hasNativeForm || /\b(useFormik|<Formik|FormikProvider|createFormHook)\b/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      library: formReadinessLibrary(source),
+      useFormCount,
+      hasSubmitHandler,
+      hasDefaultValues,
+      hasFormProvider,
+      readiness: useFormCount > 0 && hasRegister && hasSubmitHandler ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains useForm ${useFormCount}, register ${hasRegister ? "yes" : "no"}, submit handler ${hasSubmitHandler ? "yes" : "no"}, defaultValues ${hasDefaultValues ? "yes" : "no"}, FormProvider/useFormContext ${hasFormProvider ? "yes" : "no"}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function formReadinessLibrary(source: FormReadinessSourceFile): FormReadinessReport["formSetups"][number]["library"] {
+  if (/react-hook-form|\buseForm\b|\bregister\s*\(|\bhandleSubmit\b|\bController\b|\bFormProvider\b/i.test(source.text)) return "react-hook-form";
+  if (/formik|\buseFormik\b|<Formik\b|FormikProvider/i.test(source.text)) return "formik";
+  if (/@tanstack\/(react-)?form|createFormHook|formOptions/i.test(source.text)) return "tanstack-form";
+  if (/<form\b|new\s+FormData\b|\bHTMLFormElement\b/i.test(source.text)) return "native";
+  return "unknown";
+}
+
+function formReadinessFieldRegistrations(sourceFiles: FormReadinessSourceFile[]): FormReadinessReport["fieldRegistrations"] {
+  const rows: FormReadinessReport["fieldRegistrations"] = [];
+  for (const source of sourceFiles) {
+    const registerCount = countMatches(source.text, /\bregister\s*\(/gi);
+    const namedFieldCount = countMatches(source.text, /\bname\s*=\s*["'][^"']+["']/gi);
+    const registeredFieldCount = registerCount + namedFieldCount;
+    const controlledFieldCount = countMatches(source.text, /\bController\b|\buseController\s*\(|\bcontrol\s*=/gi);
+    const fieldArrayCount = countMatches(source.text, /\buseFieldArray\s*\(|\bfields\.map\b|\b(append|remove|swap|move|insert|prepend|replace|update)\s*\(/gi);
+    const nestedFieldSignals = countMatches(source.text, /\bregister\s*\(\s*["'][^"']+[.[\]][^"']*["']|\bname\s*=\s*["'][^"']+[.[\]][^"']*["']/gi);
+    if (registeredFieldCount + controlledFieldCount + fieldArrayCount + nestedFieldSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      registeredFieldCount,
+      controlledFieldCount,
+      fieldArrayCount,
+      nestedFieldSignals,
+      readiness: registeredFieldCount > 0 && (controlledFieldCount > 0 || nestedFieldSignals > 0 || fieldArrayCount > 0) ? "ready" : registeredFieldCount > 0 || controlledFieldCount > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains registered field signals ${registeredFieldCount}, controlled field signals ${controlledFieldCount}, field array signals ${fieldArrayCount}, nested field signals ${nestedFieldSignals}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 120);
+}
+
+function formReadinessValidationSignals(sourceFiles: FormReadinessSourceFile[]): FormReadinessReport["validationSignals"] {
+  const specs: Array<{ signal: FormReadinessReport["validationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "required", pattern: /\brequired\s*[:=]|\brequired\b/i, evidence: "required field validation evidence was detected." },
+    { signal: "min", pattern: /\bmin\s*[:=]|\bmin\s*\(/i, evidence: "minimum value validation evidence was detected." },
+    { signal: "max", pattern: /\bmax\s*[:=]|\bmax\s*\(/i, evidence: "maximum value validation evidence was detected." },
+    { signal: "minLength", pattern: /\bminLength\s*[:=]|\.min\s*\(/i, evidence: "minimum length validation evidence was detected." },
+    { signal: "maxLength", pattern: /\bmaxLength\s*[:=]|\.max\s*\(/i, evidence: "maximum length validation evidence was detected." },
+    { signal: "pattern", pattern: /\bpattern\s*[:=]|new\s+RegExp\b|\/.+\/[gimsuy]*/i, evidence: "pattern validation evidence was detected." },
+    { signal: "validate", pattern: /\bvalidate\s*[:=]|\bvalidate\s*\(/i, evidence: "custom validate callback evidence was detected." },
+    { signal: "resolver", pattern: /\bresolver\s*[:=]|@hookform\/resolvers/i, evidence: "React Hook Form resolver evidence was detected." },
+    { signal: "zodResolver", pattern: /\bzodResolver\s*\(|@hookform\/resolvers\/zod/i, evidence: "Zod resolver evidence was detected." },
+    { signal: "yupResolver", pattern: /\byupResolver\s*\(|@hookform\/resolvers\/yup/i, evidence: "Yup resolver evidence was detected." },
+    { signal: "schema", pattern: /\b(schema|validationSchema)\b|z\.object\s*\(|yup\.object\s*\(/i, evidence: "schema validation evidence was detected." }
+  ];
+  return formReadinessSignalFromSpecs(sourceFiles, specs, "validation", "signal");
+}
+
+function formReadinessErrorSignals(sourceFiles: FormReadinessSourceFile[]): FormReadinessReport["errorSignals"] {
+  const specs: Array<{ signal: FormReadinessReport["errorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "formState-errors", pattern: /\bformState\s*:\s*{[^}]*errors\b|\bformState\.errors\b|\berrors\.[A-Za-z_$]/i, evidence: "formState errors evidence was detected." },
+    { signal: "ErrorMessage", pattern: /\bErrorMessage\b/i, evidence: "ErrorMessage component evidence was detected." },
+    { signal: "setError", pattern: /\bsetError\s*\(/i, evidence: "setError evidence was detected." },
+    { signal: "clearErrors", pattern: /\bclearErrors\s*\(/i, evidence: "clearErrors evidence was detected." },
+    { signal: "trigger", pattern: /\btrigger\s*\(/i, evidence: "trigger validation evidence was detected." },
+    { signal: "isValid", pattern: /\bisValid\b/i, evidence: "isValid form state evidence was detected." },
+    { signal: "isSubmitting", pattern: /\bisSubmitting\b/i, evidence: "isSubmitting form state evidence was detected." },
+    { signal: "dirtyFields", pattern: /\bdirtyFields\b/i, evidence: "dirtyFields form state evidence was detected." },
+    { signal: "touchedFields", pattern: /\btouchedFields\b/i, evidence: "touchedFields form state evidence was detected." }
+  ];
+  return formReadinessSignalFromSpecs(sourceFiles, specs, "error", "signal");
+}
+
+function formReadinessValueFlowSignals(sourceFiles: FormReadinessSourceFile[]): FormReadinessReport["valueFlowSignals"] {
+  const specs: Array<{ signal: FormReadinessReport["valueFlowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "watch", pattern: /\bwatch\s*\(/i, evidence: "watch value subscription evidence was detected." },
+    { signal: "useWatch", pattern: /\buseWatch\s*\(/i, evidence: "useWatch evidence was detected." },
+    { signal: "getValues", pattern: /\bgetValues\s*\(/i, evidence: "getValues evidence was detected." },
+    { signal: "setValue", pattern: /\bsetValue\s*\(/i, evidence: "setValue evidence was detected." },
+    { signal: "reset", pattern: /\breset\s*\(/i, evidence: "reset evidence was detected." },
+    { signal: "resetField", pattern: /\bresetField\s*\(/i, evidence: "resetField evidence was detected." },
+    { signal: "defaultValues", pattern: /\bdefaultValues\s*:/i, evidence: "defaultValues evidence was detected." },
+    { signal: "values", pattern: /\bvalues\s*:/i, evidence: "controlled values evidence was detected." },
+    { signal: "unregister", pattern: /\bunregister\s*\(/i, evidence: "unregister evidence was detected." },
+    { signal: "shouldUnregister", pattern: /\bshouldUnregister\b/i, evidence: "shouldUnregister policy evidence was detected." }
+  ];
+  return formReadinessSignalFromSpecs(sourceFiles, specs, "value-flow", "signal");
+}
+
+function formReadinessPackageSignals(sourceFiles: FormReadinessSourceFile[]): FormReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: FormReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "react-hook-form", pattern: /["']react-hook-form["']|from\s+["']react-hook-form["']|\buseForm\b|\bregister\s*\(/i, evidence: "react-hook-form package/import evidence was detected." },
+    { signal: "hookform-resolvers", pattern: /@hookform\/resolvers|\b(zodResolver|yupResolver)\b/i, evidence: "@hookform/resolvers package/import evidence was detected." },
+    { signal: "formik", pattern: /["']formik["']|\buseFormik\b|<Formik\b/i, evidence: "Formik package/import evidence was detected." },
+    { signal: "tanstack-form", pattern: /@tanstack\/(react-)?form|createFormHook|formOptions/i, evidence: "TanStack Form package/import evidence was detected." },
+    { signal: "zod", pattern: /["']zod["']|\bz\.object\s*\(/i, evidence: "Zod package/import evidence was detected." },
+    { signal: "yup", pattern: /["']yup["']|yup\.object\s*\(/i, evidence: "Yup package/import evidence was detected." },
+    { signal: "valibot", pattern: /["']valibot["']|\bv\.object\s*\(/i, evidence: "Valibot package/import evidence was detected." }
+  ];
+  return formReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function formReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: FormReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/form-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
