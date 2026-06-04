@@ -2644,6 +2644,44 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 155:
   - `09b903a` mocking readiness report
 
+- 2026-06-04: AutoResearch Upgrade 156 candidate selected:
+  `TanStack/query` (`https://github.com/TanStack/query`; public MIT; 49,582
+  stars; 3,862 forks; updated 2026-06-04T06:14:40Z). Compared with
+  `vercel/swr`, `axios/axios`, and `sindresorhus/ky`; selected TanStack Query
+  because it directly models server-state/data-fetching readiness: `QueryClient`,
+  provider boundaries, query hooks, query keys/functions, mutations,
+  invalidation, cache timing, retry/enabled controls, hydration, persistence,
+  focus/online managers, and devtools. Cloned ignored external source to
+  `research/external-src/tanstack-query` and inspected README, license,
+  package metadata, docs/reference, package source layout, and examples without
+  executing external source. Clone HEAD was `c4b39ff`; tracked-file count for
+  `research/external-src/tanstack-query` returned `0`.
+- 2026-06-04: RED data-fetching-readiness smoke generated
+  `/tmp/repotutor-data-fetching-red-studies.fd8btT/2026-06-04/local__simple-ts-app__main__db6e89f5`;
+  old build was missing `analysis/data-fetching-readiness-report.json`,
+  `markdown/data-fetching-readiness.md`, and
+  `html/data-fetching-readiness.html`, and
+  `open --target data-fetching-readiness` failed as expected.
+- 2026-06-04: Implemented TanStack Query-style data-fetching-readiness report:
+  `DataFetchingReadinessReportSchema`,
+  `analysis/data-fetching-readiness-report.json`,
+  `markdown/data-fetching-readiness.md`,
+  `html/data-fetching-readiness.html`, client setups, query usages, cache
+  signals, data-flow signals, package signals, recommended commands, risk
+  queue, manifest/session-verification coverage, learning-path linkage, nav
+  entry, and `open --target data-fetching-readiness`.
+- 2026-06-04: GREEN data-fetching-readiness smoke generated
+  `/tmp/repotutor-data-fetching-green-studies.4dPN9V/2026-06-04/local__simple-ts-app__main__db6e89f5`;
+  confirmed `verificationCheckedRequiredArtifacts=168`, client setups 0,
+  query usages 0, cache signals 10, data-flow signals 10, package signals 7,
+  recommended commands 6, risk queue 2, manifest/learning-path entries, and
+  `open --target data-fetching-readiness` ->
+  `html/data-fetching-readiness.html`.
+- 2026-06-04: Verification for Upgrade 156:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 54/54 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

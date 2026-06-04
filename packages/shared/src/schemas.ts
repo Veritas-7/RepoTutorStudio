@@ -2572,6 +2572,61 @@ export const MockingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DataFetchingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  clientSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["react", "vue", "svelte", "solid", "angular", "core", "unknown"]),
+    hasClient: z.boolean(),
+    hasProvider: z.boolean(),
+    devtoolsSignal: z.boolean(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  queryUsages: z.array(z.object({
+    filePath: z.string(),
+    queryCount: z.number().int().nonnegative(),
+    mutationCount: z.number().int().nonnegative(),
+    infiniteQueryCount: z.number().int().nonnegative(),
+    queryKeySignals: z.number().int().nonnegative(),
+    queryFnSignals: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  cacheSignals: z.array(z.object({
+    signal: z.enum(["staleTime", "gcTime", "retry", "enabled", "placeholderData", "initialData", "select", "suspense", "refetchOnWindowFocus", "refetchOnReconnect", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dataFlowSignals: z.array(z.object({
+    signal: z.enum(["invalidateQueries", "prefetchQuery", "setQueryData", "getQueryData", "dehydrate", "hydrate", "persistQueryClient", "onlineManager", "focusManager", "devtools", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["tanstack-react-query", "tanstack-query-core", "swr", "axios", "ky", "graphql-request", "apollo-client", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2829,6 +2884,7 @@ export type CommitConventionReport = z.infer<typeof CommitConventionReportSchema
 export type ChangelogReadinessReport = z.infer<typeof ChangelogReadinessReportSchema>;
 export type BundleAnalysisReport = z.infer<typeof BundleAnalysisReportSchema>;
 export type MockingReadinessReport = z.infer<typeof MockingReadinessReportSchema>;
+export type DataFetchingReadinessReport = z.infer<typeof DataFetchingReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

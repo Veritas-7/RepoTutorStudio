@@ -68,6 +68,7 @@ import {
   ChangelogReadinessReport,
   BundleAnalysisReport,
   MockingReadinessReport,
+  DataFetchingReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -142,6 +143,7 @@ export interface AnalysisBundle {
   changelogReadinessReport: ChangelogReadinessReport;
   bundleAnalysisReport: BundleAnalysisReport;
   mockingReadinessReport: MockingReadinessReport;
+  dataFetchingReadinessReport: DataFetchingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -216,8 +218,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const changelogReadinessReport = await buildChangelogReadinessReport(walk);
   const bundleAnalysisReport = await buildBundleAnalysisReport(walk);
   const mockingReadinessReport = await buildMockingReadinessReport(walk);
+  const dataFetchingReadinessReport = await buildDataFetchingReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -11278,6 +11281,239 @@ function mockingReadinessSignalFromSpecs<T extends Record<K, string> & { pattern
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/mocking-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDataFetchingReadinessReport(walk: WalkResult): Promise<DataFetchingReadinessReport> {
+  const sourceFiles = await dataFetchingSourceFiles(walk);
+  const clientSetups = dataFetchingClientSetups(sourceFiles);
+  const queryUsages = dataFetchingQueryUsages(sourceFiles);
+  const cacheSignals = dataFetchingCacheSignals(sourceFiles);
+  const dataFlowSignals = dataFetchingDataFlowSignals(sourceFiles);
+  const packageSignals = dataFetchingPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasClient = clientSetups.some((item) => item.hasClient);
+  const hasProvider = clientSetups.some((item) => item.hasProvider);
+  const hasQueries = queryUsages.some((item) => item.queryCount > 0 || item.infiniteQueryCount > 0);
+  const hasMutations = queryUsages.some((item) => item.mutationCount > 0);
+  const hasInvalidation = dataFlowSignals.some((item) => item.signal === "invalidateQueries" && item.readiness === "ready");
+  const hasCachePolicy = cacheSignals.some((item) => ["staleTime", "gcTime", "retry", "enabled"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: DataFetchingReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasClient && !hasQueries) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the data-fetching library before claiming server-state readiness.",
+      why: "TanStack Query-style readiness starts with an explicit client/cache layer or hook usage surface.",
+      relatedHref: "html/data-fetching-readiness.html"
+    });
+  }
+  if (hasPackage && !hasProvider && !hasClient) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Create a QueryClient and provider boundary near the app root.",
+      why: "Query hooks need a stable client/cache owner so learners can trace where server state is stored.",
+      relatedHref: "html/data-fetching-readiness.html"
+    });
+  }
+  if (hasQueries && !hasCachePolicy) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document cache timing and retry controls for important queries.",
+      why: "staleTime, gcTime, retry, and enabled explain why data refetches or stays cached.",
+      relatedHref: "html/data-fetching-readiness.html"
+    });
+  }
+  if (hasMutations && !hasInvalidation) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect mutations to invalidateQueries or setQueryData where data changes.",
+      why: "Mutation success paths should explain how stale cached data becomes fresh again.",
+      relatedHref: "html/data-fetching-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run data-fetching tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not fetch remote APIs, instantiate app providers, hydrate caches, or execute the analyzed project's tests.",
+    relatedHref: "html/data-fetching-readiness.html"
+  });
+
+  return {
+    summary: `TanStack Query식 data fetching readiness report: client setup ${clientSetups.length}개, query usage ${queryUsages.length}개, cache signal ${cacheSignals.length}개, package signal ${packageSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "TanStack Query QueryClient QueryClientProvider useQuery useMutation queryKey queryFn invalidateQueries staleTime gcTime hydrate persist devtools",
+    clientSetups,
+    queryUsages,
+    cacheSignals,
+    dataFlowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"QueryClient|QueryClientProvider|useQuery|useMutation\" src app pages test", purpose: "Inventory query client setup and hook usage." },
+      { command: "rg \"queryKey|queryFn|invalidateQueries|setQueryData\" src app pages test", purpose: "Check whether query keys, fetch functions, and cache update paths are explicit." },
+      { command: "rg \"staleTime|gcTime|retry|enabled|refetchOnWindowFocus\" src app pages test", purpose: "Review cache timing and refetch policy controls." },
+      { command: "rg \"dehydrate|HydrationBoundary|persistQueryClient|ReactQueryDevtools\" src app pages test", purpose: "Find SSR hydration, persistence, and devtools surfaces." },
+      { command: "npx eslint . --rule '@tanstack/query/stable-query-client:error'", purpose: "Run TanStack Query lint checks when the plugin is installed." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise hooks, cache invalidation, or data-fetching boundaries." }
+    ],
+    learnerNextSteps: [
+      "먼저 app root 근처에서 QueryClient와 Provider가 어디서 만들어지는지 확인하세요.",
+      "각 useQuery는 queryKey와 queryFn을 함께 읽어 어떤 서버 데이터를 어떤 이름으로 캐시하는지 파악하세요.",
+      "useMutation이 있다면 성공 후 invalidateQueries나 setQueryData로 캐시를 갱신하는지 확인하세요.",
+      "이 리포트는 실제 API 호출 결과가 아닙니다. 네트워크 동작은 원본 프로젝트 테스트나 브라우저에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type DataFetchingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function dataFetchingSourceFiles(walk: WalkResult): Promise<DataFetchingSourceFile[]> {
+  const files: DataFetchingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !dataFetchingInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 200_000);
+    if (!text) continue;
+    if (!dataFetchingPathSignal(file.relPath) && !dataFetchingContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 240) break;
+  }
+  return files;
+}
+
+function dataFetchingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return dataFetchingPathSignal(filePath)
+    || /^(package\.json|tsconfig\.json|vite\.config\.[cm]?[jt]s|next\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|ya?ml)$/i.test(filePath);
+}
+
+function dataFetchingPathSignal(filePath: string): boolean {
+  return /(query|queries|mutation|mutations|api|client|fetch|hooks?|loaders?|server[-_]?state|tanstack|react-query|swr|axios|ky)/i.test(filePath);
+}
+
+function dataFetchingContentSignal(text: string): boolean {
+  return /\b(QueryClient|QueryClientProvider|useQuery|useSuspenseQuery|useQueries|useMutation|useInfiniteQuery|queryKey|queryFn|invalidateQueries|prefetchQuery|setQueryData|getQueryData|dehydrate|hydrate|HydrationBoundary|persistQueryClient|ReactQueryDevtools|onlineManager|focusManager|useSWR|axios\.|ky\(|graphql-request)\b/i.test(text);
+}
+
+function dataFetchingClientSetups(sourceFiles: DataFetchingSourceFile[]): DataFetchingReadinessReport["clientSetups"] {
+  const rows: DataFetchingReadinessReport["clientSetups"] = [];
+  for (const source of sourceFiles) {
+    const hasClient = /\bnew\s+QueryClient\b|\bQueryClient\(/i.test(source.text);
+    const hasProvider = /\bQueryClientProvider\b|VueQueryPlugin|provideTanStackQuery|QueryClientProvider/i.test(source.text);
+    const devtoolsSignal = /\bReactQueryDevtools|TanStackQueryDevtools|VueQueryDevtools|devtools/i.test(source.text);
+    if (!hasClient && !hasProvider && !devtoolsSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework: dataFetchingFramework(source),
+      hasClient,
+      hasProvider,
+      devtoolsSignal,
+      readiness: hasClient && hasProvider ? "ready" : "partial",
+      evidence: `${source.filePath} contains QueryClient ${hasClient ? "yes" : "no"}, provider ${hasProvider ? "yes" : "no"}, devtools ${devtoolsSignal ? "yes" : "no"}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 80);
+}
+
+function dataFetchingFramework(source: DataFetchingSourceFile): DataFetchingReadinessReport["clientSetups"][number]["framework"] {
+  if (/react-query|@tanstack\/react-query|ReactQuery/i.test(source.text) || /\.(tsx|jsx)$/i.test(source.filePath)) return "react";
+  if (/vue-query|@tanstack\/vue-query|VueQuery/i.test(source.text) || /\.vue$/i.test(source.filePath)) return "vue";
+  if (/svelte-query|@tanstack\/svelte-query/i.test(source.text) || /\.svelte$/i.test(source.filePath)) return "svelte";
+  if (/solid-query|@tanstack\/solid-query/i.test(source.text)) return "solid";
+  if (/angular-query|@tanstack\/angular-query/i.test(source.text)) return "angular";
+  if (/query-core|@tanstack\/query-core/i.test(source.text)) return "core";
+  return "unknown";
+}
+
+function dataFetchingQueryUsages(sourceFiles: DataFetchingSourceFile[]): DataFetchingReadinessReport["queryUsages"] {
+  const rows: DataFetchingReadinessReport["queryUsages"] = [];
+  for (const source of sourceFiles) {
+    const queryCount = countMatches(source.text, /\b(useQuery|useSuspenseQuery|useQueries)\b/gi);
+    const mutationCount = countMatches(source.text, /\b(useMutation|mutationFn|mutateAsync|mutate\()/gi);
+    const infiniteQueryCount = countMatches(source.text, /\b(useInfiniteQuery|useSuspenseInfiniteQuery|fetchInfiniteQuery|prefetchInfiniteQuery)\b/gi);
+    const queryKeySignals = countMatches(source.text, /\b(queryKey|mutationKey)\s*:/gi);
+    const queryFnSignals = countMatches(source.text, /\b(queryFn|mutationFn)\s*:/gi);
+    if (queryCount + mutationCount + infiniteQueryCount + queryKeySignals + queryFnSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      queryCount,
+      mutationCount,
+      infiniteQueryCount,
+      queryKeySignals,
+      queryFnSignals,
+      readiness: (queryCount + infiniteQueryCount > 0 && queryKeySignals > 0 && queryFnSignals > 0) || (mutationCount > 0 && queryFnSignals > 0) ? "ready" : "partial",
+      evidence: `${source.filePath} contains queries ${queryCount}, mutations ${mutationCount}, infinite queries ${infiniteQueryCount}, query keys ${queryKeySignals}, query functions ${queryFnSignals}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function dataFetchingCacheSignals(sourceFiles: DataFetchingSourceFile[]): DataFetchingReadinessReport["cacheSignals"] {
+  const specs: Array<{ signal: DataFetchingReadinessReport["cacheSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "staleTime", pattern: /\bstaleTime\s*:/i, evidence: "staleTime cache freshness evidence was detected." },
+    { signal: "gcTime", pattern: /\bgcTime\s*:/i, evidence: "gcTime cache retention evidence was detected." },
+    { signal: "retry", pattern: /\bretry\s*:/i, evidence: "retry policy evidence was detected." },
+    { signal: "enabled", pattern: /\benabled\s*:/i, evidence: "dependent query enabled flag evidence was detected." },
+    { signal: "placeholderData", pattern: /\bplaceholderData\s*:/i, evidence: "placeholder data evidence was detected." },
+    { signal: "initialData", pattern: /\binitialData\s*:/i, evidence: "initial data evidence was detected." },
+    { signal: "select", pattern: /\bselect\s*:/i, evidence: "data selection evidence was detected." },
+    { signal: "suspense", pattern: /\b(useSuspenseQuery|suspense\s*:)/i, evidence: "Suspense query evidence was detected." },
+    { signal: "refetchOnWindowFocus", pattern: /\brefetchOnWindowFocus\s*:/i, evidence: "window focus refetch policy evidence was detected." },
+    { signal: "refetchOnReconnect", pattern: /\brefetchOnReconnect\s*:/i, evidence: "reconnect refetch policy evidence was detected." }
+  ];
+  return dataFetchingSignalFromSpecs(sourceFiles, specs, "cache", "signal");
+}
+
+function dataFetchingDataFlowSignals(sourceFiles: DataFetchingSourceFile[]): DataFetchingReadinessReport["dataFlowSignals"] {
+  const specs: Array<{ signal: DataFetchingReadinessReport["dataFlowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "invalidateQueries", pattern: /\binvalidateQueries\b/i, evidence: "cache invalidation evidence was detected." },
+    { signal: "prefetchQuery", pattern: /\b(prefetchQuery|fetchQuery|ensureQueryData)\b/i, evidence: "prefetch/fetch query evidence was detected." },
+    { signal: "setQueryData", pattern: /\bsetQueryData\b/i, evidence: "manual cache write evidence was detected." },
+    { signal: "getQueryData", pattern: /\bgetQueryData\b/i, evidence: "manual cache read evidence was detected." },
+    { signal: "dehydrate", pattern: /\bdehydrate\b/i, evidence: "SSR dehydrate evidence was detected." },
+    { signal: "hydrate", pattern: /\b(hydrate|HydrationBoundary)\b/i, evidence: "SSR/client hydration evidence was detected." },
+    { signal: "persistQueryClient", pattern: /\bpersistQueryClient\b|createSyncStoragePersister|createAsyncStoragePersister/i, evidence: "query persistence evidence was detected." },
+    { signal: "onlineManager", pattern: /\bonlineManager\b/i, evidence: "online manager evidence was detected." },
+    { signal: "focusManager", pattern: /\bfocusManager\b/i, evidence: "focus manager evidence was detected." },
+    { signal: "devtools", pattern: /\bReactQueryDevtools|TanStackQueryDevtools|devtools/i, evidence: "query devtools evidence was detected." }
+  ];
+  return dataFetchingSignalFromSpecs(sourceFiles, specs, "data-flow", "signal");
+}
+
+function dataFetchingPackageSignals(sourceFiles: DataFetchingSourceFile[]): DataFetchingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DataFetchingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tanstack-react-query", pattern: /@tanstack\/react-query|react-query/i, evidence: "TanStack React Query package evidence was detected." },
+    { signal: "tanstack-query-core", pattern: /@tanstack\/query-core/i, evidence: "TanStack Query core package evidence was detected." },
+    { signal: "swr", pattern: /["']swr["']|\buseSWR\b/i, evidence: "SWR package evidence was detected." },
+    { signal: "axios", pattern: /["']axios["']|\baxios\./i, evidence: "Axios package evidence was detected." },
+    { signal: "ky", pattern: /["']ky["']|\bky\(/i, evidence: "Ky package evidence was detected." },
+    { signal: "graphql-request", pattern: /graphql-request|GraphQLClient/i, evidence: "graphql-request package evidence was detected." },
+    { signal: "apollo-client", pattern: /@apollo\/client|ApolloClient|useQuery\(/i, evidence: "Apollo Client package evidence was detected." }
+  ];
+  return dataFetchingSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function dataFetchingSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DataFetchingSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/data-fetching-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
