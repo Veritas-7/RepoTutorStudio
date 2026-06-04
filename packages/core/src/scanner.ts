@@ -39,6 +39,7 @@ import {
   ScorecardReport,
   ProvenanceReport,
   AdvisoryReport,
+  VexReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -84,6 +85,7 @@ export interface AnalysisBundle {
   scorecardReport: ScorecardReport;
   provenanceReport: ProvenanceReport;
   advisoryReport: AdvisoryReport;
+  vexReport: VexReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -129,8 +131,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const advisoryReport = await buildAdvisoryReport(walk, sbomReport, securityReadinessReport, licenseRightsReport);
   const scorecardReport = await buildScorecardReport(walk, licenseRightsReport, sbomReport, securityReadinessReport);
   const provenanceReport = buildProvenanceReport(context, walk, sbomReport, securityReadinessReport, sourceSnapshotReport);
+  const vexReport = buildVexReport(walk, sbomReport, securityReadinessReport, advisoryReport, provenanceReport, sourceSnapshotReport);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -2538,6 +2541,318 @@ async function buildAdvisoryReport(
       "이 리포트는 OSV-Scanner 실행 결과가 아니라 정적 질의 준비도입니다. 실제 취약점 판단에는 OSV-Scanner를 별도 실행하세요."
     ]
   };
+}
+
+function buildVexReport(
+  walk: WalkResult,
+  sbomReport: SbomReport,
+  securityReadinessReport: SecurityReadinessReport,
+  advisoryReport: AdvisoryReport,
+  provenanceReport: ProvenanceReport,
+  sourceSnapshotReport: SourceSnapshotReport
+): VexReport {
+  const productTargets = vexProductTargets(sbomReport, sourceSnapshotReport);
+  const sarifFiles = walk.files.filter((file) => /\.sarif(?:\.json)?$/i.test(file.relPath) || /(^|\/)sarif-results\.json$/i.test(file.relPath));
+  const vexTemplateFiles = walk.files.filter((file) => /(^|\/)\.openvex\/templates\//.test(file.relPath) || /(^|\/)openvex\.(json|ya?ml)$/i.test(file.relPath));
+  const vulnerabilityScanner = securityReadinessReport.scannerCoverage.find((scanner) => scanner.scanner === "vulnerability");
+  const vulnAttestation = provenanceReport.attestationSignals.find((signal) => signal.predicateType === "vuln");
+  const signatureSignal = provenanceReport.signatureSignals.find((signal) => signal.material === "signature");
+  const dsseSignal = provenanceReport.signatureSignals.find((signal) => signal.material === "bundle");
+  const transparencySignal = provenanceReport.signatureSignals.find((signal) => signal.material === "transparency-log");
+  const firstProduct = productTargets[0]?.productId ?? "<product-purl-or-uri>";
+  const statementDrafts: VexReport["statementDrafts"] = productTargets.slice(0, 5).map((product) => ({
+    vulnerabilityId: "pending-advisory-id",
+    productIds: [product.productId],
+    status: "under_investigation",
+    justification: null,
+    needsHumanReview: true,
+    evidence: `${product.productId} has product identity evidence, but RepoTutor has not confirmed any specific vulnerability impact.`,
+    relatedHref: product.relatedHref
+  }));
+
+  const vulnerabilityInputs: VexReport["vulnerabilityInputs"] = [
+    {
+      source: "advisory-query",
+      readiness: advisoryReport.packageQueryTargets.length > 0 ? "ready" : "missing",
+      evidence: advisoryReport.packageQueryTargets.length > 0 ? `${advisoryReport.packageQueryTargets.length} advisory query target(s) are available for later VEX statement matching.` : "No advisory query targets were available.",
+      relatedHref: "html/advisories.html"
+    },
+    {
+      source: "security-readiness",
+      readiness: vulnerabilityScanner?.readiness ?? "missing",
+      evidence: vulnerabilityScanner?.evidence ?? "No vulnerability scanner readiness row was available.",
+      relatedHref: vulnerabilityScanner?.relatedHref ?? "html/security-readiness.html"
+    },
+    {
+      source: "scanner-sarif",
+      readiness: sarifFiles.length > 0 ? "ready" : "missing",
+      evidence: sarifFiles.length > 0 ? `SARIF result candidate(s): ${sarifFiles.map((file) => file.relPath).join(", ")}.` : "No SARIF scanner result file was detected; vexctl filter needs scanner results as input.",
+      relatedHref: sarifFiles[0] ? `source/${encodedPath(sarifFiles[0].relPath)}` : "html/security-readiness.html"
+    },
+    {
+      source: "manual-cve",
+      readiness: "external",
+      evidence: "Manual CVE/GHSA/RUSTSEC review must be supplied by a human or an external advisory source before producing final VEX statements.",
+      relatedHref: "html/advisories.html"
+    },
+    {
+      source: "attestation",
+      readiness: vulnAttestation?.readiness === "available" ? "ready" : vulnAttestation?.readiness === "partial" ? "partial" : "external",
+      evidence: vulnAttestation?.evidence ?? "No vulnerability predicate attestation was detected; VEX can still be created as a new document and attested later.",
+      relatedHref: vulnAttestation?.relatedHref ?? "html/provenance.html"
+    }
+  ];
+
+  const statusMatrix: VexReport["statusMatrix"] = [
+    {
+      status: "affected",
+      requiredEvidence: "Confirmed vulnerable code path plus an action statement, mitigation plan, or fixed-version target.",
+      allowedFields: ["action_statement", "status_notes", "aliases", "subcomponents"],
+      filtersScannerResult: false,
+      readiness: productTargets.length > 0 ? "partial" : "external"
+    },
+    {
+      status: "not_affected",
+      requiredEvidence: "A specific OpenVEX justification and, when useful, an impact statement that explains why the product is not affected.",
+      allowedFields: ["justification", "impact_statement", "status_notes", "aliases", "subcomponents"],
+      filtersScannerResult: true,
+      readiness: advisoryReport.packageQueryTargets.length > 0 ? "partial" : "external"
+    },
+    {
+      status: "fixed",
+      requiredEvidence: "Release, commit, package, or image digest evidence proving the vulnerability is fixed for the product.",
+      allowedFields: ["status_notes", "aliases", "subcomponents"],
+      filtersScannerResult: true,
+      readiness: provenanceReport.artifactSignals.some((signal) => signal.readiness === "ready") ? "partial" : "external"
+    },
+    {
+      status: "under_investigation",
+      requiredEvidence: "An owner, timebox, product identity, and pending advisory identifier for triage.",
+      allowedFields: ["status_notes", "aliases", "subcomponents"],
+      filtersScannerResult: false,
+      readiness: productTargets.length > 0 ? "ready" : "partial"
+    }
+  ];
+
+  const justificationCatalog: VexReport["justificationCatalog"] = [
+    {
+      justification: "component_not_present",
+      useWhen: "Scanner result names a dependency or component that is absent from the shipped product.",
+      requiresImpactStatement: true,
+      readiness: productTargets.length > 0 ? "partial" : "external"
+    },
+    {
+      justification: "vulnerable_code_not_present",
+      useWhen: "The package exists, but the vulnerable function, file, feature, or build option is not present.",
+      requiresImpactStatement: true,
+      readiness: "external"
+    },
+    {
+      justification: "vulnerable_code_not_in_execute_path",
+      useWhen: "The vulnerable code is present but cannot be reached by product execution paths.",
+      requiresImpactStatement: true,
+      readiness: "external"
+    },
+    {
+      justification: "inline_mitigations_already_exist",
+      useWhen: "The product includes controls that neutralize the vulnerable behavior.",
+      requiresImpactStatement: true,
+      readiness: "external"
+    },
+    {
+      justification: "protected_by_compiler",
+      useWhen: "Compiler or build hardening prevents exploitation for the shipped artifact.",
+      requiresImpactStatement: true,
+      readiness: "external"
+    }
+  ];
+
+  const documentWorkflow: VexReport["documentWorkflow"] = [
+    {
+      step: "create",
+      command: `vexctl create --product ${firstProduct} --vuln pending-advisory-id --status under_investigation`,
+      purpose: "Start a new OpenVEX document with product identity and a pending vulnerability record.",
+      readiness: productTargets.length > 0 ? "ready" : "partial"
+    },
+    {
+      step: "add",
+      command: `vexctl add --in-place main.openvex.json --product ${firstProduct} --vuln pending-advisory-id --status not_affected --justification vulnerable_code_not_in_execute_path`,
+      purpose: "Add a reviewed not_affected statement only after evidence and justification are available.",
+      readiness: "external"
+    },
+    {
+      step: "merge",
+      command: "vexctl merge investigation.openvex.json resolution.openvex.json",
+      purpose: "Merge chronological VEX documents so investigation and resolution history stay reviewable.",
+      readiness: statementDrafts.length > 0 ? "partial" : "external"
+    },
+    {
+      step: "attest",
+      command: "vexctl attest --attach --sign main.openvex.json <image>@sha256:<digest>",
+      purpose: "Wrap VEX metadata in a signed in-toto/Sigstore attestation for a concrete subject digest.",
+      readiness: provenanceReport.signatureSignals.some((signal) => signal.readiness === "present") ? "partial" : "external"
+    },
+    {
+      step: "filter",
+      command: "vexctl filter scan_results.sarif.json main.openvex.json",
+      purpose: "Apply fixed or not_affected VEX statements to SARIF scanner output after human review.",
+      readiness: sarifFiles.length > 0 && statementDrafts.length > 0 ? "partial" : "external"
+    },
+    {
+      step: "generate",
+      command: "vexctl generate --templates=\".openvex/templates/\" --product <product>",
+      purpose: "Generate VEX from local golden templates when a repository has .openvex/templates.",
+      readiness: vexTemplateFiles.length > 0 ? "ready" : "external"
+    }
+  ];
+
+  const attestationReadiness: VexReport["attestationReadiness"] = [
+    {
+      requirement: "subject-digest",
+      status: sourceSnapshotReport.totalFiles > 0 ? "ready" : "missing",
+      evidence: sourceSnapshotReport.totalFiles > 0 ? `${sourceSnapshotReport.totalFiles} source file digest(s) are available; release/image subject digests still need external artifact evidence.` : "No source digest evidence is available.",
+      relatedHref: "analysis/source-snapshot-report.json"
+    },
+    {
+      requirement: "dsse-envelope",
+      status: dsseSignal?.readiness === "present" ? "ready" : "external",
+      evidence: dsseSignal?.evidence ?? "No DSSE/Sigstore bundle was detected; vexctl attest can produce one in a signing environment.",
+      relatedHref: dsseSignal?.relatedHref ?? "html/provenance.html"
+    },
+    {
+      requirement: "signature",
+      status: signatureSignal?.readiness === "present" ? "ready" : "external",
+      evidence: signatureSignal?.evidence ?? "No detached signature was detected; signing is an external release step.",
+      relatedHref: signatureSignal?.relatedHref ?? "html/provenance.html"
+    },
+    {
+      requirement: "transparency-log",
+      status: transparencySignal?.readiness === "present" ? "ready" : "external",
+      evidence: transparencySignal?.evidence ?? "Transparency log proof usually comes from Sigstore/Rekor or a downloaded bundle.",
+      relatedHref: transparencySignal?.relatedHref ?? "html/provenance.html"
+    },
+    {
+      requirement: "product-match",
+      status: productTargets.length > 0 ? "ready" : "missing",
+      evidence: productTargets.length > 0 ? `${productTargets.length} product target(s) can be matched to VEX statements.` : "No product identity evidence is available for VEX statements.",
+      relatedHref: productTargets[0]?.relatedHref ?? "html/sbom.html"
+    }
+  ];
+
+  const riskQueue: VexReport["riskQueue"] = [];
+  if (productTargets.length === 0) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add package, SBOM, source, or container product identity before producing VEX.",
+      why: "OpenVEX statements must name affected products.",
+      relatedHref: "html/sbom.html"
+    });
+  }
+  if (advisoryReport.packageQueryTargets.length === 0) {
+    riskQueue.push({
+      priority: "high",
+      action: "Run or prepare advisory matching before writing final VEX statuses.",
+      why: "VEX statements need a concrete vulnerability identifier and impact analysis.",
+      relatedHref: "html/advisories.html"
+    });
+  }
+  if (sarifFiles.length === 0) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Export scanner results as SARIF before relying on vexctl filter workflows.",
+      why: "vexctl filter applies reviewed VEX statements to SARIF results.",
+      relatedHref: "html/security-readiness.html"
+    });
+  }
+  if (vexTemplateFiles.length === 0) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Create .openvex/templates when VEX statements should be generated repeatedly.",
+      why: "Template-backed generation keeps author, role, and document defaults consistent.",
+      relatedHref: "html/vex.html"
+    });
+  }
+  riskQueue.push({
+    priority: "medium",
+    action: "Require human evidence review before using not_affected or fixed statuses.",
+    why: "VEX can suppress scanner findings; every suppressing status needs traceable impact evidence.",
+    relatedHref: "html/vex.html"
+  });
+  riskQueue.push({
+    priority: "low",
+    action: "Run real vexctl in a trusted release workspace before attaching or signing VEX metadata.",
+    why: "RepoTutor records readiness metadata only and does not create signed attestations.",
+    relatedHref: "html/provenance.html"
+  });
+
+  return {
+    summary: `OpenVEX impact readiness report: product target ${productTargets.length}개, vulnerability input ${vulnerabilityInputs.length}개, status rule ${statusMatrix.length}개, workflow ${documentWorkflow.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "OpenVEX affected not_affected fixed under_investigation justification product subcomponent vulnerability statement attestation SARIF filter",
+    productTargets,
+    vulnerabilityInputs,
+    statusMatrix,
+    justificationCatalog,
+    statementDrafts,
+    documentWorkflow,
+    attestationReadiness,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    learnerNextSteps: [
+      "statementDrafts는 실제 취약점 판정이 아니라 pending triage 템플릿입니다.",
+      "not_affected 또는 fixed 상태는 scanner 결과를 숨길 수 있으므로 impact evidence와 reviewer를 먼저 기록하세요.",
+      "제품 식별자는 package PURL, container digest, source digest처럼 재현 가능한 값으로 고정하세요.",
+      "SARIF 필터링과 attestation signing은 RepoTutor 밖의 신뢰된 release workspace에서 실행하세요."
+    ]
+  };
+}
+
+function vexProductTargets(sbomReport: SbomReport, sourceSnapshotReport: SourceSnapshotReport): VexReport["productTargets"] {
+  const seen = new Set<string>();
+  const targets: VexReport["productTargets"] = [];
+  for (const pkg of sbomReport.packageArtifacts.slice(0, 80)) {
+    const productId = pkg.purl ?? `pkg:${pkg.packageType}/${pkg.name}${pkg.version ? `@${pkg.version}` : ""}`;
+    if (seen.has(productId)) continue;
+    seen.add(productId);
+    targets.push({
+      productId,
+      productType: "package",
+      version: pkg.version,
+      evidence: `${pkg.foundBy} records ${pkg.name}${pkg.version ? `@${pkg.version}` : ""} as a VEX product candidate.`,
+      relatedHref: pkg.evidenceHref
+    });
+  }
+  for (const artifact of sbomReport.fileArtifacts.filter((item) => item.artifactKind === "container").slice(0, 10)) {
+    const productId = `container-config:${artifact.filePath}`;
+    if (seen.has(productId)) continue;
+    seen.add(productId);
+    targets.push({
+      productId,
+      productType: "container",
+      version: null,
+      evidence: `${artifact.filePath} is a container configuration candidate; a real image digest is needed for release VEX.`,
+      relatedHref: artifact.sourceHref
+    });
+  }
+  if (sbomReport.packageArtifacts.length > 0 && !seen.has("analysis/sbom-report.json")) {
+    seen.add("analysis/sbom-report.json");
+    targets.push({
+      productId: "analysis/sbom-report.json",
+      productType: "sbom",
+      version: sbomReport.sourceDescriptor.descriptorVersion,
+      evidence: "RepoTutor static SBOM can be signed or referenced as product inventory evidence.",
+      relatedHref: "html/sbom.html"
+    });
+  }
+  const firstDigest = sourceSnapshotReport.files[0]?.sha256;
+  if (firstDigest && !seen.has(`pkg:generic/source-snapshot@${firstDigest.slice(0, 16)}`)) {
+    targets.push({
+      productId: `pkg:generic/source-snapshot@${firstDigest.slice(0, 16)}`,
+      productType: "source",
+      version: firstDigest.slice(0, 16),
+      evidence: `${sourceSnapshotReport.totalFiles} source file digest(s) are recorded for source-level product identity.`,
+      relatedHref: "analysis/source-snapshot-report.json"
+    });
+  }
+  return targets;
 }
 
 function advisoryEcosystemForPackage(packageType: string, fallback: string): string {

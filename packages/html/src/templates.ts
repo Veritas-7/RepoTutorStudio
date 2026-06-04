@@ -34,6 +34,7 @@ import type {
   ScorecardReport,
   ProvenanceReport,
   AdvisoryReport,
+  VexReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -74,6 +75,7 @@ export interface StudyHtmlInput {
   scorecardReport: ScorecardReport;
   provenanceReport: ProvenanceReport;
   advisoryReport: AdvisoryReport;
+  vexReport: VexReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -134,6 +136,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["scorecard.html", "Project Scorecard"],
     ["provenance.html", "Provenance Readiness"],
     ["advisories.html", "Advisory Readiness"],
+    ["vex.html", "OpenVEX Readiness"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -229,6 +232,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Project Scorecard</h3><p>${escapeHtml(input.scorecardReport.summary)}</p><p>OpenSSF Scorecard 패턴으로 checks, risk, policy findings, remediation queue를 정리합니다.</p><a href="scorecard.html">Project Scorecard 열기</a></article>
           <article><h3>Provenance Readiness</h3><p>${escapeHtml(input.provenanceReport.summary)}</p><p>Cosign 패턴으로 signature material, bundle, attestation, identity requirement를 정리합니다.</p><a href="provenance.html">Provenance Readiness 열기</a></article>
           <article><h3>Advisory Query Readiness</h3><p>${escapeHtml(input.advisoryReport.summary)}</p><p>OSV-Scanner 패턴으로 package advisory query target, lockfile, ignore policy를 정리합니다.</p><a href="advisories.html">Advisory Readiness 열기</a></article>
+          <article><h3>OpenVEX Impact Readiness</h3><p>${escapeHtml(input.vexReport.summary)}</p><p>OpenVEX 패턴으로 product, vulnerability input, status justification, SARIF filter 준비도를 정리합니다.</p><a href="vex.html">OpenVEX Readiness 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -358,6 +362,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "advisories.html",
       title: "Advisory Query Readiness",
       html: pageShell("Advisory Query Readiness", "advisories.html", `<section class="panel" data-source-pattern="OSV-Scanner"><h2>Advisory Query Snapshot</h2><p>${escapeHtml(input.advisoryReport.summary)}</p><p class="muted">${escapeHtml(input.advisoryReport.sourcePattern)}</p><dl class="meta"><div><dt>targets</dt><dd>${input.advisoryReport.packageQueryTargets.length}</dd></div><div><dt>lockfiles</dt><dd>${input.advisoryReport.lockfileSignals.length}</dd></div><div><dt>sources</dt><dd>${input.advisoryReport.advisorySources.length}</dd></div><div><dt>policies</dt><dd>${input.advisoryReport.policyControls.length}</dd></div></dl></section><section class="grid"><article class="advisory-card"><h3>Advisory Sources</h3>${advisorySourceList(input.advisoryReport.advisorySources)}</article><article class="advisory-card"><h3>Policy Controls</h3>${advisoryPolicyList(input.advisoryReport.policyControls)}</article><article class="advisory-card"><h3>Result Model</h3>${advisoryResultList(input.advisoryReport.resultModel)}</article><article class="advisory-card"><h3>Remediation Queue</h3>${advisoryRiskList(input.advisoryReport.remediationQueue)}</article></section><section class="cards advisory-target-cards">${advisoryTargetCards(input.advisoryReport.packageQueryTargets)}</section><section class="grid"><article class="advisory-card"><h3>Lockfile Signals</h3>${advisoryLockfileList(input.advisoryReport.lockfileSignals)}</article><article class="advisory-card"><h3>Recommended Commands</h3>${advisoryCommandList(input.advisoryReport.recommendedCommands)}</article><article class="advisory-card"><h3>다음 확인 단계</h3>${list(input.advisoryReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "vex.html",
+      title: "OpenVEX Impact Readiness",
+      html: pageShell("OpenVEX Impact Readiness", "vex.html", `<section class="panel" data-source-pattern="OpenVEX"><h2>OpenVEX Snapshot</h2><p>${escapeHtml(input.vexReport.summary)}</p><p class="muted">${escapeHtml(input.vexReport.sourcePattern)}</p><dl class="meta"><div><dt>products</dt><dd>${input.vexReport.productTargets.length}</dd></div><div><dt>inputs</dt><dd>${input.vexReport.vulnerabilityInputs.length}</dd></div><div><dt>statuses</dt><dd>${input.vexReport.statusMatrix.length}</dd></div><div><dt>workflow</dt><dd>${input.vexReport.documentWorkflow.length}</dd></div></dl><p class="muted">RepoTutor records readiness metadata only. It does not claim any actual vulnerability status.</p></section><section class="grid"><article class="vex-card"><h3>Vulnerability Inputs</h3>${vexInputList(input.vexReport.vulnerabilityInputs)}</article><article class="vex-card"><h3>Status Matrix</h3>${vexStatusList(input.vexReport.statusMatrix)}</article><article class="vex-card"><h3>Justification Catalog</h3>${vexJustificationList(input.vexReport.justificationCatalog)}</article><article class="vex-card"><h3>Risk Queue</h3>${vexRiskList(input.vexReport.riskQueue)}</article></section><section class="cards vex-product-cards">${vexProductCards(input.vexReport.productTargets)}</section><section class="grid"><article class="vex-card"><h3>Statement Drafts</h3>${vexStatementList(input.vexReport.statementDrafts)}</article><article class="vex-card"><h3>Document Workflow</h3>${vexWorkflowList(input.vexReport.documentWorkflow)}</article><article class="vex-card"><h3>Attestation Readiness</h3>${vexAttestationList(input.vexReport.attestationReadiness)}</article><article class="vex-card"><h3>다음 확인 단계</h3>${list(input.vexReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "context-pack.html",
@@ -494,6 +503,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Project Scorecard", path: "html/scorecard.html", description: "OpenSSF Scorecard식 check, risk, policy finding, remediation queue를 확인합니다." },
       { label: "Provenance Readiness", path: "html/provenance.html", description: "Cosign식 signature material, bundle, attestation, identity requirement를 확인합니다." },
       { label: "Advisory Query Readiness", path: "html/advisories.html", description: "OSV-Scanner식 package advisory query target, lockfile, policy control 준비도를 확인합니다." },
+      { label: "OpenVEX Impact Readiness", path: "html/vex.html", description: "OpenVEX식 product, status, justification, SARIF filter, attestation 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -721,6 +731,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "advisories.html",
       goal: "OSV-Scanner식 package extraction, vulnerability matching, offline DB, ignore policy 준비도를 확인합니다.",
       evidence: `query targets ${input.advisoryReport.packageQueryTargets.length}개, policies ${input.advisoryReport.policyControls.length}개`
+    },
+    {
+      title: "OpenVEX impact 준비도 확인",
+      href: "vex.html",
+      goal: "OpenVEX식 product identity, status justification, SARIF filter, attestation 준비도를 분리해 확인합니다.",
+      evidence: `product targets ${input.vexReport.productTargets.length}개, workflow ${input.vexReport.documentWorkflow.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -1133,6 +1149,51 @@ function advisoryCommandList(items: AdvisoryReport["recommendedCommands"]): stri
 }
 
 function advisoryHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function vexProductCards(items: VexReport["productTargets"]): string {
+  if (items.length === 0) return "<article class=\"vex-card\"><h3>Product target이 없습니다.</h3><p>package PURL, source digest, SBOM, container evidence가 필요합니다.</p></article>";
+  return items.slice(0, 80).map((item) => `<article class="vex-card" data-vex-product-type="${escapeHtml(item.productType)}"><h3>${escapeHtml(item.productType)}</h3><p><code>${escapeHtml(item.productId)}</code></p><p class="muted">${escapeHtml(item.version ?? "unversioned")}</p><p>${escapeHtml(item.evidence)}</p><a href="${escapeHtml(vexHref(item.relatedHref))}">근거 열기</a></article>`).join("");
+}
+
+function vexInputList(items: VexReport["vulnerabilityInputs"]): string {
+  if (items.length === 0) return "<p class=\"muted\">vulnerability input이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.source)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(vexHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function vexStatusList(items: VexReport["statusMatrix"]): string {
+  if (items.length === 0) return "<p class=\"muted\">status rule이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.status)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.requiredEvidence)}<br><span class="muted">filters scanner result: ${item.filtersScannerResult ? "yes" : "no"} · fields: ${escapeHtml(item.allowedFields.join(", ") || "none")}</span></li>`).join("")}</ul>`;
+}
+
+function vexJustificationList(items: VexReport["justificationCatalog"]): string {
+  if (items.length === 0) return "<p class=\"muted\">justification 후보가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.justification)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.useWhen)}<br><span class="muted">impact statement: ${item.requiresImpactStatement ? "required" : "optional"}</span></li>`).join("")}</ul>`;
+}
+
+function vexStatementList(items: VexReport["statementDrafts"]): string {
+  if (items.length === 0) return "<p class=\"muted\">statement draft가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.vulnerabilityId)}</strong> [${escapeHtml(item.status)}]<br>${escapeHtml(item.productIds.join(", ") || "no products")}<br><span class="muted">justification: ${escapeHtml(item.justification ?? "none")} · review: ${item.needsHumanReview ? "required" : "not required"}</span><br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(vexHref(item.relatedHref))}">근거 열기</a></li>`).join("")}</ul>`;
+}
+
+function vexWorkflowList(items: VexReport["documentWorkflow"]): string {
+  if (items.length === 0) return "<p class=\"muted\">workflow command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.step)}</strong> [${escapeHtml(item.readiness)}]<br><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function vexAttestationList(items: VexReport["attestationReadiness"]): string {
+  if (items.length === 0) return "<p class=\"muted\">attestation readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.requirement)}</strong> [${escapeHtml(item.status)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(vexHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function vexRiskList(items: VexReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(vexHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function vexHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

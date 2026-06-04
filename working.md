@@ -1598,6 +1598,35 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 126:
   - `50921d0` advisory query readiness report
 
+- 2026-06-04: AutoResearch Upgrade 127 candidate selected:
+  `openvex/vexctl` (`https://github.com/openvex/vexctl`; public Apache-2.0;
+  194 stars; 27 forks; updated 2026-06-03T07:27:47Z). Cloned ignored
+  external source to `research/external-src/openvex-vexctl` and inspected
+  README, create/add/filter/merge/generate/attest commands, implementation
+  interfaces, statement option validation, attestation code, and examples
+  without executing external source.
+- 2026-06-04: RED VEX smoke generated
+  `/tmp/repotutor-vex-red-studies.SHPpdU/2026-06-04/local__simple-ts-app__main__076b7e4b`;
+  old build was missing `analysis/vex-report.json`, `markdown/vex.md`, and
+  `html/vex.html` as expected.
+- 2026-06-04: Implemented OpenVEX-style impact readiness report:
+  `VexReportSchema`, `analysis/vex-report.json`, `markdown/vex.md`,
+  `html/vex.html`, product targets, vulnerability inputs, status matrix,
+  justification catalog, statement drafts, document workflow, attestation
+  readiness, risk queue, manifest/session-verification coverage,
+  learning-path linkage, and `open --target vex`.
+- 2026-06-04: GREEN VEX smoke generated
+  `/tmp/repotutor-vex-green-studies.xgwwZK/2026-06-04/local__simple-ts-app__main__076b7e4b`;
+  confirmed `verificationCheckedRequiredArtifacts=81`, product targets 5,
+  vulnerability inputs 5, statuses 4, justifications 5, statement drafts 5,
+  workflow 6, attestation readiness 5, risk queue 4, `vex-card`,
+  `data-source-pattern="OpenVEX"`, manifest/learning-path entries, and
+  `open --target vex` -> `html/vex.html`.
+- 2026-06-04: Verification for Upgrade 127:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 25/25 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
