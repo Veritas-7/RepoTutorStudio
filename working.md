@@ -2330,6 +2330,43 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 147:
   - `d505f24` git hooks readiness report
 
+- 2026-06-04: AutoResearch Upgrade 148 candidate selected:
+  `vercel/turborepo` (`https://github.com/vercel/turborepo`; public MIT;
+  30,491 stars; 2,356 forks; updated 2026-06-03T21:05:38Z). Compared with
+  `nrwl/nx`, `moonrepo/moon`, and `go-task/task`; selected Turborepo for
+  `turbo.json` tasks, `dependsOn` workspace ordering, cache `outputs`/`inputs`,
+  cache-disabled and persistent tasks, remote cache/env boundaries,
+  package scripts, dry-run/summarize/daemon/prune commands, and filter-based
+  task selection. Cloned ignored external source to
+  `research/external-src/vercel-turborepo` and inspected README, package
+  metadata, root/example/cli turbo configs, docs, and examples without
+  executing external source. Tracked-file count for
+  `research/external-src/vercel-turborepo` returned `0`.
+- 2026-06-04: RED task-runner readiness smoke generated
+  `/tmp/repotutor-task-runner-red-studies.mmx6dc/2026-06-04/local__simple-ts-app__main__3a9e7dbd`;
+  old build was missing `analysis/task-runner-report.json`,
+  `markdown/task-runner.md`, and `html/task-runner.html`, and
+  `open --target task-runner` failed as expected.
+- 2026-06-04: Implemented Turborepo-style task-runner readiness report:
+  `TaskRunnerReportSchema`, `analysis/task-runner-report.json`,
+  `markdown/task-runner.md`, `html/task-runner.html`, config files, task
+  signals, cache signals, dependency signals, environment signals, package
+  script signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry
+  for package-manager/git-hooks/task-runner, and `open --target task-runner`.
+- 2026-06-04: GREEN task-runner readiness smoke generated
+  `/tmp/repotutor-task-runner-green-studies.IXhmGC/2026-06-04/local__simple-ts-app__main__3a9e7dbd`;
+  confirmed `verificationCheckedRequiredArtifacts=144`, config files 0,
+  task signals 8, cache signals 7, dependency signals 6, environment signals
+  6, package script signals 6, recommended commands 6, risk queue 2,
+  `task-runner-card`, `data-source-pattern="Turborepo"`,
+  manifest/learning-path entries, and `open --target task-runner` ->
+  `html/task-runner.html`.
+- 2026-06-04: Verification for Upgrade 148:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 46/46 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

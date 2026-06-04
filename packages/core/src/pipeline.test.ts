@@ -49,6 +49,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "typecheck-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "package-manager-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "git-hooks-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "task-runner-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -96,6 +97,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "typecheck-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "package-manager.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "git-hooks.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "task-runner.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -146,6 +148,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "typecheck-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "package-manager.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "git-hooks.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "task-runner.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -226,6 +229,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/typecheck-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/package-manager.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/git-hooks.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/task-runner.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -894,6 +898,26 @@ describe("RepoTutor core pipeline", () => {
     expect(gitHooksMarkdown).toContain("Source pattern: Husky");
     expect(gitHooksMarkdown).toContain("## Hook Files");
     expect(gitHooksMarkdown).toContain("## Tool Config Files");
+    const taskRunnerText = await fs.readFile(path.join(result.session.outputPaths.analysis, "task-runner-report.json"), "utf8");
+    expect(taskRunnerText).toContain("Turborepo turbo.json tasks dependsOn outputs inputs cache env globalEnv passThroughEnv persistent turbo run filter remote cache");
+    expect(taskRunnerText).toContain("\"configFiles\"");
+    expect(taskRunnerText).toContain("\"taskSignals\"");
+    expect(taskRunnerText).toContain("\"cacheSignals\"");
+    expect(taskRunnerText).toContain("\"dependencySignals\"");
+    expect(taskRunnerText).toContain("\"environmentSignals\"");
+    expect(taskRunnerText).toContain("\"packageScriptSignals\"");
+    expect(taskRunnerText).toContain("pnpm turbo run build --dry=json");
+    const taskRunnerHtml = await fs.readFile(path.join(result.session.outputPaths.html, "task-runner.html"), "utf8");
+    expect(taskRunnerHtml).toContain("Task Runner Readiness");
+    expect(taskRunnerHtml).toContain("task-runner-card");
+    expect(taskRunnerHtml).toContain("data-source-pattern=\"Turborepo\"");
+    expect(taskRunnerHtml).toContain("Config Files");
+    expect(taskRunnerHtml).toContain("Cache Signals");
+    const taskRunnerMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "task-runner.md"), "utf8");
+    expect(taskRunnerMarkdown).toContain("# Task Runner Readiness");
+    expect(taskRunnerMarkdown).toContain("Source pattern: Turborepo");
+    expect(taskRunnerMarkdown).toContain("## Config Files");
+    expect(taskRunnerMarkdown).toContain("## Package Script Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -1034,6 +1058,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/typecheck-readiness.html");
     expect(exportManifestText).toContain("html/package-manager.html");
     expect(exportManifestText).toContain("html/git-hooks.html");
+    expect(exportManifestText).toContain("html/task-runner.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -1138,6 +1163,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("typecheck-readiness.html");
     expect(learningPathHtml).toContain("package-manager.html");
     expect(learningPathHtml).toContain("git-hooks.html");
+    expect(learningPathHtml).toContain("task-runner.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");
