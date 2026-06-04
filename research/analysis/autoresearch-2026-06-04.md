@@ -2828,6 +2828,50 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 34/34 audit checks across 13 generated reports
 
+### Upgrade 137: Release Readiness Report
+
+- Cloned and inspected `semantic-release/semantic-release` under
+  `research/external-src/semantic-release-semantic-release` without executing
+  external source.
+- GitHub metadata: public repo, MIT license, 23,742 stars, 1,804 forks,
+  updated 2026-06-04T02:41:15Z. Compared with
+  `changesets/changesets`, `googleapis/release-please`, and
+  `conventional-changelog/commitlint`; selected semantic-release because it
+  directly models automated version calculation, release notes, branch/channel
+  workflows, CI publishing, plugin lifecycle steps, authentication, and
+  provenance-aware npm publishing. No source code was copied into RepoTutor.
+- Added `ReleaseReadinessReportSchema` and
+  `analysis/release-readiness-report.json` with release configs, branch
+  channels, version signals, CI signals, publish targets, auth signals, plugin
+  lifecycle steps, risk queue, recommended commands, and learner next steps.
+- Added `markdown/release-readiness.md`, `html/release-readiness.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target release-readiness`.
+- Source pattern: semantic-release separates repository release config,
+  `branches`, `tagFormat`, conventional commit analysis, generated release
+  notes, plugin lifecycle steps (`verifyConditions`, `analyzeCommits`,
+  `verifyRelease`, `generateNotes`, `prepare`, `publish`, `addChannel`,
+  `success`, `fail`), CI-only execution after tests, full git history checkout,
+  scoped `GITHUB_TOKEN`/`NPM_TOKEN`, OIDC trusted publishing, npm provenance,
+  and dry-run review. RepoTutor maps that to deterministic static release
+  readiness and explicitly does not create tags, publish packages, or verify
+  live credentials.
+- RED smoke generated
+  `/tmp/repotutor-release-red-studies.ij2rnJ/2026-06-04/local__simple-ts-app__main__3b04f674`;
+  old behavior was missing `analysis/release-readiness-report.json`,
+  `markdown/release-readiness.md`, and `html/release-readiness.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-release-green-studies.Knbfhz/2026-06-04/local__simple-ts-app__main__3b04f674`;
+  confirmed `verificationCheckedRequiredArtifacts=111`, release configs 0,
+  branch channels 7, version signals 8, CI signals 9, publish targets 8,
+  auth signals 7, plugin steps 9, recommended commands 5, risk queue 2,
+  `release-card`, `data-source-pattern="semantic-release"`,
+  manifest/learning-path entries, and `open --target release-readiness` ->
+  `html/release-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 35/35 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

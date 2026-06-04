@@ -1,6 +1,6 @@
 {
   "iteration": 1,
-  "createdAt": "2026-06-04T02:37:08.339Z",
+  "createdAt": "2026-06-04T02:49:27.330Z",
   "checks": [
     {
       "name": "project setup",
@@ -207,6 +207,13 @@
     },
     {
       "name": "i18n readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "release readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -1925,6 +1925,43 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 136:
   - `70ac6c9` i18n readiness report
 
+- 2026-06-04: AutoResearch Upgrade 137 candidate selected:
+  `semantic-release/semantic-release`
+  (`https://github.com/semantic-release/semantic-release`; public MIT;
+  23,742 stars; 1,804 forks; updated 2026-06-04T02:41:15Z). Compared with
+  `changesets/changesets`, `googleapis/release-please`, and
+  `conventional-changelog/commitlint`; selected semantic-release for its
+  automated version calculation, release notes, branch/channel workflows,
+  CI-only publishing, plugin lifecycle, auth, OIDC, and provenance model.
+  Cloned ignored external source to
+  `research/external-src/semantic-release-semantic-release` and inspected
+  README, configuration docs, plugin docs, CI configuration docs, and GitHub
+  Actions recipe docs without executing external source.
+- 2026-06-04: RED release readiness smoke generated
+  `/tmp/repotutor-release-red-studies.ij2rnJ/2026-06-04/local__simple-ts-app__main__3b04f674`;
+  old build was missing `analysis/release-readiness-report.json`,
+  `markdown/release-readiness.md`, and `html/release-readiness.html` as
+  expected.
+- 2026-06-04: Implemented semantic-release-style release readiness report:
+  `ReleaseReadinessReportSchema`, `analysis/release-readiness-report.json`,
+  `markdown/release-readiness.md`, `html/release-readiness.html`, release
+  configs, branch channels, version signals, CI signals, publish targets, auth
+  signals, plugin steps, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target release-readiness`.
+- 2026-06-04: GREEN release readiness smoke generated
+  `/tmp/repotutor-release-green-studies.Knbfhz/2026-06-04/local__simple-ts-app__main__3b04f674`;
+  confirmed `verificationCheckedRequiredArtifacts=111`, release configs 0,
+  branch channels 7, version signals 8, CI signals 9, publish targets 8, auth
+  signals 7, plugin steps 9, recommended commands 5, risk queue 2,
+  `release-card`, `data-source-pattern="semantic-release"`,
+  manifest/learning-path entries, and `open --target release-readiness` ->
+  `html/release-readiness.html`.
+- 2026-06-04: Verification for Upgrade 137:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 35/35 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

@@ -1506,6 +1506,65 @@ export const I18nReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ReleaseReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  releaseConfigs: z.array(z.object({
+    filePath: z.string(),
+    configType: z.enum(["semantic-release-config", "releaserc", "package-release-key", "package-script", "github-workflow", "changesets-config", "release-please-config", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  branchChannels: z.array(z.object({
+    channel: z.enum(["main", "maintenance", "next", "next-major", "beta", "alpha", "custom"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  versionSignals: z.array(z.object({
+    signal: z.enum(["semantic-versioning", "conventional-commits", "breaking-change", "commit-analyzer", "release-notes-generator", "tag-format", "last-release-tag", "changelog", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["ci-workflow", "tests-before-release", "fetch-depth-zero", "contents-write", "id-token-write", "manual-trigger", "dry-run", "npm-audit-signatures", "protected-branch", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  publishTargets: z.array(z.object({
+    target: z.enum(["npm", "github-release", "gitlab-release", "docker", "vs-code", "git-commit", "changelog", "custom", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  authSignals: z.array(z.object({
+    signal: z.enum(["github-token", "npm-token", "oidc-trusted-publishing", "registry-config", "ssh-key", "persist-credentials-false", "token-redaction", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  pluginSteps: z.array(z.object({
+    step: z.enum(["verifyConditions", "analyzeCommits", "verifyRelease", "generateNotes", "prepare", "publish", "addChannel", "success", "fail"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1744,6 +1803,7 @@ export type AccessibilityReport = z.infer<typeof AccessibilityReportSchema>;
 export type StorybookReport = z.infer<typeof StorybookReportSchema>;
 export type DesignTokensReport = z.infer<typeof DesignTokensReportSchema>;
 export type I18nReport = z.infer<typeof I18nReportSchema>;
+export type ReleaseReadinessReport = z.infer<typeof ReleaseReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

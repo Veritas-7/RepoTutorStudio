@@ -49,6 +49,7 @@ import {
   StorybookReport,
   DesignTokensReport,
   I18nReport,
+  ReleaseReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -104,6 +105,7 @@ export interface AnalysisBundle {
   storybookReport: StorybookReport;
   designTokensReport: DesignTokensReport;
   i18nReport: I18nReport;
+  releaseReadinessReport: ReleaseReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -159,8 +161,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const storybookReport = await buildStorybookReport(walk);
   const designTokensReport = await buildDesignTokensReport(walk, storybookReport);
   const i18nReport = await buildI18nReport(walk);
+  const releaseReadinessReport = await buildReleaseReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -5834,6 +5837,356 @@ function i18nQaSignals(sourceFiles: I18nSourceFile[]): I18nReport["qaSignals"] {
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} QA evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/i18n.html"
+    };
+  });
+}
+
+async function buildReleaseReadinessReport(walk: WalkResult): Promise<ReleaseReadinessReport> {
+  const sourceFiles = await releaseSourceFiles(walk);
+  const releaseConfigs = releaseConfigSignals(sourceFiles);
+  const branchChannels = releaseBranchChannels(sourceFiles);
+  const versionSignals = releaseVersionSignals(sourceFiles);
+  const ciSignals = releaseCiSignals(sourceFiles);
+  const publishTargets = releasePublishTargets(sourceFiles);
+  const authSignals = releaseAuthSignals(sourceFiles);
+  const pluginSteps = releasePluginSteps(sourceFiles);
+
+  const hasReleaseConfig = releaseConfigs.some((item) => ["semantic-release-config", "releaserc", "package-release-key", "github-workflow"].includes(item.configType));
+  const hasCiWorkflow = ciSignals.some((item) => item.signal === "ci-workflow" && item.readiness === "ready");
+  const hasTestsBeforeRelease = ciSignals.some((item) => item.signal === "tests-before-release" && item.readiness === "ready");
+  const hasAnalyzer = versionSignals.some((item) => ["conventional-commits", "commit-analyzer"].includes(item.signal) && item.readiness === "ready")
+    || pluginSteps.some((item) => item.step === "analyzeCommits" && item.readiness === "ready");
+  const hasNotes = versionSignals.some((item) => ["release-notes-generator", "changelog"].includes(item.signal) && item.readiness === "ready")
+    || pluginSteps.some((item) => item.step === "generateNotes" && item.readiness === "ready");
+  const hasPublish = publishTargets.some((item) => item.readiness === "ready")
+    || pluginSteps.some((item) => item.step === "publish" && item.readiness === "ready");
+  const hasAuth = authSignals.some((item) => ["github-token", "npm-token", "oidc-trusted-publishing", "ssh-key"].includes(item.signal) && item.readiness === "ready");
+  const hasOidc = authSignals.some((item) => item.signal === "oidc-trusted-publishing" && item.readiness === "ready")
+    || ciSignals.some((item) => item.signal === "id-token-write" && item.readiness === "ready");
+  const hasDryRun = ciSignals.some((item) => item.signal === "dry-run" && item.readiness === "ready");
+  const hasFetchDepth = ciSignals.some((item) => item.signal === "fetch-depth-zero" && item.readiness === "ready");
+
+  const riskQueue: ReleaseReadinessReport["riskQueue"] = [];
+  if (!hasReleaseConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a semantic-release config before claiming automated release readiness.",
+      why: "semantic-release needs branches, tag format, and plugin configuration from package.json, .releaserc, release.config, or CI command context.",
+      relatedHref: "html/release-readiness.html"
+    });
+  }
+  if (hasReleaseConfig && !hasCiWorkflow) {
+    riskQueue.push({
+      priority: "high",
+      action: "Run semantic-release only from a release CI workflow after tests pass.",
+      why: "semantic-release is designed to publish after successful CI on a release branch, not from an unverified local run.",
+      relatedHref: "html/release-readiness.html"
+    });
+  }
+  if (hasCiWorkflow && !hasTestsBeforeRelease) {
+    riskQueue.push({
+      priority: "high",
+      action: "Gate the release job behind test/build jobs.",
+      why: "The release command should execute only after every required build and test job succeeds.",
+      relatedHref: "html/release-readiness.html"
+    });
+  }
+  if (hasReleaseConfig && !hasAnalyzer) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Configure conventional commit analysis for next-version calculation.",
+      why: "Automated releases need repeatable mapping from commits to patch/minor/major outcomes.",
+      relatedHref: "html/release-readiness.html"
+    });
+  }
+  if (hasReleaseConfig && !hasNotes) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add release note or changelog generation.",
+      why: "Consumers need generated notes explaining what changed between release tags.",
+      relatedHref: "html/release-readiness.html"
+    });
+  }
+  if (hasReleaseConfig && !hasPublish) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Declare at least one publish target such as npm, GitHub release, Docker, changelog, or custom exec.",
+      why: "A version calculation without a publish target is useful for dry-run only.",
+      relatedHref: "html/release-readiness.html"
+    });
+  }
+  if (hasReleaseConfig && !hasAuth) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document release authentication through scoped CI tokens or trusted publishing.",
+      why: "Tag creation and package publication require explicit credentials with safe scope boundaries.",
+      relatedHref: "html/release-readiness.html"
+    });
+  }
+  if (hasReleaseConfig && !hasOidc) {
+    riskQueue.push({
+      priority: "low",
+      action: "Prefer OIDC trusted publishing for npm release jobs when GitHub Actions is used.",
+      why: "Trusted publishing reduces reliance on long-lived npm tokens and can produce npm provenance.",
+      relatedHref: "html/release-readiness.html"
+    });
+  }
+  if (hasCiWorkflow && !hasFetchDepth) {
+    riskQueue.push({
+      priority: "low",
+      action: "Use full git history in release checkout.",
+      why: "semantic-release uses tags and commits since the last release, so shallow checkouts can hide release history.",
+      relatedHref: "html/release-readiness.html"
+    });
+  }
+  if (hasReleaseConfig && !hasDryRun) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add a semantic-release dry-run path for configuration review.",
+      why: "Dry runs preview the next version and notes without prepare, publish, addChannel, success, or fail side effects.",
+      relatedHref: "html/release-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run semantic-release in the original repository before treating this static report as release approval.",
+    why: "RepoTutor detects readiness signals only; it does not create tags, publish packages, or verify remote credentials.",
+    relatedHref: "html/release-readiness.html"
+  });
+
+  return {
+    summary: `semantic-release식 release readiness report: config ${releaseConfigs.length}개, branch/channel signal ${branchChannels.length}개, CI signal ${ciSignals.length}개, publish target ${publishTargets.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "semantic-release branches tagFormat plugins verifyConditions analyzeCommits generateNotes prepare publish CI OIDC provenance",
+    releaseConfigs,
+    branchChannels,
+    versionSignals,
+    ciSignals,
+    publishTargets,
+    authSignals,
+    pluginSteps,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npm install --save-dev semantic-release", purpose: "Install the automated release runner." },
+      { command: "npx semantic-release --dry-run", purpose: "Preview next version, tag, and release notes without publishing." },
+      { command: "npx semantic-release", purpose: "Run the real release from CI after all required tests pass." },
+      { command: "npx commitlint --from <last-release-tag> --to HEAD", purpose: "Check that commits can drive conventional release analysis." },
+      { command: "npm audit signatures", purpose: "Verify npm registry signatures or provenance-adjacent package integrity in CI." }
+    ],
+    learnerNextSteps: [
+      "먼저 release config와 CI workflow를 분리해 확인하세요. config만 있고 CI gate가 없으면 아직 배포 준비가 아닙니다.",
+      "branches, tagFormat, conventional commit analyzer, release notes generator가 같은 릴리스 모델을 바라보는지 확인하세요.",
+      "publish target마다 필요한 토큰과 권한을 기록하고, 가능하면 OIDC trusted publishing을 우선 검토하세요.",
+      "이 report는 정적 readiness입니다. 실제 release approval은 원본 repo에서 dry-run과 CI 권한 검증으로 확인하세요."
+    ]
+  };
+}
+
+type ReleaseSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function releaseSourceFiles(walk: WalkResult): Promise<ReleaseSourceFile[]> {
+  const files: ReleaseSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !releaseInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!releasePathSignal(file.relPath) && !releaseContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 200) break;
+  }
+  return files;
+}
+
+function releaseInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|\.releaserc(\.json|\.ya?ml|\.js|\.cjs|\.mjs)?|release\.config\.[cm]?js|\.changeset\/config\.json|release-please-config\.json|commitlint\.config\.[cm]?js|CHANGELOG\.md|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(json|ya?ml|md|js|mjs|cjs|ts|tsx|sh)$/i.test(filePath);
+}
+
+function releasePathSignal(filePath: string): boolean {
+  return /(semantic-release|release\.config|\.releaserc|release-please|changeset|changesets|commitlint|conventional|changelog|publish|deploy|\.github\/workflows\/.+(release|publish|deploy)|npmrc)/i.test(filePath);
+}
+
+function releaseContentSignal(text: string): boolean {
+  return /(semantic-release|@semantic-release|release-please|changesets?|conventionalcommits?|commitlint|analyzeCommits|generateNotes|verifyConditions|verifyRelease|tagFormat|branches\s*:|GH_TOKEN|GITHUB_TOKEN|NPM_TOKEN|id-token:\s*write|fetch-depth:\s*0|npm audit signatures|workflow_dispatch|dry-run|CHANGELOG|BREAKING CHANGE|npm publish|docker push)/i.test(text);
+}
+
+function releaseConfigSignals(sourceFiles: ReleaseSourceFile[]): ReleaseReadinessReport["releaseConfigs"] {
+  const rows: ReleaseReadinessReport["releaseConfigs"] = [];
+  for (const source of sourceFiles) {
+    const configTypes = releaseConfigTypes(source.filePath, source.text);
+    for (const configType of configTypes) {
+      rows.push({
+        filePath: source.filePath,
+        configType,
+        readiness: configType === "unknown" ? "partial" : "ready",
+        evidence: releaseConfigEvidence(source.filePath, configType),
+        sourceHref: source.sourceHref
+      });
+    }
+  }
+  return rows.slice(0, 120);
+}
+
+function releaseConfigTypes(filePath: string, text: string): ReleaseReadinessReport["releaseConfigs"][number]["configType"][] {
+  const base = path.basename(filePath);
+  const types = new Set<ReleaseReadinessReport["releaseConfigs"][number]["configType"]>();
+  if (/^\.releaserc/i.test(base)) types.add("releaserc");
+  if (/^release\.config\.[cm]?js$/i.test(base)) types.add("semantic-release-config");
+  if (base === "package.json") {
+    if (/"release"\s*:/.test(text)) types.add("package-release-key");
+    if (/"[^"]*(release|publish)[^"]*"\s*:\s*"[^"]*(semantic-release|changeset|release-please|npm publish)/i.test(text)) types.add("package-script");
+  }
+  if (/^\.github\/workflows\//i.test(filePath) && /(semantic-release|release-please|changeset|npm publish|docker push)/i.test(text)) types.add("github-workflow");
+  if (/\.changeset\/config\.json$/i.test(filePath) || /@changesets\/cli|changeset\s+(version|publish)/i.test(text)) types.add("changesets-config");
+  if (/release-please-config\.json$/i.test(filePath) || /release-please/i.test(text)) types.add("release-please-config");
+  if (types.size === 0 && /(release|publish|changelog|conventional)/i.test(text)) types.add("unknown");
+  return [...types];
+}
+
+function releaseConfigEvidence(filePath: string, configType: ReleaseReadinessReport["releaseConfigs"][number]["configType"]): string {
+  if (configType === "semantic-release-config") return `${filePath} exports semantic-release configuration.`;
+  if (configType === "releaserc") return `${filePath} is a semantic-release config file.`;
+  if (configType === "package-release-key") return `${filePath} declares a package.json release configuration key.`;
+  if (configType === "package-script") return `${filePath} declares a release or publish package script.`;
+  if (configType === "github-workflow") return `${filePath} contains release automation in GitHub Actions.`;
+  if (configType === "changesets-config") return `${filePath} contains Changesets release workflow evidence.`;
+  if (configType === "release-please-config") return `${filePath} contains release-please workflow evidence.`;
+  return `${filePath} contains release-shaped configuration evidence.`;
+}
+
+function releaseBranchChannels(sourceFiles: ReleaseSourceFile[]): ReleaseReadinessReport["branchChannels"] {
+  const specs: Array<{ channel: ReleaseReadinessReport["branchChannels"][number]["channel"]; pattern: RegExp; evidence: string }> = [
+    { channel: "main", pattern: /\bbranches\s*[:=]\s*\[[^\]]*(main|master)|on:\s*[\s\S]{0,200}branches:\s*[\s\S]{0,120}(main|master)/i, evidence: "main/master release branch evidence was detected." },
+    { channel: "maintenance", pattern: /\+?\(\[0-9\]\)|\b\d+\.x\b|\bmaintenance\b/i, evidence: "maintenance branch/channel evidence was detected." },
+    { channel: "next", pattern: /['"]next['"]|channel\s*:\s*['"]next['"]/i, evidence: "next distribution channel evidence was detected." },
+    { channel: "next-major", pattern: /next-major/i, evidence: "next-major distribution channel evidence was detected." },
+    { channel: "beta", pattern: /\bbeta\b|prerelease\s*:\s*true/i, evidence: "beta prerelease channel evidence was detected." },
+    { channel: "alpha", pattern: /\balpha\b/i, evidence: "alpha prerelease channel evidence was detected." },
+    { channel: "custom", pattern: /channel\s*:|branches\s*:\s*\[[\s\S]{0,300}\{[\s\S]{0,300}name\s*:/i, evidence: "custom branch/channel configuration evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      channel: spec.channel,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.channel} branch/channel evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/release-readiness.html"
+    };
+  });
+}
+
+function releaseVersionSignals(sourceFiles: ReleaseSourceFile[]): ReleaseReadinessReport["versionSignals"] {
+  const specs: Array<{ signal: ReleaseReadinessReport["versionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "semantic-versioning", pattern: /semantic version|semver|major|minor|patch|version\s*[:=]/i, evidence: "semantic versioning evidence was detected." },
+    { signal: "conventional-commits", pattern: /conventionalcommits?|conventional-changelog|commitlint|feat\(|fix\(|perf\(/i, evidence: "conventional commit evidence was detected." },
+    { signal: "breaking-change", pattern: /BREAKING CHANGE|breaking\s+release|major release/i, evidence: "breaking change release evidence was detected." },
+    { signal: "commit-analyzer", pattern: /@semantic-release\/commit-analyzer|analyzeCommits|commit analyzer/i, evidence: "commit analyzer evidence was detected." },
+    { signal: "release-notes-generator", pattern: /@semantic-release\/release-notes-generator|generateNotes|release notes generator/i, evidence: "release notes generator evidence was detected." },
+    { signal: "tag-format", pattern: /tagFormat|tag-format|v\$\{version\}|git tag/i, evidence: "tag format or release tag evidence was detected." },
+    { signal: "last-release-tag", pattern: /last release|lastRelease|git tag --contains|git branch --contains/i, evidence: "last release tag alignment evidence was detected." },
+    { signal: "changelog", pattern: /CHANGELOG|@semantic-release\/changelog|changelog/i, evidence: "changelog evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} version evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/release-readiness.html"
+    };
+  });
+}
+
+function releaseCiSignals(sourceFiles: ReleaseSourceFile[]): ReleaseReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: ReleaseReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ci-workflow", pattern: /^\.github\/workflows\//i, evidence: "CI workflow file can host release automation." },
+    { signal: "tests-before-release", pattern: /needs\s*:|requires\s*:|test|build|pnpm test|npm test|yarn test|vitest|jest/i, evidence: "test/build gate evidence was detected." },
+    { signal: "fetch-depth-zero", pattern: /fetch-depth\s*:\s*0/i, evidence: "full git history checkout is configured." },
+    { signal: "contents-write", pattern: /contents\s*:\s*write/i, evidence: "GitHub contents write permission is configured." },
+    { signal: "id-token-write", pattern: /id-token\s*:\s*write/i, evidence: "OIDC id-token write permission is configured." },
+    { signal: "manual-trigger", pattern: /workflow_dispatch|repository_dispatch/i, evidence: "manual or dispatch release trigger evidence was detected." },
+    { signal: "dry-run", pattern: /semantic-release[^\n]*--dry-run|dryRun\s*:\s*true|dry-run/i, evidence: "semantic-release dry-run evidence was detected." },
+    { signal: "npm-audit-signatures", pattern: /npm audit signatures/i, evidence: "npm signature verification is configured." },
+    { signal: "protected-branch", pattern: /protected branch|branch protection|protected_branches|environments?\s*:/i, evidence: "protected branch/environment release control evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} CI evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/release-readiness.html"
+    };
+  });
+}
+
+function releasePublishTargets(sourceFiles: ReleaseSourceFile[]): ReleaseReadinessReport["publishTargets"] {
+  const specs: Array<{ target: ReleaseReadinessReport["publishTargets"][number]["target"]; pattern: RegExp; evidence: string }> = [
+    { target: "npm", pattern: /@semantic-release\/npm|npm publish|NPM_TOKEN|trusted publishing|npm provenance/i, evidence: "npm publishing evidence was detected." },
+    { target: "github-release", pattern: /@semantic-release\/github|GitHub release|GH_TOKEN|GITHUB_TOKEN|contents\s*:\s*write/i, evidence: "GitHub release publishing evidence was detected." },
+    { target: "gitlab-release", pattern: /@semantic-release\/gitlab|GitLab release|GL_TOKEN|GITLAB_TOKEN/i, evidence: "GitLab release publishing evidence was detected." },
+    { target: "docker", pattern: /semantic-release.*docker|docker push|Docker Hub|container registry|ghcr\.io/i, evidence: "Docker/container publishing evidence was detected." },
+    { target: "vs-code", pattern: /vsce|visual studio code marketplace|\.vsix/i, evidence: "VS Code extension publishing evidence was detected." },
+    { target: "git-commit", pattern: /@semantic-release\/git|git plugin|prepare\s*:\s*.*package\.json|persist-credentials\s*:\s*false/i, evidence: "release commit preparation evidence was detected." },
+    { target: "changelog", pattern: /@semantic-release\/changelog|CHANGELOG\.md/i, evidence: "changelog publish/prepare evidence was detected." },
+    { target: "custom", pattern: /@semantic-release\/exec|exec plugin|verifyRelease|prepareCmd|publishCmd|successCmd|failCmd/i, evidence: "custom exec publish hook evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      target: spec.target,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.target} publish target evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/release-readiness.html"
+    };
+  });
+}
+
+function releaseAuthSignals(sourceFiles: ReleaseSourceFile[]): ReleaseReadinessReport["authSignals"] {
+  const specs: Array<{ signal: ReleaseReadinessReport["authSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-token", pattern: /GH_TOKEN|GITHUB_TOKEN/i, evidence: "GitHub token release authentication is referenced." },
+    { signal: "npm-token", pattern: /NPM_TOKEN/i, evidence: "npm token release authentication is referenced." },
+    { signal: "oidc-trusted-publishing", pattern: /id-token\s*:\s*write|trusted publishing|OIDC|provenance/i, evidence: "OIDC trusted publishing or provenance evidence was detected." },
+    { signal: "registry-config", pattern: /\.npmrc|registry-url|custom registry|npm config/i, evidence: "registry configuration evidence was detected." },
+    { signal: "ssh-key", pattern: /SSH_PRIVATE_KEY|ssh-key|git-auth-ssh|deploy key/i, evidence: "SSH release authentication evidence was detected." },
+    { signal: "persist-credentials-false", pattern: /persist-credentials\s*:\s*false/i, evidence: "checkout credential override control is configured." },
+    { signal: "token-redaction", pattern: /hide-sensitive|redact|mask|::add-mask::/i, evidence: "token redaction or masking evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} authentication evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/release-readiness.html"
+    };
+  });
+}
+
+function releasePluginSteps(sourceFiles: ReleaseSourceFile[]): ReleaseReadinessReport["pluginSteps"] {
+  const specs: Array<{ step: ReleaseReadinessReport["pluginSteps"][number]["step"]; pattern: RegExp; evidence: string }> = [
+    { step: "verifyConditions", pattern: /verifyConditions|@semantic-release\/(npm|github|gitlab|git|exec)/i, evidence: "verifyConditions plugin step evidence was detected." },
+    { step: "analyzeCommits", pattern: /analyzeCommits|@semantic-release\/commit-analyzer/i, evidence: "analyzeCommits plugin step evidence was detected." },
+    { step: "verifyRelease", pattern: /verifyRelease/i, evidence: "verifyRelease plugin step evidence was detected." },
+    { step: "generateNotes", pattern: /generateNotes|@semantic-release\/release-notes-generator/i, evidence: "generateNotes plugin step evidence was detected." },
+    { step: "prepare", pattern: /\bprepare\b|@semantic-release\/(npm|git|changelog)|prepareCmd/i, evidence: "prepare plugin step evidence was detected." },
+    { step: "publish", pattern: /\bpublish\b|@semantic-release\/(npm|github|gitlab|exec)|publishCmd/i, evidence: "publish plugin step evidence was detected." },
+    { step: "addChannel", pattern: /addChannel|dist-tag|distribution channel/i, evidence: "addChannel plugin step evidence was detected." },
+    { step: "success", pattern: /\bsuccess\b|successCmd|released issues|released pull requests/i, evidence: "success notification step evidence was detected." },
+    { step: "fail", pattern: /\bfail\b|failCmd|release failed|failed release/i, evidence: "fail notification step evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      step: spec.step,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.step} plugin step evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/release-readiness.html"
     };
   });
 }
