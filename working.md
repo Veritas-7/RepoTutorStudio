@@ -3977,6 +3977,46 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 187:
   - `13ba079` GraphQL readiness report
 
+- 2026-06-04: AutoResearch Upgrade 188 candidate selected:
+  `tj/commander.js`
+  (`https://github.com/tj/commander.js`; public; MIT; 28,247 stars; 1,751
+  forks; updated 2026-06-04T04:59:00Z). Compared with `yargs/yargs`,
+  `oclif/core`, and `cacjs/cac`; selected Commander.js because it directly
+  models CLI command ownership: `Command`, `.command()`, `.argument()`,
+  `.option()`, `.requiredOption()`, `.action()`, `.hook()`, `parse()`,
+  `parseAsync()`, automated help, output configuration, `exitOverride()`,
+  `showHelpAfterError()`, `CommanderError`, stderr, and exit codes. Cloned
+  ignored external source to `research/external-src/tj-commander-js` and
+  inspected docs/source/test hits without executing external source. Clone
+  HEAD was `ba6d13d`; tracked file count for
+  `research/external-src/tj-commander-js` returned `0`.
+- 2026-06-04: RED cli-readiness smoke generated
+  `/tmp/repotutor-cli-red-studies.kflGSM/2026-06-04/local__simple-ts-app__HEAD__739b5cd6`;
+  old build had `verificationCheckedRequiredArtifacts=261`, was missing
+  `analysis/cli-readiness-report.json`, `markdown/cli-readiness.md`, and
+  `html/cli-readiness.html`, and `open --target cli-readiness` failed as
+  expected.
+- 2026-06-04: Implemented Commander.js-style cli-readiness report:
+  `CliReadinessReportSchema`, `analysis/cli-readiness-report.json`,
+  `markdown/cli-readiness.md`, `html/cli-readiness.html`, CLI setups, command
+  signals, option signals, parse signals, action signals, help signals, error
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target cli-readiness`.
+- 2026-06-04: GREEN cli-readiness smoke generated
+  `/tmp/repotutor-cli-green-studies.dxMJk0/2026-06-04/local__simple-ts-app__main__739b5cd6`;
+  confirmed `verificationCheckedRequiredArtifacts=264`, CLI setups 0, command
+  signals 6, option signals 8, parse signals 6, action signals 6, help
+  signals 6, error signals 6, package signals 6, risk queue 5, all three new
+  artifacts, and `open --target cli-readiness` ->
+  `html/cli-readiness.html`.
+- 2026-06-04: Verification for Upgrade 188:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 86/86 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

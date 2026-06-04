@@ -5233,6 +5233,48 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 85/85 audit checks across 13 generated reports
 
+### Upgrade 188: CLI Readiness Report
+
+- Cloned and inspected `tj/commander.js` under
+  `research/external-src/tj-commander-js` without executing external source.
+  Clone HEAD was `ba6d13d`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 28,247 stars, 1,751 forks,
+  updated 2026-06-04T04:59:00Z. Compared with `yargs/yargs`,
+  `oclif/core`, and `cacjs/cac`; selected Commander.js because it directly
+  models CLI command, option, argument, action, parse, help, output, and error
+  surfaces. No source code was copied into RepoTutor.
+- Implemented Commander.js-style cli-readiness report:
+  `CliReadinessReportSchema`, `analysis/cli-readiness-report.json`,
+  `markdown/cli-readiness.md`, `html/cli-readiness.html`, CLI setups, command
+  signals, option signals, parse signals, action signals, help signals, error
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target cli-readiness`.
+- Source pattern: Commander.js separates `Command`, subcommands, arguments,
+  options, `requiredOption`, default/choice/env/conflict/implied option
+  contracts, `action`, lifecycle hooks, `parse`, `parseAsync`, executable
+  subcommands, help/usage/custom help text, output configuration,
+  `exitOverride`, `showHelpAfterError`, `CommanderError`, stderr, and exit-code
+  behavior. RepoTutor maps that to deterministic static CLI readiness and
+  explicitly does not invoke CLI binaries, parse real argv, spawn subcommands,
+  inspect completions, or verify terminal TTY behavior.
+- RED smoke generated
+  `/tmp/repotutor-cli-red-studies.kflGSM/2026-06-04/local__simple-ts-app__HEAD__739b5cd6`;
+  old behavior had `verificationCheckedRequiredArtifacts=261`, was missing
+  `analysis/cli-readiness-report.json`, `markdown/cli-readiness.md`, and
+  `html/cli-readiness.html`, and `open --target cli-readiness` exited with
+  `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-cli-green-studies.dxMJk0/2026-06-04/local__simple-ts-app__main__739b5cd6`;
+  confirmed `verificationCheckedRequiredArtifacts=264`, CLI setups 0, command
+  signals 6, option signals 8, parse signals 6, action signals 6, help signals
+  6, error signals 6, package signals 6, risk queue 5, all three new
+  artifacts, and `open --target cli-readiness` ->
+  `html/cli-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 86/86 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

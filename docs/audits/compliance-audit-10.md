@@ -1,6 +1,6 @@
 # Compliance Audit 10
 
-Created: 2026-06-04T12:43:40.693Z
+Created: 2026-06-04T12:57:24.625Z
 
 Status: PASS
 
@@ -485,6 +485,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - GraphQL readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - CLI readiness report
 
 - missing files: none
 - missing strings: none

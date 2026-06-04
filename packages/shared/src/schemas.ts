@@ -4631,6 +4631,79 @@ export const GraphqlReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CliReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  cliSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["commander", "yargs", "oclif", "cac", "meow", "clipanion", "custom", "unknown"]),
+    commandCount: z.number().int().nonnegative(),
+    optionCount: z.number().int().nonnegative(),
+    argumentCount: z.number().int().nonnegative(),
+    actionCount: z.number().int().nonnegative(),
+    parseCount: z.number().int().nonnegative(),
+    helpCount: z.number().int().nonnegative(),
+    errorCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  commandSignals: z.array(z.object({
+    signal: z.enum(["command", "subcommand", "argument", "description", "alias", "version", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  optionSignals: z.array(z.object({
+    signal: z.enum(["option", "required-option", "variadic-option", "default-value", "choices", "env", "conflicts", "implies", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  parseSignals: z.array(z.object({
+    signal: z.enum(["parse", "parse-async", "program-name", "executable", "exit-override", "allow-unknown-option", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["action", "hook", "pre-action", "post-action", "async-action", "pass-through-options", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  helpSignals: z.array(z.object({
+    signal: z.enum(["help", "usage", "help-option", "add-help-text", "show-help-after-error", "completion", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  errorSignals: z.array(z.object({
+    signal: z.enum(["command-error", "missing-argument", "unknown-option", "invalid-option", "exit-code", "stderr", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["commander", "yargs", "@oclif/core", "cac", "meow", "clipanion", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4920,6 +4993,7 @@ export type BrowserCompatibilityReadinessReport = z.infer<typeof BrowserCompatib
 export type EnvValidationReadinessReport = z.infer<typeof EnvValidationReadinessReportSchema>;
 export type SecurityHeadersReadinessReport = z.infer<typeof SecurityHeadersReadinessReportSchema>;
 export type GraphqlReadinessReport = z.infer<typeof GraphqlReadinessReportSchema>;
+export type CliReadinessReport = z.infer<typeof CliReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
