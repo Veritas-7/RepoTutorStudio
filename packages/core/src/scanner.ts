@@ -90,6 +90,7 @@ import {
   FileUploadReadinessReport,
   WebSocketReadinessReport,
   PdfGenerationReadinessReport,
+  SpreadsheetReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -186,6 +187,7 @@ export interface AnalysisBundle {
   fileUploadReadinessReport: FileUploadReadinessReport;
   webSocketReadinessReport: WebSocketReadinessReport;
   pdfGenerationReadinessReport: PdfGenerationReadinessReport;
+  spreadsheetReadinessReport: SpreadsheetReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -282,8 +284,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const fileUploadReadinessReport = await buildFileUploadReadinessReport(walk);
   const webSocketReadinessReport = await buildWebSocketReadinessReport(walk);
   const pdfGenerationReadinessReport = await buildPdfGenerationReadinessReport(walk);
+  const spreadsheetReadinessReport = await buildSpreadsheetReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -17316,6 +17319,285 @@ function pdfGenerationReadinessSignalFromSpecs<T extends Record<K, string> & { p
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/pdf-generation-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildSpreadsheetReadinessReport(walk: WalkResult): Promise<SpreadsheetReadinessReport> {
+  const sourceFiles = await spreadsheetReadinessSourceFiles(walk);
+  const spreadsheetSetups = spreadsheetReadinessSetups(sourceFiles);
+  const workbookSignals = spreadsheetReadinessWorkbookSignals(sourceFiles);
+  const sheetSignals = spreadsheetReadinessSheetSignals(sourceFiles);
+  const formatSignals = spreadsheetReadinessFormatSignals(sourceFiles);
+  const inputSignals = spreadsheetReadinessInputSignals(sourceFiles);
+  const outputSignals = spreadsheetReadinessOutputSignals(sourceFiles);
+  const safetySignals = spreadsheetReadinessSafetySignals(sourceFiles);
+  const packageSignals = spreadsheetReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasSheetJsPackage = packageSignals.some((item) => item.signal === "xlsx" && item.readiness === "ready");
+  const hasSetup = spreadsheetSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = spreadsheetSetups.some((item) => item.readiness === "ready");
+  const hasInput = inputSignals.some((item) => item.readiness === "ready") || spreadsheetSetups.some((item) => item.inputCount > 0);
+  const hasTransform = sheetSignals.some((item) => item.readiness === "ready") || spreadsheetSetups.some((item) => item.transformCount > 0);
+  const hasOutput = outputSignals.some((item) => item.readiness === "ready") || spreadsheetSetups.some((item) => item.outputCount > 0);
+  const hasSafety = safetySignals.some((item) => item.readiness === "ready") || spreadsheetSetups.some((item) => item.safetyCount > 0);
+
+  const riskQueue: SpreadsheetReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the spreadsheet/CSV import-export strategy before claiming table export readiness.",
+      why: "Spreadsheet readiness starts with explicit workbook, sheet, input, transform, output, or package evidence.",
+      relatedHref: "html/spreadsheet-readiness.html"
+    });
+  }
+  if (hasSheetJsPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair SheetJS package evidence with concrete read/write, workbook, sheet transform, and output call sites.",
+      why: "An xlsx dependency alone does not prove that workbook inputs, sheet conversion, and exported bytes are wired.",
+      relatedHref: "html/spreadsheet-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasInput) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add readFile, XLSX.read, upload buffer, table input, stream input, or remote fetch handling.",
+      why: "Spreadsheet workflows need an explicit source of workbook or CSV data before analysis or export can be trusted.",
+      relatedHref: "html/spreadsheet-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasTransform) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add json_to_sheet, aoa_to_sheet, table_to_sheet, sheet_to_json, append, or range conversion evidence.",
+      why: "Workbook code is hard to audit when row/column conversion, sheet appending, and range handling are implicit.",
+      relatedHref: "html/spreadsheet-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasOutput) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add writeFile, XLSX.write, writeBuffer, download, Blob, base64, stream, or CSV stringify output handling.",
+      why: "Spreadsheet export is incomplete until workbook or CSV bytes are intentionally returned, written, streamed, or downloaded.",
+      relatedHref: "html/spreadsheet-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasSafety) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review formula injection, large workbook limits, date parsing, encoding, cell types, and error handling.",
+      why: "Spreadsheet files can carry formulas, dates, encodings, very large row sets, and user-provided cell values.",
+      relatedHref: "html/spreadsheet-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run representative spreadsheet/CSV tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor records spreadsheet readiness only; it does not open spreadsheet files, parse workbooks, evaluate formulas, convert tables, stream rows, write files, trigger downloads, or run the analyzed project's tests.",
+    relatedHref: "html/spreadsheet-readiness.html"
+  });
+
+  return {
+    summary: `SheetJS-style spreadsheet readiness report: setup ${spreadsheetSetups.length}개, workbook signal ${workbookSignals.length}개, sheet signal ${sheetSignals.length}개, output signal ${outputSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "SheetJS XLSX readFile writeFile read write book_new book_append_sheet json_to_sheet sheet_to_json aoa_to_sheet table_to_sheet CSV workbook worksheet",
+    spreadsheetSetups,
+    workbookSignals,
+    sheetSignals,
+    formatSignals,
+    inputSignals,
+    outputSignals,
+    safetySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"XLSX|SheetJS|ExcelJS|PapaParse|csv-parse|csv-stringify|Workbook|Worksheet\" src app packages", purpose: "Inventory spreadsheet, workbook, CSV parser, and table export providers." },
+      { command: "rg \"readFile|XLSX\\.read|arrayBuffer|FileReader|createReadStream|fetch\\(\" src app packages", purpose: "Review workbook and CSV input sources, including uploads, buffers, streams, and remote fetches." },
+      { command: "rg \"book_new|book_append_sheet|json_to_sheet|aoa_to_sheet|table_to_sheet|sheet_to_json|sheet_add_json|decode_range|encode_cell\" src app packages", purpose: "Check sheet creation, row conversion, append, and range handling." },
+      { command: "rg \"writeFile|XLSX\\.write|writeBuffer|download|createObjectURL|Blob|base64|createWriteStream|pipe\\(\" src app packages", purpose: "Confirm workbook or CSV output byte, browser download, file, stream, and base64 handling." },
+      { command: "rg \"formula|escapeFormulae|dateNF|cellDates|raw|defval|encoding|try\\s*\\{|catch\\s*\\(\" src app packages", purpose: "Review formula injection, dates, encoding, cell type policy, defaults, and error handling." },
+      { command: "npx vitest run", purpose: "Run local tests that cover workbook/CSV inputs, transforms, output paths, and failure handling." }
+    ],
+    learnerNextSteps: [
+      "먼저 XLSX, SheetJS, ExcelJS, PapaParse, csv-parse, csv-stringify import와 package evidence를 찾아 spreadsheet 책임 파일을 분리하세요.",
+      "readFile, XLSX.read, FileReader, arrayBuffer, createReadStream, fetch 신호로 input source와 신뢰 경계를 확인하세요.",
+      "book_new, book_append_sheet, json_to_sheet, aoa_to_sheet, table_to_sheet, sheet_to_json 신호로 workbook/sheet 변환 흐름을 확인하세요.",
+      "writeFile, XLSX.write, writeBuffer, Blob, createObjectURL, stream 신호로 출력 bytes가 어디로 나가는지 추적하세요.",
+      "formula, escapeFormulae, cellDates, dateNF, raw, defval, encoding 신호로 formula injection, 날짜, 인코딩, cell type 정책을 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 spreadsheet 파싱, formula 평가, table 변환, stream 처리, 파일 쓰기/다운로드는 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type SpreadsheetReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function spreadsheetReadinessSourceFiles(walk: WalkResult): Promise<SpreadsheetReadinessSourceFile[]> {
+  const files: SpreadsheetReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !spreadsheetReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!spreadsheetReadinessPathSignal(file.relPath) && !spreadsheetReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function spreadsheetReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return spreadsheetReadinessPathSignal(filePath)
+    || /^(spreadsheet\.[cm]?[jt]sx?|spreadsheets\.[cm]?[jt]sx?|sheet\.[cm]?[jt]sx?|sheets\.[cm]?[jt]sx?|workbook\.[cm]?[jt]sx?|workbooks\.[cm]?[jt]sx?|csv\.[cm]?[jt]sx?|export\.[cm]?[jt]sx?|exports\.[cm]?[jt]sx?|table\.[cm]?[jt]sx?|tables\.[cm]?[jt]sx?|report\.[cm]?[jt]sx?|reports\.[cm]?[jt]sx?|package\.json)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml)$/i.test(filePath);
+}
+
+function spreadsheetReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(spreadsheet|spreadsheets|sheet|sheets|workbook|workbooks|csv|xlsx|excel|export|exports|table|tables|report|reports)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function spreadsheetReadinessContentSignal(text: string): boolean {
+  return /(XLSX|SheetJS|readFile|writeFile|book_new|book_append_sheet|json_to_sheet|sheet_to_json|aoa_to_sheet|table_to_sheet|sheet_add_json|sheet_add_aoa|ExcelJS|Workbook|Worksheet|Papa|PapaParse|csv-parse|csv-stringify)/i.test(text);
+}
+
+function spreadsheetReadinessSetups(sourceFiles: SpreadsheetReadinessSourceFile[]): SpreadsheetReadinessReport["spreadsheetSetups"] {
+  const rows: SpreadsheetReadinessReport["spreadsheetSetups"] = [];
+  for (const source of sourceFiles) {
+    const workbookCount = countMatches(source.text, /XLSX\.read|XLSX\.write|readFile|writeFile|book_new|new Workbook|workbook|Workbook/gi);
+    const sheetCount = countMatches(source.text, /book_append_sheet|json_to_sheet|aoa_to_sheet|table_to_sheet|sheet_to_json|sheet_add_json|sheet_add_aoa|worksheet|Worksheet|decode_range|encode_range/gi);
+    const inputCount = countMatches(source.text, /readFile|XLSX\.read|arrayBuffer|ArrayBuffer|Buffer\.from|FileReader|table_to_sheet|fetch\s*\(|createReadStream|parse\s*\(/gi);
+    const transformCount = countMatches(source.text, /json_to_sheet|sheet_to_json|aoa_to_sheet|sheet_add_json|sheet_add_aoa|decode_range|encode_cell|encode_range|cellDates|raw:|header:/gi);
+    const outputCount = countMatches(source.text, /writeFile|XLSX\.write|writeBuffer|download|createObjectURL|Blob|base64|createWriteStream|pipe\s*\(|stringify/gi);
+    const safetyCount = countMatches(source.text, /formula|escapeFormulae|cellDates|dateNF|raw|defval|encoding|codepage|try\s*\{|catch\s*\(|throw/gi);
+    const hasSetupSignal = workbookCount + sheetCount + inputCount + transformCount + outputCount + safetyCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: spreadsheetReadinessProvider(source),
+      workbookCount,
+      sheetCount,
+      inputCount,
+      transformCount,
+      outputCount,
+      safetyCount,
+      readiness: workbookCount > 0 && sheetCount > 0 && inputCount > 0 && outputCount > 0 && (transformCount > 0 || safetyCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains workbook ${workbookCount}, sheet ${sheetCount}, input ${inputCount}, transform ${transformCount}, output ${outputCount}, safety ${safetyCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function spreadsheetReadinessProvider(source: SpreadsheetReadinessSourceFile): SpreadsheetReadinessReport["spreadsheetSetups"][number]["provider"] {
+  if (/xlsx|SheetJS|XLSX\.|book_new|json_to_sheet/i.test(source.text)) return "sheetjs";
+  if (/exceljs|new Workbook|Workbook|Worksheet/i.test(source.text)) return "exceljs";
+  if (/Papa|PapaParse|papaparse/i.test(source.text)) return "papaparse";
+  if (/csv-stringify|stringify/i.test(source.text)) return "csv-stringify";
+  if (/csv-parse|node-csv/i.test(source.text)) return "node-csv";
+  if (/csv|spreadsheet|workbook|worksheet|export/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function spreadsheetReadinessWorkbookSignals(sourceFiles: SpreadsheetReadinessSourceFile[]): SpreadsheetReadinessReport["workbookSignals"] {
+  const specs: Array<{ signal: SpreadsheetReadinessReport["workbookSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "workbook-create", pattern: /book_new|new Workbook|Workbook\s*\(|XLSX\.utils\.book_new/i, evidence: "workbook creation evidence was detected." },
+    { signal: "workbook-read", pattern: /XLSX\.read|readFile|workbook\.xlsx\.read|workbook\.csv\.read/i, evidence: "workbook read evidence was detected." },
+    { signal: "workbook-write", pattern: /XLSX\.write|writeFile|writeBuffer|workbook\.xlsx\.write|workbook\.csv\.write/i, evidence: "workbook write evidence was detected." },
+    { signal: "multi-sheet", pattern: /book_append_sheet|SheetNames|Worksheets|addWorksheet|worksheets/i, evidence: "multi-sheet evidence was detected." },
+    { signal: "workbook-metadata", pattern: /Props|Workbook|creator|created|modified|company|subject/i, evidence: "workbook metadata evidence was detected." }
+  ];
+  return spreadsheetReadinessSignalFromSpecs(sourceFiles, specs, "workbook", "signal");
+}
+
+function spreadsheetReadinessSheetSignals(sourceFiles: SpreadsheetReadinessSourceFile[]): SpreadsheetReadinessReport["sheetSignals"] {
+  const specs: Array<{ signal: SpreadsheetReadinessReport["sheetSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "json-to-sheet", pattern: /json_to_sheet/i, evidence: "JSON to sheet conversion evidence was detected." },
+    { signal: "aoa-to-sheet", pattern: /aoa_to_sheet/i, evidence: "array-of-arrays to sheet conversion evidence was detected." },
+    { signal: "table-to-sheet", pattern: /table_to_sheet|table_to_book|HTMLTableElement/i, evidence: "HTML table to sheet conversion evidence was detected." },
+    { signal: "sheet-to-json", pattern: /sheet_to_json/i, evidence: "sheet to JSON conversion evidence was detected." },
+    { signal: "sheet-add-json", pattern: /sheet_add_json|sheet_add_aoa|addRow|addRows/i, evidence: "sheet append evidence was detected." },
+    { signal: "range-encode-decode", pattern: /decode_range|encode_range|encode_cell|decode_cell|!ref/i, evidence: "range or cell encoding evidence was detected." }
+  ];
+  return spreadsheetReadinessSignalFromSpecs(sourceFiles, specs, "sheet", "signal");
+}
+
+function spreadsheetReadinessFormatSignals(sourceFiles: SpreadsheetReadinessSourceFile[]): SpreadsheetReadinessReport["formatSignals"] {
+  const specs: Array<{ signal: SpreadsheetReadinessReport["formatSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "xlsx", pattern: /\.xlsx|bookType\s*:\s*["']xlsx|XLSX/i, evidence: "XLSX format evidence was detected." },
+    { signal: "csv", pattern: /\.csv|bookType\s*:\s*["']csv|CSV|csv-parse|csv-stringify/i, evidence: "CSV format evidence was detected." },
+    { signal: "ods", pattern: /\.ods|bookType\s*:\s*["']ods/i, evidence: "ODS format evidence was detected." },
+    { signal: "html", pattern: /\.html|bookType\s*:\s*["']html|table_to_sheet|sheet_to_html/i, evidence: "HTML table format evidence was detected." },
+    { signal: "json", pattern: /sheet_to_json|json_to_sheet|application\/json|\.json/i, evidence: "JSON row conversion evidence was detected." },
+    { signal: "array-buffer", pattern: /ArrayBuffer|arrayBuffer|type\s*:\s*["']array|buffer/i, evidence: "array/buffer format evidence was detected." }
+  ];
+  return spreadsheetReadinessSignalFromSpecs(sourceFiles, specs, "format", "signal");
+}
+
+function spreadsheetReadinessInputSignals(sourceFiles: SpreadsheetReadinessSourceFile[]): SpreadsheetReadinessReport["inputSignals"] {
+  const specs: Array<{ signal: SpreadsheetReadinessReport["inputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "read-file", pattern: /readFile|readFileSync|XLSX\.readFile/i, evidence: "file read input evidence was detected." },
+    { signal: "upload-buffer", pattern: /FileReader|files\[|formData|multer|busboy|Buffer\.from/i, evidence: "upload or buffer input evidence was detected." },
+    { signal: "array-buffer", pattern: /arrayBuffer|ArrayBuffer|Uint8Array/i, evidence: "array buffer input evidence was detected." },
+    { signal: "html-table", pattern: /table_to_sheet|table_to_book|HTMLTableElement|querySelector\(['\"]table/i, evidence: "HTML table input evidence was detected." },
+    { signal: "stream-input", pattern: /createReadStream|Readable|stream|pipe\s*\(/i, evidence: "stream input evidence was detected." },
+    { signal: "remote-fetch", pattern: /fetch\s*\(|axios\.get|got\s*\(|request\s*\(/i, evidence: "remote fetch input evidence was detected." }
+  ];
+  return spreadsheetReadinessSignalFromSpecs(sourceFiles, specs, "input", "signal");
+}
+
+function spreadsheetReadinessOutputSignals(sourceFiles: SpreadsheetReadinessSourceFile[]): SpreadsheetReadinessReport["outputSignals"] {
+  const specs: Array<{ signal: SpreadsheetReadinessReport["outputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "write-file", pattern: /writeFile|writeFileSync|XLSX\.writeFile/i, evidence: "file write output evidence was detected." },
+    { signal: "download", pattern: /download|createObjectURL|Blob|anchor\.click|saveAs\s*\(/i, evidence: "browser download evidence was detected." },
+    { signal: "buffer-output", pattern: /writeBuffer|Buffer\.from|type\s*:\s*["']buffer|arrayBuffer/i, evidence: "buffer output evidence was detected." },
+    { signal: "base64-output", pattern: /base64|type\s*:\s*["']base64|data:application\/vnd/i, evidence: "base64 output evidence was detected." },
+    { signal: "stream-output", pattern: /createWriteStream|Writable|stream|pipe\s*\(/i, evidence: "stream output evidence was detected." },
+    { signal: "csv-stringify", pattern: /csv-stringify|stringify\s*\(|Papa\.unparse/i, evidence: "CSV stringify output evidence was detected." }
+  ];
+  return spreadsheetReadinessSignalFromSpecs(sourceFiles, specs, "output", "signal");
+}
+
+function spreadsheetReadinessSafetySignals(sourceFiles: SpreadsheetReadinessSourceFile[]): SpreadsheetReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: SpreadsheetReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "formula-injection", pattern: /formula|escapeFormulae|sanitizeFormula|^[=+\-@]/im, evidence: "formula injection boundary evidence was detected." },
+    { signal: "large-workbook", pattern: /sheetRows|maxRows|rowLimit|limit|large workbook|stream/i, evidence: "large workbook or row limit evidence was detected." },
+    { signal: "date-parsing", pattern: /cellDates|dateNF|UTC|Date\(|date1904|numFmt/i, evidence: "date parsing or format evidence was detected." },
+    { signal: "encoding", pattern: /encoding|codepage|UTF-8|utf8|delimiter|bom/i, evidence: "encoding or delimiter evidence was detected." },
+    { signal: "cell-type-policy", pattern: /raw|defval|blankrows|cellText|cellNF|cellStyles|type\s*:/i, evidence: "cell type or default policy evidence was detected." },
+    { signal: "error-handling", pattern: /try\s*\{|catch\s*\(|throw new Error|onError|reject\s*\(/i, evidence: "error handling evidence was detected." }
+  ];
+  return spreadsheetReadinessSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function spreadsheetReadinessPackageSignals(sourceFiles: SpreadsheetReadinessSourceFile[]): SpreadsheetReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: SpreadsheetReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "xlsx", pattern: /"xlsx"|from ['"]xlsx|require\(['"]xlsx|XLSX\.utils|SheetJS/i, evidence: "SheetJS xlsx package/import evidence was detected." },
+    { signal: "exceljs", pattern: /"exceljs"|from ['"]exceljs|require\(['"]exceljs|new Workbook|ExcelJS/i, evidence: "ExcelJS package/import evidence was detected." },
+    { signal: "papaparse", pattern: /"papaparse"|from ['"]papaparse|require\(['"]papaparse|PapaParse|Papa\.parse|Papa\.unparse/i, evidence: "PapaParse package/import evidence was detected." },
+    { signal: "csv-parse", pattern: /"csv-parse"|from ['"]csv-parse|require\(['"]csv-parse|parse\s*\(/i, evidence: "csv-parse package/import evidence was detected." },
+    { signal: "csv-stringify", pattern: /"csv-stringify"|from ['"]csv-stringify|require\(['"]csv-stringify|stringify\s*\(/i, evidence: "csv-stringify package/import evidence was detected." },
+    { signal: "node-csv", pattern: /"csv"|from ['"]csv|require\(['"]csv|node-csv/i, evidence: "node-csv package/import evidence was detected." }
+  ];
+  return spreadsheetReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function spreadsheetReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: SpreadsheetReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/spreadsheet-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

@@ -3947,6 +3947,77 @@ export const PdfGenerationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SpreadsheetReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  spreadsheetSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["sheetjs", "exceljs", "papaparse", "node-csv", "csv-stringify", "custom", "unknown"]),
+    workbookCount: z.number().int().nonnegative(),
+    sheetCount: z.number().int().nonnegative(),
+    inputCount: z.number().int().nonnegative(),
+    transformCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    safetyCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  workbookSignals: z.array(z.object({
+    signal: z.enum(["workbook-create", "workbook-read", "workbook-write", "multi-sheet", "workbook-metadata", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sheetSignals: z.array(z.object({
+    signal: z.enum(["json-to-sheet", "aoa-to-sheet", "table-to-sheet", "sheet-to-json", "sheet-add-json", "range-encode-decode", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  formatSignals: z.array(z.object({
+    signal: z.enum(["xlsx", "csv", "ods", "html", "json", "array-buffer", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  inputSignals: z.array(z.object({
+    signal: z.enum(["read-file", "upload-buffer", "array-buffer", "html-table", "stream-input", "remote-fetch", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["write-file", "download", "buffer-output", "base64-output", "stream-output", "csv-stringify", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["formula-injection", "large-workbook", "date-parsing", "encoding", "cell-type-policy", "error-handling", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["xlsx", "exceljs", "papaparse", "csv-parse", "csv-stringify", "node-csv", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4226,6 +4297,7 @@ export type ImageProcessingReadinessReport = z.infer<typeof ImageProcessingReadi
 export type FileUploadReadinessReport = z.infer<typeof FileUploadReadinessReportSchema>;
 export type WebSocketReadinessReport = z.infer<typeof WebSocketReadinessReportSchema>;
 export type PdfGenerationReadinessReport = z.infer<typeof PdfGenerationReadinessReportSchema>;
+export type SpreadsheetReadinessReport = z.infer<typeof SpreadsheetReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

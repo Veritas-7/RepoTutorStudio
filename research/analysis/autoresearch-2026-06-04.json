@@ -1197,6 +1197,21 @@
         "font image color and form field handling signals",
         "save bytes base64 data URI file download and stream output checks"
       ]
+    },
+    {
+      "repo": "SheetJS/sheetjs",
+      "url": "https://github.com/SheetJS/sheetjs",
+      "localPath": "research/external-src/SheetJS-sheetjs",
+      "stars": 36259,
+      "forks": 7948,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T03:36:57Z",
+      "adoptedPatterns": [
+        "SheetJS workbook read and write readiness",
+        "sheet creation and conversion with json_to_sheet sheet_to_json aoa_to_sheet and table_to_sheet",
+        "XLSX CSV ODS HTML JSON and array buffer format signals",
+        "formula injection date encoding cell type large workbook and error handling checks"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3971,6 +3986,25 @@
         "markdown/pdf-generation-readiness.md",
         "html/pdf-generation-readiness.html"
       ]
+    },
+    {
+      "name": "Spreadsheet readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/spreadsheet-readiness-report.json",
+        "markdown/spreadsheet-readiness.md",
+        "html/spreadsheet-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4364,7 +4398,13 @@
     "cliPdfGenerationReadinessOpenTargetSmoke": "PASS",
     "buildPdfGenerationReadiness": "PASS",
     "testPdfGenerationReadiness": "PASS",
-    "auditBriefPdfGenerationReadiness75": "PASS"
+    "auditBriefPdfGenerationReadiness75": "PASS",
+    "externalSheetJsCloneIgnored": "PASS",
+    "spreadsheetReadinessRedSmoke": "PASS",
+    "spreadsheetReadinessGreenSmoke": "PASS",
+    "fixtureSpreadsheetReadinessReport": "PASS",
+    "cliSpreadsheetReadinessOpenTarget": "PASS",
+    "complianceAudit76Checks": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"

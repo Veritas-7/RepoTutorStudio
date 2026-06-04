@@ -138,6 +138,26 @@ Transferable patterns:
 - Use symbol counts to identify files that should be read function-by-function
   instead of as one large blob.
 
+### SheetJS/sheetjs
+
+- URL: https://github.com/SheetJS/sheetjs
+- Local source: `research/external-src/SheetJS-sheetjs`
+- Stars at check: 36,259
+- Forks at check: 7,948
+- License: Apache-2.0
+- Updated: 2026-06-04T03:36:57Z
+- Relevance: workbook, sheet, CSV/XLSX/ODS/HTML/JSON, browser, and Node
+  spreadsheet import/export readiness patterns.
+
+Transferable patterns:
+
+- Separate workbook read/write, sheet creation, row conversion, and output
+  formats into distinct audit surfaces.
+- Track spreadsheet safety explicitly: formula injection, dates, encoding,
+  cell type defaults, large workbooks, and error handling.
+- Keep static readiness separate from opening or parsing untrusted spreadsheet
+  files.
+
 ## Adopted Upgrade
 
 ### Upgrade 1: CodeBoarding-Inspired Coverage Report
@@ -4677,6 +4697,56 @@ Local verification:
 - `pnpm build`: PASS
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 75/75 audit checks across 13 generated reports
+
+### Upgrade 178: Spreadsheet Readiness Report
+
+- Cloned and inspected `SheetJS/sheetjs` under
+  `research/external-src/SheetJS-sheetjs` without executing external source.
+  Clone HEAD was `3f44ddd`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, Apache-2.0 license, 36,259 stars, 7,948
+  forks, updated 2026-06-04T03:36:57Z. Compared with `exceljs/exceljs`,
+  `mholt/PapaParse`, and `adaltas/node-csv`; selected SheetJS because it
+  directly models workbook/sheet readiness: `XLSX.read`, `XLSX.write`,
+  `book_new`, `book_append_sheet`, `json_to_sheet`, `sheet_to_json`,
+  `aoa_to_sheet`, `table_to_sheet`, CSV/XLSX/ODS/HTML/JSON formats, browser
+  downloads, Node file writes, buffers, streams, and spreadsheet safety
+  boundaries. No source code was copied into RepoTutor.
+- Implemented SheetJS-style spreadsheet-readiness report:
+  `SpreadsheetReadinessReportSchema`,
+  `analysis/spreadsheet-readiness-report.json`,
+  `markdown/spreadsheet-readiness.md`, `html/spreadsheet-readiness.html`,
+  spreadsheet setups, workbook signals, sheet signals, format signals, input
+  signals, output signals, safety signals, package signals, recommended
+  commands, risk queue, manifest/session-verification coverage, learning-path
+  linkage, and `open --target spreadsheet-readiness`.
+- Source pattern: SheetJS separates workbook operations through read/write and
+  workbook creation; sheet operations through append, JSON/AOA/table conversion,
+  and range/cell encoding; formats through XLSX, CSV, ODS, HTML, JSON, and
+  array/buffer outputs; inputs through file reads, upload buffers, array
+  buffers, HTML tables, streams, and remote fetches; outputs through file write,
+  browser download, buffer/base64, stream, and CSV stringify; and safety
+  through formula injection, large workbook limits, date parsing, encoding,
+  cell type policy, and error handling. RepoTutor maps that to deterministic
+  static spreadsheet readiness and explicitly does not open spreadsheet files,
+  parse workbooks, evaluate formulas, convert tables, stream rows, write files,
+  trigger downloads, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-spreadsheet-red-studies.lNRD8A/2026-06-04/local__simple-ts-app__main__918e9e6a`;
+  old behavior was missing
+  `analysis/spreadsheet-readiness-report.json`,
+  `markdown/spreadsheet-readiness.md`, and
+  `html/spreadsheet-readiness.html`, and `open --target
+  spreadsheet-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-spreadsheet-green-studies.ZE5rGg/2026-06-04/local__simple-ts-app__main__918e9e6a`;
+  confirmed `verificationCheckedRequiredArtifacts=234`, spreadsheet setups 0,
+  workbook signals 5, sheet signals 6, format signals 6, input signals 6,
+  output signals 6, safety signals 6, package signals 6, risk queue 2, all
+  three new artifacts, and `open --target spreadsheet-readiness` ->
+  `html/spreadsheet-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 76/76 audit checks across 13 generated reports
 
 ## Deferred Candidate Backlog
 
