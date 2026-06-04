@@ -88,6 +88,7 @@ import {
   IdGenerationReadinessReport,
   ImageProcessingReadinessReport,
   FileUploadReadinessReport,
+  WebSocketReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -182,6 +183,7 @@ export interface AnalysisBundle {
   idGenerationReadinessReport: IdGenerationReadinessReport;
   imageProcessingReadinessReport: ImageProcessingReadinessReport;
   fileUploadReadinessReport: FileUploadReadinessReport;
+  webSocketReadinessReport: WebSocketReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -276,8 +278,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const idGenerationReadinessReport = await buildIdGenerationReadinessReport(walk);
   const imageProcessingReadinessReport = await buildImageProcessingReadinessReport(walk);
   const fileUploadReadinessReport = await buildFileUploadReadinessReport(walk);
+  const webSocketReadinessReport = await buildWebSocketReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -16784,6 +16787,255 @@ function fileUploadReadinessSignalFromSpecs<T extends Record<K, string> & { patt
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/file-upload-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildWebSocketReadinessReport(walk: WalkResult): Promise<WebSocketReadinessReport> {
+  const sourceFiles = await webSocketReadinessSourceFiles(walk);
+  const webSocketSetups = webSocketReadinessSetups(sourceFiles);
+  const connectionSignals = webSocketReadinessConnectionSignals(sourceFiles);
+  const messageSignals = webSocketReadinessMessageSignals(sourceFiles);
+  const lifecycleSignals = webSocketReadinessLifecycleSignals(sourceFiles);
+  const safetySignals = webSocketReadinessSafetySignals(sourceFiles);
+  const packageSignals = webSocketReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasWsPackage = packageSignals.some((item) => item.signal === "ws" && item.readiness === "ready");
+  const hasSetup = webSocketSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = webSocketSetups.some((item) => item.readiness === "ready");
+  const hasMessages = messageSignals.some((item) => item.readiness === "ready") || webSocketSetups.some((item) => item.messageCount > 0);
+  const hasHeartbeat = lifecycleSignals.some((item) => item.signal === "ping-pong" && item.readiness === "ready") || webSocketSetups.some((item) => item.heartbeatCount > 0);
+  const hasSafety = safetySignals.some((item) => item.readiness === "ready") || webSocketSetups.some((item) => item.safetyCount > 0);
+  const hasLifecycle = lifecycleSignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: WebSocketReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the WebSocket strategy before claiming real-time readiness.",
+      why: "WebSocket readiness starts with explicit server/client, upgrade, message, lifecycle, safety, or package evidence.",
+      relatedHref: "html/websocket-readiness.html"
+    });
+  }
+  if (hasWsPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair ws package evidence with concrete WebSocketServer, connection, message, send, close/error, and heartbeat call sites.",
+      why: "A WebSocket dependency alone does not prove that connections, message flow, or failure handling are wired.",
+      relatedHref: "html/websocket-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasMessages) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add message handlers, send paths, parse/validation, binary handling, or broadcast documentation.",
+      why: "Real-time connections are only useful when message contracts and send/receive flows are visible.",
+      relatedHref: "html/websocket-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasHeartbeat) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add ping/pong heartbeat and stale connection timeout checks.",
+      why: "Long-lived sockets can silently die without heartbeat and timeout policy.",
+      relatedHref: "html/websocket-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasSafety) {
+    riskQueue.push({
+      priority: "high",
+      action: "Review origin, authentication, rate-limit, payload limit, and compression settings before exposing sockets.",
+      why: "WebSocket upgrade endpoints bypass normal request/response lifecycles and need explicit boundary checks.",
+      relatedHref: "html/websocket-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasLifecycle) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add open, close, error, reconnect, and backpressure lifecycle handling.",
+      why: "Socket reliability depends on observable lifecycle events and buffered send policy.",
+      relatedHref: "html/websocket-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run representative WebSocket integration tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not open sockets, perform HTTP upgrades, send frames, keep timers, mutate rooms, or run the analyzed project's tests.",
+    relatedHref: "html/websocket-readiness.html"
+  });
+
+  return {
+    summary: `ws-style WebSocket readiness report: setup ${webSocketSetups.length}개, connection signal ${connectionSignals.length}개, message signal ${messageSignals.length}개, lifecycle signal ${lifecycleSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "ws WebSocket WebSocketServer upgrade connection message send close error ping pong perMessageDeflate backpressure maxPayload",
+    webSocketSetups,
+    connectionSignals,
+    messageSignals,
+    lifecycleSignals,
+    safetySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"WebSocketServer|new WebSocket|socket.io|uWebSockets|EventSource|upgrade\" src app packages", purpose: "Inventory WebSocket servers, clients, framework wrappers, and HTTP upgrade paths." },
+      { command: "rg \"connection|message|send\\(|broadcast|JSON.parse|safeParse|binary|isBinary\" src app packages test tests", purpose: "Review message handlers, send paths, serialization, validation, and binary payload handling." },
+      { command: "rg \"open|close|error|ping|pong|heartbeat|reconnect|bufferedAmount|backpressure\" src app packages", purpose: "Check lifecycle handling, stale socket policy, reconnect behavior, and send buffering." },
+      { command: "rg \"origin|Authorization|token|rateLimit|maxPayload|perMessageDeflate|verifyClient|authenticate\" src app packages", purpose: "Check origin, auth, payload size, compression, rate limit, and upgrade boundary controls." },
+      { command: "npx vitest run", purpose: "Run local tests that cover connection setup, messages, close/error events, heartbeat, payload limits, and auth failures." }
+    ],
+    learnerNextSteps: [
+      "먼저 WebSocketServer, new WebSocket, socket.io, uWebSockets, upgrade 경로를 찾아 server/client 경계를 확인하세요.",
+      "connection, message, send, broadcast, JSON.parse, schema validation, binary 신호로 message contract와 payload 처리를 분리하세요.",
+      "open, close, error, ping, pong, reconnect, bufferedAmount/backpressure 신호로 장애와 긴 연결의 운영 상태를 확인하세요.",
+      "origin, Authorization/token, rateLimit, maxPayload, perMessageDeflate, verifyClient 신호로 upgrade endpoint의 안전 경계를 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 socket 연결, HTTP upgrade, frame 전송, timer/heartbeat, room mutation은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type WebSocketReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function webSocketReadinessSourceFiles(walk: WalkResult): Promise<WebSocketReadinessSourceFile[]> {
+  const files: WebSocketReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !webSocketReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!webSocketReadinessPathSignal(file.relPath) && !webSocketReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function webSocketReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return webSocketReadinessPathSignal(filePath)
+    || /^(package\.json|websocket\.[cm]?[jt]sx?|websockets\.[cm]?[jt]sx?|socket\.[cm]?[jt]sx?|realtime\.[cm]?[jt]sx?|events\.[cm]?[jt]sx?)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml)$/i.test(filePath);
+}
+
+function webSocketReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(websocket|websockets|ws|socket|sockets|socket-io|socketio|realtime|real-time|pubsub|events|gateway|channels)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function webSocketReadinessContentSignal(text: string): boolean {
+  return /(from ['"]ws|require\(['"]ws|WebSocketServer|new WebSocket|handleUpgrade|on\(['"]connection|on\(['"]message|\.send\s*\(|ping\s*\(|pong\s*\(|perMessageDeflate|maxPayload|socket\.io|uWebSockets|EventSource)/i.test(text);
+}
+
+function webSocketReadinessSetups(sourceFiles: WebSocketReadinessSourceFile[]): WebSocketReadinessReport["webSocketSetups"] {
+  const rows: WebSocketReadinessReport["webSocketSetups"] = [];
+  for (const source of sourceFiles) {
+    const serverCount = countMatches(source.text, /WebSocketServer|WebSocket\.Server|socket\.io|new Server|uWebSockets|App\(\)\.ws|EventSource|SSE/gi);
+    const clientCount = countMatches(source.text, /new WebSocket|ReconnectingWebSocket|io\s*\(|connect\s*\(|WebSocket\(/gi);
+    const upgradeCount = countMatches(source.text, /upgrade|handleUpgrade|noServer|Sec-WebSocket|server\.on\(['"]upgrade/gi);
+    const messageCount = countMatches(source.text, /on\(['"]message|addEventListener\(['"]message|onmessage|\.send\s*\(|broadcast|emit\s*\(|JSON\.parse|safeParse|isBinary/gi);
+    const heartbeatCount = countMatches(source.text, /ping\s*\(|pong\s*\(|heartbeat|isAlive|setInterval|terminate\s*\(|closeTimeout/gi);
+    const safetyCount = countMatches(source.text, /origin|Authorization|token|authenticate|rateLimit|throttle|maxPayload|perMessageDeflate|verifyClient|payload|compression/gi);
+    const hasSetupSignal = serverCount + clientCount + upgradeCount + messageCount + heartbeatCount + safetyCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: webSocketReadinessProvider(source),
+      serverCount,
+      clientCount,
+      upgradeCount,
+      messageCount,
+      heartbeatCount,
+      safetyCount,
+      readiness: (serverCount > 0 || clientCount > 0) && messageCount > 0 && (heartbeatCount > 0 || safetyCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains server ${serverCount}, client ${clientCount}, upgrade ${upgradeCount}, message ${messageCount}, heartbeat ${heartbeatCount}, safety ${safetyCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function webSocketReadinessProvider(source: WebSocketReadinessSourceFile): WebSocketReadinessReport["webSocketSetups"][number]["provider"] {
+  if (/from ['"]ws|require\(['"]ws|WebSocketServer|WebSocket\.Server/i.test(source.text)) return "ws";
+  if (/socket\.io|from ['"]socket\.io|io\s*\(/i.test(source.text)) return "socket.io";
+  if (/uWebSockets|uwebsockets|App\(\)\.ws/i.test(source.text)) return "uwebsockets";
+  if (/new WebSocket|WebSocket\(/i.test(source.text)) return "native-websocket";
+  if (/EventSource|text\/event-stream|Server-Sent Events|SSE/i.test(source.text)) return "sse";
+  if (/websocket|real-time|realtime|socket/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function webSocketReadinessConnectionSignals(sourceFiles: WebSocketReadinessSourceFile[]): WebSocketReadinessReport["connectionSignals"] {
+  const specs: Array<{ signal: WebSocketReadinessReport["connectionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "server", pattern: /WebSocketServer|WebSocket\.Server|new Server|App\(\)\.ws|socket\.io/i, evidence: "WebSocket server evidence was detected." },
+    { signal: "client", pattern: /new WebSocket|ReconnectingWebSocket|WebSocket\(|io\s*\(/i, evidence: "WebSocket client evidence was detected." },
+    { signal: "upgrade", pattern: /upgrade|handleUpgrade|noServer|Sec-WebSocket|server\.on\(['"]upgrade/i, evidence: "HTTP upgrade evidence was detected." },
+    { signal: "namespace-room", pattern: /namespace|room|join\s*\(|leave\s*\(|to\s*\(|broadcast/i, evidence: "namespace, room, or broadcast connection grouping evidence was detected." },
+    { signal: "reconnect", pattern: /reconnect|reconnection|retry|backoff|ReconnectingWebSocket/i, evidence: "reconnect evidence was detected." },
+    { signal: "tls", pattern: /wss:|https\.createServer|TLS|SSL|cert|key\s*:/i, evidence: "TLS or secure WebSocket evidence was detected." }
+  ];
+  return webSocketReadinessSignalFromSpecs(sourceFiles, specs, "connection", "signal");
+}
+
+function webSocketReadinessMessageSignals(sourceFiles: WebSocketReadinessSourceFile[]): WebSocketReadinessReport["messageSignals"] {
+  const specs: Array<{ signal: WebSocketReadinessReport["messageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "send", pattern: /\.send\s*\(|emit\s*\(/i, evidence: "send or emit evidence was detected." },
+    { signal: "message-handler", pattern: /on\(['"]message|addEventListener\(['"]message|onmessage/i, evidence: "message handler evidence was detected." },
+    { signal: "json-parse", pattern: /JSON\.parse|JSON\.stringify|serialize|deserialize/i, evidence: "JSON serialization evidence was detected." },
+    { signal: "binary", pattern: /isBinary|binaryType|ArrayBuffer|Buffer\.|Blob|Uint8Array/i, evidence: "binary message evidence was detected." },
+    { signal: "broadcast", pattern: /broadcast|clients\.forEach|wss\.clients|io\.to|room|namespace/i, evidence: "broadcast evidence was detected." },
+    { signal: "schema-validation", pattern: /safeParse|parseAsync|z\.object|schema|validate|ajv|yup|joi/i, evidence: "message schema validation evidence was detected." }
+  ];
+  return webSocketReadinessSignalFromSpecs(sourceFiles, specs, "message", "signal");
+}
+
+function webSocketReadinessLifecycleSignals(sourceFiles: WebSocketReadinessSourceFile[]): WebSocketReadinessReport["lifecycleSignals"] {
+  const specs: Array<{ signal: WebSocketReadinessReport["lifecycleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "open", pattern: /on\(['"]open|addEventListener\(['"]open|onopen|readyState|OPEN/i, evidence: "open lifecycle evidence was detected." },
+    { signal: "close", pattern: /on\(['"]close|addEventListener\(['"]close|onclose|\.close\s*\(|closeTimeout|CLOSED/i, evidence: "close lifecycle evidence was detected." },
+    { signal: "error", pattern: /on\(['"]error|addEventListener\(['"]error|onerror|catch\s*\(|wsClientError/i, evidence: "error lifecycle evidence was detected." },
+    { signal: "ping-pong", pattern: /ping\s*\(|pong\s*\(|on\(['"]ping|on\(['"]pong|heartbeat|isAlive/i, evidence: "ping/pong heartbeat evidence was detected." },
+    { signal: "reconnect", pattern: /reconnect|reconnection|retry|backoff|ReconnectingWebSocket/i, evidence: "reconnect lifecycle evidence was detected." },
+    { signal: "backpressure", pattern: /bufferedAmount|backpressure|drain|highWaterMark|createWebSocketStream|pause\s*\(|resume\s*\(/i, evidence: "backpressure or buffered send evidence was detected." }
+  ];
+  return webSocketReadinessSignalFromSpecs(sourceFiles, specs, "lifecycle", "signal");
+}
+
+function webSocketReadinessSafetySignals(sourceFiles: WebSocketReadinessSourceFile[]): WebSocketReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: WebSocketReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "origin-check", pattern: /origin|Origin|verifyClient|Sec-WebSocket-Origin|cors/i, evidence: "origin check evidence was detected." },
+    { signal: "auth-token", pattern: /Authorization|Bearer|token|authenticate|session|cookie|jwt/i, evidence: "auth token evidence was detected." },
+    { signal: "rate-limit", pattern: /rateLimit|rate-limit|throttle|quota|backoff|too many/i, evidence: "rate limit evidence was detected." },
+    { signal: "payload-limit", pattern: /maxPayload|maxReceivedFrameSize|payload limit|message size|bufferutil/i, evidence: "payload size limit evidence was detected." },
+    { signal: "heartbeat-timeout", pattern: /heartbeat|isAlive|setInterval|terminate\s*\(|timeout|closeTimeout/i, evidence: "heartbeat timeout evidence was detected." },
+    { signal: "compression", pattern: /perMessageDeflate|permessage-deflate|compress|zlib|concurrencyLimit|threshold/i, evidence: "compression policy evidence was detected." }
+  ];
+  return webSocketReadinessSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function webSocketReadinessPackageSignals(sourceFiles: WebSocketReadinessSourceFile[]): WebSocketReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: WebSocketReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ws", pattern: /"ws"|from ['"]ws|require\(['"]ws|WebSocketServer|WebSocket\.Server/i, evidence: "ws package/import evidence was detected." },
+    { signal: "socket.io", pattern: /"socket\.io"|from ['"]socket\.io|require\(['"]socket\.io|socket\.io|io\s*\(/i, evidence: "Socket.IO package/import evidence was detected." },
+    { signal: "uWebSockets.js", pattern: /"uWebSockets\.js"|uWebSockets|uwebsockets|App\(\)\.ws/i, evidence: "uWebSockets.js package/import evidence was detected." },
+    { signal: "isomorphic-ws", pattern: /"isomorphic-ws"|from ['"]isomorphic-ws|require\(['"]isomorphic-ws/i, evidence: "isomorphic-ws package/import evidence was detected." },
+    { signal: "native-websocket", pattern: /new WebSocket|WebSocket\(/i, evidence: "native WebSocket API evidence was detected." }
+  ];
+  return webSocketReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function webSocketReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: WebSocketReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/websocket-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

@@ -3457,6 +3457,44 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 175:
   - `c051bc2` file upload readiness report
 
+- 2026-06-04: AutoResearch Upgrade 176 candidate selected:
+  `websockets/ws`
+  (`https://github.com/websockets/ws`; public; MIT; 22,768 stars; 2,552 forks;
+  updated 2026-06-03T19:54:55Z). Compared with `socketio/socket.io`,
+  `uNetworking/uWebSockets.js`, and `pladaria/reconnecting-websocket`;
+  selected `ws` because it directly models WebSocket readiness: server/client
+  setup, HTTP upgrade, connection/message/send flow, close/error lifecycle,
+  ping/pong heartbeat, backpressure, payload limits, compression, origin
+  checks, and auth boundaries. Cloned ignored external source to
+  `research/external-src/websockets-ws` and inspected docs/source/test hits
+  without executing external source. Clone HEAD was `2120f4c`; tracked-file
+  count for `research/external-src/websockets-ws` returned `0`.
+- 2026-06-04: RED websocket-readiness smoke generated
+  `/tmp/repotutor-websocket-red-studies.WvCrNQ/2026-06-04/local__simple-ts-app__HEAD__a0f10f43`;
+  old build was missing `analysis/websocket-readiness-report.json`,
+  `markdown/websocket-readiness.md`, and `html/websocket-readiness.html`, and
+  `open --target websocket-readiness` failed as expected.
+- 2026-06-04: Implemented ws-style websocket-readiness report:
+  `WebSocketReadinessReportSchema`,
+  `analysis/websocket-readiness-report.json`,
+  `markdown/websocket-readiness.md`, `html/websocket-readiness.html`,
+  WebSocket setups, connection signals, message signals, lifecycle signals,
+  safety signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target websocket-readiness`.
+- 2026-06-04: GREEN websocket-readiness smoke generated
+  `/tmp/repotutor-websocket-green-studies.hUze7y/2026-06-04/local__simple-ts-app__main__a0f10f43`;
+  confirmed `verificationCheckedRequiredArtifacts=228`, WebSocket setups 0,
+  connection signals 6, message signals 6, lifecycle signals 6, safety signals
+  6, package signals 5, risk queue 2, all three new artifacts, and
+  `open --target websocket-readiness` -> `html/websocket-readiness.html`.
+- 2026-06-04: Verification for Upgrade 176:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 74/74 audit checks across 13 reports
+
 ## Next Actions
 
-1. Continue next AutoResearch upgrade candidate unless the user stops.
+1. Stage explicit Upgrade 176 paths, run staged diff/gitleaks gates, commit,
+   push to `origin main`, then log the push in `working.md`.
+2. Continue next AutoResearch upgrade candidate unless the user stops.

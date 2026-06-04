@@ -1167,6 +1167,21 @@
         "XHR/Tus/S3/Companion transport signals",
         "upload progress, completion, cancellation, retry, and safety queues"
       ]
+    },
+    {
+      "repo": "websockets/ws",
+      "url": "https://github.com/websockets/ws",
+      "localPath": "research/external-src/websockets-ws",
+      "stars": 22768,
+      "forks": 2552,
+      "license": "MIT",
+      "updatedAt": "2026-06-03T19:54:55Z",
+      "adoptedPatterns": [
+        "WebSocket server and client readiness",
+        "HTTP upgrade and message flow signals",
+        "ping/pong heartbeat and lifecycle handling",
+        "payload limit, compression, origin, and auth safety checks"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3903,6 +3918,25 @@
         "markdown/file-upload-readiness.md",
         "html/file-upload-readiness.html"
       ]
+    },
+    {
+      "name": "WebSocket readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/websocket-readiness-report.json",
+        "markdown/websocket-readiness.md",
+        "html/websocket-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4284,7 +4318,13 @@
     "cliFileUploadReadinessOpenTargetSmoke": "PASS",
     "buildFileUploadReadiness": "PASS",
     "testFileUploadReadiness": "PASS",
-    "auditBriefFileUploadReadiness73": "PASS"
+    "auditBriefFileUploadReadiness73": "PASS",
+    "fixtureWebSocketReadinessReport": "PASS",
+    "cliWebSocketReadinessSmoke": "PASS",
+    "cliWebSocketReadinessOpenTargetSmoke": "PASS",
+    "buildWebSocketReadiness": "PASS",
+    "testWebSocketReadiness": "PASS",
+    "auditBriefWebSocketReadiness74": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -4565,6 +4605,12 @@
     "cliFileUploadReadinessOpenTargetSmoke": "PASS",
     "buildFileUploadReadiness": "PASS",
     "testFileUploadReadiness": "PASS",
-    "auditBriefFileUploadReadiness73": "PASS"
+    "auditBriefFileUploadReadiness73": "PASS",
+    "fixtureWebSocketReadinessReport": "PASS",
+    "cliWebSocketReadinessSmoke": "PASS",
+    "cliWebSocketReadinessOpenTargetSmoke": "PASS",
+    "buildWebSocketReadiness": "PASS",
+    "testWebSocketReadiness": "PASS",
+    "auditBriefWebSocketReadiness74": "PASS"
   }
 }

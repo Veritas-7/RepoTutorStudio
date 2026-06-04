@@ -83,6 +83,7 @@ import type {
   IdGenerationReadinessReport,
   ImageProcessingReadinessReport,
   FileUploadReadinessReport,
+  WebSocketReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -172,6 +173,7 @@ export interface StudyHtmlInput {
   idGenerationReadinessReport: IdGenerationReadinessReport;
   imageProcessingReadinessReport: ImageProcessingReadinessReport;
   fileUploadReadinessReport: FileUploadReadinessReport;
+  webSocketReadinessReport: WebSocketReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -275,6 +277,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["id-generation-readiness.html", "ID Generation"],
     ["image-processing-readiness.html", "Images"],
     ["file-upload-readiness.html", "Uploads"],
+    ["websocket-readiness.html", "WebSockets"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -782,6 +785,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("File Upload Readiness", "file-upload-readiness.html", `<section class="panel" data-source-pattern="Uppy"><h2>File Upload Snapshot</h2><p>${escapeHtml(input.fileUploadReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.fileUploadReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.fileUploadReadinessReport.fileUploadSetups.length}</dd></div><div><dt>inputs</dt><dd>${input.fileUploadReadinessReport.inputSignals.length}</dd></div><div><dt>restrictions</dt><dd>${input.fileUploadReadinessReport.restrictionSignals.length}</dd></div><div><dt>transport</dt><dd>${input.fileUploadReadinessReport.transportSignals.length}</dd></div></dl><p class="muted">RepoTutor records file upload readiness only. It does not select files, open browsers, send uploads, contact Companion, write storage objects, scan content, or run the analyzed project's tests.</p></section><section class="grid"><article class="file-upload-readiness-card"><h3>File Upload Setups</h3>${fileUploadReadinessSetupList(input.fileUploadReadinessReport.fileUploadSetups)}</article><article class="file-upload-readiness-card"><h3>Input Signals</h3>${fileUploadReadinessSignalList(input.fileUploadReadinessReport.inputSignals, "signal")}</article><article class="file-upload-readiness-card"><h3>Restriction Signals</h3>${fileUploadReadinessSignalList(input.fileUploadReadinessReport.restrictionSignals, "signal")}</article><article class="file-upload-readiness-card"><h3>Transport Signals</h3>${fileUploadReadinessSignalList(input.fileUploadReadinessReport.transportSignals, "signal")}</article></section><section class="grid"><article class="file-upload-readiness-card"><h3>Lifecycle Signals</h3>${fileUploadReadinessSignalList(input.fileUploadReadinessReport.lifecycleSignals, "signal")}</article><article class="file-upload-readiness-card"><h3>Safety Signals</h3>${fileUploadReadinessSignalList(input.fileUploadReadinessReport.safetySignals, "signal")}</article><article class="file-upload-readiness-card"><h3>Package Signals</h3>${fileUploadReadinessSignalList(input.fileUploadReadinessReport.packageSignals, "signal")}</article><article class="file-upload-readiness-card"><h3>Recommended Commands</h3>${fileUploadReadinessCommandList(input.fileUploadReadinessReport.recommendedCommands)}</article><article class="file-upload-readiness-card"><h3>Risk Queue</h3>${fileUploadReadinessRiskList(input.fileUploadReadinessReport.riskQueue)}</article><article class="file-upload-readiness-card"><h3>다음 확인 단계</h3>${list(input.fileUploadReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "websocket-readiness.html",
+      title: "WebSocket Readiness",
+      html: pageShell("WebSocket Readiness", "websocket-readiness.html", `<section class="panel" data-source-pattern="ws"><h2>WebSocket Snapshot</h2><p>${escapeHtml(input.webSocketReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.webSocketReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.webSocketReadinessReport.webSocketSetups.length}</dd></div><div><dt>connections</dt><dd>${input.webSocketReadinessReport.connectionSignals.length}</dd></div><div><dt>messages</dt><dd>${input.webSocketReadinessReport.messageSignals.length}</dd></div><div><dt>lifecycle</dt><dd>${input.webSocketReadinessReport.lifecycleSignals.length}</dd></div></dl><p class="muted">RepoTutor records WebSocket readiness only. It does not open sockets, perform HTTP upgrades, send frames, keep timers, mutate rooms, or run the analyzed project's tests.</p></section><section class="grid"><article class="websocket-readiness-card"><h3>WebSocket Setups</h3>${webSocketReadinessSetupList(input.webSocketReadinessReport.webSocketSetups)}</article><article class="websocket-readiness-card"><h3>Connection Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.connectionSignals, "signal")}</article><article class="websocket-readiness-card"><h3>Message Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.messageSignals, "signal")}</article><article class="websocket-readiness-card"><h3>Lifecycle Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.lifecycleSignals, "signal")}</article></section><section class="grid"><article class="websocket-readiness-card"><h3>Safety Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.safetySignals, "signal")}</article><article class="websocket-readiness-card"><h3>Package Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.packageSignals, "signal")}</article><article class="websocket-readiness-card"><h3>Recommended Commands</h3>${webSocketReadinessCommandList(input.webSocketReadinessReport.recommendedCommands)}</article><article class="websocket-readiness-card"><h3>Risk Queue</h3>${webSocketReadinessRiskList(input.webSocketReadinessReport.riskQueue)}</article><article class="websocket-readiness-card"><h3>다음 확인 단계</h3>${list(input.webSocketReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -965,6 +973,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "ID Generation Readiness", path: "html/id-generation-readiness.html", description: "Nano ID식 generator, entropy, alphabet, runtime, usage, validation 준비도를 확인합니다." },
       { label: "Image Processing Readiness", path: "html/image-processing-readiness.html", description: "Sharp식 input, resize/format, metadata, output, safety, performance 준비도를 확인합니다." },
       { label: "File Upload Readiness", path: "html/file-upload-readiness.html", description: "Uppy식 input, restrictions, transport, lifecycle, safety 준비도를 확인합니다." },
+      { label: "WebSocket Readiness", path: "html/websocket-readiness.html", description: "ws식 server/client, upgrade, message, lifecycle, safety 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1486,6 +1495,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "file-upload-readiness.html",
       goal: "Uppy식 input, restrictions, transport, lifecycle, safety 흐름을 보고 파일 업로드 관문을 확인합니다.",
       evidence: `upload setups ${input.fileUploadReadinessReport.fileUploadSetups.length}개, transport signals ${input.fileUploadReadinessReport.transportSignals.length}개`
+    },
+    {
+      title: "WebSocket readiness 확인",
+      href: "websocket-readiness.html",
+      goal: "ws식 server/client, upgrade, message, lifecycle, safety 흐름을 보고 실시간 연결 관문을 확인합니다.",
+      evidence: `websocket setups ${input.webSocketReadinessReport.webSocketSetups.length}개, message signals ${input.webSocketReadinessReport.messageSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3403,6 +3418,31 @@ function fileUploadReadinessRiskList(items: FileUploadReadinessReport["riskQueue
 }
 
 function fileUploadReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function webSocketReadinessSetupList(items: WebSocketReadinessReport["webSocketSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">websocket setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>server/client/upgrade/message/heartbeat/safety ${item.serverCount}/${item.clientCount}/${item.upgradeCount}/${item.messageCount}/${item.heartbeatCount}/${item.safetyCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(webSocketReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function webSocketReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">websocket signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(webSocketReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function webSocketReadinessCommandList(items: WebSocketReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function webSocketReadinessRiskList(items: WebSocketReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(webSocketReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function webSocketReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

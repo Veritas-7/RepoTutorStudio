@@ -3817,6 +3817,65 @@ export const FileUploadReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const WebSocketReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  webSocketSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["ws", "socket.io", "uwebsockets", "native-websocket", "sse", "custom", "unknown"]),
+    serverCount: z.number().int().nonnegative(),
+    clientCount: z.number().int().nonnegative(),
+    upgradeCount: z.number().int().nonnegative(),
+    messageCount: z.number().int().nonnegative(),
+    heartbeatCount: z.number().int().nonnegative(),
+    safetyCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  connectionSignals: z.array(z.object({
+    signal: z.enum(["server", "client", "upgrade", "namespace-room", "reconnect", "tls", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  messageSignals: z.array(z.object({
+    signal: z.enum(["send", "message-handler", "json-parse", "binary", "broadcast", "schema-validation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lifecycleSignals: z.array(z.object({
+    signal: z.enum(["open", "close", "error", "ping-pong", "reconnect", "backpressure", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["origin-check", "auth-token", "rate-limit", "payload-limit", "heartbeat-timeout", "compression", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["ws", "socket.io", "uWebSockets.js", "isomorphic-ws", "native-websocket", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4094,6 +4153,7 @@ export type DateTimeReadinessReport = z.infer<typeof DateTimeReadinessReportSche
 export type IdGenerationReadinessReport = z.infer<typeof IdGenerationReadinessReportSchema>;
 export type ImageProcessingReadinessReport = z.infer<typeof ImageProcessingReadinessReportSchema>;
 export type FileUploadReadinessReport = z.infer<typeof FileUploadReadinessReportSchema>;
+export type WebSocketReadinessReport = z.infer<typeof WebSocketReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
