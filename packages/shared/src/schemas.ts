@@ -1174,6 +1174,68 @@ export const ObservabilityReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PerformanceReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  scriptTargets: z.array(z.object({
+    filePath: z.string(),
+    kind: z.enum(["k6-script", "package-script", "ci-workflow", "config", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  workloadModels: z.array(z.object({
+    model: z.enum(["stages", "scenarios", "constant-vus", "ramping-vus", "shared-iterations", "per-vu-iterations", "constant-arrival-rate", "ramping-arrival-rate"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  thresholds: z.array(z.object({
+    metric: z.string(),
+    expression: z.string(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  checks: z.array(z.object({
+    filePath: z.string(),
+    name: z.string(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  metrics: z.array(z.object({
+    metric: z.string(),
+    metricType: z.enum(["counter", "gauge", "rate", "trend", "built-in", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputs: z.array(z.object({
+    target: z.enum(["summary", "json", "cloud", "prometheus", "influxdb", "statsd", "otel", "none"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runtimeControls: z.array(z.object({
+    control: z.enum(["vus", "duration", "stages", "iterations", "env-vars", "archive", "browser", "distributed"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1406,6 +1468,7 @@ export type VexReport = z.infer<typeof VexReportSchema>;
 export type PolicyGateReport = z.infer<typeof PolicyGateReportSchema>;
 export type ApiContractReport = z.infer<typeof ApiContractReportSchema>;
 export type ObservabilityReport = z.infer<typeof ObservabilityReportSchema>;
+export type PerformanceReport = z.infer<typeof PerformanceReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

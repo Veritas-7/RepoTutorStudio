@@ -2605,6 +2605,40 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 28/28 audit checks across 13 generated reports
 
+### Upgrade 131: Performance Readiness Report
+
+- Cloned and inspected `grafana/k6` under
+  `research/external-src/grafana-k6` without executing external source.
+- GitHub metadata: public repo, AGPL-3.0 license, 30,725 stars, 1,554 forks,
+  updated 2026-06-03T20:35:08Z. No source code was copied into RepoTutor.
+- Added `PerformanceReportSchema` and `analysis/performance-report.json` with
+  k6-style script targets, workload models, thresholds, checks, metrics,
+  outputs, runtime controls, risk queue, recommended commands, and learner next
+  steps.
+- Added `markdown/performance.md`, `html/performance.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target performance`.
+- Source pattern: k6 separates JavaScript load-test scripts, stages/scenarios,
+  executors, VUs/duration/iterations, thresholds, checks, built-in/custom
+  metrics, summary/cloud/Prometheus/InfluxDB/StatsD/OpenTelemetry outputs, and
+  runtime controls. RepoTutor maps that to deterministic static performance
+  readiness and explicitly does not generate load or claim performance
+  pass/fail results.
+- RED smoke generated
+  `/tmp/repotutor-performance-red-studies.Ld7wHh/2026-06-04/local__simple-ts-app__main__470b176e`;
+  old behavior was missing `analysis/performance-report.json`,
+  `markdown/performance.md`, and `html/performance.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-performance-green-studies.ItApNO/2026-06-04/local__simple-ts-app__main__470b176e`;
+  confirmed `verificationCheckedRequiredArtifacts=93`, script targets 0,
+  workload models 8, thresholds 0, checks 0, metrics 0, outputs 1, runtime
+  controls 8, recommended commands 5, risk queue 2, `performance-card`,
+  `data-source-pattern="k6"`, manifest/learning path entries, and
+  `open --target performance` -> `html/performance.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 29/29 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

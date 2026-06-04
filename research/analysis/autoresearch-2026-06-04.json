@@ -430,6 +430,22 @@
         "resource attributes including service.name deployment environment and service version",
         "context propagation diagnostics shutdown sampling and runtime support checks"
       ]
+    },
+    {
+      "repo": "grafana/k6",
+      "url": "https://github.com/grafana/k6",
+      "localPath": "research/external-src/grafana-k6",
+      "stars": 30725,
+      "forks": 1554,
+      "license": "AGPL-3.0",
+      "updatedAt": "2026-06-03T20:35:08Z",
+      "adoptedPatterns": [
+        "k6 JavaScript load-test scripts and CLI run workflow",
+        "stages scenarios executors VUs duration iterations and arrival-rate workload models",
+        "thresholds checks built-in metrics and custom Counter Gauge Rate Trend metrics",
+        "summary export handleSummary cloud Prometheus InfluxDB StatsD and OpenTelemetry outputs",
+        "runtime controls for env vars archives browser flows and distributed/cloud execution"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2287,6 +2303,28 @@
         "ObservabilityReportSchema",
         "OpenTelemetry traces metrics logs resource context propagation exporter instrumentation semantic conventions diagnostics"
       ]
+    },
+    {
+      "name": "Performance readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/performance-report.json",
+        "markdown/performance.md",
+        "html/performance.html",
+        "open --target performance",
+        "PerformanceReportSchema",
+        "k6 load testing scripts scenarios executors thresholds checks metrics outputs summaries cloud performance SLO"
+      ]
     }
   ],
   "verification": {
@@ -2571,6 +2609,12 @@
     "cliObservabilityOpenTargetSmoke": "PASS",
     "buildObservability": "PASS",
     "testObservability": "PASS",
-    "auditBriefObservability28": "PASS"
+    "auditBriefObservability28": "PASS",
+    "fixturePerformanceReport": "PASS",
+    "cliPerformanceSmoke": "PASS",
+    "cliPerformanceOpenTargetSmoke": "PASS",
+    "buildPerformance": "PASS",
+    "testPerformance": "PASS",
+    "auditBriefPerformance29": "PASS"
   }
 }

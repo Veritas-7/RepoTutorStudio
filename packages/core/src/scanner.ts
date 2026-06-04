@@ -43,6 +43,7 @@ import {
   PolicyGateReport,
   ApiContractReport,
   ObservabilityReport,
+  PerformanceReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -92,6 +93,7 @@ export interface AnalysisBundle {
   policyGateReport: PolicyGateReport;
   apiContractReport: ApiContractReport;
   observabilityReport: ObservabilityReport;
+  performanceReport: PerformanceReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -141,8 +143,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const policyGateReport = await buildPolicyGateReport(walk, securityReadinessReport);
   const apiContractReport = await buildApiContractReport(walk);
   const observabilityReport = await buildObservabilityReport(walk, runtimeEnvironmentReport);
+  const performanceReport = await buildPerformanceReport(walk, runtimeEnvironmentReport);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -4045,6 +4048,294 @@ function observabilityDiagnostics(
       status: match ? "ready" : sourceFiles.length > 0 ? "partial" : "missing",
       evidence: match ? item.readyEvidence(match.filePath) : item.missingEvidence,
       relatedHref: match?.sourceHref ?? "html/observability.html"
+    };
+  });
+}
+
+async function buildPerformanceReport(
+  walk: WalkResult,
+  runtimeEnvironmentReport: RuntimeEnvironmentReport
+): Promise<PerformanceReport> {
+  const sourceFiles = await performanceSourceFiles(walk);
+  const scriptTargets = performanceScriptTargets(sourceFiles);
+  const workloadModels = performanceWorkloadModels(sourceFiles);
+  const thresholds = performanceThresholds(sourceFiles);
+  const checks = performanceChecks(sourceFiles);
+  const metrics = performanceMetrics(sourceFiles);
+  const outputs = performanceOutputs(sourceFiles);
+  const runtimeControls = performanceRuntimeControls(sourceFiles, runtimeEnvironmentReport);
+  const hasScript = scriptTargets.some((item) => item.readiness === "ready");
+  const hasWorkload = workloadModels.some((item) => item.readiness === "ready");
+  const hasThreshold = thresholds.length > 0;
+  const hasCheck = checks.length > 0;
+  const hasOutput = outputs.some((item) => item.target !== "none" && item.readiness !== "missing");
+
+  const riskQueue: PerformanceReport["riskQueue"] = [];
+  if (!hasScript) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a k6 script or package script before claiming load-test coverage.",
+      why: "k6-style performance testing needs a runnable JavaScript scenario or documented CLI target.",
+      relatedHref: "html/performance.html"
+    });
+  }
+  if (hasScript && !hasWorkload) {
+    riskQueue.push({
+      priority: "high",
+      action: "Define stages or scenarios with an explicit executor and traffic model.",
+      why: "A load test without a workload model cannot explain VUs, arrival rate, duration, or iteration shape.",
+      relatedHref: "html/performance.html"
+    });
+  }
+  if (hasScript && !hasThreshold) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add thresholds for latency, error rate, and key custom metrics.",
+      why: "Thresholds turn performance runs into pass/fail SLO checks instead of screenshots.",
+      relatedHref: "html/performance.html"
+    });
+  }
+  if (hasScript && !hasCheck) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add checks for expected status codes or response invariants.",
+      why: "A fast endpoint can still be functionally wrong under load.",
+      relatedHref: "html/api-contracts.html"
+    });
+  }
+  if (hasScript && !hasOutput) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Configure summary, JSON, cloud, Prometheus, InfluxDB, StatsD, or OpenTelemetry output.",
+      why: "Performance evidence needs a retained result artifact or metrics backend.",
+      relatedHref: "html/performance.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run k6 against the original service before treating this report as a performance result.",
+    why: "RepoTutor only performs static readiness analysis and does not generate load.",
+    relatedHref: "html/performance.html"
+  });
+
+  return {
+    summary: `k6식 performance readiness report: script target ${scriptTargets.length}개, workload model ${workloadModels.length}개, threshold ${thresholds.length}개, runtime control ${runtimeControls.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "k6 load testing scripts scenarios executors thresholds checks metrics outputs summaries cloud performance SLO",
+    scriptTargets,
+    workloadModels,
+    thresholds,
+    checks,
+    metrics,
+    outputs,
+    runtimeControls,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "k6 run performance/load-test.js", purpose: "Run a committed k6 script locally and inspect the terminal summary." },
+      { command: "k6 run --vus 10 --duration 30s performance/load-test.js", purpose: "Override VU and duration controls for a quick smoke load run." },
+      { command: "k6 run --summary-export reports/k6-summary.json performance/load-test.js", purpose: "Persist a JSON summary artifact for CI review." },
+      { command: "K6_PROMETHEUS_RW_SERVER_URL=http://localhost:9090/api/v1/write k6 run -o experimental-prometheus-rw performance/load-test.js", purpose: "Stream metrics to Prometheus remote write when a backend is available." },
+      { command: "k6 cloud run performance/load-test.js", purpose: "Run a Grafana Cloud k6 test after credentials and stack settings are configured." }
+    ],
+    learnerNextSteps: [
+      "먼저 runnable k6 script나 package script가 있는지 확인하세요.",
+      "stages/scenarios/executor가 없으면 부하 모델을 설명할 수 없습니다.",
+      "thresholds와 checks를 함께 두어 latency SLO와 기능적 정상성을 동시에 확인하세요.",
+      "이 리포트는 k6 실행 결과가 아닙니다. 실제 성능 판단은 원본 서비스에서 별도 실행하세요."
+    ]
+  };
+}
+
+type PerformanceSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function performanceSourceFiles(walk: WalkResult): Promise<PerformanceSourceFile[]> {
+  const files: PerformanceSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !performanceInspectablePath(file.relPath)) continue;
+    const pathCandidate = performancePathSignal(file.relPath);
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!pathCandidate && !performanceContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 120) break;
+  }
+  return files;
+}
+
+function performanceInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|docker-compose\.ya?ml|Dockerfile)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(js|ts|mjs|cjs|json|ya?ml|toml|md|sh)$/i.test(filePath);
+}
+
+function performancePathSignal(filePath: string): boolean {
+  return /(k6|load[-_ ]?test|performance|perf|benchmark|stress|soak|spike|threshold|scenario|grafana|prometheus|influx|statsd)/i.test(filePath);
+}
+
+function performanceContentSignal(text: string): boolean {
+  return /\b(k6 run|from ["']k6|k6\/http|export const options|thresholds|scenarios|stages|vus|duration|executor|check\(|Trend|Counter|Rate|Gauge|handleSummary|summary-export|experimental-prometheus-rw|K6_|http_req_duration)\b/i.test(text);
+}
+
+function performanceScriptTargets(sourceFiles: PerformanceSourceFile[]): PerformanceReport["scriptTargets"] {
+  const rows: PerformanceReport["scriptTargets"] = [];
+  for (const source of sourceFiles) {
+    const isK6Script = /from ["']k6|k6\/http|export const options|check\(|sleep\(/i.test(source.text);
+    const isPackageScript = path.basename(source.filePath) === "package.json" && /k6\s+run|load[-_:]?test|performance/i.test(source.text);
+    const isWorkflow = /^\.github\/workflows\//i.test(source.filePath) && /k6\s+run|grafana\/k6-action|load test|performance/i.test(source.text);
+    const isConfig = /\.(json|ya?ml|toml|md|sh)$/i.test(source.filePath) && /k6\s+run|K6_|thresholds|scenarios/i.test(source.text);
+    if (!isK6Script && !isPackageScript && !isWorkflow && !isConfig) continue;
+    rows.push({
+      filePath: source.filePath,
+      kind: isK6Script ? "k6-script" : isPackageScript ? "package-script" : isWorkflow ? "ci-workflow" : isConfig ? "config" : "unknown",
+      readiness: isK6Script || isPackageScript || isWorkflow ? "ready" : "partial",
+      evidence: performanceTargetEvidence(source.filePath, source.text),
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 60);
+}
+
+function performanceTargetEvidence(filePath: string, text: string): string {
+  if (/from ["']k6|k6\/http/i.test(text)) return `${filePath} imports k6 modules for a runnable load-test script.`;
+  if (/k6\s+run/i.test(text)) return `${filePath} documents a k6 run command.`;
+  if (/thresholds|scenarios|stages/i.test(text)) return `${filePath} contains k6 option-style performance configuration.`;
+  return `${filePath} has performance/load-test evidence.`;
+}
+
+function performanceWorkloadModels(sourceFiles: PerformanceSourceFile[]): PerformanceReport["workloadModels"] {
+  const specs: Array<{ model: PerformanceReport["workloadModels"][number]["model"]; pattern: RegExp; evidence: string }> = [
+    { model: "stages", pattern: /\bstages\s*:/i, evidence: "stages define ramp-up, steady, or ramp-down targets." },
+    { model: "scenarios", pattern: /\bscenarios\s*:/i, evidence: "scenarios configure named workloads." },
+    { model: "constant-vus", pattern: /constant-vus/i, evidence: "constant-vus keeps a fixed virtual user count." },
+    { model: "ramping-vus", pattern: /ramping-vus/i, evidence: "ramping-vus changes virtual users over time." },
+    { model: "shared-iterations", pattern: /shared-iterations/i, evidence: "shared-iterations distributes fixed iterations across VUs." },
+    { model: "per-vu-iterations", pattern: /per-vu-iterations/i, evidence: "per-vu-iterations assigns fixed iterations per VU." },
+    { model: "constant-arrival-rate", pattern: /constant-arrival-rate/i, evidence: "constant-arrival-rate models open traffic at a fixed rate." },
+    { model: "ramping-arrival-rate", pattern: /ramping-arrival-rate/i, evidence: "ramping-arrival-rate models open traffic with rate changes." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text));
+    return {
+      model: spec.model,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.model} workload evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/performance.html"
+    };
+  });
+}
+
+function performanceThresholds(sourceFiles: PerformanceSourceFile[]): PerformanceReport["thresholds"] {
+  const rows: PerformanceReport["thresholds"] = [];
+  for (const source of sourceFiles) {
+    if (!/thresholds\s*:/i.test(source.text)) continue;
+    const thresholdBlock = source.text.match(/thresholds\s*:\s*\{([\s\S]{0,2500}?)\n\s*\}/i)?.[1] ?? source.text;
+    const matches = [...thresholdBlock.matchAll(/["']?([A-Za-z_][A-Za-z0-9_.{}:-]*)["']?\s*:\s*(\[[^\]]+\]|["'][^"']+["'])/g)].slice(0, 40);
+    for (const match of matches) {
+      rows.push({
+        metric: match[1],
+        expression: match[2].replace(/\s+/g, " ").slice(0, 160),
+        readiness: "ready",
+        evidence: `${source.filePath} defines a k6 threshold for ${match[1]}.`,
+        relatedHref: source.sourceHref
+      });
+    }
+  }
+  return rows.slice(0, 80);
+}
+
+function performanceChecks(sourceFiles: PerformanceSourceFile[]): PerformanceReport["checks"] {
+  const rows: PerformanceReport["checks"] = [];
+  for (const source of sourceFiles) {
+    if (!/check\s*\(/i.test(source.text)) continue;
+    const names = [...source.text.matchAll(/["']([^"']{2,80})["']\s*:\s*\(?\s*\w+/g)]
+      .map((match) => match[1])
+      .filter((name) => /status|response|ok|success|body|header|latency|valid/i.test(name))
+      .slice(0, 20);
+    rows.push({
+      filePath: source.filePath,
+      name: names[0] ?? "k6 check",
+      readiness: "ready",
+      evidence: names.length > 0 ? `${source.filePath} defines check(s): ${names.slice(0, 5).join(", ")}.` : `${source.filePath} calls k6 check().`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 60);
+}
+
+function performanceMetrics(sourceFiles: PerformanceSourceFile[]): PerformanceReport["metrics"] {
+  const rows: PerformanceReport["metrics"] = [];
+  const builtIns = ["http_req_duration", "http_req_failed", "http_reqs", "vus", "iterations", "checks", "data_received", "data_sent"];
+  for (const metric of builtIns) {
+    const match = sourceFiles.find((source) => new RegExp(`\\b${metric}\\b`, "i").test(source.text));
+    if (!match) continue;
+    rows.push({ metric, metricType: "built-in", readiness: "ready", evidence: `${match.filePath} references built-in k6 metric ${metric}.`, relatedHref: match.sourceHref });
+  }
+  const constructors: Array<{ metricType: PerformanceReport["metrics"][number]["metricType"]; pattern: RegExp }> = [
+    { metricType: "counter", pattern: /new\s+Counter\s*\(\s*["']([^"']+)["']/g },
+    { metricType: "gauge", pattern: /new\s+Gauge\s*\(\s*["']([^"']+)["']/g },
+    { metricType: "rate", pattern: /new\s+Rate\s*\(\s*["']([^"']+)["']/g },
+    { metricType: "trend", pattern: /new\s+Trend\s*\(\s*["']([^"']+)["']/g }
+  ];
+  for (const source of sourceFiles) {
+    for (const spec of constructors) {
+      for (const match of source.text.matchAll(spec.pattern)) {
+        rows.push({ metric: match[1], metricType: spec.metricType, readiness: "ready", evidence: `${source.filePath} defines custom ${spec.metricType} metric ${match[1]}.`, relatedHref: source.sourceHref });
+      }
+    }
+  }
+  return rows.slice(0, 80);
+}
+
+function performanceOutputs(sourceFiles: PerformanceSourceFile[]): PerformanceReport["outputs"] {
+  const specs: Array<{ target: Exclude<PerformanceReport["outputs"][number]["target"], "none">; pattern: RegExp; evidence: (filePath: string) => string }> = [
+    { target: "summary", pattern: /handleSummary|summary-export|summaryTrendStats/i, evidence: (filePath) => `${filePath} configures summary output or summary export.` },
+    { target: "json", pattern: /--summary-export|json-output|K6_OUT=json|\.json/i, evidence: (filePath) => `${filePath} references JSON performance output.` },
+    { target: "cloud", pattern: /k6 cloud|K6_CLOUD|cloud:\s*\{/i, evidence: (filePath) => `${filePath} references Grafana Cloud k6 execution.` },
+    { target: "prometheus", pattern: /experimental-prometheus-rw|K6_PROMETHEUS|prometheus/i, evidence: (filePath) => `${filePath} references Prometheus output.` },
+    { target: "influxdb", pattern: /influxdb|K6_INFLUXDB/i, evidence: (filePath) => `${filePath} references InfluxDB output.` },
+    { target: "statsd", pattern: /statsd|K6_STATSD/i, evidence: (filePath) => `${filePath} references StatsD output.` },
+    { target: "otel", pattern: /traces-output|K6_TRACES_OUTPUT|opentelemetry|otel/i, evidence: (filePath) => `${filePath} references OpenTelemetry trace output.` }
+  ];
+  const outputs: PerformanceReport["outputs"] = [];
+  for (const spec of specs) {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    if (!match) continue;
+    outputs.push({ target: spec.target, readiness: "ready", evidence: spec.evidence(match.filePath), relatedHref: match.sourceHref });
+  }
+  if (outputs.length === 0) {
+    outputs.push({ target: "none", readiness: "missing", evidence: "No k6 summary, JSON, cloud, Prometheus, InfluxDB, StatsD, or OpenTelemetry output was detected.", relatedHref: "html/performance.html" });
+  }
+  return outputs;
+}
+
+function performanceRuntimeControls(
+  sourceFiles: PerformanceSourceFile[],
+  runtimeEnvironmentReport: RuntimeEnvironmentReport
+): PerformanceReport["runtimeControls"] {
+  const runtimeHref = "html/runtime-environment.html";
+  const specs: Array<{ control: PerformanceReport["runtimeControls"][number]["control"]; pattern: RegExp; evidence: string }> = [
+    { control: "vus", pattern: /\bvus\s*:|--vus\b|-u\s+\d+/i, evidence: "VU count can be controlled." },
+    { control: "duration", pattern: /\bduration\s*:|--duration\b/i, evidence: "Duration can be controlled." },
+    { control: "stages", pattern: /\bstages\s*:/i, evidence: "Ramp stages are configured." },
+    { control: "iterations", pattern: /\biterations\s*:|--iterations\b/i, evidence: "Iteration count is configured." },
+    { control: "env-vars", pattern: /__ENV|K6_|--env\b/i, evidence: "Environment variable controls are configured." },
+    { control: "archive", pattern: /k6 archive|--archive-out|archive/i, evidence: "k6 archive packaging is referenced." },
+    { control: "browser", pattern: /k6\/browser|browser\./i, evidence: "Browser performance flow is referenced." },
+    { control: "distributed", pattern: /operator|kubernetes|k6-operator|cloud run|distributed/i, evidence: "Distributed/cloud execution is referenced." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    if (match) return { control: spec.control, readiness: "ready", evidence: `${match.filePath} ${spec.evidence}`, relatedHref: match.sourceHref };
+    const runtimeSignals = runtimeEnvironmentReport.containerSignals.length + runtimeEnvironmentReport.setupSignals.length;
+    return {
+      control: spec.control,
+      readiness: runtimeSignals > 0 && ["env-vars", "distributed"].includes(spec.control) ? "external" : "missing",
+      evidence: `${spec.control} runtime control was not detected in static performance files.`,
+      relatedHref: runtimeHref
     };
   });
 }

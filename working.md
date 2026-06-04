@@ -1724,6 +1724,34 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 130:
   - `53e9469` observability readiness report
 
+- 2026-06-04: AutoResearch Upgrade 131 candidate selected:
+  `grafana/k6` (`https://github.com/grafana/k6`; public AGPL-3.0; 30,725
+  stars; 1,554 forks; updated 2026-06-03T20:35:08Z). Cloned ignored external
+  source to `research/external-src/grafana-k6` and inspected README, examples,
+  threshold/scenario/executor/summary/options code, outputs, release notes, and
+  workflow hints without executing external source.
+- 2026-06-04: RED performance smoke generated
+  `/tmp/repotutor-performance-red-studies.Ld7wHh/2026-06-04/local__simple-ts-app__main__470b176e`;
+  old build was missing `analysis/performance-report.json`,
+  `markdown/performance.md`, and `html/performance.html` as expected.
+- 2026-06-04: Implemented k6-style performance readiness report:
+  `PerformanceReportSchema`, `analysis/performance-report.json`,
+  `markdown/performance.md`, `html/performance.html`, script targets, workload
+  models, thresholds, checks, metrics, outputs, runtime controls, recommended
+  commands, risk queue, manifest/session-verification coverage, learning-path
+  linkage, and `open --target performance`.
+- 2026-06-04: GREEN performance smoke generated
+  `/tmp/repotutor-performance-green-studies.ItApNO/2026-06-04/local__simple-ts-app__main__470b176e`;
+  confirmed `verificationCheckedRequiredArtifacts=93`, script targets 0,
+  workload models 8, thresholds 0, checks 0, metrics 0, outputs 1, runtime
+  controls 8, recommended commands 5, risk queue 2, `performance-card`,
+  `data-source-pattern="k6"`, manifest/learning-path entries, and
+  `open --target performance` -> `html/performance.html`.
+- 2026-06-04: Verification for Upgrade 131:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 29/29 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
