@@ -87,6 +87,7 @@ import {
   DateTimeReadinessReport,
   IdGenerationReadinessReport,
   ImageProcessingReadinessReport,
+  FileUploadReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -180,6 +181,7 @@ export interface AnalysisBundle {
   dateTimeReadinessReport: DateTimeReadinessReport;
   idGenerationReadinessReport: IdGenerationReadinessReport;
   imageProcessingReadinessReport: ImageProcessingReadinessReport;
+  fileUploadReadinessReport: FileUploadReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -273,8 +275,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const dateTimeReadinessReport = await buildDateTimeReadinessReport(walk);
   const idGenerationReadinessReport = await buildIdGenerationReadinessReport(walk);
   const imageProcessingReadinessReport = await buildImageProcessingReadinessReport(walk);
+  const fileUploadReadinessReport = await buildFileUploadReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -16516,6 +16519,271 @@ function imageProcessingReadinessSignalFromSpecs<T extends Record<K, string> & {
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/image-processing-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildFileUploadReadinessReport(walk: WalkResult): Promise<FileUploadReadinessReport> {
+  const sourceFiles = await fileUploadReadinessSourceFiles(walk);
+  const fileUploadSetups = fileUploadReadinessSetups(sourceFiles);
+  const inputSignals = fileUploadReadinessInputSignals(sourceFiles);
+  const restrictionSignals = fileUploadReadinessRestrictionSignals(sourceFiles);
+  const transportSignals = fileUploadReadinessTransportSignals(sourceFiles);
+  const lifecycleSignals = fileUploadReadinessLifecycleSignals(sourceFiles);
+  const safetySignals = fileUploadReadinessSafetySignals(sourceFiles);
+  const packageSignals = fileUploadReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasUppyPackage = packageSignals.some((item) => ["uppy", "@uppy/react"].includes(item.signal) && item.readiness === "ready");
+  const hasSetup = fileUploadSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = fileUploadSetups.some((item) => item.readiness === "ready");
+  const hasRestrictions = restrictionSignals.some((item) => item.readiness === "ready") || fileUploadSetups.some((item) => item.restrictionCount > 0);
+  const hasTransport = transportSignals.some((item) => item.readiness === "ready") || fileUploadSetups.some((item) => item.transportCount > 0);
+  const hasLifecycle = lifecycleSignals.some((item) => item.readiness === "ready") || fileUploadSetups.some((item) => item.lifecycleCount > 0);
+  const hasSafety = safetySignals.some((item) => item.readiness === "ready") || fileUploadSetups.some((item) => item.safetyCount > 0);
+
+  const riskQueue: FileUploadReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the file upload strategy before claiming upload readiness.",
+      why: "Upload readiness starts with explicit input, restriction, transport, lifecycle, safety, or package evidence.",
+      relatedHref: "html/file-upload-readiness.html"
+    });
+  }
+  if (hasUppyPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair Uppy package evidence with concrete Uppy(), Dashboard or DragDrop setup, restrictions, transport, and lifecycle handlers.",
+      why: "A browser upload dependency alone does not prove that file limits, network transport, progress, errors, or completion states are wired.",
+      relatedHref: "html/file-upload-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasRestrictions) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add MIME type, size, file-count, image-dimension, or metadata restrictions for untrusted uploads.",
+      why: "Upload entry points without explicit restrictions can accept oversized, unsupported, or unexpected files.",
+      relatedHref: "html/file-upload-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasTransport) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document the upload transport, endpoint, resumability, headers, and remote-provider boundary.",
+      why: "Users need to know whether uploads use XHR, Tus, S3 multipart, Companion, or a server parser before testing reliability.",
+      relatedHref: "html/file-upload-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasLifecycle) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add upload progress, status, completion, cancellation, retry, and error handling signals.",
+      why: "Upload UX and recovery depend on visible lifecycle states, not only file selection.",
+      relatedHref: "html/file-upload-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasSafety) {
+    riskQueue.push({
+      priority: "high",
+      action: "Review authentication headers, CSRF, content validation, storage path, scanning, and rate-limit controls.",
+      why: "Upload endpoints are security boundaries and should not rely only on client-side widgets.",
+      relatedHref: "html/file-upload-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run representative upload tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not select files, open browsers, send uploads, contact Companion, write storage objects, scan content, or run the analyzed project's tests.",
+    relatedHref: "html/file-upload-readiness.html"
+  });
+
+  return {
+    summary: `Uppy-style file upload readiness report: setup ${fileUploadSetups.length}개, input signal ${inputSignals.length}개, restriction signal ${restrictionSignals.length}개, transport signal ${transportSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Uppy Dashboard DragDrop FileInput restrictions allowedFileTypes maxFileSize maxNumberOfFiles metaFields XHRUpload Tus AwsS3 Companion upload-progress complete error cancel retry",
+    fileUploadSetups,
+    inputSignals,
+    restrictionSignals,
+    transportSignals,
+    lifecycleSignals,
+    safetySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"Uppy\\(|Dashboard|DragDrop|FileInput|useDropzone|dropzone|multer|formidable\" src app packages", purpose: "Inventory upload entry points, browser widgets, hooks, and server-side parsers." },
+      { command: "rg \"restrictions|allowedFileTypes|maxFileSize|maxNumberOfFiles|minNumberOfFiles|maxTotalFileSize|metaFields\" src app packages test tests", purpose: "Review file type, size, count, and required metadata gates." },
+      { command: "rg \"XHRUpload|Tus|AwsS3|Companion|endpoint|headers|getUploadParameters|createMultipartUpload\" src app packages", purpose: "Inspect upload transport, endpoints, headers, resumability, and remote-provider wiring." },
+      { command: "rg \"upload-progress|progress|complete|upload-error|cancel|retry|pause|resume|StatusBar\" src app packages", purpose: "Check upload lifecycle, recovery UX, and error reporting." },
+      { command: "rg \"csrf|authorization|virus|scan|validate|sanitize|storage|rateLimit|content-type\" src app packages", purpose: "Check server-side upload security controls and storage boundaries." },
+      { command: "npx vitest run", purpose: "Run local tests that cover representative file selection, restrictions, upload transport, progress, cancellation, retry, and error paths." }
+    ],
+    learnerNextSteps: [
+      "먼저 Uppy(), Dashboard, DragDrop, FileInput, useDropzone 같은 entry point를 찾아 사용자가 파일을 어디에서 넣는지 확인하세요.",
+      "restrictions, allowedFileTypes, maxFileSize, maxNumberOfFiles, metaFields가 실제 upload path에 적용되는지 확인하세요.",
+      "XHRUpload, Tus, AwsS3, Companion, endpoint, headers를 보며 업로드가 어디로 가고 재시도/재개가 가능한지 분리하세요.",
+      "upload-progress, complete, upload-error, cancel, retry, pause, resume, StatusBar 신호로 사용자에게 보이는 lifecycle을 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 파일 선택, 네트워크 업로드, 서버 저장, 악성 파일 검사, 권한 검사는 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type FileUploadReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function fileUploadReadinessSourceFiles(walk: WalkResult): Promise<FileUploadReadinessSourceFile[]> {
+  const files: FileUploadReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !fileUploadReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!fileUploadReadinessPathSignal(file.relPath) && !fileUploadReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function fileUploadReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return fileUploadReadinessPathSignal(filePath)
+    || /^(package\.json|upload\.[cm]?[jt]sx?|uploads\.[cm]?[jt]sx?|uploader\.[cm]?[jt]sx?|dropzone\.[cm]?[jt]sx?|storage\.[cm]?[jt]sx?|media\.[cm]?[jt]sx?)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml)$/i.test(filePath);
+}
+
+function fileUploadReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(upload|uploads|uploader|file-upload|fileinput|dropzone|drag-drop|multipart|form-data|storage|media|attachments|companion|uppy)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function fileUploadReadinessContentSignal(text: string): boolean {
+  return /(from ['"]@uppy|require\(['"]@uppy|new Uppy|Uppy\s*\(|Dashboard|DragDrop|FileInput|restrictions|allowedFileTypes|maxFileSize|maxNumberOfFiles|XHRUpload|Tus|AwsS3|Companion|react-dropzone|multer|formidable|busboy|upload-progress|upload-error)/i.test(text);
+}
+
+function fileUploadReadinessSetups(sourceFiles: FileUploadReadinessSourceFile[]): FileUploadReadinessReport["fileUploadSetups"] {
+  const rows: FileUploadReadinessReport["fileUploadSetups"] = [];
+  for (const source of sourceFiles) {
+    const uploaderCount = countMatches(source.text, /new Uppy|Uppy\s*\(|\.use\s*\(|Dashboard|DragDrop|FileInput|useDropzone|multer\s*\(|formidable\s*\(|busboy\s*\(/gi);
+    const restrictionCount = countMatches(source.text, /restrictions|allowedFileTypes|maxFileSize|maxNumberOfFiles|minNumberOfFiles|maxTotalFileSize|maxNumberOfFiles|metaFields|requiredMetaFields/gi);
+    const transportCount = countMatches(source.text, /XHRUpload|Tus|AwsS3|AwsS3Multipart|Companion|endpoint\s*:|headers\s*:|getUploadParameters|createMultipartUpload/gi);
+    const metadataCount = countMatches(source.text, /meta\s*:|metadata|setFileMeta|metaFields|fields\s*:|formData|bundle\s*:/gi);
+    const lifecycleCount = countMatches(source.text, /upload-progress|progress|complete|upload-success|upload-error|cancel|retry|pause|resume|StatusBar/gi);
+    const safetyCount = countMatches(source.text, /authorization|headers\s*:|csrf|content-type|mime|validate|sanitize|virus|scan|storage|path|rateLimit|limit/gi);
+    const hasSetupSignal = uploaderCount + restrictionCount + transportCount + metadataCount + lifecycleCount + safetyCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: fileUploadReadinessProvider(source),
+      uploaderCount,
+      restrictionCount,
+      transportCount,
+      metadataCount,
+      lifecycleCount,
+      safetyCount,
+      readiness: uploaderCount > 0 && restrictionCount > 0 && transportCount > 0 && lifecycleCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains uploader ${uploaderCount}, restriction ${restrictionCount}, transport ${transportCount}, metadata ${metadataCount}, lifecycle ${lifecycleCount}, safety ${safetyCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function fileUploadReadinessProvider(source: FileUploadReadinessSourceFile): FileUploadReadinessReport["fileUploadSetups"][number]["provider"] {
+  if (/@uppy|new Uppy|Uppy\s*\(|Dashboard|DragDrop|XHRUpload|Tus/i.test(source.text)) return "uppy";
+  if (/react-dropzone|useDropzone|Dropzone/i.test(source.text)) return "react-dropzone";
+  if (/multer|multipart\/form-data/i.test(source.text)) return "multer";
+  if (/formidable/i.test(source.text)) return "formidable";
+  if (/busboy/i.test(source.text)) return "busboy";
+  if (/upload|uploader|file input|multipart/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function fileUploadReadinessInputSignals(sourceFiles: FileUploadReadinessSourceFile[]): FileUploadReadinessReport["inputSignals"] {
+  const specs: Array<{ signal: FileUploadReadinessReport["inputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dashboard", pattern: /Dashboard|DashboardModal|@uppy\/dashboard/i, evidence: "Uppy Dashboard evidence was detected." },
+    { signal: "drag-drop", pattern: /DragDrop|drag-drop|DropTarget|drop-target|ondrop|onDrop/i, evidence: "drag and drop upload evidence was detected." },
+    { signal: "file-input", pattern: /FileInput|type=['"]file|useFileInput|createFileInput/i, evidence: "file input evidence was detected." },
+    { signal: "dropzone", pattern: /react-dropzone|useDropzone|dropzone/i, evidence: "dropzone evidence was detected." },
+    { signal: "camera-screen", pattern: /Webcam|ScreenCapture|@uppy\/webcam|@uppy\/screen-capture|camera/i, evidence: "camera or screen capture input evidence was detected." },
+    { signal: "remote-provider", pattern: /Companion|Dropbox|GoogleDrive|OneDrive|Box|Url|Unsplash|remoteSources|provider/i, evidence: "remote provider input evidence was detected." }
+  ];
+  return fileUploadReadinessSignalFromSpecs(sourceFiles, specs, "input", "signal");
+}
+
+function fileUploadReadinessRestrictionSignals(sourceFiles: FileUploadReadinessSourceFile[]): FileUploadReadinessReport["restrictionSignals"] {
+  const specs: Array<{ signal: FileUploadReadinessReport["restrictionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "mime-types", pattern: /allowedFileTypes|accept\s*:|accept=|mime|content-type|image\/|application\//i, evidence: "MIME type restriction evidence was detected." },
+    { signal: "max-file-size", pattern: /maxFileSize|maxTotalFileSize|fileSize|sizeLimit|limit\s*:/i, evidence: "file size restriction evidence was detected." },
+    { signal: "max-number-files", pattern: /maxNumberOfFiles|minNumberOfFiles|maxFiles|fileCount/i, evidence: "file count restriction evidence was detected." },
+    { signal: "image-dimensions", pattern: /maxWidth|maxHeight|minWidth|minHeight|dimensions|Image\s*\(|metadata\s*\(/i, evidence: "image dimension validation evidence was detected." },
+    { signal: "required-meta-fields", pattern: /metaFields|requiredMetaFields|requiredMeta|fields\s*:|validateMetadata/i, evidence: "required metadata field evidence was detected." }
+  ];
+  return fileUploadReadinessSignalFromSpecs(sourceFiles, specs, "restriction", "signal");
+}
+
+function fileUploadReadinessTransportSignals(sourceFiles: FileUploadReadinessSourceFile[]): FileUploadReadinessReport["transportSignals"] {
+  const specs: Array<{ signal: FileUploadReadinessReport["transportSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "xhr-upload", pattern: /XHRUpload|@uppy\/xhr-upload|XMLHttpRequest/i, evidence: "XHRUpload evidence was detected." },
+    { signal: "tus-resumable", pattern: /Tus|@uppy\/tus|tus-js-client|resumable|resume/i, evidence: "Tus or resumable upload evidence was detected." },
+    { signal: "s3-multipart", pattern: /AwsS3|AwsS3Multipart|@uppy\/aws-s3|createMultipartUpload|signPart|completeMultipartUpload/i, evidence: "S3 multipart upload evidence was detected." },
+    { signal: "companion", pattern: /Companion|companionUrl|companionHeaders|@uppy\/companion/i, evidence: "Companion transport evidence was detected." },
+    { signal: "endpoint", pattern: /endpoint\s*:|uploadUrl|uploadURL|url\s*:|action\s*=/i, evidence: "upload endpoint evidence was detected." },
+    { signal: "headers", pattern: /headers\s*:|Authorization|Bearer|withCredentials|getUploadParameters|csrf/i, evidence: "upload header evidence was detected." }
+  ];
+  return fileUploadReadinessSignalFromSpecs(sourceFiles, specs, "transport", "signal");
+}
+
+function fileUploadReadinessLifecycleSignals(sourceFiles: FileUploadReadinessSourceFile[]): FileUploadReadinessReport["lifecycleSignals"] {
+  const specs: Array<{ signal: FileUploadReadinessReport["lifecycleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "progress", pattern: /upload-progress|progress|bytesUploaded|percentage|onProgress/i, evidence: "upload progress evidence was detected." },
+    { signal: "status", pattern: /StatusBar|status|isUploading|uploadStarted|state\.totalProgress/i, evidence: "upload status evidence was detected." },
+    { signal: "cancel-retry", pattern: /cancel|retry|retryUpload|cancel-all|resetProgress/i, evidence: "cancel or retry evidence was detected." },
+    { signal: "complete", pattern: /complete|upload-success|onComplete|successful|finished/i, evidence: "upload completion evidence was detected." },
+    { signal: "error", pattern: /upload-error|error|failed|onError|catch\s*\(/i, evidence: "upload error evidence was detected." },
+    { signal: "pause-resume", pattern: /pause|resume|paused|isPaused|pauseResume/i, evidence: "pause or resume evidence was detected." }
+  ];
+  return fileUploadReadinessSignalFromSpecs(sourceFiles, specs, "lifecycle", "signal");
+}
+
+function fileUploadReadinessSafetySignals(sourceFiles: FileUploadReadinessSourceFile[]): FileUploadReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: FileUploadReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "auth-headers", pattern: /Authorization|Bearer|headers\s*:|withCredentials|session|cookie/i, evidence: "upload auth header evidence was detected." },
+    { signal: "csrf", pattern: /csrf|xsrf|sameSite|anti-forgery/i, evidence: "CSRF protection evidence was detected." },
+    { signal: "virus-scan", pattern: /virus|malware|clamav|scan|quarantine/i, evidence: "virus scan or quarantine evidence was detected." },
+    { signal: "content-validation", pattern: /allowedFileTypes|mime|content-type|validate|sanitize|magic|file-type/i, evidence: "content validation evidence was detected." },
+    { signal: "storage-path", pattern: /storage|bucket|key\s*:|path\s*:|filename|destination|diskStorage|memoryStorage/i, evidence: "storage path evidence was detected." },
+    { signal: "rate-limit", pattern: /rateLimit|rate-limit|throttle|quota|limit\s*:|maxFiles/i, evidence: "rate limit or quota evidence was detected." }
+  ];
+  return fileUploadReadinessSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function fileUploadReadinessPackageSignals(sourceFiles: FileUploadReadinessSourceFile[]): FileUploadReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: FileUploadReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "uppy", pattern: /"uppy"|from ['"]uppy|require\(['"]uppy|new Uppy|Uppy\s*\(/i, evidence: "Uppy package/import evidence was detected." },
+    { signal: "@uppy/react", pattern: /"@uppy\/react"|from ['"]@uppy\/react/i, evidence: "@uppy/react package/import evidence was detected." },
+    { signal: "@uppy/xhr-upload", pattern: /"@uppy\/xhr-upload"|XHRUpload/i, evidence: "@uppy/xhr-upload package/import evidence was detected." },
+    { signal: "@uppy/tus", pattern: /"@uppy\/tus"|from ['"]@uppy\/tus|Tus/i, evidence: "@uppy/tus package/import evidence was detected." },
+    { signal: "react-dropzone", pattern: /"react-dropzone"|from ['"]react-dropzone|useDropzone/i, evidence: "react-dropzone package/import evidence was detected." },
+    { signal: "multer", pattern: /"multer"|from ['"]multer|require\(['"]multer|multer\s*\(/i, evidence: "multer package/import evidence was detected." },
+    { signal: "formidable", pattern: /"formidable"|from ['"]formidable|require\(['"]formidable|formidable\s*\(/i, evidence: "formidable package/import evidence was detected." }
+  ];
+  return fileUploadReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function fileUploadReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: FileUploadReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/file-upload-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

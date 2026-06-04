@@ -82,6 +82,7 @@ import type {
   DateTimeReadinessReport,
   IdGenerationReadinessReport,
   ImageProcessingReadinessReport,
+  FileUploadReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -170,6 +171,7 @@ export interface StudyHtmlInput {
   dateTimeReadinessReport: DateTimeReadinessReport;
   idGenerationReadinessReport: IdGenerationReadinessReport;
   imageProcessingReadinessReport: ImageProcessingReadinessReport;
+  fileUploadReadinessReport: FileUploadReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -272,6 +274,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["datetime-readiness.html", "Datetime"],
     ["id-generation-readiness.html", "ID Generation"],
     ["image-processing-readiness.html", "Images"],
+    ["file-upload-readiness.html", "Uploads"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -774,6 +777,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Image Processing Readiness", "image-processing-readiness.html", `<section class="panel" data-source-pattern="Sharp"><h2>Image Processing Snapshot</h2><p>${escapeHtml(input.imageProcessingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.imageProcessingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.imageProcessingReadinessReport.imageProcessingSetups.length}</dd></div><div><dt>inputs</dt><dd>${input.imageProcessingReadinessReport.inputSignals.length}</dd></div><div><dt>transforms</dt><dd>${input.imageProcessingReadinessReport.transformSignals.length}</dd></div><div><dt>safety</dt><dd>${input.imageProcessingReadinessReport.safetySignals.length}</dd></div></dl><p class="muted">RepoTutor records image processing readiness only. It does not decode images, load native binaries, transform pixels, read image metadata, write output files, or run the analyzed project's tests.</p></section><section class="grid"><article class="image-processing-readiness-card"><h3>Image Processing Setups</h3>${imageProcessingReadinessSetupList(input.imageProcessingReadinessReport.imageProcessingSetups)}</article><article class="image-processing-readiness-card"><h3>Input Signals</h3>${imageProcessingReadinessSignalList(input.imageProcessingReadinessReport.inputSignals, "signal")}</article><article class="image-processing-readiness-card"><h3>Transform Signals</h3>${imageProcessingReadinessSignalList(input.imageProcessingReadinessReport.transformSignals, "signal")}</article><article class="image-processing-readiness-card"><h3>Output Signals</h3>${imageProcessingReadinessSignalList(input.imageProcessingReadinessReport.outputSignals, "signal")}</article></section><section class="grid"><article class="image-processing-readiness-card"><h3>Safety Signals</h3>${imageProcessingReadinessSignalList(input.imageProcessingReadinessReport.safetySignals, "signal")}</article><article class="image-processing-readiness-card"><h3>Performance Signals</h3>${imageProcessingReadinessSignalList(input.imageProcessingReadinessReport.performanceSignals, "signal")}</article><article class="image-processing-readiness-card"><h3>Package Signals</h3>${imageProcessingReadinessSignalList(input.imageProcessingReadinessReport.packageSignals, "signal")}</article><article class="image-processing-readiness-card"><h3>Recommended Commands</h3>${imageProcessingReadinessCommandList(input.imageProcessingReadinessReport.recommendedCommands)}</article><article class="image-processing-readiness-card"><h3>Risk Queue</h3>${imageProcessingReadinessRiskList(input.imageProcessingReadinessReport.riskQueue)}</article><article class="image-processing-readiness-card"><h3>다음 확인 단계</h3>${list(input.imageProcessingReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "file-upload-readiness.html",
+      title: "File Upload Readiness",
+      html: pageShell("File Upload Readiness", "file-upload-readiness.html", `<section class="panel" data-source-pattern="Uppy"><h2>File Upload Snapshot</h2><p>${escapeHtml(input.fileUploadReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.fileUploadReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.fileUploadReadinessReport.fileUploadSetups.length}</dd></div><div><dt>inputs</dt><dd>${input.fileUploadReadinessReport.inputSignals.length}</dd></div><div><dt>restrictions</dt><dd>${input.fileUploadReadinessReport.restrictionSignals.length}</dd></div><div><dt>transport</dt><dd>${input.fileUploadReadinessReport.transportSignals.length}</dd></div></dl><p class="muted">RepoTutor records file upload readiness only. It does not select files, open browsers, send uploads, contact Companion, write storage objects, scan content, or run the analyzed project's tests.</p></section><section class="grid"><article class="file-upload-readiness-card"><h3>File Upload Setups</h3>${fileUploadReadinessSetupList(input.fileUploadReadinessReport.fileUploadSetups)}</article><article class="file-upload-readiness-card"><h3>Input Signals</h3>${fileUploadReadinessSignalList(input.fileUploadReadinessReport.inputSignals, "signal")}</article><article class="file-upload-readiness-card"><h3>Restriction Signals</h3>${fileUploadReadinessSignalList(input.fileUploadReadinessReport.restrictionSignals, "signal")}</article><article class="file-upload-readiness-card"><h3>Transport Signals</h3>${fileUploadReadinessSignalList(input.fileUploadReadinessReport.transportSignals, "signal")}</article></section><section class="grid"><article class="file-upload-readiness-card"><h3>Lifecycle Signals</h3>${fileUploadReadinessSignalList(input.fileUploadReadinessReport.lifecycleSignals, "signal")}</article><article class="file-upload-readiness-card"><h3>Safety Signals</h3>${fileUploadReadinessSignalList(input.fileUploadReadinessReport.safetySignals, "signal")}</article><article class="file-upload-readiness-card"><h3>Package Signals</h3>${fileUploadReadinessSignalList(input.fileUploadReadinessReport.packageSignals, "signal")}</article><article class="file-upload-readiness-card"><h3>Recommended Commands</h3>${fileUploadReadinessCommandList(input.fileUploadReadinessReport.recommendedCommands)}</article><article class="file-upload-readiness-card"><h3>Risk Queue</h3>${fileUploadReadinessRiskList(input.fileUploadReadinessReport.riskQueue)}</article><article class="file-upload-readiness-card"><h3>다음 확인 단계</h3>${list(input.fileUploadReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -956,6 +964,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Datetime Readiness", path: "html/datetime-readiness.html", description: "Luxon식 parsing, formatting, timezone, duration, interval, validity 준비도를 확인합니다." },
       { label: "ID Generation Readiness", path: "html/id-generation-readiness.html", description: "Nano ID식 generator, entropy, alphabet, runtime, usage, validation 준비도를 확인합니다." },
       { label: "Image Processing Readiness", path: "html/image-processing-readiness.html", description: "Sharp식 input, resize/format, metadata, output, safety, performance 준비도를 확인합니다." },
+      { label: "File Upload Readiness", path: "html/file-upload-readiness.html", description: "Uppy식 input, restrictions, transport, lifecycle, safety 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1471,6 +1480,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "image-processing-readiness.html",
       goal: "Sharp식 input, transform, output, safety, performance 흐름을 보고 이미지 처리 관문을 확인합니다.",
       evidence: `image setups ${input.imageProcessingReadinessReport.imageProcessingSetups.length}개, safety signals ${input.imageProcessingReadinessReport.safetySignals.length}개`
+    },
+    {
+      title: "File upload readiness 확인",
+      href: "file-upload-readiness.html",
+      goal: "Uppy식 input, restrictions, transport, lifecycle, safety 흐름을 보고 파일 업로드 관문을 확인합니다.",
+      evidence: `upload setups ${input.fileUploadReadinessReport.fileUploadSetups.length}개, transport signals ${input.fileUploadReadinessReport.transportSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3363,6 +3378,31 @@ function imageProcessingReadinessRiskList(items: ImageProcessingReadinessReport[
 }
 
 function imageProcessingReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function fileUploadReadinessSetupList(items: FileUploadReadinessReport["fileUploadSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">file upload setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>uploader/restriction/transport/metadata/lifecycle/safety ${item.uploaderCount}/${item.restrictionCount}/${item.transportCount}/${item.metadataCount}/${item.lifecycleCount}/${item.safetyCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(fileUploadReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function fileUploadReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">file upload signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(fileUploadReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function fileUploadReadinessCommandList(items: FileUploadReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function fileUploadReadinessRiskList(items: FileUploadReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(fileUploadReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function fileUploadReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
