@@ -1,6 +1,6 @@
 {
   "iteration": 2,
-  "createdAt": "2026-06-04T05:14:15.839Z",
+  "createdAt": "2026-06-04T05:25:14.568Z",
   "checks": [
     {
       "name": "project setup",
@@ -298,6 +298,13 @@
     },
     {
       "name": "dependency updates readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "lint readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

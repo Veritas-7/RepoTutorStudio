@@ -3371,6 +3371,45 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 47/47 audit checks across 13 generated reports
 
+### Upgrade 150: Lint Readiness Report
+
+- Cloned and inspected `eslint/eslint` under
+  `research/external-src/eslint-eslint` without executing external source.
+- GitHub metadata: public repo, MIT license from the cloned license/package
+  metadata, 27,265 stars, 5,017 forks, updated 2026-06-04T01:32:13Z.
+  Compared with `biomejs/biome`, `oxc-project/oxc`, and
+  `standard/standard`; selected ESLint because it directly models flat config,
+  rules, plugins, parser boundaries, ignores, inline disables, formatter and
+  output controls, fix/cache/max-warnings workflows, config inspection, and
+  package script handoff. No source code was copied into RepoTutor.
+- Implemented ESLint-style lint readiness report:
+  `LintReadinessReportSchema`, `analysis/lint-readiness-report.json`,
+  `markdown/lint-readiness.md`, `html/lint-readiness.html`, config files,
+  rule signals, script signals, scope signals, output signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, and `open --target lint-readiness`.
+- Source pattern: ESLint separates flat config file discovery, rules and
+  severities, plugins, parsers, globals, ignores, inline disable handling,
+  output formatters/files, fix and fix-dry-run modes, cache strategy, warning
+  budgets, and `--print-config`/`--inspect-config` diagnostics. RepoTutor maps
+  that to deterministic static lint readiness and explicitly does not run
+  ESLint, apply fixes, resolve plugin/parser packages, or write cache files.
+- RED smoke generated
+  `/tmp/repotutor-lint-readiness-red-studies.zVyVO1/2026-06-04/local__simple-ts-app__main__a0316049`;
+  old behavior was missing `analysis/lint-readiness-report.json`,
+  `markdown/lint-readiness.md`, and `html/lint-readiness.html`, and
+  `open --target lint-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-lint-readiness-green-studies.mTm9Eq/2026-06-04/local__simple-ts-app__main__a0316049`;
+  confirmed `verificationCheckedRequiredArtifacts=150`, config files 0,
+  rule signals 11, script signals 9, scope signals 7, output signals 7,
+  package signals 7, recommended commands 6, risk queue 3,
+  `formatter=ready`, `typescript=ready`, manifest/learning-path entries, and
+  `open --target lint-readiness` -> `html/lint-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 48/48 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
