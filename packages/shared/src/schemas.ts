@@ -4096,6 +4096,77 @@ export const ChartVisualizationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DiagramRenderingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  diagramSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["mermaid", "plantuml", "kroki", "markmap", "graphviz", "custom", "unknown"]),
+    syntaxCount: z.number().int().nonnegative(),
+    renderCount: z.number().int().nonnegative(),
+    themeCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    interactionCount: z.number().int().nonnegative(),
+    safetyCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  diagramTypeSignals: z.array(z.object({
+    signal: z.enum(["flowchart", "sequence", "class", "state", "er", "gantt", "mindmap", "architecture", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  renderSignals: z.array(z.object({
+    signal: z.enum(["initialize", "run", "render", "parse", "svg-output", "bind-functions", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  themeSignals: z.array(z.object({
+    signal: z.enum(["theme", "theme-variables", "theme-css", "dark-mode", "font-family", "html-labels", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  securitySignals: z.array(z.object({
+    signal: z.enum(["security-level", "strict-mode", "sandbox", "sanitize", "dompurify", "external-links", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  layoutSignals: z.array(z.object({
+    signal: z.enum(["use-max-width", "viewbox", "elk", "dagre", "tidy-tree", "responsive-svg", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["svg", "iframe", "download", "live-editor", "snapshot-test", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["mermaid", "plantuml", "kroki", "markmap", "graphviz", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4377,6 +4448,7 @@ export type WebSocketReadinessReport = z.infer<typeof WebSocketReadinessReportSc
 export type PdfGenerationReadinessReport = z.infer<typeof PdfGenerationReadinessReportSchema>;
 export type SpreadsheetReadinessReport = z.infer<typeof SpreadsheetReadinessReportSchema>;
 export type ChartVisualizationReadinessReport = z.infer<typeof ChartVisualizationReadinessReportSchema>;
+export type DiagramRenderingReadinessReport = z.infer<typeof DiagramRenderingReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

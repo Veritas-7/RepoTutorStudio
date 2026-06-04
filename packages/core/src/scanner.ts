@@ -92,6 +92,7 @@ import {
   PdfGenerationReadinessReport,
   SpreadsheetReadinessReport,
   ChartVisualizationReadinessReport,
+  DiagramRenderingReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -190,6 +191,7 @@ export interface AnalysisBundle {
   pdfGenerationReadinessReport: PdfGenerationReadinessReport;
   spreadsheetReadinessReport: SpreadsheetReadinessReport;
   chartVisualizationReadinessReport: ChartVisualizationReadinessReport;
+  diagramRenderingReadinessReport: DiagramRenderingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -288,8 +290,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const pdfGenerationReadinessReport = await buildPdfGenerationReadinessReport(walk);
   const spreadsheetReadinessReport = await buildSpreadsheetReadinessReport(walk);
   const chartVisualizationReadinessReport = await buildChartVisualizationReadinessReport(walk);
+  const diagramRenderingReadinessReport = await buildDiagramRenderingReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -17899,6 +17902,288 @@ function chartVisualizationReadinessSignalFromSpecs<T extends Record<K, string> 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/chart-visualization-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDiagramRenderingReadinessReport(walk: WalkResult): Promise<DiagramRenderingReadinessReport> {
+  const sourceFiles = await diagramRenderingReadinessSourceFiles(walk);
+  const diagramSetups = diagramRenderingReadinessSetups(sourceFiles);
+  const diagramTypeSignals = diagramRenderingReadinessDiagramTypeSignals(sourceFiles);
+  const renderSignals = diagramRenderingReadinessRenderSignals(sourceFiles);
+  const themeSignals = diagramRenderingReadinessThemeSignals(sourceFiles);
+  const securitySignals = diagramRenderingReadinessSecuritySignals(sourceFiles);
+  const layoutSignals = diagramRenderingReadinessLayoutSignals(sourceFiles);
+  const outputSignals = diagramRenderingReadinessOutputSignals(sourceFiles);
+  const packageSignals = diagramRenderingReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasMermaidPackage = packageSignals.some((item) => item.signal === "mermaid" && item.readiness === "ready");
+  const hasSetup = diagramSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = diagramSetups.some((item) => item.readiness === "ready");
+  const hasRender = renderSignals.some((item) => item.readiness === "ready") || diagramSetups.some((item) => item.renderCount > 0);
+  const hasSafety = securitySignals.some((item) => item.readiness === "ready") || diagramSetups.some((item) => item.safetyCount > 0);
+  const hasOutput = outputSignals.some((item) => item.readiness === "ready") || diagramSetups.some((item) => item.outputCount > 0);
+  const hasThemeOrLayout = themeSignals.some((item) => item.readiness === "ready")
+    || layoutSignals.some((item) => item.readiness === "ready")
+    || diagramSetups.some((item) => item.themeCount > 0);
+
+  const riskQueue: DiagramRenderingReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the diagram rendering strategy before claiming Mermaid-style diagram readiness.",
+      why: "Diagram readiness starts with explicit syntax, render, theme, output, interaction, safety, or package evidence.",
+      relatedHref: "html/diagram-rendering-readiness.html"
+    });
+  }
+  if (hasMermaidPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair Mermaid package evidence with concrete diagram syntax, initialize/run/render/parse, SVG output, and security configuration.",
+      why: "A diagram package alone does not prove diagrams render safely or produce usable output.",
+      relatedHref: "html/diagram-rendering-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasRender) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add mermaid.initialize, mermaid.run, mermaid.render, mermaid.parse, Diagram.fromText, or bindFunctions evidence.",
+      why: "Diagram syntax is not enough; apps need a concrete render or parse path.",
+      relatedHref: "html/diagram-rendering-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasSafety) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review securityLevel, strict/sandbox mode, sanitization, DOMPurify, and external-link policy.",
+      why: "Text-to-diagram surfaces often accept user text and can create SVG, links, callbacks, or sandboxed iframe output.",
+      relatedHref: "html/diagram-rendering-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasOutput) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document SVG, iframe, download, live-editor, or snapshot output expectations.",
+      why: "Rendered diagrams need a clear output target before learners can verify what users will see.",
+      relatedHref: "html/diagram-rendering-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasThemeOrLayout) {
+    riskQueue.push({
+      priority: "low",
+      action: "Check theme, themeVariables, themeCSS, htmlLabels, useMaxWidth, viewBox, and layout engine settings.",
+      why: "Diagram readability depends on theme and layout settings, especially in responsive documentation pages.",
+      relatedHref: "html/diagram-rendering-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run representative diagram rendering tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor records diagram rendering readiness only; it does not render Mermaid diagrams, execute diagram callbacks, open sandboxed iframes, sanitize user text, mutate SVG, export images, or run the analyzed project's tests.",
+    relatedHref: "html/diagram-rendering-readiness.html"
+  });
+
+  return {
+    summary: `Mermaid-style diagram rendering readiness report: setup ${diagramSetups.length}개, diagram type signal ${diagramTypeSignals.length}개, render signal ${renderSignals.length}개, security signal ${securitySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Mermaid mermaid.initialize mermaid.run mermaid.render mermaid.parse flowchart sequenceDiagram classDiagram stateDiagram erDiagram gantt journey mindmap securityLevel theme svg sandbox",
+    diagramSetups,
+    diagramTypeSignals,
+    renderSignals,
+    themeSignals,
+    securitySignals,
+    layoutSignals,
+    outputSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"mermaid|plantuml|kroki|markmap|graphviz|flowchart|sequenceDiagram|classDiagram|stateDiagram|erDiagram|gantt|mindmap\" src app packages docs", purpose: "Inventory diagram providers and syntax entry points." },
+      { command: "rg \"mermaid\\.initialize|mermaid\\.run|mermaid\\.render|mermaid\\.parse|Diagram\\.fromText|bindFunctions\" src app packages docs", purpose: "Review diagram initialization, render, parse, and callback binding paths." },
+      { command: "rg \"securityLevel|strict|loose|antiscript|sandbox|DOMPurify|sanitize|dompurifyConfig|external user\" src app packages docs", purpose: "Check user-text, SVG, iframe, and link safety policy." },
+      { command: "rg \"theme|themeVariables|themeCSS|darkMode|fontFamily|htmlLabels|useMaxWidth|viewBox|elk|dagre\" src app packages docs", purpose: "Check theme and layout settings that affect readability." },
+      { command: "rg \"svg|iframe|download|snapshot|mermaid\\.live|toDataURL|click|callback|href\" src app packages docs", purpose: "Confirm output, export, live-editor, and interaction behavior." },
+      { command: "npx vitest run", purpose: "Run local tests that cover diagram parsing, rendering fallbacks, output snapshots, and safety policy." }
+    ],
+    learnerNextSteps: [
+      "먼저 Mermaid, PlantUML, Kroki, Markmap, Graphviz import와 diagram syntax 지점을 찾으세요.",
+      "flowchart, sequenceDiagram, classDiagram, stateDiagram, erDiagram, gantt, mindmap 신호로 지원 diagram 종류를 확인하세요.",
+      "mermaid.initialize, mermaid.run, mermaid.render, mermaid.parse, Diagram.fromText, bindFunctions 신호로 렌더링 흐름을 추적하세요.",
+      "securityLevel, strict, sandbox, sanitize, DOMPurify, external links 신호로 사용자 입력과 SVG/iframe 안전 경계를 확인하세요.",
+      "themeVariables, themeCSS, darkMode, fontFamily, htmlLabels, useMaxWidth, viewBox, elk, dagre 신호로 시각적 가독성을 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 Mermaid 렌더링, callback 실행, sandboxed iframe 검사, SVG export는 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type DiagramRenderingReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function diagramRenderingReadinessSourceFiles(walk: WalkResult): Promise<DiagramRenderingReadinessSourceFile[]> {
+  const files: DiagramRenderingReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !diagramRenderingReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!diagramRenderingReadinessPathSignal(file.relPath) && !diagramRenderingReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function diagramRenderingReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return diagramRenderingReadinessPathSignal(filePath)
+    || /^(diagram\.[cm]?[jt]sx?|diagrams\.[cm]?[jt]sx?|mermaid\.[cm]?[jt]sx?|graph\.[cm]?[jt]sx?|graphs\.[cm]?[jt]sx?|flowchart\.[cm]?[jt]sx?|architecture\.[cm]?[jt]sx?|visualization\.[cm]?[jt]sx?|markdown\.[cm]?[jt]sx?|docs\.[cm]?[jt]sx?|package\.json)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml)$/i.test(filePath);
+}
+
+function diagramRenderingReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(diagram|diagrams|mermaid|graph|graphs|flowchart|sequence|architecture|visualization|docs|markdown)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function diagramRenderingReadinessContentSignal(text: string): boolean {
+  return /(mermaid|mermaid\.initialize|mermaid\.run|mermaid\.render|mermaid\.parse|flowchart|sequenceDiagram|classDiagram|stateDiagram|erDiagram|gantt|journey|mindmap|securityLevel|themeVariables|DOMPurify|kroki|plantuml|markmap|graphviz|dot)/i.test(text);
+}
+
+function diagramRenderingReadinessSetups(sourceFiles: DiagramRenderingReadinessSourceFile[]): DiagramRenderingReadinessReport["diagramSetups"] {
+  const rows: DiagramRenderingReadinessReport["diagramSetups"] = [];
+  for (const source of sourceFiles) {
+    const syntaxCount = countMatches(source.text, /flowchart|sequenceDiagram|classDiagram|stateDiagram|stateDiagram-v2|erDiagram|gantt|journey|mindmap|architecture-beta|C4Context|graph TD|graph LR|@startuml|digraph/gi);
+    const renderCount = countMatches(source.text, /mermaid\.initialize|mermaid\.run|mermaid\.render|mermaid\.parse|renderDiagram|Diagram\.fromText|bindFunctions/gi);
+    const themeCount = countMatches(source.text, /theme|themeVariables|themeCSS|darkMode|fontFamily|htmlLabels/gi);
+    const outputCount = countMatches(source.text, /svg|iframe|download|toDataURL|snapshot|live editor|mermaid\.live/gi);
+    const interactionCount = countMatches(source.text, /click|callback|bindFunctions|href|link|zoom|pan/gi);
+    const safetyCount = countMatches(source.text, /securityLevel|strict|loose|antiscript|sandbox|sanitize|DOMPurify|dompurifyConfig|external user|trusted/gi);
+    const hasSetupSignal = syntaxCount + renderCount + themeCount + outputCount + interactionCount + safetyCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: diagramRenderingReadinessProvider(source),
+      syntaxCount,
+      renderCount,
+      themeCount,
+      outputCount,
+      interactionCount,
+      safetyCount,
+      readiness: syntaxCount > 0 && renderCount > 0 && outputCount > 0 && safetyCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains syntax ${syntaxCount}, render ${renderCount}, theme ${themeCount}, output ${outputCount}, interaction ${interactionCount}, safety ${safetyCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function diagramRenderingReadinessProvider(source: DiagramRenderingReadinessSourceFile): DiagramRenderingReadinessReport["diagramSetups"][number]["provider"] {
+  if (/mermaid|flowchart|sequenceDiagram|securityLevel|themeVariables/i.test(source.text)) return "mermaid";
+  if (/plantuml|@startuml/i.test(source.text)) return "plantuml";
+  if (/kroki/i.test(source.text)) return "kroki";
+  if (/markmap/i.test(source.text)) return "markmap";
+  if (/graphviz|dot|digraph/i.test(source.text)) return "graphviz";
+  if (/diagram|graph|svg/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function diagramRenderingReadinessDiagramTypeSignals(sourceFiles: DiagramRenderingReadinessSourceFile[]): DiagramRenderingReadinessReport["diagramTypeSignals"] {
+  const specs: Array<{ signal: DiagramRenderingReadinessReport["diagramTypeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "flowchart", pattern: /flowchart|graph TD|graph LR/i, evidence: "flowchart evidence was detected." },
+    { signal: "sequence", pattern: /sequenceDiagram/i, evidence: "sequence diagram evidence was detected." },
+    { signal: "class", pattern: /classDiagram/i, evidence: "class diagram evidence was detected." },
+    { signal: "state", pattern: /stateDiagram|stateDiagram-v2/i, evidence: "state diagram evidence was detected." },
+    { signal: "er", pattern: /erDiagram/i, evidence: "ER diagram evidence was detected." },
+    { signal: "gantt", pattern: /gantt/i, evidence: "Gantt diagram evidence was detected." },
+    { signal: "mindmap", pattern: /mindmap|markmap/i, evidence: "mindmap evidence was detected." },
+    { signal: "architecture", pattern: /architecture-beta|C4Context|C4Container|digraph|graphviz/i, evidence: "architecture diagram evidence was detected." }
+  ];
+  return diagramRenderingReadinessSignalFromSpecs(sourceFiles, specs, "diagram type", "signal");
+}
+
+function diagramRenderingReadinessRenderSignals(sourceFiles: DiagramRenderingReadinessSourceFile[]): DiagramRenderingReadinessReport["renderSignals"] {
+  const specs: Array<{ signal: DiagramRenderingReadinessReport["renderSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "initialize", pattern: /mermaid\.initialize|initialize\s*\(\s*\{/i, evidence: "diagram initialization evidence was detected." },
+    { signal: "run", pattern: /mermaid\.run|run\s*\(\s*\{/i, evidence: "diagram run evidence was detected." },
+    { signal: "render", pattern: /mermaid\.render|renderDiagram|render\s*\(/i, evidence: "diagram render evidence was detected." },
+    { signal: "parse", pattern: /mermaid\.parse|Diagram\.fromText|parse\s*\(/i, evidence: "diagram parse evidence was detected." },
+    { signal: "svg-output", pattern: /\bsvg\b|<svg|SVGElement/i, evidence: "SVG output evidence was detected." },
+    { signal: "bind-functions", pattern: /bindFunctions|callback|event listener/i, evidence: "diagram callback binding evidence was detected." }
+  ];
+  return diagramRenderingReadinessSignalFromSpecs(sourceFiles, specs, "render", "signal");
+}
+
+function diagramRenderingReadinessThemeSignals(sourceFiles: DiagramRenderingReadinessSourceFile[]): DiagramRenderingReadinessReport["themeSignals"] {
+  const specs: Array<{ signal: DiagramRenderingReadinessReport["themeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "theme", pattern: /theme\s*:|theme:/i, evidence: "theme evidence was detected." },
+    { signal: "theme-variables", pattern: /themeVariables/i, evidence: "theme variable evidence was detected." },
+    { signal: "theme-css", pattern: /themeCSS/i, evidence: "theme CSS evidence was detected." },
+    { signal: "dark-mode", pattern: /darkMode|dark mode/i, evidence: "dark mode evidence was detected." },
+    { signal: "font-family", pattern: /fontFamily|font-family/i, evidence: "font family evidence was detected." },
+    { signal: "html-labels", pattern: /htmlLabels|html labels/i, evidence: "HTML labels evidence was detected." }
+  ];
+  return diagramRenderingReadinessSignalFromSpecs(sourceFiles, specs, "theme", "signal");
+}
+
+function diagramRenderingReadinessSecuritySignals(sourceFiles: DiagramRenderingReadinessSourceFile[]): DiagramRenderingReadinessReport["securitySignals"] {
+  const specs: Array<{ signal: DiagramRenderingReadinessReport["securitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "security-level", pattern: /securityLevel/i, evidence: "security level evidence was detected." },
+    { signal: "strict-mode", pattern: /securityLevel\s*:\s*['"]strict|strict mode/i, evidence: "strict security mode evidence was detected." },
+    { signal: "sandbox", pattern: /securityLevel\s*:\s*['"]sandbox|sandboxed iframe|sandbox/i, evidence: "sandbox evidence was detected." },
+    { signal: "sanitize", pattern: /sanitize|sanitise/i, evidence: "sanitization evidence was detected." },
+    { signal: "dompurify", pattern: /DOMPurify|dompurify|dompurifyConfig/i, evidence: "DOMPurify evidence was detected." },
+    { signal: "external-links", pattern: /external user|external link|trusted|href|target=/i, evidence: "external link or trust policy evidence was detected." }
+  ];
+  return diagramRenderingReadinessSignalFromSpecs(sourceFiles, specs, "security", "signal");
+}
+
+function diagramRenderingReadinessLayoutSignals(sourceFiles: DiagramRenderingReadinessSourceFile[]): DiagramRenderingReadinessReport["layoutSignals"] {
+  const specs: Array<{ signal: DiagramRenderingReadinessReport["layoutSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "use-max-width", pattern: /useMaxWidth/i, evidence: "useMaxWidth evidence was detected." },
+    { signal: "viewbox", pattern: /viewBox|viewbox/i, evidence: "viewBox evidence was detected." },
+    { signal: "elk", pattern: /\belk\b|elkjs/i, evidence: "ELK layout evidence was detected." },
+    { signal: "dagre", pattern: /dagre/i, evidence: "Dagre layout evidence was detected." },
+    { signal: "tidy-tree", pattern: /tidy-tree|tidyTree|mindmap/i, evidence: "tidy-tree layout evidence was detected." },
+    { signal: "responsive-svg", pattern: /responsive|preserveAspectRatio|ResizeObserver|useMaxWidth/i, evidence: "responsive SVG evidence was detected." }
+  ];
+  return diagramRenderingReadinessSignalFromSpecs(sourceFiles, specs, "layout", "signal");
+}
+
+function diagramRenderingReadinessOutputSignals(sourceFiles: DiagramRenderingReadinessSourceFile[]): DiagramRenderingReadinessReport["outputSignals"] {
+  const specs: Array<{ signal: DiagramRenderingReadinessReport["outputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "svg", pattern: /\bsvg\b|<svg|SVGElement/i, evidence: "SVG output evidence was detected." },
+    { signal: "iframe", pattern: /iframe|sandboxed iframe/i, evidence: "iframe output evidence was detected." },
+    { signal: "download", pattern: /download|toDataURL|save image/i, evidence: "download/export evidence was detected." },
+    { signal: "live-editor", pattern: /mermaid\.live|live editor|live-editor/i, evidence: "live editor evidence was detected." },
+    { signal: "snapshot-test", pattern: /snapshot|toMatchSnapshot|visual test|argos/i, evidence: "snapshot or visual test evidence was detected." }
+  ];
+  return diagramRenderingReadinessSignalFromSpecs(sourceFiles, specs, "output", "signal");
+}
+
+function diagramRenderingReadinessPackageSignals(sourceFiles: DiagramRenderingReadinessSourceFile[]): DiagramRenderingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DiagramRenderingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "mermaid", pattern: /"mermaid"|from ['"]mermaid|require\(['"]mermaid|mermaid\.initialize|mermaid\.render/i, evidence: "Mermaid package/import evidence was detected." },
+    { signal: "plantuml", pattern: /"plantuml|from ['"].*plantuml|@startuml|plantuml/i, evidence: "PlantUML evidence was detected." },
+    { signal: "kroki", pattern: /"kroki|from ['"].*kroki|kroki/i, evidence: "Kroki evidence was detected." },
+    { signal: "markmap", pattern: /"markmap|from ['"].*markmap|markmap/i, evidence: "Markmap evidence was detected." },
+    { signal: "graphviz", pattern: /"graphviz|from ['"].*graphviz|graphviz|digraph/i, evidence: "Graphviz evidence was detected." }
+  ];
+  return diagramRenderingReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function diagramRenderingReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DiagramRenderingReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/diagram-rendering-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

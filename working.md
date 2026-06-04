@@ -3622,6 +3622,48 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 179:
   - `5b0fd64` chart visualization readiness report
 
+- 2026-06-04: AutoResearch Upgrade 180 candidate selected:
+  `mermaid-js/mermaid`
+  (`https://github.com/mermaid-js/mermaid`; public; MIT; 88,421 stars; 9,024
+  forks; updated 2026-06-04T09:35:29Z). Compared with `plantuml/plantuml`,
+  `yuzutech/kroki`, and `markmap/markmap`; selected Mermaid because it directly
+  models diagram rendering readiness: text-to-diagram syntax,
+  `mermaid.initialize`, `mermaid.run`, `mermaid.render`, `mermaid.parse`, SVG
+  output, `bindFunctions`, diagram families, theme/layout settings, sandbox
+  mode, and sanitization boundaries. Cloned ignored external source to
+  `research/external-src/mermaid-js-mermaid` and inspected docs/source/test hits
+  without executing external source. Clone HEAD was `0c00846`; tracked-file
+  count for `research/external-src/mermaid-js-mermaid` returned `0`.
+- 2026-06-04: RED diagram-rendering-readiness smoke generated
+  `/tmp/repotutor-diagram-red-studies.K5YD0w/2026-06-04/local__simple-ts-app__HEAD__4fb02829`;
+  old build had `verificationCheckedRequiredArtifacts=237`, was missing
+  `analysis/diagram-rendering-readiness-report.json`,
+  `markdown/diagram-rendering-readiness.md`, and
+  `html/diagram-rendering-readiness.html`, and `open --target
+  diagram-rendering-readiness` failed as expected.
+- 2026-06-04: Implemented Mermaid-style diagram-rendering-readiness report:
+  `DiagramRenderingReadinessReportSchema`,
+  `analysis/diagram-rendering-readiness-report.json`,
+  `markdown/diagram-rendering-readiness.md`,
+  `html/diagram-rendering-readiness.html`, diagram setups, diagram type signals,
+  render signals, theme signals, security signals, layout signals, output
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target diagram-rendering-readiness`.
+- 2026-06-04: GREEN diagram-rendering-readiness smoke generated
+  `/tmp/repotutor-diagram-green-studies.6nQ6vE/2026-06-04/local__simple-ts-app__main__4fb02829`;
+  confirmed `verificationCheckedRequiredArtifacts=240`, diagram setups 0,
+  diagram type signals 8, render signals 6, theme signals 6, security signals
+  6, layout signals 6, output signals 5, package signals 5, risk queue 2, all
+  three new artifacts, and `open --target diagram-rendering-readiness` ->
+  `html/diagram-rendering-readiness.html`.
+- 2026-06-04: Verification for Upgrade 180:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 78/78 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
