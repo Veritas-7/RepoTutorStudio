@@ -5877,6 +5877,51 @@ Local verification:
 - `pnpm test`: PASS, 8/8 tests
 - `pnpm audit:brief`: PASS, 99/99 audit checks across 13 generated reports
 
+### Upgrade 202: Edge Readiness Report
+
+- Cloned sparse and inspected `cloudflare/workers-sdk` under
+  `research/external-src/cloudflare-workers-sdk` without executing external
+  source. Clone HEAD was `23aecac`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, Apache-2.0 license, 4,124 stars, 1,291 forks,
+  updated 2026-06-04T15:52:29Z. Compared with `cloudflare/miniflare`,
+  `vercel/edge-runtime`, and the prior mobile/serverless candidates; selected
+  Workers SDK because Wrangler directly models edge runtime readiness through
+  config, module handlers, bindings, routing, local dev, deploy/tail/secret
+  workflows, and Cloudflare resource commands. No source code was copied into
+  RepoTutor.
+- Implemented Cloudflare Workers-style edge-readiness report:
+  `EdgeReadinessReportSchema`, `analysis/edge-readiness-report.json`,
+  `markdown/edge-readiness.md`, `html/edge-readiness.html`, edge setups,
+  config signals, handler signals, binding signals, routing signals, dev
+  signals, deployment signals, observability signals, package signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, nav entry, and `open --target edge-readiness`.
+- Source pattern: Cloudflare Workers separates `wrangler.toml`/JSON/JSONC,
+  `compatibility_date`, `main`, module `fetch` handlers, scheduled/queue/email
+  handlers, Durable Objects, Workflows, KV/R2/D1/Queues/services/workflows/
+  analytics/secrets bindings, `vars`, `routes`, `workers_dev`, `.dev.vars`,
+  Miniflare, Workers Vitest pool, `wrangler dev`, `wrangler deploy`,
+  `wrangler tail`, and `wrangler secret`. RepoTutor maps that to deterministic
+  static edge readiness and explicitly does not run Wrangler, Miniflare, dev
+  servers, deploy Workers, tail logs, publish versions, mutate routes, touch
+  KV/R2/D1/Queues/Durable Objects, or read/write Cloudflare secrets.
+- RED smoke generated
+  `/tmp/repotutor-edge-red-studies.ixB8QO/2026-06-05/local__repotutor-edge-red-repo.7BZjQy__local__4137a999`;
+  old behavior had `verificationCheckedRequiredArtifacts=303`, was missing
+  `analysis/edge-readiness-report.json`, `markdown/edge-readiness.md`, and
+  `html/edge-readiness.html`, and `open --target edge-readiness` exited with
+  `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-edge-green-studies.f7rPej/2026-06-05/local__repotutor-edge-green-repo.Bsplww__local__9845eab5`;
+  confirmed `verificationCheckedRequiredArtifacts=306`, edge setups 6, config
+  signals 9, handler signals 8, binding signals 9, routing signals 8, dev
+  signals 7, deployment signals 8, observability signals 6, package signals 7,
+  risk queue 0, all three new artifacts, and `open --target edge-readiness` ->
+  `html/edge-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 9/9 tests
+- `pnpm audit:brief`: PASS, 100/100 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

@@ -1577,6 +1577,23 @@
         "EAS build submit profiles development client internal distribution auto increment prebuild run-ios and run-android workflows",
         "expo-updates runtimeVersion update URL EAS Update branches channels check fetch reload and package tooling signals"
       ]
+    },
+    {
+      "repo": "cloudflare/workers-sdk",
+      "url": "https://github.com/cloudflare/workers-sdk",
+      "localPath": "research/external-src/cloudflare-workers-sdk",
+      "stars": 4124,
+      "forks": 1291,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T15:52:29Z",
+      "cloneHead": "23aecac",
+      "adoptedPatterns": [
+        "Wrangler configuration through wrangler.toml json jsonc with name main compatibility_date compatibility_flags env vars and limits",
+        "Module Worker handlers including fetch scheduled queue email Durable Object Workflow and assets handling",
+        "Bindings for KV R2 D1 Durable Objects Queues service bindings workflows analytics engine secrets and local dev vars",
+        "Routing and deployment evidence through workers_dev routes custom domains migrations placement wrangler deploy versions tail secret kv r2 d1 and CI action signals",
+        "Local edge development and test signals through wrangler dev local remote typegen Miniflare and @cloudflare/vitest-pool-workers"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -4807,6 +4824,25 @@
         "markdown/mobile-readiness.md",
         "html/mobile-readiness.html"
       ]
+    },
+    {
+      "name": "edge readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/edge-readiness-report.json",
+        "markdown/edge-readiness.md",
+        "html/edge-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -5345,7 +5381,15 @@
     "mobileReadinessOpenTarget": "PASS",
     "buildMobileReadiness": "PASS",
     "testMobileReadiness": "PASS",
-    "complianceAudit99Checks": "PASS"
+    "complianceAudit99Checks": "PASS",
+    "externalCloudflareWorkersSdkCloneIgnored": "PASS",
+    "edgeReadinessRedSmoke": "PASS",
+    "edgeReadinessGreenSmoke": "PASS",
+    "fixtureEdgeReadinessReport": "PASS",
+    "edgeReadinessOpenTarget": "PASS",
+    "buildEdgeReadiness": "PASS",
+    "testEdgeReadiness": "PASS",
+    "complianceAudit100Checks": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -5753,6 +5797,13 @@
     "cliServerlessReadinessOpenTargetSmoke": "PASS",
     "buildServerlessReadiness": "PASS",
     "testServerlessReadiness": "PASS",
-    "auditBriefServerlessReadiness98": "PASS"
+    "auditBriefServerlessReadiness98": "PASS",
+    "externalCloudflareWorkersSdkCloneIgnored": "PASS",
+    "fixtureEdgeReadinessReport": "PASS",
+    "cliEdgeReadinessSmoke": "PASS",
+    "cliEdgeReadinessOpenTargetSmoke": "PASS",
+    "buildEdgeReadiness": "PASS",
+    "testEdgeReadiness": "PASS",
+    "auditBriefEdgeReadiness100": "PASS"
   }
 }

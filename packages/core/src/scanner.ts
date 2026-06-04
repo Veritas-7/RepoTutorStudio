@@ -114,6 +114,7 @@ import {
   DeploymentReadinessReport,
   ServerlessReadinessReport,
   MobileReadinessReport,
+  EdgeReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -234,6 +235,7 @@ export interface AnalysisBundle {
   deploymentReadinessReport: DeploymentReadinessReport;
   serverlessReadinessReport: ServerlessReadinessReport;
   mobileReadinessReport: MobileReadinessReport;
+  edgeReadinessReport: EdgeReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -354,8 +356,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const deploymentReadinessReport = await buildDeploymentReadinessReport(walk);
   const serverlessReadinessReport = await buildServerlessReadinessReport(walk);
   const mobileReadinessReport = await buildMobileReadinessReport(walk);
+  const edgeReadinessReport = await buildEdgeReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -24207,6 +24210,304 @@ function mobileSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/mobile-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildEdgeReadinessReport(walk: WalkResult): Promise<EdgeReadinessReport> {
+  const sourceFiles = await edgeSourceFiles(walk);
+  const edgeSetups = edgeSetupFiles(sourceFiles);
+  const configSignals = edgeConfigSignals(sourceFiles);
+  const handlerSignals = edgeHandlerSignals(sourceFiles);
+  const bindingSignals = edgeBindingSignals(sourceFiles);
+  const routingSignals = edgeRoutingSignals(sourceFiles);
+  const devSignals = edgeDevSignals(sourceFiles);
+  const deploymentSignals = edgeDeploymentSignals(sourceFiles);
+  const observabilitySignals = edgeObservabilitySignals(sourceFiles);
+  const packageSignals = edgePackageSignals(sourceFiles);
+
+  const hasConfig = edgeSetups.length > 0 || configSignals.some((item) => item.readiness === "ready");
+  const hasHandler = handlerSignals.some((item) => item.readiness === "ready") || edgeSetups.some((item) => item.handlerCount > 0);
+  const hasDev = devSignals.some((item) => item.readiness === "ready") || edgeSetups.some((item) => item.devWorkflowCount > 0);
+  const hasDeploy = deploymentSignals.some((item) => item.signal === "wrangler-deploy" && item.readiness === "ready") || edgeSetups.some((item) => item.deploymentWorkflowCount > 0);
+  const hasObservability = observabilitySignals.some((item) => item.readiness === "ready") || edgeSetups.some((item) => item.observabilityCount > 0);
+
+  const riskQueue: EdgeReadinessReport["riskQueue"] = [];
+  if (!hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a Cloudflare Workers inventory if this project owns edge runtime code.",
+      why: "Workers readiness starts from Wrangler config, compatibility date, entry point, routes, bindings, and environment-specific settings.",
+      relatedHref: "html/edge-readiness.html"
+    });
+  }
+  if (hasConfig && !hasHandler) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document the module Worker handlers that receive edge traffic or background events.",
+      why: "A Worker without visible fetch, scheduled, queue, email, Durable Object, or Workflow handlers is hard to explain or smoke test.",
+      relatedHref: "html/edge-readiness.html"
+    });
+  }
+  if (hasConfig && !hasDev) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add local edge development and test commands before changing runtime behavior.",
+      why: "Wrangler dev, .dev.vars, Miniflare, type generation, or the Workers Vitest pool make edge behavior reproducible without deploying.",
+      relatedHref: "html/edge-readiness.html"
+    });
+  }
+  if (hasConfig && !hasDeploy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record deploy, version, secret, KV, R2, D1, or CI commands for edge operations.",
+      why: "Workers changes usually span config and account resources; repeatable commands avoid guessing at deploy time.",
+      relatedHref: "html/edge-readiness.html"
+    });
+  }
+  if (hasConfig && !hasObservability) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document tailing, logs, traces, console instrumentation, or analytics signals.",
+      why: "Edge failures are often environment-specific; observability evidence helps learners connect a request to runtime behavior.",
+      relatedHref: "html/edge-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Cloudflare Workers-style edge readiness report: setup ${edgeSetups.length}개, config signal ${configSignals.length}개, handler signal ${handlerSignals.length}개, binding signal ${bindingSignals.length}개, deployment signal ${deploymentSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Cloudflare Workers wrangler.toml compatibility_date main fetch handler bindings kv_namespaces r2_buckets d1_databases durable_objects queues services vars routes workers_dev wrangler dev deploy tail secret Miniflare vitest-pool-workers",
+    edgeSetups,
+    configSignals,
+    handlerSignals,
+    bindingSignals,
+    routingSignals,
+    devSignals,
+    deploymentSignals,
+    observabilitySignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "wrangler dev --local", purpose: "Run a local Workers simulation after config, bindings, and .dev.vars are reviewed." },
+      { command: "wrangler types", purpose: "Generate Worker binding types so env usage matches the Wrangler configuration." },
+      { command: "wrangler deploy", purpose: "Deploy the Worker only after compatibility date, routes, bindings, secrets, and account scope are confirmed." },
+      { command: "wrangler tail", purpose: "Tail deployed Worker events after a controlled smoke test." },
+      { command: "wrangler secret list", purpose: "Review configured secret names without exposing secret values." }
+    ],
+    learnerNextSteps: [
+      "Open Edge Readiness and identify the Wrangler configuration file first.",
+      "Confirm name, main, compatibility_date, compatibility_flags, env blocks, vars, and routes before reading handlers.",
+      "Map every KV, R2, D1, Durable Object, Queue, service, workflow, analytics, or secret binding to its code usage.",
+      "Review local dev, typegen, deploy, tail, and resource commands before trusting an edge release path."
+    ]
+  };
+}
+
+type EdgeSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function edgeSourceFiles(walk: WalkResult): Promise<EdgeSourceFile[]> {
+  const files: EdgeSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !edgeInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath);
+    if (!text) continue;
+    if (!edgePathSignal(file.relPath) && !edgeContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return files;
+}
+
+function edgeInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return edgePathSignal(filePath)
+    || /(^|\/)(README|docs?|src|workers?|cloudflare|edge|functions?|routes?|assets?|bindings?|scripts?|ci|workflows?|test|tests)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|Makefile|Taskfile\.ya?ml|justfile|vitest\.config\.[cm]?[jt]s|tsconfig\.json)$/i.test(base);
+}
+
+function edgePathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^wrangler\.(toml|json|jsonc)$/i.test(base)
+    || /^\.dev\.vars(\..+)?$/i.test(base)
+    || /^vitest\.config\.[cm]?[jt]s$/i.test(base)
+    || /(^|\/)\.github\/workflows\/.*\.(ya?ml)$/i.test(filePath)
+    || /(^|\/)(workers|cloudflare|edge|functions)(\/|$)/i.test(filePath);
+}
+
+function edgeContentSignal(text: string): boolean {
+  return /(Cloudflare Workers|wrangler\.(toml|json|jsonc)|compatibility_date|workers_dev|kv_namespaces|r2_buckets|d1_databases|durable_objects|queues|services|workflows|analytics_engine|export\s+default\s*\{|async\s+fetch\s*\(|fetch\s*\(\s*request|DurableObject|KVNamespace|R2Bucket|D1Database|wrangler\s+(dev|deploy|tail|secret|kv|r2|d1|versions|types)|Miniflare|@cloudflare\/vitest-pool-workers|@cloudflare\/workers-types)/i.test(text);
+}
+
+function edgeSetupFiles(sourceFiles: EdgeSourceFile[]): EdgeReadinessReport["edgeSetups"] {
+  const rows: EdgeReadinessReport["edgeSetups"] = [];
+  for (const source of sourceFiles) {
+    const configCount = countMatches(source.text, /(^|\n)\s*(name|main|compatibility_date|compatibility_flags|compatibility_flags|account_id|env|vars|limits)\s*[=:]|"compatibility_date"\s*:|"main"\s*:|"name"\s*:/gi) + (/^wrangler\.(toml|json|jsonc)$/i.test(path.basename(source.filePath)) ? 1 : 0);
+    const handlerCount = countMatches(source.text, /export\s+default\s*\{|async\s+fetch\s*\(|fetch\s*\(\s*request|scheduled\s*\(|queue\s*\(|email\s*\(|class\s+\w+\s+extends\s+DurableObject|WorkflowEntrypoint|assets?\s*:/gi);
+    const bindingCount = countMatches(source.text, /kv_namespaces|KVNamespace|r2_buckets|R2Bucket|d1_databases|D1Database|durable_objects|DurableObject(Namespace)?|queues|Queue<|services|Service<|workflows|Workflow<|analytics_engine|AnalyticsEngineDataset|secrets?|Secret/gi);
+    const routingCount = countMatches(source.text, /workers_dev|routes?\s*[=:]|custom_domain|zone_name|pattern\s*[=:]|assets\s*[=:]|site\s*[=:]|migrations\s*[=:]|placement\s*[=:]/gi);
+    const devWorkflowCount = countMatches(source.text, /wrangler\s+dev|--local|--remote|\.dev\.vars|Miniflare|@cloudflare\/vitest-pool-workers|wrangler\s+types|typegen/gi);
+    const deploymentWorkflowCount = countMatches(source.text, /wrangler\s+(deploy|versions|tail|secret|kv|r2|d1)|CLOUDFLARE_API_TOKEN|cloudflare\/wrangler-action/gi);
+    const observabilityCount = countMatches(source.text, /wrangler\s+tail|console\.(log|warn|error|info)|logs?|traces?|analytics_engine|version_metadata|Workers Logs/gi);
+    const packageCount = countMatches(source.text, /"wrangler"|"@cloudflare\/workers-types"|"miniflare"|"@cloudflare\/vitest-pool-workers"|"vite-plugin-cloudflare"|"@cloudflare\/kv-asset-handler"|workers-tsconfig/gi);
+    const totalSignals = configCount + handlerCount + bindingCount + routingCount + devWorkflowCount + deploymentWorkflowCount + observabilityCount + packageCount;
+    if (totalSignals === 0 && !edgePathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: edgePlatform(source),
+      configCount,
+      handlerCount,
+      bindingCount,
+      routingCount,
+      devWorkflowCount,
+      deploymentWorkflowCount,
+      observabilityCount,
+      packageCount,
+      readiness: totalSignals >= 5 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} edge runtime signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.configCount + b.handlerCount + b.bindingCount + b.deploymentWorkflowCount;
+    const aScore = a.configCount + a.handlerCount + a.bindingCount + a.deploymentWorkflowCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 60);
+}
+
+function edgePlatform(source: EdgeSourceFile): EdgeReadinessReport["edgeSetups"][number]["platform"] {
+  if (/Miniflare|"miniflare"/i.test(source.text) || /miniflare/i.test(source.filePath)) return "miniflare";
+  if (/wrangler\.(toml|json|jsonc)$/i.test(source.filePath) || /wrangler\s+(dev|deploy|tail|secret|kv|r2|d1|types)|"wrangler"/i.test(source.text)) return "cloudflare-workers";
+  if (/functions(\/|$)|Pages Functions|pages_build_output_dir/i.test(source.filePath) || /Pages Functions|pages_build_output_dir/i.test(source.text)) return "pages-functions";
+  if (/Cloudflare Workers|KVNamespace|R2Bucket|D1Database|DurableObject/i.test(source.text)) return "cloudflare-workers";
+  return "unknown";
+}
+
+function edgeConfigSignals(sourceFiles: EdgeSourceFile[]): EdgeReadinessReport["configSignals"] {
+  const specs: Array<{ signal: EdgeReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "wrangler-toml", pattern: /(^|\/)wrangler\.toml$/i, evidence: "wrangler.toml evidence was detected." },
+    { signal: "wrangler-json", pattern: /(^|\/)wrangler\.(json|jsonc)$/i, evidence: "wrangler JSON/JSONC evidence was detected." },
+    { signal: "name", pattern: /(^|\n)\s*name\s*=|"name"\s*:/i, evidence: "Worker name evidence was detected." },
+    { signal: "main", pattern: /(^|\n)\s*main\s*=|"main"\s*:/i, evidence: "Worker entry point evidence was detected." },
+    { signal: "compatibility-date", pattern: /compatibility_date|"compatibility_date"/i, evidence: "compatibility date evidence was detected." },
+    { signal: "compatibility-flags", pattern: /compatibility_flags|"compatibility_flags"/i, evidence: "compatibility flags evidence was detected." },
+    { signal: "env", pattern: /(^|\n)\s*\[env\.|(^|\n)\s*env\s*=|"env"\s*:/i, evidence: "environment block evidence was detected." },
+    { signal: "vars", pattern: /(^|\n)\s*\[vars\]|(^|\n)\s*vars\s*=|"vars"\s*:/i, evidence: "vars evidence was detected." },
+    { signal: "limits", pattern: /(^|\n)\s*\[limits\]|limits\s*=|"limits"\s*:/i, evidence: "limits evidence was detected." }
+  ];
+  return edgeSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function edgeHandlerSignals(sourceFiles: EdgeSourceFile[]): EdgeReadinessReport["handlerSignals"] {
+  const specs: Array<{ signal: EdgeReadinessReport["handlerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "module-worker", pattern: /export\s+default\s*\{/i, evidence: "module Worker export evidence was detected." },
+    { signal: "fetch-handler", pattern: /async\s+fetch\s*\(|fetch\s*\(\s*request|addEventListener\s*\(\s*["']fetch/i, evidence: "fetch handler evidence was detected." },
+    { signal: "scheduled", pattern: /scheduled\s*\(\s*(controller|event)|ScheduledController|cron_triggers/i, evidence: "scheduled handler evidence was detected." },
+    { signal: "queue-handler", pattern: /queue\s*\(\s*batch|MessageBatch|queues?\s*[=:]/i, evidence: "queue handler evidence was detected." },
+    { signal: "durable-object-class", pattern: /class\s+\w+\s+extends\s+DurableObject|DurableObjectNamespace|durable_objects/i, evidence: "Durable Object evidence was detected." },
+    { signal: "workflow-class", pattern: /WorkflowEntrypoint|workflows?\s*[=:]/i, evidence: "Workflow evidence was detected." },
+    { signal: "email-handler", pattern: /email\s*\(\s*message|EmailMessage|send_email/i, evidence: "email handler evidence was detected." },
+    { signal: "assets-worker", pattern: /assets\s*[=:]|ASSETS|kv-asset-handler/i, evidence: "static assets Worker evidence was detected." }
+  ];
+  return edgeSignalFromSpecs(sourceFiles, specs, "handler", "signal");
+}
+
+function edgeBindingSignals(sourceFiles: EdgeSourceFile[]): EdgeReadinessReport["bindingSignals"] {
+  const specs: Array<{ signal: EdgeReadinessReport["bindingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kv", pattern: /kv_namespaces|KVNamespace|\bKV\b/i, evidence: "KV binding evidence was detected." },
+    { signal: "r2", pattern: /r2_buckets|R2Bucket|\bR2\b/i, evidence: "R2 binding evidence was detected." },
+    { signal: "d1", pattern: /d1_databases|D1Database|\bD1\b/i, evidence: "D1 binding evidence was detected." },
+    { signal: "durable-objects", pattern: /durable_objects|DurableObject(Namespace)?|migrations\s*[=:]/i, evidence: "Durable Objects evidence was detected." },
+    { signal: "queues", pattern: /queues?\s*[=:]|Queue<|MessageBatch/i, evidence: "Queues evidence was detected." },
+    { signal: "services", pattern: /services?\s*[=:]|Service</i, evidence: "service binding evidence was detected." },
+    { signal: "workflows", pattern: /workflows?\s*[=:]|Workflow</i, evidence: "workflow binding evidence was detected." },
+    { signal: "analytics-engine", pattern: /analytics_engine|AnalyticsEngineDataset/i, evidence: "Analytics Engine evidence was detected." },
+    { signal: "secrets", pattern: /wrangler\s+secret|Secret|secrets?|\.dev\.vars/i, evidence: "secret binding evidence was detected." }
+  ];
+  return edgeSignalFromSpecs(sourceFiles, specs, "binding", "signal");
+}
+
+function edgeRoutingSignals(sourceFiles: EdgeSourceFile[]): EdgeReadinessReport["routingSignals"] {
+  const specs: Array<{ signal: EdgeReadinessReport["routingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "workers-dev", pattern: /workers_dev/i, evidence: "workers.dev routing evidence was detected." },
+    { signal: "route", pattern: /(^|\n)\s*route\s*=|"route"\s*:/i, evidence: "single route evidence was detected." },
+    { signal: "routes", pattern: /(^|\n)\s*routes\s*=|"routes"\s*:/i, evidence: "routes array evidence was detected." },
+    { signal: "custom-domain", pattern: /custom_domain|custom_domain\s*=|"custom_domain"\s*:/i, evidence: "custom domain evidence was detected." },
+    { signal: "assets", pattern: /assets\s*[=:]|assets\.binding|assets\.directory/i, evidence: "assets routing evidence was detected." },
+    { signal: "site", pattern: /(^|\n)\s*\[site\]|site\s*=|"site"\s*:/i, evidence: "site/static asset evidence was detected." },
+    { signal: "durable-object-migrations", pattern: /migrations\s*[=:]|new_sqlite_classes|new_classes|deleted_classes|renamed_classes/i, evidence: "Durable Object migration evidence was detected." },
+    { signal: "placement", pattern: /placement\s*[=:]|smart_placement/i, evidence: "placement evidence was detected." }
+  ];
+  return edgeSignalFromSpecs(sourceFiles, specs, "routing", "signal");
+}
+
+function edgeDevSignals(sourceFiles: EdgeSourceFile[]): EdgeReadinessReport["devSignals"] {
+  const specs: Array<{ signal: EdgeReadinessReport["devSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "wrangler-dev", pattern: /wrangler\s+dev/i, evidence: "wrangler dev evidence was detected." },
+    { signal: "local-mode", pattern: /--local|local_protocol|local_ip/i, evidence: "local mode evidence was detected." },
+    { signal: "remote-bindings", pattern: /--remote|remote\s*=\s*true|remote:\s*true/i, evidence: "remote binding development evidence was detected." },
+    { signal: "dev-vars", pattern: /\.dev\.vars/i, evidence: ".dev.vars evidence was detected." },
+    { signal: "miniflare", pattern: /Miniflare|"miniflare"/i, evidence: "Miniflare evidence was detected." },
+    { signal: "vitest-pool-workers", pattern: /@cloudflare\/vitest-pool-workers|defineWorkersConfig/i, evidence: "Workers Vitest pool evidence was detected." },
+    { signal: "typegen", pattern: /wrangler\s+types|typegen|worker-configuration\.d\.ts/i, evidence: "Worker type generation evidence was detected." }
+  ];
+  return edgeSignalFromSpecs(sourceFiles, specs, "dev", "signal");
+}
+
+function edgeDeploymentSignals(sourceFiles: EdgeSourceFile[]): EdgeReadinessReport["deploymentSignals"] {
+  const specs: Array<{ signal: EdgeReadinessReport["deploymentSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "wrangler-deploy", pattern: /wrangler\s+deploy/i, evidence: "wrangler deploy evidence was detected." },
+    { signal: "wrangler-versions", pattern: /wrangler\s+versions/i, evidence: "wrangler versions evidence was detected." },
+    { signal: "wrangler-tail", pattern: /wrangler\s+tail/i, evidence: "wrangler tail evidence was detected." },
+    { signal: "wrangler-secret", pattern: /wrangler\s+secret/i, evidence: "wrangler secret evidence was detected." },
+    { signal: "wrangler-kv", pattern: /wrangler\s+kv/i, evidence: "wrangler KV command evidence was detected." },
+    { signal: "wrangler-r2", pattern: /wrangler\s+r2/i, evidence: "wrangler R2 command evidence was detected." },
+    { signal: "wrangler-d1", pattern: /wrangler\s+d1/i, evidence: "wrangler D1 command evidence was detected." },
+    { signal: "ci-deploy", pattern: /CLOUDFLARE_API_TOKEN|cloudflare\/wrangler-action|wrangler-action/i, evidence: "CI deploy evidence was detected." }
+  ];
+  return edgeSignalFromSpecs(sourceFiles, specs, "deployment", "signal");
+}
+
+function edgeObservabilitySignals(sourceFiles: EdgeSourceFile[]): EdgeReadinessReport["observabilitySignals"] {
+  const specs: Array<{ signal: EdgeReadinessReport["observabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tail", pattern: /wrangler\s+tail/i, evidence: "tailing evidence was detected." },
+    { signal: "logs", pattern: /Workers Logs|logs?\s*[=:]|wrangler\s+tail/i, evidence: "logs evidence was detected." },
+    { signal: "console", pattern: /console\.(log|warn|error|info)/i, evidence: "console instrumentation evidence was detected." },
+    { signal: "traces", pattern: /traces?|Trace Events|Workers Trace/i, evidence: "trace evidence was detected." },
+    { signal: "analytics-engine", pattern: /analytics_engine|AnalyticsEngineDataset/i, evidence: "Analytics Engine observability evidence was detected." },
+    { signal: "version-metadata", pattern: /version_metadata|VersionMetadata/i, evidence: "version metadata evidence was detected." }
+  ];
+  return edgeSignalFromSpecs(sourceFiles, specs, "observability", "signal");
+}
+
+function edgePackageSignals(sourceFiles: EdgeSourceFile[]): EdgeReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: EdgeReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "wrangler", pattern: /"wrangler"|wrangler\s+(dev|deploy|tail|secret|kv|r2|d1|types)/i, evidence: "Wrangler package/command evidence was detected." },
+    { signal: "cloudflare-workers-types", pattern: /"@cloudflare\/workers-types"|KVNamespace|R2Bucket|D1Database/i, evidence: "Workers types evidence was detected." },
+    { signal: "miniflare", pattern: /"miniflare"|Miniflare/i, evidence: "Miniflare evidence was detected." },
+    { signal: "vitest-pool-workers", pattern: /"@cloudflare\/vitest-pool-workers"|@cloudflare\/vitest-pool-workers/i, evidence: "Workers Vitest pool evidence was detected." },
+    { signal: "vite-plugin-cloudflare", pattern: /"vite-plugin-cloudflare"|vite-plugin-cloudflare/i, evidence: "Vite Cloudflare plugin evidence was detected." },
+    { signal: "workers-tsconfig", pattern: /workers-tsconfig|worker-configuration\.d\.ts/i, evidence: "Workers tsconfig/typegen evidence was detected." },
+    { signal: "kv-asset-handler", pattern: /"@cloudflare\/kv-asset-handler"|kv-asset-handler/i, evidence: "KV asset handler evidence was detected." }
+  ];
+  return edgeSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function edgeSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: EdgeSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/edge-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

@@ -103,6 +103,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "deployment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "serverless-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mobile-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "edge-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -204,6 +205,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "deployment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "serverless-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mobile-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "edge-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -305,6 +307,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "deployment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "serverless-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mobile-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "edge-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -437,6 +440,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/deployment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/serverless-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/mobile-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/edge-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -2194,6 +2198,19 @@ describe("RepoTutor core pipeline", () => {
     expect(mobileReadinessMarkdown).toContain("# Mobile Readiness");
     expect(mobileReadinessMarkdown).toContain("Source pattern: Expo");
     expect(mobileReadinessMarkdown).toContain("## Build Signals");
+    const edgeReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "edge-readiness-report.json"), "utf8");
+    expect(edgeReadinessText).toContain("Cloudflare Workers wrangler.toml compatibility_date main fetch handler bindings kv_namespaces r2_buckets d1_databases durable_objects queues services vars routes workers_dev wrangler dev deploy tail secret Miniflare vitest-pool-workers");
+    expect(edgeReadinessText).toContain("\"edgeSetups\"");
+    expect(edgeReadinessText).toContain("\"bindingSignals\"");
+    expect(edgeReadinessText).toContain("\"deploymentSignals\"");
+    const edgeReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "edge-readiness.html"), "utf8");
+    expect(edgeReadinessHtml).toContain("Edge Readiness");
+    expect(edgeReadinessHtml).toContain("edge-readiness-card");
+    expect(edgeReadinessHtml).toContain("data-source-pattern=\"Cloudflare Workers\"");
+    const edgeReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "edge-readiness.md"), "utf8");
+    expect(edgeReadinessMarkdown).toContain("# Edge Readiness");
+    expect(edgeReadinessMarkdown).toContain("Source pattern: Cloudflare Workers");
+    expect(edgeReadinessMarkdown).toContain("## Binding Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -2355,6 +2372,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/feature-flag-readiness.html");
     expect(exportManifestText).toContain("html/rate-limit-readiness.html");
     expect(exportManifestText).toContain("html/error-tracking-readiness.html");
+    expect(exportManifestText).toContain("html/edge-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -2959,6 +2977,133 @@ describe("RepoTutor core pipeline", () => {
     expect(report.packageSignals.some((item) => item.signal === "expo-dev-client" && item.readiness === "ready")).toBe(true);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mobile-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mobile-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects Cloudflare Workers edge readiness in Wrangler config and handlers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-edge-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-edge-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "edge-demo",
+      scripts: {
+        dev: "wrangler dev --local",
+        types: "wrangler types",
+        deploy: "wrangler deploy",
+        tail: "wrangler tail",
+        "secret:list": "wrangler secret list",
+        "kv:list": "wrangler kv namespace list",
+        "r2:list": "wrangler r2 bucket list",
+        "d1:list": "wrangler d1 list"
+      },
+      devDependencies: {
+        wrangler: "^5.0.0",
+        "@cloudflare/workers-types": "^5.0.0",
+        "@cloudflare/vitest-pool-workers": "^1.0.0",
+        miniflare: "^4.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "wrangler.toml"), [
+      "name = \"edge-demo\"",
+      "main = \"src/index.ts\"",
+      "compatibility_date = \"2026-06-01\"",
+      "compatibility_flags = [\"nodejs_compat\"]",
+      "workers_dev = true",
+      "routes = [{ pattern = \"edge.example.com/*\", zone_name = \"example.com\" }]",
+      "vars = { FEATURE_MODE = \"local\" }",
+      "limits = { cpu_ms = 50 }",
+      "placement = { mode = \"smart\" }",
+      "kv_namespaces = [{ binding = \"CACHE\", id = \"local-cache\" }]",
+      "r2_buckets = [{ binding = \"ASSETS\", bucket_name = \"assets\" }]",
+      "d1_databases = [{ binding = \"DB\", database_name = \"demo\", database_id = \"demo\" }]",
+      "queues.producers = [{ binding = \"JOB_QUEUE\", queue = \"jobs\" }]",
+      "services = [{ binding = \"API\", service = \"api-worker\" }]",
+      "analytics_engine_datasets = [{ binding = \"ANALYTICS\" }]",
+      "workflows = [{ binding = \"PIPELINE\", name = \"pipeline\", class_name = \"PipelineWorkflow\" }]",
+      "[[durable_objects.bindings]]",
+      "name = \"COUNTER\"",
+      "class_name = \"Counter\"",
+      "[[migrations]]",
+      "tag = \"v1\"",
+      "new_sqlite_classes = [\"Counter\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".dev.vars"), "FEATURE_MODE=local\n");
+    await fs.writeFile(path.join(sourceRoot, "vitest.config.ts"), [
+      "import { defineWorkersConfig } from '@cloudflare/vitest-pool-workers/config';",
+      "export default defineWorkersConfig({ test: { poolOptions: { workers: { wrangler: { configPath: './wrangler.toml' } } } } });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "index.ts"), [
+      "export interface Env { CACHE: KVNamespace; ASSETS: R2Bucket; DB: D1Database; COUNTER: DurableObjectNamespace; JOB_QUEUE: Queue; API: Fetcher; ANALYTICS: AnalyticsEngineDataset; }",
+      "export class Counter { fetch(request: Request) { return new Response('counter'); } }",
+      "export default {",
+      "  async fetch(request: Request, env: Env) {",
+      "    console.log('edge request');",
+      "    env.ANALYTICS.writeDataPoint({ blobs: ['demo'], doubles: [1], indexes: ['edge'] });",
+      "    return new Response('edge');",
+      "  },",
+      "  async scheduled(controller: ScheduledController, env: Env) { console.info(controller.cron); },",
+      "  async queue(batch: MessageBatch, env: Env) { console.warn(batch.messages.length); }",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "deploy.yml"), "name: deploy\non: [push]\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: cloudflare/wrangler-action@v3\n        env:\n          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}\n");
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "edge-readiness-report.json"), "utf8")) as {
+      edgeSetups: Array<{ filePath: string; platform: string; configCount: number; handlerCount: number; bindingCount: number; routingCount: number; devWorkflowCount: number; deploymentWorkflowCount: number; observabilityCount: number; packageCount: number }>;
+      configSignals: Array<{ signal: string; readiness: string }>;
+      handlerSignals: Array<{ signal: string; readiness: string }>;
+      bindingSignals: Array<{ signal: string; readiness: string }>;
+      routingSignals: Array<{ signal: string; readiness: string }>;
+      devSignals: Array<{ signal: string; readiness: string }>;
+      deploymentSignals: Array<{ signal: string; readiness: string }>;
+      observabilitySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const setup = report.edgeSetups.find((item) => item.filePath === "wrangler.toml");
+    expect(report.edgeSetups.length).toBeGreaterThan(0);
+    expect(setup?.platform).toBe("cloudflare-workers");
+    expect(setup?.configCount).toBeGreaterThan(0);
+    expect(setup?.bindingCount).toBeGreaterThan(0);
+    expect(setup?.routingCount).toBeGreaterThan(0);
+    expect(report.edgeSetups.some((item) => item.handlerCount > 0)).toBe(true);
+    expect(report.edgeSetups.some((item) => item.devWorkflowCount > 0)).toBe(true);
+    expect(report.edgeSetups.some((item) => item.deploymentWorkflowCount > 0)).toBe(true);
+    expect(report.edgeSetups.some((item) => item.observabilityCount > 0)).toBe(true);
+    expect(report.edgeSetups.some((item) => item.packageCount > 0)).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "wrangler-toml" && item.readiness === "ready")).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "compatibility-date" && item.readiness === "ready")).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "vars" && item.readiness === "ready")).toBe(true);
+    expect(report.handlerSignals.some((item) => item.signal === "module-worker" && item.readiness === "ready")).toBe(true);
+    expect(report.handlerSignals.some((item) => item.signal === "fetch-handler" && item.readiness === "ready")).toBe(true);
+    expect(report.handlerSignals.some((item) => item.signal === "durable-object-class" && item.readiness === "ready")).toBe(true);
+    expect(report.bindingSignals.some((item) => item.signal === "kv" && item.readiness === "ready")).toBe(true);
+    expect(report.bindingSignals.some((item) => item.signal === "r2" && item.readiness === "ready")).toBe(true);
+    expect(report.bindingSignals.some((item) => item.signal === "d1" && item.readiness === "ready")).toBe(true);
+    expect(report.bindingSignals.some((item) => item.signal === "durable-objects" && item.readiness === "ready")).toBe(true);
+    expect(report.bindingSignals.some((item) => item.signal === "queues" && item.readiness === "ready")).toBe(true);
+    expect(report.bindingSignals.some((item) => item.signal === "services" && item.readiness === "ready")).toBe(true);
+    expect(report.bindingSignals.some((item) => item.signal === "workflows" && item.readiness === "ready")).toBe(true);
+    expect(report.bindingSignals.some((item) => item.signal === "analytics-engine" && item.readiness === "ready")).toBe(true);
+    expect(report.bindingSignals.some((item) => item.signal === "secrets" && item.readiness === "ready")).toBe(true);
+    expect(report.routingSignals.some((item) => item.signal === "workers-dev" && item.readiness === "ready")).toBe(true);
+    expect(report.routingSignals.some((item) => item.signal === "routes" && item.readiness === "ready")).toBe(true);
+    expect(report.routingSignals.some((item) => item.signal === "durable-object-migrations" && item.readiness === "ready")).toBe(true);
+    expect(report.devSignals.some((item) => item.signal === "wrangler-dev" && item.readiness === "ready")).toBe(true);
+    expect(report.devSignals.some((item) => item.signal === "dev-vars" && item.readiness === "ready")).toBe(true);
+    expect(report.devSignals.some((item) => item.signal === "miniflare" && item.readiness === "ready")).toBe(true);
+    expect(report.devSignals.some((item) => item.signal === "vitest-pool-workers" && item.readiness === "ready")).toBe(true);
+    expect(report.deploymentSignals.some((item) => item.signal === "wrangler-deploy" && item.readiness === "ready")).toBe(true);
+    expect(report.deploymentSignals.some((item) => item.signal === "wrangler-tail" && item.readiness === "ready")).toBe(true);
+    expect(report.deploymentSignals.some((item) => item.signal === "wrangler-secret" && item.readiness === "ready")).toBe(true);
+    expect(report.deploymentSignals.some((item) => item.signal === "ci-deploy" && item.readiness === "ready")).toBe(true);
+    expect(report.observabilitySignals.some((item) => item.signal === "tail" && item.readiness === "ready")).toBe(true);
+    expect(report.observabilitySignals.some((item) => item.signal === "console" && item.readiness === "ready")).toBe(true);
+    expect(report.observabilitySignals.some((item) => item.signal === "analytics-engine" && item.readiness === "ready")).toBe(true);
+    expect(report.packageSignals.some((item) => item.signal === "wrangler" && item.readiness === "ready")).toBe(true);
+    expect(report.packageSignals.some((item) => item.signal === "cloudflare-workers-types" && item.readiness === "ready")).toBe(true);
+    expect(report.packageSignals.some((item) => item.signal === "vitest-pool-workers" && item.readiness === "ready")).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "edge-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "edge-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("compares a new study session against the previous source snapshot", async () => {

@@ -1,6 +1,6 @@
 {
   "iteration": 10,
-  "createdAt": "2026-06-04T16:18:12.798Z",
+  "createdAt": "2026-06-04T16:33:49.144Z",
   "checks": [
     {
       "name": "project setup",
@@ -662,6 +662,13 @@
     },
     {
       "name": "Mobile readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Edge readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
