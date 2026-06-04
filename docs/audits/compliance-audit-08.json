@@ -1,6 +1,6 @@
 {
   "iteration": 8,
-  "createdAt": "2026-06-04T06:20:23.218Z",
+  "createdAt": "2026-06-04T06:29:52.311Z",
   "checks": [
     {
       "name": "project setup",
@@ -340,6 +340,13 @@
     },
     {
       "name": "mocking readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "data fetching readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

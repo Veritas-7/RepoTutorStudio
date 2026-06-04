@@ -3627,6 +3627,52 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 53/53 audit checks across 13 generated reports
 
+### Upgrade 156: Data Fetching Readiness Report
+
+- Cloned and inspected `TanStack/query` under
+  `research/external-src/tanstack-query` without executing external source.
+  Clone HEAD was `c4b39ff`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 49,582 stars, 3,862 forks,
+  updated 2026-06-04T06:14:40Z. Compared with `vercel/swr`,
+  `axios/axios`, and `sindresorhus/ky`; selected TanStack Query because it
+  directly models server-state/data-fetching readiness: `QueryClient`,
+  provider boundaries, query hooks, query keys/functions, mutations,
+  invalidation, cache timing, retry/enabled controls, hydration, persistence,
+  focus/online managers, and devtools. No source code was copied into
+  RepoTutor.
+- Implemented TanStack Query-style data-fetching-readiness report:
+  `DataFetchingReadinessReportSchema`,
+  `analysis/data-fetching-readiness-report.json`,
+  `markdown/data-fetching-readiness.md`,
+  `html/data-fetching-readiness.html`, client setups, query usages, cache
+  signals, data-flow signals, package signals, recommended commands, risk
+  queue, manifest/session-verification coverage, learning-path linkage, and
+  `open --target data-fetching-readiness`.
+- Source pattern: TanStack Query separates `QueryClient` creation,
+  provider/root boundaries, query hooks, query keys/functions, mutation
+  functions, cache invalidation and manual cache writes, `staleTime`, `gcTime`,
+  retry/enabled/refetch controls, hydration/dehydration, persistence,
+  focus/online managers, and devtools. RepoTutor maps that to deterministic
+  static data-fetching readiness and explicitly does not fetch remote APIs,
+  instantiate providers, hydrate caches, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-data-fetching-red-studies.fd8btT/2026-06-04/local__simple-ts-app__main__db6e89f5`;
+  old behavior was missing `analysis/data-fetching-readiness-report.json`,
+  `markdown/data-fetching-readiness.md`, and
+  `html/data-fetching-readiness.html`, and
+  `open --target data-fetching-readiness` exited with
+  `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-data-fetching-green-studies.4dPN9V/2026-06-04/local__simple-ts-app__main__db6e89f5`;
+  confirmed `verificationCheckedRequiredArtifacts=168`, client setups 0,
+  query usages 0, cache signals 10, data-flow signals 10, package signals 7,
+  recommended commands 6, risk queue 2, manifest/learning-path entries, and
+  `open --target data-fetching-readiness` ->
+  `html/data-fetching-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 54/54 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

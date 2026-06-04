@@ -57,6 +57,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "changelog-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "bundle-analysis-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mocking-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-fetching-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -112,6 +113,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "changelog-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "bundle-analysis.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mocking-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-fetching-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -170,6 +172,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "changelog-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "bundle-analysis.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mocking-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-fetching-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -258,6 +261,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/changelog-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/bundle-analysis.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/mocking-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/data-fetching-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -1082,6 +1086,25 @@ describe("RepoTutor core pipeline", () => {
     expect(mockingReadinessMarkdown).toContain("Source pattern: Mock Service Worker");
     expect(mockingReadinessMarkdown).toContain("## Handler Files");
     expect(mockingReadinessMarkdown).toContain("## Package Signals");
+    const dataFetchingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "data-fetching-readiness-report.json"), "utf8");
+    expect(dataFetchingText).toContain("TanStack Query QueryClient QueryClientProvider useQuery useMutation queryKey queryFn invalidateQueries staleTime gcTime hydrate persist devtools");
+    expect(dataFetchingText).toContain("\"clientSetups\"");
+    expect(dataFetchingText).toContain("\"queryUsages\"");
+    expect(dataFetchingText).toContain("\"cacheSignals\"");
+    expect(dataFetchingText).toContain("\"dataFlowSignals\"");
+    expect(dataFetchingText).toContain("\"packageSignals\"");
+    expect(dataFetchingText).toContain("npx eslint . --rule '@tanstack/query/stable-query-client:error'");
+    const dataFetchingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-fetching-readiness.html"), "utf8");
+    expect(dataFetchingHtml).toContain("Data Fetching Readiness");
+    expect(dataFetchingHtml).toContain("data-fetching-card");
+    expect(dataFetchingHtml).toContain("data-source-pattern=\"TanStack Query\"");
+    expect(dataFetchingHtml).toContain("Client Setups");
+    expect(dataFetchingHtml).toContain("Data Flow Signals");
+    const dataFetchingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-fetching-readiness.md"), "utf8");
+    expect(dataFetchingMarkdown).toContain("# Data Fetching Readiness");
+    expect(dataFetchingMarkdown).toContain("Source pattern: TanStack Query");
+    expect(dataFetchingMarkdown).toContain("## Query Usages");
+    expect(dataFetchingMarkdown).toContain("## Cache Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -1230,6 +1253,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/changelog-readiness.html");
     expect(exportManifestText).toContain("html/bundle-analysis.html");
     expect(exportManifestText).toContain("html/mocking-readiness.html");
+    expect(exportManifestText).toContain("html/data-fetching-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -1342,6 +1366,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("changelog-readiness.html");
     expect(learningPathHtml).toContain("bundle-analysis.html");
     expect(learningPathHtml).toContain("mocking-readiness.html");
+    expect(learningPathHtml).toContain("data-fetching-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");
