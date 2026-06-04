@@ -78,6 +78,7 @@ import {
   QueueReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
+  FeatureFlagReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -162,6 +163,7 @@ export interface AnalysisBundle {
   queueReadinessReport: QueueReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
+  featureFlagReadinessReport: FeatureFlagReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -246,8 +248,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const queueReadinessReport = await buildQueueReadinessReport(walk);
   const cacheReadinessReport = await buildCacheReadinessReport(walk);
   const loggingReadinessReport = await buildLoggingReadinessReport(walk);
+  const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -14045,6 +14048,261 @@ function loggingReadinessSignalFromSpecs<T extends Record<K, string> & { pattern
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/logging-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildFeatureFlagReadinessReport(walk: WalkResult): Promise<FeatureFlagReadinessReport> {
+  const sourceFiles = await featureFlagReadinessSourceFiles(walk);
+  const featureFlagSetups = featureFlagReadinessSetups(sourceFiles);
+  const evaluationSignals = featureFlagReadinessEvaluationSignals(sourceFiles);
+  const contextSignals = featureFlagReadinessContextSignals(sourceFiles);
+  const lifecycleSignals = featureFlagReadinessLifecycleSignals(sourceFiles);
+  const packageSignals = featureFlagReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasOpenFeaturePackage = packageSignals.some((item) => item.signal.startsWith("@openfeature/") && item.readiness === "ready");
+  const hasSetup = featureFlagSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = featureFlagSetups.some((item) => item.readiness === "ready");
+  const hasEvaluation = evaluationSignals.some((item) => ["boolean", "string", "number", "object", "details"].includes(item.signal) && item.readiness === "ready");
+  const hasDefaultValue = evaluationSignals.some((item) => item.signal === "default-value" && item.readiness === "ready");
+  const hasContext = contextSignals.some((item) => ["evaluation-context", "targeting-key", "user-attributes", "request-context", "transaction-context"].includes(item.signal) && item.readiness === "ready");
+  const hasProviderReadySignal = lifecycleSignals.some((item) => ["set-provider-and-wait", "ready-event"].includes(item.signal) && item.readiness === "ready");
+  const hasHooks = lifecycleSignals.some((item) => item.signal === "hooks" && item.readiness === "ready");
+  const hasTracking = lifecycleSignals.some((item) => item.signal === "tracking" && item.readiness === "ready");
+  const hasShutdown = lifecycleSignals.some((item) => item.signal === "shutdown" && item.readiness === "ready");
+  const hasMultiProvider = lifecycleSignals.some((item) => item.signal === "multi-provider" && item.readiness === "ready");
+
+  const riskQueue: FeatureFlagReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasEvaluation) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the feature-flag strategy before claiming feature-flag readiness.",
+      why: "Feature-flag readiness starts with an explicit provider, client, flag evaluation, targeting context, lifecycle hook, or package dependency.",
+      relatedHref: "html/feature-flag-readiness.html"
+    });
+  }
+  if (hasOpenFeaturePackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair each OpenFeature package signal with provider setup, client access, and flag evaluations.",
+      why: "OpenFeature readiness requires a registered provider and client calls that resolve flags through the provider abstraction.",
+      relatedHref: "html/feature-flag-readiness.html"
+    });
+  }
+  if ((hasOpenFeaturePackage || hasSetup || hasEvaluation) && !hasProviderReadySignal) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Wait for provider readiness or handle READY/ERROR events before evaluating flags.",
+      why: "Flags can default while providers initialize unless setProviderAndWait or provider events guard evaluation flow.",
+      relatedHref: "html/feature-flag-readiness.html"
+    });
+  }
+  if (hasEvaluation && !hasDefaultValue) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Check that every flag evaluation has a safe default value.",
+      why: "Feature flags must remain deterministic when a provider is down, a flag is missing, or targeting data is incomplete.",
+      relatedHref: "html/feature-flag-readiness.html"
+    });
+  }
+  if (hasEvaluation && !hasContext) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Bind evaluation context such as targetingKey, user attributes, request data, or transaction context.",
+      why: "Targeted rollouts and experiments need stable context so users receive consistent variants.",
+      relatedHref: "html/feature-flag-readiness.html"
+    });
+  }
+  if ((hasEvaluation || hasHooks) && !hasTracking) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add tracking for experiments or conversion-sensitive flags.",
+      why: "OpenFeature tracking connects user actions to flag evaluations for A/B tests and rollout analysis.",
+      relatedHref: "html/feature-flag-readiness.html"
+    });
+  }
+  if ((hasSetup || hasMultiProvider) && !hasShutdown) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document provider shutdown and cleanup behavior.",
+      why: "Server-side providers may hold sockets, streams, polling loops, or caches that should close cleanly.",
+      relatedHref: "html/feature-flag-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run feature-flag integration tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not initialize providers, fetch remote flags, evaluate live targeting rules, emit tracking events, close providers, or run the analyzed project's tests.",
+    relatedHref: "html/feature-flag-readiness.html"
+  });
+
+  return {
+    summary: `OpenFeature식 feature-flag readiness report: setup ${featureFlagSetups.length}개, evaluation signal ${evaluationSignals.length}개, context signal ${contextSignals.length}개, lifecycle signal ${lifecycleSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "OpenFeature setProviderAndWait setProvider getClient getBooleanValue getStringValue getNumberValue getObjectValue getBooleanDetails EvaluationContext targetingKey hooks events tracking shutdown MultiProvider",
+    featureFlagSetups,
+    evaluationSignals,
+    contextSignals,
+    lifecycleSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"OpenFeature|setProvider|setProviderAndWait|getClient|MultiProvider|FeatureFlag\" src app pages packages", purpose: "Inventory OpenFeature provider registration, clients, domains, multi-provider setup, and declarative flag components." },
+      { command: "rg \"getBooleanValue|getStringValue|getNumberValue|getObjectValue|getBooleanDetails|getStringDetails|getNumberDetails|getObjectDetails|useFlag|useBooleanFlag\" src app pages packages", purpose: "Find flag evaluations, detailed evaluations, React hooks, and default values." },
+      { command: "rg \"EvaluationContext|targetingKey|userId|attributes|setContext|setTransactionContext|contextFactory|request\" src app pages packages", purpose: "Review targeting context, request context, user attributes, and transaction-context propagation." },
+      { command: "rg \"addHooks|before|after|error|finally|addHandler|READY|ERROR|PROVIDER|track\\(|shutdown|close\\(\" src app pages packages", purpose: "Inspect hooks, provider events, tracking, shutdown, and close behavior." },
+      { command: "rg \"@openfeature|launchdarkly|unleash|growthbook|flagsmith|splitio\" package.json pnpm-lock.yaml yarn.lock package-lock.json", purpose: "Check feature-flag SDK packages and provider dependencies." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise default values, targeting context, provider readiness, hooks, and rollout branches." }
+    ],
+    learnerNextSteps: [
+      "먼저 provider setup 파일에서 OpenFeature.setProviderAndWait, setProvider, domain provider, MultiProvider가 어디서 등록되는지 확인하세요.",
+      "getBooleanValue/getStringValue/getNumberValue/getObjectValue 또는 Details 호출을 따라가며 flag key와 default value가 안전한지 확인하세요.",
+      "EvaluationContext, targetingKey, user attributes, request context, transaction context가 일관되게 전달되는지 비교하세요.",
+      "hooks, provider READY/ERROR events, tracking, shutdown/close 흐름이 있으면 rollout 관측과 cleanup 책임을 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 provider 초기화, 원격 flag fetch, targeting rule 평가, tracking event 전송은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type FeatureFlagReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function featureFlagReadinessSourceFiles(walk: WalkResult): Promise<FeatureFlagReadinessSourceFile[]> {
+  const files: FeatureFlagReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !featureFlagReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!featureFlagReadinessPathSignal(file.relPath) && !featureFlagReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function featureFlagReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return featureFlagReadinessPathSignal(filePath)
+    || /^(package\.json|\.env\.example|\.env\.sample|next\.config\.[cm]?[jt]s|vite\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env|toml)$/i.test(filePath);
+}
+
+function featureFlagReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(feature[-_ ]?flags?|flags?|toggles?|rollouts?|experiments?|openfeature|launchdarkly|unleash|growthbook|flagsmith)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function featureFlagReadinessContentSignal(text: string): boolean {
+  return /\b(OpenFeature|setProviderAndWait|setProvider|getClient|getBooleanValue|getStringValue|getNumberValue|getObjectValue|getBooleanDetails|getStringDetails|getNumberDetails|getObjectDetails|EvaluationContext|targetingKey|FeatureFlag|useFlag|useBooleanFlag|MultiProvider|launchdarkly|unleash|growthbook|flagsmith)\b/i.test(text);
+}
+
+function featureFlagReadinessSetups(sourceFiles: FeatureFlagReadinessSourceFile[]): FeatureFlagReadinessReport["featureFlagSetups"] {
+  const rows: FeatureFlagReadinessReport["featureFlagSetups"] = [];
+  for (const source of sourceFiles) {
+    const providerSetupCount = countMatches(source.text, /OpenFeature\.setProvider(?:AndWait)?\s*\(|setProvider(?:AndWait)?\s*\(|new\s+.*Provider\b|MultiProvider\s*\(/gi);
+    const clientCount = countMatches(source.text, /OpenFeature\.getClient\s*\(|getClient\s*\(|OpenFeatureProvider\b|OpenFeatureClient\b/gi);
+    const evaluationCount = countMatches(source.text, /get(Boolean|String|Number|Object)(Value|Details)\s*\(|use(Boolean|String|Number|Object)?Flag(Value|Details)?\s*\(|<FeatureFlag\b/gi);
+    const contextCount = countMatches(source.text, /EvaluationContext|targetingKey|setContext\s*\(|setTransactionContext\s*\(|contextFactory|userId|attributes/i);
+    const hookCount = countMatches(source.text, /addHooks?\s*\(|hooks\s*:|before\s*:|after\s*:|error\s*:|finally\s*:|addHandler\s*\(|track\s*\(/gi);
+    const hasSetupSignal = providerSetupCount + clientCount + evaluationCount + contextCount + hookCount > 0 || /\b(OpenFeature|feature flag|flag evaluation|rollout|experiment)\b/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: featureFlagReadinessProvider(source),
+      providerSetupCount,
+      clientCount,
+      evaluationCount,
+      contextCount,
+      hookCount,
+      readiness: providerSetupCount > 0 && clientCount > 0 && evaluationCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains provider setup ${providerSetupCount}, clients ${clientCount}, evaluations ${evaluationCount}, contexts ${contextCount}, hooks/events ${hookCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function featureFlagReadinessProvider(source: FeatureFlagReadinessSourceFile): FeatureFlagReadinessReport["featureFlagSetups"][number]["provider"] {
+  if (/@openfeature|OpenFeature|setProviderAndWait|EvaluationContext/i.test(source.text)) return "openfeature";
+  if (/launchdarkly|LDClient|LDProvider/i.test(source.text)) return "launchdarkly";
+  if (/unleash|UnleashClient/i.test(source.text)) return "unleash";
+  if (/growthbook|GrowthBook/i.test(source.text)) return "growthbook";
+  if (/flagsmith/i.test(source.text)) return "flagsmith";
+  if (/\b(feature flag|flag evaluation|toggle|rollout|experiment)\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function featureFlagReadinessEvaluationSignals(sourceFiles: FeatureFlagReadinessSourceFile[]): FeatureFlagReadinessReport["evaluationSignals"] {
+  const specs: Array<{ signal: FeatureFlagReadinessReport["evaluationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "boolean", pattern: /getBoolean(Value|Details)\s*\(|useBooleanFlag(Value|Details)?\s*\(|BooleanFeatureFlag/i, evidence: "boolean flag evaluation evidence was detected." },
+    { signal: "string", pattern: /getString(Value|Details)\s*\(|useStringFlag(Value|Details)?\s*\(|StringFeatureFlag/i, evidence: "string flag evaluation evidence was detected." },
+    { signal: "number", pattern: /getNumber(Value|Details)\s*\(|useNumberFlag(Value|Details)?\s*\(|NumberFeatureFlag/i, evidence: "number flag evaluation evidence was detected." },
+    { signal: "object", pattern: /getObject(Value|Details)\s*\(|useObjectFlag(Value|Details)?\s*\(|ObjectFeatureFlag/i, evidence: "object flag evaluation evidence was detected." },
+    { signal: "details", pattern: /get(Boolean|String|Number|Object)Details\s*\(|use(Boolean|String|Number|Object)FlagDetails\s*\(|EvaluationDetails/i, evidence: "detailed evaluation evidence was detected." },
+    { signal: "default-value", pattern: /get(Boolean|String|Number|Object)(Value|Details)\s*\([^,]+,\s*[^,)]+|defaultValue\s*=/i, evidence: "default value evidence was detected." },
+    { signal: "variant", pattern: /variant|defaultVariant|matchValue|reason|flagMetadata/i, evidence: "variant/reason metadata evidence was detected." },
+    { signal: "flag-key", pattern: /flagKey|flag[-_ ]?key|["'`][A-Za-z0-9_.:-]+["'`]\s*,\s*(true|false|["'`]|\\d|{)/i, evidence: "flag key evidence was detected." }
+  ];
+  return featureFlagReadinessSignalFromSpecs(sourceFiles, specs, "evaluation", "signal");
+}
+
+function featureFlagReadinessContextSignals(sourceFiles: FeatureFlagReadinessSourceFile[]): FeatureFlagReadinessReport["contextSignals"] {
+  const specs: Array<{ signal: FeatureFlagReadinessReport["contextSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "evaluation-context", pattern: /EvaluationContext|setContext\s*\(|context\s*:/i, evidence: "evaluation context evidence was detected." },
+    { signal: "targeting-key", pattern: /targetingKey|targeting[-_ ]?key/i, evidence: "targeting key evidence was detected." },
+    { signal: "user-attributes", pattern: /userId|user_id|email|locale|country|attributes|traits|segment/i, evidence: "user attribute targeting evidence was detected." },
+    { signal: "request-context", pattern: /request|headers|req\.|ExecutionContext|contextFactory/i, evidence: "request-derived context evidence was detected." },
+    { signal: "transaction-context", pattern: /setTransactionContext|TransactionContext|TransactionContextPropagator|AsyncLocalStorage/i, evidence: "transaction context evidence was detected." },
+    { signal: "domain", pattern: /getClient\s*\(\s*["'`][^"'`]+["'`]|domain\s*:/i, evidence: "domain-scoped client evidence was detected." },
+    { signal: "react-provider", pattern: /OpenFeatureProvider|FeatureFlag\b|useFlag|useBooleanFlag/i, evidence: "React provider/hook evidence was detected." },
+    { signal: "nest-context-factory", pattern: /ContextFactory|EvaluationContextInterceptor|OpenFeatureModule|RequireFlagsEnabled|BooleanFeatureFlag/i, evidence: "NestJS context factory evidence was detected." }
+  ];
+  return featureFlagReadinessSignalFromSpecs(sourceFiles, specs, "context", "signal");
+}
+
+function featureFlagReadinessLifecycleSignals(sourceFiles: FeatureFlagReadinessSourceFile[]): FeatureFlagReadinessReport["lifecycleSignals"] {
+  const specs: Array<{ signal: FeatureFlagReadinessReport["lifecycleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "set-provider", pattern: /setProvider\s*\(/i, evidence: "synchronous provider setup evidence was detected." },
+    { signal: "set-provider-and-wait", pattern: /setProviderAndWait\s*\(|await\s+OpenFeature\.setProvider/i, evidence: "awaitable provider setup evidence was detected." },
+    { signal: "ready-event", pattern: /READY|ProviderEvents\.Ready|PROVIDER_READY|addHandler\s*\(/i, evidence: "provider ready event evidence was detected." },
+    { signal: "error-event", pattern: /ERROR|ProviderEvents\.Error|PROVIDER_ERROR|error\s*=>|catch\s*\(/i, evidence: "provider error event evidence was detected." },
+    { signal: "hooks", pattern: /addHooks?\s*\(|hooks\s*:|before\s*:|after\s*:|finally\s*:|HookContext/i, evidence: "hook lifecycle evidence was detected." },
+    { signal: "tracking", pattern: /\.track\s*\(|TrackingEventDetails|tracking/i, evidence: "tracking event evidence was detected." },
+    { signal: "shutdown", pattern: /OpenFeature\.close\s*\(|\.close\s*\(|shutdown|onClose|onApplicationShutdown/i, evidence: "shutdown/close evidence was detected." },
+    { signal: "multi-provider", pattern: /MultiProvider|FirstMatchStrategy|FirstSuccessfulStrategy|ComparisonStrategy/i, evidence: "multi-provider strategy evidence was detected." }
+  ];
+  return featureFlagReadinessSignalFromSpecs(sourceFiles, specs, "lifecycle", "signal");
+}
+
+function featureFlagReadinessPackageSignals(sourceFiles: FeatureFlagReadinessSourceFile[]): FeatureFlagReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: FeatureFlagReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@openfeature/server-sdk", pattern: /@openfeature\/server-sdk/i, evidence: "@openfeature/server-sdk package/import evidence was detected." },
+    { signal: "@openfeature/web-sdk", pattern: /@openfeature\/web-sdk/i, evidence: "@openfeature/web-sdk package/import evidence was detected." },
+    { signal: "@openfeature/react-sdk", pattern: /@openfeature\/react-sdk/i, evidence: "@openfeature/react-sdk package/import evidence was detected." },
+    { signal: "@openfeature/nestjs-sdk", pattern: /@openfeature\/nestjs-sdk|@openfeature\/nest/i, evidence: "@openfeature/nestjs-sdk package/import evidence was detected." },
+    { signal: "launchdarkly", pattern: /launchdarkly|launchdarkly-js-client-sdk|@launchdarkly/i, evidence: "LaunchDarkly package/import evidence was detected." },
+    { signal: "unleash", pattern: /unleash-client|@unleash|unleash/i, evidence: "Unleash package/import evidence was detected." },
+    { signal: "growthbook", pattern: /@growthbook|growthbook/i, evidence: "GrowthBook package/import evidence was detected." },
+    { signal: "flagsmith", pattern: /flagsmith/i, evidence: "Flagsmith package/import evidence was detected." }
+  ];
+  return featureFlagReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function featureFlagReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: FeatureFlagReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/feature-flag-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

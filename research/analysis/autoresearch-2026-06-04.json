@@ -991,6 +991,23 @@
         "transport scanning for pino.transport destination pino-pretty multistream worker-thread async logging file output and log processors",
         "safe static logging readiness that never executes logger calls emits logs starts transports flushes worker threads calls log processors or runs analyzed project tests"
       ]
+    },
+    {
+      "repo": "open-feature/js-sdk",
+      "url": "https://github.com/open-feature/js-sdk",
+      "localPath": "research/external-src/open-feature-js-sdk",
+      "stars": 269,
+      "forks": 63,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-02T11:57:25Z",
+      "adoptedPatterns": [
+        "OpenFeature provider setup scanning for setProviderAndWait setProvider domains MultiProvider and provider readiness events",
+        "feature flag evaluation scanning for getBooleanValue getStringValue getNumberValue getObjectValue and Details calls with default values and variants",
+        "evaluation context scanning for EvaluationContext targetingKey user attributes request context transaction context React provider and Nest context factory",
+        "lifecycle scanning for hooks READY ERROR events tracking shutdown close and multi-provider strategies",
+        "package scanning for OpenFeature SDKs LaunchDarkly Unleash GrowthBook and Flagsmith dependencies",
+        "safe static feature-flag readiness that never initializes providers fetches remote flags evaluates live targeting rules emits tracking events closes providers or runs analyzed project tests"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3537,6 +3554,25 @@
         "markdown/logging-readiness.md",
         "html/logging-readiness.html"
       ]
+    },
+    {
+      "name": "Feature flag readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/feature-flag-readiness-report.json",
+        "markdown/feature-flag-readiness.md",
+        "html/feature-flag-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4133,6 +4169,12 @@
     "cliLoggingReadinessOpenTargetSmoke": "PASS",
     "buildLoggingReadiness": "PASS",
     "testLoggingReadiness": "PASS",
-    "auditBriefLoggingReadiness63": "PASS"
+    "auditBriefLoggingReadiness63": "PASS",
+    "fixtureFeatureFlagReadinessReport": "PASS",
+    "cliFeatureFlagReadinessSmoke": "PASS",
+    "cliFeatureFlagReadinessOpenTargetSmoke": "PASS",
+    "buildFeatureFlagReadiness": "PASS",
+    "testFeatureFlagReadiness": "PASS",
+    "auditBriefFeatureFlagReadiness64": "PASS"
   }
 }

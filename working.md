@@ -3040,6 +3040,45 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 165:
   - `c5a9c47` logging readiness report
 
+- 2026-06-04: AutoResearch Upgrade 166 candidate selected:
+  `open-feature/js-sdk` (`https://github.com/open-feature/js-sdk`; public
+  Apache-2.0; 269 stars; 63 forks; updated 2026-06-02T11:57:25Z). Compared
+  with `Unleash/unleash`, `growthbook/growthbook`, and
+  `launchdarkly/js-client-sdk`; selected OpenFeature because it directly models
+  vendor-neutral feature flag readiness: `OpenFeature`, `setProviderAndWait`,
+  `setProvider`, `getClient`, boolean/string/number/object evaluations,
+  details calls, `EvaluationContext`, `targetingKey`, hooks, events, tracking,
+  shutdown, domains, React provider/hooks, Nest context factory, and
+  `MultiProvider`. Cloned ignored external source to
+  `research/external-src/open-feature-js-sdk` and inspected README, package
+  metadata, server/web/react docs, and source hits without executing external
+  source. Clone HEAD was `3854c5f`; tracked-file count for
+  `research/external-src/open-feature-js-sdk` returned `0`.
+- 2026-06-04: RED feature-flag-readiness smoke generated
+  `/tmp/repotutor-feature-flag-readiness-red-studies.vGPC88/2026-06-04/local__simple-ts-app__main__0de5b192`;
+  old build was missing `analysis/feature-flag-readiness-report.json`,
+  `markdown/feature-flag-readiness.md`, and
+  `html/feature-flag-readiness.html`, and `open --target
+  feature-flag-readiness` failed as expected.
+- 2026-06-04: Implemented OpenFeature-style feature-flag-readiness report:
+  `FeatureFlagReadinessReportSchema`,
+  `analysis/feature-flag-readiness-report.json`,
+  `markdown/feature-flag-readiness.md`,
+  `html/feature-flag-readiness.html`, feature-flag setups, evaluation signals,
+  context signals, lifecycle signals, package signals, recommended commands,
+  risk queue, manifest/session-verification coverage, learning-path linkage,
+  nav entry, and `open --target feature-flag-readiness`.
+- 2026-06-04: GREEN feature-flag-readiness smoke generated
+  `/tmp/repotutor-feature-flag-readiness-green-studies.w2DAtE/2026-06-04/local__simple-ts-app__main__0de5b192`;
+  confirmed `verificationCheckedRequiredArtifacts=198`, feature flag setups
+  0, evaluation signals 8, context signals 8, lifecycle signals 8, package
+  signals 8, risk queue 2, manifest/learning-path entries, and `open --target
+  feature-flag-readiness` -> `html/feature-flag-readiness.html`.
+- 2026-06-04: Verification for Upgrade 166:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 64/64 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
