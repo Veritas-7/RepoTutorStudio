@@ -1,6 +1,6 @@
 {
   "iteration": 4,
-  "createdAt": "2026-06-04T13:59:58.474Z",
+  "createdAt": "2026-06-04T14:13:05.763Z",
   "checks": [
     {
       "name": "project setup",
@@ -599,6 +599,13 @@
     },
     {
       "name": "Workspace graph readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Scaffolding readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

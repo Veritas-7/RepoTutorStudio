@@ -105,6 +105,7 @@ import {
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
+  ScaffoldingReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -216,6 +217,7 @@ export interface AnalysisBundle {
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
+  scaffoldingReadinessReport: ScaffoldingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -327,8 +329,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
+  const scaffoldingReadinessReport = await buildScaffoldingReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -21614,6 +21617,262 @@ function workspaceGraphSignalFromSpecs<T extends Record<K, string> & { pattern: 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/workspace-graph-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildScaffoldingReadinessReport(walk: WalkResult): Promise<ScaffoldingReadinessReport> {
+  const sourceFiles = await scaffoldingSourceFiles(walk);
+  const generatorFiles = scaffoldingGeneratorFiles(sourceFiles);
+  const promptSignals = scaffoldingPromptSignals(sourceFiles);
+  const actionSignals = scaffoldingActionSignals(sourceFiles);
+  const templateSignals = scaffoldingTemplateSignals(sourceFiles);
+  const safetySignals = scaffoldingSafetySignals(sourceFiles);
+  const packageSignals = scaffoldingPackageSignals(sourceFiles);
+
+  const hasGenerator = generatorFiles.length > 0 || packageSignals.some((item) => item.readiness === "ready");
+  const hasPrompt = promptSignals.some((item) => item.readiness === "ready") || generatorFiles.some((item) => item.promptCount > 0);
+  const hasAction = actionSignals.some((item) => item.readiness === "ready") || generatorFiles.some((item) => item.actionCount > 0);
+  const hasTemplate = templateSignals.some((item) => item.readiness === "ready") || generatorFiles.some((item) => item.templateCount > 0);
+  const hasSafety = safetySignals.some((item) => item.readiness === "ready") || generatorFiles.some((item) => item.safetyCount > 0);
+
+  const riskQueue: ScaffoldingReadinessReport["riskQueue"] = [];
+  if (!hasGenerator) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document a scaffolding entrypoint before claiming repeatable code-generation workflows.",
+      why: "Plop-style readiness starts with a plopfile, generator folder, package script, or equivalent template automation learners can locate.",
+      relatedHref: "html/scaffolding-readiness.html"
+    });
+  }
+  if (hasGenerator && !hasPrompt) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Map generator inputs through prompts, choices, defaults, validation, or bypass arguments.",
+      why: "Scaffolding is reproducible only when learners can see which answers drive generated paths and file contents.",
+      relatedHref: "html/scaffolding-readiness.html"
+    });
+  }
+  if (hasGenerator && !hasAction) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document actions such as add, addMany, modify, append, custom action functions, or command hooks.",
+      why: "Generator definitions need visible mutation steps so users understand which files are created or changed.",
+      relatedHref: "html/scaffolding-readiness.html"
+    });
+  }
+  if (hasAction && !hasTemplate) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace template files, template directories, helpers, partials, and variable placeholders.",
+      why: "Actions without templates do not explain the reusable source of generated file contents.",
+      relatedHref: "html/scaffolding-readiness.html"
+    });
+  }
+  if (hasAction && !hasSafety) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record overwrite, skip-if-exists, abort-on-fail, validation, dry-run, or snapshot safety controls.",
+      why: "Generation tools mutate source trees, so learners need conflict and idempotency signals before running them.",
+      relatedHref: "html/scaffolding-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run generators only in a disposable copy of the original project before treating scaffolding readiness as approved.",
+    why: "RepoTutor records scaffolding readiness only; it does not invoke prompts, write generated files, run codemods, execute shell actions, or validate generated output.",
+    relatedHref: "html/scaffolding-readiness.html"
+  });
+
+  return {
+    summary: `Plop-style scaffolding readiness report: generator file ${generatorFiles.length}개, prompt signal ${promptSignals.length}개, action signal ${actionSignals.length}개, template signal ${templateSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Plop setGenerator prompts actions add addMany modify append templateFile helpers partials load skipIfExists force abortOnFail",
+    generatorFiles,
+    promptSignals,
+    actionSignals,
+    templateSignals,
+    safetySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"setGenerator|plopfile|hygen|generator|schematics|jscodeshift\" .", purpose: "Find scaffolding entrypoints, generator folders, schematics, and codemod tooling." },
+      { command: "rg \"prompts|type: ['\\\"](input|confirm|list|checkbox)|choices|validate|default|bypass\" .", purpose: "Map generator inputs, defaults, choices, validation, and bypass arguments." },
+      { command: "rg \"type: ['\\\"](add|addMany|modify|append)|setActionType|actions\\s*:\\s*function|transform\" .", purpose: "Trace creation, modification, custom action, dynamic action, and transform steps." },
+      { command: "rg \"templateFile|templateFiles|\\.hbs|\\.ejs|\\.mustache|setHelper|setPartial|{{\" .", purpose: "Review template sources, partials, helpers, variables, and rendered file paths." },
+      { command: "rg \"skipIfExists|force|abortOnFail|dry-run|validate|existsSync|snapshot\" .", purpose: "Check overwrite, conflict, validation, dry-run, and snapshot safety controls." }
+    ],
+    learnerNextSteps: [
+      "먼저 plopfile, generator folders, package scripts, schematics, hygen templates, codemod entrypoints를 찾아 generation entrypoint를 확인하세요.",
+      "prompts, choices, defaults, validate, bypass argument 신호로 사용자가 입력해야 하는 값을 분리하세요.",
+      "add, addMany, modify, append, custom action, dynamic actions, transform 신호로 source tree mutation 단계를 추적하세요.",
+      "templateFile, templateFiles, .hbs/.ejs/.mustache, setHelper, setPartial 신호로 generated content의 원본 템플릿을 찾으세요.",
+      "skipIfExists, force, abortOnFail, dry-run, validation, snapshot 신호로 overwrite와 conflict safety를 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 generator 실행, codemod 적용, shell action, generated output 검증은 원본 프로젝트의 disposable copy에서 별도 확인하세요."
+    ]
+  };
+}
+
+type ScaffoldingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function scaffoldingSourceFiles(walk: WalkResult): Promise<ScaffoldingSourceFile[]> {
+  const files: ScaffoldingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !scaffoldingInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!scaffoldingPathSignal(file.relPath) && !scaffoldingContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function scaffoldingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return scaffoldingPathSignal(filePath)
+    || /^(plopfile\.[cm]?[jt]s|package\.json|generators\.json|collection\.json|schema\.json|hygen\.js|generator\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|json|ya?ml|toml|md|mdx|hbs|handlebars|ejs|mustache|stub|tmpl)$/i.test(filePath);
+}
+
+function scaffoldingPathSignal(filePath: string): boolean {
+  return /(^|\/)(plopfile\.[cm]?[jt]s|plop-templates|_templates|templates?|generators?|generator|schematics?|blueprints?|codemods?|transforms?|migrations?|scaffold|scaffolding|hygen|package\.json)(\/|$|\.|-|_)/i.test(filePath);
+}
+
+function scaffoldingContentSignal(text: string): boolean {
+  return /(setGenerator|NodePlopAPI|PlopGenerator|prompts\s*:|actions\s*:|templateFile|templateFiles|addMany|skipIfExists|setHelper|setPartial|setActionType|plop\.load|hygen|yeoman-generator|@angular-devkit\/schematics|jscodeshift|ts-morph|recast|codemod)/i.test(text);
+}
+
+function scaffoldingGeneratorFiles(sourceFiles: ScaffoldingSourceFile[]): ScaffoldingReadinessReport["generatorFiles"] {
+  const rows: ScaffoldingReadinessReport["generatorFiles"] = [];
+  for (const source of sourceFiles) {
+    const generatorCount = countMatches(source.text, /setGenerator|getGenerator|GeneratorConfig|generator\s*:/gi) + (scaffoldingGeneratorType(source) !== "unknown" ? 1 : 0);
+    const promptCount = countMatches(source.text, /prompts\s*:|setPrompt|type\s*:\s*['"](input|confirm|list|checkbox|password|editor)|choices\s*:|validate\s*:|default\s*:/gi);
+    const actionCount = countMatches(source.text, /actions\s*:|type\s*:\s*['"](add|addMany|modify|append)|setActionType|custom action|actions\s*:\s*function|transform\s*:/gi);
+    const templateCount = countMatches(source.text, /templateFile|templateFiles|template\s*:|\.hbs|\.handlebars|\.ejs|\.mustache|{{\s*[\w@#/>]/gi) + (/\.(hbs|handlebars|ejs|mustache|stub|tmpl)$/i.test(source.filePath) ? 1 : 0);
+    const helperCount = countMatches(source.text, /setHelper|registerHelper|helpers?\s*:|dashCase|camelCase|pascalCase|properCase/gi);
+    const partialCount = countMatches(source.text, /setPartial|registerPartial|partials?\s*:|{{>\s*[\w-]+/gi);
+    const safetyCount = countMatches(source.text, /skipIfExists|force|abortOnFail|dry-run|dryRun|validate|existsSync|overwrite|snapshot|idempotent/gi);
+    const hasSignal = generatorCount + promptCount + actionCount + templateCount + helperCount + partialCount + safetyCount > 0;
+    if (!hasSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      generatorType: scaffoldingGeneratorType(source),
+      generatorCount,
+      promptCount,
+      actionCount,
+      templateCount,
+      helperCount,
+      partialCount,
+      safetyCount,
+      readiness: generatorCount > 0 && actionCount > 0 && templateCount > 0 ? "ready" : hasSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains generators ${generatorCount}, prompts ${promptCount}, actions ${actionCount}, templates ${templateCount}, helpers ${helperCount}, partials ${partialCount}, safety controls ${safetyCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function scaffoldingGeneratorType(source: ScaffoldingSourceFile): ScaffoldingReadinessReport["generatorFiles"][number]["generatorType"] {
+  const filePath = source.filePath.toLowerCase();
+  if (/plopfile\.[cm]?[jt]s$/.test(filePath) || /setGenerator|NodePlopAPI|node-plop|plopfile/i.test(source.text)) return "plopfile";
+  if (/(^|\/)_templates\//.test(filePath) || /hygen/i.test(source.text)) return "hygen";
+  if (/yeoman-generator|class .* extends Generator|this\.fs\.copyTpl/i.test(source.text)) return "yeoman";
+  if (/collection\.json|@angular-devkit\/schematics|Rule\b|Tree\b|schematics?\//i.test(source.text) || /schematics?\//.test(filePath)) return "schematic";
+  if (/generators\.json|@nx\/plugin|GeneratorCallback|Tree\b/i.test(source.text) || /(^|\/)generators?\//.test(filePath)) return "nx-generator";
+  if (/(^|\/)(templates?|plop-templates)\//.test(filePath) || /\.(hbs|handlebars|ejs|mustache|stub|tmpl)$/.test(filePath)) return "template-dir";
+  if (path.basename(filePath) === "package.json" && /"plop"|"hygen"|"generate"|"scaffold"/i.test(source.text)) return "package-script";
+  if (/jscodeshift|ts-morph|recast|codemod|transform/i.test(source.text) || /codemods?|transforms?/.test(filePath)) return "codemod";
+  return "unknown";
+}
+
+function scaffoldingPromptSignals(sourceFiles: ScaffoldingSourceFile[]): ScaffoldingReadinessReport["promptSignals"] {
+  const specs: Array<{ signal: ScaffoldingReadinessReport["promptSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "input", pattern: /type\s*:\s*['"]input|input prompt/i, evidence: "input prompt evidence was detected." },
+    { signal: "confirm", pattern: /type\s*:\s*['"]confirm|confirm prompt/i, evidence: "confirm prompt evidence was detected." },
+    { signal: "list", pattern: /type\s*:\s*['"]list|list prompt/i, evidence: "list prompt evidence was detected." },
+    { signal: "checkbox", pattern: /type\s*:\s*['"]checkbox|checkbox prompt/i, evidence: "checkbox prompt evidence was detected." },
+    { signal: "choices", pattern: /choices\s*:/i, evidence: "prompt choices evidence was detected." },
+    { signal: "validate", pattern: /validate\s*:/i, evidence: "prompt validation evidence was detected." },
+    { signal: "default", pattern: /default\s*:/i, evidence: "prompt default evidence was detected." },
+    { signal: "bypass", pattern: /bypass|argv|--\s+|plop\s+\w+\s+["'<]/i, evidence: "prompt bypass evidence was detected." },
+    { signal: "custom-prompt", pattern: /setPrompt|registerPrompt|inquirer-[\w-]+-prompt/i, evidence: "custom prompt evidence was detected." }
+  ];
+  return scaffoldingSignalFromSpecs(sourceFiles, specs, "prompt", "signal");
+}
+
+function scaffoldingActionSignals(sourceFiles: ScaffoldingSourceFile[]): ScaffoldingReadinessReport["actionSignals"] {
+  const specs: Array<{ signal: ScaffoldingReadinessReport["actionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "add", pattern: /type\s*:\s*['"]add['"]|\bAdd action\b/i, evidence: "add action evidence was detected." },
+    { signal: "add-many", pattern: /type\s*:\s*['"]addMany['"]|addMany/i, evidence: "addMany action evidence was detected." },
+    { signal: "modify", pattern: /type\s*:\s*['"]modify['"]|\bModify action\b/i, evidence: "modify action evidence was detected." },
+    { signal: "append", pattern: /type\s*:\s*['"]append['"]|\bappend\b/i, evidence: "append action evidence was detected." },
+    { signal: "custom-action", pattern: /setActionType|custom action function|actions\s*:\s*\[[\s\S]{0,200}\([^)]*\)\s*=>|function\s*\([^)]*\)\s*\{/i, evidence: "custom action evidence was detected." },
+    { signal: "dynamic-actions", pattern: /actions\s*:\s*function|actions\s*:\s*\([^)]*\)\s*=>|return\s+actions/i, evidence: "dynamic actions evidence was detected." },
+    { signal: "transform", pattern: /transform\s*:/i, evidence: "transform action evidence was detected." },
+    { signal: "run-command", pattern: /execa|child_process|spawn\(|exec\(|git init|npm install|pnpm install|yarn install/i, evidence: "command-running action evidence was detected." }
+  ];
+  return scaffoldingSignalFromSpecs(sourceFiles, specs, "action", "signal");
+}
+
+function scaffoldingTemplateSignals(sourceFiles: ScaffoldingSourceFile[]): ScaffoldingReadinessReport["templateSignals"] {
+  const specs: Array<{ signal: ScaffoldingReadinessReport["templateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "template-file", pattern: /templateFile\s*:|\.hbs|\.handlebars|\.ejs|\.mustache/i, evidence: "template file evidence was detected." },
+    { signal: "template-dir", pattern: /templateFiles\s*:|plop-templates|_templates|\/templates?\//i, evidence: "template directory evidence was detected." },
+    { signal: "handlebars", pattern: /Handlebars|handlebars|\.hbs|{{\s*[#/>]?\w+/i, evidence: "Handlebars template evidence was detected." },
+    { signal: "ejs", pattern: /\.ejs|<%[=-]?/i, evidence: "EJS template evidence was detected." },
+    { signal: "mustache", pattern: /\.mustache|Mustache/i, evidence: "Mustache template evidence was detected." },
+    { signal: "partials", pattern: /setPartial|registerPartial|partials?\s*:|{{>\s*[\w-]+/i, evidence: "template partial evidence was detected." },
+    { signal: "helpers", pattern: /setHelper|registerHelper|helpers?\s*:|dashCase|camelCase|pascalCase|properCase/i, evidence: "template helper evidence was detected." },
+    { signal: "variables", pattern: /{{\s*[\w.]+|<%=\s*[\w.]+|\$\{[\w.]+\}/i, evidence: "template variable evidence was detected." }
+  ];
+  return scaffoldingSignalFromSpecs(sourceFiles, specs, "template", "signal");
+}
+
+function scaffoldingSafetySignals(sourceFiles: ScaffoldingSourceFile[]): ScaffoldingReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: ScaffoldingReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "skip-if-exists", pattern: /skipIfExists/i, evidence: "skip-if-exists evidence was detected." },
+    { signal: "force", pattern: /\bforce\b|--force/i, evidence: "force/overwrite control evidence was detected." },
+    { signal: "abort-on-fail", pattern: /abortOnFail/i, evidence: "abort-on-fail evidence was detected." },
+    { signal: "dry-run", pattern: /dry-run|dryRun|--dry/i, evidence: "dry-run evidence was detected." },
+    { signal: "idempotent", pattern: /idempotent|repeatable|safe to re-run/i, evidence: "idempotency evidence was detected." },
+    { signal: "validation", pattern: /validate\s*:|validation|assert|throw new Error/i, evidence: "validation evidence was detected." },
+    { signal: "conflict-check", pattern: /existsSync|pathExists|already exists|overwrite|conflict/i, evidence: "conflict check evidence was detected." },
+    { signal: "snapshots", pattern: /snapshot|toMatchSnapshot|fixtures?|golden/i, evidence: "snapshot/fixture evidence was detected." }
+  ];
+  return scaffoldingSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function scaffoldingPackageSignals(sourceFiles: ScaffoldingSourceFile[]): ScaffoldingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ScaffoldingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "plop", pattern: /"plop"|from ['"]plop|require\(['"]plop|npx plop|\bplop\b/i, evidence: "plop package or command evidence was detected." },
+    { signal: "node-plop", pattern: /"node-plop"|from ['"]node-plop|require\(['"]node-plop|nodePlop/i, evidence: "node-plop evidence was detected." },
+    { signal: "hygen", pattern: /"hygen"|npx hygen|\bhygen\b/i, evidence: "hygen evidence was detected." },
+    { signal: "yeoman-generator", pattern: /"yeoman-generator"|from ['"]yeoman-generator|require\(['"]yeoman-generator/i, evidence: "yeoman-generator evidence was detected." },
+    { signal: "@angular-devkit/schematics", pattern: /@angular-devkit\/schematics|schematics/i, evidence: "schematics evidence was detected." },
+    { signal: "jscodeshift", pattern: /"jscodeshift"|from ['"]jscodeshift|require\(['"]jscodeshift|jscodeshift/i, evidence: "jscodeshift evidence was detected." },
+    { signal: "ts-morph", pattern: /"ts-morph"|from ['"]ts-morph|require\(['"]ts-morph|Project\s*\(/i, evidence: "ts-morph evidence was detected." },
+    { signal: "recast", pattern: /"recast"|from ['"]recast|require\(['"]recast|recast/i, evidence: "recast evidence was detected." }
+  ];
+  return scaffoldingSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function scaffoldingSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ScaffoldingSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/scaffolding-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

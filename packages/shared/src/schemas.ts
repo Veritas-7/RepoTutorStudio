@@ -5021,6 +5021,66 @@ export const WorkspaceGraphReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ScaffoldingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  generatorFiles: z.array(z.object({
+    filePath: z.string(),
+    generatorType: z.enum(["plopfile", "hygen", "yeoman", "schematic", "nx-generator", "template-dir", "package-script", "codemod", "unknown"]),
+    generatorCount: z.number().int().nonnegative(),
+    promptCount: z.number().int().nonnegative(),
+    actionCount: z.number().int().nonnegative(),
+    templateCount: z.number().int().nonnegative(),
+    helperCount: z.number().int().nonnegative(),
+    partialCount: z.number().int().nonnegative(),
+    safetyCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  promptSignals: z.array(z.object({
+    signal: z.enum(["input", "confirm", "list", "checkbox", "choices", "validate", "default", "bypass", "custom-prompt", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["add", "add-many", "modify", "append", "custom-action", "dynamic-actions", "transform", "run-command", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  templateSignals: z.array(z.object({
+    signal: z.enum(["template-file", "template-dir", "handlebars", "ejs", "mustache", "partials", "helpers", "variables", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["skip-if-exists", "force", "abort-on-fail", "dry-run", "idempotent", "validation", "conflict-check", "snapshots", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["plop", "node-plop", "hygen", "yeoman-generator", "@angular-devkit/schematics", "jscodeshift", "ts-morph", "recast", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -5315,6 +5375,7 @@ export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;
+export type ScaffoldingReadinessReport = z.infer<typeof ScaffoldingReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

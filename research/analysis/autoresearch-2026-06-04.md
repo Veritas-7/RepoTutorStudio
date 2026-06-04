@@ -5464,6 +5464,52 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 90/90 audit checks across 13 generated reports
 
+### Upgrade 193: Scaffolding Readiness Report
+
+- Cloned and inspected `plopjs/plop` under
+  `research/external-src/plopjs-plop` without executing external source. Clone
+  HEAD was `0c90e7e`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 7,661 stars, 295 forks, updated
+  2026-06-04T08:40:11Z. Compared with `jondot/hygen`,
+  `yeoman/generator`, `facebook/jscodeshift`, and
+  `OpenAPITools/openapi-generator`; selected Plop because it directly models
+  prompt-driven micro-generators, action arrays, templates, helpers, partials,
+  package loading, and overwrite safety. No source code was copied into
+  RepoTutor.
+- Implemented Plop-style scaffolding-readiness report:
+  `ScaffoldingReadinessReportSchema`,
+  `analysis/scaffolding-readiness-report.json`,
+  `markdown/scaffolding-readiness.md`,
+  `html/scaffolding-readiness.html`, generator files, prompt signals, action
+  signals, template signals, safety signals, package signals, recommended
+  commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, nav entry, and `open --target
+  scaffolding-readiness`.
+- Source pattern: Plop separates `plopfile`, `setGenerator`, Inquirer-style
+  `prompts`, `actions`, `add`, `addMany`, `modify`, `append`, dynamic actions,
+  custom action types, `templateFile`, `templateFiles`, Handlebars templates,
+  helpers, partials, `plop.load`, `skipIfExists`, `force`, and
+  `abortOnFail`. RepoTutor maps that to deterministic static scaffolding
+  readiness and explicitly does not invoke prompts, write generated files, run
+  codemods, execute shell actions, or validate generated output.
+- RED smoke generated
+  `/tmp/repotutor-scaffolding-red-studies.UcXxzJ/2026-06-04/local__simple-ts-app__HEAD__ac1bf33d`;
+  old behavior had `verificationCheckedRequiredArtifacts=276`, was missing
+  `analysis/scaffolding-readiness-report.json`,
+  `markdown/scaffolding-readiness.md`, and
+  `html/scaffolding-readiness.html`, and `open --target
+  scaffolding-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-scaffolding-green-studies.Y1ydxh/2026-06-04/local__simple-ts-app__main__ac1bf33d`;
+  confirmed `verificationCheckedRequiredArtifacts=279`, generator files 0,
+  prompt signals 9, action signals 8, template signals 8, safety signals 8,
+  package signals 8, risk queue 2, all three new artifacts, and
+  `open --target scaffolding-readiness` ->
+  `html/scaffolding-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 91/91 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

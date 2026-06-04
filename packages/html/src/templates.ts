@@ -100,6 +100,7 @@ import type {
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
+  ScaffoldingReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -206,6 +207,7 @@ export interface StudyHtmlInput {
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
+  scaffoldingReadinessReport: ScaffoldingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -326,6 +328,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["server-framework-readiness.html", "Server Framework"],
     ["rpc-readiness.html", "RPC"],
     ["workspace-graph-readiness.html", "Workspace Graph"],
+    ["scaffolding-readiness.html", "Scaffolding"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -467,6 +470,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Server Framework Readiness</h3><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p>Fastify 패턴으로 routes, schemas, plugins, hooks, decorators, errors, runtime, tests 준비도를 정리합니다.</p><a href="server-framework-readiness.html">Server Framework 열기</a></article>
           <article><h3>RPC Readiness</h3><p>${escapeHtml(input.rpcReadinessReport.summary)}</p><p>tRPC 패턴으로 routers, procedures, validation, context, clients, adapters, errors 준비도를 정리합니다.</p><a href="rpc-readiness.html">RPC 열기</a></article>
           <article><h3>Workspace Graph Readiness</h3><p>${escapeHtml(input.workspaceGraphReadinessReport.summary)}</p><p>Nx 패턴으로 project graph, targets, affected, boundaries, plugins 준비도를 정리합니다.</p><a href="workspace-graph-readiness.html">Workspace Graph 열기</a></article>
+          <article><h3>Scaffolding Readiness</h3><p>${escapeHtml(input.scaffoldingReadinessReport.summary)}</p><p>Plop 패턴으로 generators, prompts, actions, templates, helpers, safety 준비도를 정리합니다.</p><a href="scaffolding-readiness.html">Scaffolding 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -921,6 +925,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Workspace Graph Readiness", "workspace-graph-readiness.html", `<section class="panel" data-source-pattern="Nx"><h2>Workspace Graph Snapshot</h2><p>${escapeHtml(input.workspaceGraphReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.workspaceGraphReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>workspace files</dt><dd>${input.workspaceGraphReadinessReport.workspaceFiles.length}</dd></div><div><dt>projects</dt><dd>${input.workspaceGraphReadinessReport.projectSignals.length}</dd></div><div><dt>graph</dt><dd>${input.workspaceGraphReadinessReport.graphSignals.length}</dd></div><div><dt>targets</dt><dd>${input.workspaceGraphReadinessReport.targetSignals.length}</dd></div></dl><p class="muted">RepoTutor records workspace graph readiness only; it does not execute Nx, compute affected projects, run generators, enforce lint boundaries, or contact remote cache services.</p></section><section class="grid"><article class="workspace-graph-readiness-card"><h3>Workspace Files</h3>${workspaceGraphReadinessFileList(input.workspaceGraphReadinessReport.workspaceFiles)}</article><article class="workspace-graph-readiness-card"><h3>Project Signals</h3>${workspaceGraphReadinessSignalList(input.workspaceGraphReadinessReport.projectSignals, "signal")}</article><article class="workspace-graph-readiness-card"><h3>Graph Signals</h3>${workspaceGraphReadinessSignalList(input.workspaceGraphReadinessReport.graphSignals, "signal")}</article><article class="workspace-graph-readiness-card"><h3>Boundary Signals</h3>${workspaceGraphReadinessSignalList(input.workspaceGraphReadinessReport.boundarySignals, "signal")}</article></section><section class="grid"><article class="workspace-graph-readiness-card"><h3>Affected Signals</h3>${workspaceGraphReadinessSignalList(input.workspaceGraphReadinessReport.affectedSignals, "signal")}</article><article class="workspace-graph-readiness-card"><h3>Target Signals</h3>${workspaceGraphReadinessSignalList(input.workspaceGraphReadinessReport.targetSignals, "signal")}</article><article class="workspace-graph-readiness-card"><h3>Plugin Signals</h3>${workspaceGraphReadinessSignalList(input.workspaceGraphReadinessReport.pluginSignals, "signal")}</article><article class="workspace-graph-readiness-card"><h3>Package Signals</h3>${workspaceGraphReadinessSignalList(input.workspaceGraphReadinessReport.packageSignals, "signal")}</article><article class="workspace-graph-readiness-card"><h3>Recommended Commands</h3>${workspaceGraphReadinessCommandList(input.workspaceGraphReadinessReport.recommendedCommands)}</article><article class="workspace-graph-readiness-card"><h3>Risk Queue</h3>${workspaceGraphReadinessRiskList(input.workspaceGraphReadinessReport.riskQueue)}</article><article class="workspace-graph-readiness-card"><h3>다음 확인 단계</h3>${list(input.workspaceGraphReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "scaffolding-readiness.html",
+      title: "Scaffolding Readiness",
+      html: pageShell("Scaffolding Readiness", "scaffolding-readiness.html", `<section class="panel" data-source-pattern="Plop"><h2>Scaffolding Snapshot</h2><p>${escapeHtml(input.scaffoldingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.scaffoldingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>generators</dt><dd>${input.scaffoldingReadinessReport.generatorFiles.length}</dd></div><div><dt>prompts</dt><dd>${input.scaffoldingReadinessReport.promptSignals.length}</dd></div><div><dt>actions</dt><dd>${input.scaffoldingReadinessReport.actionSignals.length}</dd></div><div><dt>templates</dt><dd>${input.scaffoldingReadinessReport.templateSignals.length}</dd></div></dl><p class="muted">RepoTutor records scaffolding readiness only; it does not invoke prompts, write generated files, run codemods, execute shell actions, or validate generated output.</p></section><section class="grid"><article class="scaffolding-readiness-card"><h3>Generator Files</h3>${scaffoldingReadinessFileList(input.scaffoldingReadinessReport.generatorFiles)}</article><article class="scaffolding-readiness-card"><h3>Prompt Signals</h3>${scaffoldingReadinessSignalList(input.scaffoldingReadinessReport.promptSignals, "signal")}</article><article class="scaffolding-readiness-card"><h3>Action Signals</h3>${scaffoldingReadinessSignalList(input.scaffoldingReadinessReport.actionSignals, "signal")}</article><article class="scaffolding-readiness-card"><h3>Template Signals</h3>${scaffoldingReadinessSignalList(input.scaffoldingReadinessReport.templateSignals, "signal")}</article></section><section class="grid"><article class="scaffolding-readiness-card"><h3>Safety Signals</h3>${scaffoldingReadinessSignalList(input.scaffoldingReadinessReport.safetySignals, "signal")}</article><article class="scaffolding-readiness-card"><h3>Package Signals</h3>${scaffoldingReadinessSignalList(input.scaffoldingReadinessReport.packageSignals, "signal")}</article><article class="scaffolding-readiness-card"><h3>Recommended Commands</h3>${scaffoldingReadinessCommandList(input.scaffoldingReadinessReport.recommendedCommands)}</article><article class="scaffolding-readiness-card"><h3>Risk Queue</h3>${scaffoldingReadinessRiskList(input.scaffoldingReadinessReport.riskQueue)}</article><article class="scaffolding-readiness-card"><h3>다음 확인 단계</h3>${list(input.scaffoldingReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -1121,6 +1130,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Server Framework Readiness", path: "html/server-framework-readiness.html", description: "Fastify식 route, schema, plugin, hook, runtime, test 준비도를 확인합니다." },
       { label: "RPC Readiness", path: "html/rpc-readiness.html", description: "tRPC식 router, procedure, validation, context, client, adapter 준비도를 확인합니다." },
       { label: "Workspace Graph Readiness", path: "html/workspace-graph-readiness.html", description: "Nx식 project graph, target, affected, boundary, plugin 준비도를 확인합니다." },
+      { label: "Scaffolding Readiness", path: "html/scaffolding-readiness.html", description: "Plop식 generator, prompt, action, template, safety 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1744,6 +1754,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "workspace-graph-readiness.html",
       goal: "Nx식 project graph, target, affected, boundary, plugin 흐름을 보고 workspace dependency contract를 확인합니다.",
       evidence: `workspace files ${input.workspaceGraphReadinessReport.workspaceFiles.length}개, graph signals ${input.workspaceGraphReadinessReport.graphSignals.length}개`
+    },
+    {
+      title: "Scaffolding readiness 확인",
+      href: "scaffolding-readiness.html",
+      goal: "Plop식 generator, prompt, action, template, helper, safety 흐름을 보고 반복 가능한 코드 생성 contract를 확인합니다.",
+      evidence: `generator files ${input.scaffoldingReadinessReport.generatorFiles.length}개, action signals ${input.scaffoldingReadinessReport.actionSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -4086,6 +4102,31 @@ function workspaceGraphReadinessRiskList(items: WorkspaceGraphReadinessReport["r
 }
 
 function workspaceGraphReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function scaffoldingReadinessFileList(items: ScaffoldingReadinessReport["generatorFiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">scaffolding generator file이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.generatorType)}/${escapeHtml(item.readiness)}]<br>generators/prompts/actions/templates/helpers/partials/safety ${item.generatorCount}/${item.promptCount}/${item.actionCount}/${item.templateCount}/${item.helperCount}/${item.partialCount}/${item.safetyCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(scaffoldingReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function scaffoldingReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">scaffolding signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(scaffoldingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function scaffoldingReadinessCommandList(items: ScaffoldingReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function scaffoldingReadinessRiskList(items: ScaffoldingReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(scaffoldingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function scaffoldingReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
