@@ -5496,6 +5496,75 @@ export const WebhookReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const NotificationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  notificationSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["novu", "knock", "magicbell", "firebase", "onesignal", "custom", "unknown"]),
+    workflowCount: z.number().int().nonnegative(),
+    triggerCount: z.number().int().nonnegative(),
+    subscriberCount: z.number().int().nonnegative(),
+    topicCount: z.number().int().nonnegative(),
+    preferenceCount: z.number().int().nonnegative(),
+    channelCount: z.number().int().nonnegative(),
+    inboxCount: z.number().int().nonnegative(),
+    templateCount: z.number().int().nonnegative(),
+    credentialCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["workflow", "trigger", "step", "digest", "delay", "condition", "payload", "tenant", "conversation", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  audienceSignals: z.array(z.object({
+    signal: z.enum(["subscriber", "subscriber-id", "topic", "subscription", "preferences", "segments", "user-profile", "tenant", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  channelSignals: z.array(z.object({
+    signal: z.enum(["inbox", "email", "sms", "push", "chat", "slack", "teams", "telegram", "whatsapp", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  templateSignals: z.array(z.object({
+    signal: z.enum(["template", "subject", "body", "editor", "variables", "localization", "branding", "preview", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  operationsSignals: z.array(z.object({
+    signal: z.enum(["api-key", "environment", "webhook", "delivery-log", "activity-feed", "rate-limit", "retry", "analytics", "dashboard", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@novu/node", "@novu/js", "@novu/react", "@knocklabs/node", "@magicbell/react", "firebase-admin", "onesignal-node", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ServerFrameworkReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7142,6 +7211,7 @@ export type RealtimeCollaborationReadinessReport = z.infer<typeof RealtimeCollab
 export type WorkflowOrchestrationReadinessReport = z.infer<typeof WorkflowOrchestrationReadinessReportSchema>;
 export type OpenApiClientReadinessReport = z.infer<typeof OpenApiClientReadinessReportSchema>;
 export type WebhookReadinessReport = z.infer<typeof WebhookReadinessReportSchema>;
+export type NotificationReadinessReport = z.infer<typeof NotificationReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;
