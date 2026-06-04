@@ -2567,6 +2567,43 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 153:
   - `ff0522e` changelog readiness report
 
+- 2026-06-04: AutoResearch Upgrade 154 candidate selected:
+  `webpack/webpack-bundle-analyzer`
+  (`https://github.com/webpack/webpack-bundle-analyzer`; public MIT;
+  12,667 stars; 504 forks; updated 2026-05-20T11:27:07Z). Compared with
+  `btd/rollup-plugin-visualizer`, `vitejs/vite`, and
+  `danvk/source-map-explorer`; selected Webpack Bundle Analyzer for stats JSON
+  bundle composition, zoomable treemap reporting, `analyzerMode`,
+  `reportFilename`, `defaultSizes`, gzip/Brotli/Zstandard size modes, source
+  maps, chunk visibility, bundle directory handoff, and trusted analyzer CLI
+  commands. Cloned ignored external source to
+  `research/external-src/webpack-webpack-bundle-analyzer` and inspected README,
+  license, package metadata, CLI/plugin docs, examples, and source layout
+  without executing external source. Clone HEAD was `9ba43c7`; tracked-file
+  count for `research/external-src/webpack-webpack-bundle-analyzer` returned
+  `0`.
+- 2026-06-04: RED bundle-analysis smoke generated
+  `/tmp/repotutor-bundle-analysis-red-studies.7oWjQJ/2026-06-04/local__simple-ts-app__main__419a1930`;
+  old build was missing `analysis/bundle-analysis-report.json`,
+  `markdown/bundle-analysis.md`, and `html/bundle-analysis.html`, and
+  `open --target bundle-analysis` failed as expected.
+- 2026-06-04: Implemented Webpack Bundle Analyzer-style bundle-analysis report:
+  `BundleAnalysisReportSchema`, `analysis/bundle-analysis-report.json`,
+  `markdown/bundle-analysis.md`, `html/bundle-analysis.html`, config files,
+  bundle artifacts, size signals, script signals, package signals, recommended
+  commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, nav entry, and `open --target bundle-analysis`.
+- 2026-06-04: GREEN bundle-analysis smoke generated
+  `/tmp/repotutor-bundle-analysis-green-studies.l4dWOy/2026-06-04/local__simple-ts-app__main__419a1930`;
+  confirmed `verificationCheckedRequiredArtifacts=162`, config files 0,
+  bundle artifacts 0, size signals 10, script signals 7, package signals 6,
+  recommended commands 6, risk queue 2, manifest/learning-path entries, and
+  `open --target bundle-analysis` -> `html/bundle-analysis.html`.
+- 2026-06-04: Verification for Upgrade 154:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 52/52 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

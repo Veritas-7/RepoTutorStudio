@@ -2461,6 +2461,61 @@ export const ChangelogReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const BundleAnalysisReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  configFiles: z.array(z.object({
+    filePath: z.string(),
+    configType: z.enum(["webpack", "vite", "rollup", "esbuild", "next", "package-json", "unknown"]),
+    analyzerMode: z.enum(["server", "static", "json", "disabled", "missing"]),
+    defaultSizeMode: z.enum(["stat", "parsed", "gzip", "brotli", "zstd", "missing"]),
+    statsFileSignal: z.boolean(),
+    sourceMapSignal: z.boolean(),
+    budgetSignal: z.boolean(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  bundleArtifacts: z.array(z.object({
+    filePath: z.string(),
+    artifactType: z.enum(["stats-json", "source-map", "asset-manifest", "bundle-report", "dist-file", "unknown"]),
+    sizeBytes: z.number().int().nonnegative(),
+    referencedChunks: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string().nullable()
+  })),
+  sizeSignals: z.array(z.object({
+    signal: z.enum(["js-bundle", "css-bundle", "asset", "chunk", "vendor", "sourcemap", "gzip", "brotli", "zstd", "budget", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scriptSignals: z.array(z.object({
+    signal: z.enum(["analyze", "build", "stats", "visualizer", "bundle-analyzer", "source-map-explorer", "webpack-profile", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["webpack-bundle-analyzer", "rollup-plugin-visualizer", "source-map-explorer", "vite", "webpack", "next-bundle-analyzer", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2716,6 +2771,7 @@ export type LintReadinessReport = z.infer<typeof LintReadinessReportSchema>;
 export type FormatReadinessReport = z.infer<typeof FormatReadinessReportSchema>;
 export type CommitConventionReport = z.infer<typeof CommitConventionReportSchema>;
 export type ChangelogReadinessReport = z.infer<typeof ChangelogReadinessReportSchema>;
+export type BundleAnalysisReport = z.infer<typeof BundleAnalysisReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

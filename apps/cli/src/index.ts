@@ -1807,6 +1807,7 @@ function openTargetEntries(): Array<{ target: string; fileName: string }> {
     { target: "format-readiness", fileName: "format-readiness.html" },
     { target: "commit-conventions", fileName: "commit-conventions.html" },
     { target: "changelog-readiness", fileName: "changelog-readiness.html" },
+    { target: "bundle-analysis", fileName: "bundle-analysis.html" },
     { target: "context-pack", fileName: "context-pack.html" },
     { target: "mcp-handoff", fileName: "mcp-handoff.html" },
     { target: "agent-memory", fileName: "agent-memory.html" },
@@ -1898,7 +1899,7 @@ function help(): void {
   verify-session <session-id-or-path> --format json|markdown
   verify-list-output <output-file> --manifest output.manifest.json --report [verification.json] --format json|markdown
   list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --output reports/list.json --output-manifest [manifest.json] --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
-  open <session-id-or-path> --target verification|evidence|suggested-reads|runtime-environment|interface-map|symbol-map|api-reference|search-index|learning-journal|project-activity|license-rights|sbom|security-readiness|scorecard|provenance|advisories|vex|policy-gates|api-contracts|observability|performance|e2e|accessibility|storybook|design-tokens|i18n|release-readiness|secret-readiness|container-readiness|code-quality|documentation|database-readiness|ci-cd|unit-tests|typecheck-readiness|package-manager|git-hooks|task-runner|dependency-updates|lint-readiness|format-readiness|commit-conventions|changelog-readiness|context-pack|mcp-handoff|agent-memory|graph-query|tutorial-abstractions|decision-records|dependency-health|learning-path|quiz|quiz-print|all --format json|markdown
+  open <session-id-or-path> --target verification|evidence|suggested-reads|runtime-environment|interface-map|symbol-map|api-reference|search-index|learning-journal|project-activity|license-rights|sbom|security-readiness|scorecard|provenance|advisories|vex|policy-gates|api-contracts|observability|performance|e2e|accessibility|storybook|design-tokens|i18n|release-readiness|secret-readiness|container-readiness|code-quality|documentation|database-readiness|ci-cd|unit-tests|typecheck-readiness|package-manager|git-hooks|task-runner|dependency-updates|lint-readiness|format-readiness|commit-conventions|changelog-readiness|bundle-analysis|context-pack|mcp-handoff|agent-memory|graph-query|tutorial-abstractions|decision-records|dependency-health|learning-path|quiz|quiz-print|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown
   study/list/doctor option: --studies-root <dir>`);
