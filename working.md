@@ -1567,6 +1567,34 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`: PASS, 13/13 audit reports
 - 2026-06-04: Pushed AutoResearch Upgrade 125:
   - `ab8f07b` provenance readiness report
+- 2026-06-04: AutoResearch Upgrade 126 candidate selected:
+  `google/osv-scanner` (`https://github.com/google/osv-scanner`; public
+  Apache-2.0; 10,426 stars; 713 forks; updated 2026-06-03T21:51:24Z).
+  Cloned ignored external source to `research/external-src/google-osv-scanner`
+  and inspected README, usage/configuration/output/offline docs, result models,
+  vulnerability result building, config parsing, and lockfile scanner mapping
+  without executing external source.
+- 2026-06-04: RED advisories smoke generated
+  `/tmp/repotutor-advisories-red-studies.GMKrqn/2026-06-04/local__simple-ts-app__main__6afec26d`;
+  old build was missing `analysis/advisory-report.json`,
+  `markdown/advisories.md`, and `html/advisories.html` as expected.
+- 2026-06-04: Implemented OSV-Scanner-style advisory query readiness report:
+  `AdvisoryReportSchema`, `analysis/advisory-report.json`,
+  `markdown/advisories.md`, `html/advisories.html`, package query targets,
+  lockfile signals, advisory sources, policy controls, result model,
+  remediation queue, recommended commands, manifest/session-verification
+  coverage, learning-path linkage, and `open --target advisories`.
+- 2026-06-04: GREEN advisories smoke generated
+  `/tmp/repotutor-advisories-final-studies.nWy5FO/2026-06-04/local__simple-ts-app__main__6afec26d`;
+  confirmed `verificationCheckedRequiredArtifacts=78`, query targets 3,
+  lockfile signals 0, advisory sources 6, policy controls 6, result model 5,
+  remediation queue 4, recommended commands 5, `advisory-card`,
+  `data-source-pattern="OSV-Scanner"`, manifest/learning-path entries, and
+  `open --target advisories` -> `html/advisories.html`.
+- 2026-06-04: Verification for Upgrade 126:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 14/14 audit checks across 13 reports
 
 ## Next Actions
 

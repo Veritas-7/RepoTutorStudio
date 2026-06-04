@@ -350,6 +350,22 @@
         "attestation predicate and subject-verification readiness",
         "digest-pinned artifact verification command handoff"
       ]
+    },
+    {
+      "repo": "google/osv-scanner",
+      "url": "https://github.com/google/osv-scanner",
+      "localPath": "research/external-src/google-osv-scanner",
+      "stars": 10426,
+      "forks": 713,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-03T21:51:24Z",
+      "adoptedPatterns": [
+        "package extraction separated from vulnerability matching",
+        "OSV.dev advisory query targets by ecosystem package name and version",
+        "lockfile SBOM source path/type result modeling",
+        "osv-scanner.toml IgnoredVulns and PackageOverrides policy readiness",
+        "offline vulnerability database and guided remediation command handoff"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2097,6 +2113,28 @@
         "ScorecardReportSchema",
         "OpenSSF Scorecard checks score 0-10 risk remediation structured results policy measurement"
       ]
+    },
+    {
+      "name": "Advisory query readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/advisory-report.json",
+        "markdown/advisories.md",
+        "html/advisories.html",
+        "open --target advisories",
+        "AdvisoryReportSchema",
+        "OSV-Scanner package extraction vulnerability matching OSV.dev lockfile SBOM offline remediation ignore policy"
+      ]
     }
   ],
   "verification": {
@@ -2351,6 +2389,12 @@
     "cliProvenanceOpenTargetSmoke": "PASS",
     "buildProvenance": "PASS",
     "testProvenance": "PASS",
-    "auditBriefProvenance13": "PASS"
+    "auditBriefProvenance13": "PASS",
+    "fixtureAdvisoryReport": "PASS",
+    "cliAdvisorySmoke": "PASS",
+    "cliAdvisoryOpenTargetSmoke": "PASS",
+    "buildAdvisory": "PASS",
+    "testAdvisory": "PASS",
+    "auditBriefAdvisory14": "PASS"
   }
 }

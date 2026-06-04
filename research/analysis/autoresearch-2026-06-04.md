@@ -2430,6 +2430,41 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 126: Advisory Query Readiness Report
+
+- Cloned and inspected `google/osv-scanner` under
+  `research/external-src/google-osv-scanner` without executing external
+  source.
+- GitHub metadata: public repo, Apache-2.0 license, 10,426 stars, 713 forks,
+  updated 2026-06-03T21:51:24Z. No source code was copied into RepoTutor.
+- Added `AdvisoryReportSchema` and `analysis/advisory-report.json` with
+  OSV-Scanner-style package query targets, lockfile signals, advisory sources,
+  policy controls, result model, remediation queue, recommended commands, and
+  learner next steps.
+- Added `markdown/advisories.md`, `html/advisories.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target advisories`.
+- Source pattern: OSV-Scanner separates package extraction from vulnerability
+  matching, models result source path/type and package vulnerability groups,
+  supports `osv-scanner.toml` `IgnoredVulns`/`PackageOverrides`, and can use
+  offline vulnerability databases or guided remediation. RepoTutor maps that to
+  deterministic static advisory query readiness and explicitly does not claim
+  actual vulnerabilities.
+- RED smoke generated
+  `/tmp/repotutor-advisories-red-studies.GMKrqn/2026-06-04/local__simple-ts-app__main__6afec26d`;
+  old behavior was missing `analysis/advisory-report.json`,
+  `markdown/advisories.md`, and `html/advisories.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-advisories-final-studies.nWy5FO/2026-06-04/local__simple-ts-app__main__6afec26d`;
+  confirmed `verificationCheckedRequiredArtifacts=78`, query targets 3,
+  lockfile signals 0, advisory sources 6, policy controls 6, result model 5,
+  remediation queue 4, recommended commands 5, `advisory-card`,
+  `data-source-pattern="OSV-Scanner"`, manifest/learning path entries, and
+  `open --target advisories` -> `html/advisories.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 14/14 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
