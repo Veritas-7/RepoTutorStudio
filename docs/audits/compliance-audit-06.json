@@ -1,6 +1,6 @@
 {
   "iteration": 6,
-  "createdAt": "2026-06-04T00:59:08.166Z",
+  "createdAt": "2026-06-04T01:15:43.251Z",
   "checks": [
     {
       "name": "project setup",
@@ -151,6 +151,13 @@
     },
     {
       "name": "policy gate readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "api contract readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
