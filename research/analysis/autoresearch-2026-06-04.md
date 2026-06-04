@@ -3540,6 +3540,50 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 51/51 audit checks across 13 generated reports
 
+### Upgrade 154: Bundle Analysis Report
+
+- Cloned and inspected `webpack/webpack-bundle-analyzer` under
+  `research/external-src/webpack-webpack-bundle-analyzer` without executing
+  external source. Clone HEAD was `9ba43c7`; the clone remains ignored by
+  RepoTutor.
+- GitHub metadata: public repo, MIT license, 12,667 stars, 504 forks, updated
+  2026-05-20T11:27:07Z. Compared with
+  `btd/rollup-plugin-visualizer`, `vitejs/vite`, and
+  `danvk/source-map-explorer`; selected Webpack Bundle Analyzer because it
+  directly models stats JSON bundle composition, zoomable treemap reporting,
+  analyzer mode selection, static/JSON report outputs, stat/parsed/gzip/Brotli/
+  Zstandard size modes, source-map and bundle directory handoff, chunk/asset
+  visibility, and trusted analyzer CLI commands. No source code was copied into
+  RepoTutor.
+- Implemented Webpack Bundle Analyzer-style bundle-analysis report:
+  `BundleAnalysisReportSchema`, `analysis/bundle-analysis-report.json`,
+  `markdown/bundle-analysis.md`, `html/bundle-analysis.html`, config files,
+  bundle artifacts, size signals, script signals, package signals, recommended
+  commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, and `open --target bundle-analysis`.
+- Source pattern: Webpack Bundle Analyzer separates stats generation
+  (`webpack --profile --json`), analyzer plugin and CLI entrypoints,
+  `analyzerMode` (`server`, `static`, `json`, `disabled`), report and stats
+  filenames, default size mode (`stat`, `parsed`, `gzip`, `brotli`, `zstd`),
+  compression algorithms, bundle directories, source maps, chunks, assets,
+  exclusions, and no-open behavior. RepoTutor maps that to deterministic static
+  bundle-analysis readiness and explicitly does not run webpack, open analyzer
+  servers, calculate compressed sizes, or execute external analyzer code.
+- RED smoke generated
+  `/tmp/repotutor-bundle-analysis-red-studies.7oWjQJ/2026-06-04/local__simple-ts-app__main__419a1930`;
+  old behavior was missing `analysis/bundle-analysis-report.json`,
+  `markdown/bundle-analysis.md`, and `html/bundle-analysis.html`, and
+  `open --target bundle-analysis` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-bundle-analysis-green-studies.l4dWOy/2026-06-04/local__simple-ts-app__main__419a1930`;
+  confirmed `verificationCheckedRequiredArtifacts=162`, config files 0,
+  bundle artifacts 0, size signals 10, script signals 7, package signals 6,
+  recommended commands 6, risk queue 2, manifest/learning-path entries, and
+  `open --target bundle-analysis` -> `html/bundle-analysis.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 52/52 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

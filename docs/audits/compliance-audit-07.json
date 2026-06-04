@@ -1,6 +1,6 @@
 {
   "iteration": 7,
-  "createdAt": "2026-06-04T05:54:47.164Z",
+  "createdAt": "2026-06-04T06:11:03.779Z",
   "checks": [
     {
       "name": "project setup",
@@ -326,6 +326,13 @@
     },
     {
       "name": "changelog readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "bundle analysis report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
