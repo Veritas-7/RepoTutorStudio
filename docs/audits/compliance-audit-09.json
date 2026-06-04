@@ -1,6 +1,6 @@
 {
   "iteration": 9,
-  "createdAt": "2026-06-04T13:28:02.384Z",
+  "createdAt": "2026-06-04T13:43:47.662Z",
   "checks": [
     {
       "name": "project setup",
@@ -585,6 +585,13 @@
     },
     {
       "name": "Server framework readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "RPC readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

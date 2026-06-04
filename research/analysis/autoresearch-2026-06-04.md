@@ -5368,6 +5368,51 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 88/88 audit checks across 13 generated reports
 
+### Upgrade 191: RPC Readiness Report
+
+- Cloned and inspected `trpc/trpc` under `research/external-src/trpc-trpc`
+  without executing external source. Clone HEAD was `c7360d4`; the clone
+  remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 40,303 stars, 1,628 forks, updated
+  2026-06-04T11:52:54Z. Compared with `connectrpc/connect-es` and
+  `grpc/grpc-node`; selected tRPC because it directly models end-to-end
+  type-safe RPC ownership through root routers, procedures, validation,
+  context/middleware, typed clients, transport links, adapters, structured
+  errors, and local callers. No source code was copied into RepoTutor.
+- Implemented tRPC-style rpc-readiness report: `RpcReadinessReportSchema`,
+  `analysis/rpc-readiness-report.json`, `markdown/rpc-readiness.md`,
+  `html/rpc-readiness.html`, RPC setups, router signals, procedure signals,
+  validation signals, context signals, client signals, adapter signals, error
+  signals, caller signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target rpc-readiness`.
+- Source pattern: tRPC separates `initTRPC.create()`, `router()`,
+  `mergeRouters`, exported `AppRouter`/`inferRouter` types,
+  `publicProcedure`, `protectedProcedure`, `query`, `mutation`,
+  `subscription`, streaming procedures, `input()`/`output()` validation,
+  Zod/Standard Schema and `superjson` transformers, context creation,
+  middleware/auth guards, `TRPCError`, error formatters, typed clients,
+  React/Next/TanStack bindings, HTTP batch/subscription/websocket/logger/retry
+  links, server adapters, and `createCaller` helpers. RepoTutor maps that to
+  deterministic static RPC readiness and explicitly does not start adapters,
+  invoke procedures, open websocket/subscription links, serialize
+  transformers, call clients, or run analyzed project tests.
+- RED smoke generated
+  `/tmp/repotutor-rpc-red-studies.wETSbj/2026-06-04/local__simple-ts-app__main__3d645e49`;
+  old behavior was missing `analysis/rpc-readiness-report.json`,
+  `markdown/rpc-readiness.md`, and `html/rpc-readiness.html`, and
+  `open --target rpc-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-rpc-green-studies.l3OflZ/2026-06-04/local__simple-ts-app__main__3d645e49`;
+  confirmed `verificationCheckedRequiredArtifacts=273`, RPC setups 0, router
+  signals 6, procedure signals 7, validation signals 7, context signals 6,
+  client signals 10, adapter signals 9, error signals 6, caller signals 5,
+  package signals 7, risk queue 2, all three new artifacts, and
+  `open --target rpc-readiness` -> `html/rpc-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 89/89 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

@@ -4103,6 +4103,43 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 190:
   - `f070f00` server framework readiness report
 
+- 2026-06-04: AutoResearch Upgrade 191 candidate selected:
+  `trpc/trpc`
+  (`https://github.com/trpc/trpc`; public; MIT; 40,303 stars; 1,628 forks;
+  updated 2026-06-04T11:52:54Z). Compared with `connectrpc/connect-es` and
+  `grpc/grpc-node`; selected tRPC because it directly models end-to-end
+  type-safe RPC boundaries: root routers, procedures, validation,
+  context/middleware, typed clients, transport links, adapters, structured
+  errors, and local callers. Cloned ignored external source to
+  `research/external-src/trpc-trpc` and inspected docs/source/example/test hits
+  without executing external source. Clone HEAD was `c7360d4`; tracked file
+  count for `research/external-src/trpc-trpc` returned `0`.
+- 2026-06-04: RED rpc-readiness smoke generated
+  `/tmp/repotutor-rpc-red-studies.wETSbj/2026-06-04/local__simple-ts-app__main__3d645e49`;
+  old build was missing `analysis/rpc-readiness-report.json`,
+  `markdown/rpc-readiness.md`, and `html/rpc-readiness.html`, and
+  `open --target rpc-readiness` failed as expected.
+- 2026-06-04: Implemented tRPC-style rpc-readiness report:
+  `RpcReadinessReportSchema`, `analysis/rpc-readiness-report.json`,
+  `markdown/rpc-readiness.md`, `html/rpc-readiness.html`, RPC setups, router
+  signals, procedure signals, validation signals, context signals, client
+  signals, adapter signals, error signals, caller signals, package signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, nav entry, and `open --target rpc-readiness`.
+- 2026-06-04: GREEN rpc-readiness smoke generated
+  `/tmp/repotutor-rpc-green-studies.l3OflZ/2026-06-04/local__simple-ts-app__main__3d645e49`;
+  confirmed `verificationCheckedRequiredArtifacts=273`, RPC setups 0, router
+  signals 6, procedure signals 7, validation signals 7, context signals 6,
+  client signals 10, adapter signals 9, error signals 6, caller signals 5,
+  package signals 7, risk queue 2, all three new artifacts, and
+  `open --target rpc-readiness` -> `html/rpc-readiness.html`.
+- 2026-06-04: Verification for Upgrade 191:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 89/89 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

@@ -98,6 +98,7 @@ import type {
   CliReadinessReport,
   LlmReadinessReport,
   ServerFrameworkReadinessReport,
+  RpcReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -202,6 +203,7 @@ export interface StudyHtmlInput {
   cliReadinessReport: CliReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
+  rpcReadinessReport: RpcReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -320,6 +322,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["cli-readiness.html", "CLI"],
     ["llm-readiness.html", "LLM"],
     ["server-framework-readiness.html", "Server Framework"],
+    ["rpc-readiness.html", "RPC"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -459,6 +462,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Decision Records</h3><p>${escapeHtml(input.decisionRecordReport.summary)}</p><p>Log4brains 패턴으로 Context, Decision, Status, Consequences를 정리합니다.</p><a href="decision-records.html">Decision Records 열기</a></article>
           <article><h3>Dependency Health</h3><p>${escapeHtml(input.dependencyHealthReport.summary)}</p><p>dependency-cruiser 패턴으로 no-circular, no-orphans, fan-in/fan-out을 확인합니다.</p><a href="dependency-health.html">Dependency Health 열기</a></article>
           <article><h3>Server Framework Readiness</h3><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p>Fastify 패턴으로 routes, schemas, plugins, hooks, decorators, errors, runtime, tests 준비도를 정리합니다.</p><a href="server-framework-readiness.html">Server Framework 열기</a></article>
+          <article><h3>RPC Readiness</h3><p>${escapeHtml(input.rpcReadinessReport.summary)}</p><p>tRPC 패턴으로 routers, procedures, validation, context, clients, adapters, errors 준비도를 정리합니다.</p><a href="rpc-readiness.html">RPC 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -903,6 +907,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Server Framework Readiness", "server-framework-readiness.html", `<section class="panel" data-source-pattern="Fastify"><h2>Server Framework Snapshot</h2><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.serverFrameworkReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.serverFrameworkReadinessReport.serverSetups.length}</dd></div><div><dt>routes</dt><dd>${input.serverFrameworkReadinessReport.routeSignals.length}</dd></div><div><dt>schemas</dt><dd>${input.serverFrameworkReadinessReport.schemaSignals.length}</dd></div><div><dt>plugins</dt><dd>${input.serverFrameworkReadinessReport.pluginSignals.length}</dd></div></dl><p class="muted">RepoTutor records server framework readiness only; it does not start listeners, execute handlers, send HTTP requests, run plugins, compile schemas, or mutate runtime state.</p></section><section class="grid"><article class="server-framework-readiness-card"><h3>Server Setups</h3>${serverFrameworkReadinessSetupList(input.serverFrameworkReadinessReport.serverSetups)}</article><article class="server-framework-readiness-card"><h3>Route Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.routeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Schema Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.schemaSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Plugin Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.pluginSignals, "signal")}</article></section><section class="grid"><article class="server-framework-readiness-card"><h3>Lifecycle Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.lifecycleSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Runtime Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.runtimeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Error Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.errorSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Test Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.testSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Package Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.packageSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Recommended Commands</h3>${serverFrameworkReadinessCommandList(input.serverFrameworkReadinessReport.recommendedCommands)}</article><article class="server-framework-readiness-card"><h3>Risk Queue</h3>${serverFrameworkReadinessRiskList(input.serverFrameworkReadinessReport.riskQueue)}</article><article class="server-framework-readiness-card"><h3>다음 확인 단계</h3>${list(input.serverFrameworkReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "rpc-readiness.html",
+      title: "RPC Readiness",
+      html: pageShell("RPC Readiness", "rpc-readiness.html", `<section class="panel" data-source-pattern="tRPC"><h2>RPC Snapshot</h2><p>${escapeHtml(input.rpcReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.rpcReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.rpcReadinessReport.rpcSetups.length}</dd></div><div><dt>routers</dt><dd>${input.rpcReadinessReport.routerSignals.length}</dd></div><div><dt>procedures</dt><dd>${input.rpcReadinessReport.procedureSignals.length}</dd></div><div><dt>clients</dt><dd>${input.rpcReadinessReport.clientSignals.length}</dd></div></dl><p class="muted">RepoTutor records RPC readiness only; it does not start adapters, invoke procedures, open websocket/subscription links, serialize transformers, call clients, or run analyzed project tests.</p></section><section class="grid"><article class="rpc-readiness-card"><h3>RPC Setups</h3>${rpcReadinessSetupList(input.rpcReadinessReport.rpcSetups)}</article><article class="rpc-readiness-card"><h3>Router Signals</h3>${rpcReadinessSignalList(input.rpcReadinessReport.routerSignals, "signal")}</article><article class="rpc-readiness-card"><h3>Procedure Signals</h3>${rpcReadinessSignalList(input.rpcReadinessReport.procedureSignals, "signal")}</article><article class="rpc-readiness-card"><h3>Validation Signals</h3>${rpcReadinessSignalList(input.rpcReadinessReport.validationSignals, "signal")}</article></section><section class="grid"><article class="rpc-readiness-card"><h3>Context Signals</h3>${rpcReadinessSignalList(input.rpcReadinessReport.contextSignals, "signal")}</article><article class="rpc-readiness-card"><h3>Client Signals</h3>${rpcReadinessSignalList(input.rpcReadinessReport.clientSignals, "signal")}</article><article class="rpc-readiness-card"><h3>Adapter Signals</h3>${rpcReadinessSignalList(input.rpcReadinessReport.adapterSignals, "signal")}</article><article class="rpc-readiness-card"><h3>Error Signals</h3>${rpcReadinessSignalList(input.rpcReadinessReport.errorSignals, "signal")}</article><article class="rpc-readiness-card"><h3>Caller Signals</h3>${rpcReadinessSignalList(input.rpcReadinessReport.callerSignals, "signal")}</article><article class="rpc-readiness-card"><h3>Package Signals</h3>${rpcReadinessSignalList(input.rpcReadinessReport.packageSignals, "signal")}</article><article class="rpc-readiness-card"><h3>Recommended Commands</h3>${rpcReadinessCommandList(input.rpcReadinessReport.recommendedCommands)}</article><article class="rpc-readiness-card"><h3>Risk Queue</h3>${rpcReadinessRiskList(input.rpcReadinessReport.riskQueue)}</article><article class="rpc-readiness-card"><h3>다음 확인 단계</h3>${list(input.rpcReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -1101,6 +1110,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "CLI Readiness", path: "html/cli-readiness.html", description: "Commander.js식 command, option, argument, action, help, error 준비도를 확인합니다." },
       { label: "LLM Readiness", path: "html/llm-readiness.html", description: "LangChain.js식 model, prompt, tool, RAG, structured output, streaming 준비도를 확인합니다." },
       { label: "Server Framework Readiness", path: "html/server-framework-readiness.html", description: "Fastify식 route, schema, plugin, hook, runtime, test 준비도를 확인합니다." },
+      { label: "RPC Readiness", path: "html/rpc-readiness.html", description: "tRPC식 router, procedure, validation, context, client, adapter 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1712,6 +1722,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "server-framework-readiness.html",
       goal: "Fastify식 route, schema, plugin, hook, runtime 흐름을 보고 server contract를 확인합니다.",
       evidence: `server setups ${input.serverFrameworkReadinessReport.serverSetups.length}개, route signals ${input.serverFrameworkReadinessReport.routeSignals.length}개`
+    },
+    {
+      title: "RPC readiness 확인",
+      href: "rpc-readiness.html",
+      goal: "tRPC식 router, procedure, validation, context, client, adapter 흐름을 보고 type-safe RPC contract를 확인합니다.",
+      evidence: `RPC setups ${input.rpcReadinessReport.rpcSetups.length}개, procedure signals ${input.rpcReadinessReport.procedureSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -4004,6 +4020,31 @@ function serverFrameworkReadinessRiskList(items: ServerFrameworkReadinessReport[
 }
 
 function serverFrameworkReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function rpcReadinessSetupList(items: RpcReadinessReport["rpcSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">RPC setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>router/procedure/query/mutation/subscription/validation/middleware/client/adapter/error ${item.routerCount}/${item.procedureCount}/${item.queryCount}/${item.mutationCount}/${item.subscriptionCount}/${item.validationCount}/${item.middlewareCount}/${item.clientCount}/${item.adapterCount}/${item.errorCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(rpcReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function rpcReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">RPC signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(rpcReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function rpcReadinessCommandList(items: RpcReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function rpcReadinessRiskList(items: RpcReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(rpcReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function rpcReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

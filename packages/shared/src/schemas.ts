@@ -4863,6 +4863,93 @@ export const ServerFrameworkReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const RpcReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  rpcSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["trpc", "grpc", "connect", "json-rpc", "custom", "unknown"]),
+    routerCount: z.number().int().nonnegative(),
+    procedureCount: z.number().int().nonnegative(),
+    queryCount: z.number().int().nonnegative(),
+    mutationCount: z.number().int().nonnegative(),
+    subscriptionCount: z.number().int().nonnegative(),
+    validationCount: z.number().int().nonnegative(),
+    middlewareCount: z.number().int().nonnegative(),
+    clientCount: z.number().int().nonnegative(),
+    adapterCount: z.number().int().nonnegative(),
+    errorCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  routerSignals: z.array(z.object({
+    signal: z.enum(["init-trpc", "router", "nested-router", "merge-routers", "app-router", "app-router-type", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  procedureSignals: z.array(z.object({
+    signal: z.enum(["procedure", "public-procedure", "protected-procedure", "query", "mutation", "subscription", "streaming", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  validationSignals: z.array(z.object({
+    signal: z.enum(["input", "output", "zod", "valibot", "superstruct", "standard-schema", "transformer", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["context", "create-context", "middleware", "auth-guard", "meta", "next-ctx", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  clientSignals: z.array(z.object({
+    signal: z.enum(["create-client", "react-query", "next-client", "tanstack-options", "http-link", "batch-link", "subscription-link", "ws-link", "logger-link", "retry-link", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  adapterSignals: z.array(z.object({
+    signal: z.enum(["standalone", "next-api", "app-router", "express", "fastify", "fetch", "node-http", "websocket", "mcp", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  errorSignals: z.array(z.object({
+    signal: z.enum(["trpc-error", "unauthorized", "forbidden", "not-found", "bad-request", "error-formatter", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  callerSignals: z.array(z.object({
+    signal: z.enum(["create-caller", "create-caller-factory", "router-create-caller", "infer-router", "type-import", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@trpc/server", "@trpc/client", "@trpc/react-query", "@trpc/next", "@trpc/tanstack-react-query", "superjson", "zod", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -5155,6 +5242,7 @@ export type GraphqlReadinessReport = z.infer<typeof GraphqlReadinessReportSchema
 export type CliReadinessReport = z.infer<typeof CliReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
+export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

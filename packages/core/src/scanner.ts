@@ -103,6 +103,7 @@ import {
   CliReadinessReport,
   LlmReadinessReport,
   ServerFrameworkReadinessReport,
+  RpcReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -212,6 +213,7 @@ export interface AnalysisBundle {
   cliReadinessReport: CliReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
+  rpcReadinessReport: RpcReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -321,8 +323,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const cliReadinessReport = await buildCliReadinessReport(walk);
   const llmReadinessReport = await buildLlmReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
+  const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -20949,6 +20952,347 @@ function serverFrameworkReadinessSignalFromSpecs<T extends Record<K, string> & {
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/server-framework-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildRpcReadinessReport(walk: WalkResult): Promise<RpcReadinessReport> {
+  const sourceFiles = await rpcReadinessSourceFiles(walk);
+  const rpcSetups = rpcReadinessSetups(sourceFiles);
+  const routerSignals = rpcReadinessRouterSignals(sourceFiles);
+  const procedureSignals = rpcReadinessProcedureSignals(sourceFiles);
+  const validationSignals = rpcReadinessValidationSignals(sourceFiles);
+  const contextSignals = rpcReadinessContextSignals(sourceFiles);
+  const clientSignals = rpcReadinessClientSignals(sourceFiles);
+  const adapterSignals = rpcReadinessAdapterSignals(sourceFiles);
+  const errorSignals = rpcReadinessErrorSignals(sourceFiles);
+  const callerSignals = rpcReadinessCallerSignals(sourceFiles);
+  const packageSignals = rpcReadinessPackageSignals(sourceFiles);
+
+  const hasRpc = rpcSetups.length > 0 || packageSignals.some((item) => item.readiness === "ready");
+  const hasRouter = routerSignals.some((item) => item.readiness === "ready") || rpcSetups.some((item) => item.routerCount > 0);
+  const hasProcedure = procedureSignals.some((item) => item.readiness === "ready") || rpcSetups.some((item) => item.procedureCount > 0);
+  const hasValidation = validationSignals.some((item) => item.readiness === "ready") || rpcSetups.some((item) => item.validationCount > 0);
+  const hasContext = contextSignals.some((item) => item.readiness === "ready") || rpcSetups.some((item) => item.middlewareCount > 0);
+  const hasClient = clientSignals.some((item) => item.readiness === "ready") || rpcSetups.some((item) => item.clientCount > 0);
+  const hasAdapter = adapterSignals.some((item) => item.readiness === "ready") || rpcSetups.some((item) => item.adapterCount > 0);
+  const hasErrors = errorSignals.some((item) => item.readiness === "ready") || rpcSetups.some((item) => item.errorCount > 0);
+
+  const riskQueue: RpcReadinessReport["riskQueue"] = [];
+  if (!hasRpc) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the RPC entry point before claiming type-safe API readiness.",
+      why: "tRPC-style readiness starts with router/procedure setup, client link setup, adapter setup, or package evidence learners can trace.",
+      relatedHref: "html/rpc-readiness.html"
+    });
+  }
+  if (hasRpc && !hasRouter) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace the root router and nested router ownership.",
+      why: "RPC clients infer callable paths from router structure, so learners need a clear AppRouter or mergeRouters boundary.",
+      relatedHref: "html/rpc-readiness.html"
+    });
+  }
+  if (hasRouter && !hasProcedure) {
+    riskQueue.push({
+      priority: "high",
+      action: "Map query, mutation, and subscription procedure declarations.",
+      why: "Routers without procedure evidence do not show the callable API surface or operation semantics.",
+      relatedHref: "html/rpc-readiness.html"
+    });
+  }
+  if (hasProcedure && !hasValidation) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document input/output validation for important procedures.",
+      why: "tRPC relies on runtime parsers such as Zod and transformer boundaries to keep inferred types honest at runtime.",
+      relatedHref: "html/rpc-readiness.html"
+    });
+  }
+  if (hasProcedure && !hasContext) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document context, middleware, auth guards, and meta ownership.",
+      why: "Procedure behavior often depends on ctx narrowing, middleware next() calls, and auth-specific protected procedures.",
+      relatedHref: "html/rpc-readiness.html"
+    });
+  }
+  if (hasRouter && !hasClient) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Trace typed client creation and link selection.",
+      why: "End-to-end RPC readiness needs the client side that imports the router type and chooses HTTP, batch, subscription, or websocket links.",
+      relatedHref: "html/rpc-readiness.html"
+    });
+  }
+  if (hasRouter && !hasAdapter) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record the server adapter that exposes the router.",
+      why: "Adapters explain whether the router is mounted through standalone HTTP, Next, Express, Fastify, fetch, node-http, websocket, or MCP surfaces.",
+      relatedHref: "html/rpc-readiness.html"
+    });
+  }
+  if (hasProcedure && !hasErrors) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document TRPCError, error formatter, and known auth/error codes.",
+      why: "Typed API callers need structured error behavior for UNAUTHORIZED, FORBIDDEN, NOT_FOUND, BAD_REQUEST, and formatter boundaries.",
+      relatedHref: "html/rpc-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify RPC behavior with trusted server/client tests outside RepoTutor.",
+    why: "RepoTutor records RPC readiness only; it does not start adapters, invoke procedures, open websocket/subscription links, serialize transformers, call clients, or run analyzed project tests.",
+    relatedHref: "html/rpc-readiness.html"
+  });
+
+  return {
+    summary: `tRPC-style RPC readiness report: setup ${rpcSetups.length}개, router signal ${routerSignals.length}개, procedure signal ${procedureSignals.length}개, client signal ${clientSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "tRPC initTRPC router procedure query mutation subscription input output middleware context createTRPCClient links adapters TRPCError createCaller",
+    rpcSetups,
+    routerSignals,
+    procedureSignals,
+    validationSignals,
+    contextSignals,
+    clientSignals,
+    adapterSignals,
+    errorSignals,
+    callerSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"initTRPC|createTRPC|router\\(|mergeRouters|AppRouter|inferRouter\" src app server packages", purpose: "Find RPC initialization, root routers, nested routers, and exported router types." },
+      { command: "rg \"publicProcedure|protectedProcedure|\\.procedure|\\.query\\(|\\.mutation\\(|\\.subscription\\(\" src app server packages", purpose: "Trace procedure declarations and operation semantics." },
+      { command: "rg \"\\.input\\(|\\.output\\(|z\\.object|valibot|superstruct|standard-schema|transformer|superjson\" src app server packages", purpose: "Review runtime input/output validation and transformer boundaries." },
+      { command: "rg \"context<|createContext|\\.use\\(|middleware\\(|TRPCError|UNAUTHORIZED|FORBIDDEN|errorFormatter|meta<\" src app server packages", purpose: "Inspect context creation, middleware, auth guards, metadata, and structured errors." },
+      { command: "rg \"createTRPCClient|createTRPCReact|createTRPCNext|createTRPCContext|httpBatchLink|httpLink|wsLink|splitLink|loggerLink|retryLink\" src app client packages", purpose: "Map typed clients, React/Next/TanStack bindings, and transport links." },
+      { command: "rg \"createHTTPServer|createNextApiHandler|fetchRequestHandler|express|fastifyTRPCPlugin|applyWSSHandler|experimental_createMCPHandler|createCaller\" src app server packages test tests", purpose: "Check adapters, websocket/subscription exposure, local callers, and test helpers." }
+    ],
+    learnerNextSteps: [
+      "먼저 initTRPC.create(), t.router/router(), mergeRouters, AppRouter export 지점으로 RPC root boundary를 찾으세요.",
+      "publicProcedure, protectedProcedure, procedure.query/mutation/subscription 신호로 callable API surface를 분류하세요.",
+      "input(), output(), Zod/Valibot/Superstruct/Standard Schema와 transformer/superjson 신호로 runtime contract를 확인하세요.",
+      "context, createContext, middleware use(), opts.next(), TRPCError, errorFormatter 신호로 auth와 error behavior를 분리하세요.",
+      "createTRPCClient, createTRPCReact, createTRPCNext, createTRPCContext, httpBatchLink, wsLink, splitLink 신호로 client transport와 type import 경계를 확인하세요.",
+      "createHTTPServer, createNextApiHandler, fetchRequestHandler, express, fastifyTRPCPlugin, applyWSSHandler 신호가 있으면 server adapter ownership을 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 procedure 호출, adapter 실행, websocket/subscription 연결, transformer serialization, client request behavior는 원본 프로젝트 테스트나 안전한 dev server에서 별도 확인하세요."
+    ]
+  };
+}
+
+type RpcReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function rpcReadinessSourceFiles(walk: WalkResult): Promise<RpcReadinessSourceFile[]> {
+  const files: RpcReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !rpcReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!rpcReadinessPathSignal(file.relPath) && !rpcReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function rpcReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return rpcReadinessPathSignal(filePath)
+    || /^(package\.json|trpc\.[cm]?[jt]sx?|router\.[cm]?[jt]sx?|client\.[cm]?[jt]sx?|server\.[cm]?[jt]sx?|context\.[cm]?[jt]sx?|api\.[cm]?[jt]sx?)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml|proto)$/i.test(filePath);
+}
+
+function rpcReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(trpc|rpc|routers?|procedures?|server|client|api|apis|context|middleware|middlewares|adapters?|subscriptions?|websocket|grpc|connect)(\/|\.|-|_|$)|package\.json$/i.test(filePath);
+}
+
+function rpcReadinessContentSignal(text: string): boolean {
+  return /(initTRPC|createTRPC|@trpc\/server|@trpc\/client|@trpc\/react-query|@trpc\/next|t\.router|router\s*\(|mergeRouters|publicProcedure|protectedProcedure|\.procedure|\.query\s*\(|\.mutation\s*\(|\.subscription\s*\(|\.input\s*\(|\.output\s*\(|createTRPCClient|httpBatchLink|httpLink|wsLink|splitLink|TRPCError|createCaller|createHTTPServer|createNextApiHandler|fetchRequestHandler|fastifyTRPCPlugin|applyWSSHandler|experimental_createMCPHandler|service\s+[A-Za-z_][\w]*\s*\{)/i.test(text);
+}
+
+function rpcReadinessSetups(sourceFiles: RpcReadinessSourceFile[]): RpcReadinessReport["rpcSetups"] {
+  const rows: RpcReadinessReport["rpcSetups"] = [];
+  for (const source of sourceFiles) {
+    const routerCount = countMatches(source.text, /initTRPC|createTRPC|t\.router|router\s*\(|mergeRouters|AppRouter|inferRouter|service\s+[A-Za-z_][\w]*\s*\{/gi);
+    const procedureCount = countMatches(source.text, /publicProcedure|protectedProcedure|\.procedure|t\.procedure|procedure\s*\(|rpc\s+[A-Za-z_][\w]*\s*\(/gi);
+    const queryCount = countMatches(source.text, /\.query\s*\(|type\s*:\s*['"]query|query\s*\(/gi);
+    const mutationCount = countMatches(source.text, /\.mutation\s*\(|type\s*:\s*['"]mutation|mutation\s*\(/gi);
+    const subscriptionCount = countMatches(source.text, /\.subscription\s*\(|httpSubscriptionLink|wsLink|applyWSSHandler|subscription\s*\(|async\s+function\*/gi);
+    const validationCount = countMatches(source.text, /\.input\s*\(|\.output\s*\(|z\.object|z\.string|valibot|superstruct|standard-schema|transformer|superjson/gi);
+    const middlewareCount = countMatches(source.text, /context<|createContext|\.use\s*\(|middleware\s*\(|opts\.next|ctx\.|meta<|auth|UNAUTHORIZED|FORBIDDEN/gi);
+    const clientCount = countMatches(source.text, /createTRPCClient|createTRPCReact|createTRPCNext|createTRPCContext|createTRPCOptionsProxy|httpBatchLink|httpBatchStreamLink|httpLink|wsLink|splitLink|loggerLink|retryLink|useQuery|useMutation|useSubscription/gi);
+    const adapterCount = countMatches(source.text, /createHTTPServer|createHTTPHandler|createNextApiHandler|fetchRequestHandler|expressMiddleware|fastifyTRPCPlugin|applyWSSHandler|nodeHTTPRequestHandler|experimental_createMCPHandler/gi);
+    const errorCount = countMatches(source.text, /TRPCError|getTRPCErrorFromUnknown|errorFormatter|UNAUTHORIZED|FORBIDDEN|NOT_FOUND|BAD_REQUEST|PAYLOAD_TOO_LARGE|INTERNAL_SERVER_ERROR/gi);
+    const hasSetupSignal = routerCount + procedureCount + queryCount + mutationCount + subscriptionCount + validationCount + middlewareCount + clientCount + adapterCount + errorCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework: rpcReadinessFramework(source),
+      routerCount,
+      procedureCount,
+      queryCount,
+      mutationCount,
+      subscriptionCount,
+      validationCount,
+      middlewareCount,
+      clientCount,
+      adapterCount,
+      errorCount,
+      readiness: routerCount > 0 && procedureCount > 0 && (validationCount > 0 || clientCount > 0 || adapterCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains routers ${routerCount}, procedures ${procedureCount}, queries ${queryCount}, mutations ${mutationCount}, subscriptions ${subscriptionCount}, validation ${validationCount}, middleware/context ${middlewareCount}, clients ${clientCount}, adapters ${adapterCount}, errors ${errorCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function rpcReadinessFramework(source: RpcReadinessSourceFile): RpcReadinessReport["rpcSetups"][number]["framework"] {
+  if (/@trpc\/|initTRPC|createTRPC|TRPCError|publicProcedure|protectedProcedure/i.test(source.text)) return "trpc";
+  if (/grpc|@grpc\/grpc-js|proto-loader|service\s+[A-Za-z_][\w]*\s*\{/i.test(source.text)) return "grpc";
+  if (/connectrpc|@connectrpc|ConnectRouter|createConnectTransport/i.test(source.text)) return "connect";
+  if (/jsonrpc|JSON-RPC|rpc\./i.test(source.text)) return "json-rpc";
+  if (/rpc|procedure|router/i.test(source.filePath) || /remote procedure|typed API/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function rpcReadinessRouterSignals(sourceFiles: RpcReadinessSourceFile[]): RpcReadinessReport["routerSignals"] {
+  const specs: Array<{ signal: RpcReadinessReport["routerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "init-trpc", pattern: /initTRPC|createTRPC/i, evidence: "tRPC initialization evidence was detected." },
+    { signal: "router", pattern: /t\.router|router\s*\(/i, evidence: "router creation evidence was detected." },
+    { signal: "nested-router", pattern: /router\s*\(\s*\{[\s\S]{0,200}\w+\s*:\s*(t\.)?router\s*\(/i, evidence: "nested router evidence was detected." },
+    { signal: "merge-routers", pattern: /mergeRouters|\.merge\s*\(/i, evidence: "router merge evidence was detected." },
+    { signal: "app-router", pattern: /appRouter|rootRouter|createRouter/i, evidence: "root AppRouter evidence was detected." },
+    { signal: "app-router-type", pattern: /export\s+type\s+\w*AppRouter|typeof\s+\w*appRouter|inferRouter/i, evidence: "exported router type evidence was detected." }
+  ];
+  return rpcReadinessSignalFromSpecs(sourceFiles, specs, "router", "signal");
+}
+
+function rpcReadinessProcedureSignals(sourceFiles: RpcReadinessSourceFile[]): RpcReadinessReport["procedureSignals"] {
+  const specs: Array<{ signal: RpcReadinessReport["procedureSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "procedure", pattern: /t\.procedure|\.procedure|procedure\s*\(/i, evidence: "procedure builder evidence was detected." },
+    { signal: "public-procedure", pattern: /publicProcedure/i, evidence: "public procedure helper evidence was detected." },
+    { signal: "protected-procedure", pattern: /protectedProcedure|authedProcedure|authorizedProcedure|privateProcedure/i, evidence: "protected/authed procedure helper evidence was detected." },
+    { signal: "query", pattern: /\.query\s*\(/i, evidence: "query procedure evidence was detected." },
+    { signal: "mutation", pattern: /\.mutation\s*\(/i, evidence: "mutation procedure evidence was detected." },
+    { signal: "subscription", pattern: /\.subscription\s*\(|httpSubscriptionLink|wsLink|applyWSSHandler/i, evidence: "subscription procedure or transport evidence was detected." },
+    { signal: "streaming", pattern: /async\s+function\*|yield\s+|httpBatchStreamLink|stream/i, evidence: "streaming procedure evidence was detected." }
+  ];
+  return rpcReadinessSignalFromSpecs(sourceFiles, specs, "procedure", "signal");
+}
+
+function rpcReadinessValidationSignals(sourceFiles: RpcReadinessSourceFile[]): RpcReadinessReport["validationSignals"] {
+  const specs: Array<{ signal: RpcReadinessReport["validationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "input", pattern: /\.input\s*\(/i, evidence: "input parser evidence was detected." },
+    { signal: "output", pattern: /\.output\s*\(/i, evidence: "output parser evidence was detected." },
+    { signal: "zod", pattern: /from ['"]zod|require\(['"]zod|z\.object|z\.string|zod/i, evidence: "Zod validation evidence was detected." },
+    { signal: "valibot", pattern: /valibot/i, evidence: "Valibot validation evidence was detected." },
+    { signal: "superstruct", pattern: /superstruct/i, evidence: "Superstruct validation evidence was detected." },
+    { signal: "standard-schema", pattern: /standard-schema|StandardSchema/i, evidence: "Standard Schema evidence was detected." },
+    { signal: "transformer", pattern: /transformer|superjson|devalue|serialize|deserialize/i, evidence: "data transformer evidence was detected." }
+  ];
+  return rpcReadinessSignalFromSpecs(sourceFiles, specs, "validation", "signal");
+}
+
+function rpcReadinessContextSignals(sourceFiles: RpcReadinessSourceFile[]): RpcReadinessReport["contextSignals"] {
+  const specs: Array<{ signal: RpcReadinessReport["contextSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "context", pattern: /\.context<|context<|ctx\./i, evidence: "typed context evidence was detected." },
+    { signal: "create-context", pattern: /createContext|createTRPCContext|CreateNextContextOptions/i, evidence: "context factory evidence was detected." },
+    { signal: "middleware", pattern: /\.use\s*\(|middleware\s*\(|opts\.next|next\s*\(/i, evidence: "procedure middleware evidence was detected." },
+    { signal: "auth-guard", pattern: /UNAUTHORIZED|FORBIDDEN|protectedProcedure|authedProcedure|auth|session|user/i, evidence: "auth guard evidence was detected." },
+    { signal: "meta", pattern: /\.meta\s*\(|meta<|routerMeta/i, evidence: "router/procedure metadata evidence was detected." },
+    { signal: "next-ctx", pattern: /CreateNextContextOptions|NextApiRequest|NextRequest|headers\(\)|cookies\(\)/i, evidence: "Next.js context evidence was detected." }
+  ];
+  return rpcReadinessSignalFromSpecs(sourceFiles, specs, "context", "signal");
+}
+
+function rpcReadinessClientSignals(sourceFiles: RpcReadinessSourceFile[]): RpcReadinessReport["clientSignals"] {
+  const specs: Array<{ signal: RpcReadinessReport["clientSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "create-client", pattern: /createTRPCClient|createTRPCProxyClient|createTRPCUntypedClient/i, evidence: "typed client creation evidence was detected." },
+    { signal: "react-query", pattern: /createTRPCReact|@trpc\/react-query|useQuery|useMutation|useSubscription/i, evidence: "React Query binding evidence was detected." },
+    { signal: "next-client", pattern: /createTRPCNext|@trpc\/next|withTRPC|ssrPrepass/i, evidence: "Next client binding evidence was detected." },
+    { signal: "tanstack-options", pattern: /createTRPCContext|createTRPCOptionsProxy|queryOptions|mutationOptions|subscriptionOptions/i, evidence: "TanStack options proxy evidence was detected." },
+    { signal: "http-link", pattern: /httpLink\s*\(/i, evidence: "HTTP link evidence was detected." },
+    { signal: "batch-link", pattern: /httpBatchLink|httpBatchStreamLink/i, evidence: "batch or streaming link evidence was detected." },
+    { signal: "subscription-link", pattern: /httpSubscriptionLink|subscriptionOptions|useSubscription/i, evidence: "subscription client evidence was detected." },
+    { signal: "ws-link", pattern: /wsLink|createWSClient|websocket/i, evidence: "websocket link evidence was detected." },
+    { signal: "logger-link", pattern: /loggerLink/i, evidence: "logger link evidence was detected." },
+    { signal: "retry-link", pattern: /retryLink/i, evidence: "retry link evidence was detected." }
+  ];
+  return rpcReadinessSignalFromSpecs(sourceFiles, specs, "client", "signal");
+}
+
+function rpcReadinessAdapterSignals(sourceFiles: RpcReadinessSourceFile[]): RpcReadinessReport["adapterSignals"] {
+  const specs: Array<{ signal: RpcReadinessReport["adapterSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "standalone", pattern: /createHTTPServer|createHTTPHandler|adapters\/standalone/i, evidence: "standalone HTTP adapter evidence was detected." },
+    { signal: "next-api", pattern: /createNextApiHandler|adapters\/next|pages\/api\/trpc|app\/api\/trpc/i, evidence: "Next API adapter evidence was detected." },
+    { signal: "app-router", pattern: /next-app-dir|experimental_createTRPCNextAppDir|appDir|route\.ts/i, evidence: "Next app-router adapter evidence was detected." },
+    { signal: "express", pattern: /trpcExpress|expressMiddleware|adapters\/express/i, evidence: "Express adapter evidence was detected." },
+    { signal: "fastify", pattern: /fastifyTRPCPlugin|adapters\/fastify/i, evidence: "Fastify adapter evidence was detected." },
+    { signal: "fetch", pattern: /fetchRequestHandler|adapters\/fetch/i, evidence: "Fetch adapter evidence was detected." },
+    { signal: "node-http", pattern: /nodeHTTPRequestHandler|adapters\/node-http|IncomingMessage/i, evidence: "Node HTTP adapter evidence was detected." },
+    { signal: "websocket", pattern: /applyWSSHandler|adapters\/ws|wsLink|websocket/i, evidence: "websocket adapter evidence was detected." },
+    { signal: "mcp", pattern: /experimental_createMCPHandler|MCP/i, evidence: "MCP adapter evidence was detected." }
+  ];
+  return rpcReadinessSignalFromSpecs(sourceFiles, specs, "adapter", "signal");
+}
+
+function rpcReadinessErrorSignals(sourceFiles: RpcReadinessSourceFile[]): RpcReadinessReport["errorSignals"] {
+  const specs: Array<{ signal: RpcReadinessReport["errorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "trpc-error", pattern: /TRPCError|getTRPCErrorFromUnknown|TRPCClientError/i, evidence: "TRPCError evidence was detected." },
+    { signal: "unauthorized", pattern: /UNAUTHORIZED/i, evidence: "UNAUTHORIZED error code evidence was detected." },
+    { signal: "forbidden", pattern: /FORBIDDEN/i, evidence: "FORBIDDEN error code evidence was detected." },
+    { signal: "not-found", pattern: /NOT_FOUND|notFound/i, evidence: "not-found error evidence was detected." },
+    { signal: "bad-request", pattern: /BAD_REQUEST|PAYLOAD_TOO_LARGE|PARSE_ERROR/i, evidence: "bad-request/payload error evidence was detected." },
+    { signal: "error-formatter", pattern: /errorFormatter|getErrorShape|errorShape|formatError/i, evidence: "error formatter evidence was detected." }
+  ];
+  return rpcReadinessSignalFromSpecs(sourceFiles, specs, "error", "signal");
+}
+
+function rpcReadinessCallerSignals(sourceFiles: RpcReadinessSourceFile[]): RpcReadinessReport["callerSignals"] {
+  const specs: Array<{ signal: RpcReadinessReport["callerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "create-caller", pattern: /createCaller\s*\(/i, evidence: "createCaller evidence was detected." },
+    { signal: "create-caller-factory", pattern: /createCallerFactory/i, evidence: "createCallerFactory evidence was detected." },
+    { signal: "router-create-caller", pattern: /router\.createCaller|appRouter\.createCaller/i, evidence: "router.createCaller evidence was detected." },
+    { signal: "infer-router", pattern: /inferRouter|inferProcedure|inferReactQueryProcedureOptions|inferRouterInputs|inferRouterOutputs/i, evidence: "router inference evidence was detected." },
+    { signal: "type-import", pattern: /import\s+type\s+\{\s*\w*AppRouter|import\s+type\s+\w*AppRouter|typeof\s+\w*appRouter/i, evidence: "type-only router import/export evidence was detected." }
+  ];
+  return rpcReadinessSignalFromSpecs(sourceFiles, specs, "caller", "signal");
+}
+
+function rpcReadinessPackageSignals(sourceFiles: RpcReadinessSourceFile[]): RpcReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: RpcReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@trpc/server", pattern: /"@trpc\/server"|from ['"]@trpc\/server|require\(['"]@trpc\/server/i, evidence: "@trpc/server evidence was detected." },
+    { signal: "@trpc/client", pattern: /"@trpc\/client"|from ['"]@trpc\/client|require\(['"]@trpc\/client/i, evidence: "@trpc/client evidence was detected." },
+    { signal: "@trpc/react-query", pattern: /"@trpc\/react-query"|from ['"]@trpc\/react-query/i, evidence: "@trpc/react-query evidence was detected." },
+    { signal: "@trpc/next", pattern: /"@trpc\/next"|from ['"]@trpc\/next/i, evidence: "@trpc/next evidence was detected." },
+    { signal: "@trpc/tanstack-react-query", pattern: /"@trpc\/tanstack-react-query"|from ['"]@trpc\/tanstack-react-query/i, evidence: "@trpc/tanstack-react-query evidence was detected." },
+    { signal: "superjson", pattern: /"superjson"|from ['"]superjson|superjson/i, evidence: "superjson evidence was detected." },
+    { signal: "zod", pattern: /"zod"|from ['"]zod|require\(['"]zod|z\.object/i, evidence: "Zod evidence was detected." }
+  ];
+  return rpcReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function rpcReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: RpcReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/rpc-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
