@@ -42,6 +42,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "secret-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "container-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-quality-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "documentation-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -82,6 +83,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "secret-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "container-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-quality.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "documentation.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -125,6 +127,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "secret-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "container-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "code-quality.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "documentation.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -198,6 +201,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/secret-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/container-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/code-quality.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/documentation.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -727,6 +731,26 @@ describe("RepoTutor core pipeline", () => {
     expect(codeQualityMarkdown).toContain("Source pattern: Biome");
     expect(codeQualityMarkdown).toContain("## Formatter Signals");
     expect(codeQualityMarkdown).toContain("## Language Coverage");
+    const documentationText = await fs.readFile(path.join(result.session.outputPaths.analysis, "documentation-report.json"), "utf8");
+    expect(documentationText).toContain("Docusaurus docs blog pages sidebars docusaurus.config themeConfig navbar footer i18n versioning search build deploy");
+    expect(documentationText).toContain("\"siteConfigs\"");
+    expect(documentationText).toContain("\"contentSurfaces\"");
+    expect(documentationText).toContain("\"navigationSignals\"");
+    expect(documentationText).toContain("\"qualitySignals\"");
+    expect(documentationText).toContain("\"localizationSignals\"");
+    expect(documentationText).toContain("\"releaseSignals\"");
+    expect(documentationText).toContain("npm run build");
+    const documentationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "documentation.html"), "utf8");
+    expect(documentationHtml).toContain("Documentation Readiness");
+    expect(documentationHtml).toContain("documentation-card");
+    expect(documentationHtml).toContain("data-source-pattern=\"Docusaurus\"");
+    expect(documentationHtml).toContain("Content Surfaces");
+    expect(documentationHtml).toContain("Release Signals");
+    const documentationMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "documentation.md"), "utf8");
+    expect(documentationMarkdown).toContain("# Documentation Readiness");
+    expect(documentationMarkdown).toContain("Source pattern: Docusaurus");
+    expect(documentationMarkdown).toContain("## Content Surfaces");
+    expect(documentationMarkdown).toContain("## Release Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -860,6 +884,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/secret-readiness.html");
     expect(exportManifestText).toContain("html/container-readiness.html");
     expect(exportManifestText).toContain("html/code-quality.html");
+    expect(exportManifestText).toContain("html/documentation.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -957,6 +982,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("secret-readiness.html");
     expect(learningPathHtml).toContain("container-readiness.html");
     expect(learningPathHtml).toContain("code-quality.html");
+    expect(learningPathHtml).toContain("documentation.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");
