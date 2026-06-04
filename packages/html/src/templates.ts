@@ -91,6 +91,7 @@ import type {
   LinkIntegrityReadinessReport,
   SeoMetadataReadinessReport,
   PwaReadinessReport,
+  BrowserCompatibilityReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -188,6 +189,7 @@ export interface StudyHtmlInput {
   linkIntegrityReadinessReport: LinkIntegrityReadinessReport;
   seoMetadataReadinessReport: SeoMetadataReadinessReport;
   pwaReadinessReport: PwaReadinessReport;
+  browserCompatibilityReadinessReport: BrowserCompatibilityReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -299,6 +301,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["link-integrity-readiness.html", "Link Integrity"],
     ["seo-metadata-readiness.html", "SEO Metadata"],
     ["pwa-readiness.html", "PWA"],
+    ["browser-compat-readiness.html", "Browser Compat"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -846,6 +849,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("PWA Readiness", "pwa-readiness.html", `<section class="panel" data-source-pattern="Vite PWA"><h2>PWA Snapshot</h2><p>${escapeHtml(input.pwaReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.pwaReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.pwaReadinessReport.pwaSetups.length}</dd></div><div><dt>manifest</dt><dd>${input.pwaReadinessReport.manifestSignals.length}</dd></div><div><dt>service worker</dt><dd>${input.pwaReadinessReport.serviceWorkerSignals.length}</dd></div><div><dt>caching</dt><dd>${input.pwaReadinessReport.cachingSignals.length}</dd></div></dl><p class="muted">RepoTutor records PWA readiness only; it does not register service workers, open browsers, populate Cache Storage, fetch manifests, test offline mode, trigger install prompts, or run the analyzed project's tests.</p></section><section class="grid"><article class="pwa-readiness-card"><h3>PWA Setups</h3>${pwaReadinessSetupList(input.pwaReadinessReport.pwaSetups)}</article><article class="pwa-readiness-card"><h3>Manifest Signals</h3>${pwaReadinessSignalList(input.pwaReadinessReport.manifestSignals, "signal")}</article><article class="pwa-readiness-card"><h3>Service Worker Signals</h3>${pwaReadinessSignalList(input.pwaReadinessReport.serviceWorkerSignals, "signal")}</article><article class="pwa-readiness-card"><h3>Caching Signals</h3>${pwaReadinessSignalList(input.pwaReadinessReport.cachingSignals, "signal")}</article></section><section class="grid"><article class="pwa-readiness-card"><h3>Update Signals</h3>${pwaReadinessSignalList(input.pwaReadinessReport.updateSignals, "signal")}</article><article class="pwa-readiness-card"><h3>Install Signals</h3>${pwaReadinessSignalList(input.pwaReadinessReport.installSignals, "signal")}</article><article class="pwa-readiness-card"><h3>Package Signals</h3>${pwaReadinessSignalList(input.pwaReadinessReport.packageSignals, "signal")}</article><article class="pwa-readiness-card"><h3>Recommended Commands</h3>${pwaReadinessCommandList(input.pwaReadinessReport.recommendedCommands)}</article><article class="pwa-readiness-card"><h3>Risk Queue</h3>${pwaReadinessRiskList(input.pwaReadinessReport.riskQueue)}</article><article class="pwa-readiness-card"><h3>다음 확인 단계</h3>${list(input.pwaReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "browser-compat-readiness.html",
+      title: "Browser Compatibility Readiness",
+      html: pageShell("Browser Compatibility Readiness", "browser-compat-readiness.html", `<section class="panel" data-source-pattern="Browserslist"><h2>Browser Compatibility Snapshot</h2><p>${escapeHtml(input.browserCompatibilityReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.browserCompatibilityReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.browserCompatibilityReadinessReport.compatibilitySetups.length}</dd></div><div><dt>config</dt><dd>${input.browserCompatibilityReadinessReport.configSignals.length}</dd></div><div><dt>queries</dt><dd>${input.browserCompatibilityReadinessReport.querySignals.length}</dd></div><div><dt>coverage</dt><dd>${input.browserCompatibilityReadinessReport.coverageSignals.length}</dd></div></dl><p class="muted">RepoTutor records browser compatibility readiness only; it does not resolve Browserslist queries, update caniuse-lite, run Babel, run Autoprefixer, execute browser tests, or contact external services.</p></section><section class="grid"><article class="browser-compat-readiness-card"><h3>Compatibility Setups</h3>${browserCompatibilityReadinessSetupList(input.browserCompatibilityReadinessReport.compatibilitySetups)}</article><article class="browser-compat-readiness-card"><h3>Config Signals</h3>${browserCompatibilityReadinessSignalList(input.browserCompatibilityReadinessReport.configSignals, "signal")}</article><article class="browser-compat-readiness-card"><h3>Query Signals</h3>${browserCompatibilityReadinessSignalList(input.browserCompatibilityReadinessReport.querySignals, "signal")}</article><article class="browser-compat-readiness-card"><h3>Coverage Signals</h3>${browserCompatibilityReadinessSignalList(input.browserCompatibilityReadinessReport.coverageSignals, "signal")}</article></section><section class="grid"><article class="browser-compat-readiness-card"><h3>Feature Signals</h3>${browserCompatibilityReadinessSignalList(input.browserCompatibilityReadinessReport.featureSignals, "signal")}</article><article class="browser-compat-readiness-card"><h3>Update Signals</h3>${browserCompatibilityReadinessSignalList(input.browserCompatibilityReadinessReport.updateSignals, "signal")}</article><article class="browser-compat-readiness-card"><h3>Package Signals</h3>${browserCompatibilityReadinessSignalList(input.browserCompatibilityReadinessReport.packageSignals, "signal")}</article><article class="browser-compat-readiness-card"><h3>Recommended Commands</h3>${browserCompatibilityReadinessCommandList(input.browserCompatibilityReadinessReport.recommendedCommands)}</article><article class="browser-compat-readiness-card"><h3>Risk Queue</h3>${browserCompatibilityReadinessRiskList(input.browserCompatibilityReadinessReport.riskQueue)}</article><article class="browser-compat-readiness-card"><h3>다음 확인 단계</h3>${list(input.browserCompatibilityReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -1037,6 +1045,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Link Integrity Readiness", path: "html/link-integrity-readiness.html", description: "Lychee식 link target, policy, network, output, CI 준비도를 확인합니다." },
       { label: "SEO Metadata Readiness", path: "html/seo-metadata-readiness.html", description: "Nuxt SEO식 robots, sitemap, metadata, structured data, AEO 준비도를 확인합니다." },
       { label: "PWA Readiness", path: "html/pwa-readiness.html", description: "Vite PWA식 manifest, service worker, Workbox cache, update/install 준비도를 확인합니다." },
+      { label: "Browser Compatibility Readiness", path: "html/browser-compat-readiness.html", description: "Browserslist식 target browser config, query, coverage, update 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1606,6 +1615,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "pwa-readiness.html",
       goal: "Vite PWA식 manifest, service worker, Workbox cache, update/install 흐름을 보고 오프라인 앱 준비도를 확인합니다.",
       evidence: `PWA setups ${input.pwaReadinessReport.pwaSetups.length}개, service worker signals ${input.pwaReadinessReport.serviceWorkerSignals.length}개`
+    },
+    {
+      title: "Browser compatibility readiness 확인",
+      href: "browser-compat-readiness.html",
+      goal: "Browserslist식 target browser config, query, coverage, update 흐름을 보고 프런트엔드 호환성 정책을 확인합니다.",
+      evidence: `compatibility setups ${input.browserCompatibilityReadinessReport.compatibilitySetups.length}개, query signals ${input.browserCompatibilityReadinessReport.querySignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3723,6 +3738,31 @@ function pwaReadinessRiskList(items: PwaReadinessReport["riskQueue"]): string {
 }
 
 function pwaReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function browserCompatibilityReadinessSetupList(items: BrowserCompatibilityReadinessReport["compatibilitySetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">browser compatibility setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>config/query/coverage/env/update/feature ${item.configCount}/${item.queryCount}/${item.coverageCount}/${item.envCount}/${item.updateCount}/${item.featureCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(browserCompatibilityReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function browserCompatibilityReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">browser compatibility signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(browserCompatibilityReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function browserCompatibilityReadinessCommandList(items: BrowserCompatibilityReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function browserCompatibilityReadinessRiskList(items: BrowserCompatibilityReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(browserCompatibilityReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function browserCompatibilityReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
