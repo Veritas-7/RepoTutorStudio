@@ -115,6 +115,7 @@ import {
   ServerlessReadinessReport,
   MobileReadinessReport,
   EdgeReadinessReport,
+  ComposeReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -236,6 +237,7 @@ export interface AnalysisBundle {
   serverlessReadinessReport: ServerlessReadinessReport;
   mobileReadinessReport: MobileReadinessReport;
   edgeReadinessReport: EdgeReadinessReport;
+  composeReadinessReport: ComposeReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -357,8 +359,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const serverlessReadinessReport = await buildServerlessReadinessReport(walk);
   const mobileReadinessReport = await buildMobileReadinessReport(walk);
   const edgeReadinessReport = await buildEdgeReadinessReport(walk);
+  const composeReadinessReport = await buildComposeReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -24508,6 +24511,299 @@ function edgeSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; ev
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/edge-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildComposeReadinessReport(walk: WalkResult): Promise<ComposeReadinessReport> {
+  const sourceFiles = await composeSourceFiles(walk);
+  const composeSetups = composeSetupFiles(sourceFiles);
+  const configSignals = composeConfigSignals(sourceFiles);
+  const serviceSignals = composeServiceSignals(sourceFiles);
+  const dependencySignals = composeDependencySignals(sourceFiles);
+  const resourceSignals = composeResourceSignals(sourceFiles);
+  const workflowSignals = composeWorkflowSignals(sourceFiles);
+  const safetySignals = composeSafetySignals(sourceFiles);
+  const packageSignals = composePackageSignals(sourceFiles);
+
+  const hasConfig = composeSetups.some((item) => ["compose-yaml", "docker-compose-yaml", "override"].includes(item.format)) || configSignals.some((item) => item.readiness === "ready");
+  const hasServices = composeSetups.some((item) => item.serviceCount > 0) || configSignals.some((item) => item.signal === "services" && item.readiness === "ready");
+  const hasHealthOrDependency = dependencySignals.some((item) => ["depends-on", "service-healthy", "healthcheck"].includes(item.signal) && item.readiness === "ready") || composeSetups.some((item) => item.dependencyCount > 0 || item.healthcheckCount > 0);
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready") || composeSetups.some((item) => item.commandCount > 0);
+  const hasResourceOrEnv = resourceSignals.some((item) => item.readiness === "ready") || composeSetups.some((item) => item.volumeCount > 0 || item.networkCount > 0 || item.envCount > 0 || item.secretConfigCount > 0);
+
+  const riskQueue: ComposeReadinessReport["riskQueue"] = [];
+  if (!hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document Compose configuration if this project has multi-service local runtime topology.",
+      why: "Docker Compose readiness starts from compose.yaml or docker-compose.yml with visible services, images/builds, ports, networks, and volumes.",
+      relatedHref: "html/compose-readiness.html"
+    });
+  }
+  if (hasConfig && !hasServices) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add explicit services to the Compose inventory.",
+      why: "A Compose file without visible services cannot explain what processes start together or which image/build path owns each runtime.",
+      relatedHref: "html/compose-readiness.html"
+    });
+  }
+  if (hasConfig && !hasHealthOrDependency) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document service dependencies, healthchecks, or startup order before relying on Compose for repeatable local runs.",
+      why: "depends_on, healthcheck, and service_healthy evidence help learners understand when a stack is actually ready.",
+      relatedHref: "html/compose-readiness.html"
+    });
+  }
+  if (hasConfig && !hasWorkflow) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add repeatable docker compose commands for config validation, startup, inspection, logs, and teardown.",
+      why: "docker compose config/up/ps/logs/down commands make the topology actionable without guessing at runtime.",
+      relatedHref: "html/compose-readiness.html"
+    });
+  }
+  if (hasConfig && !hasResourceOrEnv) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document environment, volume, network, secret, or config resources that services depend on.",
+      why: "Compose stacks often fail because resource wiring is implicit; explicit resource signals make local state easier to audit.",
+      relatedHref: "html/compose-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Docker Compose readiness report: setup ${composeSetups.length}개, config signal ${configSignals.length}개, service signal ${serviceSignals.length}개, workflow signal ${workflowSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Docker Compose compose.yaml docker-compose.yml services build image ports volumes networks depends_on healthcheck profiles env_file secrets configs docker compose config up build run logs ps watch wait",
+    composeSetups,
+    configSignals,
+    serviceSignals,
+    dependencySignals,
+    resourceSignals,
+    workflowSignals,
+    safetySignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "docker compose config", purpose: "Validate and render the Compose model before starting containers." },
+      { command: "docker compose up --no-start", purpose: "Create the stack without starting services when you need a low-risk dry run." },
+      { command: "docker compose up -d", purpose: "Start the stack in detached mode after config, resources, and healthchecks are reviewed." },
+      { command: "docker compose ps", purpose: "Inspect service state and health after startup." },
+      { command: "docker compose logs <service>", purpose: "Read a specific service log stream during local debugging." },
+      { command: "docker compose down --remove-orphans", purpose: "Tear down containers and remove stale service containers after a smoke run." }
+    ],
+    learnerNextSteps: [
+      "Open Compose Readiness and identify the Compose file that defines the local runtime topology.",
+      "Map each service to its image or build context, exposed ports, volumes, networks, and environment inputs.",
+      "Check depends_on, healthcheck, and service_healthy evidence before assuming startup order is reliable.",
+      "Review docker compose config/up/ps/logs/down commands before changing local stack behavior."
+    ]
+  };
+}
+
+type ComposeSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function composeSourceFiles(walk: WalkResult): Promise<ComposeSourceFile[]> {
+  const files: ComposeSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !composeInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath);
+    if (!text) continue;
+    if (!composePathSignal(file.relPath) && !composeContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return files;
+}
+
+function composeInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return composePathSignal(filePath)
+    || /(^|\/)(README|docs?|src|docker|compose|containers?|services?|infra|infrastructure|scripts?|ci|workflows?|dev|local|test|tests)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|Makefile|Taskfile\.ya?ml|justfile|Dockerfile(\..+)?|\.env(\..+)?|\.env)$/i.test(base);
+}
+
+function composePathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(compose|docker-compose)(\.override)?\.ya?ml$/i.test(base)
+    || /^\.env(\..+)?$/i.test(base)
+    || /^Dockerfile(\..+)?$/i.test(base)
+    || /(^|\/)\.github\/workflows\/.*\.(ya?ml)$/i.test(filePath);
+}
+
+function composeContentSignal(text: string): boolean {
+  return /(Docker Compose|docker\s+compose|docker-compose|(^|\n)\s*services\s*:|(^|\n)\s*depends_on\s*:|(^|\n)\s*healthcheck\s*:|(^|\n)\s*profiles\s*:|(^|\n)\s*env_file\s*:|(^|\n)\s*secrets\s*:|(^|\n)\s*configs\s*:|(^|\n)\s*networks\s*:|(^|\n)\s*volumes\s*:)/i.test(text);
+}
+
+function composeSetupFiles(sourceFiles: ComposeSourceFile[]): ComposeReadinessReport["composeSetups"] {
+  const rows: ComposeReadinessReport["composeSetups"] = [];
+  for (const source of sourceFiles) {
+    const serviceCount = countMatches(source.text, /(^|\n)\s{2}[A-Za-z0-9_.-]+\s*:\s*\n\s{4}(build|image|command|entrypoint|ports|expose|depends_on|environment|env_file|volumes|networks|profiles|restart)\s*:/gm);
+    const buildCount = countMatches(source.text, /(^|\n)\s*build\s*:|(^|\n)\s*context\s*:|(^|\n)\s*dockerfile\s*:|(^|\n)\s*FROM\s+\S+/gim);
+    const imageCount = countMatches(source.text, /(^|\n)\s*image\s*:/gm);
+    const portCount = countMatches(source.text, /(^|\n)\s*(ports|expose)\s*:|["']?\d{2,5}:\d{2,5}["']?/gm);
+    const volumeCount = countMatches(source.text, /(^|\n)\s*volumes\s*:|(^|\n)\s*-\s*[^:\n]+:[^:\n]+/gm);
+    const networkCount = countMatches(source.text, /(^|\n)\s*networks\s*:|(^|\n)\s*aliases\s*:|(^|\n)\s*external\s*:\s*true/gim);
+    const dependencyCount = countMatches(source.text, /(^|\n)\s*depends_on\s*:|(^|\n)\s*condition\s*:|(^|\n)\s*links\s*:/gm);
+    const healthcheckCount = countMatches(source.text, /(^|\n)\s*healthcheck\s*:|(^|\n)\s*test\s*:|(^|\n)\s*interval\s*:|(^|\n)\s*timeout\s*:|(^|\n)\s*retries\s*:/gm);
+    const envCount = countMatches(source.text, /(^|\n)\s*environment\s*:|(^|\n)\s*env_file\s*:|(^|\n)[A-Z][A-Z0-9_]*=/gm);
+    const secretConfigCount = countMatches(source.text, /(^|\n)\s*(secrets|configs)\s*:|\/run\/secrets|(^|\n)\s*file\s*:/gm);
+    const profileCount = countMatches(source.text, /(^|\n)\s*profiles\s*:|COMPOSE_PROFILES/gm);
+    const commandCount = countMatches(source.text, /docker\s+compose\s+(config|up|down|build|run|exec|logs|ps|pull|watch|wait|restart|start|stop)|docker-compose\s+(config|up|down|build|run|exec|logs|ps|pull|restart|start|stop)/gi);
+    const totalSignals = serviceCount + buildCount + imageCount + portCount + volumeCount + networkCount + dependencyCount + healthcheckCount + envCount + secretConfigCount + profileCount + commandCount;
+    if (totalSignals === 0 && !composePathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      format: composeFormat(source),
+      serviceCount,
+      buildCount,
+      imageCount,
+      portCount,
+      volumeCount,
+      networkCount,
+      dependencyCount,
+      healthcheckCount,
+      envCount,
+      secretConfigCount,
+      profileCount,
+      commandCount,
+      readiness: totalSignals >= 6 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} compose topology signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.serviceCount + b.buildCount + b.imageCount + b.dependencyCount + b.healthcheckCount + b.commandCount;
+    const aScore = a.serviceCount + a.buildCount + a.imageCount + a.dependencyCount + a.healthcheckCount + a.commandCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 60);
+}
+
+function composeFormat(source: ComposeSourceFile): ComposeReadinessReport["composeSetups"][number]["format"] {
+  const base = path.basename(source.filePath).toLowerCase();
+  if (/^docker-compose\.override\.ya?ml$/.test(base) || /^compose\.override\.ya?ml$/.test(base)) return "override";
+  if (/^docker-compose\.ya?ml$/.test(base)) return "docker-compose-yaml";
+  if (/^compose\.ya?ml$/.test(base)) return "compose-yaml";
+  if (/^\.env(\..+)?$/.test(base)) return "env-file";
+  if (/^(package\.json|Makefile|Taskfile\.ya?ml|justfile)$/i.test(base) || /docker\s+compose|docker-compose/i.test(source.text)) return "package-script";
+  return "unknown";
+}
+
+function composeConfigSignals(sourceFiles: ComposeSourceFile[]): ComposeReadinessReport["configSignals"] {
+  const specs: Array<{ signal: ComposeReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "compose-yaml", pattern: /(^|\/)compose\.ya?ml$/i, evidence: "compose.yaml evidence was detected." },
+    { signal: "docker-compose-yaml", pattern: /(^|\/)docker-compose\.ya?ml$/i, evidence: "docker-compose.yml evidence was detected." },
+    { signal: "override-file", pattern: /(^|\/)(compose|docker-compose)\.override\.ya?ml$/i, evidence: "Compose override file evidence was detected." },
+    { signal: "services", pattern: /(^|\n)\s*services\s*:/i, evidence: "services block evidence was detected." },
+    { signal: "name", pattern: /(^|\n)\s*name\s*:/i, evidence: "project name evidence was detected." },
+    { signal: "include", pattern: /(^|\n)\s*include\s*:/i, evidence: "include evidence was detected." },
+    { signal: "extends", pattern: /(^|\n)\s*extends\s*:/i, evidence: "extends evidence was detected." },
+    { signal: "x-extension", pattern: /(^|\n)\s*x-[A-Za-z0-9_.-]+\s*:/i, evidence: "Compose extension field evidence was detected." }
+  ];
+  return composeSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function composeServiceSignals(sourceFiles: ComposeSourceFile[]): ComposeReadinessReport["serviceSignals"] {
+  const specs: Array<{ signal: ComposeReadinessReport["serviceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "build", pattern: /(^|\n)\s*build\s*:|(^|\n)\s*context\s*:|(^|\n)\s*dockerfile\s*:/i, evidence: "service build evidence was detected." },
+    { signal: "image", pattern: /(^|\n)\s*image\s*:/i, evidence: "service image evidence was detected." },
+    { signal: "command", pattern: /(^|\n)\s*command\s*:/i, evidence: "service command evidence was detected." },
+    { signal: "entrypoint", pattern: /(^|\n)\s*entrypoint\s*:/i, evidence: "service entrypoint evidence was detected." },
+    { signal: "ports", pattern: /(^|\n)\s*ports\s*:|["']?\d{2,5}:\d{2,5}["']?/i, evidence: "service ports evidence was detected." },
+    { signal: "expose", pattern: /(^|\n)\s*expose\s*:/i, evidence: "service expose evidence was detected." },
+    { signal: "restart", pattern: /(^|\n)\s*restart\s*:/i, evidence: "restart policy evidence was detected." },
+    { signal: "profiles", pattern: /(^|\n)\s*profiles\s*:/i, evidence: "profiles evidence was detected." },
+    { signal: "scale-deploy", pattern: /(^|\n)\s*deploy\s*:|(^|\n)\s*replicas\s*:|(^|\n)\s*resources\s*:/i, evidence: "deploy/scale evidence was detected." }
+  ];
+  return composeSignalFromSpecs(sourceFiles, specs, "service", "signal");
+}
+
+function composeDependencySignals(sourceFiles: ComposeSourceFile[]): ComposeReadinessReport["dependencySignals"] {
+  const specs: Array<{ signal: ComposeReadinessReport["dependencySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "depends-on", pattern: /(^|\n)\s*depends_on\s*:/i, evidence: "depends_on evidence was detected." },
+    { signal: "service-healthy", pattern: /service_healthy/i, evidence: "service_healthy condition evidence was detected." },
+    { signal: "healthcheck", pattern: /(^|\n)\s*healthcheck\s*:|(^|\n)\s*test\s*:/i, evidence: "healthcheck evidence was detected." },
+    { signal: "links", pattern: /(^|\n)\s*links\s*:/i, evidence: "legacy links evidence was detected." },
+    { signal: "external-network", pattern: /(^|\n)\s*external\s*:\s*true/i, evidence: "external network evidence was detected." },
+    { signal: "aliases", pattern: /(^|\n)\s*aliases\s*:/i, evidence: "network aliases evidence was detected." }
+  ];
+  return composeSignalFromSpecs(sourceFiles, specs, "dependency", "signal");
+}
+
+function composeResourceSignals(sourceFiles: ComposeSourceFile[]): ComposeReadinessReport["resourceSignals"] {
+  const specs: Array<{ signal: ComposeReadinessReport["resourceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "volumes", pattern: /(^|\n)\s*volumes\s*:/i, evidence: "volume evidence was detected." },
+    { signal: "bind-mounts", pattern: /(^|\n)\s*-\s*\.{1,2}(:|\/)/i, evidence: "bind mount evidence was detected." },
+    { signal: "named-volumes", pattern: /(^|\n)\s{2,}[A-Za-z0-9_.-]+:\s*(\n|$)/i, evidence: "named volume style evidence was detected." },
+    { signal: "networks", pattern: /(^|\n)\s*networks\s*:/i, evidence: "network evidence was detected." },
+    { signal: "secrets", pattern: /(^|\n)\s*secrets\s*:|\/run\/secrets/i, evidence: "secrets evidence was detected." },
+    { signal: "configs", pattern: /(^|\n)\s*configs\s*:/i, evidence: "configs evidence was detected." },
+    { signal: "env-file", pattern: /(^|\n)\s*env_file\s*:|(^|\/)\.env(\..+)?$/i, evidence: "env_file evidence was detected." },
+    { signal: "environment", pattern: /(^|\n)\s*environment\s*:|(^|\n)[A-Z][A-Z0-9_]*=/i, evidence: "environment evidence was detected." }
+  ];
+  return composeSignalFromSpecs(sourceFiles, specs, "resource", "signal");
+}
+
+function composeWorkflowSignals(sourceFiles: ComposeSourceFile[]): ComposeReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: ComposeReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "config", pattern: /docker\s+compose\s+config|docker-compose\s+config/i, evidence: "config command evidence was detected." },
+    { signal: "up", pattern: /docker\s+compose\s+up|docker-compose\s+up/i, evidence: "up command evidence was detected." },
+    { signal: "down", pattern: /docker\s+compose\s+down|docker-compose\s+down/i, evidence: "down command evidence was detected." },
+    { signal: "build", pattern: /docker\s+compose\s+build|docker-compose\s+build/i, evidence: "build command evidence was detected." },
+    { signal: "run", pattern: /docker\s+compose\s+run|docker-compose\s+run/i, evidence: "run command evidence was detected." },
+    { signal: "exec", pattern: /docker\s+compose\s+exec|docker-compose\s+exec/i, evidence: "exec command evidence was detected." },
+    { signal: "logs", pattern: /docker\s+compose\s+logs|docker-compose\s+logs/i, evidence: "logs command evidence was detected." },
+    { signal: "ps", pattern: /docker\s+compose\s+ps|docker-compose\s+ps/i, evidence: "ps command evidence was detected." },
+    { signal: "pull", pattern: /docker\s+compose\s+pull|docker-compose\s+pull/i, evidence: "pull command evidence was detected." },
+    { signal: "watch", pattern: /docker\s+compose\s+watch/i, evidence: "watch command evidence was detected." },
+    { signal: "wait", pattern: /docker\s+compose\s+wait/i, evidence: "wait command evidence was detected." }
+  ];
+  return composeSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function composeSafetySignals(sourceFiles: ComposeSourceFile[]): ComposeReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: ComposeReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "healthcheck", pattern: /(^|\n)\s*healthcheck\s*:/i, evidence: "healthcheck safety evidence was detected." },
+    { signal: "restart-policy", pattern: /(^|\n)\s*restart\s*:/i, evidence: "restart policy evidence was detected." },
+    { signal: "profiles", pattern: /(^|\n)\s*profiles\s*:|COMPOSE_PROFILES/i, evidence: "profile gating evidence was detected." },
+    { signal: "resource-limits", pattern: /(^|\n)\s*(resources|limits|cpus|mem_limit)\s*:/i, evidence: "resource limit evidence was detected." },
+    { signal: "read-only", pattern: /(^|\n)\s*read_only\s*:\s*true/i, evidence: "read-only container evidence was detected." },
+    { signal: "cap-drop", pattern: /(^|\n)\s*cap_drop\s*:/i, evidence: "cap_drop evidence was detected." },
+    { signal: "security-opt", pattern: /(^|\n)\s*security_opt\s*:/i, evidence: "security_opt evidence was detected." },
+    { signal: "secrets", pattern: /(^|\n)\s*secrets\s*:|\/run\/secrets/i, evidence: "secrets safety evidence was detected." }
+  ];
+  return composeSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function composePackageSignals(sourceFiles: ComposeSourceFile[]): ComposeReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ComposeReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "docker-compose-plugin", pattern: /docker\s+compose\s+(config|up|down|build|run|exec|logs|ps|pull|watch|wait)/i, evidence: "Docker Compose plugin command evidence was detected." },
+    { signal: "docker-compose-v1", pattern: /docker-compose\s+(config|up|down|build|run|exec|logs|ps|pull)/i, evidence: "legacy docker-compose command evidence was detected." },
+    { signal: "compose-spec", pattern: /compose-spec|Compose Specification|compose\.ya?ml/i, evidence: "Compose spec evidence was detected." },
+    { signal: "compose-watch", pattern: /docker\s+compose\s+watch|develop\s*:|watch\s*:/i, evidence: "Compose watch evidence was detected." },
+    { signal: "dockerfile", pattern: /(^|\/)Dockerfile(\..+)?$|(^|\n)\s*FROM\s+\S+/i, evidence: "Dockerfile evidence was detected." }
+  ];
+  return composeSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function composeSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ComposeSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/compose-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

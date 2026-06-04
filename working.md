@@ -4614,6 +4614,44 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 202:
   - `b872178` edge readiness report
 
+- 2026-06-05: AutoResearch Upgrade 203 candidate selected: `docker/compose`
+  (`https://github.com/docker/compose`; public; Apache-2.0; 37,482 stars;
+  5,904 forks; updated 2026-06-04T14:39:01Z). Compared with
+  `compose-spec/compose-spec`, `docker/awesome-compose`, and `docker/docs`;
+  selected Docker Compose because it directly models multi-service local
+  runtime topology through compose files, services, dependencies, healthchecks,
+  resources, safety controls, and `docker compose` CLI workflows. Cloned sparse
+  ignored external source to `research/external-src/docker-compose` and
+  inspected source/docs/fixtures without executing external source. Clone HEAD
+  was `f3969cd`; tracked file count for
+  `research/external-src/docker-compose` returned `0`.
+- 2026-06-05: RED compose-readiness smoke generated
+  `/tmp/repotutor-compose-red-studies.nAN1Gy/2026-06-05/local__repotutor-compose-red-repo.tB0j0H__local__ce9aed18`;
+  old build had `verificationCheckedRequiredArtifacts=306`, was missing
+  `analysis/compose-readiness-report.json`, `markdown/compose-readiness.md`,
+  and `html/compose-readiness.html`, and `open --target compose-readiness`
+  failed as expected.
+- 2026-06-05: Implemented Docker Compose-style compose-readiness report:
+  `ComposeReadinessReportSchema`, `analysis/compose-readiness-report.json`,
+  `markdown/compose-readiness.md`, `html/compose-readiness.html`, compose
+  setups, config signals, service signals, dependency signals, resource
+  signals, workflow signals, safety signals, package signals, recommended
+  commands, risk queue, manifest/session verification coverage, learning-path
+  linkage, nav entry, CLI help target, and `open --target compose-readiness`.
+- 2026-06-05: GREEN compose-readiness smoke generated
+  `/tmp/repotutor-compose-green-studies.YiCemT/2026-06-05/local__repotutor-compose-green-repo.J3tX9G__local__4c25d1a6`;
+  confirmed `verificationCheckedRequiredArtifacts=309`, compose setups 3,
+  config signals 8, service signals 9, dependency signals 6, resource signals
+  8, workflow signals 11, safety signals 8, package signals 5, risk queue 0,
+  all three new artifacts, and `open --target compose-readiness` ->
+  `html/compose-readiness.html`.
+- 2026-06-05: Verification for Upgrade 203:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 10/10 tests
+  - `pnpm audit:brief`: PASS, 101/101 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

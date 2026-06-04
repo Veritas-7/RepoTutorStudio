@@ -104,6 +104,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "serverless-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mobile-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "edge-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "compose-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -206,6 +207,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "serverless-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mobile-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "edge-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "compose-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -308,6 +310,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "serverless-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mobile-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "edge-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "compose-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -441,6 +444,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/serverless-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/mobile-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/edge-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/compose-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -2211,6 +2215,19 @@ describe("RepoTutor core pipeline", () => {
     expect(edgeReadinessMarkdown).toContain("# Edge Readiness");
     expect(edgeReadinessMarkdown).toContain("Source pattern: Cloudflare Workers");
     expect(edgeReadinessMarkdown).toContain("## Binding Signals");
+    const composeReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "compose-readiness-report.json"), "utf8");
+    expect(composeReadinessText).toContain("Docker Compose compose.yaml docker-compose.yml services build image ports volumes networks depends_on healthcheck profiles env_file secrets configs docker compose config up build run logs ps watch wait");
+    expect(composeReadinessText).toContain("\"composeSetups\"");
+    expect(composeReadinessText).toContain("\"workflowSignals\"");
+    expect(composeReadinessText).toContain("\"resourceSignals\"");
+    const composeReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "compose-readiness.html"), "utf8");
+    expect(composeReadinessHtml).toContain("Compose Readiness");
+    expect(composeReadinessHtml).toContain("compose-readiness-card");
+    expect(composeReadinessHtml).toContain("data-source-pattern=\"Docker Compose\"");
+    const composeReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "compose-readiness.md"), "utf8");
+    expect(composeReadinessMarkdown).toContain("# Compose Readiness");
+    expect(composeReadinessMarkdown).toContain("Source pattern: Docker Compose");
+    expect(composeReadinessMarkdown).toContain("## Workflow Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -2373,6 +2390,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/rate-limit-readiness.html");
     expect(exportManifestText).toContain("html/error-tracking-readiness.html");
     expect(exportManifestText).toContain("html/edge-readiness.html");
+    expect(exportManifestText).toContain("html/compose-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -3104,6 +3122,190 @@ describe("RepoTutor core pipeline", () => {
     expect(report.packageSignals.some((item) => item.signal === "vitest-pool-workers" && item.readiness === "ready")).toBe(true);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "edge-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "edge-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects Docker Compose readiness patterns without running Docker", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-compose-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-compose-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "compose.yaml"), [
+      "name: repotutor-compose-fixture",
+      "x-common-env: &common-env",
+      "  APP_MODE: compose",
+      "include:",
+      "  - compose.override.yml",
+      "services:",
+      "  web:",
+      "    build:",
+      "      context: .",
+      "      dockerfile: Dockerfile",
+      "    image: local/repotutor-web:dev",
+      "    command: pnpm dev",
+      "    entrypoint: [\"sh\", \"-c\"]",
+      "    ports:",
+      "      - \"3000:3000\"",
+      "    expose:",
+      "      - \"3000\"",
+      "    restart: unless-stopped",
+      "    profiles: [\"app\"]",
+      "    environment:",
+      "      <<: *common-env",
+      "      DATABASE_URL: postgresql://db:5432/app",
+      "    env_file:",
+      "      - .env.compose",
+      "    depends_on:",
+      "      db:",
+      "        condition: service_healthy",
+      "    healthcheck:",
+      "      test: [\"CMD\", \"node\", \"health.js\"]",
+      "      interval: 10s",
+      "      timeout: 3s",
+      "      retries: 3",
+      "    volumes:",
+      "      - .:/workspace",
+      "      - web-cache:/cache",
+      "    networks:",
+      "      app-net:",
+      "        aliases: [\"web.local\"]",
+      "    secrets:",
+      "      - app_token",
+      "    configs:",
+      "      - app_config",
+      "    deploy:",
+      "      replicas: 1",
+      "      resources:",
+      "        limits:",
+      "          cpus: \"0.50\"",
+      "    read_only: true",
+      "    cap_drop:",
+      "      - ALL",
+      "    security_opt:",
+      "      - no-new-privileges:true",
+      "  db:",
+      "    image: postgres:16",
+      "    environment:",
+      "      POSTGRES_DB: app",
+      "    healthcheck:",
+      "      test: [\"CMD-SHELL\", \"pg_isready -U app\"]",
+      "      interval: 5s",
+      "      timeout: 3s",
+      "      retries: 5",
+      "    volumes:",
+      "      - db-data:/var/lib/postgresql/data",
+      "    networks:",
+      "      - app-net",
+      "  worker:",
+      "    build: .",
+      "    depends_on:",
+      "      - web",
+      "    command: pnpm worker",
+      "    links:",
+      "      - db",
+      "volumes:",
+      "  web-cache:",
+      "  db-data:",
+      "networks:",
+      "  app-net:",
+      "    external: true",
+      "secrets:",
+      "  app_token:",
+      "    file: ./secrets/app_token.txt",
+      "configs:",
+      "  app_config:",
+      "    file: ./config/app.yml",
+      "extends:",
+      "  file: compose.base.yml"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "compose.override.yml"), "services:\n  web:\n    profiles: [\"debug\"]\n");
+    await fs.writeFile(path.join(sourceRoot, ".env.compose"), "APP_MODE=compose\nDB_NAME=app\nCOMPOSE_PROFILES=app\n");
+    await fs.writeFile(path.join(sourceRoot, "Dockerfile"), "FROM node:22-alpine\nWORKDIR /workspace\nCMD [\"node\", \"health.js\"]\n");
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "compose:config": "docker compose config",
+        "compose:up": "docker compose up -d",
+        "compose:build": "docker compose build",
+        "compose:run": "docker compose run --rm web pnpm test",
+        "compose:exec": "docker compose exec web sh",
+        "compose:logs": "docker compose logs web",
+        "compose:ps": "docker compose ps",
+        "compose:pull": "docker compose pull",
+        "compose:watch": "docker compose watch",
+        "compose:wait": "docker compose wait",
+        "compose:down": "docker compose down --remove-orphans",
+        "compose:v1": "docker-compose config"
+      },
+      devDependencies: {}
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "compose-readiness-report.json"), "utf8")) as {
+      composeSetups: Array<{ filePath: string; format: string; serviceCount: number; buildCount: number; imageCount: number; portCount: number; volumeCount: number; networkCount: number; dependencyCount: number; healthcheckCount: number; envCount: number; secretConfigCount: number; profileCount: number; commandCount: number }>;
+      configSignals: Array<{ signal: string; readiness: string }>;
+      serviceSignals: Array<{ signal: string; readiness: string }>;
+      dependencySignals: Array<{ signal: string; readiness: string }>;
+      resourceSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const setup = report.composeSetups.find((item) => item.filePath === "compose.yaml");
+    expect(report.composeSetups.length).toBeGreaterThan(0);
+    expect(setup?.format).toBe("compose-yaml");
+    expect(setup?.serviceCount).toBeGreaterThan(0);
+    expect(setup?.buildCount).toBeGreaterThan(0);
+    expect(setup?.imageCount).toBeGreaterThan(0);
+    expect(setup?.portCount).toBeGreaterThan(0);
+    expect(setup?.volumeCount).toBeGreaterThan(0);
+    expect(setup?.networkCount).toBeGreaterThan(0);
+    expect(setup?.dependencyCount).toBeGreaterThan(0);
+    expect(setup?.healthcheckCount).toBeGreaterThan(0);
+    expect(setup?.envCount).toBeGreaterThan(0);
+    expect(setup?.secretConfigCount).toBeGreaterThan(0);
+    expect(setup?.profileCount).toBeGreaterThan(0);
+    expect(report.composeSetups.some((item) => item.commandCount > 0)).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "compose-yaml" && item.readiness === "ready")).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "override-file" && item.readiness === "ready")).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "services" && item.readiness === "ready")).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "name" && item.readiness === "ready")).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "include" && item.readiness === "ready")).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "extends" && item.readiness === "ready")).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "x-extension" && item.readiness === "ready")).toBe(true);
+    expect(report.serviceSignals.some((item) => item.signal === "build" && item.readiness === "ready")).toBe(true);
+    expect(report.serviceSignals.some((item) => item.signal === "image" && item.readiness === "ready")).toBe(true);
+    expect(report.serviceSignals.some((item) => item.signal === "command" && item.readiness === "ready")).toBe(true);
+    expect(report.serviceSignals.some((item) => item.signal === "entrypoint" && item.readiness === "ready")).toBe(true);
+    expect(report.serviceSignals.some((item) => item.signal === "ports" && item.readiness === "ready")).toBe(true);
+    expect(report.serviceSignals.some((item) => item.signal === "expose" && item.readiness === "ready")).toBe(true);
+    expect(report.serviceSignals.some((item) => item.signal === "restart" && item.readiness === "ready")).toBe(true);
+    expect(report.serviceSignals.some((item) => item.signal === "profiles" && item.readiness === "ready")).toBe(true);
+    expect(report.serviceSignals.some((item) => item.signal === "scale-deploy" && item.readiness === "ready")).toBe(true);
+    expect(report.dependencySignals.some((item) => item.signal === "depends-on" && item.readiness === "ready")).toBe(true);
+    expect(report.dependencySignals.some((item) => item.signal === "service-healthy" && item.readiness === "ready")).toBe(true);
+    expect(report.dependencySignals.some((item) => item.signal === "healthcheck" && item.readiness === "ready")).toBe(true);
+    expect(report.dependencySignals.some((item) => item.signal === "links" && item.readiness === "ready")).toBe(true);
+    expect(report.dependencySignals.some((item) => item.signal === "external-network" && item.readiness === "ready")).toBe(true);
+    expect(report.dependencySignals.some((item) => item.signal === "aliases" && item.readiness === "ready")).toBe(true);
+    expect(report.resourceSignals.some((item) => item.signal === "volumes" && item.readiness === "ready")).toBe(true);
+    expect(report.resourceSignals.some((item) => item.signal === "bind-mounts" && item.readiness === "ready")).toBe(true);
+    expect(report.resourceSignals.some((item) => item.signal === "named-volumes" && item.readiness === "ready")).toBe(true);
+    expect(report.resourceSignals.some((item) => item.signal === "networks" && item.readiness === "ready")).toBe(true);
+    expect(report.resourceSignals.some((item) => item.signal === "secrets" && item.readiness === "ready")).toBe(true);
+    expect(report.resourceSignals.some((item) => item.signal === "configs" && item.readiness === "ready")).toBe(true);
+    expect(report.resourceSignals.some((item) => item.signal === "env-file" && item.readiness === "ready")).toBe(true);
+    expect(report.resourceSignals.some((item) => item.signal === "environment" && item.readiness === "ready")).toBe(true);
+    for (const signal of ["config", "up", "down", "build", "run", "exec", "logs", "ps", "pull", "watch", "wait"]) {
+      expect(report.workflowSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["healthcheck", "restart-policy", "profiles", "resource-limits", "read-only", "cap-drop", "security-opt", "secrets"]) {
+      expect(report.safetySignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    expect(report.packageSignals.some((item) => item.signal === "docker-compose-plugin" && item.readiness === "ready")).toBe(true);
+    expect(report.packageSignals.some((item) => item.signal === "docker-compose-v1" && item.readiness === "ready")).toBe(true);
+    expect(report.packageSignals.some((item) => item.signal === "compose-spec" && item.readiness === "ready")).toBe(true);
+    expect(report.packageSignals.some((item) => item.signal === "compose-watch" && item.readiness === "ready")).toBe(true);
+    expect(report.packageSignals.some((item) => item.signal === "dockerfile" && item.readiness === "ready")).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "compose-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "compose-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("compares a new study session against the previous source snapshot", async () => {
