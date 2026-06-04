@@ -54,6 +54,7 @@ import type {
   UnitTestReport,
   TypecheckReadinessReport,
   PackageManagerReport,
+  GitHooksReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -114,6 +115,7 @@ export interface StudyHtmlInput {
   unitTestReport: UnitTestReport;
   typecheckReadinessReport: TypecheckReadinessReport;
   packageManagerReport: PackageManagerReport;
+  gitHooksReport: GitHooksReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -193,6 +195,8 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["ci-cd.html", "CI/CD"],
     ["unit-tests.html", "Unit Tests"],
     ["typecheck-readiness.html", "Typecheck"],
+    ["package-manager.html", "Package Manager"],
+    ["git-hooks.html", "Git Hooks"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -308,6 +312,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Unit Test Readiness</h3><p>${escapeHtml(input.unitTestReport.summary)}</p><p>Vitest 패턴으로 test files, assertions, mocks, coverage, environment, reporters 준비도를 정리합니다.</p><a href="unit-tests.html">Unit Tests 열기</a></article>
           <article><h3>Typecheck Readiness</h3><p>${escapeHtml(input.typecheckReadinessReport.summary)}</p><p>TypeScript 패턴으로 tsconfig, strict flags, project references, module resolution, declaration emit, tsc scripts를 정리합니다.</p><a href="typecheck-readiness.html">Typecheck 열기</a></article>
           <article><h3>Package Manager Readiness</h3><p>${escapeHtml(input.packageManagerReport.summary)}</p><p>pnpm 패턴으로 packageManager, workspace, lockfile, scripts, install policy를 정리합니다.</p><a href="package-manager.html">Package Manager 열기</a></article>
+          <article><h3>Git Hooks Readiness</h3><p>${escapeHtml(input.gitHooksReport.summary)}</p><p>Husky 패턴으로 .husky hook files, install scripts, pre-commit/pre-push policy, lint-staged, bypass signals를 정리합니다.</p><a href="git-hooks.html">Git Hooks 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -539,6 +544,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Package Manager Readiness", "package-manager.html", `<section class="panel" data-source-pattern="pnpm"><h2>Package Manager Snapshot</h2><p>${escapeHtml(input.packageManagerReport.summary)}</p><p class="muted">${escapeHtml(input.packageManagerReport.sourcePattern)}</p><dl class="meta"><div><dt>manifests</dt><dd>${input.packageManagerReport.manifestFiles.length}</dd></div><div><dt>workspaces</dt><dd>${input.packageManagerReport.workspaceSignals.length}</dd></div><div><dt>lockfiles</dt><dd>${input.packageManagerReport.lockfileSignals.length}</dd></div><div><dt>policies</dt><dd>${input.packageManagerReport.policySignals.length}</dd></div></dl><p class="muted">RepoTutor records package-manager readiness only. It does not run install, resolve registries, or execute lifecycle scripts.</p></section><section class="grid"><article class="package-manager-card"><h3>Manifest Files</h3>${packageManagerManifestList(input.packageManagerReport.manifestFiles)}</article><article class="package-manager-card"><h3>Workspace Signals</h3>${packageManagerSignalList(input.packageManagerReport.workspaceSignals, "signal")}</article><article class="package-manager-card"><h3>Lockfile Signals</h3>${packageManagerLockfileList(input.packageManagerReport.lockfileSignals)}</article><article class="package-manager-card"><h3>Script Signals</h3>${packageManagerSignalList(input.packageManagerReport.scriptSignals, "signal")}</article></section><section class="grid"><article class="package-manager-card"><h3>Policy Signals</h3>${packageManagerSignalList(input.packageManagerReport.policySignals, "signal")}</article><article class="package-manager-card"><h3>Recommended Commands</h3>${packageManagerCommandList(input.packageManagerReport.recommendedCommands)}</article><article class="package-manager-card"><h3>Risk Queue</h3>${packageManagerRiskList(input.packageManagerReport.riskQueue)}</article><article class="package-manager-card"><h3>다음 확인 단계</h3>${list(input.packageManagerReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "git-hooks.html",
+      title: "Git Hooks Readiness",
+      html: pageShell("Git Hooks Readiness", "git-hooks.html", `<section class="panel" data-source-pattern="Husky"><h2>Git Hooks Snapshot</h2><p>${escapeHtml(input.gitHooksReport.summary)}</p><p class="muted">${escapeHtml(input.gitHooksReport.sourcePattern)}</p><dl class="meta"><div><dt>hooks</dt><dd>${input.gitHooksReport.hookFiles.length}</dd></div><div><dt>install</dt><dd>${input.gitHooksReport.installSignals.length}</dd></div><div><dt>commands</dt><dd>${input.gitHooksReport.commandSignals.length}</dd></div><div><dt>tools</dt><dd>${input.gitHooksReport.toolConfigFiles.length}</dd></div></dl><p class="muted">RepoTutor records Git hook readiness only. It does not run hooks, change Git config, or create commits.</p></section><section class="grid"><article class="git-hooks-card"><h3>Hook Files</h3>${gitHooksHookList(input.gitHooksReport.hookFiles)}</article><article class="git-hooks-card"><h3>Install Signals</h3>${gitHooksSignalList(input.gitHooksReport.installSignals, "signal")}</article><article class="git-hooks-card"><h3>Command Signals</h3>${gitHooksSignalList(input.gitHooksReport.commandSignals, "signal")}</article><article class="git-hooks-card"><h3>Policy Signals</h3>${gitHooksSignalList(input.gitHooksReport.policySignals, "signal")}</article></section><section class="grid"><article class="git-hooks-card"><h3>Tool Config Files</h3>${gitHooksToolConfigList(input.gitHooksReport.toolConfigFiles)}</article><article class="git-hooks-card"><h3>Recommended Commands</h3>${gitHooksCommandList(input.gitHooksReport.recommendedCommands)}</article><article class="git-hooks-card"><h3>Risk Queue</h3>${gitHooksRiskList(input.gitHooksReport.riskQueue)}</article><article class="git-hooks-card"><h3>다음 확인 단계</h3>${list(input.gitHooksReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -693,6 +703,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Unit Test Readiness", path: "html/unit-tests.html", description: "Vitest식 test file, assertion, mock, coverage, environment, reporter 준비도를 확인합니다." },
       { label: "Typecheck Readiness", path: "html/typecheck-readiness.html", description: "TypeScript식 tsconfig, strict flag, project reference, module resolution, declaration, tsc script 준비도를 확인합니다." },
       { label: "Package Manager Readiness", path: "html/package-manager.html", description: "pnpm식 manifest, workspace, lockfile, script, install policy 준비도를 확인합니다." },
+      { label: "Git Hooks Readiness", path: "html/git-hooks.html", description: "Husky식 hook file, install script, pre-commit/pre-push, bypass policy 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1040,6 +1051,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "package-manager.html",
       goal: "pnpm식 manifest, workspace, lockfile, script, install policy를 보고 재현 가능한 설치 경로를 확인합니다.",
       evidence: `manifest files ${input.packageManagerReport.manifestFiles.length}개, lockfiles ${input.packageManagerReport.lockfileSignals.length}개`
+    },
+    {
+      title: "Git hooks 준비도 확인",
+      href: "git-hooks.html",
+      goal: "Husky식 hook file, install script, pre-commit/pre-push, bypass policy를 보고 커밋 전 로컬 품질 관문을 확인합니다.",
+      evidence: `hook files ${input.gitHooksReport.hookFiles.length}개, command signals ${input.gitHooksReport.commandSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -2182,6 +2199,36 @@ function packageManagerRiskList(items: PackageManagerReport["riskQueue"]): strin
 }
 
 function packageManagerHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function gitHooksHookList(items: GitHooksReport["hookFiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">Git hook file이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.hookName)}/${escapeHtml(item.readiness)}]<br>commands ${item.commandCount} · bypass ${item.hasBypassHint ? "yes" : "no"} · node path ${item.hasNodePathHint ? "yes" : "no"}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(gitHooksHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function gitHooksToolConfigList(items: GitHooksReport["toolConfigFiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">hook tool config가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)}/${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(gitHooksHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function gitHooksSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">Git hook signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(gitHooksHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function gitHooksCommandList(items: GitHooksReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function gitHooksRiskList(items: GitHooksReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(gitHooksHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function gitHooksHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

@@ -48,6 +48,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "typecheck-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "package-manager-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "git-hooks-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -94,6 +95,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "typecheck-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "package-manager.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "git-hooks.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -143,6 +145,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "typecheck-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "package-manager.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "git-hooks.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -222,6 +225,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/typecheck-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/package-manager.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/git-hooks.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -871,6 +875,25 @@ describe("RepoTutor core pipeline", () => {
     expect(packageManagerMarkdown).toContain("Source pattern: pnpm");
     expect(packageManagerMarkdown).toContain("## Manifest Files");
     expect(packageManagerMarkdown).toContain("## Policy Signals");
+    const gitHooksText = await fs.readFile(path.join(result.session.outputPaths.analysis, "git-hooks-report.json"), "utf8");
+    expect(gitHooksText).toContain("Husky .husky hook files prepare core.hooksPath pre-commit pre-push commit-msg HUSKY=0 no-verify lint-staged POSIX shell");
+    expect(gitHooksText).toContain("\"hookFiles\"");
+    expect(gitHooksText).toContain("\"installSignals\"");
+    expect(gitHooksText).toContain("\"commandSignals\"");
+    expect(gitHooksText).toContain("\"policySignals\"");
+    expect(gitHooksText).toContain("\"toolConfigFiles\"");
+    expect(gitHooksText).toContain("git config --get core.hooksPath");
+    const gitHooksHtml = await fs.readFile(path.join(result.session.outputPaths.html, "git-hooks.html"), "utf8");
+    expect(gitHooksHtml).toContain("Git Hooks Readiness");
+    expect(gitHooksHtml).toContain("git-hooks-card");
+    expect(gitHooksHtml).toContain("data-source-pattern=\"Husky\"");
+    expect(gitHooksHtml).toContain("Hook Files");
+    expect(gitHooksHtml).toContain("Policy Signals");
+    const gitHooksMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "git-hooks.md"), "utf8");
+    expect(gitHooksMarkdown).toContain("# Git Hooks Readiness");
+    expect(gitHooksMarkdown).toContain("Source pattern: Husky");
+    expect(gitHooksMarkdown).toContain("## Hook Files");
+    expect(gitHooksMarkdown).toContain("## Tool Config Files");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -1010,6 +1033,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/unit-tests.html");
     expect(exportManifestText).toContain("html/typecheck-readiness.html");
     expect(exportManifestText).toContain("html/package-manager.html");
+    expect(exportManifestText).toContain("html/git-hooks.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -1113,6 +1137,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("unit-tests.html");
     expect(learningPathHtml).toContain("typecheck-readiness.html");
     expect(learningPathHtml).toContain("package-manager.html");
+    expect(learningPathHtml).toContain("git-hooks.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");

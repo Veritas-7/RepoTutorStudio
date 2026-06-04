@@ -2066,6 +2066,57 @@ export const PackageManagerReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const GitHooksReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  hookFiles: z.array(z.object({
+    filePath: z.string(),
+    hookName: z.string(),
+    commandCount: z.number().int().nonnegative(),
+    hasBypassHint: z.boolean(),
+    hasNodePathHint: z.boolean(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  installSignals: z.array(z.object({
+    signal: z.enum(["prepare-script", "postinstall-script", "husky-init", "core-hooks-path", "git-root-subdir", "ci-skip", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  commandSignals: z.array(z.object({
+    signal: z.enum(["test", "lint", "format", "typecheck", "security", "commitlint", "lint-staged", "npm-run", "pnpm-run", "node-entrypoint", "posix-shell", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  policySignals: z.array(z.object({
+    signal: z.enum(["pre-commit", "pre-push", "commit-msg", "prepare-commit-msg", "post-merge", "skip-env", "no-verify", "gui-node-path", "deprecated-husky-sh", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  toolConfigFiles: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["husky", "lint-staged", "commitlint", "lefthook", "pre-commit", "simple-git-hooks", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2314,6 +2365,7 @@ export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type TypecheckReadinessReport = z.infer<typeof TypecheckReadinessReportSchema>;
 export type PackageManagerReport = z.infer<typeof PackageManagerReportSchema>;
+export type GitHooksReport = z.infer<typeof GitHooksReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
