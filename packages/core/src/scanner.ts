@@ -74,6 +74,7 @@ import {
   FormReadinessReport,
   AuthReadinessReport,
   PaymentReadinessReport,
+  EmailReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -154,6 +155,7 @@ export interface AnalysisBundle {
   formReadinessReport: FormReadinessReport;
   authReadinessReport: AuthReadinessReport;
   paymentReadinessReport: PaymentReadinessReport;
+  emailReadinessReport: EmailReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -234,8 +236,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const formReadinessReport = await buildFormReadinessReport(walk);
   const authReadinessReport = await buildAuthReadinessReport(walk);
   const paymentReadinessReport = await buildPaymentReadinessReport(walk);
+  const emailReadinessReport = await buildEmailReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -12924,6 +12927,297 @@ function paymentReadinessSignalFromSpecs<T extends Record<K, string> & { pattern
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/payment-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildEmailReadinessReport(walk: WalkResult): Promise<EmailReadinessReport> {
+  const sourceFiles = await emailReadinessSourceFiles(walk);
+  const emailSetups = emailReadinessEmailSetups(sourceFiles);
+  const recipientSignals = emailReadinessRecipientSignals(sourceFiles);
+  const deliverySignals = emailReadinessDeliverySignals(sourceFiles);
+  const templateSignals = emailReadinessTemplateSignals(sourceFiles);
+  const credentialSignals = emailReadinessCredentialSignals(sourceFiles);
+  const packageSignals = emailReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasResendPackage = packageSignals.some((item) => item.signal === "resend" && item.readiness === "ready");
+  const hasSetup = emailSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = emailSetups.some((item) => item.readiness === "ready");
+  const hasSend = emailSetups.some((item) => item.sendCallCount > 0) || deliverySignals.some((item) => item.signal === "batch-send" && item.readiness === "ready");
+  const hasApiKey = credentialSignals.some((item) => item.signal === "RESEND_API_KEY" && item.readiness === "ready");
+  const hasFrom = recipientSignals.some((item) => item.signal === "from" && item.readiness === "ready");
+  const hasTo = recipientSignals.some((item) => item.signal === "to" && item.readiness === "ready");
+  const hasSubject = recipientSignals.some((item) => item.signal === "subject" && item.readiness === "ready");
+  const hasContent = recipientSignals.some((item) => ["text", "html", "react"].includes(item.signal) && item.readiness === "ready");
+  const hasDomainVerification = deliverySignals.some((item) => item.signal === "domain-verification" && item.readiness === "ready");
+  const hasWebhook = deliverySignals.some((item) => item.signal === "webhook-verification" && item.readiness === "ready" || item.signal === "event-handling" && item.readiness === "ready");
+  const hasWebhookVerification = deliverySignals.some((item) => item.signal === "webhook-verification" && item.readiness === "ready");
+  const hasBatch = deliverySignals.some((item) => item.signal === "batch-send" && item.readiness === "ready");
+  const hasIdempotency = deliverySignals.some((item) => item.signal === "idempotency" && item.readiness === "ready");
+  const hasReactTemplate = templateSignals.some((item) => ["react-email", "jsx-runtime"].includes(item.signal) && item.readiness === "ready");
+  const hasReactRenderPackage = packageSignals.some((item) => item.signal === "@react-email/render" && item.readiness === "ready");
+
+  const riskQueue: EmailReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasSend) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the transactional email strategy before claiming email readiness.",
+      why: "Email readiness starts with an explicit provider package, client setup, send call, SMTP transport, or notification surface.",
+      relatedHref: "html/email-readiness.html"
+    });
+  }
+  if (hasResendPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Expose a Resend client setup before trusting email flow scans.",
+      why: "Resend's Node SDK expects `new Resend(...)` or RESEND_API_KEY-backed initialization before email, domain, webhook, or contact calls.",
+      relatedHref: "html/email-readiness.html"
+    });
+  }
+  if ((hasResendPackage || hasSetup) && !hasApiKey) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document RESEND_API_KEY or the equivalent server-only email provider credential.",
+      why: "Transactional email calls must not rely on missing, hard-coded, or client-exposed provider credentials.",
+      relatedHref: "html/email-readiness.html"
+    });
+  }
+  if (hasSend && (!hasFrom || !hasTo || !hasSubject || !hasContent)) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review send payloads for from, to, subject, and text/html/react content coverage.",
+      why: "Email sends need auditable sender, recipient, subject, and body/template assumptions before runtime QA.",
+      relatedHref: "html/email-readiness.html"
+    });
+  }
+  if (hasSend && !hasDomainVerification) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document sender-domain verification and DNS ownership before production email delivery.",
+      why: "Provider SDKs can send only after SPF/DKIM/domain verification is complete for production sender domains.",
+      relatedHref: "html/email-readiness.html"
+    });
+  }
+  if (hasWebhook && !hasWebhookVerification) {
+    riskQueue.push({
+      priority: "high",
+      action: "Verify email webhook signatures before processing delivery events.",
+      why: "Delivery, bounce, complaint, and open/click callbacks must reject forged webhook requests.",
+      relatedHref: "html/email-readiness.html"
+    });
+  }
+  if (hasBatch && !hasIdempotency) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add idempotency or duplicate-send protection around batch email sends.",
+      why: "Transactional and batch email sends may be retried; duplicate delivery can create support and trust issues.",
+      relatedHref: "html/email-readiness.html"
+    });
+  }
+  if (hasReactTemplate && !hasReactRenderPackage) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Confirm React email templates have a renderer dependency and build path.",
+      why: "Resend renders React templates through a render helper that depends on @react-email/render-style tooling.",
+      relatedHref: "html/email-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run email delivery tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not send email, call provider APIs, verify live DNS, process live callbacks, or run the analyzed project's tests.",
+    relatedHref: "html/email-readiness.html"
+  });
+
+  return {
+    summary: `Resend식 email readiness report: setup ${emailSetups.length}개, recipient/content signal ${recipientSignals.length}개, delivery signal ${deliverySignals.length}개, template signal ${templateSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Resend new Resend emails.send batch.send domains verify webhooks verify standardwebhooks from to subject html react attachments replyTo RESEND_API_KEY idempotency",
+    emailSetups,
+    recipientSignals,
+    deliverySignals,
+    templateSignals,
+    credentialSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"new Resend|RESEND_API_KEY|resend\\.\" src app pages packages", purpose: "Inventory Resend client setup and server-only credential usage." },
+      { command: "rg \"emails\\.send|emails\\.create|batch\\.send|sendMail|transporter\\.sendMail\" src app pages packages", purpose: "Find transactional and batch email send calls." },
+      { command: "rg \"from:|to:|cc:|bcc:|replyTo|subject:|text:|html:|react:|attachments\" src app pages packages", purpose: "Review sender, recipient, subject, body, template, and attachment payloads." },
+      { command: "rg \"domains\\.|verify\\(|SPF|DKIM|webhooks\\.verify|standardwebhooks|webhook-signature|bounce|complaint|delivered\" src app pages packages", purpose: "Check domain verification, webhook signature verification, and delivery-event handling." },
+      { command: "rg \"@react-email/render|react-email|EmailTemplate|templateId|variables|unsubscribe|Idempotency-Key|idempotencyKey\" src app pages packages", purpose: "Trace template rendering, variables, unsubscribe, and duplicate-send protection." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise email payload construction, provider mocks, webhooks, and duplicate-send handling." }
+    ],
+    learnerNextSteps: [
+      "먼저 서버 쪽 email provider client 생성 위치를 찾고 RESEND_API_KEY 같은 credential이 어떻게 주입되는지 확인하세요.",
+      "emails.send 또는 batch.send가 있으면 from, to, subject, text/html/react, attachments, replyTo를 함께 추적하세요.",
+      "커스텀 발신 도메인을 쓰면 SPF/DKIM/domain verification 증거가 있는지 확인하세요.",
+      "webhooks.verify 또는 delivery event 처리가 있으면 signature header, raw payload, signing configuration, bounce/complaint 처리까지 같이 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 이메일 전송, DNS 검증, provider callback, unsubscribe compliance는 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type EmailReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function emailReadinessSourceFiles(walk: WalkResult): Promise<EmailReadinessSourceFile[]> {
+  const files: EmailReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !emailReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!emailReadinessPathSignal(file.relPath) && !emailReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function emailReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return emailReadinessPathSignal(filePath)
+    || /^(package\.json|\.env\.example|\.env\.sample|next\.config\.[cm]?[jt]s|vite\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env)$/i.test(filePath);
+}
+
+function emailReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(emails?|mail|mailer|notifications?|resend|smtp|templates?|webhooks?|domains?|contacts?|broadcasts?|newsletters?)(\/|\.|-|_|$)|sendgrid|mailgun|postmark|ses/i.test(filePath);
+}
+
+function emailReadinessContentSignal(text: string): boolean {
+  return /\b(Resend|resend|emails\.send|emails\.create|batch\.send|sendMail|transporter\.sendMail|RESEND_API_KEY|SENDGRID_API_KEY|MAILGUN_API_KEY|SMTP_HOST|SMTP_USER|SMTP_PASS|POSTMARK_SERVER_TOKEN|@react-email\/render|react-email|replyTo|attachments|domains\.|webhooks\.verify|standardwebhooks|Idempotency-Key|idempotencyKey|bounce|complaint|unsubscribe|delivered|mailgun|sendgrid|postmark)\b/i.test(text);
+}
+
+function emailReadinessEmailSetups(sourceFiles: EmailReadinessSourceFile[]): EmailReadinessReport["emailSetups"] {
+  const rows: EmailReadinessReport["emailSetups"] = [];
+  for (const source of sourceFiles) {
+    const clientSetupCount = countMatches(source.text, /\bnew\s+Resend\s*\(|\bResend\s*\(\s*(process\.env\.)?RESEND_API_KEY|createTransport\s*\(|setApiKey\s*\(|new\s+Mailgun\b|new\s+Postmark\b|SESClient\s*\(/gi);
+    const sendCallCount = countMatches(source.text, /\bemails\.(send|create)\s*\(|\bbatch\.(send|create)\s*\(|\bsendMail\s*\(|\btransporter\.sendMail\s*\(|\bmessages\(\)\.send\b/gi);
+    const templateSignalCount = countMatches(source.text, /\breact\s*:|\bhtml\s*:|\btext\s*:|EmailTemplate|@react-email\/render|templateId|template_id|variables\s*:/gi);
+    const domainSignalCount = countMatches(source.text, /\bdomains?\.(create|verify|get|list|update)|SPF|DKIM|domain verification|verify domain/gi);
+    const webhookSignalCount = countMatches(source.text, /\bwebhooks?\.(create|verify|get|list|update)|standardwebhooks|webhook-signature|webhookSecret|bounce|complaint|delivered/gi);
+    const hasSetupSignal = clientSetupCount + sendCallCount + templateSignalCount + domainSignalCount + webhookSignalCount > 0 || /\b(email|mail|notification)\b/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: emailReadinessProvider(source),
+      clientSetupCount,
+      sendCallCount,
+      templateSignalCount,
+      domainSignalCount,
+      webhookSignalCount,
+      readiness: clientSetupCount > 0 && sendCallCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains client setup ${clientSetupCount}, send calls ${sendCallCount}, template signals ${templateSignalCount}, domain signals ${domainSignalCount}, webhook signals ${webhookSignalCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function emailReadinessProvider(source: EmailReadinessSourceFile): EmailReadinessReport["emailSetups"][number]["provider"] {
+  if (/\bResend\b|["']resend["']/i.test(source.text)) return "resend";
+  if (/\bnodemailer\b|createTransport|sendMail/i.test(source.text)) return "nodemailer";
+  if (/@sendgrid\/mail|sendgrid/i.test(source.text)) return "sendgrid";
+  if (/mailgun\.js|mailgun/i.test(source.text)) return "mailgun";
+  if (/postmark/i.test(source.text)) return "postmark";
+  if (/SESClient|@aws-sdk\/client-ses|AWS_SES/i.test(source.text)) return "ses";
+  if (/\bemail|mail|notification\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function emailReadinessRecipientSignals(sourceFiles: EmailReadinessSourceFile[]): EmailReadinessReport["recipientSignals"] {
+  const specs: Array<{ signal: EmailReadinessReport["recipientSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "from", pattern: /\bfrom\s*:/i, evidence: "sender/from evidence was detected." },
+    { signal: "to", pattern: /\bto\s*:/i, evidence: "recipient/to evidence was detected." },
+    { signal: "cc", pattern: /\bcc\s*:/i, evidence: "cc recipient evidence was detected." },
+    { signal: "bcc", pattern: /\bbcc\s*:/i, evidence: "bcc recipient evidence was detected." },
+    { signal: "reply-to", pattern: /\breplyTo\s*:|\breply_to\s*:|\breply-to\b/i, evidence: "reply-to evidence was detected." },
+    { signal: "subject", pattern: /\bsubject\s*:/i, evidence: "subject evidence was detected." },
+    { signal: "text", pattern: /\btext\s*:/i, evidence: "plain text body evidence was detected." },
+    { signal: "html", pattern: /\bhtml\s*:/i, evidence: "HTML body evidence was detected." },
+    { signal: "react", pattern: /\breact\s*:|EmailTemplate|jsx\(/i, evidence: "React email template evidence was detected." },
+    { signal: "attachments", pattern: /\battachments?\s*:/i, evidence: "attachment evidence was detected." },
+    { signal: "scheduled", pattern: /\bscheduledAt\b|\bscheduled_at\b|\bschedule/i, evidence: "scheduled email evidence was detected." },
+    { signal: "tags", pattern: /\btags\s*:|\bheaders\s*:|List-Unsubscribe/i, evidence: "tag/header/unsubscribe evidence was detected." }
+  ];
+  return emailReadinessSignalFromSpecs(sourceFiles, specs, "recipient", "signal");
+}
+
+function emailReadinessDeliverySignals(sourceFiles: EmailReadinessSourceFile[]): EmailReadinessReport["deliverySignals"] {
+  const specs: Array<{ signal: EmailReadinessReport["deliverySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "domain-verification", pattern: /\bdomains?\.(create|verify|get|list|update)|SPF|DKIM|domain verification|verify domain/i, evidence: "domain verification evidence was detected." },
+    { signal: "batch-send", pattern: /\bbatch\.(send|create)\s*\(|\/emails\/batch|x-batch-validation/i, evidence: "batch send evidence was detected." },
+    { signal: "idempotency", pattern: /\bIdempotency-Key\b|\bidempotencyKey\b|\bidempotent\b/i, evidence: "idempotency evidence was detected." },
+    { signal: "webhook-verification", pattern: /\bwebhooks?\.verify\b|standardwebhooks|webhook-signature|webhookSecret|signature/i, evidence: "webhook signature verification evidence was detected." },
+    { signal: "event-handling", pattern: /\bevent\.type\b|\bcase\s+['\"][a-z0-9_.-]+['\"]|email\.(sent|delivered|opened|clicked|bounced|complained)/i, evidence: "delivery event handling evidence was detected." },
+    { signal: "bounce", pattern: /\bbounce(d)?\b|email\.bounced/i, evidence: "bounce handling evidence was detected." },
+    { signal: "complaint", pattern: /\bcomplaint\b|\bcomplained\b|email\.complained/i, evidence: "complaint handling evidence was detected." },
+    { signal: "delivery", pattern: /\bdelivered\b|email\.delivered|delivery/i, evidence: "delivery status evidence was detected." },
+    { signal: "open-tracking", pattern: /\bopenTracking\b|\bopen_tracking\b|email\.opened/i, evidence: "open tracking evidence was detected." },
+    { signal: "click-tracking", pattern: /\bclickTracking\b|\bclick_tracking\b|email\.clicked/i, evidence: "click tracking evidence was detected." },
+    { signal: "unsubscribe", pattern: /List-Unsubscribe|unsubscribe|preferences/i, evidence: "unsubscribe or preferences evidence was detected." }
+  ];
+  return emailReadinessSignalFromSpecs(sourceFiles, specs, "delivery", "signal");
+}
+
+function emailReadinessTemplateSignals(sourceFiles: EmailReadinessSourceFile[]): EmailReadinessReport["templateSignals"] {
+  const specs: Array<{ signal: EmailReadinessReport["templateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "react-email", pattern: /@react-email\/render|@react-email\/components|react-email|EmailTemplate/i, evidence: "React Email evidence was detected." },
+    { signal: "html-template", pattern: /\bhtml\s*:|<html|<strong|template.*html/i, evidence: "HTML template evidence was detected." },
+    { signal: "text-template", pattern: /\btext\s*:|plain text|text template/i, evidence: "text template evidence was detected." },
+    { signal: "jsx-runtime", pattern: /react\/jsx-runtime|\bjsx\s*\(/i, evidence: "JSX runtime email template evidence was detected." },
+    { signal: "template-id", pattern: /templateId|template_id|template_id\s*:/i, evidence: "template ID evidence was detected." },
+    { signal: "variables", pattern: /variables\s*:|firstName|{{|}}|\${/i, evidence: "template variable evidence was detected." }
+  ];
+  return emailReadinessSignalFromSpecs(sourceFiles, specs, "template", "signal");
+}
+
+function emailReadinessCredentialSignals(sourceFiles: EmailReadinessSourceFile[]): EmailReadinessReport["credentialSignals"] {
+  const specs: Array<{ signal: EmailReadinessReport["credentialSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "RESEND_API_KEY", pattern: /\bRESEND_API_KEY\b/i, evidence: "RESEND_API_KEY evidence was detected." },
+    { signal: "RESEND_BASE_URL", pattern: /\bRESEND_BASE_URL\b/i, evidence: "RESEND_BASE_URL evidence was detected." },
+    { signal: "RESEND_USER_AGENT", pattern: /\bRESEND_USER_AGENT\b/i, evidence: "RESEND_USER_AGENT evidence was detected." },
+    { signal: "SENDGRID_API_KEY", pattern: /\bSENDGRID_API_KEY\b/i, evidence: "SENDGRID_API_KEY evidence was detected." },
+    { signal: "MAILGUN_API_KEY", pattern: /\bMAILGUN_API_KEY\b/i, evidence: "MAILGUN_API_KEY evidence was detected." },
+    { signal: "SMTP_HOST", pattern: /\bSMTP_HOST\b|\bSMTP_SERVER\b/i, evidence: "SMTP host evidence was detected." },
+    { signal: "SMTP_USER", pattern: /\bSMTP_USER\b|\bSMTP_USERNAME\b/i, evidence: "SMTP user evidence was detected." },
+    { signal: "SMTP_PASS", pattern: /\bSMTP_PASS\b|\bSMTP_PASSWORD\b/i, evidence: "SMTP password evidence was detected." },
+    { signal: "POSTMARK_SERVER_TOKEN", pattern: /\bPOSTMARK_SERVER_TOKEN\b|\bPOSTMARK_API_TOKEN\b/i, evidence: "Postmark token evidence was detected." },
+    { signal: "AWS_SES", pattern: /\bAWS_SES\b|\bAWS_ACCESS_KEY_ID\b|SESClient/i, evidence: "AWS SES credential/client evidence was detected." }
+  ];
+  return emailReadinessSignalFromSpecs(sourceFiles, specs, "credential", "signal");
+}
+
+function emailReadinessPackageSignals(sourceFiles: EmailReadinessSourceFile[]): EmailReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: EmailReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "resend", pattern: /["']resend["']|from\s+["']resend["']|\bnew\s+Resend\b/i, evidence: "resend package/import evidence was detected." },
+    { signal: "nodemailer", pattern: /["']nodemailer["']|createTransport|sendMail/i, evidence: "nodemailer package/import evidence was detected." },
+    { signal: "@sendgrid/mail", pattern: /@sendgrid\/mail|sendgrid/i, evidence: "@sendgrid/mail package/import evidence was detected." },
+    { signal: "mailgun.js", pattern: /mailgun\.js|mailgun/i, evidence: "mailgun.js package/import evidence was detected." },
+    { signal: "postmark", pattern: /["']postmark["']|postmark/i, evidence: "postmark package/import evidence was detected." },
+    { signal: "@aws-sdk/client-ses", pattern: /@aws-sdk\/client-ses|SESClient/i, evidence: "AWS SES package/import evidence was detected." },
+    { signal: "@react-email/render", pattern: /@react-email\/render|@react-email\/components|react-email/i, evidence: "React Email render package/import evidence was detected." }
+  ];
+  return emailReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function emailReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: EmailReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/email-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

@@ -2946,6 +2946,64 @@ export const PaymentReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const EmailReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  emailSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["resend", "nodemailer", "sendgrid", "mailgun", "postmark", "ses", "custom", "unknown"]),
+    clientSetupCount: z.number().int().nonnegative(),
+    sendCallCount: z.number().int().nonnegative(),
+    templateSignalCount: z.number().int().nonnegative(),
+    domainSignalCount: z.number().int().nonnegative(),
+    webhookSignalCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  recipientSignals: z.array(z.object({
+    signal: z.enum(["from", "to", "cc", "bcc", "reply-to", "subject", "text", "html", "react", "attachments", "scheduled", "tags", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  deliverySignals: z.array(z.object({
+    signal: z.enum(["domain-verification", "batch-send", "idempotency", "webhook-verification", "event-handling", "bounce", "complaint", "delivery", "open-tracking", "click-tracking", "unsubscribe", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  templateSignals: z.array(z.object({
+    signal: z.enum(["react-email", "html-template", "text-template", "jsx-runtime", "template-id", "variables", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  credentialSignals: z.array(z.object({
+    signal: z.enum(["RESEND_API_KEY", "RESEND_BASE_URL", "RESEND_USER_AGENT", "SENDGRID_API_KEY", "MAILGUN_API_KEY", "SMTP_HOST", "SMTP_USER", "SMTP_PASS", "POSTMARK_SERVER_TOKEN", "AWS_SES", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["resend", "nodemailer", "@sendgrid/mail", "mailgun.js", "postmark", "@aws-sdk/client-ses", "@react-email/render", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3209,6 +3267,7 @@ export type StateManagementReadinessReport = z.infer<typeof StateManagementReadi
 export type FormReadinessReport = z.infer<typeof FormReadinessReportSchema>;
 export type AuthReadinessReport = z.infer<typeof AuthReadinessReportSchema>;
 export type PaymentReadinessReport = z.infer<typeof PaymentReadinessReportSchema>;
+export type EmailReadinessReport = z.infer<typeof EmailReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
