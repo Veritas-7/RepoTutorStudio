@@ -2913,6 +2913,50 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 36/36 audit checks across 13 generated reports
 
+### Upgrade 139: Container Readiness Report
+
+- Cloned and inspected `hadolint/hadolint` under
+  `research/external-src/hadolint-hadolint` without executing external source.
+- GitHub metadata: public repo, GPL-3.0 license, 12,185 stars, 495 forks,
+  updated 2026-06-01T09:57:49Z. Compared with `wagoodman/dive`,
+  `GoogleContainerTools/container-structure-test`, and `bridgecrewio/checkov`;
+  selected Hadolint because it directly models Dockerfile AST linting,
+  ShellCheck-backed `RUN` review, `.hadolint.yaml` config, trusted registry
+  policy, label schema, ignored rules, severity thresholds, CI integrations,
+  and SARIF/JUnit/code-quality output. No source code was copied into
+  RepoTutor.
+- Added `ContainerReadinessReportSchema` and
+  `analysis/container-readiness-report.json` with Dockerfiles, Compose files,
+  config signals, instruction risks, label policy, integration signals, risk
+  queue, recommended commands, and learner next steps.
+- Added `markdown/container-readiness.md`, `html/container-readiness.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target container-readiness`.
+- Source pattern: Hadolint separates Dockerfile AST rules (`DL`), ShellCheck
+  shell checks (`SC`) inside `RUN`, config discovery via `.hadolint.yaml`,
+  ignored rules and inline/global ignore pragmas, severity overrides,
+  `failure-threshold`, `trustedRegistries`, label schema and strict labels,
+  output formats including JSON/SARIF/JUnit/code-quality reports, and
+  pre-commit/CI/editor integrations. RepoTutor maps that to deterministic
+  static container readiness and explicitly does not build images, parse the
+  Dockerfile AST, execute ShellCheck, or verify registries.
+- RED smoke generated
+  `/tmp/repotutor-container-red-studies.B1NoYh/2026-06-04/local__simple-ts-app__main__3583b1c4`;
+  old behavior was missing `analysis/container-readiness-report.json`,
+  `markdown/container-readiness.md`, and `html/container-readiness.html`, and
+  `open --target container-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-container-green-studies.27lWGI/2026-06-04/local__simple-ts-app__main__3583b1c4`;
+  confirmed `verificationCheckedRequiredArtifacts=117`, Dockerfiles 0,
+  Compose files 0, config signals 0, instruction risks 15, label policies 7,
+  integration signals 9, recommended commands 5, risk queue 2,
+  `container-card`, `data-source-pattern="Hadolint"`,
+  manifest/learning-path entries, and `open --target container-readiness` ->
+  `html/container-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 37/37 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

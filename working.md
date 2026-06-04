@@ -1999,6 +1999,43 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 138:
   - `6198347` secret readiness report
 
+- 2026-06-04: AutoResearch Upgrade 139 candidate selected:
+  `hadolint/hadolint` (`https://github.com/hadolint/hadolint`; public
+  GPL-3.0; 12,185 stars; 495 forks; updated 2026-06-01T09:57:49Z).
+  Compared with `wagoodman/dive`,
+  `GoogleContainerTools/container-structure-test`, and `bridgecrewio/checkov`;
+  selected Hadolint for Dockerfile AST linting, ShellCheck-backed RUN review,
+  project config, ignored rules, severity/failure thresholds, trusted
+  registries, label schemas, output formats, pre-commit, and CI integration
+  patterns. Cloned ignored external source to
+  `research/external-src/hadolint-hadolint` and inspected README,
+  integration docs, pre-commit hook metadata, and Docker docs without executing
+  external source.
+- 2026-06-04: RED container readiness smoke generated
+  `/tmp/repotutor-container-red-studies.B1NoYh/2026-06-04/local__simple-ts-app__main__3583b1c4`;
+  old build was missing `analysis/container-readiness-report.json`,
+  `markdown/container-readiness.md`, and `html/container-readiness.html`, and
+  `open --target container-readiness` failed as expected.
+- 2026-06-04: Implemented Hadolint-style container readiness report:
+  `ContainerReadinessReportSchema`, `analysis/container-readiness-report.json`,
+  `markdown/container-readiness.md`, `html/container-readiness.html`,
+  Dockerfile and Compose summaries, config signals, instruction risk queue,
+  label policy, integration signals, recommended commands,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target container-readiness`.
+- 2026-06-04: GREEN container readiness smoke generated
+  `/tmp/repotutor-container-green-studies.27lWGI/2026-06-04/local__simple-ts-app__main__3583b1c4`;
+  confirmed `verificationCheckedRequiredArtifacts=117`, Dockerfiles 0,
+  Compose files 0, config signals 0, instruction risks 15, label policies 7,
+  integration signals 9, recommended commands 5, risk queue 2,
+  `container-card`, `data-source-pattern="Hadolint"`,
+  manifest/learning-path entries, and `open --target container-readiness` ->
+  `html/container-readiness.html`.
+- 2026-06-04: Verification for Upgrade 139:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 37/37 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
