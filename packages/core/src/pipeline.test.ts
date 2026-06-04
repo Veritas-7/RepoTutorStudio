@@ -63,6 +63,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "state-management-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "form-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "auth-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "authorization-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "payment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "email-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "queue-readiness-report.json"))).resolves.toBeUndefined();
@@ -182,6 +183,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "state-management-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "form-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "auth-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "authorization-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "payment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "email-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "queue-readiness.md"))).resolves.toBeUndefined();
@@ -304,6 +306,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "state-management-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "form-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "auth-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "authorization-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "payment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "email-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "queue-readiness.html"))).resolves.toBeUndefined();
@@ -453,6 +456,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/state-management-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/form-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/auth-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/authorization-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/payment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/email-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/queue-readiness.html\"");
@@ -1454,6 +1458,28 @@ describe("RepoTutor core pipeline", () => {
     expect(authReadinessMarkdown).toContain("Source pattern: Auth.js");
     expect(authReadinessMarkdown).toContain("## Session Surfaces");
     expect(authReadinessMarkdown).toContain("## Credential Signals");
+    const authorizationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "authorization-readiness-report.json"), "utf8");
+    expect(authorizationReadinessText).toContain("Authorization readiness OpenFGA Casbin CASL Oso RBAC ABAC ReBAC ACL relationship tuples policy model roles permissions resources actions guards middleware can checks deny by default ownership tenants organizations audit decision logs tests");
+    expect(authorizationReadinessText).toContain("\"authorizationSetups\"");
+    expect(authorizationReadinessText).toContain("\"modelSignals\"");
+    expect(authorizationReadinessText).toContain("\"enforcementSignals\"");
+    expect(authorizationReadinessText).toContain("\"identitySignals\"");
+    expect(authorizationReadinessText).toContain("\"resourceSignals\"");
+    expect(authorizationReadinessText).toContain("\"governanceSignals\"");
+    expect(authorizationReadinessText).toContain("\"testSignals\"");
+    expect(authorizationReadinessText).toContain("\"packageSignals\"");
+    expect(authorizationReadinessText).toContain("npx vitest run");
+    const authorizationReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "authorization-readiness.html"), "utf8");
+    expect(authorizationReadinessHtml).toContain("Authorization Readiness");
+    expect(authorizationReadinessHtml).toContain("authorization-readiness-card");
+    expect(authorizationReadinessHtml).toContain("data-source-pattern=\"OpenFGA\"");
+    expect(authorizationReadinessHtml).toContain("Authorization Setups");
+    expect(authorizationReadinessHtml).toContain("Enforcement Signals");
+    const authorizationReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "authorization-readiness.md"), "utf8");
+    expect(authorizationReadinessMarkdown).toContain("# Authorization Readiness");
+    expect(authorizationReadinessMarkdown).toContain("Source pattern: Authorization readiness");
+    expect(authorizationReadinessMarkdown).toContain("## Model Signals");
+    expect(authorizationReadinessMarkdown).toContain("## Governance Signals");
     const paymentReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "payment-readiness-report.json"), "utf8");
     expect(paymentReadinessText).toContain("Stripe new Stripe checkout sessions payment intents subscriptions customers invoices billing portal webhooks constructEvent raw body signature idempotency apiVersion env price");
     expect(paymentReadinessText).toContain("\"paymentSetups\"");
@@ -2747,6 +2773,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/state-management-readiness.html");
     expect(exportManifestText).toContain("html/form-readiness.html");
     expect(exportManifestText).toContain("html/auth-readiness.html");
+    expect(exportManifestText).toContain("html/authorization-readiness.html");
     expect(exportManifestText).toContain("html/payment-readiness.html");
     expect(exportManifestText).toContain("html/email-readiness.html");
     expect(exportManifestText).toContain("html/queue-readiness.html");
@@ -2890,6 +2917,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("state-management-readiness.html");
     expect(learningPathHtml).toContain("form-readiness.html");
     expect(learningPathHtml).toContain("auth-readiness.html");
+    expect(learningPathHtml).toContain("authorization-readiness.html");
     expect(learningPathHtml).toContain("payment-readiness.html");
     expect(learningPathHtml).toContain("email-readiness.html");
     expect(learningPathHtml).toContain("queue-readiness.html");
@@ -6404,6 +6432,149 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "secret-management-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "secret-management-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects authorization readiness patterns without executing policy engines", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-authorization-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-authorization-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "authz"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "policies"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "authz:scan": "rg \"OpenFGA|newEnforcer|AbilityBuilder|Polar|allow|OPA|Rego\" src policies",
+        "authz:test": "vitest run authorization.policy.test.ts"
+      },
+      dependencies: {
+        "@openfga/sdk": "latest",
+        "openfga": "latest",
+        "casbin": "latest",
+        "casl": "latest",
+        "@casl/ability": "latest",
+        "oso": "latest",
+        "opa": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "authz", "openfga.ts"), [
+      "import { OpenFgaClient, type AuthorizationModel, type TupleKey } from '@openfga/sdk';",
+      "const openfga = new OpenFgaClient({ apiUrl: 'https://authz.example.test' });",
+      "export const authorizationModel: AuthorizationModel = {",
+      "  schema_version: '1.1',",
+      "  type_definitions: [{ type: 'user' }, { type: 'group', relations: { member: { this: {} } } }, { type: 'organization', relations: { admin: { this: {} }, member: { this: {} } } }, { type: 'tenant', relations: { owner: { this: {} } } }, { type: 'document', relations: { owner: { this: {} }, viewer: { union: { child: [] } }, editor: { this: {} } } } }]",
+      "};",
+      "export const relationshipTuples: TupleKey[] = [",
+      "  { user: 'user:*', relation: 'viewer', object: 'document:public' },",
+      "  { user: 'group:eng#member', relation: 'editor', object: 'document:roadmap' },",
+      "  { user: 'organization:veritas#member', relation: 'viewer', object: 'repository:repotutor' }",
+      "];",
+      "export async function canCheck(actor: string, action: 'read' | 'write' | 'delete' | 'manage', resource: string, tenantId: string, ownerId: string) {",
+      "  const resourceAction = `${resource}:${action}`;",
+      "  const allowed = await openfga.check({ user: actor, relation: action === 'read' ? 'viewer' : 'editor', object: resource });",
+      "  const decisionLog = { actor, action, resource, tenantId, ownerId, resourceAction, serviceAccount: 'service-account:indexer', anonymous: 'anonymous', auditLog: true };",
+      "  if (!allowed.allowed) throw new Error(`deny-by-default AccessDenied authorization decision ${JSON.stringify(decisionLog)}`);",
+      "  return allowed;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "authz", "casbin.ts"), [
+      "import { newEnforcer } from 'casbin';",
+      "export async function authorizeWithCasbin(user: string, obj: string, act: string, domain: string) {",
+      "  const enforcer = await newEnforcer('model.conf', 'policy.csv');",
+      "  const model = '[request_definition] r = sub, obj, act [policy_definition] p = sub, obj, act [role_definition] g = _, _ [matchers] m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act';",
+      "  const policy = 'p, role:admin, repository:repotutor, read\\ng, alice, role:admin';",
+      "  const rbac = 'RBAC ABAC ACL permissions roles group tenant domain subject object action';",
+      "  const allowed = await enforcer.enforce(user, obj, act);",
+      "  if (!allowed) return false;",
+      "  return { allowed, model, policy, rbac, domain };",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "authz", "casl.ts"), [
+      "import { AbilityBuilder, ForbiddenError, createMongoAbility, defineAbility } from '@casl/ability';",
+      "export const ability = defineAbility((can, cannot) => {",
+      "  can('read', 'Document');",
+      "  can('manage', 'Document', { owner: 'user-1', tenant: 'tenant-1', organization: 'org-1' });",
+      "  can(['update', 'delete'], ['Project', 'Record'], { owner: 'user-1' });",
+      "  cannot('delete', 'Document', { locked: true });",
+      "});",
+      "export function assertUiAbility(subject: unknown) {",
+      "  const { can, cannot, build } = new AbilityBuilder(createMongoAbility);",
+      "  can('read', 'field');",
+      "  cannot('delete', 'collection');",
+      "  const built = build();",
+      "  ForbiddenError.from(built).throwUnlessCan('read', subject as never);",
+      "  return built.can('read', subject as never);",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "policies", "authorization.polar"), [
+      "resource Repository {",
+      "  roles = ['reader', 'writer', 'admin'];",
+      "  permissions = ['pull', 'push', 'delete'];",
+      "  'pull' if 'reader';",
+      "  'push' if 'writer';",
+      "  'writer' if 'admin';",
+      "}",
+      "allow(actor, action, resource) if has_permission(actor, action, resource);",
+      "has_permission(actor, 'push', repo: Repository) if has_role(actor, 'writer', repo);",
+      "allow_field(actor, 'read', resource, field) if field = 'title';",
+      "allow_request(actor, request) if actor.is_admin = true;",
+      "# Oso Polar actor action resource authorize is_allowed authorized_actions authorized_resources RBAC ReBAC"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "policies", "authz.rego"), [
+      "package authz",
+      "default allow := false",
+      "allow if { input.actor.role == \"admin\" }",
+      "deny contains msg if { not allow; msg := \"deny by default\" }",
+      "# OPA Rego opa test policy decision output"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "policies", "authorization.md"), [
+      "# Authorization governance",
+      "Use least privilege, separation of duties, audit log, permission review, policy versioning, migration, decision log, and break-glass emergency access.",
+      "Route protection uses middleware and guard checks; resolver protection checks field and collection resources.",
+      "Authorization unit test fixture table test negative test policy test e2e test type test coverage includes expect allowed false and 403 forbidden deny cases."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "authorization-readiness-report.json"), "utf8")) as {
+      authorizationSetups: Array<{ filePath: string; framework: string; modelCount: number; relationCount: number; roleCount: number; permissionCount: number; resourceCount: number; actionCount: number; guardCount: number; middlewareCount: number; ownershipCount: number; testCount: number; readiness: string }>;
+      modelSignals: Array<{ signal: string; readiness: string }>;
+      enforcementSignals: Array<{ signal: string; readiness: string }>;
+      identitySignals: Array<{ signal: string; readiness: string }>;
+      resourceSignals: Array<{ signal: string; readiness: string }>;
+      governanceSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    expect(report.authorizationSetups.length).toBeGreaterThan(0);
+    expect(report.authorizationSetups.some((item) => item.framework === "openfga")).toBe(true);
+    expect(report.authorizationSetups.some((item) => item.framework === "casbin")).toBe(true);
+    expect(report.authorizationSetups.some((item) => item.framework === "casl")).toBe(true);
+    expect(report.authorizationSetups.some((item) => item.framework === "oso")).toBe(true);
+    expect(report.authorizationSetups.some((item) => item.framework === "opa")).toBe(true);
+    const openfgaSetup = report.authorizationSetups.find((item) => item.filePath === "src/authz/openfga.ts");
+    expect(openfgaSetup?.modelCount).toBeGreaterThan(0);
+    expect(openfgaSetup?.relationCount).toBeGreaterThan(0);
+    expect(openfgaSetup?.permissionCount).toBeGreaterThan(0);
+    expect(openfgaSetup?.resourceCount).toBeGreaterThan(0);
+    expect(openfgaSetup?.actionCount).toBeGreaterThan(0);
+    expect(openfgaSetup?.guardCount).toBeGreaterThan(0);
+    expect(openfgaSetup?.ownershipCount).toBeGreaterThan(0);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.modelSignals, ["rbac", "abac", "rebac", "acl", "relationship-tuples", "policy-file", "subject-object-action", "resource-action"]);
+    expectReady(report.enforcementSignals, ["guard", "middleware", "can-check", "authorize-call", "deny-by-default", "route-protection", "resolver-protection", "ui-ability"]);
+    expectReady(report.identitySignals, ["user", "role", "group", "tenant", "organization", "service-account", "owner", "anonymous"]);
+    expectReady(report.resourceSignals, ["document", "project", "repository", "organization", "tenant", "record", "field", "collection"]);
+    expectReady(report.governanceSignals, ["least-privilege", "separation-of-duties", "audit-log", "permission-review", "policy-versioning", "migration", "decision-log", "break-glass"]);
+    expectReady(report.testSignals, ["unit-test", "fixture", "table-test", "negative-test", "policy-test", "e2e-test", "type-test"]);
+    expectReady(report.packageSignals, ["@openfga/sdk", "openfga", "casbin", "casl", "@casl/ability", "oso", "opa", "custom"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "authorization-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "authorization-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects object storage readiness patterns without contacting object storage", async () => {

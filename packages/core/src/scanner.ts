@@ -74,6 +74,7 @@ import {
   StateManagementReadinessReport,
   FormReadinessReport,
   AuthReadinessReport,
+  AuthorizationReadinessReport,
   PaymentReadinessReport,
   EmailReadinessReport,
   QueueReadinessReport,
@@ -212,6 +213,7 @@ export interface AnalysisBundle {
   stateManagementReadinessReport: StateManagementReadinessReport;
   formReadinessReport: FormReadinessReport;
   authReadinessReport: AuthReadinessReport;
+  authorizationReadinessReport: AuthorizationReadinessReport;
   paymentReadinessReport: PaymentReadinessReport;
   emailReadinessReport: EmailReadinessReport;
   queueReadinessReport: QueueReadinessReport;
@@ -350,6 +352,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const stateManagementReadinessReport = await buildStateManagementReadinessReport(walk);
   const formReadinessReport = await buildFormReadinessReport(walk);
   const authReadinessReport = await buildAuthReadinessReport(walk);
+  const authorizationReadinessReport = await buildAuthorizationReadinessReport(walk);
   const paymentReadinessReport = await buildPaymentReadinessReport(walk);
   const emailReadinessReport = await buildEmailReadinessReport(walk);
   const queueReadinessReport = await buildQueueReadinessReport(walk);
@@ -409,7 +412,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -13105,6 +13108,330 @@ function authReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: R
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/auth-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildAuthorizationReadinessReport(walk: WalkResult): Promise<AuthorizationReadinessReport> {
+  const sourceFiles = await authorizationReadinessSourceFiles(walk);
+  const authorizationSetups = authorizationReadinessSetups(sourceFiles);
+  const modelSignals = authorizationReadinessModelSignals(sourceFiles);
+  const enforcementSignals = authorizationReadinessEnforcementSignals(sourceFiles);
+  const identitySignals = authorizationReadinessIdentitySignals(sourceFiles);
+  const resourceSignals = authorizationReadinessResourceSignals(sourceFiles);
+  const governanceSignals = authorizationReadinessGovernanceSignals(sourceFiles);
+  const testSignals = authorizationReadinessTestSignals(sourceFiles);
+  const packageSignals = authorizationReadinessPackageSignals(sourceFiles);
+
+  const hasSetup = authorizationSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = authorizationSetups.some((item) => item.readiness === "ready");
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasAuthorizationModel = modelSignals.some((item) => ["rbac", "abac", "rebac", "acl", "relationship-tuples", "policy-file"].includes(item.signal) && item.readiness === "ready");
+  const hasSubjectActionModel = modelSignals.some((item) => ["subject-object-action", "resource-action"].includes(item.signal) && item.readiness === "ready");
+  const hasEnforcement = enforcementSignals.some((item) => ["guard", "middleware", "can-check", "authorize-call", "route-protection", "resolver-protection", "ui-ability"].includes(item.signal) && item.readiness === "ready");
+  const hasDenyDefault = enforcementSignals.some((item) => item.signal === "deny-by-default" && item.readiness === "ready");
+  const hasTests = testSignals.some((item) => ["unit-test", "fixture", "table-test", "negative-test", "policy-test", "e2e-test", "type-test"].includes(item.signal) && item.readiness === "ready");
+  const hasGovernance = governanceSignals.some((item) => ["least-privilege", "audit-log", "permission-review", "policy-versioning", "decision-log"].includes(item.signal) && item.readiness === "ready");
+  const hasTenantOrOrg = identitySignals.some((item) => ["tenant", "organization"].includes(item.signal) && item.readiness === "ready") || resourceSignals.some((item) => ["tenant", "organization"].includes(item.signal) && item.readiness === "ready");
+  const hasOwnershipBoundary = identitySignals.some((item) => ["owner", "tenant", "organization", "group"].includes(item.signal) && item.readiness === "ready") || authorizationSetups.some((item) => item.ownershipCount > 0);
+
+  const riskQueue: AuthorizationReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document the authorization strategy before claiming authorization readiness.",
+      why: "Authorization readiness starts with explicit permission packages, policy models, relationship tuples, RBAC/ABAC/ReBAC rules, guards, middleware, or custom authorize checks.",
+      relatedHref: "html/authorization-readiness.html"
+    });
+  }
+  if (hasSetup && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Connect the authorization model to a concrete enforcement point.",
+      why: "Policy files or permission vocabulary alone do not prove that protected routes, resolvers, UI abilities, or service calls use the model.",
+      relatedHref: "html/authorization-readiness.html"
+    });
+  }
+  if ((hasSetup || hasPackage) && !hasAuthorizationModel) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Make the permission model explicit with RBAC, ABAC, ReBAC, ACL, relationship tuple, or policy-file evidence.",
+      why: "Readers need to see which permission model the project uses before they can audit access boundaries.",
+      relatedHref: "html/authorization-readiness.html"
+    });
+  }
+  if ((hasSetup || hasPackage) && !hasSubjectActionModel) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document subject, resource, and action vocabulary next to permission checks.",
+      why: "Authorization decisions need a stable actor-resource-action shape or resource-action mapping to avoid ambiguous checks.",
+      relatedHref: "html/authorization-readiness.html"
+    });
+  }
+  if ((hasSetup || hasPackage) && !hasEnforcement) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add guard, middleware, can-check, authorize-call, route, resolver, or UI ability enforcement evidence.",
+      why: "A model that is not enforced at request or UI boundaries cannot explain how access is denied.",
+      relatedHref: "html/authorization-readiness.html"
+    });
+  }
+  if (hasEnforcement && !hasDenyDefault) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document deny-by-default behavior for failed authorization decisions.",
+      why: "Permission systems should make the denial path explicit so missing rules do not become accidental allows.",
+      relatedHref: "html/authorization-readiness.html"
+    });
+  }
+  if (hasTenantOrOrg && !hasOwnershipBoundary) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Map tenant, organization, group, and owner boundaries in authorization checks.",
+      why: "Multi-tenant or organization-aware permissions need ownership boundaries to avoid cross-tenant access.",
+      relatedHref: "html/authorization-readiness.html"
+    });
+  }
+  if ((hasSetup || hasPackage) && !hasTests) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add unit, fixture, table, negative, policy, E2E, or type tests for authorization decisions.",
+      why: "Authorization failures are often regression-prone; negative and table tests are the fastest static signal that deny paths were considered.",
+      relatedHref: "html/authorization-readiness.html"
+    });
+  }
+  if ((hasSetup || hasPackage) && !hasGovernance) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add least-privilege, audit log, permission review, policy versioning, migration, decision log, or break-glass notes.",
+      why: "Authorization readiness includes operational governance, not only code-level permission checks.",
+      relatedHref: "html/authorization-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Authorization readiness report: setup ${authorizationSetups.length}개, model signal ${modelSignals.length}개, enforcement signal ${enforcementSignals.length}개, governance signal ${governanceSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Authorization readiness OpenFGA Casbin CASL Oso RBAC ABAC ReBAC ACL relationship tuples policy model roles permissions resources actions guards middleware can checks deny by default ownership tenants organizations audit decision logs tests",
+    authorizationSetups,
+    modelSignals,
+    enforcementSignals,
+    identitySignals,
+    resourceSignals,
+    governanceSignals,
+    testSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"OpenFGA|authorization model|relationship tuple|TupleKey|user:\\\\*|define .*:|relations\" src app pages packages policies", purpose: "Inventory OpenFGA/Zanzibar-style relationship models and tuple checks." },
+      { command: "rg \"newEnforcer|enforce\\\\(|model.conf|policy.csv|sub, obj, act|RBAC|ABAC|ACL\" src app pages packages policies", purpose: "Review Casbin-style model, policy, and enforcement surfaces." },
+      { command: "rg \"AbilityBuilder|defineAbility|can\\\\(|cannot\\\\(|ForbiddenError|throwUnlessCan\" src app pages packages", purpose: "Trace CASL ability definitions and UI/API can-checks." },
+      { command: "rg \"Polar|allow\\\\(|authorize\\\\(|is_allowed|actor.*action.*resource\" src app pages packages policies", purpose: "Find Oso/Polar or custom actor-action-resource authorization checks." },
+      { command: "rg \"tenant|organization|owner|group|service account|anonymous|deny by default|audit log|decision log|permission review\" docs src app pages packages policies", purpose: "Map identity boundaries, denial behavior, and governance evidence." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise positive and negative authorization decisions in a trusted workspace." }
+    ],
+    learnerNextSteps: [
+      "먼저 authorization model이 RBAC, ABAC, ReBAC, ACL, 또는 custom 정책 중 무엇을 기준으로 하는지 분류하세요.",
+      "subject, resource, action이 어떤 이름으로 표현되는지 찾고 route, resolver, service, UI ability 중 어디에서 검사되는지 연결하세요.",
+      "deny-by-default와 negative test가 있는지 확인해 빠진 permission이 allow로 처리되지 않는지 검토하세요.",
+      "tenant, organization, group, owner, service account 같은 identity boundary가 resource boundary와 같이 검사되는지 원본 링크로 추적하세요.",
+      "이 리포트는 정적 readiness입니다. OpenFGA, Casbin, CASL, Oso, OPA, custom policy engine은 실행하지 않고 신뢰된 환경에서 별도로 검증하세요."
+    ]
+  };
+}
+
+type AuthorizationReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function authorizationReadinessSourceFiles(walk: WalkResult): Promise<AuthorizationReadinessSourceFile[]> {
+  const files: AuthorizationReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !authorizationReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!authorizationReadinessPathSignal(file.relPath) && !authorizationReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function authorizationReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return authorizationReadinessPathSignal(filePath)
+    || /^(package\.json|permissions?\.json|authorization\.json|authz\.json|model\.conf|policy\.csv|policy\.polar|policy\.rego)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|conf|csv|rego|polar|graphql|gql|prisma)$/i.test(filePath);
+}
+
+function authorizationReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(authz|authorization|authorize|permission|permissions|rbac|abac|rebac|acl|policy|policies|guard|guards|middleware|openfga|fga|casbin|casl|oso|ability|abilities|access-control|access_control)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function authorizationReadinessContentSignal(text: string): boolean {
+  return /(OpenFGA|authorization model|relationship tuple|TupleKey|user:\*|define\s+[A-Za-z0-9_-]+\s*:|relations?\b|newEnforcer|enforce\s*\(|model\.conf|policy\.csv|sub\s*,\s*obj\s*,\s*act|AbilityBuilder|defineAbility|createMongoAbility|ForbiddenError|(?:can|cannot)\s*\(|throwUnlessCan|Polar|allow\s*\(|oso\.authorize|is_allowed|authorize\s*\(|authorized_actions|RBAC|ABAC|ReBAC|ACL|\brole\b|\broles\b|\bpermission\b|\bpermissions\b|\bresource\b|\baction\b|\bguard\b|\bmiddleware\b|deny[- ]by[- ]default|least[- ]privilege|\bowner\b|\btenant\b|\borganization\b|audit log|decision log)/i.test(text);
+}
+
+function authorizationReadinessSetups(sourceFiles: AuthorizationReadinessSourceFile[]): AuthorizationReadinessReport["authorizationSetups"] {
+  const rows: AuthorizationReadinessReport["authorizationSetups"] = [];
+  for (const source of sourceFiles) {
+    const modelCount = countMatches(source.text, /(authorization model|model\.conf|policy\.csv|policy\.polar|\.rego\b|resource\s+[A-Z][A-Za-z0-9_]*\s*{|AbilityBuilder|defineAbility|createMongoAbility|Polar|OpenFGA|newEnforcer|RBAC|ABAC|ReBAC|ACL)/gi);
+    const relationCount = countMatches(source.text, /(relationship tuple|TupleKey|tuple\.NewTupleKey|relations?\b|define\s+[A-Za-z0-9_-]+\s*:|has_relation|relation\s*:|member from parent|#member|#viewer)/gi);
+    const roleCount = countMatches(source.text, /\b(role|roles|RBAC|admin|member|viewer|editor|owner|reader|writer)\b/gi);
+    const permissionCount = countMatches(source.text, /\b(permissions?|has_permission|is_allowed|throwUnlessCan|ForbiddenError|AccessDenied|allowed|canCheck)\b|(?:can|cannot|enforce|authorize|allow|check)\s*\(/gi);
+    const resourceCount = countMatches(source.text, /\b(resource|resources|document|project|repository|repo|organization|tenant|record|field|collection|obj|subject)\b/gi);
+    const actionCount = countMatches(source.text, /\b(action|actions|act|read|write|create|update|delete|manage|invite|pull|push|view|edit)\b/gi);
+    const guardCount = countMatches(source.text, /\b(guard|guards|requirePermission|requireRole|authorize|authorized|canCheck|canAccess|assertAllowed|throwUnlessCan|ForbiddenError|AccessDenied|NotAllowed)\b/gi);
+    const middlewareCount = countMatches(source.text, /\b(middleware|route protection|protected route|resolver protection|beforeEach|interceptor)\b/gi);
+    const ownershipCount = countMatches(source.text, /\b(owner|own|tenant|organization|org|group|service account|service-account|anonymous|createdBy|author)\b/gi);
+    const testCount = countMatches(source.text, /\b(test|spec|fixture|table test|table-driven|negative test|policy test|e2e|type test|expect|describe|it\()\b/gi);
+    const totalSignals = modelCount + relationCount + roleCount + permissionCount + resourceCount + actionCount + guardCount + middlewareCount + ownershipCount + testCount;
+    const hasModel = modelCount > 0 || relationCount > 0 || roleCount > 0 || permissionCount > 0;
+    const hasSubjectAction = resourceCount > 0 && actionCount > 0;
+    const hasEnforcement = guardCount > 0 || middlewareCount > 0 || /(?:enforce|can|authorize|allow|check)\s*\(|\b(is_allowed|throwUnlessCan)\b/i.test(source.text);
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework: authorizationReadinessFramework(source),
+      modelCount,
+      relationCount,
+      roleCount,
+      permissionCount,
+      resourceCount,
+      actionCount,
+      guardCount,
+      middlewareCount,
+      ownershipCount,
+      testCount,
+      readiness: hasModel && hasSubjectAction && hasEnforcement && totalSignals >= 8 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains model ${modelCount}, relations ${relationCount}, roles ${roleCount}, permissions ${permissionCount}, resources ${resourceCount}, actions ${actionCount}, guards ${guardCount}, middleware ${middlewareCount}, ownership ${ownershipCount}, tests ${testCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function authorizationReadinessFramework(source: AuthorizationReadinessSourceFile): AuthorizationReadinessReport["authorizationSetups"][number]["framework"] {
+  if (/OpenFGA|@openfga\/sdk|authorization model|relationship tuple|TupleKey|user:\*/i.test(source.text) || /openfga|(^|\/)fga(\/|\.|-|_|$)/i.test(source.filePath)) return "openfga";
+  if (/casbin|newEnforcer|enforce\s*\(|model\.conf|policy\.csv|sub\s*,\s*obj\s*,\s*act/i.test(source.text) || /casbin|model\.conf|policy\.csv/i.test(source.filePath)) return "casbin";
+  if (/CASL|@casl\/ability|AbilityBuilder|defineAbility|createMongoAbility|ForbiddenError|throwUnlessCan/i.test(source.text) || /casl|abilit/i.test(source.filePath)) return "casl";
+  if (/Oso|Polar|policy\.polar|allow\s*\(|is_allowed|oso\.authorize/i.test(source.text) || /oso|\.polar$/i.test(source.filePath)) return "oso";
+  if (/OPA|Rego|\.rego\b|opa\s+(eval|test|check|build)|package\s+[A-Za-z0-9_.]+/i.test(source.text) || /\.rego$/i.test(source.filePath)) return "opa";
+  if (/\b(authorize|permission|permissions|requireRole|requirePermission|canAccess|AccessDenied|Forbidden)\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function authorizationReadinessModelSignals(sourceFiles: AuthorizationReadinessSourceFile[]): AuthorizationReadinessReport["modelSignals"] {
+  const specs: Array<{ signal: AuthorizationReadinessReport["modelSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "rbac", pattern: /\b(RBAC|role-based access control|role|roles|getRolesForUser|hasRoleForUser|role_definition)\b/i, evidence: "RBAC role evidence was detected." },
+    { signal: "abac", pattern: /\b(ABAC|attribute-based access control|attribute|attributes|context attributes|r\.sub\.[A-Za-z]|conditions?|eval\(p\.)\b/i, evidence: "ABAC attribute or condition evidence was detected." },
+    { signal: "rebac", pattern: /\b(ReBAC|relationship-based|relationship tuple|TupleKey|tuple-to-userset|userset|member from parent|Zanzibar|OpenFGA)\b/i, evidence: "ReBAC relationship evidence was detected." },
+    { signal: "acl", pattern: /\b(ACL|access control list|allowlist|denylist|allow-list|deny-list)\b/i, evidence: "ACL evidence was detected." },
+    { signal: "relationship-tuples", pattern: /(relationship tuple|TupleKey|tuple\.NewTupleKey|user:\*|[A-Za-z]+:[A-Za-z0-9_-]+#[A-Za-z0-9_-]+@user:|define\s+[A-Za-z0-9_-]+\s*:)/i, evidence: "relationship tuple/model evidence was detected." },
+    { signal: "policy-file", pattern: /(model\.conf|policy\.csv|policy\.polar|\.rego\b|package\s+[A-Za-z0-9_.]+|resource\s+[A-Z][A-Za-z0-9_]*\s*{|authorization model)/i, evidence: "policy file or model evidence was detected." },
+    { signal: "subject-object-action", pattern: /(sub\s*,\s*obj\s*,\s*act|subject.*object.*action|actor.*action.*resource|user.*resource.*action|r\.sub.*r\.obj.*r\.act)/i, evidence: "subject/object/action decision shape evidence was detected." },
+    { signal: "resource-action", pattern: /(resource.*action|action.*resource|permissions?\s*[:=]\s*\[|actions?\s*[:=]\s*\[|can\s*\(\s*['\"][a-z]+['\"],\s*['\"][A-Za-z])/i, evidence: "resource/action vocabulary evidence was detected." }
+  ];
+  return authorizationReadinessSignalFromSpecs(sourceFiles, specs, "model", "signal");
+}
+
+function authorizationReadinessEnforcementSignals(sourceFiles: AuthorizationReadinessSourceFile[]): AuthorizationReadinessReport["enforcementSignals"] {
+  const specs: Array<{ signal: AuthorizationReadinessReport["enforcementSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "guard", pattern: /\b(guard|guards|requirePermission|requireRole|ensurePermission|canAccess|assertAllowed|AccessDenied|Forbidden)\b/i, evidence: "guard enforcement evidence was detected." },
+    { signal: "middleware", pattern: /\b(middleware|withAuthorization|authzMiddleware|permissionMiddleware|accessMiddleware)\b/i, evidence: "middleware enforcement evidence was detected." },
+    { signal: "can-check", pattern: /(\bcan\s*\(|\bcannot\s*\(|\bcanCheck\b|\bability\.can\b|\bcanAccess\b|enforcer\.enforce\s*\()/i, evidence: "can-check evidence was detected." },
+    { signal: "authorize-call", pattern: /(\bauthorize\s*\(|\boso\.authorize\b|\bis_allowed\b|\ballow\s*\(|\bquery_rule_once\b|\brequirePermission\s*\()/i, evidence: "authorize-call evidence was detected." },
+    { signal: "deny-by-default", pattern: /(deny[- ]by[- ]default|default deny|allow by exception|fail closed|fail-closed|ForbiddenError|throwUnlessCan|NotAllowed|AccessDenied|return\s+false|403)/i, evidence: "deny-by-default evidence was detected." },
+    { signal: "route-protection", pattern: /(protected route|route protection|route guard|beforeEach|loader.*authorize|middleware.*route|GET.*authorize|POST.*authorize|app\/api\/.*authz)/i, evidence: "route protection evidence was detected." },
+    { signal: "resolver-protection", pattern: /(resolver.*authorize|authorize.*resolver|resolver protection|field.*authorize|authorize_field|field.*permission|GraphQL.*permission|trpc.*permission|procedure.*guard)/i, evidence: "resolver protection evidence was detected." },
+    { signal: "ui-ability", pattern: /(AbilityBuilder|defineAbility|Can\b|ability\.can|useAbility|ForbiddenError|accessibleBy|ui ability|component permission)/i, evidence: "UI ability evidence was detected." }
+  ];
+  return authorizationReadinessSignalFromSpecs(sourceFiles, specs, "enforcement", "signal");
+}
+
+function authorizationReadinessIdentitySignals(sourceFiles: AuthorizationReadinessSourceFile[]): AuthorizationReadinessReport["identitySignals"] {
+  const specs: Array<{ signal: AuthorizationReadinessReport["identitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "user", pattern: /\b(user|users|actor|subject|sub)\b|user:/i, evidence: "user/actor identity evidence was detected." },
+    { signal: "role", pattern: /\b(role|roles|admin|member|reader|writer|viewer|editor)\b/i, evidence: "role identity evidence was detected." },
+    { signal: "group", pattern: /\b(group|groups|team|teams|member from parent|#member)\b/i, evidence: "group identity evidence was detected." },
+    { signal: "tenant", pattern: /\b(tenant|tenants|tenantId|tenant_id|domain|domains)\b/i, evidence: "tenant identity evidence was detected." },
+    { signal: "organization", pattern: /\b(organization|organizations|org|orgId|org_id|company|workspace)\b/i, evidence: "organization identity evidence was detected." },
+    { signal: "service-account", pattern: /\b(service account|service-account|serviceAccount|machine identity|robot account|client credentials)\b/i, evidence: "service account identity evidence was detected." },
+    { signal: "owner", pattern: /\b(owner|owners|owned|createdBy|author|resource\.owner|obj\.Owner)\b/i, evidence: "owner identity evidence was detected." },
+    { signal: "anonymous", pattern: /\b(anonymous|guest|public|unauthenticated|user:\*)\b/i, evidence: "anonymous/public identity evidence was detected." }
+  ];
+  return authorizationReadinessSignalFromSpecs(sourceFiles, specs, "identity", "signal");
+}
+
+function authorizationReadinessResourceSignals(sourceFiles: AuthorizationReadinessSourceFile[]): AuthorizationReadinessReport["resourceSignals"] {
+  const specs: Array<{ signal: AuthorizationReadinessReport["resourceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "document", pattern: /\b(document|documents|doc|docs|BlogPost|Post)\b/i, evidence: "document resource evidence was detected." },
+    { signal: "project", pattern: /\b(project|projects)\b/i, evidence: "project resource evidence was detected." },
+    { signal: "repository", pattern: /\b(repository|repositories|repo|repos)\b/i, evidence: "repository resource evidence was detected." },
+    { signal: "organization", pattern: /\b(organization|organizations|org|company|workspace)\b/i, evidence: "organization resource evidence was detected." },
+    { signal: "tenant", pattern: /\b(tenant|tenants|domain|domains)\b/i, evidence: "tenant resource evidence was detected." },
+    { signal: "record", pattern: /\b(record|records|row|rows|entity|entities)\b/i, evidence: "record resource evidence was detected." },
+    { signal: "field", pattern: /\b(field|fields|authorize_field|allowed fields|field permission)\b/i, evidence: "field-level resource evidence was detected." },
+    { signal: "collection", pattern: /\b(collection|collections|list|ListObjects|authorized_resources|accessibleBy)\b/i, evidence: "collection-level resource evidence was detected." }
+  ];
+  return authorizationReadinessSignalFromSpecs(sourceFiles, specs, "resource", "signal");
+}
+
+function authorizationReadinessGovernanceSignals(sourceFiles: AuthorizationReadinessSourceFile[]): AuthorizationReadinessReport["governanceSignals"] {
+  const specs: Array<{ signal: AuthorizationReadinessReport["governanceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "least-privilege", pattern: /(least privilege|least-privilege|minimal permission|minimum permission|scoped permission)/i, evidence: "least privilege evidence was detected." },
+    { signal: "separation-of-duties", pattern: /(separation of duties|separation-of-duties|two person|two-person|dual approval|maker checker)/i, evidence: "separation of duties evidence was detected." },
+    { signal: "audit-log", pattern: /(audit log|audit-log|audit trail|access log|permission log|authorization log)/i, evidence: "audit log evidence was detected." },
+    { signal: "permission-review", pattern: /(permission review|access review|entitlement review|role review|recertification)/i, evidence: "permission review evidence was detected." },
+    { signal: "policy-versioning", pattern: /(policy version|policy-version|versioned policy|authorization model version|model id|migration)/i, evidence: "policy versioning evidence was detected." },
+    { signal: "migration", pattern: /(migration|migrate|model migration|policy migration|backfill)/i, evidence: "authorization migration evidence was detected." },
+    { signal: "decision-log", pattern: /(decision log|decision-log|authorization decision|PDP|policy decision|decision output)/i, evidence: "decision log evidence was detected." },
+    { signal: "break-glass", pattern: /(break glass|break-glass|emergency access|privileged access|override access)/i, evidence: "break-glass evidence was detected." }
+  ];
+  return authorizationReadinessSignalFromSpecs(sourceFiles, specs, "governance", "signal");
+}
+
+function authorizationReadinessTestSignals(sourceFiles: AuthorizationReadinessSourceFile[]): AuthorizationReadinessReport["testSignals"] {
+  const specs: Array<{ signal: AuthorizationReadinessReport["testSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "unit-test", pattern: /(\bdescribe\s*\(|\bit\s*\(|\btest\s*\(|unit test|\.test\.|\.spec\.)/i, evidence: "unit test evidence was detected." },
+    { signal: "fixture", pattern: /\b(fixture|fixtures|sample policy|sample tuple|test data)\b/i, evidence: "fixture evidence was detected." },
+    { signal: "table-test", pattern: /(table test|table-driven|test cases|cases\s*=\s*\[|each\s*\()/i, evidence: "table test evidence was detected." },
+    { signal: "negative-test", pattern: /(negative test|denies|deny|forbid|forbidden|not allowed|expect.*false|rejects|403)/i, evidence: "negative test evidence was detected." },
+    { signal: "policy-test", pattern: /(policy test|authorization model test|fga model test|casbin test|oso test|opa test|rego test|allow.*deny)/i, evidence: "policy test evidence was detected." },
+    { signal: "e2e-test", pattern: /(e2e|end-to-end|playwright|cypress|protected route test|browser permission)/i, evidence: "E2E authorization test evidence was detected." },
+    { signal: "type-test", pattern: /(ts-expect-error|type test|expectType|type-level|AppAbility|AbilityTuple|SubjectType)/i, evidence: "type test evidence was detected." }
+  ];
+  return authorizationReadinessSignalFromSpecs(sourceFiles, specs, "test", "signal");
+}
+
+function authorizationReadinessPackageSignals(sourceFiles: AuthorizationReadinessSourceFile[]): AuthorizationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: AuthorizationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@openfga/sdk", pattern: /@openfga\/sdk/i, evidence: "@openfga/sdk package evidence was detected." },
+    { signal: "openfga", pattern: /["']openfga["']|\bOpenFGA\b|openfga\/openfga|openfga\s+(model|tuple|check)/i, evidence: "OpenFGA evidence was detected." },
+    { signal: "casbin", pattern: /["']casbin["']|\bCasbin\b|newEnforcer|model\.conf|policy\.csv/i, evidence: "Casbin package/model evidence was detected." },
+    { signal: "casl", pattern: /["']casl["']|\bCASL\b|defineAbility|AbilityBuilder/i, evidence: "CASL evidence was detected." },
+    { signal: "@casl/ability", pattern: /@casl\/ability/i, evidence: "@casl/ability package evidence was detected." },
+    { signal: "oso", pattern: /["']oso["']|\bOso\b|\bPolar\b|policy\.polar/i, evidence: "Oso/Polar evidence was detected." },
+    { signal: "opa", pattern: /["']opa["']|\bOPA\b|\bRego\b|\.rego\b|opa\s+(eval|test|check|build)/i, evidence: "OPA/Rego evidence was detected." },
+    { signal: "custom", pattern: /\b(authorize|authorization|permission|permissions|requirePermission|canAccess|AccessDenied|Forbidden)\b/i, evidence: "custom authorization evidence was detected." }
+  ];
+  return authorizationReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function authorizationReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: AuthorizationReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/authorization-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
