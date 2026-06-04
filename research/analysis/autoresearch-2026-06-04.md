@@ -4234,6 +4234,55 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 66/66 audit checks across 13 generated reports
 
+### Upgrade 169: Analytics Readiness Report
+
+- Cloned and inspected `PostHog/posthog-js` under
+  `research/external-src/PostHog-posthog-js` without executing external source.
+  Clone HEAD was `76a2d6b`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, licenseInfo key `other`, 545 stars, 263 forks,
+  updated 2026-06-03T23:19:22Z. Compared with
+  `segmentio/analytics-next`, `amplitude/Amplitude-TypeScript`, and
+  `mixpanel/mixpanel-js`; selected PostHog JavaScript because it directly
+  models product analytics readiness: `posthog.init`, `PostHogProvider`,
+  `posthog.capture`, `posthog.identify`, `posthog.reset`, groups, feature flag
+  hooks, flag payloads, SSR/bootstrap flags, session recording, consent,
+  opt-in/opt-out controls, and `before_send` filtering. No source code was
+  copied into RepoTutor.
+- Implemented PostHog-style analytics-readiness report:
+  `AnalyticsReadinessReportSchema`,
+  `analysis/analytics-readiness-report.json`,
+  `markdown/analytics-readiness.md`, `html/analytics-readiness.html`,
+  analytics setups, event signals, identity signals, privacy signals, product
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target analytics-readiness`.
+- Source pattern: PostHog separates setup through `posthog.init`,
+  `PostHogProvider`, API host options, and package imports; event capture
+  through `posthog.capture`, track/pageview/autocapture, feature interactions,
+  error capture, and custom event names; identity through identify, alias,
+  group, reset, distinct IDs, person properties, and group properties; privacy
+  through opt-in/out checks, `before_send`, property filtering, masking, and
+  session-recording disable controls; and product analytics through feature
+  flags, flag payloads, bootstrap flags, session recording, heatmaps, surveys,
+  and web vitals. RepoTutor maps that to deterministic static analytics
+  readiness and explicitly does not initialize SDKs, send events, collect
+  identities, start replay/heatmaps, mutate cookies or local storage, or run
+  the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-analytics-readiness-red-studies.eLChGX/2026-06-04/local__simple-ts-app__main__f9e07776`;
+  old behavior was missing `analysis/analytics-readiness-report.json`,
+  `markdown/analytics-readiness.md`, and `html/analytics-readiness.html`, and
+  `open --target analytics-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-analytics-readiness-green-studies.2zbfvL/2026-06-04/local__simple-ts-app__main__f9e07776`;
+  confirmed `verificationCheckedRequiredArtifacts=207`, analytics setups 0,
+  event signals 7, identity signals 7, privacy signals 7, product signals 7,
+  package signals 8, risk queue 2, and `open --target
+  analytics-readiness` -> `html/analytics-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 67/67 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

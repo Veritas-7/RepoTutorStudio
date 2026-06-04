@@ -3352,6 +3352,64 @@ export const ErrorTrackingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const AnalyticsReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  analyticsSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["posthog", "segment", "amplitude", "mixpanel", "custom", "unknown"]),
+    initCount: z.number().int().nonnegative(),
+    captureCount: z.number().int().nonnegative(),
+    identityCount: z.number().int().nonnegative(),
+    pageviewCount: z.number().int().nonnegative(),
+    privacyCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  eventSignals: z.array(z.object({
+    signal: z.enum(["capture", "track", "pageview", "autocapture", "feature-interaction", "error-capture", "custom-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  identitySignals: z.array(z.object({
+    signal: z.enum(["identify", "alias", "group", "reset", "distinct-id", "person-properties", "group-properties", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  privacySignals: z.array(z.object({
+    signal: z.enum(["opt-in", "opt-out", "has-opted-in", "has-opted-out", "disable-session-recording", "before-send", "property-filter", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  productSignals: z.array(z.object({
+    signal: z.enum(["feature-flags", "flag-payload", "flag-bootstrap", "session-recording", "heatmaps", "surveys", "web-vitals", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["posthog-js", "posthog-js-lite", "posthog-node", "@posthog/react", "@posthog/nextjs-config", "@segment/analytics-next", "@amplitude/analytics-browser", "mixpanel-browser", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3622,6 +3680,7 @@ export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema
 export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;
 export type RateLimitReadinessReport = z.infer<typeof RateLimitReadinessReportSchema>;
 export type ErrorTrackingReadinessReport = z.infer<typeof ErrorTrackingReadinessReportSchema>;
+export type AnalyticsReadinessReport = z.infer<typeof AnalyticsReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
