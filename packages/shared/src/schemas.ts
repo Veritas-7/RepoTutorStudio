@@ -2958,6 +2958,81 @@ export const AuthReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const AuthorizationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  authorizationSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["openfga", "casbin", "casl", "oso", "opa", "custom", "unknown"]),
+    modelCount: z.number().int().nonnegative(),
+    relationCount: z.number().int().nonnegative(),
+    roleCount: z.number().int().nonnegative(),
+    permissionCount: z.number().int().nonnegative(),
+    resourceCount: z.number().int().nonnegative(),
+    actionCount: z.number().int().nonnegative(),
+    guardCount: z.number().int().nonnegative(),
+    middlewareCount: z.number().int().nonnegative(),
+    ownershipCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  modelSignals: z.array(z.object({
+    signal: z.enum(["rbac", "abac", "rebac", "acl", "relationship-tuples", "policy-file", "subject-object-action", "resource-action", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  enforcementSignals: z.array(z.object({
+    signal: z.enum(["guard", "middleware", "can-check", "authorize-call", "deny-by-default", "route-protection", "resolver-protection", "ui-ability", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  identitySignals: z.array(z.object({
+    signal: z.enum(["user", "role", "group", "tenant", "organization", "service-account", "owner", "anonymous", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resourceSignals: z.array(z.object({
+    signal: z.enum(["document", "project", "repository", "organization", "tenant", "record", "field", "collection", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  governanceSignals: z.array(z.object({
+    signal: z.enum(["least-privilege", "separation-of-duties", "audit-log", "permission-review", "policy-versioning", "migration", "decision-log", "break-glass", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["unit-test", "fixture", "table-test", "negative-test", "policy-test", "e2e-test", "type-test", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@openfga/sdk", "openfga", "casbin", "casl", "@casl/ability", "oso", "opa", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const PaymentReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7312,6 +7387,7 @@ export type RoutingReadinessReport = z.infer<typeof RoutingReadinessReportSchema
 export type StateManagementReadinessReport = z.infer<typeof StateManagementReadinessReportSchema>;
 export type FormReadinessReport = z.infer<typeof FormReadinessReportSchema>;
 export type AuthReadinessReport = z.infer<typeof AuthReadinessReportSchema>;
+export type AuthorizationReadinessReport = z.infer<typeof AuthorizationReadinessReportSchema>;
 export type PaymentReadinessReport = z.infer<typeof PaymentReadinessReportSchema>;
 export type EmailReadinessReport = z.infer<typeof EmailReadinessReportSchema>;
 export type QueueReadinessReport = z.infer<typeof QueueReadinessReportSchema>;
