@@ -5521,7 +5521,7 @@
         "markdown/workflow-orchestration-readiness.md",
         "html/workflow-orchestration-readiness.html"
       ],
-      "commit": "pending"
+      "commit": "c46460a"
     }
   ],
   "verification": {
@@ -6128,7 +6128,8 @@
     "cliWorkflowOrchestrationReadinessOpenTargetSmoke": "PASS",
     "buildWorkflowOrchestrationReadiness": "PASS",
     "testWorkflowOrchestrationReadiness": "PASS",
-    "auditBriefWorkflowOrchestrationReadiness112": "PASS"
+    "auditBriefWorkflowOrchestrationReadiness112": "PASS",
+    "workflowOrchestrationReadinessImplementationPushed": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -6664,6 +6665,6 @@
     "buildWorkflowOrchestrationReadiness": "PASS",
     "testWorkflowOrchestrationReadiness": "PASS",
     "auditBriefWorkflowOrchestrationReadiness112": "PASS",
-    "workflowOrchestrationReadinessImplementationPushed": "PENDING"
+    "workflowOrchestrationReadinessImplementationPushed": "PASS"
   }
 }
