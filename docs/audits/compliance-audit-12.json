@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-04T23:19:34.887Z",
+  "createdAt": "2026-06-04T23:34:15.799Z",
   "checks": [
     {
       "name": "project setup",
@@ -172,6 +172,13 @@
     },
     {
       "name": "api contract readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "consumer contract readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

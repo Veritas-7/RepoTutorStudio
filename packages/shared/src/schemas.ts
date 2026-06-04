@@ -1244,6 +1244,72 @@ export const ApiContractReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ConsumerContractReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  contractSetups: z.array(z.object({
+    filePath: z.string(),
+    role: z.enum(["consumer", "provider", "broker", "ci", "mixed", "unknown"]),
+    framework: z.enum(["pact-js", "pact-jvm", "pact-ruby", "pact-go", "pact-python", "custom", "unknown"]),
+    interactionCount: z.number().int().nonnegative(),
+    providerStateCount: z.number().int().nonnegative(),
+    verifierCount: z.number().int().nonnegative(),
+    brokerCount: z.number().int().nonnegative(),
+    matcherCount: z.number().int().nonnegative(),
+    messageCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["pact-v3", "pact-v4", "interaction", "given", "upon-receiving", "with-request", "will-respond-with", "execute-test", "message", "graphql", "plugin", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  providerSignals: z.array(z.object({
+    signal: z.enum(["verifier", "provider-state", "state-handlers", "provider-base-url", "verification-context", "publish-results", "provider-version", "provider-branch", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  brokerSignals: z.array(z.object({
+    signal: z.enum(["pact-broker", "pactflow", "can-i-deploy", "consumer-version-selector", "pending-pacts", "wip-pacts", "webhook", "token-auth", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  matcherSignals: z.array(z.object({
+    signal: z.enum(["like", "each-like", "regex", "term", "from-provider-state", "matching-rules", "headers", "body", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["publish-pact", "verify-provider", "junit", "github-actions", "gradle", "maven", "npm-script", "rake-task", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@pact-foundation/pact", "pact-jvm", "pact-ruby", "pact-broker-client", "pactflow", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ObservabilityReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7674,6 +7740,7 @@ export type AdvisoryReport = z.infer<typeof AdvisoryReportSchema>;
 export type VexReport = z.infer<typeof VexReportSchema>;
 export type PolicyGateReport = z.infer<typeof PolicyGateReportSchema>;
 export type ApiContractReport = z.infer<typeof ApiContractReportSchema>;
+export type ConsumerContractReadinessReport = z.infer<typeof ConsumerContractReadinessReportSchema>;
 export type ObservabilityReport = z.infer<typeof ObservabilityReportSchema>;
 export type PerformanceReport = z.infer<typeof PerformanceReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;

@@ -39,6 +39,7 @@ import type {
   VexReport,
   PolicyGateReport,
   ApiContractReport,
+  ConsumerContractReadinessReport,
   ObservabilityReport,
   PerformanceReport,
   E2eReport,
@@ -178,6 +179,7 @@ export interface StudyHtmlInput {
   vexReport: VexReport;
   policyGateReport: PolicyGateReport;
   apiContractReport: ApiContractReport;
+  consumerContractReadinessReport: ConsumerContractReadinessReport;
   observabilityReport: ObservabilityReport;
   performanceReport: PerformanceReport;
   e2eReport: E2eReport;
@@ -337,6 +339,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["vex.html", "OpenVEX Readiness"],
     ["policy-gates.html", "Policy Gates"],
     ["api-contracts.html", "API Contracts"],
+    ["consumer-contract-readiness.html", "Consumer Contracts"],
     ["observability.html", "Observability"],
     ["performance.html", "Performance"],
     ["e2e.html", "E2E"],
@@ -515,6 +518,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>OpenVEX Impact Readiness</h3><p>${escapeHtml(input.vexReport.summary)}</p><p>OpenVEX 패턴으로 product, vulnerability input, status justification, SARIF filter 준비도를 정리합니다.</p><a href="vex.html">OpenVEX Readiness 열기</a></article>
           <article><h3>Policy Gate Readiness</h3><p>${escapeHtml(input.policyGateReport.summary)}</p><p>OPA 패턴으로 Rego policy, input/data fixture, test, bundle, decision output 준비도를 정리합니다.</p><a href="policy-gates.html">Policy Gates 열기</a></article>
           <article><h3>API Contract Readiness</h3><p>${escapeHtml(input.apiContractReport.summary)}</p><p>Schemathesis 패턴으로 schema, generated case phase, response check, runtime/reporting 준비도를 정리합니다.</p><a href="api-contracts.html">API Contracts 열기</a></article>
+          <article><h3>Consumer Contract Readiness</h3><p>${escapeHtml(input.consumerContractReadinessReport.summary)}</p><p>Pact 패턴으로 consumer interaction, provider state, verifier, broker/can-i-deploy, matcher 준비도를 정리합니다.</p><a href="consumer-contract-readiness.html">Consumer Contracts 열기</a></article>
           <article><h3>Observability Readiness</h3><p>${escapeHtml(input.observabilityReport.summary)}</p><p>OpenTelemetry 패턴으로 traces, metrics, logs, exporter, resource/context readiness를 정리합니다.</p><a href="observability.html">Observability 열기</a></article>
           <article><h3>Performance Readiness</h3><p>${escapeHtml(input.performanceReport.summary)}</p><p>k6 패턴으로 load script, workload, thresholds, checks, metrics/output 준비도를 정리합니다.</p><a href="performance.html">Performance 열기</a></article>
           <article><h3>E2E Readiness</h3><p>${escapeHtml(input.e2eReport.summary)}</p><p>Playwright 패턴으로 browser projects, locators, assertions, traces/reporters, webServer/baseURL 준비도를 정리합니다.</p><a href="e2e.html">E2E 열기</a></article>
@@ -735,6 +739,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "api-contracts.html",
       title: "API Contract Readiness",
       html: pageShell("API Contract Readiness", "api-contracts.html", `<section class="panel" data-source-pattern="Schemathesis"><h2>API Contract Snapshot</h2><p>${escapeHtml(input.apiContractReport.summary)}</p><p class="muted">${escapeHtml(input.apiContractReport.sourcePattern)}</p><dl class="meta"><div><dt>schemas</dt><dd>${input.apiContractReport.schemaDocuments.length}</dd></div><div><dt>operations</dt><dd>${input.apiContractReport.operationTargets.length}</dd></div><div><dt>phases</dt><dd>${input.apiContractReport.testPhases.length}</dd></div><div><dt>checks</dt><dd>${input.apiContractReport.checkMatrix.length}</dd></div></dl><p class="muted">RepoTutor records API contract readiness only. It does not send generated requests or claim test pass/fail results.</p></section><section class="grid"><article class="api-contract-card"><h3>Test Phases</h3>${apiContractPhaseList(input.apiContractReport.testPhases)}</article><article class="api-contract-card"><h3>Check Matrix</h3>${apiContractCheckList(input.apiContractReport.checkMatrix)}</article><article class="api-contract-card"><h3>Runtime Targets</h3>${apiContractRuntimeList(input.apiContractReport.runtimeTargets)}</article><article class="api-contract-card"><h3>Reporting Outputs</h3>${apiContractReportingList(input.apiContractReport.reportingOutputs)}</article></section><section class="cards api-contract-schema-cards">${apiContractSchemaCards(input.apiContractReport.schemaDocuments)}</section><section class="grid"><article class="api-contract-card"><h3>Operation Targets</h3>${apiContractOperationList(input.apiContractReport.operationTargets)}</article><article class="api-contract-card"><h3>Recommended Commands</h3>${apiContractCommandList(input.apiContractReport.recommendedCommands)}</article><article class="api-contract-card"><h3>Risk Queue</h3>${apiContractRiskList(input.apiContractReport.riskQueue)}</article><article class="api-contract-card"><h3>다음 확인 단계</h3>${list(input.apiContractReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "consumer-contract-readiness.html",
+      title: "Consumer Contract Readiness",
+      html: pageShell("Consumer Contract Readiness", "consumer-contract-readiness.html", `<section class="panel" data-source-pattern="Pact"><h2>Consumer Contract Snapshot</h2><p>${escapeHtml(input.consumerContractReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.consumerContractReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.consumerContractReadinessReport.contractSetups.length}</dd></div><div><dt>interactions</dt><dd>${input.consumerContractReadinessReport.interactionSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>providers</dt><dd>${input.consumerContractReadinessReport.providerSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>brokers</dt><dd>${input.consumerContractReadinessReport.brokerSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records Pact consumer contract readiness only. It does not start mock servers, write pact files, verify providers, publish verification results, contact Pact Broker/PactFlow, or run can-i-deploy.</p></section><section class="grid"><article class="consumer-contract-readiness-card"><h3>Contract Setups</h3>${consumerContractReadinessSetupList(input.consumerContractReadinessReport.contractSetups)}</article><article class="consumer-contract-readiness-card"><h3>Interaction Signals</h3>${consumerContractReadinessSignalList(input.consumerContractReadinessReport.interactionSignals, "signal")}</article><article class="consumer-contract-readiness-card"><h3>Provider Signals</h3>${consumerContractReadinessSignalList(input.consumerContractReadinessReport.providerSignals, "signal")}</article><article class="consumer-contract-readiness-card"><h3>Broker Signals</h3>${consumerContractReadinessSignalList(input.consumerContractReadinessReport.brokerSignals, "signal")}</article></section><section class="grid"><article class="consumer-contract-readiness-card"><h3>Matcher Signals</h3>${consumerContractReadinessSignalList(input.consumerContractReadinessReport.matcherSignals, "signal")}</article><article class="consumer-contract-readiness-card"><h3>CI Signals</h3>${consumerContractReadinessSignalList(input.consumerContractReadinessReport.ciSignals, "signal")}</article><article class="consumer-contract-readiness-card"><h3>Package Signals</h3>${consumerContractReadinessSignalList(input.consumerContractReadinessReport.packageSignals, "signal")}</article><article class="consumer-contract-readiness-card"><h3>Recommended Commands</h3>${consumerContractReadinessCommandList(input.consumerContractReadinessReport.recommendedCommands)}</article><article class="consumer-contract-readiness-card"><h3>Risk Queue</h3>${consumerContractReadinessRiskList(input.consumerContractReadinessReport.riskQueue)}</article><article class="consumer-contract-readiness-card"><h3>다음 확인 단계</h3>${list(input.consumerContractReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "observability.html",
@@ -1346,6 +1355,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "OpenVEX Impact Readiness", path: "html/vex.html", description: "OpenVEX식 product, status, justification, SARIF filter, attestation 준비도를 확인합니다." },
       { label: "Policy Gate Readiness", path: "html/policy-gates.html", description: "OPA식 Rego policy, input/data, test, bundle, decision gate 준비도를 확인합니다." },
       { label: "API Contract Readiness", path: "html/api-contracts.html", description: "Schemathesis식 schema, generated phase, response check, runtime/reporting 준비도를 확인합니다." },
+      { label: "Consumer Contract Readiness", path: "html/consumer-contract-readiness.html", description: "Pact식 interaction, provider state, verifier, broker/can-i-deploy, matcher 준비도를 확인합니다." },
       { label: "Observability Readiness", path: "html/observability.html", description: "OpenTelemetry식 signal pipeline, instrumentation, exporter, resource/context 준비도를 확인합니다." },
       { label: "Performance Readiness", path: "html/performance.html", description: "k6식 load script, workload model, threshold, output 준비도를 확인합니다." },
       { label: "E2E Readiness", path: "html/e2e.html", description: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다." },
@@ -1689,6 +1699,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "api-contracts.html",
       goal: "Schemathesis식 schema, generated phase, response check, runtime target, reporting output 준비도를 확인합니다.",
       evidence: `schema documents ${input.apiContractReport.schemaDocuments.length}개, operation targets ${input.apiContractReport.operationTargets.length}개`
+    },
+    {
+      title: "Consumer contract 준비도 확인",
+      href: "consumer-contract-readiness.html",
+      goal: "Pact식 consumer interaction, provider state, verifier, broker/can-i-deploy, matcher 흐름을 확인합니다.",
+      evidence: `contract setups ${input.consumerContractReadinessReport.contractSetups.length}개, broker signals ${input.consumerContractReadinessReport.brokerSignals.length}개`
     },
     {
       title: "Observability 준비도 확인",
@@ -2854,6 +2870,34 @@ function apiContractRiskList(items: ApiContractReport["riskQueue"]): string {
 }
 
 function apiContractHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function consumerContractReadinessSetupList(items: ConsumerContractReadinessReport["contractSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">consumer contract setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)} / ${escapeHtml(item.role)} / ${escapeHtml(item.readiness)}]<br>interactions ${item.interactionCount}, provider states ${item.providerStateCount}, verifiers ${item.verifierCount}, brokers ${item.brokerCount}, matchers ${item.matcherCount}, messages ${item.messageCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(consumerContractReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function consumerContractReadinessSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">consumer contract signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(consumerContractReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function consumerContractReadinessCommandList(items: ConsumerContractReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function consumerContractReadinessRiskList(items: ConsumerContractReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(consumerContractReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function consumerContractReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
