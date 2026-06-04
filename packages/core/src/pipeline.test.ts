@@ -99,6 +99,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "realtime-collaboration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workflow-orchestration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "openapi-client-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "webhook-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workspace-graph-readiness-report.json"))).resolves.toBeUndefined();
@@ -214,6 +215,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "realtime-collaboration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workflow-orchestration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "openapi-client-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "webhook-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rpc-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workspace-graph-readiness.md"))).resolves.toBeUndefined();
@@ -329,6 +331,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "realtime-collaboration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workflow-orchestration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "openapi-client-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "webhook-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "server-framework-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rpc-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workspace-graph-readiness.html"))).resolves.toBeUndefined();
@@ -475,6 +478,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/realtime-collaboration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workflow-orchestration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/openapi-client-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/webhook-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/server-framework-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rpc-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workspace-graph-readiness.html\"");
@@ -2204,6 +2208,24 @@ describe("RepoTutor core pipeline", () => {
     expect(openApiClientReadinessMarkdown).toContain("Source pattern: OpenAPI client readiness");
     expect(openApiClientReadinessMarkdown).toContain("## Generator Signals");
     expect(openApiClientReadinessMarkdown).toContain("## Quality Signals");
+    const webhookReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "webhook-readiness-report.json"), "utf8");
+    expect(webhookReadinessText).toContain("Webhook readiness Svix Standard Webhooks Hookdeck signature webhook-id webhook-timestamp webhook-signature HMAC ed25519 replay idempotency event types endpoints retry attempts delivery logs replay fan-out filtering source destination localhost CLI MCP failures metrics SSRF");
+    expect(webhookReadinessText).toContain("\"webhookSetups\"");
+    expect(webhookReadinessText).toContain("\"endpointSignals\"");
+    expect(webhookReadinessText).toContain("\"signatureSignals\"");
+    expect(webhookReadinessText).toContain("\"reliabilitySignals\"");
+    expect(webhookReadinessText).toContain("\"operationsSignals\"");
+    expect(webhookReadinessText).toContain("\"packageSignals\"");
+    const webhookReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "webhook-readiness.html"), "utf8");
+    expect(webhookReadinessHtml).toContain("Webhook Readiness");
+    expect(webhookReadinessHtml).toContain("webhook-readiness-card");
+    expect(webhookReadinessHtml).toContain("data-source-pattern=\"Webhook\"");
+    expect(webhookReadinessHtml).toContain("Signature Signals");
+    const webhookReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "webhook-readiness.md"), "utf8");
+    expect(webhookReadinessMarkdown).toContain("# Webhook Readiness");
+    expect(webhookReadinessMarkdown).toContain("Source pattern: Webhook readiness");
+    expect(webhookReadinessMarkdown).toContain("## Signature Signals");
+    expect(webhookReadinessMarkdown).toContain("## Reliability Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
     expect(serverFrameworkReadinessText).toContain("Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
@@ -2677,6 +2699,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/realtime-collaboration-readiness.html");
     expect(exportManifestText).toContain("html/workflow-orchestration-readiness.html");
     expect(exportManifestText).toContain("html/openapi-client-readiness.html");
+    expect(exportManifestText).toContain("html/webhook-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -2810,6 +2833,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("realtime-collaboration-readiness.html");
     expect(learningPathHtml).toContain("workflow-orchestration-readiness.html");
     expect(learningPathHtml).toContain("openapi-client-readiness.html");
+    expect(learningPathHtml).toContain("webhook-readiness.html");
     expect(learningPathHtml).toContain("backup-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
@@ -5782,6 +5806,141 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "openapi-client-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "openapi-client-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects webhook readiness patterns without receiving webhooks", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-webhook-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-webhook-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "webhooks"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "app", "api", "webhooks", "github"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "webhook:listen": "hookdeck listen 3000 stripe --path /webhooks/stripe --filter-headers '{\"x-stripe-signature\":{\"$exist\":true}}'",
+        "webhook:events": "hookdeck gateway event list --status FAILED",
+        "webhook:attempts": "hookdeck gateway attempt list --event-id evt_abc123"
+      },
+      dependencies: {
+        svix: "latest",
+        standardwebhooks: "latest",
+        stripe: "latest",
+        "@octokit/webhooks": "latest",
+        express: "latest",
+        next: "latest"
+      },
+      devDependencies: {
+        "hookdeck-cli": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "webhooks", "svix.ts"), [
+      "import { Webhook } from 'svix';",
+      "const endpoint = new Webhook('whsec_test_secret');",
+      "const signingKey = 'whsk_test_private';",
+      "const publicKey = 'whpk_test_public';",
+      "export function verifySvix(rawBody: string, headers: Record<string, string>) {",
+      "  return endpoint.verify(rawBody, headers);",
+      "}",
+      "export const svixNotes = `${signingKey} ${publicKey} secret rotation asymmetric public key private key`;".replaceAll("`", "'")
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "webhooks", "standard.ts"), [
+      "import { Webhook } from 'standardwebhooks';",
+      "const webhook = new Webhook('standard_signing_secret');",
+      "export function verifyStandard(rawBody: string, headers: Record<string, string>) {",
+      "  const id = headers['webhook-id'];",
+      "  const timestamp = headers['webhook-timestamp'];",
+      "  const signature = headers['webhook-signature'];",
+      "  return webhook.verify(rawBody, { 'webhook-id': id, 'webhook-timestamp': timestamp, 'webhook-signature': signature });",
+      "}",
+      "export const standardNotes = 'ed25519 v1a asymmetric signature timestamp tolerance replay raw request body';"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "webhooks", "stripe.ts"), [
+      "import crypto from 'node:crypto';",
+      "import express from 'express';",
+      "import Stripe from 'stripe';",
+      "import Redis from 'ioredis';",
+      "const app = express();",
+      "const stripe = new Stripe('sk_test');",
+      "const redis = new Redis();",
+      "app.post('/webhooks/stripe', express.raw({ type: 'application/json' }), async (request, response) => {",
+      "  const rawBody = request.body;",
+      "  const signature = request.headers['x-stripe-signature'];",
+      "  const hmac = crypto.createHmac('sha256', 'signing secret').update(rawBody).digest();",
+      "  crypto.timingSafeEqual(hmac, Buffer.from(String(signature ?? ''), 'utf8'));",
+      "  const event = stripe.webhooks.constructEvent(rawBody, signature as string, 'endpoint_secret');",
+      "  await redis.setnx(`processed_events:${event.id}`, '1');",
+      "  const idempotencyKey = request.headers['idempotency-key'];",
+      "  const retry = 'retry schedule uses exponential backoff and jitter for delivery attempt recovery';",
+      "  const replay = 'manual replay supported; dead-letter DLQ stores failed queue events; disable endpoint with 410 Gone';",
+      "  const responseCodes = '2xx success 4xx bad request 5xx retry status code timeout after 15s';",
+      "  const eventTypes = 'event types invoice.paid user.created eventTypes filter subscription source destination connection fan-out';",
+      "  const security = 'HTTPS https://example.com/webhooks/stripe SSRF allowlist static IP constant time raw body secret rotation untrusted';",
+      "  response.status(200).json({ ok: true, retry, replay, responseCodes, eventTypes, security, idempotencyKey });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "app", "api", "webhooks", "github", "route.ts"), [
+      "import { Webhooks } from '@octokit/webhooks';",
+      "import { NextRequest } from 'next/server';",
+      "const webhooks = new Webhooks({ secret: 'github_secret' });",
+      "export async function POST(request: NextRequest) {",
+      "  const rawBody = await request.text();",
+      "  const signature = request.headers.get('x-hub-signature-256');",
+      "  const delivery = request.headers.get('X-GitHub-Delivery');",
+      "  await webhooks.verify(rawBody, signature ?? '');",
+      "  return Response.json({ delivery, signature });",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "webhooks.md"), [
+      "# Webhooks",
+      "Hookdeck listen forwards events to localhost: hookdeck listen 3000 stripe --path /webhooks/stripe.",
+      "Hookdeck gateway source and destination create a connection; fan-out sends one source to multiple destinations.",
+      "Filters use filter-body and filter-headers for event filter rules before delivery.",
+      "The dashboard shows event history, request log, attempt log, attempt details, failure rate, metrics, issues, alerts, and aggregate metrics.",
+      "Operators run hookdeck gateway event list --status FAILED and hookdeck gateway attempt list for delivery attempts.",
+      "Failed events can be manual replay requests, replayed from event history, and inspected through MCP Model Context Protocol.",
+      "The local CLI listener can forward events to localhost during local development."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "webhook-readiness-report.json"), "utf8")) as {
+      webhookSetups: Array<{ filePath: string; provider: string; endpointCount: number; signatureCount: number; replayCount: number; idempotencyCount: number; retryCount: number; deliveryCount: number; eventTypeCount: number; localDebugCount: number; observabilityCount: number; securityCount: number }>;
+      endpointSignals: Array<{ signal: string; readiness: string }>;
+      signatureSignals: Array<{ signal: string; readiness: string }>;
+      reliabilitySignals: Array<{ signal: string; readiness: string }>;
+      operationsSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    expect(report.webhookSetups.length).toBeGreaterThan(0);
+    expect(report.webhookSetups.some((item) => item.provider === "svix")).toBe(true);
+    expect(report.webhookSetups.some((item) => item.provider === "standard-webhooks")).toBe(true);
+    expect(report.webhookSetups.some((item) => item.provider === "hookdeck")).toBe(true);
+    expect(report.webhookSetups.some((item) => item.provider === "stripe")).toBe(true);
+    expect(report.webhookSetups.some((item) => item.provider === "github")).toBe(true);
+    const stripeSetup = report.webhookSetups.find((item) => item.filePath === "src/webhooks/stripe.ts");
+    const hookdeckSetup = report.webhookSetups.find((item) => item.filePath === "docs/webhooks.md");
+    expect(stripeSetup?.endpointCount).toBeGreaterThan(0);
+    expect(stripeSetup?.signatureCount).toBeGreaterThan(0);
+    expect(stripeSetup?.idempotencyCount).toBeGreaterThan(0);
+    expect(stripeSetup?.retryCount).toBeGreaterThan(0);
+    expect(stripeSetup?.deliveryCount).toBeGreaterThan(0);
+    expect(stripeSetup?.securityCount).toBeGreaterThan(0);
+    expect(hookdeckSetup?.localDebugCount).toBeGreaterThan(0);
+    expect(hookdeckSetup?.observabilityCount).toBeGreaterThan(0);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.endpointSignals, ["endpoint", "route", "source", "destination", "connection", "fan-out", "event-filter", "https", "status-code", "timeout"]);
+    expectReady(report.signatureSignals, ["webhook-id", "webhook-timestamp", "webhook-signature", "hmac", "ed25519", "secret-prefix", "constant-time", "raw-body", "rotation", "asymmetric"]);
+    expectReady(report.reliabilitySignals, ["retry", "retry-schedule", "backoff", "jitter", "delivery-attempt", "manual-replay", "idempotency", "dedupe-store", "disable-endpoint", "dead-letter"]);
+    expectReady(report.operationsSignals, ["dashboard", "event-history", "request-log", "attempt-log", "failure-rate", "metrics", "issues", "alerts", "mcp", "cli-listen"]);
+    expectReady(report.packageSignals, ["svix", "standardwebhooks", "hookdeck-cli", "stripe", "@octokit/webhooks", "express", "next-server"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "webhook-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "webhook-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects object storage readiness patterns without contacting object storage", async () => {

@@ -5218,6 +5218,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 215:
   - `b7aa9e4` openapi-client readiness report
 
+- 2026-06-05: AutoResearch Upgrade 216 candidate selected:
+  `svix/svix-webhooks`
+  (`https://github.com/svix/svix-webhooks`; webhook delivery/signature/retry
+  patterns; sparse ignored clone HEAD `52855a5`), compared with
+  `standard-webhooks/standard-webhooks` (webhook-id/timestamp/signature,
+  HMAC/ed25519, replay/idempotency/retry semantics; sparse ignored clone HEAD
+  `4e0fabc`) and `hookdeck/hookdeck-cli` (local listener, event history,
+  request/attempt logs, replay, metrics, MCP inspection; sparse ignored clone
+  HEAD `eeaecc8`). Current GitHub metadata: `svix/svix-webhooks` public, MIT,
+  3,237 stars, 250 forks, updated 2026-06-04T19:09:59Z;
+  `standard-webhooks/standard-webhooks` public, Apache-2.0, 1,684 stars, 60
+  forks, updated 2026-06-03T13:50:36Z; `hookdeck/hookdeck-cli` public,
+  Apache-2.0, 358 stars, 20 forks, updated 2026-06-04T16:32:11Z. All three
+  external source paths remained ignored and `git ls-files` returned `0`.
+- 2026-06-05: RED webhook-readiness smoke generated
+  `/tmp/repotutor-webhook-red-studies.W6HjVU/2026-06-05/local__repotutor-webhook-red-source.Qn8vAF__local__5a758343`;
+  old behavior had `verificationCheckedRequiredArtifacts=345`, was missing
+  `analysis/webhook-readiness-report.json`, `markdown/webhook-readiness.md`,
+  and `html/webhook-readiness.html`, and `open --target webhook-readiness`
+  failed with `Unsupported open target`.
+- 2026-06-05: Implemented Svix/Standard Webhooks/Hookdeck-style
+  webhook-readiness report:
+  `WebhookReadinessReportSchema`, `analysis/webhook-readiness-report.json`,
+  `markdown/webhook-readiness.md`, `html/webhook-readiness.html`, webhook setup
+  detection, endpoint signals, signature signals, reliability signals,
+  operations signals, package signals, recommended commands, risk queue,
+  manifest/session verification coverage, learning-path linkage, nav entry,
+  CLI help target, and `open --target webhook-readiness`.
+- 2026-06-05: GREEN webhook-readiness smoke generated
+  `/tmp/repotutor-webhook-green-studies.uHOUmm/2026-06-05/local__repotutor-webhook-red-source.Qn8vAF__local__ea1dc390`;
+  confirmed `verificationCheckedRequiredArtifacts=348`, all three new
+  artifacts, risk queue 0, ready providers `stripe`, `standard-webhooks`,
+  `hookdeck`, `github`, and `svix`, all endpoint/signature/reliability/
+  operations/package signals ready, and `open --target webhook-readiness` ->
+  `html/webhook-readiness.html`. The focused Vitest fixture covered raw-body
+  signature verification, webhook-id/timestamp/signature headers, HMAC,
+  ed25519/asymmetric signatures, constant-time comparison, secret prefixes and
+  rotation, timestamp/replay/idempotency/dedupe, retry schedules, backoff/
+  jitter, delivery attempts, manual replay, dead-letter handling, dashboards,
+  event history, request/attempt logs, metrics, issues, alerts, local CLI
+  listen, and MCP inspection with risk queue 0.
+- 2026-06-05: Verification for Upgrade 216:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 23/23 tests
+  - `pnpm audit:brief`: PASS, 114/114 audit checks across 13 reports
+- 2026-06-05: Pushed AutoResearch Upgrade 216:
+  - `PENDING` webhook readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

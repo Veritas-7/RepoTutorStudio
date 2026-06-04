@@ -5433,6 +5433,69 @@ export const OpenApiClientReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const WebhookReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  webhookSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["svix", "standard-webhooks", "hookdeck", "stripe", "github", "custom", "unknown"]),
+    endpointCount: z.number().int().nonnegative(),
+    signatureCount: z.number().int().nonnegative(),
+    replayCount: z.number().int().nonnegative(),
+    idempotencyCount: z.number().int().nonnegative(),
+    retryCount: z.number().int().nonnegative(),
+    deliveryCount: z.number().int().nonnegative(),
+    eventTypeCount: z.number().int().nonnegative(),
+    localDebugCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    securityCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  endpointSignals: z.array(z.object({
+    signal: z.enum(["endpoint", "route", "source", "destination", "connection", "fan-out", "event-filter", "https", "status-code", "timeout", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  signatureSignals: z.array(z.object({
+    signal: z.enum(["webhook-id", "webhook-timestamp", "webhook-signature", "hmac", "ed25519", "secret-prefix", "constant-time", "raw-body", "rotation", "asymmetric", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reliabilitySignals: z.array(z.object({
+    signal: z.enum(["retry", "retry-schedule", "backoff", "jitter", "delivery-attempt", "manual-replay", "idempotency", "dedupe-store", "disable-endpoint", "dead-letter", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  operationsSignals: z.array(z.object({
+    signal: z.enum(["dashboard", "event-history", "request-log", "attempt-log", "failure-rate", "metrics", "issues", "alerts", "mcp", "cli-listen", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["svix", "standardwebhooks", "hookdeck-cli", "stripe", "@octokit/webhooks", "express", "next-server", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ServerFrameworkReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7078,6 +7141,7 @@ export type ObjectStorageReadinessReport = z.infer<typeof ObjectStorageReadiness
 export type RealtimeCollaborationReadinessReport = z.infer<typeof RealtimeCollaborationReadinessReportSchema>;
 export type WorkflowOrchestrationReadinessReport = z.infer<typeof WorkflowOrchestrationReadinessReportSchema>;
 export type OpenApiClientReadinessReport = z.infer<typeof OpenApiClientReadinessReportSchema>;
+export type WebhookReadinessReport = z.infer<typeof WebhookReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;

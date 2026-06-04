@@ -1,6 +1,6 @@
 {
   "iteration": 3,
-  "createdAt": "2026-06-04T20:27:27.180Z",
+  "createdAt": "2026-06-04T20:46:29.049Z",
   "checks": [
     {
       "name": "project setup",
@@ -760,6 +760,13 @@
     },
     {
       "name": "OpenAPI client readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Webhook readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -110,6 +110,7 @@ import {
   RealtimeCollaborationReadinessReport,
   WorkflowOrchestrationReadinessReport,
   OpenApiClientReadinessReport,
+  WebhookReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -244,6 +245,7 @@ export interface AnalysisBundle {
   realtimeCollaborationReadinessReport: RealtimeCollaborationReadinessReport;
   workflowOrchestrationReadinessReport: WorkflowOrchestrationReadinessReport;
   openApiClientReadinessReport: OpenApiClientReadinessReport;
+  webhookReadinessReport: WebhookReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -378,6 +380,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const realtimeCollaborationReadinessReport = await buildRealtimeCollaborationReadinessReport(walk);
   const workflowOrchestrationReadinessReport = await buildWorkflowOrchestrationReadinessReport(walk);
   const openApiClientReadinessReport = await buildOpenApiClientReadinessReport(walk);
+  const webhookReadinessReport = await buildWebhookReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
@@ -397,7 +400,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -22969,6 +22972,266 @@ function openApiClientSignalFromSpecs<T extends Record<K, string> & { pattern: R
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/openapi-client-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildWebhookReadinessReport(walk: WalkResult): Promise<WebhookReadinessReport> {
+  const sourceFiles = await webhookReadinessSourceFiles(walk);
+  const webhookSetups = webhookReadinessSetups(sourceFiles);
+  const endpointSignals = webhookReadinessEndpointSignals(sourceFiles);
+  const signatureSignals = webhookReadinessSignatureSignals(sourceFiles);
+  const reliabilitySignals = webhookReadinessReliabilitySignals(sourceFiles);
+  const operationsSignals = webhookReadinessOperationsSignals(sourceFiles);
+  const packageSignals = webhookReadinessPackageSignals(sourceFiles);
+
+  const hasEndpoint = endpointSignals.some((item) => item.readiness === "ready") || webhookSetups.some((item) => item.endpointCount > 0);
+  const hasSignature = signatureSignals.some((item) => ["webhook-signature", "hmac", "ed25519", "raw-body"].includes(item.signal) && item.readiness === "ready") || webhookSetups.some((item) => item.signatureCount > 0);
+  const hasReplayControl = signatureSignals.some((item) => ["webhook-timestamp", "webhook-id"].includes(item.signal) && item.readiness === "ready")
+    || reliabilitySignals.some((item) => ["idempotency", "dedupe-store"].includes(item.signal) && item.readiness === "ready")
+    || webhookSetups.some((item) => item.replayCount + item.idempotencyCount > 0);
+  const hasReliability = reliabilitySignals.some((item) => ["retry", "delivery-attempt", "manual-replay"].includes(item.signal) && item.readiness === "ready") || webhookSetups.some((item) => item.retryCount + item.deliveryCount > 0);
+  const hasOps = operationsSignals.some((item) => item.readiness === "ready") || webhookSetups.some((item) => item.localDebugCount + item.observabilityCount > 0);
+
+  const riskQueue: WebhookReadinessReport["riskQueue"] = [];
+  if (!hasEndpoint) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document webhook endpoint/source/destination routing before claiming webhook readiness.",
+      why: "Webhook readiness starts from a concrete receiver or sender endpoint, plus source/destination routing and event filters.",
+      relatedHref: "html/webhook-readiness.html"
+    });
+  }
+  if (hasEndpoint && !hasSignature) {
+    riskQueue.push({
+      priority: "high",
+      action: "Verify webhook signatures against the raw request body before parsing or mutating payload JSON.",
+      why: "Webhook authenticity depends on signing the exact payload and metadata; parsing then reserializing JSON can break verification.",
+      relatedHref: "html/webhook-readiness.html"
+    });
+  }
+  if (hasSignature && !hasReplayControl) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add timestamp tolerance and idempotency/dedupe storage for replay and duplicate delivery protection.",
+      why: "Retries and malicious replays can deliver the same event more than once; webhook-id and timestamp metadata should gate processing.",
+      relatedHref: "html/webhook-readiness.html"
+    });
+  }
+  if (hasEndpoint && !hasReliability) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document retry/backoff, delivery attempts, replay, or dead-letter behavior around webhook failures.",
+      why: "Webhook delivery is unreliable by default; producers and buffers need visible retry and recovery controls.",
+      relatedHref: "html/webhook-readiness.html"
+    });
+  }
+  if (hasReliability && !hasOps) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add event history, request/attempt logs, dashboard links, metrics, alerts, or local listen tooling.",
+      why: "Webhook failures are hard to debug unless requests, events, attempts, response codes, and replay controls are visible.",
+      relatedHref: "html/webhook-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Webhook readiness report: setup ${webhookSetups.length}개, endpoint signal ${endpointSignals.length}개, signature signal ${signatureSignals.length}개, reliability signal ${reliabilitySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Webhook readiness Svix Standard Webhooks Hookdeck signature webhook-id webhook-timestamp webhook-signature HMAC ed25519 replay idempotency event types endpoints retry attempts delivery logs replay fan-out filtering source destination localhost CLI MCP failures metrics SSRF",
+    webhookSetups,
+    endpointSignals,
+    signatureSignals,
+    reliabilitySignals,
+    operationsSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"webhook|svix|standardwebhooks|hookdeck|stripe.webhooks|@octokit/webhooks\" package.json src app", purpose: "Find webhook packages, receiver routes, sender integrations, and local debug tooling." },
+      { command: "rg \"webhook-id|webhook-timestamp|webhook-signature|x-signature|timingSafeEqual|rawBody|constructEvent\" src app", purpose: "Trace raw-body signature verification, timestamp checks, and provider-specific headers." },
+      { command: "rg \"idempotency|dedupe|retry|backoff|attempt|replay|dead.?letter|dashboard|metrics|failure\" src app docs", purpose: "Check duplicate delivery protection, reliability controls, and failure visibility." }
+    ],
+    learnerNextSteps: [
+      "먼저 webhook endpoint/source/destination 경계를 찾고, 어떤 event type을 어떤 route가 받는지 확인하세요.",
+      "그 다음 raw body를 그대로 서명 검증에 쓰는지, timestamp tolerance와 webhook ID/idempotency 저장소가 있는지 확인하세요.",
+      "retry/backoff, delivery attempts, replay, dead-letter, dashboard/log/metrics 경계를 찾아 장애 복구 흐름을 확인하세요.",
+      "RepoTutor는 webhook을 수신하거나 전송하지 않습니다. 실제 검증은 신뢰된 환경에서 provider CLI나 local listener로 별도 실행하세요."
+    ]
+  };
+}
+
+type WebhookSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function webhookReadinessSourceFiles(walk: WalkResult): Promise<WebhookSourceFile[]> {
+  const rows: WebhookSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!webhookInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!webhookPathSignal(file.relPath) && !webhookContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 160);
+}
+
+function webhookInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|hookdeck\.(json|ya?ml)|svix\.(json|ya?ml)|webhooks?\.(json|ya?ml|md))$/i.test(base)
+    || /(^|\/)(webhooks?|events?|hookdeck|svix|stripe|github|receivers?|destinations?|sources?)(\/|\.|-|_|$)/i.test(filePath)
+    || /\.(json|ya?ml|ts|tsx|js|jsx|mjs|cjs|md|go|rs|py|rb|php)$/i.test(filePath);
+}
+
+function webhookPathSignal(filePath: string): boolean {
+  return /(^|\/)(webhooks?|events?|hookdeck|svix|stripe|github|receivers?|destinations?|sources?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|hookdeck\.(json|ya?ml)|svix\.(json|ya?ml))$/i.test(path.basename(filePath));
+}
+
+function webhookContentSignal(text: string): boolean {
+  return /(webhook|svix|standardwebhooks|hookdeck|stripe\.webhooks|@octokit\/webhooks|webhook-signature|webhook-timestamp|webhook-id|x-hub-signature|x-stripe-signature|idempotency|delivery attempt|retry|replay)/i.test(text);
+}
+
+function webhookReadinessSetups(sourceFiles: WebhookSourceFile[]): WebhookReadinessReport["webhookSetups"] {
+  const rows: WebhookReadinessReport["webhookSetups"] = [];
+  for (const source of sourceFiles) {
+    const endpointCount = countMatches(source.text, /\b(webhook|endpoint|route|POST|app\.post|router\.post|NextRequest|source|destination|connection|fan.?out|event filter)\b/gi);
+    const signatureCount = countMatches(source.text, /\b(webhook-signature|webhook-timestamp|webhook-id|x-stripe-signature|x-hub-signature|signature|HMAC|ed25519|timingSafeEqual|constructEvent|rawBody|raw body)\b/gi);
+    const replayCount = countMatches(source.text, /\b(replay|timestamp tolerance|clock skew|webhook-timestamp|duplicate|same event|once)\b/gi);
+    const idempotencyCount = countMatches(source.text, /\b(idempotency|idempotency-key|webhook-id|dedupe|dedup|setnx|Redis|processed_events|event_id)\b/gi);
+    const retryCount = countMatches(source.text, /\b(retry|retries|retry schedule|backoff|exponential|jitter|rate limit|throttle|queue)\b/gi);
+    const deliveryCount = countMatches(source.text, /\b(delivery|attempt|attempts|2xx|status code|timeout|request log|event log|dead.?letter|DLQ)\b/gi);
+    const eventTypeCount = countMatches(source.text, /\b(event type|eventTypes|event_types|type:|invoice\.paid|user\.created|filter|subscription|webhooks|x-webhooks)\b/gi);
+    const localDebugCount = countMatches(source.text, /\b(hookdeck listen|svix listen|listen localhost|localhost|forward|CLI|tunnel|ngrok|local development)\b/gi);
+    const observabilityCount = countMatches(source.text, /\b(dashboard|event history|logs|metrics|failure rate|issues|alerts|inspect|MCP|attempt log|request log)\b/gi);
+    const securityCount = countMatches(source.text, /\b(SSRF|https|allowlist|static IP|secret rotation|rotation|asymmetric|constant time|timing attack|raw body|untrusted)\b/gi);
+    const totalSignals = endpointCount + signatureCount + replayCount + idempotencyCount + retryCount + deliveryCount + eventTypeCount + localDebugCount + observabilityCount + securityCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: webhookProvider(source),
+      endpointCount,
+      signatureCount,
+      replayCount,
+      idempotencyCount,
+      retryCount,
+      deliveryCount,
+      eventTypeCount,
+      localDebugCount,
+      observabilityCount,
+      securityCount,
+      readiness: endpointCount > 0 && signatureCount > 0 && (idempotencyCount + replayCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} webhook readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.endpointCount + b.signatureCount + b.retryCount + b.observabilityCount) - (a.endpointCount + a.signatureCount + a.retryCount + a.observabilityCount))
+    .slice(0, 45);
+}
+
+function webhookProvider(source: WebhookSourceFile): WebhookReadinessReport["webhookSetups"][number]["provider"] {
+  if (/svix/i.test(source.filePath) || /svix|whsec_|whsk_|whpk_/i.test(source.text)) return "svix";
+  if (/standardwebhooks|Standard Webhooks|webhook-id|webhook-timestamp|webhook-signature/i.test(source.text)) return "standard-webhooks";
+  if (/hookdeck/i.test(source.filePath) || /hookdeck/i.test(source.text)) return "hookdeck";
+  if (/stripe/i.test(source.filePath) || /stripe\.webhooks|x-stripe-signature/i.test(source.text)) return "stripe";
+  if (/github/i.test(source.filePath) || /@octokit\/webhooks|x-hub-signature|X-GitHub-Delivery/i.test(source.text)) return "github";
+  if (/webhook|event|endpoint/i.test(source.filePath) || /webhook|event|endpoint/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function webhookReadinessEndpointSignals(sourceFiles: WebhookSourceFile[]): WebhookReadinessReport["endpointSignals"] {
+  const specs: Array<{ signal: WebhookReadinessReport["endpointSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "endpoint", pattern: /\bendpoint\b|webhook endpoint|endpoint_secret|endpointId/i, evidence: "webhook endpoint evidence was detected." },
+    { signal: "route", pattern: /app\.post|router\.post|POST\s+\/|route\.ts|NextRequest|RequestHandler|webhooks?\/[A-Za-z0-9_-]+/i, evidence: "receiver route evidence was detected." },
+    { signal: "source", pattern: /\bsource\b|source-alias|hookdeck gateway source|source-id/i, evidence: "webhook source evidence was detected." },
+    { signal: "destination", pattern: /\bdestination\b|destination_id|hookdeck gateway destination|Forwards to/i, evidence: "webhook destination evidence was detected." },
+    { signal: "connection", pattern: /\bconnection\b|hookdeck gateway connection|source.*destination/i, evidence: "source/destination connection evidence was detected." },
+    { signal: "fan-out", pattern: /fan.?out|multiple destinations|multiple endpoints|2 connections|3 connections/i, evidence: "fan-out or multiple destination evidence was detected." },
+    { signal: "event-filter", pattern: /eventTypes|event types|filter-body|filter-headers|filter-path|subscription|events? filter|invoice\.paid|user\.created/i, evidence: "event filtering evidence was detected." },
+    { signal: "https", pattern: /https:\/\/|HTTPS|ssl|tls|--insecure/i, evidence: "HTTPS/TLS endpoint evidence was detected." },
+    { signal: "status-code", pattern: /2xx|200|4xx|5xx|status code|response code|410 Gone/i, evidence: "webhook response status handling evidence was detected." },
+    { signal: "timeout", pattern: /timeout|15.*30s|request timeout|server health checks/i, evidence: "webhook timeout evidence was detected." }
+  ];
+  return webhookSignalFromSpecs(sourceFiles, specs, "endpoint", "signal");
+}
+
+function webhookReadinessSignatureSignals(sourceFiles: WebhookSourceFile[]): WebhookReadinessReport["signatureSignals"] {
+  const specs: Array<{ signal: WebhookReadinessReport["signatureSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "webhook-id", pattern: /webhook-id|X-GitHub-Delivery|message id|msg_id|event_id/i, evidence: "webhook ID evidence was detected." },
+    { signal: "webhook-timestamp", pattern: /webhook-timestamp|timestamp tolerance|timestamp.*replay|attempt.*timestamp/i, evidence: "webhook timestamp evidence was detected." },
+    { signal: "webhook-signature", pattern: /webhook-signature|x-stripe-signature|x-hub-signature|svix-signature|signature header/i, evidence: "webhook signature header evidence was detected." },
+    { signal: "hmac", pattern: /HMAC|sha256|createHmac|hmac_sha256|v1,/i, evidence: "HMAC evidence was detected." },
+    { signal: "ed25519", pattern: /ed25519|v1a|asymmetric signature/i, evidence: "ed25519/asymmetric signature evidence was detected." },
+    { signal: "secret-prefix", pattern: /whsec_|whsk_|whpk_|endpoint secret|signing secret/i, evidence: "typed signing secret evidence was detected." },
+    { signal: "constant-time", pattern: /timingSafeEqual|constant time|timing attack/i, evidence: "constant-time comparison evidence was detected." },
+    { signal: "raw-body", pattern: /rawBody|raw body|raw request body|text\(\)|arrayBuffer\(\)|bodyParser\.raw|parse.*json.*signature/i, evidence: "raw body verification evidence was detected." },
+    { signal: "rotation", pattern: /rotation|old key|multiple keys|zero downtime secret rotation|secret rotation/i, evidence: "secret rotation evidence was detected." },
+    { signal: "asymmetric", pattern: /asymmetric|public key|private key|whpk_|whsk_/i, evidence: "asymmetric verification evidence was detected." }
+  ];
+  return webhookSignalFromSpecs(sourceFiles, specs, "signature", "signal");
+}
+
+function webhookReadinessReliabilitySignals(sourceFiles: WebhookSourceFile[]): WebhookReadinessReport["reliabilitySignals"] {
+  const specs: Array<{ signal: WebhookReadinessReport["reliabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "retry", pattern: /\bretry\b|retries|retry requests|retry events/i, evidence: "retry evidence was detected." },
+    { signal: "retry-schedule", pattern: /retry schedule|spanning multiple days|retry_schedule/i, evidence: "retry schedule evidence was detected." },
+    { signal: "backoff", pattern: /backoff|exponential/i, evidence: "backoff evidence was detected." },
+    { signal: "jitter", pattern: /jitter|random/i, evidence: "retry jitter evidence was detected." },
+    { signal: "delivery-attempt", pattern: /delivery attempt|attempts|attempt list|hookdeck gateway attempt|attempt log/i, evidence: "delivery attempt evidence was detected." },
+    { signal: "manual-replay", pattern: /manual replay|replay specific|replayed|events can be replayed|replay requests/i, evidence: "manual replay evidence was detected." },
+    { signal: "idempotency", pattern: /idempotency|idempotency-key|webhook-id.*idempotency/i, evidence: "idempotency evidence was detected." },
+    { signal: "dedupe-store", pattern: /dedupe|dedup|Redis|setnx|processed_events|save the IDs/i, evidence: "dedupe store evidence was detected." },
+    { signal: "disable-endpoint", pattern: /disable future delivery|disable.*endpoint|410 Gone|pause.*connection|disable.*connection/i, evidence: "endpoint disable/pause evidence was detected." },
+    { signal: "dead-letter", pattern: /dead.?letter|DLQ|failed queue|failure queue/i, evidence: "dead-letter/failure queue evidence was detected." }
+  ];
+  return webhookSignalFromSpecs(sourceFiles, specs, "reliability", "signal");
+}
+
+function webhookReadinessOperationsSignals(sourceFiles: WebhookSourceFile[]): WebhookReadinessReport["operationsSignals"] {
+  const specs: Array<{ signal: WebhookReadinessReport["operationsSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dashboard", pattern: /dashboard|Open dashboard|dashboard\.hookdeck|api\.svix/i, evidence: "dashboard evidence was detected." },
+    { signal: "event-history", pattern: /event history|events can be replayed|history of all received events/i, evidence: "event history evidence was detected." },
+    { signal: "request-log", pattern: /request log|request list|hookdeck_requests|raw inbound webhooks|Show data/i, evidence: "request log evidence was detected." },
+    { signal: "attempt-log", pattern: /attempt log|hookdeck_attempts|delivery attempts|attempt details/i, evidence: "attempt log evidence was detected." },
+    { signal: "failure-rate", pattern: /failure rate|error rate|failed_count|status FAILED/i, evidence: "failure-rate evidence was detected." },
+    { signal: "metrics", pattern: /metrics|aggregate metrics|queue depth|counts/i, evidence: "webhook metrics evidence was detected." },
+    { signal: "issues", pattern: /issues|open issues|delivery failures|transform errors|backpressure/i, evidence: "issue aggregation evidence was detected." },
+    { signal: "alerts", pattern: /alerts|notify|email|outage|failure signals/i, evidence: "alert/notification evidence was detected." },
+    { signal: "mcp", pattern: /\bMCP\b|Model Context Protocol|hookdeck gateway mcp/i, evidence: "MCP investigation evidence was detected." },
+    { signal: "cli-listen", pattern: /hookdeck listen|svix listen|listen 3000|localhost|forward.*events/i, evidence: "local CLI listener evidence was detected." }
+  ];
+  return webhookSignalFromSpecs(sourceFiles, specs, "operations", "signal");
+}
+
+function webhookReadinessPackageSignals(sourceFiles: WebhookSourceFile[]): WebhookReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: WebhookReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "svix", pattern: /"svix"|svix-webhooks|svix\b/i, evidence: "Svix package evidence was detected." },
+    { signal: "standardwebhooks", pattern: /"standardwebhooks"|standard-webhooks|standardwebhooks\b/i, evidence: "Standard Webhooks package evidence was detected." },
+    { signal: "hookdeck-cli", pattern: /"hookdeck-cli"|hookdeck-cli|hookdeck listen|hookdeck gateway/i, evidence: "Hookdeck CLI evidence was detected." },
+    { signal: "stripe", pattern: /"stripe"|stripe\.webhooks|constructEvent|x-stripe-signature/i, evidence: "Stripe webhook package evidence was detected." },
+    { signal: "@octokit/webhooks", pattern: /"@octokit\/webhooks"|@octokit\/webhooks|X-GitHub-Delivery/i, evidence: "Octokit webhook package evidence was detected." },
+    { signal: "express", pattern: /"express"|app\.post|express\.raw|bodyParser\.raw/i, evidence: "Express receiver evidence was detected." },
+    { signal: "next-server", pattern: /NextRequest|next\/server|route\.ts|export async function POST/i, evidence: "Next.js route handler evidence was detected." }
+  ];
+  return webhookSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function webhookSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: WebhookSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/webhook-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }
