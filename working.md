@@ -4783,6 +4783,49 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 206:
   - `63a8c87` gitops readiness report
 
+- 2026-06-05: AutoResearch Upgrade 207 candidate selected:
+  `velero-io/velero` (`https://github.com/velero-io/velero`; public;
+  Apache-2.0; 10,041 stars; 1,538 forks; updated
+  2026-06-04T16:21:12Z). Compared with `benbjohnson/litestream`
+  (`https://github.com/benbjohnson/litestream`; public; Apache-2.0; 13,699
+  stars; 361 forks; updated 2026-06-04T15:15:20Z) and `restic/restic`
+  (`https://github.com/restic/restic`; public; BSD-2-Clause; 33,861 stars;
+  1,769 forks; updated 2026-06-04T16:26:02Z); selected the three-source
+  backup/restore slice because RepoTutor had no dedicated backup-readiness
+  target and these sources model Kubernetes backups, SQLite replication, and
+  encrypted repository backup/restore workflows. Cloned sparse ignored external
+  sources to `research/external-src/velero`, `research/external-src/litestream`,
+  and `research/external-src/restic` and inspected docs/examples/config/API
+  patterns without executing external source. Clone HEADs were `b34c843`,
+  `4784cc9`, and `ed571c8`; tracked file count for all three ignored source
+  paths returned `0`.
+- 2026-06-05: RED backup-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-backup-red-studies.MmxlqH/2026-06-05/local__repotutor-backup-red-repo.cUMOH2__local__e666ab16`;
+  old behavior had `verificationCheckedRequiredArtifacts=318`, was missing
+  `analysis/backup-readiness-report.json`, `markdown/backup-readiness.md`, and
+  `html/backup-readiness.html`, and `open --target backup-readiness` failed as
+  expected.
+- 2026-06-05: Implemented Velero/Litestream/restic-style backup-readiness
+  report: `BackupReadinessReportSchema`,
+  `analysis/backup-readiness-report.json`, `markdown/backup-readiness.md`,
+  `html/backup-readiness.html`, backup setup detection, Velero signals,
+  Litestream signals, restic signals, restore-drill signals, safety signals,
+  package signals, recommended commands, risk queue, manifest/session
+  verification coverage, learning-path linkage, nav entry, CLI help target, and
+  `open --target backup-readiness`.
+- 2026-06-05: GREEN backup-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-backup-green-studies.QyjuEN/2026-06-05/local__repotutor-backup-green-repo.qHzjoW__local__9260a660`;
+  confirmed `verificationCheckedRequiredArtifacts=321`, backup setups 7,
+  Velero ready signals 14, Litestream ready signals 11, restic ready signals
+  11, restore-drill ready signals 9, risk queue 0, all three new artifacts,
+  and `open --target backup-readiness` -> `html/backup-readiness.html`.
+- 2026-06-05: Verification for Upgrade 207:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 14/14 tests
+  - `pnpm audit:brief`: PASS, 105/105 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

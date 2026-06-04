@@ -6122,6 +6122,59 @@ Local verification:
 - `pnpm audit:brief`: PASS, 104/104 audit checks across 13 generated reports
 - Pushed implementation commit: `63a8c87` gitops readiness report
 
+### Upgrade 207: Backup Readiness Report
+
+- Cloned and inspected `velero-io/velero` under
+  `research/external-src/velero`, `benbjohnson/litestream` under
+  `research/external-src/litestream`, and `restic/restic` under
+  `research/external-src/restic` without executing external source. Clone HEADs
+  were `b34c843`, `4784cc9`, and `ed571c8`; all three clones remain ignored by
+  RepoTutor.
+- GitHub metadata: `velero-io/velero` is public, Apache-2.0 licensed, 10,041
+  stars, 1,538 forks, updated 2026-06-04T16:21:12Z.
+  `benbjohnson/litestream` is public, Apache-2.0 licensed, 13,699 stars, 361
+  forks, updated 2026-06-04T15:15:20Z. `restic/restic` is public,
+  BSD-2-Clause licensed, 33,861 stars, 1,769 forks, updated
+  2026-06-04T16:26:02Z. Selected the three-source slice because together they
+  model Kubernetes backups, SQLite replication, encrypted backup repositories,
+  restore drills, retention, pruning, and verification workflows. No source
+  code was copied into RepoTutor.
+- Implemented Velero/Litestream/restic-style backup-readiness report:
+  `BackupReadinessReportSchema`, `analysis/backup-readiness-report.json`,
+  `markdown/backup-readiness.md`, `html/backup-readiness.html`, backup setup
+  detection, Velero signals, Litestream signals, restic signals, restore-drill
+  signals, safety signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target backup-readiness`.
+- Source pattern: Backup readiness separates Velero `Backup`, `Schedule`,
+  `Restore`, `BackupStorageLocation`, `VolumeSnapshotLocation`,
+  `includedNamespaces`, `excludedNamespaces`, `ttl`, storage and snapshot
+  locations, filesystem backup settings, backup/restore describe and log
+  workflows, Litestream `litestream.yml`, `dbs`, database paths, replicas,
+  S3/GCS/Azure targets, snapshot interval and retention settings,
+  replicate/restore/database commands, restic `RESTIC_REPOSITORY`,
+  `RESTIC_PASSWORD_FILE`, `init`, `backup`, `snapshots`, `restore`,
+  `forget --prune`, `check`, `read-data`, tags, and excludes. RepoTutor maps
+  that to deterministic static backup readiness and explicitly does not run
+  `velero`, `litestream`, `restic`, Kubernetes APIs, object stores, backup
+  repositories, restore commands, retention pruning, secret reads, snapshot
+  operations, or data restores.
+- RED smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-backup-red-studies.MmxlqH/2026-06-05/local__repotutor-backup-red-repo.cUMOH2__local__e666ab16`;
+  old behavior had `verificationCheckedRequiredArtifacts=318`, was missing
+  `analysis/backup-readiness-report.json`, `markdown/backup-readiness.md`, and
+  `html/backup-readiness.html`, and `open --target backup-readiness` exited
+  with `Unsupported open target`.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-backup-green-studies.QyjuEN/2026-06-05/local__repotutor-backup-green-repo.qHzjoW__local__9260a660`;
+  confirmed `verificationCheckedRequiredArtifacts=321`, backup setups 7,
+  Velero signals 14, Litestream signals 11, restic signals 11, restore-drill
+  signals 9, risk queue 0, all three new artifacts, and
+  `open --target backup-readiness` -> `html/backup-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 14/14 tests
+- `pnpm audit:brief`: PASS, 105/105 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

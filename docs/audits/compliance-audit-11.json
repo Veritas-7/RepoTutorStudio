@@ -1,6 +1,6 @@
 {
   "iteration": 11,
-  "createdAt": "2026-06-04T17:47:07.916Z",
+  "createdAt": "2026-06-04T18:08:07.622Z",
   "checks": [
     {
       "name": "project setup",
@@ -697,6 +697,13 @@
     },
     {
       "name": "GitOps readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Backup readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

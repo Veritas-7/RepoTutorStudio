@@ -108,6 +108,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "devcontainer-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "kubernetes-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "gitops-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "backup-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -214,6 +215,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "devcontainer-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "kubernetes-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "gitops-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "backup-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -320,6 +322,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "devcontainer-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "kubernetes-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "gitops-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "backup-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -457,6 +460,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/devcontainer-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/kubernetes-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/gitops-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/backup-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -2279,6 +2283,19 @@ describe("RepoTutor core pipeline", () => {
     expect(gitopsReadinessMarkdown).toContain("# GitOps Readiness");
     expect(gitopsReadinessMarkdown).toContain("Source pattern: GitOps");
     expect(gitopsReadinessMarkdown).toContain("## Flux Source Signals");
+    const backupReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "backup-readiness-report.json"), "utf8");
+    expect(backupReadinessText).toContain("Backup readiness Velero Backup Schedule Restore");
+    expect(backupReadinessText).toContain("\"backupSetups\"");
+    expect(backupReadinessText).toContain("\"restoreDrillSignals\"");
+    expect(backupReadinessText).toContain("\"resticSignals\"");
+    const backupReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "backup-readiness.html"), "utf8");
+    expect(backupReadinessHtml).toContain("Backup Readiness");
+    expect(backupReadinessHtml).toContain("backup-readiness-card");
+    expect(backupReadinessHtml).toContain("data-source-pattern=\"Backup\"");
+    const backupReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "backup-readiness.md"), "utf8");
+    expect(backupReadinessMarkdown).toContain("# Backup Readiness");
+    expect(backupReadinessMarkdown).toContain("Source pattern: Backup readiness");
+    expect(backupReadinessMarkdown).toContain("## Restore Drill Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -2445,6 +2462,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/devcontainer-readiness.html");
     expect(exportManifestText).toContain("html/kubernetes-readiness.html");
     expect(exportManifestText).toContain("html/gitops-readiness.html");
+    expect(exportManifestText).toContain("html/backup-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -2570,6 +2588,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
     expect(learningPathHtml).toContain("rate-limit-readiness.html");
     expect(learningPathHtml).toContain("error-tracking-readiness.html");
+    expect(learningPathHtml).toContain("backup-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");
@@ -4337,6 +4356,173 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "gitops-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "gitops-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects backup readiness patterns without running backup tools", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-backup-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-backup-source-"));
+    await fs.mkdir(path.join(sourceRoot, "k8s"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "scripts"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Backup readiness fixture",
+      "This repo keeps a restore runbook for disaster recovery and point-in-time WAL recovery.",
+      "Use velero backup create app-manual --include-namespaces app --wait.",
+      "Use velero backup describe app-manual and velero backup logs app-manual.",
+      "Use velero restore create --from-backup app-nightly --wait and velero restore describe app-restore.",
+      "Use litestream replicate, litestream restore, and litestream databases.",
+      "Use restic backup, restic snapshots, restic restore, restic forget --prune, and restic check --read-data.",
+      "Restore drill validates target directory and checksum integrity."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "velero.yaml"), [
+      "apiVersion: velero.io/v1",
+      "kind: Backup",
+      "metadata:",
+      "  name: app-nightly",
+      "spec:",
+      "  includedNamespaces:",
+      "    - app",
+      "  excludedNamespaces:",
+      "    - kube-system",
+      "  ttl: 720h0m0s",
+      "  storageLocation: default",
+      "  volumeSnapshotLocations:",
+      "    - aws",
+      "  snapshotVolumes: true",
+      "  defaultVolumesToFsBackup: true",
+      "---",
+      "apiVersion: velero.io/v1",
+      "kind: Schedule",
+      "metadata:",
+      "  name: app-daily",
+      "spec:",
+      "  schedule: \"0 2 * * *\"",
+      "  template:",
+      "    includedNamespaces:",
+      "      - app",
+      "    ttl: 168h0m0s",
+      "---",
+      "apiVersion: velero.io/v1",
+      "kind: Restore",
+      "metadata:",
+      "  name: app-restore",
+      "spec:",
+      "  backupName: app-nightly",
+      "  includedNamespaces:",
+      "    - app",
+      "---",
+      "apiVersion: velero.io/v1",
+      "kind: BackupStorageLocation",
+      "metadata:",
+      "  name: default",
+      "spec:",
+      "  provider: aws",
+      "  objectStorage:",
+      "    bucket: app-backups",
+      "    prefix: velero",
+      "  config:",
+      "    region: us-east-1",
+      "---",
+      "apiVersion: velero.io/v1",
+      "kind: VolumeSnapshotLocation",
+      "metadata:",
+      "  name: aws",
+      "spec:",
+      "  provider: aws"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "litestream.yml"), [
+      "dbs:",
+      "  - path: /var/lib/app/app.db",
+      "    replicas:",
+      "      - url: s3://app-backups/sqlite/app",
+      "        retention: 720h",
+      "      - url: gcs://app-backups/sqlite/app",
+      "      - url: abs://app-backups/sqlite/app",
+      "    snapshot:",
+      "      interval: 1h",
+      "      retention: 168h"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "scripts", "backup.sh"), [
+      "#!/usr/bin/env sh",
+      "set -eu",
+      "export RESTIC_REPOSITORY=s3:s3.amazonaws.com/app-backups/restic",
+      "export RESTIC_PASSWORD_FILE=/run/secrets/restic-password",
+      "restic init || true",
+      "restic backup /var/lib/app --tag app --exclude /var/lib/app/tmp",
+      "restic snapshots --group-by host,paths,tags",
+      "restic forget --keep-daily 7 --keep-weekly 4 --prune",
+      "restic check --read-data-subset=5%",
+      "velero backup create app-manual --include-namespaces app --wait",
+      "velero backup describe app-manual",
+      "velero backup logs app-manual",
+      "litestream databases -config litestream.yml"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "restore.md"), [
+      "# Restore drill",
+      "point-in-time WAL recovery and integrity validation",
+      "- velero restore create --from-backup app-nightly --wait",
+      "- velero restore describe app-restore",
+      "- litestream restore -o /var/lib/app/app.db s3://app-backups/sqlite/app",
+      "- restic restore latest --target /restore/app",
+      "- restic check --read-data"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "backup.yml"), [
+      "name: backup",
+      "on:",
+      "  workflow_dispatch:",
+      "  schedule:",
+      "    - cron: \"0 2 * * *\"",
+      "jobs:",
+      "  backup:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - run: ./scripts/backup.sh"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({ scripts: { "backup:check": "restic check && velero backup get && litestream databases" } }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "backup-readiness-report.json"), "utf8")) as {
+      backupSetups: Array<{ filePath: string; tool: string; backupCount: number; restoreCount: number; scheduleCount: number; storageCount: number; retentionCount: number; verificationCount: number }>;
+      veleroSignals: Array<{ signal: string; readiness: string }>;
+      litestreamSignals: Array<{ signal: string; readiness: string }>;
+      resticSignals: Array<{ signal: string; readiness: string }>;
+      restoreDrillSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    const veleroSetup = report.backupSetups.find((item) => item.filePath === "k8s/velero.yaml");
+    const resticSetup = report.backupSetups.find((item) => item.filePath === "scripts/backup.sh");
+    expect(report.backupSetups.length).toBeGreaterThan(0);
+    expect(veleroSetup?.tool).toBe("velero");
+    expect(veleroSetup?.backupCount).toBeGreaterThan(0);
+    expect(veleroSetup?.restoreCount).toBeGreaterThan(0);
+    expect(veleroSetup?.scheduleCount).toBeGreaterThan(0);
+    expect(veleroSetup?.storageCount).toBeGreaterThan(0);
+    expect(resticSetup?.tool).toBe("hybrid");
+    expect(resticSetup?.verificationCount).toBeGreaterThan(0);
+    for (const signal of ["backup", "schedule", "restore", "backup-storage-location", "volume-snapshot-location", "included-namespaces", "excluded-namespaces", "ttl", "storage-location", "volume-snapshot", "fs-backup", "backup-describe", "backup-logs", "restore-describe"]) {
+      expect(report.veleroSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["config", "db-path", "replica-url", "s3", "gcs", "azure", "snapshot-interval", "snapshot-retention", "replicate-command", "restore-command", "database-command"]) {
+      expect(report.litestreamSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["repository", "password-file", "init", "backup-command", "snapshots-command", "restore-command", "forget-prune", "check", "tags", "exclude", "read-data"]) {
+      expect(report.resticSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["restore-runbook", "restore-command", "point-in-time", "wait", "describe", "logs", "integrity-check", "read-data", "target-path"]) {
+      expect(report.restoreDrillSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["retention-policy", "encrypted-secret", "namespace-scope", "storage-location", "snapshot-location", "verification-check", "prune-policy", "restore-drill", "external-repository"]) {
+      expect(report.safetySignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["velero", "litestream", "restic", "backup-script", "cron", "workflow"]) {
+      expect(report.packageSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "backup-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "backup-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("compares a new study session against the previous source snapshot", async () => {
