@@ -92,6 +92,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "cli-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "llm-eval-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "llm-observability-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workspace-graph-readiness-report.json"))).resolves.toBeUndefined();
@@ -200,6 +201,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "cli-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-eval-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-observability-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rpc-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workspace-graph-readiness.md"))).resolves.toBeUndefined();
@@ -308,6 +310,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "cli-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-eval-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "llm-observability-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "server-framework-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rpc-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workspace-graph-readiness.html"))).resolves.toBeUndefined();
@@ -447,6 +450,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/cli-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/llm-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/llm-eval-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/llm-observability-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/server-framework-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rpc-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workspace-graph-readiness.html\"");
@@ -2025,6 +2029,30 @@ describe("RepoTutor core pipeline", () => {
     expect(llmEvalReadinessMarkdown).toContain("Source pattern: LLM eval readiness");
     expect(llmEvalReadinessMarkdown).toContain("## Config Signals");
     expect(llmEvalReadinessMarkdown).toContain("## Red-Team Signals");
+    const llmObservabilityReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-observability-readiness-report.json"), "utf8");
+    expect(llmObservabilityReadinessText).toContain("LLM observability readiness Langfuse Phoenix Helicone traces spans observations generations sessions userId sessionId metadata release tags scores feedback annotations datasets experiments prompt versions playground OpenInference OpenTelemetry OTLP exporter token usage promptTokens completionTokens totalTokens cost latency model provider gateway baseURL Helicone headers rate limit retry fallback redaction telemetry opt-out");
+    expect(llmObservabilityReadinessText).toContain("\"observabilitySetups\"");
+    expect(llmObservabilityReadinessText).toContain("\"traceSignals\"");
+    expect(llmObservabilityReadinessText).toContain("\"instrumentationSignals\"");
+    expect(llmObservabilityReadinessText).toContain("\"identitySignals\"");
+    expect(llmObservabilityReadinessText).toContain("\"llmMetricSignals\"");
+    expect(llmObservabilityReadinessText).toContain("\"feedbackSignals\"");
+    expect(llmObservabilityReadinessText).toContain("\"datasetExperimentSignals\"");
+    expect(llmObservabilityReadinessText).toContain("\"gatewaySignals\"");
+    expect(llmObservabilityReadinessText).toContain("\"privacySignals\"");
+    expect(llmObservabilityReadinessText).toContain("\"workflowSignals\"");
+    expect(llmObservabilityReadinessText).toContain("\"packageSignals\"");
+    const llmObservabilityReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "llm-observability-readiness.html"), "utf8");
+    expect(llmObservabilityReadinessHtml).toContain("LLM Observability Readiness");
+    expect(llmObservabilityReadinessHtml).toContain("llm-observability-readiness-card");
+    expect(llmObservabilityReadinessHtml).toContain("data-source-pattern=\"LLM Observability\"");
+    expect(llmObservabilityReadinessHtml).toContain("Observability Setups");
+    expect(llmObservabilityReadinessHtml).toContain("Gateway Signals");
+    const llmObservabilityReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "llm-observability-readiness.md"), "utf8");
+    expect(llmObservabilityReadinessMarkdown).toContain("# LLM Observability Readiness");
+    expect(llmObservabilityReadinessMarkdown).toContain("Source pattern: LLM observability readiness");
+    expect(llmObservabilityReadinessMarkdown).toContain("## Trace Signals");
+    expect(llmObservabilityReadinessMarkdown).toContain("## Gateway Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
     expect(serverFrameworkReadinessText).toContain("Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
@@ -2491,6 +2519,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/gitops-readiness.html");
     expect(exportManifestText).toContain("html/backup-readiness.html");
     expect(exportManifestText).toContain("html/llm-eval-readiness.html");
+    expect(exportManifestText).toContain("html/llm-observability-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -2617,6 +2646,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("rate-limit-readiness.html");
     expect(learningPathHtml).toContain("error-tracking-readiness.html");
     expect(learningPathHtml).toContain("llm-eval-readiness.html");
+    expect(learningPathHtml).toContain("llm-observability-readiness.html");
     expect(learningPathHtml).toContain("backup-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
@@ -4564,6 +4594,206 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-eval-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-eval-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects LLM observability readiness patterns without contacting observability services", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-observability-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-observability-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "datasets"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "prompts"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "observability"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "observe:llm": "tsx src/observability/phoenix.ts",
+        "prompt:sync": "langfuse prompts pull"
+      },
+      dependencies: {
+        "@arizeai/phoenix-client": "latest",
+        "@arizeai/phoenix-evals": "latest",
+        "@arizeai/phoenix-otel": "latest",
+        "@helicone/helpers": "latest",
+        "@langfuse/tracing": "latest",
+        "@opentelemetry/auto-instrumentations-node": "latest",
+        "@opentelemetry/exporter-trace-otlp-http": "latest",
+        "@opentelemetry/sdk-trace-node": "latest",
+        langfuse: "latest",
+        openai: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "requirements.txt"), [
+      "langfuse",
+      "arize-phoenix-otel",
+      "openinference-instrumentation-openai",
+      "openinference-instrumentation-langchain",
+      "opentelemetry-exporter-otlp"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "observability", "langfuse.py"), [
+      "from langfuse import observe, get_client",
+      "from langfuse.openai import openai",
+      "from langfuse.decorators import langfuse_context",
+      "from langfuse.callback import LangfuseCallbackHandler",
+      "",
+      "langfuse = get_client()",
+      "callback_handler = LangfuseCallbackHandler()",
+      "",
+      "@observe(name=\"support-answer\")",
+      "def answer(user_id: str, session_id: str, conversation_id: str, prompt: str):",
+      "    langfuse_context.update_current_trace(",
+      "        user_id=user_id,",
+      "        session_id=session_id,",
+      "        metadata={\"tenant\": \"acme\", \"conversation_id\": conversation_id, \"environment\": \"staging\"},",
+      "        tags=[\"support\", \"rag\"],",
+      "        release=\"2026.06\"",
+      "    )",
+      "    generation = openai.chat.completions.create(",
+      "        model=\"gpt-4.1-mini\",",
+      "        messages=[{\"role\": \"user\", \"content\": prompt}],",
+      "        metadata={\"promptVersion\": \"support-v3\", \"promptTokens\": 42, \"completionTokens\": 12, \"totalTokens\": 54, \"cost\": 0.01, \"latency\": 120}",
+      "    )",
+      "    trace_id = langfuse_context.get_current_trace_id()",
+      "    langfuse.score(name=\"helpfulness\", value=1, trace_id=trace_id)",
+      "    langfuse.flush()",
+      "    return generation, callback_handler"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "observability", "phoenix.ts"), [
+      "import { register } from \"@arizeai/phoenix-otel\";",
+      "import { OTLPTraceExporter } from \"@opentelemetry/exporter-trace-otlp-http\";",
+      "import { NodeTracerProvider } from \"@opentelemetry/sdk-trace-node\";",
+      "import { getNodeAutoInstrumentations } from \"@opentelemetry/auto-instrumentations-node\";",
+      "import { registerInstrumentations } from \"@opentelemetry/instrumentation\";",
+      "",
+      "const provider = new NodeTracerProvider();",
+      "const exporter = new OTLPTraceExporter({ url: process.env.PHOENIX_COLLECTOR_ENDPOINT });",
+      "register({ projectName: \"support-agent\", endpoint: process.env.PHOENIX_COLLECTOR_ENDPOINT });",
+      "registerInstrumentations({ instrumentations: [getNodeAutoInstrumentations()] });",
+      "",
+      "export const phoenixReadiness = {",
+      "  provider,",
+      "  exporter,",
+      "  openInference: \"OpenInference instrumentation for OpenAI and LangChain\",",
+      "  dataset: \"support-regression\",",
+      "  experiment: \"prompt-v3-vs-v4\",",
+      "  run_id: \"run-001\",",
+      "  playground: \"prompt playground\",",
+      "  benchmark: \"golden set\",",
+      "  eval: \"quality score feedback link\",",
+      "  span: \"retrieval-span\",",
+      "  trace: \"support-trace\",",
+      "  rootSpan: \"root span\",",
+      "  childSpan: \"nested span\",",
+      "  spanId: \"span_id\",",
+      "  traceId: \"trace_id\"",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "observability", "helicone.ts"), [
+      "import OpenAI from \"openai\";",
+      "",
+      "export const client = new OpenAI({",
+      "  apiKey: process.env.OPENAI_API_KEY,",
+      "  baseURL: \"https://ai-gateway.helicone.ai/v1\",",
+      "  defaultHeaders: {",
+      "    \"Helicone-Auth\": `Bearer ${process.env.HELICONE_API_KEY}`,",
+      "    \"Helicone-User-Id\": \"user-123\",",
+      "    \"Helicone-Session-Id\": \"session-456\",",
+      "    \"Helicone-Property-Environment\": \"staging\",",
+      "    \"Helicone-Cache-Enabled\": \"true\",",
+      "    \"Helicone-Retry-Enabled\": \"true\",",
+      "    \"Helicone-RateLimit-Policy\": \"support-tier\",",
+      "    \"Helicone-Prompt-Id\": \"support-answer-v3\"",
+      "  }",
+      "});",
+      "",
+      "export const gatewayPolicy = \"provider routing with fallback retry and secondary provider\";"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "prompts", "support-answer.prompt.md"), [
+      "---",
+      "langfuse_prompt: support-answer",
+      "promptVersion: v3",
+      "metadata:",
+      "  redaction: pii-mask",
+      "  prompt_tokens: tracked",
+      "  completion_tokens: tracked",
+      "  total_tokens: tracked",
+      "  total_cost: tracked",
+      "  quality: feedback",
+      "  prompt_filter: enabled",
+      "  telemetry_opt_out: TELEMETRY_ENABLED=false",
+      "  data_retention: 30 days",
+      "---",
+      "Answer with citations and collect thumbs up/down user feedback after the response."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "datasets", "support-observability.csv"), [
+      "input,expected,feedback,annotation,label",
+      "\"How do I reset?\",\"Use settings\",positive,\"manual review\",quality"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".env.example"), [
+      "TELEMETRY_ENABLED=false",
+      "PII_MASKING=true",
+      "TRACE_REDACTION=enabled",
+      "PROMPT_FILTER=enabled",
+      "TRACE_RETENTION_DAYS=30"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "llm-observability.yml"), [
+      "name: llm-observability",
+      "on:",
+      "  pull_request:",
+      "  workflow_dispatch:",
+      "jobs:",
+      "  static-check:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - run: echo \"dashboard export self-host docker-compose helm Langfuse Phoenix Helicone OpenInference OpenTelemetry only\""
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-observability-readiness-report.json"), "utf8")) as {
+      observabilitySetups: Array<{ filePath: string; platform: string; traceCount: number; spanCount: number; generationCount: number; sessionCount: number; userCount: number; metadataCount: number; scoreCount: number; tokenCount: number; costCount: number; promptCount: number; feedbackCount: number }>;
+      traceSignals: Array<{ signal: string; readiness: string }>;
+      instrumentationSignals: Array<{ signal: string; readiness: string }>;
+      identitySignals: Array<{ signal: string; readiness: string }>;
+      llmMetricSignals: Array<{ signal: string; readiness: string }>;
+      feedbackSignals: Array<{ signal: string; readiness: string }>;
+      datasetExperimentSignals: Array<{ signal: string; readiness: string }>;
+      gatewaySignals: Array<{ signal: string; readiness: string }>;
+      privacySignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    const langfuseSetup = report.observabilitySetups.find((item) => item.filePath === "src/observability/langfuse.py");
+    expect(report.observabilitySetups.length).toBeGreaterThan(0);
+    expect(langfuseSetup?.platform).toBe("langfuse");
+    expect(langfuseSetup?.traceCount).toBeGreaterThan(0);
+    expect(langfuseSetup?.generationCount).toBeGreaterThan(0);
+    expect(langfuseSetup?.sessionCount).toBeGreaterThan(0);
+    expect(langfuseSetup?.userCount).toBeGreaterThan(0);
+    expect(langfuseSetup?.metadataCount).toBeGreaterThan(0);
+    expect(langfuseSetup?.scoreCount).toBeGreaterThan(0);
+    expect(langfuseSetup?.tokenCount).toBeGreaterThan(0);
+    expect(langfuseSetup?.costCount).toBeGreaterThan(0);
+    expect(report.observabilitySetups.some((item) => item.platform === "phoenix")).toBe(true);
+    expect(report.observabilitySetups.some((item) => item.platform === "helicone")).toBe(true);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.traceSignals, ["trace", "span", "observation", "generation", "root-span", "nested-span", "trace-id", "span-id"]);
+    expectReady(report.instrumentationSignals, ["observe-decorator", "openai-wrapper", "callback-handler", "openinference", "opentelemetry", "otel-exporter", "tracer-provider", "auto-instrumentation"]);
+    expectReady(report.identitySignals, ["user-id", "session-id", "conversation-id", "release", "environment", "tags", "metadata"]);
+    expectReady(report.llmMetricSignals, ["prompt-tokens", "completion-tokens", "total-tokens", "cost", "latency", "model-name", "provider", "cache"]);
+    expectReady(report.feedbackSignals, ["score", "feedback", "annotation", "label", "manual-review", "thumbs-up-down", "quality"]);
+    expectReady(report.datasetExperimentSignals, ["dataset", "experiment", "run", "prompt-version", "playground", "benchmark", "eval-link"]);
+    expectReady(report.gatewaySignals, ["base-url", "helicone-auth", "request-header", "property-header", "rate-limit", "retry", "provider-routing", "fallback"]);
+    expectReady(report.privacySignals, ["masking", "redaction", "pii", "prompt-filter", "telemetry-opt-out", "data-retention"]);
+    expectReady(report.workflowSignals, ["export", "api-client", "dashboard", "self-host", "docker-compose", "helm", "ci"]);
+    expectReady(report.packageSignals, ["langfuse", "phoenix", "arize-phoenix-otel", "openinference", "opentelemetry", "helicone"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-observability-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "llm-observability-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects backup readiness patterns without running backup tools", async () => {

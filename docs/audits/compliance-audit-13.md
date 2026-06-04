@@ -1,6 +1,6 @@
 # Compliance Audit 13
 
-Created: 2026-06-04T18:27:33.940Z
+Created: 2026-06-04T18:46:17.959Z
 
 Status: PASS
 
@@ -611,6 +611,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - LLM eval readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - LLM observability readiness report
 
 - missing files: none
 - missing strings: none

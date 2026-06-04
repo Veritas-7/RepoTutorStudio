@@ -6229,6 +6229,66 @@ Local verification:
 - `pnpm audit:brief`: PASS, 106/106 audit checks across 13 generated reports
 - Pushed implementation commit: `3cb0e04` llm-eval readiness report
 
+### Upgrade 209: LLM Observability Readiness Report
+
+- Cloned and inspected `langfuse/langfuse` under
+  `research/external-src/langfuse`, `Arize-ai/phoenix` under
+  `research/external-src/phoenix`, and `Helicone/helicone` under
+  `research/external-src/helicone` without executing external source. Clone
+  HEADs were `1d863d4`, `b1a3c2b`, and `094b210`; all three clones remain
+  ignored by RepoTutor.
+- GitHub metadata: `langfuse/langfuse` is public, license key `other`, 28,506
+  stars, 2,947 forks, updated 2026-06-04T18:08:24Z. `Arize-ai/phoenix` is
+  public, license key `other`, 9,983 stars, 908 forks, updated
+  2026-06-04T17:37:04Z. `Helicone/helicone` is public, Apache-2.0 licensed,
+  5,779 stars, 593 forks, updated 2026-06-04T16:09:53Z. Selected the
+  three-source slice because together they model LLM traces/spans/generations,
+  sessions, user and metadata linkage, OpenInference/OpenTelemetry exporters,
+  prompt versions, datasets/experiments, token/cost/latency metrics, feedback,
+  privacy controls, and gateway headers/routing. No source code was copied into
+  RepoTutor.
+- Implemented Langfuse/Phoenix/Helicone-style
+  llm-observability-readiness report:
+  `LlmObservabilityReadinessReportSchema`,
+  `analysis/llm-observability-readiness-report.json`,
+  `markdown/llm-observability-readiness.md`,
+  `html/llm-observability-readiness.html`, observability setup detection, trace
+  signals, instrumentation signals, identity signals, LLM metric signals,
+  feedback signals, dataset/experiment signals, gateway signals, privacy
+  signals, workflow signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target llm-observability-readiness`.
+- Source pattern: LLM observability readiness separates Langfuse, Phoenix,
+  Helicone, traces, spans, observations, generations, sessions, `userId`,
+  `sessionId`, metadata, release, tags, scores, feedback, annotations,
+  datasets, experiments, prompt versions, playground, OpenInference,
+  OpenTelemetry, OTLP exporters, token usage, `promptTokens`,
+  `completionTokens`, `totalTokens`, cost, latency, model, provider, gateway
+  `baseURL`, Helicone headers, rate limits, retry, fallback, redaction, and
+  telemetry opt-out. RepoTutor maps that to deterministic static LLM
+  observability readiness and explicitly does not call providers, send traces,
+  export spans, contact Langfuse/Phoenix/Helicone/OpenTelemetry collectors,
+  upload prompts/datasets/scores, replay sessions, route gateway requests, or
+  inspect live dashboards.
+- RED smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-llm-observability-red-studies.aWoORR/2026-06-05/local__repotutor-llm-observability-red-repo.7U2Pwh__local__7ac1d546`;
+  old behavior had `verificationCheckedRequiredArtifacts=324`, was missing
+  `analysis/llm-observability-readiness-report.json`,
+  `markdown/llm-observability-readiness.md`, and
+  `html/llm-observability-readiness.html`, and
+  `open --target llm-observability-readiness` exited with
+  `Unsupported open target`.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-llm-observability-green-studies.dPWeq3/2026-06-05/local__repotutor-llm-observability-green-repo.fI8p9g__local__f941a870`;
+  confirmed `verificationCheckedRequiredArtifacts=327`, observability setups
+  7, trace signals 8, LLM metric signals 8, feedback signals 7, gateway
+  signals 8, risk queue 0, all three new artifacts, and
+  `open --target llm-observability-readiness` ->
+  `html/llm-observability-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 16/16 tests
+- `pnpm audit:brief`: PASS, 107/107 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
