@@ -414,6 +414,22 @@
         "pytest and CI integration with JUnit report output",
         "Allure VCR/cassette curl reproduction and TraceCov-style coverage evidence"
       ]
+    },
+    {
+      "repo": "open-telemetry/opentelemetry-js",
+      "url": "https://github.com/open-telemetry/opentelemetry-js",
+      "localPath": "research/external-src/open-telemetry-opentelemetry-js",
+      "stars": 3387,
+      "forks": 1052,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-03T14:58:51Z",
+      "adoptedPatterns": [
+        "OpenTelemetry traces metrics and logs signal model",
+        "NodeSDK setup with auto-instrumentations and preload runtime hooks",
+        "OTLP console Prometheus Jaeger Zipkin and vendor exporter readiness",
+        "resource attributes including service.name deployment environment and service version",
+        "context propagation diagnostics shutdown sampling and runtime support checks"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2249,6 +2265,28 @@
         "ApiContractReportSchema",
         "Schemathesis OpenAPI GraphQL schema generated cases Hypothesis checks stateful workflows JUnit Allure contract testing"
       ]
+    },
+    {
+      "name": "Observability readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/observability-report.json",
+        "markdown/observability.md",
+        "html/observability.html",
+        "open --target observability",
+        "ObservabilityReportSchema",
+        "OpenTelemetry traces metrics logs resource context propagation exporter instrumentation semantic conventions diagnostics"
+      ]
     }
   ],
   "verification": {
@@ -2527,6 +2565,12 @@
     "cliApiContractsOpenTargetSmoke": "PASS",
     "buildApiContracts": "PASS",
     "testApiContracts": "PASS",
-    "auditBriefApiContracts27": "PASS"
+    "auditBriefApiContracts27": "PASS",
+    "fixtureObservabilityReport": "PASS",
+    "cliObservabilitySmoke": "PASS",
+    "cliObservabilityOpenTargetSmoke": "PASS",
+    "buildObservability": "PASS",
+    "testObservability": "PASS",
+    "auditBriefObservability28": "PASS"
   }
 }

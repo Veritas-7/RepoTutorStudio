@@ -37,6 +37,7 @@ import type {
   VexReport,
   PolicyGateReport,
   ApiContractReport,
+  ObservabilityReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -80,6 +81,7 @@ export interface StudyHtmlInput {
   vexReport: VexReport;
   policyGateReport: PolicyGateReport;
   apiContractReport: ApiContractReport;
+  observabilityReport: ObservabilityReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -143,6 +145,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["vex.html", "OpenVEX Readiness"],
     ["policy-gates.html", "Policy Gates"],
     ["api-contracts.html", "API Contracts"],
+    ["observability.html", "Observability"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -241,6 +244,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>OpenVEX Impact Readiness</h3><p>${escapeHtml(input.vexReport.summary)}</p><p>OpenVEX 패턴으로 product, vulnerability input, status justification, SARIF filter 준비도를 정리합니다.</p><a href="vex.html">OpenVEX Readiness 열기</a></article>
           <article><h3>Policy Gate Readiness</h3><p>${escapeHtml(input.policyGateReport.summary)}</p><p>OPA 패턴으로 Rego policy, input/data fixture, test, bundle, decision output 준비도를 정리합니다.</p><a href="policy-gates.html">Policy Gates 열기</a></article>
           <article><h3>API Contract Readiness</h3><p>${escapeHtml(input.apiContractReport.summary)}</p><p>Schemathesis 패턴으로 schema, generated case phase, response check, runtime/reporting 준비도를 정리합니다.</p><a href="api-contracts.html">API Contracts 열기</a></article>
+          <article><h3>Observability Readiness</h3><p>${escapeHtml(input.observabilityReport.summary)}</p><p>OpenTelemetry 패턴으로 traces, metrics, logs, exporter, resource/context readiness를 정리합니다.</p><a href="observability.html">Observability 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -387,6 +391,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("API Contract Readiness", "api-contracts.html", `<section class="panel" data-source-pattern="Schemathesis"><h2>API Contract Snapshot</h2><p>${escapeHtml(input.apiContractReport.summary)}</p><p class="muted">${escapeHtml(input.apiContractReport.sourcePattern)}</p><dl class="meta"><div><dt>schemas</dt><dd>${input.apiContractReport.schemaDocuments.length}</dd></div><div><dt>operations</dt><dd>${input.apiContractReport.operationTargets.length}</dd></div><div><dt>phases</dt><dd>${input.apiContractReport.testPhases.length}</dd></div><div><dt>checks</dt><dd>${input.apiContractReport.checkMatrix.length}</dd></div></dl><p class="muted">RepoTutor records API contract readiness only. It does not send generated requests or claim test pass/fail results.</p></section><section class="grid"><article class="api-contract-card"><h3>Test Phases</h3>${apiContractPhaseList(input.apiContractReport.testPhases)}</article><article class="api-contract-card"><h3>Check Matrix</h3>${apiContractCheckList(input.apiContractReport.checkMatrix)}</article><article class="api-contract-card"><h3>Runtime Targets</h3>${apiContractRuntimeList(input.apiContractReport.runtimeTargets)}</article><article class="api-contract-card"><h3>Reporting Outputs</h3>${apiContractReportingList(input.apiContractReport.reportingOutputs)}</article></section><section class="cards api-contract-schema-cards">${apiContractSchemaCards(input.apiContractReport.schemaDocuments)}</section><section class="grid"><article class="api-contract-card"><h3>Operation Targets</h3>${apiContractOperationList(input.apiContractReport.operationTargets)}</article><article class="api-contract-card"><h3>Recommended Commands</h3>${apiContractCommandList(input.apiContractReport.recommendedCommands)}</article><article class="api-contract-card"><h3>Risk Queue</h3>${apiContractRiskList(input.apiContractReport.riskQueue)}</article><article class="api-contract-card"><h3>다음 확인 단계</h3>${list(input.apiContractReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "observability.html",
+      title: "Observability Readiness",
+      html: pageShell("Observability Readiness", "observability.html", `<section class="panel" data-source-pattern="OpenTelemetry"><h2>Observability Snapshot</h2><p>${escapeHtml(input.observabilityReport.summary)}</p><p class="muted">${escapeHtml(input.observabilityReport.sourcePattern)}</p><dl class="meta"><div><dt>pipelines</dt><dd>${input.observabilityReport.signalPipelines.length}</dd></div><div><dt>instrumentation</dt><dd>${input.observabilityReport.instrumentationSignals.length}</dd></div><div><dt>exporters</dt><dd>${input.observabilityReport.exporterTargets.length}</dd></div><div><dt>diagnostics</dt><dd>${input.observabilityReport.diagnostics.length}</dd></div></dl><p class="muted">RepoTutor records OpenTelemetry readiness only. It does not collect spans, metrics, or logs from the target app.</p></section><section class="grid"><article class="observability-card"><h3>Signal Pipelines</h3>${observabilityPipelineList(input.observabilityReport.signalPipelines)}</article><article class="observability-card"><h3>Exporter Targets</h3>${observabilityExporterList(input.observabilityReport.exporterTargets)}</article><article class="observability-card"><h3>Resource Attributes</h3>${observabilityResourceList(input.observabilityReport.resourceAttributes)}</article><article class="observability-card"><h3>Propagation Context</h3>${observabilityPropagationList(input.observabilityReport.propagationContext)}</article></section><section class="grid"><article class="observability-card"><h3>Instrumentation Signals</h3>${observabilityInstrumentationList(input.observabilityReport.instrumentationSignals)}</article><article class="observability-card"><h3>Diagnostics</h3>${observabilityDiagnosticList(input.observabilityReport.diagnostics)}</article><article class="observability-card"><h3>Recommended Commands</h3>${observabilityCommandList(input.observabilityReport.recommendedCommands)}</article><article class="observability-card"><h3>Risk Queue</h3>${observabilityRiskList(input.observabilityReport.riskQueue)}</article><article class="observability-card"><h3>다음 확인 단계</h3>${list(input.observabilityReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -524,6 +533,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "OpenVEX Impact Readiness", path: "html/vex.html", description: "OpenVEX식 product, status, justification, SARIF filter, attestation 준비도를 확인합니다." },
       { label: "Policy Gate Readiness", path: "html/policy-gates.html", description: "OPA식 Rego policy, input/data, test, bundle, decision gate 준비도를 확인합니다." },
       { label: "API Contract Readiness", path: "html/api-contracts.html", description: "Schemathesis식 schema, generated phase, response check, runtime/reporting 준비도를 확인합니다." },
+      { label: "Observability Readiness", path: "html/observability.html", description: "OpenTelemetry식 signal pipeline, instrumentation, exporter, resource/context 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -769,6 +779,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "api-contracts.html",
       goal: "Schemathesis식 schema, generated phase, response check, runtime target, reporting output 준비도를 확인합니다.",
       evidence: `schema documents ${input.apiContractReport.schemaDocuments.length}개, operation targets ${input.apiContractReport.operationTargets.length}개`
+    },
+    {
+      title: "Observability 준비도 확인",
+      href: "observability.html",
+      goal: "OpenTelemetry식 traces, metrics, logs pipeline과 exporter/resource/context 설정을 확인합니다.",
+      evidence: `signal pipelines ${input.observabilityReport.signalPipelines.length}개, instrumentation ${input.observabilityReport.instrumentationSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -1316,6 +1332,51 @@ function apiContractRiskList(items: ApiContractReport["riskQueue"]): string {
 }
 
 function apiContractHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function observabilityPipelineList(items: ObservabilityReport["signalPipelines"]): string {
+  if (items.length === 0) return "<p class=\"muted\">signal pipeline readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.signal)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(observabilityHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function observabilityInstrumentationList(items: ObservabilityReport["instrumentationSignals"]): string {
+  if (items.length === 0) return "<p class=\"muted\">instrumentation signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.kind)} / ${escapeHtml(item.signal)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(observabilityHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function observabilityExporterList(items: ObservabilityReport["exporterTargets"]): string {
+  if (items.length === 0) return "<p class=\"muted\">exporter target readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.target)}</strong> [${escapeHtml(item.signal)} / ${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(observabilityHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function observabilityResourceList(items: ObservabilityReport["resourceAttributes"]): string {
+  if (items.length === 0) return "<p class=\"muted\">resource attribute signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.attribute)}</strong> [${escapeHtml(item.readiness)}]<br><span class="muted">${escapeHtml(item.source)}</span><br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(observabilityHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function observabilityPropagationList(items: ObservabilityReport["propagationContext"]): string {
+  if (items.length === 0) return "<p class=\"muted\">propagation context readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.mechanism)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(observabilityHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function observabilityDiagnosticList(items: ObservabilityReport["diagnostics"]): string {
+  if (items.length === 0) return "<p class=\"muted\">diagnostic readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.check)}</strong> [${escapeHtml(item.status)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(observabilityHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function observabilityCommandList(items: ObservabilityReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function observabilityRiskList(items: ObservabilityReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(observabilityHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function observabilityHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

@@ -1119,6 +1119,61 @@ export const ApiContractReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ObservabilityReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  signalPipelines: z.array(z.object({
+    signal: z.enum(["traces", "metrics", "logs"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  instrumentationSignals: z.array(z.object({
+    filePath: z.string(),
+    kind: z.enum(["auto", "manual", "middleware", "browser", "server", "unknown"]),
+    signal: z.enum(["traces", "metrics", "logs", "mixed"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  exporterTargets: z.array(z.object({
+    target: z.enum(["otlp", "console", "prometheus", "jaeger", "zipkin", "vendor", "none"]),
+    signal: z.enum(["traces", "metrics", "logs", "mixed"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resourceAttributes: z.array(z.object({
+    attribute: z.string(),
+    source: z.string(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  propagationContext: z.array(z.object({
+    mechanism: z.enum(["trace-context", "baggage", "b3", "async-context", "zone-context"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  diagnostics: z.array(z.object({
+    check: z.enum(["diag-logger", "collector-endpoint", "shutdown", "sampling", "attribute-limits", "runtime-support"]),
+    status: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1350,6 +1405,7 @@ export type AdvisoryReport = z.infer<typeof AdvisoryReportSchema>;
 export type VexReport = z.infer<typeof VexReportSchema>;
 export type PolicyGateReport = z.infer<typeof PolicyGateReportSchema>;
 export type ApiContractReport = z.infer<typeof ApiContractReportSchema>;
+export type ObservabilityReport = z.infer<typeof ObservabilityReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

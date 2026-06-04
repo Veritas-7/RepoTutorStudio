@@ -42,6 +42,7 @@ import {
   VexReport,
   PolicyGateReport,
   ApiContractReport,
+  ObservabilityReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -90,6 +91,7 @@ export interface AnalysisBundle {
   vexReport: VexReport;
   policyGateReport: PolicyGateReport;
   apiContractReport: ApiContractReport;
+  observabilityReport: ObservabilityReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -138,8 +140,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const vexReport = buildVexReport(walk, sbomReport, securityReadinessReport, advisoryReport, provenanceReport, sourceSnapshotReport);
   const policyGateReport = await buildPolicyGateReport(walk, securityReadinessReport);
   const apiContractReport = await buildApiContractReport(walk);
+  const observabilityReport = await buildObservabilityReport(walk, runtimeEnvironmentReport);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -3712,6 +3715,338 @@ function parseJsonObject(text: string): unknown | null {
   } catch {
     return null;
   }
+}
+
+async function buildObservabilityReport(
+  walk: WalkResult,
+  runtimeEnvironmentReport: RuntimeEnvironmentReport
+): Promise<ObservabilityReport> {
+  const sourceFiles = await observabilitySourceFiles(walk);
+  const instrumentationSignals = sourceFiles
+    .map((item) => observabilityInstrumentationSignal(item))
+    .filter((item): item is ObservabilityReport["instrumentationSignals"][number] => Boolean(item))
+    .slice(0, 80);
+  const exporterTargets = observabilityExporterTargets(sourceFiles);
+  const resourceAttributes = observabilityResourceAttributes(sourceFiles);
+  const propagationContext = observabilityPropagationContext(sourceFiles);
+  const diagnostics = observabilityDiagnostics(sourceFiles, runtimeEnvironmentReport);
+  const hasInstrumentation = instrumentationSignals.length > 0;
+  const hasExporter = exporterTargets.some((item) => item.target !== "none" && item.readiness !== "missing");
+  const hasResourceName = resourceAttributes.some((item) => item.attribute === "service.name" && item.readiness === "ready");
+  const hasShutdown = diagnostics.some((item) => item.check === "shutdown" && item.status === "ready");
+  const hasCollectorEndpoint = diagnostics.some((item) => item.check === "collector-endpoint" && item.status === "ready");
+  const signalPipelines: ObservabilityReport["signalPipelines"] = (["traces", "metrics", "logs"] as const).map((signal) => {
+    const signalInstrumentation = instrumentationSignals.filter((item) => item.signal === signal || item.signal === "mixed");
+    const signalExporters = exporterTargets.filter((item) => item.target !== "none" && (item.signal === signal || item.signal === "mixed"));
+    const readiness = signalInstrumentation.length > 0 && signalExporters.length > 0
+      ? "ready"
+      : signalInstrumentation.length > 0 || signalExporters.length > 0
+        ? "partial"
+        : "missing";
+    const relatedHref = signalInstrumentation[0]?.sourceHref ?? signalExporters[0]?.relatedHref ?? "html/observability.html";
+    return {
+      signal,
+      readiness,
+      evidence: readiness === "ready"
+        ? `${signal} pipeline has instrumentation and exporter evidence.`
+        : readiness === "partial"
+          ? `${signal} pipeline has only one side of instrumentation/export evidence.`
+          : `${signal} pipeline was not detected in static repository files.`,
+      relatedHref
+    };
+  });
+
+  const riskQueue: ObservabilityReport["riskQueue"] = [];
+  if (!hasInstrumentation) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add OpenTelemetry SDK setup and at least one auto or manual instrumentation entrypoint.",
+      why: "Traces, metrics, and logs cannot be collected until application code starts providers or instrumentation.",
+      relatedHref: "html/observability.html"
+    });
+  }
+  if (hasInstrumentation && !hasExporter) {
+    riskQueue.push({
+      priority: "high",
+      action: "Configure an OTLP, Prometheus, console, Jaeger, Zipkin, or vendor exporter before relying on telemetry.",
+      why: "Instrumented signals need a destination or they will remain local process data.",
+      relatedHref: "html/observability.html"
+    });
+  }
+  if (hasInstrumentation && !hasResourceName) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Set service.name with resourceFromAttributes, OTEL_SERVICE_NAME, or OTEL_RESOURCE_ATTRIBUTES.",
+      why: "Backends group telemetry by resource attributes; missing service.name makes traces and metrics hard to read.",
+      relatedHref: "html/runtime-environment.html"
+    });
+  }
+  if (hasInstrumentation && !hasCollectorEndpoint) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document collector endpoint variables such as OTEL_EXPORTER_OTLP_ENDPOINT for local and CI runs.",
+      why: "A repeatable endpoint makes telemetry smoke tests deterministic.",
+      relatedHref: "html/runtime-environment.html"
+    });
+  }
+  if (hasInstrumentation && !hasShutdown) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Flush or shutdown SDK providers on process exit.",
+      why: "Short-lived CLIs and tests can lose spans or metrics without explicit provider shutdown.",
+      relatedHref: "html/observability.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the original app with a collector before treating this report as an observability pass.",
+    why: "RepoTutor only performs static readiness analysis and does not receive spans, metrics, or logs.",
+    relatedHref: "html/observability.html"
+  });
+
+  return {
+    summary: `OpenTelemetry식 observability readiness report: signal pipeline ${signalPipelines.length}개, instrumentation signal ${instrumentationSignals.length}개, exporter target ${exporterTargets.length}개, diagnostic ${diagnostics.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "OpenTelemetry traces metrics logs resource context propagation exporter instrumentation semantic conventions diagnostics",
+    signalPipelines,
+    instrumentationSignals,
+    exporterTargets,
+    resourceAttributes,
+    propagationContext,
+    diagnostics,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      {
+        command: "OTEL_SERVICE_NAME=<service> OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 node -r ./tracing.js app.js",
+        purpose: "Start a Node app with a preload tracing setup and an OTLP collector endpoint."
+      },
+      {
+        command: "curl -s http://localhost:9464/metrics",
+        purpose: "Check a Prometheus exporter endpoint after metrics are enabled."
+      },
+      {
+        command: "OTEL_LOG_LEVEL=debug node -r ./tracing.js app.js",
+        purpose: "Turn on OpenTelemetry diagnostics while debugging instrumentation setup."
+      },
+      {
+        command: "docker run --rm -p 4317:4317 -p 4318:4318 otel/opentelemetry-collector-contrib:latest",
+        purpose: "Run a local collector target for OTLP smoke tests."
+      },
+      {
+        command: "npm ls @opentelemetry/api @opentelemetry/sdk-node @opentelemetry/auto-instrumentations-node",
+        purpose: "Confirm the Node OpenTelemetry API, SDK, and auto-instrumentation packages are installed together."
+      }
+    ],
+    learnerNextSteps: [
+      "먼저 traces, metrics, logs 중 어떤 signal pipeline이 필요한지 정하고 instrumentation entrypoint를 찾으세요.",
+      "instrumentation만 있고 exporter가 없으면 telemetry가 backend로 나가지 않습니다.",
+      "service.name, deployment.environment, service.version 같은 resource attribute를 먼저 고정하세요.",
+      "이 리포트는 OpenTelemetry 실행 결과가 아닙니다. 실제 spans, metrics, logs는 원본 앱과 collector에서 별도 확인하세요."
+    ]
+  };
+}
+
+type ObservabilitySourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function observabilitySourceFiles(walk: WalkResult): Promise<ObservabilitySourceFile[]> {
+  const files: ObservabilitySourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !observabilityInspectablePath(file.relPath)) continue;
+    const pathCandidate = observabilityPathSignal(file.relPath);
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!pathCandidate && !observabilityContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 120) break;
+  }
+  return files;
+}
+
+function observabilityInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(Dockerfile|docker-compose\.ya?ml|package\.json|pnpm-lock\.yaml|yarn\.lock|package-lock\.json|requirements.*\.txt|pyproject\.toml|go\.mod|Cargo\.toml)$/i.test(base)
+    || /\.(ts|tsx|js|jsx|mjs|cjs|json|ya?ml|toml|md|py|go|rs|java|kt|cs|rb|php|sh|env|conf|ini)$/i.test(filePath);
+}
+
+function observabilityPathSignal(filePath: string): boolean {
+  return /(opentelemetry|otel|observability|telemetry|tracing|trace|metrics?|prometheus|jaeger|zipkin|grafana|tempo|sentry|datadog|newrelic|honeycomb|logger|logging|instrument)/i.test(filePath);
+}
+
+function observabilityContentSignal(text: string): boolean {
+  return /(@opentelemetry|opentelemetry|OpenTelemetry|OTEL_|NodeSDK|TracerProvider|MeterProvider|LoggerProvider|getNodeAutoInstrumentations|getTracer|startSpan|createCounter|createHistogram|PrometheusExporter|OTLP|ConsoleSpanExporter|JaegerExporter|ZipkinExporter|resourceFromAttributes|ATTR_SERVICE_NAME|W3CTraceContextPropagator|W3CBaggagePropagator|B3Propagator|AsyncHooksContextManager|ZoneContextManager|diag\.setLogger|DiagConsoleLogger)/i.test(text);
+}
+
+function observabilityInstrumentationSignal(source: ObservabilitySourceFile): ObservabilityReport["instrumentationSignals"][number] | null {
+  const { filePath, text, sourceHref } = source;
+  if (!/(@opentelemetry|opentelemetry|NodeSDK|TracerProvider|MeterProvider|LoggerProvider|getNodeAutoInstrumentations|getTracer|startSpan|metrics\.getMeter|createCounter|createHistogram|getLogger|instrumentation)/i.test(text)) return null;
+  const signal = observabilitySignalForText(text);
+  const kind = observabilityInstrumentationKind(filePath, text);
+  return {
+    filePath,
+    kind,
+    signal,
+    evidence: observabilityInstrumentationEvidence(kind, signal, filePath, text),
+    sourceHref
+  };
+}
+
+function observabilitySignalForText(text: string): ObservabilityReport["instrumentationSignals"][number]["signal"] {
+  const hasTrace = /\b(trace|tracer|span|TracerProvider|startSpan|getTracer|NodeTracerProvider|traceparent)\b/i.test(text);
+  const hasMetrics = /\b(metric|meter|counter|histogram|MeterProvider|PrometheusExporter|metrics\.getMeter|createCounter|createHistogram)\b/i.test(text);
+  const hasLogs = /\b(logs?|logger|LoggerProvider|getLogger|diag\.setLogger|DiagConsoleLogger)\b/i.test(text);
+  const count = [hasTrace, hasMetrics, hasLogs].filter(Boolean).length;
+  if (count > 1) return "mixed";
+  if (hasMetrics) return "metrics";
+  if (hasLogs) return "logs";
+  return "traces";
+}
+
+function observabilityInstrumentationKind(filePath: string, text: string): ObservabilityReport["instrumentationSignals"][number]["kind"] {
+  if (/getNodeAutoInstrumentations|auto-instrumentations|autoInstrumentations/i.test(text)) return "auto";
+  if (/express|fastify|koa|hapi|middleware|interceptor|filter/i.test(text)) return "middleware";
+  if (/browser|web|fetch|XMLHttpRequest|document\.|window\./i.test(filePath) || /browser|fetch|XMLHttpRequest|document\.|window\./i.test(text)) return "browser";
+  if (/node|http|https|grpc|server|listen\(|Fastify|Express/i.test(filePath) || /node|http|https|grpc|server|listen\(|Fastify|Express/i.test(text)) return "server";
+  if (/getTracer|startSpan|metrics\.getMeter|createCounter|createHistogram|getLogger|new\s+(NodeSDK|MeterProvider|TracerProvider|LoggerProvider)/i.test(text)) return "manual";
+  return "unknown";
+}
+
+function observabilityInstrumentationEvidence(
+  kind: ObservabilityReport["instrumentationSignals"][number]["kind"],
+  signal: ObservabilityReport["instrumentationSignals"][number]["signal"],
+  filePath: string,
+  text: string
+): string {
+  if (/getNodeAutoInstrumentations|auto-instrumentations/i.test(text)) return `${filePath} configures OpenTelemetry auto-instrumentation for ${signal}.`;
+  if (/NodeSDK|TracerProvider|MeterProvider|LoggerProvider/i.test(text)) return `${filePath} starts an OpenTelemetry SDK/provider for ${signal}.`;
+  if (/getTracer|startSpan/i.test(text)) return `${filePath} creates manual trace spans.`;
+  if (/metrics\.getMeter|createCounter|createHistogram/i.test(text)) return `${filePath} creates manual metric instruments.`;
+  if (/getLogger|LoggerProvider|diag\.setLogger/i.test(text)) return `${filePath} contains logging or diagnostic telemetry setup.`;
+  return `${filePath} has ${kind} observability instrumentation evidence for ${signal}.`;
+}
+
+function observabilityExporterTargets(sourceFiles: ObservabilitySourceFile[]): ObservabilityReport["exporterTargets"] {
+  const specs: Array<{
+    target: Exclude<ObservabilityReport["exporterTargets"][number]["target"], "none">;
+    signal: ObservabilityReport["exporterTargets"][number]["signal"];
+    pattern: RegExp;
+    evidence: (filePath: string) => string;
+  }> = [
+    { target: "otlp", signal: "mixed", pattern: /OTLP|otlp|OTEL_EXPORTER_OTLP|collector|4317|4318/i, evidence: (filePath) => `${filePath} references OTLP or collector endpoint configuration.` },
+    { target: "console", signal: "mixed", pattern: /ConsoleSpanExporter|ConsoleMetricExporter|ConsoleLogRecordExporter|console exporter/i, evidence: (filePath) => `${filePath} references a console exporter for local telemetry inspection.` },
+    { target: "prometheus", signal: "metrics", pattern: /PrometheusExporter|prom-client|\/metrics\b|9464/i, evidence: (filePath) => `${filePath} references Prometheus metrics export.` },
+    { target: "jaeger", signal: "traces", pattern: /JaegerExporter|jaeger/i, evidence: (filePath) => `${filePath} references Jaeger trace export.` },
+    { target: "zipkin", signal: "traces", pattern: /ZipkinExporter|zipkin/i, evidence: (filePath) => `${filePath} references Zipkin trace export.` },
+    { target: "vendor", signal: "mixed", pattern: /sentry|datadog|honeycomb|dynatrace|newrelic|grafana|tempo|splunk|lightstep/i, evidence: (filePath) => `${filePath} references a vendor observability backend.` }
+  ];
+  const targets: ObservabilityReport["exporterTargets"] = [];
+  for (const spec of specs) {
+    const match = sourceFiles.find((item) => spec.pattern.test(item.text) || spec.pattern.test(item.filePath));
+    if (!match) continue;
+    targets.push({
+      target: spec.target,
+      signal: spec.signal,
+      readiness: "ready",
+      evidence: spec.evidence(match.filePath),
+      relatedHref: match.sourceHref
+    });
+  }
+  if (targets.length === 0) {
+    targets.push({
+      target: "none",
+      signal: "mixed",
+      readiness: "missing",
+      evidence: "No OTLP, Prometheus, console, Jaeger, Zipkin, or vendor exporter signal was detected.",
+      relatedHref: "html/observability.html"
+    });
+  }
+  return targets;
+}
+
+function observabilityResourceAttributes(sourceFiles: ObservabilitySourceFile[]): ObservabilityReport["resourceAttributes"] {
+  const specs = [
+    { attribute: "service.name", pattern: /ATTR_SERVICE_NAME|service\.name|OTEL_SERVICE_NAME|serviceName/i },
+    { attribute: "service.version", pattern: /service\.version|ATTR_SERVICE_VERSION|OTEL_SERVICE_VERSION|npm_package_version/i },
+    { attribute: "deployment.environment", pattern: /deployment\.environment|DEPLOYMENT_ENVIRONMENT|OTEL_RESOURCE_ATTRIBUTES|NODE_ENV/i },
+    { attribute: "resource", pattern: /resourceFromAttributes|new\s+Resource|Resource\.default|resources?/i }
+  ];
+  const rows: ObservabilityReport["resourceAttributes"] = [];
+  for (const spec of specs) {
+    const match = sourceFiles.find((item) => spec.pattern.test(item.text));
+    if (!match) continue;
+    rows.push({
+      attribute: spec.attribute,
+      source: match.filePath,
+      readiness: spec.attribute === "resource" ? "partial" : "ready",
+      evidence: `${match.filePath} contains ${spec.attribute} resource attribute evidence.`,
+      relatedHref: match.sourceHref
+    });
+  }
+  return rows.slice(0, 30);
+}
+
+function observabilityPropagationContext(sourceFiles: ObservabilitySourceFile[]): ObservabilityReport["propagationContext"] {
+  const specs: Array<{
+    mechanism: ObservabilityReport["propagationContext"][number]["mechanism"];
+    pattern: RegExp;
+    externalEvidence: string;
+  }> = [
+    { mechanism: "trace-context", pattern: /W3CTraceContextPropagator|traceparent|trace-context/i, externalEvidence: "W3C trace context is the default OpenTelemetry propagation baseline for most SDKs." },
+    { mechanism: "baggage", pattern: /W3CBaggagePropagator|\bbaggage\b/i, externalEvidence: "Baggage propagation is external until explicitly configured or verified in requests." },
+    { mechanism: "b3", pattern: /B3Propagator|\bb3\b/i, externalEvidence: "B3 propagation is external unless Zipkin/B3 compatibility is configured." },
+    { mechanism: "async-context", pattern: /AsyncLocalStorage|AsyncHooksContextManager|context-async-hooks/i, externalEvidence: "Node async context propagation depends on the runtime context manager." },
+    { mechanism: "zone-context", pattern: /ZoneContextManager|context-zone|zone\.js/i, externalEvidence: "Browser zone context propagation depends on zone.js or a web context manager." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((item) => spec.pattern.test(item.text) || spec.pattern.test(item.filePath));
+    return {
+      mechanism: spec.mechanism,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} contains ${spec.mechanism} propagation evidence.` : spec.externalEvidence,
+      relatedHref: match?.sourceHref ?? "html/observability.html"
+    };
+  });
+}
+
+function observabilityDiagnostics(
+  sourceFiles: ObservabilitySourceFile[],
+  runtimeEnvironmentReport: RuntimeEnvironmentReport
+): ObservabilityReport["diagnostics"] {
+  const runtimeSignalCount = runtimeEnvironmentReport.detectedManifests.length
+    + runtimeEnvironmentReport.setupSignals.length
+    + runtimeEnvironmentReport.containerSignals.length;
+  const checks: Array<{
+    check: ObservabilityReport["diagnostics"][number]["check"];
+    pattern: RegExp | null;
+    readyEvidence: (filePath: string) => string;
+    missingEvidence: string;
+  }> = [
+    { check: "diag-logger", pattern: /diag\.setLogger|DiagConsoleLogger|DiagLogLevel|OTEL_LOG_LEVEL/i, readyEvidence: (filePath) => `${filePath} configures OpenTelemetry diagnostics logging.`, missingEvidence: "No OpenTelemetry diagnostic logger or OTEL_LOG_LEVEL setup was detected." },
+    { check: "collector-endpoint", pattern: /OTEL_EXPORTER_OTLP_ENDPOINT|collector|4317|4318|OTLP/i, readyEvidence: (filePath) => `${filePath} documents an OTLP collector endpoint.`, missingEvidence: "No collector endpoint or OTLP environment variable was detected." },
+    { check: "shutdown", pattern: /sdk\.shutdown|provider\.shutdown|shutdown\(\)|process\.on\(['"]SIG(INT|TERM)['"]/i, readyEvidence: (filePath) => `${filePath} flushes or shuts down telemetry providers.`, missingEvidence: "No SDK/provider shutdown path was detected." },
+    { check: "sampling", pattern: /Sampler|sampling|OTEL_TRACES_SAMPLER|TraceIdRatioBasedSampler|ParentBasedSampler/i, readyEvidence: (filePath) => `${filePath} contains trace sampling configuration.`, missingEvidence: "No trace sampler policy was detected." },
+    { check: "attribute-limits", pattern: /attributeCountLimit|attributeValueLengthLimit|spanLimits|metricReader|OTEL_ATTRIBUTE/i, readyEvidence: (filePath) => `${filePath} references attribute limits or metric reader controls.`, missingEvidence: "No attribute limit or reader control was detected." },
+    { check: "runtime-support", pattern: null, readyEvidence: () => "Runtime manifests and setup/container signals exist for telemetry smoke tests.", missingEvidence: "Runtime manifest/setup/container evidence is sparse." }
+  ];
+  return checks.map((item) => {
+    if (item.check === "runtime-support") {
+      return {
+        check: item.check,
+        status: runtimeSignalCount >= 2 ? "ready" : runtimeSignalCount === 1 ? "partial" : "missing",
+        evidence: runtimeSignalCount >= 2 ? item.readyEvidence("runtime-environment-report") : item.missingEvidence,
+        relatedHref: "html/runtime-environment.html"
+      };
+    }
+    const match = item.pattern ? sourceFiles.find((source) => item.pattern?.test(source.text) || item.pattern?.test(source.filePath)) : null;
+    return {
+      check: item.check,
+      status: match ? "ready" : sourceFiles.length > 0 ? "partial" : "missing",
+      evidence: match ? item.readyEvidence(match.filePath) : item.missingEvidence,
+      relatedHref: match?.sourceHref ?? "html/observability.html"
+    };
+  });
 }
 
 function advisoryEcosystemForPackage(packageType: string, fallback: string): string {

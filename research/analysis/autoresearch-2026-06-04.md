@@ -2569,6 +2569,42 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 27/27 audit checks across 13 generated reports
 
+### Upgrade 130: Observability Readiness Report
+
+- Cloned and inspected `open-telemetry/opentelemetry-js` under
+  `research/external-src/open-telemetry-opentelemetry-js` without executing
+  external source.
+- GitHub metadata: public repo, Apache-2.0 license, 3,387 stars, 1,052 forks,
+  updated 2026-06-03T14:58:51Z. No source code was copied into RepoTutor.
+- Added `ObservabilityReportSchema` and `analysis/observability-report.json`
+  with OpenTelemetry-style signal pipelines, instrumentation signals, exporter
+  targets, resource attributes, propagation context, diagnostics, risk queue,
+  recommended commands, and learner next steps.
+- Added `markdown/observability.md`, `html/observability.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target observability`.
+- Source pattern: OpenTelemetry separates traces, metrics, logs,
+  auto/manual instrumentation, OTLP/Prometheus/console/vendor exporters,
+  resource attributes, context propagation, diagnostics, shutdown, sampling,
+  and runtime support. RepoTutor maps that to deterministic static
+  observability readiness and explicitly does not collect spans, metrics, or
+  logs from the target app.
+- RED smoke generated
+  `/tmp/repotutor-observability-red-studies.WwbQXF/2026-06-04/local__simple-ts-app__main__ac8cad2e`;
+  old behavior was missing `analysis/observability-report.json`,
+  `markdown/observability.md`, and `html/observability.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-observability-green-studies.PILjIS/2026-06-04/local__simple-ts-app__main__ac8cad2e`;
+  confirmed `verificationCheckedRequiredArtifacts=90`, signal pipelines 3,
+  instrumentation signals 0, exporter targets 1, resource attributes 0,
+  propagation context 5, diagnostics 6, recommended commands 5, risk queue 2,
+  `observability-card`, `data-source-pattern="OpenTelemetry"`,
+  manifest/learning path entries, and `open --target observability` ->
+  `html/observability.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 28/28 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

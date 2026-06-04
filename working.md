@@ -1690,6 +1690,38 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 129:
   - `0b1e685` API contract readiness report
 
+- 2026-06-04: AutoResearch Upgrade 130 candidate selected:
+  `open-telemetry/opentelemetry-js`
+  (`https://github.com/open-telemetry/opentelemetry-js`; public Apache-2.0;
+  3,387 stars; 1,052 forks; updated 2026-06-03T14:58:51Z). Cloned ignored
+  external source to `research/external-src/open-telemetry-opentelemetry-js`
+  and inspected README, metrics docs, SDK setup, auto-instrumentation,
+  exporters, resource/context packages, semantic conventions, and diagnostics
+  patterns without executing external source.
+- 2026-06-04: RED observability smoke generated
+  `/tmp/repotutor-observability-red-studies.WwbQXF/2026-06-04/local__simple-ts-app__main__ac8cad2e`;
+  old build was missing `analysis/observability-report.json`,
+  `markdown/observability.md`, and `html/observability.html` as expected.
+- 2026-06-04: Implemented OpenTelemetry-style observability readiness report:
+  `ObservabilityReportSchema`, `analysis/observability-report.json`,
+  `markdown/observability.md`, `html/observability.html`, signal pipelines,
+  instrumentation signals, exporter targets, resource attributes, propagation
+  context, diagnostics, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target observability`.
+- 2026-06-04: GREEN observability smoke generated
+  `/tmp/repotutor-observability-green-studies.PILjIS/2026-06-04/local__simple-ts-app__main__ac8cad2e`;
+  confirmed `verificationCheckedRequiredArtifacts=90`, signal pipelines 3,
+  instrumentation signals 0, exporter targets 1, resource attributes 0,
+  propagation context 5, diagnostics 6, recommended commands 5, risk queue 2,
+  `observability-card`, `data-source-pattern="OpenTelemetry"`,
+  manifest/learning-path entries, and `open --target observability` ->
+  `html/observability.html`.
+- 2026-06-04: Verification for Upgrade 130:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 28/28 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
