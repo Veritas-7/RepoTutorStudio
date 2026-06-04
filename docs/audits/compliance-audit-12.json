@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-04T19:53:57.626Z",
+  "createdAt": "2026-06-04T20:11:06.203Z",
   "checks": [
     {
       "name": "project setup",
@@ -746,6 +746,13 @@
     },
     {
       "name": "Realtime collaboration readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Workflow orchestration readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

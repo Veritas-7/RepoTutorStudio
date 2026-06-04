@@ -5286,6 +5286,84 @@ export const RealtimeCollaborationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const WorkflowOrchestrationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  workflowSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["temporal", "inngest", "triggerdotdev", "cloudflare-workflows", "custom", "unknown"]),
+    workflowCount: z.number().int().nonnegative(),
+    eventCount: z.number().int().nonnegative(),
+    scheduleCount: z.number().int().nonnegative(),
+    stepCount: z.number().int().nonnegative(),
+    activityCount: z.number().int().nonnegative(),
+    queueCount: z.number().int().nonnegative(),
+    retryCount: z.number().int().nonnegative(),
+    timeoutCount: z.number().int().nonnegative(),
+    waitCount: z.number().int().nonnegative(),
+    cancelCount: z.number().int().nonnegative(),
+    concurrencyCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  triggerSignals: z.array(z.object({
+    signal: z.enum(["event", "cron", "schedule", "webhook", "manual", "api-trigger", "child-trigger", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  executionSignals: z.array(z.object({
+    signal: z.enum(["task", "workflow", "activity", "step", "worker", "task-queue", "function-run", "handler", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  durabilitySignals: z.array(z.object({
+    signal: z.enum(["retry", "timeout", "heartbeat", "checkpoint", "state-store", "resume", "history", "continue-as-new", "idempotency", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  flowSignals: z.array(z.object({
+    signal: z.enum(["wait", "sleep", "wait-for-event", "cancel", "batch", "concurrency", "rate-limit", "throttle", "priority", "child-workflow", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runtimeSignals: z.array(z.object({
+    signal: z.enum(["dev-server", "deploy", "worker-pool", "isolated-runtime", "machine", "environment", "serve", "dashboard", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observabilitySignals: z.array(z.object({
+    signal: z.enum(["logger", "tracing", "metadata", "tags", "run-status", "dashboard", "alerts", "metrics", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@temporalio/workflow", "@temporalio/worker", "@temporalio/client", "inngest", "@trigger.dev/sdk", "@trigger.dev/react", "cloudflare-workflows", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ServerFrameworkReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -6929,6 +7007,7 @@ export type VectorDbReadinessReport = z.infer<typeof VectorDbReadinessReportSche
 export type SearchServiceReadinessReport = z.infer<typeof SearchServiceReadinessReportSchema>;
 export type ObjectStorageReadinessReport = z.infer<typeof ObjectStorageReadinessReportSchema>;
 export type RealtimeCollaborationReadinessReport = z.infer<typeof RealtimeCollaborationReadinessReportSchema>;
+export type WorkflowOrchestrationReadinessReport = z.infer<typeof WorkflowOrchestrationReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;

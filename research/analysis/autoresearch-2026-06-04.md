@@ -6516,6 +6516,63 @@ Local verification:
 - `pnpm audit:brief`: PASS, 111/111 audit checks across 13 generated reports
 - Pushed implementation commit: `d004486` realtime-collaboration readiness report
 
+### Upgrade 214: Workflow Orchestration Readiness Report
+
+- Cloned and inspected `temporalio/sdk-typescript` under
+  `research/external-src/temporalio-sdk-typescript`, `inngest/inngest` under
+  `research/external-src/inngest-inngest`, and `triggerdotdev/trigger.dev`
+  under `research/external-src/triggerdotdev-trigger.dev` without executing
+  external source. Clone HEADs were `f3e11c5`, `b31360b`, and `64151d6`; all
+  three clones remain ignored by RepoTutor and tracked file count returned `0`.
+- GitHub metadata: `temporalio/sdk-typescript` is public, MIT licensed, 858
+  stars, 182 forks, updated 2026-06-04T19:17:33Z. `inngest/inngest` is public,
+  license key `other`, 5,451 stars, 311 forks, updated
+  2026-06-04T18:58:19Z. `triggerdotdev/trigger.dev` is public, Apache-2.0
+  licensed, 15,215 stars, 1,285 forks, updated 2026-06-04T15:44:05Z. Selected
+  the three-source slice because together they model Temporal durable
+  workflows/activities/workers, Inngest event-driven functions/steps/flow
+  control, and Trigger.dev task runs/schedules/queues/retries/waits/
+  observability. No source code was copied into RepoTutor.
+- Implemented Temporal/Inngest/Trigger.dev-style
+  workflow-orchestration-readiness report:
+  `WorkflowOrchestrationReadinessReportSchema`,
+  `analysis/workflow-orchestration-readiness-report.json`,
+  `markdown/workflow-orchestration-readiness.md`,
+  `html/workflow-orchestration-readiness.html`, workflow setup detection,
+  trigger signals, execution signals, durability signals, flow signals, runtime
+  signals, observability signals, package signals, recommended commands, risk
+  queue, manifest/session-verification coverage, learning-path linkage, nav
+  entry, and `open --target workflow-orchestration-readiness`.
+- Source pattern: workflow orchestration readiness separates Temporal
+  workflows, activities, Workers, task queues, schedules, signals, queries,
+  retry, timeout, heartbeat, history, and continue-as-new; Inngest
+  createFunction triggers, events, cron, webhook handlers, step.run, step.sleep,
+  waitForEvent, invoke, cancelOn, concurrency/throttle/debounce/rate limiting,
+  state store, runner/executor, and serve endpoint registration; and Trigger.dev
+  task/schemaTask/schedules/task queues, waits, retry, maxDuration,
+  idempotencyKey, metadata/tags/logger/tracing, alerts/metrics, machines,
+  environments, dev/deploy, and isolated runtime checkpoint/resume. RepoTutor
+  maps that to deterministic static readiness and explicitly does not start
+  workers, send events, register schedules, execute tasks/runs, call dashboards,
+  or contact orchestration services.
+- RED smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-workflow-orchestration-red-studies.XXXXXX.opXcQ1jj4t/2026-06-05/local__repotutor-workflow-orchestration-red-repo.2pcur7__local__d063b7fb`;
+  old behavior had `verificationCheckedRequiredArtifacts=339`, was missing
+  `analysis/workflow-orchestration-readiness-report.json`,
+  `markdown/workflow-orchestration-readiness.md`, and
+  `html/workflow-orchestration-readiness.html`, and
+  `open --target workflow-orchestration-readiness` exited with
+  `Unsupported open target`.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-workflow-orchestration-green-studies.XXXXXX.vEkM3IxuEd/2026-06-05/local__repotutor-workflow-orchestration-red-repo.2pcur7__local__ee5ccc1d`;
+  confirmed `verificationCheckedRequiredArtifacts=342`, all three new
+  artifacts, risk queue 0, and `open --target workflow-orchestration-readiness`
+  -> `html/workflow-orchestration-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 21/21 tests
+- `pnpm audit:brief`: PASS, 112/112 audit checks across 13 generated reports
+- Implementation commit pending.
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

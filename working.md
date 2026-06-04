@@ -5115,6 +5115,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 213:
   - `d004486` realtime-collaboration readiness report
 
+- 2026-06-05: AutoResearch Upgrade 214 candidate selected:
+  `temporalio/sdk-typescript` (`https://github.com/temporalio/sdk-typescript`;
+  Temporal TypeScript workflows/activities/Workers; sparse ignored clone HEAD
+  `f3e11c5`), compared with `inngest/inngest` (durable functions, events,
+  steps, flow control; sparse ignored clone HEAD `b31360b`) and
+  `triggerdotdev/trigger.dev` (task runs, schedules, queues, retries, waits,
+  observability; sparse ignored clone HEAD `64151d6`). Selected workflow
+  orchestration readiness because RepoTutor had scheduler, serverless, realtime,
+  and object-storage reports, but no dedicated durable workflow/job orchestration
+  target for triggers, execution, durability, flow control, runtime,
+  observability, and packages. All three external source paths remained ignored
+  and `git ls-files` returned `0`.
+- 2026-06-05: RED workflow-orchestration-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-workflow-orchestration-red-studies.XXXXXX.opXcQ1jj4t/2026-06-05/local__repotutor-workflow-orchestration-red-repo.2pcur7__local__d063b7fb`;
+  old behavior had `verificationCheckedRequiredArtifacts=339`, was missing
+  `analysis/workflow-orchestration-readiness-report.json`,
+  `markdown/workflow-orchestration-readiness.md`, and
+  `html/workflow-orchestration-readiness.html`, and
+  `open --target workflow-orchestration-readiness` failed with
+  `Unsupported open target`.
+- 2026-06-05: Implemented Temporal/Inngest/Trigger.dev-style
+  workflow-orchestration-readiness report:
+  `WorkflowOrchestrationReadinessReportSchema`,
+  `analysis/workflow-orchestration-readiness-report.json`,
+  `markdown/workflow-orchestration-readiness.md`,
+  `html/workflow-orchestration-readiness.html`, workflow setup detection,
+  trigger signals, execution signals, durability signals, flow signals,
+  runtime signals, observability signals, package signals, recommended
+  commands, risk queue, manifest/session verification coverage, learning-path
+  linkage, nav entry, CLI help target, and
+  `open --target workflow-orchestration-readiness`.
+- 2026-06-05: GREEN workflow-orchestration-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-workflow-orchestration-green-studies.XXXXXX.vEkM3IxuEd/2026-06-05/local__repotutor-workflow-orchestration-red-repo.2pcur7__local__ee5ccc1d`;
+  confirmed `verificationCheckedRequiredArtifacts=342`, all three new
+  artifacts, risk queue 0, and
+  `open --target workflow-orchestration-readiness` ->
+  `html/workflow-orchestration-readiness.html`. The focused Vitest fixture
+  covered Temporal workflow/activity/Worker/taskQueue/retry/timeout/heartbeat,
+  Inngest createFunction/events/cron/webhook/steps/waits/cancel/flow control,
+  and Trigger.dev tasks/schema tasks/schedules/queues/waits/metadata/logger/
+  machine/idempotency with risk queue 0.
+- 2026-06-05: Verification for Upgrade 214:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 21/21 tests
+  - `pnpm audit:brief`: PASS, 112/112 audit checks across 13 reports
+- 2026-06-05: AutoResearch Upgrade 214 implementation commit pending.
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

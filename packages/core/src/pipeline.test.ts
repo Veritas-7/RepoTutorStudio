@@ -97,6 +97,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "search-service-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "object-storage-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "realtime-collaboration-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "workflow-orchestration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workspace-graph-readiness-report.json"))).resolves.toBeUndefined();
@@ -210,6 +211,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "search-service-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "object-storage-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "realtime-collaboration-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "workflow-orchestration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rpc-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workspace-graph-readiness.md"))).resolves.toBeUndefined();
@@ -323,6 +325,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "search-service-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "object-storage-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "realtime-collaboration-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "workflow-orchestration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "server-framework-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rpc-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workspace-graph-readiness.html"))).resolves.toBeUndefined();
@@ -467,6 +470,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/search-service-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/object-storage-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/realtime-collaboration-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/workflow-orchestration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/server-framework-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rpc-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workspace-graph-readiness.html\"");
@@ -2156,6 +2160,27 @@ describe("RepoTutor core pipeline", () => {
     expect(realtimeCollaborationReadinessMarkdown).toContain("Source pattern: Realtime collaboration readiness");
     expect(realtimeCollaborationReadinessMarkdown).toContain("## CRDT Signals");
     expect(realtimeCollaborationReadinessMarkdown).toContain("## Sync Signals");
+    const workflowOrchestrationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "workflow-orchestration-readiness-report.json"), "utf8");
+    expect(workflowOrchestrationReadinessText).toContain("Workflow orchestration readiness Temporal workflows activities Worker taskQueue schedules signals queries retry timeout heartbeat continueAsNew Inngest createFunction events cron step.run step.sleep waitForEvent invoke cancelOn concurrency throttle debounce rate limit Trigger.dev task schemaTask schedules cron wait queue retry maxDuration idempotency metadata logger deploy runs");
+    expect(workflowOrchestrationReadinessText).toContain("\"workflowSetups\"");
+    expect(workflowOrchestrationReadinessText).toContain("\"triggerSignals\"");
+    expect(workflowOrchestrationReadinessText).toContain("\"executionSignals\"");
+    expect(workflowOrchestrationReadinessText).toContain("\"durabilitySignals\"");
+    expect(workflowOrchestrationReadinessText).toContain("\"flowSignals\"");
+    expect(workflowOrchestrationReadinessText).toContain("\"runtimeSignals\"");
+    expect(workflowOrchestrationReadinessText).toContain("\"observabilitySignals\"");
+    expect(workflowOrchestrationReadinessText).toContain("\"packageSignals\"");
+    const workflowOrchestrationReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "workflow-orchestration-readiness.html"), "utf8");
+    expect(workflowOrchestrationReadinessHtml).toContain("Workflow Orchestration Readiness");
+    expect(workflowOrchestrationReadinessHtml).toContain("workflow-orchestration-readiness-card");
+    expect(workflowOrchestrationReadinessHtml).toContain("data-source-pattern=\"Workflow Orchestration\"");
+    expect(workflowOrchestrationReadinessHtml).toContain("Workflow Setups");
+    expect(workflowOrchestrationReadinessHtml).toContain("Durability Signals");
+    const workflowOrchestrationReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "workflow-orchestration-readiness.md"), "utf8");
+    expect(workflowOrchestrationReadinessMarkdown).toContain("# Workflow Orchestration Readiness");
+    expect(workflowOrchestrationReadinessMarkdown).toContain("Source pattern: Workflow orchestration readiness");
+    expect(workflowOrchestrationReadinessMarkdown).toContain("## Execution Signals");
+    expect(workflowOrchestrationReadinessMarkdown).toContain("## Flow Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
     expect(serverFrameworkReadinessText).toContain("Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
@@ -2627,6 +2652,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/search-service-readiness.html");
     expect(exportManifestText).toContain("html/object-storage-readiness.html");
     expect(exportManifestText).toContain("html/realtime-collaboration-readiness.html");
+    expect(exportManifestText).toContain("html/workflow-orchestration-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -2758,6 +2784,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("search-service-readiness.html");
     expect(learningPathHtml).toContain("object-storage-readiness.html");
     expect(learningPathHtml).toContain("realtime-collaboration-readiness.html");
+    expect(learningPathHtml).toContain("workflow-orchestration-readiness.html");
     expect(learningPathHtml).toContain("backup-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
@@ -5368,6 +5395,136 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "realtime-collaboration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "realtime-collaboration-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects workflow orchestration readiness patterns without executing jobs", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-workflow-orchestration-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-workflow-orchestration-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "trigger:dev": "trigger.dev dev",
+        "trigger:deploy": "trigger.dev deploy",
+        "inngest:dev": "inngest-cli dev"
+      },
+      dependencies: {
+        "@temporalio/workflow": "latest",
+        "@temporalio/worker": "latest",
+        "@temporalio/client": "latest",
+        inngest: "latest",
+        "@trigger.dev/sdk": "latest",
+        "@trigger.dev/react": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "docs", "workflow.md"), [
+      "Temporal workflows run activities through a task queue with retry, timeout, heartbeat, history, and continue as new recovery.",
+      "Inngest durable functions use events, cron schedules, webhook endpoint handlers, step.run, step.sleep, waitForEvent, cancelOn, concurrency, throttling, debounce, rate limiting, prioritization, batching, state store, executor, runner, serve endpoint registration, and dashboard status.",
+      "Trigger.dev tasks use schemaTask, schedules.task, wait.for, waitpoints, queues, retry, maxDuration, idempotencyKey, metadata, tags, logger, tracing, alerts, metrics, machine resources, environments, dev server, deploy, and isolated runtime checkpoint resume."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "workflows", "temporal.ts"), [
+      "import { proxyActivities, defineSignal, defineQuery, sleep, continueAsNew } from \"@temporalio/workflow\";",
+      "import { Worker } from \"@temporalio/worker\";",
+      "import { Client } from \"@temporalio/client\";",
+      "const activities = proxyActivities({ startToCloseTimeout: \"1 minute\", scheduleToCloseTimeout: \"5 minutes\", heartbeatTimeout: \"10 seconds\", retry: { maximumAttempts: 3 } });",
+      "export const approveSignal = defineSignal<[string]>(\"approve\");",
+      "export const statusQuery = defineQuery<string>(\"status\");",
+      "export async function onboardingWorkflow(userId: string) {",
+      "  await activities.sendWelcomeEmail(userId);",
+      "  await sleep(\"1 day\");",
+      "  return continueAsNew(userId);",
+      "}",
+      "export const worker = Worker.create({ workflowsPath: require.resolve(\"./temporal\"), activities, taskQueue: \"onboarding\", maxConcurrentActivityTaskExecutions: 10 });",
+      "export const client = new Client({ namespace: \"default\" });",
+      "client.workflow.start(onboardingWorkflow, { taskQueue: \"onboarding\", workflowId: \"user-onboarding\", args: [\"u1\"] });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "workflows", "inngest.ts"), [
+      "import { Inngest } from \"inngest\";",
+      "export const inngest = new Inngest({ id: \"app\" });",
+      "export const importProduct = inngest.createFunction(",
+      "  { id: \"import-product\", retries: 3, concurrency: { limit: 2, key: \"event.data.userId\" }, throttle: { limit: 1, period: \"1m\" }, debounce: { period: \"5s\" }, rateLimit: { limit: 10, period: \"1m\" }, priority: { run: \"event.data.priority\" }, cancelOn: [{ event: \"product/cancel\" }] },",
+      "  { event: \"shop/product.imported\" },",
+      "  async ({ event, step }) => {",
+      "    await step.run(\"copy-images\", async () => event.data.imageURLs);",
+      "    await step.sleep(\"wait-for-review\", \"1h\");",
+      "    await step.waitForEvent(\"approval\", { event: \"product/approved\", if: \"async.data.id == event.data.id\" });",
+      "    await step.invoke(\"resize-images\", { function: importProduct, data: event.data });",
+      "  }",
+      ");",
+      "inngest.send({ name: \"shop/product.imported\", data: { userId: \"u1\" } });",
+      "serve({ client: inngest, functions: [importProduct] });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "workflows", "trigger.ts"), [
+      "import { AbortTaskRunError, logger, metadata, schedules, schemaTask, task, tasks, wait } from \"@trigger.dev/sdk\";",
+      "export const videoTask = task({",
+      "  id: \"convert-video\",",
+      "  retry: { maxAttempts: 3 },",
+      "  queue: { concurrencyLimit: 1 },",
+      "  maxDuration: 3600,",
+      "  machine: \"large-1x\",",
+      "  run: async (payload: { videoId: string }) => {",
+      "    metadata.set(\"videoId\", payload.videoId);",
+      "    logger.info(\"Video task started\", { tags: [\"video\"] });",
+      "    await wait.for({ seconds: 30 });",
+      "    await tasks.trigger(\"child-task\", payload, { idempotencyKey: payload.videoId });",
+      "    await tasks.batchTrigger([{ payload }]);",
+      "    throw new AbortTaskRunError(\"manual cancel\");",
+      "  }",
+      "});",
+      "export const nightlySchedule = schedules.task({ id: \"nightly\", cron: \"0 0 * * *\", run: async () => videoTask.trigger({ videoId: \"v1\" }) });",
+      "export const typedTask = schemaTask({ id: \"typed\", schema: {}, run: async () => ({ ok: true }) });"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "workflow-orchestration-readiness-report.json"), "utf8")) as {
+      workflowSetups: Array<{ filePath: string; platform: string; workflowCount: number; eventCount: number; scheduleCount: number; stepCount: number; activityCount: number; queueCount: number; retryCount: number; timeoutCount: number; waitCount: number; cancelCount: number; concurrencyCount: number; stateCount: number; observabilityCount: number }>;
+      triggerSignals: Array<{ signal: string; readiness: string }>;
+      executionSignals: Array<{ signal: string; readiness: string }>;
+      durabilitySignals: Array<{ signal: string; readiness: string }>;
+      flowSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      observabilitySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    expect(report.workflowSetups.length).toBeGreaterThan(0);
+    expect(report.workflowSetups.some((item) => item.platform === "temporal")).toBe(true);
+    expect(report.workflowSetups.some((item) => item.platform === "inngest")).toBe(true);
+    expect(report.workflowSetups.some((item) => item.platform === "triggerdotdev")).toBe(true);
+    const temporalSetup = report.workflowSetups.find((item) => item.filePath === "src/workflows/temporal.ts");
+    const inngestSetup = report.workflowSetups.find((item) => item.filePath === "src/workflows/inngest.ts");
+    const triggerSetup = report.workflowSetups.find((item) => item.filePath === "src/workflows/trigger.ts");
+    expect(temporalSetup?.workflowCount).toBeGreaterThan(0);
+    expect(temporalSetup?.activityCount).toBeGreaterThan(0);
+    expect(temporalSetup?.queueCount).toBeGreaterThan(0);
+    expect(temporalSetup?.retryCount).toBeGreaterThan(0);
+    expect(temporalSetup?.timeoutCount).toBeGreaterThan(0);
+    expect(inngestSetup?.eventCount).toBeGreaterThan(0);
+    expect(inngestSetup?.stepCount).toBeGreaterThan(0);
+    expect(inngestSetup?.waitCount).toBeGreaterThan(0);
+    expect(inngestSetup?.cancelCount).toBeGreaterThan(0);
+    expect(inngestSetup?.concurrencyCount).toBeGreaterThan(0);
+    expect(triggerSetup?.scheduleCount).toBeGreaterThan(0);
+    expect(triggerSetup?.waitCount).toBeGreaterThan(0);
+    expect(triggerSetup?.stateCount).toBeGreaterThan(0);
+    expect(triggerSetup?.observabilityCount).toBeGreaterThan(0);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.triggerSignals, ["event", "cron", "schedule", "webhook", "manual", "api-trigger", "child-trigger"]);
+    expectReady(report.executionSignals, ["task", "workflow", "activity", "step", "worker", "task-queue", "function-run", "handler"]);
+    expectReady(report.durabilitySignals, ["retry", "timeout", "heartbeat", "checkpoint", "state-store", "resume", "history", "continue-as-new", "idempotency"]);
+    expectReady(report.flowSignals, ["wait", "sleep", "wait-for-event", "cancel", "batch", "concurrency", "rate-limit", "throttle", "priority", "child-workflow"]);
+    expectReady(report.runtimeSignals, ["dev-server", "deploy", "worker-pool", "isolated-runtime", "machine", "environment", "serve", "dashboard"]);
+    expectReady(report.observabilitySignals, ["logger", "tracing", "metadata", "tags", "run-status", "dashboard", "alerts", "metrics"]);
+    expectReady(report.packageSignals, ["@temporalio/workflow", "@temporalio/worker", "@temporalio/client", "inngest", "@trigger.dev/sdk", "@trigger.dev/react"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "workflow-orchestration-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "workflow-orchestration-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects object storage readiness patterns without contacting object storage", async () => {
