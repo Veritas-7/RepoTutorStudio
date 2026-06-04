@@ -89,6 +89,7 @@ import {
   ImageProcessingReadinessReport,
   FileUploadReadinessReport,
   WebSocketReadinessReport,
+  PdfGenerationReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -184,6 +185,7 @@ export interface AnalysisBundle {
   imageProcessingReadinessReport: ImageProcessingReadinessReport;
   fileUploadReadinessReport: FileUploadReadinessReport;
   webSocketReadinessReport: WebSocketReadinessReport;
+  pdfGenerationReadinessReport: PdfGenerationReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -279,8 +281,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const imageProcessingReadinessReport = await buildImageProcessingReadinessReport(walk);
   const fileUploadReadinessReport = await buildFileUploadReadinessReport(walk);
   const webSocketReadinessReport = await buildWebSocketReadinessReport(walk);
+  const pdfGenerationReadinessReport = await buildPdfGenerationReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -17036,6 +17039,283 @@ function webSocketReadinessSignalFromSpecs<T extends Record<K, string> & { patte
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/websocket-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildPdfGenerationReadinessReport(walk: WalkResult): Promise<PdfGenerationReadinessReport> {
+  const sourceFiles = await pdfGenerationReadinessSourceFiles(walk);
+  const pdfGenerationSetups = pdfGenerationReadinessSetups(sourceFiles);
+  const documentSignals = pdfGenerationReadinessDocumentSignals(sourceFiles);
+  const pageSignals = pdfGenerationReadinessPageSignals(sourceFiles);
+  const assetSignals = pdfGenerationReadinessAssetSignals(sourceFiles);
+  const formSignals = pdfGenerationReadinessFormSignals(sourceFiles);
+  const outputSignals = pdfGenerationReadinessOutputSignals(sourceFiles);
+  const safetySignals = pdfGenerationReadinessSafetySignals(sourceFiles);
+  const packageSignals = pdfGenerationReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasPdfLibPackage = packageSignals.some((item) => item.signal === "pdf-lib" && item.readiness === "ready");
+  const hasSetup = pdfGenerationSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = pdfGenerationSetups.some((item) => item.readiness === "ready");
+  const hasPages = pageSignals.some((item) => item.readiness === "ready") || pdfGenerationSetups.some((item) => item.pageCount > 0);
+  const hasOutput = outputSignals.some((item) => item.readiness === "ready") || pdfGenerationSetups.some((item) => item.outputCount > 0);
+  const hasSafety = safetySignals.some((item) => item.readiness === "ready") || pdfGenerationSetups.some((item) => item.safetyCount > 0);
+  const hasAssets = assetSignals.some((item) => item.readiness === "ready") || pdfGenerationSetups.some((item) => item.assetCount > 0);
+
+  const riskQueue: PdfGenerationReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the PDF generation strategy before claiming document export readiness.",
+      why: "PDF generation readiness starts with explicit document creation/loading, page drawing, asset embedding, form handling, output, or package evidence.",
+      relatedHref: "html/pdf-generation-readiness.html"
+    });
+  }
+  if (hasPdfLibPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair pdf-lib package evidence with concrete PDFDocument.create/load, page, drawText/drawImage, embed, form, and save call sites.",
+      why: "A PDF dependency alone does not prove that generated documents, assets, forms, and output bytes are wired.",
+      relatedHref: "html/pdf-generation-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasPages) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add page creation, page sizing, text/image drawing, shape drawing, or coordinate-system documentation.",
+      why: "Generated PDFs need visible page composition before they can be treated as user-facing exports.",
+      relatedHref: "html/pdf-generation-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasOutput) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add save, base64/data URI, file write, download, or stream output handling.",
+      why: "PDF generation is incomplete until the bytes are returned, written, streamed, or downloaded intentionally.",
+      relatedHref: "html/pdf-generation-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasSafety) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review input bytes, encryption, metadata, font embedding, large document limits, and error handling.",
+      why: "PDF code commonly handles user-provided bytes, embedded assets, metadata, and large files that need explicit boundaries.",
+      relatedHref: "html/pdf-generation-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasAssets) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document font, image, color, and asset embedding choices for generated PDFs.",
+      why: "Exports become hard to reproduce when fonts, images, color spaces, or embedded asset policies are implicit.",
+      relatedHref: "html/pdf-generation-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run representative PDF generation tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor records PDF generation readiness only; it does not parse PDFs, render pages, embed fonts/images, modify form fields, write files, trigger downloads, or run the analyzed project's tests.",
+    relatedHref: "html/pdf-generation-readiness.html"
+  });
+
+  return {
+    summary: `pdf-lib-style PDF generation readiness report: setup ${pdfGenerationSetups.length}개, document signal ${documentSignals.length}개, page signal ${pageSignals.length}개, output signal ${outputSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "pdf-lib PDFDocument create load addPage drawText drawImage embedFont embedPng embedJpg getForm createTextField setText copyPages save saveAsBase64",
+    pdfGenerationSetups,
+    documentSignals,
+    pageSignals,
+    assetSignals,
+    formSignals,
+    outputSignals,
+    safetySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"PDFDocument|pdf-lib|pdfkit|@react-pdf/renderer|pdfmake|jsPDF\" src app packages", purpose: "Inventory PDF generators, renderers, and package-level document export entry points." },
+      { command: "rg \"create\\(|load\\(|copyPages|addPage|drawText|drawImage|drawRectangle|PageSizes\" src app packages", purpose: "Review document construction, page composition, drawing, page sizing, and copy-page flows." },
+      { command: "rg \"embedFont|StandardFonts|registerFontkit|embedPng|embedJpg|rgb\\(|grayscale\" src app packages", purpose: "Check font, image, color, and asset embedding policy." },
+      { command: "rg \"getForm|createTextField|getTextField|setText|createCheckBox|createRadioGroup|flatten\" src app packages", purpose: "Check AcroForm field access, mutation, and flattening behavior." },
+      { command: "rg \"save\\(|saveAsBase64|dataUri|writeFile|download|createWriteStream|pipe\\(\" src app packages", purpose: "Confirm output byte, base64, file, browser download, or stream handling." },
+      { command: "npx vitest run", purpose: "Run local tests that cover generated PDF bytes, pages, embedded assets, form fields, output paths, and failure handling." }
+    ],
+    learnerNextSteps: [
+      "먼저 PDFDocument.create/load, pdfkit, @react-pdf/renderer, pdfmake, jsPDF 경로를 찾아 PDF 생성 책임이 있는 파일을 분리하세요.",
+      "addPage, PageSizes, drawText, drawImage, drawRectangle 같은 신호로 page composition과 좌표계를 확인하세요.",
+      "embedFont, StandardFonts, registerFontkit, embedPng, embedJpg, rgb 신호로 font/image/color 자산 정책을 확인하세요.",
+      "getForm, createTextField, setText, flatten 신호가 있다면 form field 변경과 flatten 여부를 별도로 확인하세요.",
+      "save, saveAsBase64, data URI, writeFile, download, stream 신호로 생성된 PDF bytes가 어디로 나가는지 추적하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 PDF 파싱, 렌더링, 폰트/이미지 임베딩, form field 변경, 파일 쓰기/다운로드는 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type PdfGenerationReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function pdfGenerationReadinessSourceFiles(walk: WalkResult): Promise<PdfGenerationReadinessSourceFile[]> {
+  const files: PdfGenerationReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !pdfGenerationReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!pdfGenerationReadinessPathSignal(file.relPath) && !pdfGenerationReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function pdfGenerationReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return pdfGenerationReadinessPathSignal(filePath)
+    || /^(package\.json|pdf\.[cm]?[jt]sx?|pdfs\.[cm]?[jt]sx?|document\.[cm]?[jt]sx?|documents\.[cm]?[jt]sx?|export\.[cm]?[jt]sx?|exports\.[cm]?[jt]sx?|print\.[cm]?[jt]sx?|certificate\.[cm]?[jt]sx?|report\.[cm]?[jt]sx?)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml)$/i.test(filePath);
+}
+
+function pdfGenerationReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(pdf|pdfs|document|documents|export|exports|print|report|reports|certificate|certificates|invoice|invoices|receipt|receipts|form|forms)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function pdfGenerationReadinessContentSignal(text: string): boolean {
+  return /(PDFDocument|pdf-lib|PDFKit|@react-pdf\/renderer|pdfmake|pdfMake|jsPDF|addPage|drawText|drawImage|embedFont|embedPng|embedJpg|saveAsBase64|getForm|createTextField|copyPages)/i.test(text);
+}
+
+function pdfGenerationReadinessSetups(sourceFiles: PdfGenerationReadinessSourceFile[]): PdfGenerationReadinessReport["pdfGenerationSetups"] {
+  const rows: PdfGenerationReadinessReport["pdfGenerationSetups"] = [];
+  for (const source of sourceFiles) {
+    const documentCount = countMatches(source.text, /PDFDocument\.create|PDFDocument\.load|new PDFDocument|new jsPDF|pdfMake\.createPdf|<Document\b|Document\s*\(|copyPages/gi);
+    const pageCount = countMatches(source.text, /addPage|insertPage|drawPage|page\.draw|drawText|drawImage|drawRectangle|drawLine|PageSizes|setSize|getPages|removePage|width|height|x:|y:/gi);
+    const assetCount = countMatches(source.text, /embedFont|embedPng|embedJpg|registerFontkit|StandardFonts|rgb\s*\(|grayscale|cmyk|drawImage|fontkit/gi);
+    const formCount = countMatches(source.text, /getForm|createTextField|getTextField|setText|createCheckBox|createRadioGroup|createDropdown|addOptionToDropdown|flatten/gi);
+    const outputCount = countMatches(source.text, /save\s*\(|saveAsBase64|dataUri|data URI|writeFile|download|createWriteStream|pipe\s*\(|toBuffer|arrayBuffer/gi);
+    const safetyCount = countMatches(source.text, /encrypted|ignoreEncryption|updateMetadata|setTitle|setAuthor|parseSpeed|throw|catch\s*\(|try\s*\{|large page|pageCount|fontkit|Uint8Array|ArrayBuffer/gi);
+    const hasSetupSignal = documentCount + pageCount + assetCount + formCount + outputCount + safetyCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: pdfGenerationReadinessProvider(source),
+      documentCount,
+      pageCount,
+      assetCount,
+      formCount,
+      outputCount,
+      safetyCount,
+      readiness: documentCount > 0 && pageCount > 0 && outputCount > 0 && (assetCount > 0 || formCount > 0 || safetyCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains document ${documentCount}, page ${pageCount}, asset ${assetCount}, form ${formCount}, output ${outputCount}, safety ${safetyCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function pdfGenerationReadinessProvider(source: PdfGenerationReadinessSourceFile): PdfGenerationReadinessReport["pdfGenerationSetups"][number]["provider"] {
+  if (/pdf-lib|PDFDocument\.create|PDFDocument\.load|embedFont|embedPng|embedJpg|saveAsBase64/i.test(source.text)) return "pdf-lib";
+  if (/pdfkit|PDFKit|new PDFDocument/i.test(source.text)) return "pdfkit";
+  if (/@react-pdf\/renderer|<Document\b|<Page\b/i.test(source.text)) return "react-pdf";
+  if (/pdfmake|pdfMake|createPdf/i.test(source.text)) return "pdfmake";
+  if (/jspdf|jsPDF|new jsPDF/i.test(source.text)) return "jspdf";
+  if (/pdf|document export|print/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function pdfGenerationReadinessDocumentSignals(sourceFiles: PdfGenerationReadinessSourceFile[]): PdfGenerationReadinessReport["documentSignals"] {
+  const specs: Array<{ signal: PdfGenerationReadinessReport["documentSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "create-document", pattern: /PDFDocument\.create|new PDFDocument|new jsPDF|pdfMake\.createPdf|<Document\b|Document\s*\(/i, evidence: "PDF document creation evidence was detected." },
+    { signal: "load-document", pattern: /PDFDocument\.load|loadPdf|fromBytes|ArrayBuffer|Uint8Array/i, evidence: "existing PDF load/input bytes evidence was detected." },
+    { signal: "copy-pages", pattern: /copyPages|embedPage|drawPage/i, evidence: "copy or embed pages evidence was detected." },
+    { signal: "metadata", pattern: /setTitle|setAuthor|setSubject|setKeywords|setProducer|setCreator|updateMetadata/i, evidence: "metadata policy evidence was detected." },
+    { signal: "attachments", pattern: /attach|attachment|embedFile|fileAttachment/i, evidence: "attachment evidence was detected." }
+  ];
+  return pdfGenerationReadinessSignalFromSpecs(sourceFiles, specs, "document", "signal");
+}
+
+function pdfGenerationReadinessPageSignals(sourceFiles: PdfGenerationReadinessSourceFile[]): PdfGenerationReadinessReport["pageSignals"] {
+  const specs: Array<{ signal: PdfGenerationReadinessReport["pageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "add-page", pattern: /addPage|insertPage|<Page\b/i, evidence: "page creation evidence was detected." },
+    { signal: "page-size", pattern: /PageSizes|setSize|getWidth|getHeight|width\s*:|height\s*:/i, evidence: "page size evidence was detected." },
+    { signal: "draw-text", pattern: /drawText|<Text\b|fontSize|lineHeight/i, evidence: "text drawing evidence was detected." },
+    { signal: "draw-image", pattern: /drawImage|<Image\b|embedPng|embedJpg/i, evidence: "image drawing evidence was detected." },
+    { signal: "draw-shapes", pattern: /drawRectangle|drawLine|drawCircle|drawEllipse|drawSvgPath/i, evidence: "shape drawing evidence was detected." },
+    { signal: "coordinates", pattern: /\bx\s*:|\by\s*:|moveTo|translate|rotate|degrees\s*\(|scale\s*\(/i, evidence: "coordinate or transform evidence was detected." }
+  ];
+  return pdfGenerationReadinessSignalFromSpecs(sourceFiles, specs, "page", "signal");
+}
+
+function pdfGenerationReadinessAssetSignals(sourceFiles: PdfGenerationReadinessSourceFile[]): PdfGenerationReadinessReport["assetSignals"] {
+  const specs: Array<{ signal: PdfGenerationReadinessReport["assetSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "standard-fonts", pattern: /StandardFonts|Helvetica|TimesRoman|Courier/i, evidence: "standard font evidence was detected." },
+    { signal: "custom-fontkit", pattern: /registerFontkit|fontkit|custom font/i, evidence: "custom fontkit evidence was detected." },
+    { signal: "embed-font", pattern: /embedFont|font\s*:/i, evidence: "font embedding evidence was detected." },
+    { signal: "embed-png", pattern: /embedPng|\.png|image\/png/i, evidence: "PNG embedding evidence was detected." },
+    { signal: "embed-jpg", pattern: /embedJpg|embedJpeg|\.jpe?g|image\/jpeg/i, evidence: "JPEG embedding evidence was detected." },
+    { signal: "colors", pattern: /rgb\s*\(|grayscale|cmyk|color\s*:/i, evidence: "color evidence was detected." }
+  ];
+  return pdfGenerationReadinessSignalFromSpecs(sourceFiles, specs, "asset", "signal");
+}
+
+function pdfGenerationReadinessFormSignals(sourceFiles: PdfGenerationReadinessSourceFile[]): PdfGenerationReadinessReport["formSignals"] {
+  const specs: Array<{ signal: PdfGenerationReadinessReport["formSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "get-form", pattern: /getForm|getFields|getField/i, evidence: "form access evidence was detected." },
+    { signal: "text-field", pattern: /createTextField|getTextField|setText/i, evidence: "text field evidence was detected." },
+    { signal: "checkbox-radio", pattern: /createCheckBox|getCheckBox|createRadioGroup|getRadioGroup|check\s*\(|select\s*\(/i, evidence: "checkbox or radio evidence was detected." },
+    { signal: "dropdown-option", pattern: /createDropdown|getDropdown|createOptionList|addOptionToDropdown|select\s*\(/i, evidence: "dropdown or option list evidence was detected." },
+    { signal: "flatten", pattern: /flatten\s*\(|updateFieldAppearances/i, evidence: "form flatten/appearance evidence was detected." }
+  ];
+  return pdfGenerationReadinessSignalFromSpecs(sourceFiles, specs, "form", "signal");
+}
+
+function pdfGenerationReadinessOutputSignals(sourceFiles: PdfGenerationReadinessSourceFile[]): PdfGenerationReadinessReport["outputSignals"] {
+  const specs: Array<{ signal: PdfGenerationReadinessReport["outputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "save-bytes", pattern: /save\s*\(|toBuffer|arrayBuffer|Uint8Array/i, evidence: "save bytes evidence was detected." },
+    { signal: "save-base64", pattern: /saveAsBase64|base64/i, evidence: "base64 output evidence was detected." },
+    { signal: "data-uri", pattern: /dataUri|data URI|data:application\/pdf/i, evidence: "data URI output evidence was detected." },
+    { signal: "write-file", pattern: /writeFile|writeFileSync|Deno\.writeFile/i, evidence: "file write evidence was detected." },
+    { signal: "download", pattern: /download|createObjectURL|Blob|saveAs\s*\(|anchor\.click/i, evidence: "browser download evidence was detected." },
+    { signal: "stream", pattern: /createWriteStream|pipe\s*\(|Readable|stream/i, evidence: "stream output evidence was detected." }
+  ];
+  return pdfGenerationReadinessSignalFromSpecs(sourceFiles, specs, "output", "signal");
+}
+
+function pdfGenerationReadinessSafetySignals(sourceFiles: PdfGenerationReadinessSourceFile[]): PdfGenerationReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: PdfGenerationReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "input-bytes", pattern: /Uint8Array|ArrayBuffer|Buffer\.from|readFile|fetch\s*\(/i, evidence: "input bytes evidence was detected." },
+    { signal: "encrypted-pdf", pattern: /encrypted|ignoreEncryption|password|ownerPassword|userPassword/i, evidence: "encrypted PDF handling evidence was detected." },
+    { signal: "font-embedding", pattern: /registerFontkit|fontkit|embedFont|subset/i, evidence: "font embedding boundary evidence was detected." },
+    { signal: "large-page-count", pattern: /pageCount|getPageCount|getPages|large page|limit|maxPages/i, evidence: "large document/page count evidence was detected." },
+    { signal: "metadata-policy", pattern: /updateMetadata|setTitle|setAuthor|setCreator|setProducer|metadata/i, evidence: "metadata policy evidence was detected." },
+    { signal: "error-handling", pattern: /try\s*\{|catch\s*\(|throw new Error|onError|reject\s*\(/i, evidence: "error handling evidence was detected." }
+  ];
+  return pdfGenerationReadinessSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function pdfGenerationReadinessPackageSignals(sourceFiles: PdfGenerationReadinessSourceFile[]): PdfGenerationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: PdfGenerationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "pdf-lib", pattern: /"pdf-lib"|from ['"]pdf-lib|require\(['"]pdf-lib|PDFDocument\.create|PDFDocument\.load/i, evidence: "pdf-lib package/import evidence was detected." },
+    { signal: "pdfkit", pattern: /"pdfkit"|from ['"]pdfkit|require\(['"]pdfkit|new PDFDocument/i, evidence: "PDFKit package/import evidence was detected." },
+    { signal: "@react-pdf/renderer", pattern: /"@react-pdf\/renderer"|from ['"]@react-pdf\/renderer|<Document\b|<Page\b/i, evidence: "React PDF renderer evidence was detected." },
+    { signal: "pdfmake", pattern: /"pdfmake"|from ['"]pdfmake|require\(['"]pdfmake|pdfMake|createPdf/i, evidence: "pdfmake package/import evidence was detected." },
+    { signal: "jspdf", pattern: /"jspdf"|from ['"]jspdf|require\(['"]jspdf|jsPDF|new jsPDF/i, evidence: "jsPDF package/import evidence was detected." }
+  ];
+  return pdfGenerationReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function pdfGenerationReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: PdfGenerationReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/pdf-generation-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

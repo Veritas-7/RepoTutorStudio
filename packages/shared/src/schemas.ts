@@ -3876,6 +3876,77 @@ export const WebSocketReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PdfGenerationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  pdfGenerationSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["pdf-lib", "pdfkit", "react-pdf", "pdfmake", "jspdf", "custom", "unknown"]),
+    documentCount: z.number().int().nonnegative(),
+    pageCount: z.number().int().nonnegative(),
+    assetCount: z.number().int().nonnegative(),
+    formCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    safetyCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  documentSignals: z.array(z.object({
+    signal: z.enum(["create-document", "load-document", "copy-pages", "metadata", "attachments", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  pageSignals: z.array(z.object({
+    signal: z.enum(["add-page", "page-size", "draw-text", "draw-image", "draw-shapes", "coordinates", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  assetSignals: z.array(z.object({
+    signal: z.enum(["standard-fonts", "custom-fontkit", "embed-font", "embed-png", "embed-jpg", "colors", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  formSignals: z.array(z.object({
+    signal: z.enum(["get-form", "text-field", "checkbox-radio", "dropdown-option", "flatten", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["save-bytes", "save-base64", "data-uri", "write-file", "download", "stream", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["input-bytes", "encrypted-pdf", "font-embedding", "large-page-count", "metadata-policy", "error-handling", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["pdf-lib", "pdfkit", "@react-pdf/renderer", "pdfmake", "jspdf", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4154,6 +4225,7 @@ export type IdGenerationReadinessReport = z.infer<typeof IdGenerationReadinessRe
 export type ImageProcessingReadinessReport = z.infer<typeof ImageProcessingReadinessReportSchema>;
 export type FileUploadReadinessReport = z.infer<typeof FileUploadReadinessReportSchema>;
 export type WebSocketReadinessReport = z.infer<typeof WebSocketReadinessReportSchema>;
+export type PdfGenerationReadinessReport = z.infer<typeof PdfGenerationReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
