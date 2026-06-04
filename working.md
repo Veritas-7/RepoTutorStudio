@@ -3936,6 +3936,45 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 186:
   - `ff3a1ed` security headers readiness report
 
+- 2026-06-04: AutoResearch Upgrade 187 candidate selected:
+  `graphql/graphql-js`
+  (`https://github.com/graphql/graphql-js`; public; MIT; 20,316 stars; 2,048
+  forks; updated 2026-06-04T11:28:53Z). Compared with
+  `apollographql/apollo-server`, `dotansimha/graphql-code-generator`, and
+  `urql-graphql/urql`; selected GraphQL.js because it directly models
+  `GraphQLSchema`, SDL, parse/validate/execute, subscriptions, introspection,
+  resolver hooks, and typed document/codegen workflows. Cloned ignored external
+  source to `research/external-src/graphql-graphql-js` and inspected
+  docs/source hits without executing external source. Clone HEAD was
+  `9c68b2a`; tracked file count for
+  `research/external-src/graphql-graphql-js` returned `0`.
+- 2026-06-04: RED graphql-readiness smoke generated
+  `/tmp/repotutor-graphql-red-studies.VLdL7o/2026-06-04/local__simple-ts-app__HEAD__ee3af3c3`;
+  old build had `verificationCheckedRequiredArtifacts=258`, was missing
+  `analysis/graphql-readiness-report.json`, `markdown/graphql-readiness.md`,
+  and `html/graphql-readiness.html`, and `open --target graphql-readiness`
+  failed as expected.
+- 2026-06-04: Implemented GraphQL.js-style graphql-readiness report:
+  `GraphqlReadinessReportSchema`, `analysis/graphql-readiness-report.json`,
+  `markdown/graphql-readiness.md`, `html/graphql-readiness.html`, GraphQL
+  setups, schema signals, operation signals, resolver signals, validation
+  signals, execution signals, client signals, codegen signals, recommended
+  commands, risk queue, manifest/session-verification coverage, learning-path
+  linkage, nav entry, and `open --target graphql-readiness`.
+- 2026-06-04: GREEN graphql-readiness smoke generated
+  `/tmp/repotutor-graphql-green-studies.ONglFp/2026-06-04/local__simple-ts-app__main__ee3af3c3`;
+  confirmed `verificationCheckedRequiredArtifacts=261`, GraphQL setups 0,
+  schema signals 8, operation signals 7, resolver signals 7, validation
+  signals 7, execution signals 7, client signals 7, codegen signals 5, risk
+  queue 2, all three new artifacts, and `open --target graphql-readiness` ->
+  `html/graphql-readiness.html`.
+- 2026-06-04: Verification for Upgrade 187:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 85/85 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

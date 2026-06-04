@@ -1,6 +1,6 @@
 {
   "iteration": 9,
-  "createdAt": "2026-06-04T12:30:28.387Z",
+  "createdAt": "2026-06-04T12:43:37.983Z",
   "checks": [
     {
       "name": "project setup",
@@ -557,6 +557,13 @@
     },
     {
       "name": "security headers readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "GraphQL readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

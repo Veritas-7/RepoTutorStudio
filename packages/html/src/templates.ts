@@ -94,6 +94,7 @@ import type {
   BrowserCompatibilityReadinessReport,
   EnvValidationReadinessReport,
   SecurityHeadersReadinessReport,
+  GraphqlReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -194,6 +195,7 @@ export interface StudyHtmlInput {
   browserCompatibilityReadinessReport: BrowserCompatibilityReadinessReport;
   envValidationReadinessReport: EnvValidationReadinessReport;
   securityHeadersReadinessReport: SecurityHeadersReadinessReport;
+  graphqlReadinessReport: GraphqlReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -308,6 +310,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["browser-compat-readiness.html", "Browser Compat"],
     ["env-validation-readiness.html", "Env Validation"],
     ["security-headers-readiness.html", "Security Headers"],
+    ["graphql-readiness.html", "GraphQL"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -870,6 +873,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Security Headers Readiness", "security-headers-readiness.html", `<section class="panel" data-source-pattern="Helmet"><h2>Security Headers Snapshot</h2><p>${escapeHtml(input.securityHeadersReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.securityHeadersReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.securityHeadersReadinessReport.headerSetups.length}</dd></div><div><dt>CSP</dt><dd>${input.securityHeadersReadinessReport.cspSignals.length}</dd></div><div><dt>transport</dt><dd>${input.securityHeadersReadinessReport.transportSignals.length}</dd></div><div><dt>cross-origin</dt><dd>${input.securityHeadersReadinessReport.crossOriginSignals.length}</dd></div></dl><p class="muted">RepoTutor records security header readiness only; it does not start servers, send HTTP requests, evaluate CSP, follow redirects, or inspect CDN/proxy behavior.</p></section><section class="grid"><article class="security-headers-readiness-card"><h3>Header Setups</h3>${securityHeadersReadinessSetupList(input.securityHeadersReadinessReport.headerSetups)}</article><article class="security-headers-readiness-card"><h3>CSP Signals</h3>${securityHeadersReadinessSignalList(input.securityHeadersReadinessReport.cspSignals, "signal")}</article><article class="security-headers-readiness-card"><h3>Transport Signals</h3>${securityHeadersReadinessSignalList(input.securityHeadersReadinessReport.transportSignals, "signal")}</article><article class="security-headers-readiness-card"><h3>Cross-Origin Signals</h3>${securityHeadersReadinessSignalList(input.securityHeadersReadinessReport.crossOriginSignals, "signal")}</article></section><section class="grid"><article class="security-headers-readiness-card"><h3>Legacy Header Signals</h3>${securityHeadersReadinessSignalList(input.securityHeadersReadinessReport.legacyHeaderSignals, "signal")}</article><article class="security-headers-readiness-card"><h3>Middleware Signals</h3>${securityHeadersReadinessSignalList(input.securityHeadersReadinessReport.middlewareSignals, "signal")}</article><article class="security-headers-readiness-card"><h3>Package Signals</h3>${securityHeadersReadinessSignalList(input.securityHeadersReadinessReport.packageSignals, "signal")}</article><article class="security-headers-readiness-card"><h3>Recommended Commands</h3>${securityHeadersReadinessCommandList(input.securityHeadersReadinessReport.recommendedCommands)}</article><article class="security-headers-readiness-card"><h3>Risk Queue</h3>${securityHeadersReadinessRiskList(input.securityHeadersReadinessReport.riskQueue)}</article><article class="security-headers-readiness-card"><h3>다음 확인 단계</h3>${list(input.securityHeadersReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "graphql-readiness.html",
+      title: "GraphQL Readiness",
+      html: pageShell("GraphQL Readiness", "graphql-readiness.html", `<section class="panel" data-source-pattern="GraphQL.js"><h2>GraphQL Snapshot</h2><p>${escapeHtml(input.graphqlReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.graphqlReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.graphqlReadinessReport.graphqlSetups.length}</dd></div><div><dt>schema</dt><dd>${input.graphqlReadinessReport.schemaSignals.length}</dd></div><div><dt>operations</dt><dd>${input.graphqlReadinessReport.operationSignals.length}</dd></div><div><dt>validation</dt><dd>${input.graphqlReadinessReport.validationSignals.length}</dd></div></dl><p class="muted">RepoTutor records GraphQL readiness only; it does not execute operations, start servers, introspect remote schemas, validate authorization, or benchmark resolver performance.</p></section><section class="grid"><article class="graphql-readiness-card"><h3>GraphQL Setups</h3>${graphqlReadinessSetupList(input.graphqlReadinessReport.graphqlSetups)}</article><article class="graphql-readiness-card"><h3>Schema Signals</h3>${graphqlReadinessSignalList(input.graphqlReadinessReport.schemaSignals, "signal")}</article><article class="graphql-readiness-card"><h3>Operation Signals</h3>${graphqlReadinessSignalList(input.graphqlReadinessReport.operationSignals, "signal")}</article><article class="graphql-readiness-card"><h3>Resolver Signals</h3>${graphqlReadinessSignalList(input.graphqlReadinessReport.resolverSignals, "signal")}</article></section><section class="grid"><article class="graphql-readiness-card"><h3>Validation Signals</h3>${graphqlReadinessSignalList(input.graphqlReadinessReport.validationSignals, "signal")}</article><article class="graphql-readiness-card"><h3>Execution Signals</h3>${graphqlReadinessSignalList(input.graphqlReadinessReport.executionSignals, "signal")}</article><article class="graphql-readiness-card"><h3>Client Signals</h3>${graphqlReadinessSignalList(input.graphqlReadinessReport.clientSignals, "signal")}</article><article class="graphql-readiness-card"><h3>Codegen Signals</h3>${graphqlReadinessSignalList(input.graphqlReadinessReport.codegenSignals, "signal")}</article><article class="graphql-readiness-card"><h3>Recommended Commands</h3>${graphqlReadinessCommandList(input.graphqlReadinessReport.recommendedCommands)}</article><article class="graphql-readiness-card"><h3>Risk Queue</h3>${graphqlReadinessRiskList(input.graphqlReadinessReport.riskQueue)}</article><article class="graphql-readiness-card"><h3>다음 확인 단계</h3>${list(input.graphqlReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -1064,6 +1072,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Browser Compatibility Readiness", path: "html/browser-compat-readiness.html", description: "Browserslist식 target browser config, query, coverage, update 준비도를 확인합니다." },
       { label: "Env Validation Readiness", path: "html/env-validation-readiness.html", description: "t3-env식 server/client schema, runtimeEnv, client prefix, validation hook 준비도를 확인합니다." },
       { label: "Security Headers Readiness", path: "html/security-headers-readiness.html", description: "Helmet식 CSP, HSTS, cross-origin, legacy hardening header 준비도를 확인합니다." },
+      { label: "GraphQL Readiness", path: "html/graphql-readiness.html", description: "GraphQL.js식 schema, operation, resolver, validation, execution 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1651,6 +1660,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "security-headers-readiness.html",
       goal: "Helmet식 CSP, HSTS, cross-origin, legacy hardening header 흐름을 보고 HTTP 보안 header contract를 확인합니다.",
       evidence: `header setups ${input.securityHeadersReadinessReport.headerSetups.length}개, CSP signals ${input.securityHeadersReadinessReport.cspSignals.length}개`
+    },
+    {
+      title: "GraphQL readiness 확인",
+      href: "graphql-readiness.html",
+      goal: "GraphQL.js식 schema, operation, resolver, validation, execution 흐름을 보고 GraphQL contract를 확인합니다.",
+      evidence: `GraphQL setups ${input.graphqlReadinessReport.graphqlSetups.length}개, schema signals ${input.graphqlReadinessReport.schemaSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3843,6 +3858,31 @@ function securityHeadersReadinessRiskList(items: SecurityHeadersReadinessReport[
 }
 
 function securityHeadersReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function graphqlReadinessSetupList(items: GraphqlReadinessReport["graphqlSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">GraphQL setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>schema/operation/resolver/validation/execution/client/codegen ${item.schemaCount}/${item.operationCount}/${item.resolverCount}/${item.validationCount}/${item.executionCount}/${item.clientCount}/${item.codegenCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(graphqlReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function graphqlReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">GraphQL signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(graphqlReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function graphqlReadinessCommandList(items: GraphqlReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function graphqlReadinessRiskList(items: GraphqlReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(graphqlReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function graphqlReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
