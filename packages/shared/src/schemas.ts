@@ -4427,6 +4427,72 @@ export const BrowserCompatibilityReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const EnvValidationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  envSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["t3-env", "envalid", "dotenvx", "dotenv", "env-var", "zod", "valibot", "arktype", "custom", "unknown"]),
+    schemaCount: z.number().int().nonnegative(),
+    serverCount: z.number().int().nonnegative(),
+    clientCount: z.number().int().nonnegative(),
+    runtimeEnvCount: z.number().int().nonnegative(),
+    prefixCount: z.number().int().nonnegative(),
+    validationHookCount: z.number().int().nonnegative(),
+    transformCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  schemaSignals: z.array(z.object({
+    signal: z.enum(["create-env", "server-schema", "client-schema", "shared-schema", "standard-schema", "zod", "valibot", "arktype", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runtimeSignals: z.array(z.object({
+    signal: z.enum(["process-env", "import-meta-env", "runtime-env", "runtime-env-strict", "experimental-runtime-env", "dotenv-file", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  boundarySignals: z.array(z.object({
+    signal: z.enum(["client-prefix", "next-public", "nuxt-public", "vite-public", "server-only", "invalid-access-guard", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  validationSignals: z.array(z.object({
+    signal: z.enum(["parse", "safe-parse", "on-validation-error", "skip-validation", "empty-string-as-undefined", "transform-default", "synchronous-validation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  documentationSignals: z.array(z.object({
+    signal: z.enum(["env-example", "required-vars-doc", "deployment-vars", "build-time-validation", "secret-warning", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@t3-oss/env-core", "@t3-oss/env-nextjs", "@t3-oss/env-nuxt", "envalid", "env-var", "dotenv", "dotenvx", "zod", "valibot", "arktype", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4713,6 +4779,7 @@ export type LinkIntegrityReadinessReport = z.infer<typeof LinkIntegrityReadiness
 export type SeoMetadataReadinessReport = z.infer<typeof SeoMetadataReadinessReportSchema>;
 export type PwaReadinessReport = z.infer<typeof PwaReadinessReportSchema>;
 export type BrowserCompatibilityReadinessReport = z.infer<typeof BrowserCompatibilityReadinessReportSchema>;
+export type EnvValidationReadinessReport = z.infer<typeof EnvValidationReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

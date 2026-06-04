@@ -5090,6 +5090,58 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 82/82 audit checks across 13 generated reports
 
+### Upgrade 185: Env Validation Readiness Report
+
+- Cloned and inspected `t3-oss/t3-env` under
+  `research/external-src/t3-oss-t3-env` without executing external source.
+  Clone HEAD was `7d26a64`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 3,936 stars, 127 forks, updated
+  2026-06-03T12:20:25Z. Compared with `af/envalid`,
+  `dotenvx/dotenvx`, and `evanshortiss/env-var`; selected t3-env because it
+  directly models typed environment contracts across `createEnv`, server/client
+  schemas, shared variables, Standard Schema-compatible validators,
+  `runtimeEnv`, `runtimeEnvStrict`, `experimental__runtimeEnv`,
+  framework-specific public prefixes, validation hooks, empty-string handling,
+  transforms/defaults, and invalid client access guards. No source code was
+  copied into RepoTutor.
+- Implemented t3-env-style env-validation-readiness report:
+  `EnvValidationReadinessReportSchema`,
+  `analysis/env-validation-readiness-report.json`,
+  `markdown/env-validation-readiness.md`,
+  `html/env-validation-readiness.html`, env setups, schema signals, runtime
+  signals, boundary signals, validation signals, documentation signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, nav entry, and `open --target
+  env-validation-readiness`.
+- Source pattern: t3-env separates schema readiness through `createEnv`,
+  server/client/shared schemas, Standard Schema, Zod, Valibot, and ArkType;
+  runtime readiness through `process.env`, `import.meta.env`, `runtimeEnv`,
+  `runtimeEnvStrict`, and `experimental__runtimeEnv`; boundary readiness
+  through `clientPrefix`, `NEXT_PUBLIC_`, `NUXT_PUBLIC_`, `VITE_`/`PUBLIC_`,
+  server-only keys, and invalid-access guards; and validation behavior through
+  parse/safeParse, `onValidationError`, `skipValidation`,
+  `emptyStringAsUndefined`, transforms/defaults, and synchronous validation.
+  RepoTutor maps that to deterministic static env validation readiness and
+  explicitly does not load `.env` files, execute validators, evaluate
+  transforms, contact secret stores, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-env-validation-red-studies.5b2b1e/2026-06-04/local__simple-ts-app__HEAD__39239644`;
+  old behavior had `verificationCheckedRequiredArtifacts=252`, was missing
+  `analysis/env-validation-readiness-report.json`,
+  `markdown/env-validation-readiness.md`, and
+  `html/env-validation-readiness.html`, and `open --target
+  env-validation-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-env-validation-green-studies.263126/2026-06-04/local__simple-ts-app__main__39239644`;
+  confirmed `verificationCheckedRequiredArtifacts=255`, env setups 0, schema
+  signals 8, runtime signals 6, boundary signals 6, validation signals 7,
+  documentation signals 5, package signals 10, risk queue 2, all three new
+  artifacts, and `open --target env-validation-readiness` ->
+  `html/env-validation-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 83/83 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

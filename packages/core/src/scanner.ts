@@ -97,6 +97,7 @@ import {
   SeoMetadataReadinessReport,
   PwaReadinessReport,
   BrowserCompatibilityReadinessReport,
+  EnvValidationReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -200,6 +201,7 @@ export interface AnalysisBundle {
   seoMetadataReadinessReport: SeoMetadataReadinessReport;
   pwaReadinessReport: PwaReadinessReport;
   browserCompatibilityReadinessReport: BrowserCompatibilityReadinessReport;
+  envValidationReadinessReport: EnvValidationReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -303,8 +305,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const seoMetadataReadinessReport = await buildSeoMetadataReadinessReport(walk);
   const pwaReadinessReport = await buildPwaReadinessReport(walk);
   const browserCompatibilityReadinessReport = await buildBrowserCompatibilityReadinessReport(walk);
+  const envValidationReadinessReport = await buildEnvValidationReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -19212,6 +19215,274 @@ function browserCompatibilityReadinessSignalFromSpecs<T extends Record<K, string
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/browser-compat-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildEnvValidationReadinessReport(walk: WalkResult): Promise<EnvValidationReadinessReport> {
+  const sourceFiles = await envValidationReadinessSourceFiles(walk);
+  const envSetups = envValidationReadinessSetups(sourceFiles);
+  const schemaSignals = envValidationReadinessSchemaSignals(sourceFiles);
+  const runtimeSignals = envValidationReadinessRuntimeSignals(sourceFiles);
+  const boundarySignals = envValidationReadinessBoundarySignals(sourceFiles);
+  const validationSignals = envValidationReadinessValidationSignals(sourceFiles);
+  const documentationSignals = envValidationReadinessDocumentationSignals(sourceFiles);
+  const packageSignals = envValidationReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasSetup = envSetups.some((item) => item.readiness !== "missing");
+  const hasSchema = schemaSignals.some((item) => item.readiness === "ready") || envSetups.some((item) => item.schemaCount > 0);
+  const hasRuntimeEnv = runtimeSignals.some((item) => item.readiness === "ready") || envSetups.some((item) => item.runtimeEnvCount > 0);
+  const hasBoundary = boundarySignals.some((item) => item.readiness === "ready") || envSetups.some((item) => item.serverCount + item.clientCount + item.prefixCount > 0);
+  const hasValidationHandling = validationSignals.some((item) => item.readiness === "ready") || envSetups.some((item) => item.validationHookCount > 0);
+  const hasDocs = documentationSignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: EnvValidationReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document an environment-variable validation contract before relying on undeclared process.env reads.",
+      why: "t3-env-style readiness starts with explicit env schemas, runtimeEnv wiring, or package evidence rather than scattered string lookups.",
+      relatedHref: "html/env-validation-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && (!hasSchema || !hasRuntimeEnv)) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair env validation packages with explicit schema definitions and runtimeEnv/process.env/import.meta.env wiring.",
+      why: "A validation dependency alone does not prove that required variables are parsed before app startup or build output.",
+      relatedHref: "html/env-validation-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasBoundary) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Separate server-only and client-exposed variables with prefixes and access guards.",
+      why: "Client/server boundary mistakes can leak server secrets or omit public variables from bundled runtimes.",
+      relatedHref: "html/env-validation-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasValidationHandling) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document validation failure handling, skip-validation escapes, and empty-string/default behavior.",
+      why: "Env validators often fail at startup or build time, so teams need clear behavior for invalid, empty, transformed, and defaulted variables.",
+      relatedHref: "html/env-validation-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasDocs) {
+    riskQueue.push({
+      priority: "low",
+      action: "Keep .env.example or deployment variable documentation close to the schema.",
+      why: "A typed schema helps developers, but deploy operators still need a visible required-variable checklist.",
+      relatedHref: "html/env-validation-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the real app build/start command in the target environment before treating env validation as complete.",
+    why: "RepoTutor records env validation readiness only; it does not load .env files, execute validators, evaluate transforms, contact secret stores, or run the analyzed project's tests.",
+    relatedHref: "html/env-validation-readiness.html"
+  });
+
+  return {
+    summary: `t3-env-style env validation readiness report: setup ${envSetups.length}개, schema signal ${schemaSignals.length}개, runtime signal ${runtimeSignals.length}개, boundary signal ${boundarySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "t3-env createEnv server client shared runtimeEnv runtimeEnvStrict clientPrefix Standard Schema process.env import.meta.env emptyStringAsUndefined skipValidation",
+    envSetups,
+    schemaSignals,
+    runtimeSignals,
+    boundarySignals,
+    validationSignals,
+    documentationSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"createEnv|@t3-oss/env|cleanEnv|envsafe|env-var|dotenvx|dotenv\" package.json src app packages", purpose: "Inventory env validation packages and setup files." },
+      { command: "rg \"server:|client:|shared:|clientPrefix|NEXT_PUBLIC_|NUXT_PUBLIC_|PUBLIC_|VITE_\" src app packages", purpose: "Check server/client/shared env boundary definitions." },
+      { command: "rg \"runtimeEnv|runtimeEnvStrict|experimental__runtimeEnv|process\\.env|import\\.meta\\.env\" src app packages", purpose: "Review runtime environment object wiring." },
+      { command: "rg \"skipValidation|emptyStringAsUndefined|onValidationError|onInvalidAccess|transform|default\" src app packages", purpose: "Inspect validation behavior, defaults, transforms, and escape hatches." },
+      { command: "find . -maxdepth 3 \\( -name '.env.example' -o -name '.env.sample' -o -name '.env.template' \\) -print", purpose: "Find documented env variable examples without reading private .env secrets." },
+      { command: "pnpm build", purpose: "Run the real build/start gate after static review to prove env validation executes as expected." }
+    ],
+    learnerNextSteps: [
+      "먼저 @t3-oss/env, envalid, env-var, dotenv/dotenvx, Zod/Valibot/ArkType 패키지와 env setup 파일을 찾으세요.",
+      "server, client, shared schema가 분리되어 있고 clientPrefix/NEXT_PUBLIC_/NUXT_PUBLIC_/VITE_ 같은 공개 변수 경계가 맞는지 확인하세요.",
+      "runtimeEnv, runtimeEnvStrict, experimental__runtimeEnv, process.env, import.meta.env 연결이 schema key와 맞는지 확인하세요.",
+      "skipValidation, emptyStringAsUndefined, onValidationError, onInvalidAccess, transform/default 신호로 실패 동작과 예외 경로를 검토하세요.",
+      ".env.example, deployment variables, README 문서가 schema와 맞는지 비교하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 env 값 검증은 안전한 로컬/CI 환경에서 build 또는 start command로 별도 확인하세요."
+    ]
+  };
+}
+
+type EnvValidationReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function envValidationReadinessSourceFiles(walk: WalkResult): Promise<EnvValidationReadinessSourceFile[]> {
+  const files: EnvValidationReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !envValidationReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!envValidationReadinessPathSignal(file.relPath) && !envValidationReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function envValidationReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return envValidationReadinessPathSignal(filePath)
+    || /^(package\.json|README\.md|\.env\.example|\.env\.sample|\.env\.template|env\.(js|mjs|cjs|ts|tsx)|environment\.(js|mjs|cjs|ts)|config\.(js|mjs|cjs|ts|json)|next\.config\.(js|mjs|cjs|ts)|nuxt\.config\.(js|mjs|ts)|vite\.config\.(js|mjs|ts))$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml|env)$/i.test(filePath);
+}
+
+function envValidationReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(env|environment|config|schema|schemas|validation|validator|validators|zod|valibot|arktype|dotenv|secrets?|src|app|server|client|packages|examples|docs|test|tests)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function envValidationReadinessContentSignal(text: string): boolean {
+  return /(@t3-oss\/env|createEnv|cleanEnv|envsafe|env-var|dotenvx|dotenv|runtimeEnv|runtimeEnvStrict|experimental__runtimeEnv|clientPrefix|NEXT_PUBLIC_|NUXT_PUBLIC_|VITE_|PUBLIC_|process\.env|import\.meta\.env|emptyStringAsUndefined|skipValidation|onValidationError|onInvalidAccess|Standard Schema)/i.test(text);
+}
+
+function envValidationReadinessSetups(sourceFiles: EnvValidationReadinessSourceFile[]): EnvValidationReadinessReport["envSetups"] {
+  const rows: EnvValidationReadinessReport["envSetups"] = [];
+  for (const source of sourceFiles) {
+    const schemaCount = countMatches(source.text, /createEnv|cleanEnv|envsafe|z\.object|z\.(string|url|number|boolean|enum)|v\.(object|string|number|boolean)|type\(|schema|StandardSchema/gi);
+    const serverCount = countMatches(source.text, /server\s*:|serverOnly|server-side|SERVER_|DATABASE_URL|SECRET|API_KEY|TOKEN/gi);
+    const clientCount = countMatches(source.text, /client\s*:|clientPrefix|NEXT_PUBLIC_|NUXT_PUBLIC_|VITE_|PUBLIC_/gi);
+    const runtimeEnvCount = countMatches(source.text, /runtimeEnvStrict|runtimeEnv|experimental__runtimeEnv|process\.env|import\.meta\.env/gi);
+    const prefixCount = countMatches(source.text, /clientPrefix|NEXT_PUBLIC_|NUXT_PUBLIC_|VITE_|PUBLIC_|CLIENT_/gi);
+    const validationHookCount = countMatches(source.text, /onValidationError|onInvalidAccess|skipValidation|safeParse|parse\(|validate\(|ensureSynchronous/gi);
+    const transformCount = countMatches(source.text, /emptyStringAsUndefined|transform\(|default\(|coerce|preprocess|port\(|num\(|bool\(/gi);
+    const hasSetupSignal = schemaCount + serverCount + clientCount + runtimeEnvCount + prefixCount + validationHookCount + transformCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: envValidationReadinessProvider(source),
+      schemaCount,
+      serverCount,
+      clientCount,
+      runtimeEnvCount,
+      prefixCount,
+      validationHookCount,
+      transformCount,
+      readiness: schemaCount > 0 && runtimeEnvCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains schema ${schemaCount}, server ${serverCount}, client ${clientCount}, runtimeEnv ${runtimeEnvCount}, prefix ${prefixCount}, validation hook ${validationHookCount}, transform/default ${transformCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function envValidationReadinessProvider(source: EnvValidationReadinessSourceFile): EnvValidationReadinessReport["envSetups"][number]["provider"] {
+  if (/@t3-oss\/env|createEnv/i.test(source.text)) return "t3-env";
+  if (/envalid|cleanEnv|makeValidator|str\(|num\(|bool\(/i.test(source.text)) return "envalid";
+  if (/dotenvx/i.test(source.text)) return "dotenvx";
+  if (/\bdotenv\b|dotenv\/config|dotenv\.config/i.test(source.text)) return "dotenv";
+  if (/env-var|get\(|required\(\)|asString|asPortNumber/i.test(source.text)) return "env-var";
+  if (/\bzod\b|z\.object|z\.string/i.test(source.text)) return "zod";
+  if (/\bvalibot\b|v\.object|v\.string/i.test(source.text)) return "valibot";
+  if (/\barktype\b|type\(/i.test(source.text)) return "arktype";
+  if (/process\.env|import\.meta\.env|schema|validate/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function envValidationReadinessSchemaSignals(sourceFiles: EnvValidationReadinessSourceFile[]): EnvValidationReadinessReport["schemaSignals"] {
+  const specs: Array<{ signal: EnvValidationReadinessReport["schemaSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "create-env", pattern: /createEnv|cleanEnv|envsafe/i, evidence: "env schema factory evidence was detected." },
+    { signal: "server-schema", pattern: /server\s*:|server-side Environment variables|serverOnly|DATABASE_URL|API_KEY|SECRET/i, evidence: "server env schema evidence was detected." },
+    { signal: "client-schema", pattern: /client\s*:|clientPrefix|NEXT_PUBLIC_|NUXT_PUBLIC_|VITE_|PUBLIC_/i, evidence: "client env schema evidence was detected." },
+    { signal: "shared-schema", pattern: /shared\s*:|NODE_ENV|VERCEL_URL|PUBLIC_URL/i, evidence: "shared env schema evidence was detected." },
+    { signal: "standard-schema", pattern: /Standard Schema|standardschema|~standard|StandardSchemaV1/i, evidence: "Standard Schema evidence was detected." },
+    { signal: "zod", pattern: /\bzod\b|z\.object|z\.string|z\.url|z\.enum/i, evidence: "Zod schema evidence was detected." },
+    { signal: "valibot", pattern: /\bvalibot\b|v\.object|v\.string|v\.pipe/i, evidence: "Valibot schema evidence was detected." },
+    { signal: "arktype", pattern: /\barktype\b|type\(/i, evidence: "ArkType schema evidence was detected." }
+  ];
+  return envValidationReadinessSignalFromSpecs(sourceFiles, specs, "schema", "signal");
+}
+
+function envValidationReadinessRuntimeSignals(sourceFiles: EnvValidationReadinessSourceFile[]): EnvValidationReadinessReport["runtimeSignals"] {
+  const specs: Array<{ signal: EnvValidationReadinessReport["runtimeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "process-env", pattern: /process\.env/i, evidence: "process.env evidence was detected." },
+    { signal: "import-meta-env", pattern: /import\.meta\.env/i, evidence: "import.meta.env evidence was detected." },
+    { signal: "runtime-env", pattern: /runtimeEnv\s*:/i, evidence: "runtimeEnv wiring evidence was detected." },
+    { signal: "runtime-env-strict", pattern: /runtimeEnvStrict/i, evidence: "runtimeEnvStrict evidence was detected." },
+    { signal: "experimental-runtime-env", pattern: /experimental__runtimeEnv/i, evidence: "experimental runtime env evidence was detected." },
+    { signal: "dotenv-file", pattern: /\.env\.example|\.env\.sample|\.env\.template|dotenv|dotenvx/i, evidence: "dotenv/env example evidence was detected." }
+  ];
+  return envValidationReadinessSignalFromSpecs(sourceFiles, specs, "runtime", "signal");
+}
+
+function envValidationReadinessBoundarySignals(sourceFiles: EnvValidationReadinessSourceFile[]): EnvValidationReadinessReport["boundarySignals"] {
+  const specs: Array<{ signal: EnvValidationReadinessReport["boundarySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "client-prefix", pattern: /clientPrefix|client-side variables must have|prefixed with/i, evidence: "client prefix evidence was detected." },
+    { signal: "next-public", pattern: /NEXT_PUBLIC_/i, evidence: "Next.js public env prefix evidence was detected." },
+    { signal: "nuxt-public", pattern: /NUXT_PUBLIC_/i, evidence: "Nuxt public env prefix evidence was detected." },
+    { signal: "vite-public", pattern: /VITE_|PUBLIC_/i, evidence: "Vite/Astro public env prefix evidence was detected." },
+    { signal: "server-only", pattern: /server\s*:|server-side|server-only|serverOnly|DATABASE_URL|SECRET|PRIVATE_/i, evidence: "server-only env evidence was detected." },
+    { signal: "invalid-access-guard", pattern: /onInvalidAccess|Attempted to access a server-side environment variable|isServer|typeof window/i, evidence: "invalid client access guard evidence was detected." }
+  ];
+  return envValidationReadinessSignalFromSpecs(sourceFiles, specs, "boundary", "signal");
+}
+
+function envValidationReadinessValidationSignals(sourceFiles: EnvValidationReadinessSourceFile[]): EnvValidationReadinessReport["validationSignals"] {
+  const specs: Array<{ signal: EnvValidationReadinessReport["validationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "parse", pattern: /\.parse\(|parseWithDictionary|validate\(/i, evidence: "parse/validate evidence was detected." },
+    { signal: "safe-parse", pattern: /safeParse/i, evidence: "safeParse evidence was detected." },
+    { signal: "on-validation-error", pattern: /onValidationError|Invalid environment variables|ValidationError/i, evidence: "validation failure hook evidence was detected." },
+    { signal: "skip-validation", pattern: /skipValidation|SKIP_ENV_VALIDATION/i, evidence: "skip-validation escape evidence was detected." },
+    { signal: "empty-string-as-undefined", pattern: /emptyStringAsUndefined|empty string/i, evidence: "empty-string normalization evidence was detected." },
+    { signal: "transform-default", pattern: /transform\(|default\(|coerce|preprocess|pipe\(/i, evidence: "transform/default evidence was detected." },
+    { signal: "synchronous-validation", pattern: /ensureSynchronous|Validation must be synchronous|Promise/i, evidence: "synchronous validation guard evidence was detected." }
+  ];
+  return envValidationReadinessSignalFromSpecs(sourceFiles, specs, "validation", "signal");
+}
+
+function envValidationReadinessDocumentationSignals(sourceFiles: EnvValidationReadinessSourceFile[]): EnvValidationReadinessReport["documentationSignals"] {
+  const specs: Array<{ signal: EnvValidationReadinessReport["documentationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "env-example", pattern: /\.env\.example|\.env\.sample|\.env\.template/i, evidence: "env example file evidence was detected." },
+    { signal: "required-vars-doc", pattern: /required environment variables|required env|environment variables.*required|DATABASE_URL|API_KEY/i, evidence: "required variable documentation evidence was detected." },
+    { signal: "deployment-vars", pattern: /deploy|deployment|Vercel|Netlify|Cloudflare|Docker|Kubernetes|CI/i, evidence: "deployment variable documentation evidence was detected." },
+    { signal: "build-time-validation", pattern: /build.*env|validate.*build|invalid environment variables|startup/i, evidence: "build/startup validation documentation evidence was detected." },
+    { signal: "secret-warning", pattern: /secret|private|server-side|not available on the client|do not expose/i, evidence: "secret/public boundary documentation evidence was detected." }
+  ];
+  return envValidationReadinessSignalFromSpecs(sourceFiles, specs, "documentation", "signal");
+}
+
+function envValidationReadinessPackageSignals(sourceFiles: EnvValidationReadinessSourceFile[]): EnvValidationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: EnvValidationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@t3-oss/env-core", pattern: /@t3-oss\/env-core/i, evidence: "@t3-oss/env-core evidence was detected." },
+    { signal: "@t3-oss/env-nextjs", pattern: /@t3-oss\/env-nextjs/i, evidence: "@t3-oss/env-nextjs evidence was detected." },
+    { signal: "@t3-oss/env-nuxt", pattern: /@t3-oss\/env-nuxt/i, evidence: "@t3-oss/env-nuxt evidence was detected." },
+    { signal: "envalid", pattern: /envalid|cleanEnv/i, evidence: "envalid evidence was detected." },
+    { signal: "env-var", pattern: /env-var|asPortNumber|asString/i, evidence: "env-var evidence was detected." },
+    { signal: "dotenv", pattern: /"dotenv"|dotenv\/config|dotenv\.config/i, evidence: "dotenv evidence was detected." },
+    { signal: "dotenvx", pattern: /dotenvx|@dotenvx\/dotenvx/i, evidence: "dotenvx evidence was detected." },
+    { signal: "zod", pattern: /"zod"|\bzod\b|z\.object/i, evidence: "Zod evidence was detected." },
+    { signal: "valibot", pattern: /"valibot"|\bvalibot\b|v\.object/i, evidence: "Valibot evidence was detected." },
+    { signal: "arktype", pattern: /"arktype"|\barktype\b|type\(/i, evidence: "ArkType evidence was detected." }
+  ];
+  return envValidationReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function envValidationReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: EnvValidationReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/env-validation-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

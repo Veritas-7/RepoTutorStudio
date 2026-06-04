@@ -3846,6 +3846,49 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 184:
   - `d5b0baa` browser compatibility readiness report
 
+- 2026-06-04: AutoResearch Upgrade 185 candidate selected:
+  `t3-oss/t3-env`
+  (`https://github.com/t3-oss/t3-env`; public; MIT; 3,936 stars; 127 forks;
+  updated 2026-06-03T12:20:25Z). Compared with `af/envalid`,
+  `dotenvx/dotenvx`, and `evanshortiss/env-var`; selected t3-env because it
+  directly models typed environment contracts: `createEnv`, server/client/shared
+  schemas, Standard Schema-compatible validators, `runtimeEnv`,
+  `runtimeEnvStrict`, `experimental__runtimeEnv`, framework public prefixes,
+  validation hooks, `emptyStringAsUndefined`, transforms/defaults, and invalid
+  client access guards. Cloned ignored external source to
+  `research/external-src/t3-oss-t3-env` and inspected docs/source hits without
+  executing external source. Clone HEAD was `7d26a64`; tracked file count for
+  `research/external-src/t3-oss-t3-env` returned `0`.
+- 2026-06-04: RED env-validation-readiness smoke generated
+  `/tmp/repotutor-env-validation-red-studies.5b2b1e/2026-06-04/local__simple-ts-app__HEAD__39239644`;
+  old build had `verificationCheckedRequiredArtifacts=252`, was missing
+  `analysis/env-validation-readiness-report.json`,
+  `markdown/env-validation-readiness.md`, and
+  `html/env-validation-readiness.html`, and `open --target
+  env-validation-readiness` failed as expected.
+- 2026-06-04: Implemented t3-env-style env-validation-readiness report:
+  `EnvValidationReadinessReportSchema`,
+  `analysis/env-validation-readiness-report.json`,
+  `markdown/env-validation-readiness.md`,
+  `html/env-validation-readiness.html`, env setups, schema signals, runtime
+  signals, boundary signals, validation signals, documentation signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, nav entry, and `open --target
+  env-validation-readiness`.
+- 2026-06-04: GREEN env-validation-readiness smoke generated
+  `/tmp/repotutor-env-validation-green-studies.263126/2026-06-04/local__simple-ts-app__main__39239644`;
+  confirmed `verificationCheckedRequiredArtifacts=255`, env setups 0, schema
+  signals 8, runtime signals 6, boundary signals 6, validation signals 7,
+  documentation signals 5, package signals 10, risk queue 2, all three new
+  artifacts, and `open --target env-validation-readiness` ->
+  `html/env-validation-readiness.html`.
+- 2026-06-04: Verification for Upgrade 185:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 83/83 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
