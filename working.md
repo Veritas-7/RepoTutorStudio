@@ -5422,6 +5422,47 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 219:
   - `b1c7fcf` secret management readiness report
 
+- 2026-06-05: AutoResearch Upgrade 220 candidate selected:
+  `openfga/openfga` (`https://github.com/openfga/openfga`; Apache-2.0,
+  public, 5,244 stars, 409 forks, updated 2026-06-04T21:23:34Z, ignored clone
+  HEAD `4f00251`) with comparison sources `apache/casbin-node-casbin`
+  (Apache-2.0, public, 2,903 stars, 231 forks, updated
+  2026-06-03T20:40:55Z, ignored clone HEAD `406c459`), `stalniy/casl`
+  (MIT, public, 6,948 stars, 303 forks, updated 2026-06-04T19:18:05Z,
+  ignored clone HEAD `d234fc7`), and `osohq/oso` (Apache-2.0, public,
+  3,497 stars, 191 forks, updated 2026-06-01T16:39:50Z, ignored clone HEAD
+  `7292df0`). Static source inspection only; `git ls-files` for all four
+  external source paths returned `0`.
+- 2026-06-05: Implemented OpenFGA/Casbin/CASL/Oso/OPA-style
+  authorization-readiness report:
+  `AuthorizationReadinessReportSchema`,
+  `analysis/authorization-readiness-report.json`,
+  `markdown/authorization-readiness.md`, `html/authorization-readiness.html`,
+  authorization setup detection, model/enforcement/identity/resource/
+  governance/test/package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target authorization-readiness`.
+- 2026-06-05: RED/GREEN authorization-readiness smoke recorded:
+  old behavior at `f2ece8c6` had `verificationCheckedRequiredArtifacts=357`,
+  was missing all three authorization-readiness artifacts, and
+  `open --target authorization-readiness` was unsupported. GREEN generated
+  `/tmp/repotutor-authorization-readiness-green-studies.15684/2026-06-05/local__simple-ts-app__main__f2ece8c6`;
+  confirmed `verificationCheckedRequiredArtifacts=360`, all three new
+  artifacts, `verificationOk=true`, focused fixture risk queue 0, and
+  `open --target authorization-readiness` ->
+  `html/authorization-readiness.html`.
+- 2026-06-05: Verification for Upgrade 220:
+  - `pnpm build`: PASS
+  - focused authorization Vitest: PASS, 1/1 selected test
+  - RED/GREEN smoke: PASS
+  - `pnpm test`: PASS, 27/27 tests
+  - `pnpm audit:brief`: PASS, 118/118 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 220:
+  - `a4a01d8` authorization readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
