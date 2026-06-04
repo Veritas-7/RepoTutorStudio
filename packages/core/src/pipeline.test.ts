@@ -37,6 +37,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "performance-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "chaos-engineering-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "accessibility-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "storybook-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "design-tokens-report.json"))).resolves.toBeUndefined();
@@ -161,6 +162,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "performance.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "chaos-engineering-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "accessibility.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "storybook.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "design-tokens.md"))).resolves.toBeUndefined();
@@ -288,6 +290,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "performance.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "chaos-engineering-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "accessibility.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "storybook.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "design-tokens.html"))).resolves.toBeUndefined();
@@ -442,6 +445,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/performance.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/integration-test-environment-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/chaos-engineering-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/accessibility.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/storybook.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/design-tokens.html\"");
@@ -957,6 +961,26 @@ describe("RepoTutor core pipeline", () => {
     expect(integrationTestEnvironmentMarkdown).toContain("Source pattern: Testcontainers");
     expect(integrationTestEnvironmentMarkdown).toContain("## Wait Signals");
     expect(integrationTestEnvironmentMarkdown).toContain("## Runtime Signals");
+    const chaosEngineeringText = await fs.readFile(path.join(result.session.outputPaths.analysis, "chaos-engineering-readiness-report.json"), "utf8");
+    expect(chaosEngineeringText).toContain("Chaos Mesh LitmusChaos Toxiproxy chaos experiments probes steady state blast radius schedules toxics cleanup");
+    expect(chaosEngineeringText).toContain("\"chaosSetups\"");
+    expect(chaosEngineeringText).toContain("\"experimentSignals\"");
+    expect(chaosEngineeringText).toContain("\"faultSignals\"");
+    expect(chaosEngineeringText).toContain("\"scopeSignals\"");
+    expect(chaosEngineeringText).toContain("\"safetySignals\"");
+    expect(chaosEngineeringText).toContain("\"observabilitySignals\"");
+    expect(chaosEngineeringText).toContain("kubectl apply --dry-run=server");
+    const chaosEngineeringHtml = await fs.readFile(path.join(result.session.outputPaths.html, "chaos-engineering-readiness.html"), "utf8");
+    expect(chaosEngineeringHtml).toContain("Chaos Engineering Readiness");
+    expect(chaosEngineeringHtml).toContain("chaos-engineering-readiness-card");
+    expect(chaosEngineeringHtml).toContain("data-source-pattern=\"Chaos Engineering\"");
+    expect(chaosEngineeringHtml).toContain("Safety Signals");
+    expect(chaosEngineeringHtml).toContain("Observability Signals");
+    const chaosEngineeringMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "chaos-engineering-readiness.md"), "utf8");
+    expect(chaosEngineeringMarkdown).toContain("# Chaos Engineering Readiness");
+    expect(chaosEngineeringMarkdown).toContain("Source pattern: Chaos Mesh LitmusChaos Toxiproxy");
+    expect(chaosEngineeringMarkdown).toContain("## Fault Signals");
+    expect(chaosEngineeringMarkdown).toContain("## Safety Signals");
     const accessibilityText = await fs.readFile(path.join(result.session.outputPaths.analysis, "accessibility-report.json"), "utf8");
     expect(accessibilityText).toContain("axe-core accessibility engine WCAG tags violations passes incomplete inapplicable impact selectors context configure reporter iframes");
     expect(accessibilityText).toContain("\"scanTargets\"");
@@ -2844,6 +2868,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/performance.html");
     expect(exportManifestText).toContain("html/e2e.html");
     expect(exportManifestText).toContain("html/integration-test-environment-readiness.html");
+    expect(exportManifestText).toContain("html/chaos-engineering-readiness.html");
     expect(exportManifestText).toContain("html/accessibility.html");
     expect(exportManifestText).toContain("html/storybook.html");
     expect(exportManifestText).toContain("html/design-tokens.html");
@@ -2992,6 +3017,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("performance.html");
     expect(learningPathHtml).toContain("e2e.html");
     expect(learningPathHtml).toContain("integration-test-environment-readiness.html");
+    expect(learningPathHtml).toContain("chaos-engineering-readiness.html");
     expect(learningPathHtml).toContain("accessibility.html");
     expect(learningPathHtml).toContain("storybook.html");
     expect(learningPathHtml).toContain("design-tokens.html");
@@ -3497,6 +3523,165 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects chaos engineering readiness patterns without running chaos tools", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-chaos-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-chaos-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "chaos"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "tests"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "go.mod"), [
+      "module example.com/chaosfixture",
+      "",
+      "require github.com/Shopify/toxiproxy v2.12.0+incompatible"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "chaos", "network-delay.yaml"), [
+      "apiVersion: chaos-mesh.org/v1alpha1",
+      "kind: NetworkChaos",
+      "metadata:",
+      "  name: checkout-network-delay",
+      "  namespace: chaos-testing",
+      "spec:",
+      "  action: delay",
+      "  mode: one",
+      "  selector:",
+      "    namespaces:",
+      "      - default",
+      "    labelSelectors:",
+      "      app: checkout",
+      "  duration: \"30s\"",
+      "  containerNames:",
+      "    - app",
+      "  delay:",
+      "    latency: \"200ms\"",
+      "    correlation: \"25\"",
+      "---",
+      "apiVersion: chaos-mesh.org/v1alpha1",
+      "kind: Schedule",
+      "metadata:",
+      "  name: checkout-chaos-schedule",
+      "spec:",
+      "  schedule: \"@every 10m\"",
+      "  type: NetworkChaos",
+      "  historyLimit: 1"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "chaos", "litmus-engine.yaml"), [
+      "apiVersion: litmuschaos.io/v1alpha1",
+      "kind: ChaosEngine",
+      "metadata:",
+      "  name: checkout-litmus",
+      "  namespace: chaos-testing",
+      "spec:",
+      "  annotationCheck: \"true\"",
+      "  chaosServiceAccount: litmus-admin",
+      "  jobCleanUpPolicy: delete",
+      "  appinfo:",
+      "    appns: default",
+      "    applabel: app=checkout",
+      "    appkind: deployment",
+      "  experiments:",
+      "    - name: pod-network-latency",
+      "      spec:",
+      "        components:",
+      "          env:",
+      "            - name: TOTAL_CHAOS_DURATION",
+      "              value: \"30\"",
+      "            - name: CHAOS_INTERVAL",
+      "              value: \"10\"",
+      "        probe:",
+      "          - name: checkout-http-steady-state",
+      "            type: httpProbe",
+      "            mode: SOT",
+      "            httpProbe/inputs:",
+      "              url: http://checkout.default/health",
+      "          - name: checkout-prometheus-steady-state",
+      "            type: promProbe",
+      "            mode: EOT",
+      "            promProbe/inputs:",
+      "              endpoint: http://prometheus.monitoring:9090",
+      "              query: rate(http_requests_total[1m])",
+      "---",
+      "apiVersion: litmuschaos.io/v1alpha1",
+      "kind: ChaosExperiment",
+      "metadata:",
+      "  name: pod-delete"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "chaos", "litmus-result.yaml"), [
+      "apiVersion: litmuschaos.io/v1alpha1",
+      "kind: ChaosResult",
+      "metadata:",
+      "  name: checkout-pod-network-latency",
+      "spec:",
+      "  engine: checkout-litmus"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "chaos", "prometheus-rules.yaml"), [
+      "apiVersion: monitoring.coreos.com/v1",
+      "kind: PrometheusRule",
+      "metadata:",
+      "  name: litmuschaos-alerts",
+      "spec:",
+      "  groups:",
+      "    - name: litmuschaos",
+      "      rules:",
+      "        - alert: ChaosExperimentFailed",
+      "          expr: litmuschaos_awaited_probe_success_total < 1",
+      "          labels:",
+      "            dashboard: grafana",
+      "            metrics: litmuschaos_awaited_probe_success_total"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "toxiproxy_test.go"), [
+      "package tests",
+      "",
+      "import toxiproxy \"github.com/Shopify/toxiproxy/client\"",
+      "",
+      "func configureProxy() error {",
+      "  client := toxiproxy.NewClient(\"localhost:8474\")",
+      "  proxy, err := client.CreateProxy(\"postgres\", \"localhost:15432\", \"localhost:5432\")",
+      "  if err != nil { return err }",
+      "  toxic, err := proxy.AddToxic(\"db_latency\", \"latency\", \"downstream\", 1.0, toxiproxy.Attributes{\"latency\": 200})",
+      "  if err != nil { return err }",
+      "  _ = toxic.Update()",
+      "  return proxy.RemoveToxic(\"db_latency\")",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "chaos.yml"), [
+      "name: chaos",
+      "on: [workflow_dispatch]",
+      "jobs:",
+      "  validate-chaos:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: helm template chaos-mesh chaos-mesh/chaos-mesh --dry-run",
+      "      - run: kubectl apply --dry-run=server -f chaos/",
+      "      - run: kubectl get chaosresults --all-namespaces"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = result.analysis.chaosEngineeringReadinessReport;
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const meshSetup = report.chaosSetups.find((item) => item.filePath.endsWith("network-delay.yaml"));
+    const litmusSetup = report.chaosSetups.find((item) => item.filePath.endsWith("litmus-engine.yaml"));
+    const toxiproxySetup = report.chaosSetups.find((item) => item.filePath.endsWith("toxiproxy_test.go"));
+
+    expect(report.chaosSetups.length).toBeGreaterThan(0);
+    expect(meshSetup?.platform).toBe("chaos-mesh");
+    expect(meshSetup?.hasSelector).toBe(true);
+    expect(meshSetup?.hasDuration).toBe(true);
+    expect(litmusSetup?.platform).toBe("litmus");
+    expect(litmusSetup?.hasProbeOrSteadyState).toBe(true);
+    expect(toxiproxySetup?.platform).toBe("toxiproxy");
+    expect(readySignals(report.experimentSignals)).toEqual(expect.arrayContaining(["network-chaos", "schedule", "chaos-engine", "chaos-experiment", "chaos-result", "toxiproxy"]));
+    expect(readySignals(report.faultSignals)).toEqual(expect.arrayContaining(["network-delay", "pod-delete", "latency-toxic"]));
+    expect(readySignals(report.scopeSignals)).toEqual(expect.arrayContaining(["selector", "namespace", "label-selector", "mode", "duration", "container-names", "target", "service-account", "annotation-check"]));
+    expect(readySignals(report.safetySignals)).toEqual(expect.arrayContaining(["probe", "steady-state", "sot", "eot", "prometheus-probe", "http-probe", "cleanup", "job-cleanup-policy"]));
+    expect(readySignals(report.observabilitySignals)).toEqual(expect.arrayContaining(["prometheus", "grafana", "alert-rule", "metrics", "chaos-result"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["chaos-mesh", "litmuschaos", "toxiproxy", "helm", "kubectl"]));
+    expect(report.riskQueue.at(-1)?.action).toContain("approved non-production environment");
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "chaos-engineering-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "chaos-engineering-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "chaos-engineering-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects mutation testing readiness patterns without executing mutation engines", async () => {

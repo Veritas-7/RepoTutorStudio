@@ -1472,6 +1472,73 @@ export const IntegrationTestEnvironmentReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ChaosEngineeringReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  chaosSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["chaos-mesh", "litmus", "toxiproxy", "gremlin", "custom", "unknown"]),
+    experimentCount: z.number().int().nonnegative(),
+    faultCount: z.number().int().nonnegative(),
+    scopeCount: z.number().int().nonnegative(),
+    safetyCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    hasSelector: z.boolean(),
+    hasDuration: z.boolean(),
+    hasProbeOrSteadyState: z.boolean(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  experimentSignals: z.array(z.object({
+    signal: z.enum(["pod-chaos", "network-chaos", "stress-chaos", "io-chaos", "dns-chaos", "time-chaos", "http-chaos", "schedule", "workflow", "chaos-engine", "chaos-experiment", "chaos-result", "toxiproxy", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  faultSignals: z.array(z.object({
+    signal: z.enum(["pod-kill", "pod-delete", "network-delay", "network-loss", "network-partition", "network-bandwidth", "cpu-stress", "memory-stress", "io-delay", "time-shift", "dns-error", "http-abort", "http-delay", "latency-toxic", "timeout-toxic", "bandwidth-toxic", "slow-close-toxic", "limit-data-toxic", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scopeSignals: z.array(z.object({
+    signal: z.enum(["selector", "namespace", "label-selector", "mode", "duration", "container-names", "target", "blast-radius", "service-account", "annotation-check", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["probe", "steady-state", "sot", "eot", "prometheus-probe", "http-probe", "k8s-probe", "cmd-probe", "rollback", "abort", "pause", "cleanup", "job-cleanup-policy", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observabilitySignals: z.array(z.object({
+    signal: z.enum(["prometheus", "grafana", "otel", "alert-rule", "metrics", "dashboard", "chaos-result", "report", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["chaos-mesh", "litmuschaos", "toxiproxy", "gremlin", "helm", "kubectl", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const AccessibilityReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7611,6 +7678,7 @@ export type ObservabilityReport = z.infer<typeof ObservabilityReportSchema>;
 export type PerformanceReport = z.infer<typeof PerformanceReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;
 export type IntegrationTestEnvironmentReadinessReport = z.infer<typeof IntegrationTestEnvironmentReadinessReportSchema>;
+export type ChaosEngineeringReadinessReport = z.infer<typeof ChaosEngineeringReadinessReportSchema>;
 export type AccessibilityReport = z.infer<typeof AccessibilityReportSchema>;
 export type StorybookReport = z.infer<typeof StorybookReportSchema>;
 export type DesignTokensReport = z.infer<typeof DesignTokensReportSchema>;

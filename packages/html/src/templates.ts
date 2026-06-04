@@ -43,6 +43,7 @@ import type {
   PerformanceReport,
   E2eReport,
   IntegrationTestEnvironmentReadinessReport,
+  ChaosEngineeringReadinessReport,
   AccessibilityReport,
   StorybookReport,
   DesignTokensReport,
@@ -181,6 +182,7 @@ export interface StudyHtmlInput {
   performanceReport: PerformanceReport;
   e2eReport: E2eReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
+  chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
   accessibilityReport: AccessibilityReport;
   storybookReport: StorybookReport;
   designTokensReport: DesignTokensReport;
@@ -338,6 +340,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["observability.html", "Observability"],
     ["performance.html", "Performance"],
     ["e2e.html", "E2E"],
+    ["chaos-engineering-readiness.html", "Chaos Engineering"],
     ["accessibility.html", "Accessibility"],
     ["storybook.html", "Storybook"],
     ["design-tokens.html", "Design Tokens"],
@@ -515,6 +518,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Observability Readiness</h3><p>${escapeHtml(input.observabilityReport.summary)}</p><p>OpenTelemetry 패턴으로 traces, metrics, logs, exporter, resource/context readiness를 정리합니다.</p><a href="observability.html">Observability 열기</a></article>
           <article><h3>Performance Readiness</h3><p>${escapeHtml(input.performanceReport.summary)}</p><p>k6 패턴으로 load script, workload, thresholds, checks, metrics/output 준비도를 정리합니다.</p><a href="performance.html">Performance 열기</a></article>
           <article><h3>E2E Readiness</h3><p>${escapeHtml(input.e2eReport.summary)}</p><p>Playwright 패턴으로 browser projects, locators, assertions, traces/reporters, webServer/baseURL 준비도를 정리합니다.</p><a href="e2e.html">E2E 열기</a></article>
+          <article><h3>Chaos Engineering Readiness</h3><p>${escapeHtml(input.chaosEngineeringReadinessReport.summary)}</p><p>Chaos Mesh, LitmusChaos, Toxiproxy 패턴으로 experiment, fault, scope, probe/steady-state, observability 준비도를 정리합니다.</p><a href="chaos-engineering-readiness.html">Chaos Engineering 열기</a></article>
           <article><h3>Accessibility Readiness</h3><p>${escapeHtml(input.accessibilityReport.summary)}</p><p>axe-core 패턴으로 scan targets, WCAG/category tags, result buckets, impact, context controls를 정리합니다.</p><a href="accessibility.html">Accessibility 열기</a></article>
           <article><h3>Storybook Readiness</h3><p>${escapeHtml(input.storybookReport.summary)}</p><p>Storybook 패턴으로 CSF stories, args, decorators, play functions, addons, publish/test signals를 정리합니다.</p><a href="storybook.html">Storybook 열기</a></article>
           <article><h3>Design Tokens Readiness</h3><p>${escapeHtml(input.designTokensReport.summary)}</p><p>Style Dictionary 패턴으로 token source, platform target, transform, usage, governance signals를 정리합니다.</p><a href="design-tokens.html">Design Tokens 열기</a></article>
@@ -751,6 +755,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "integration-test-environment-readiness.html",
       title: "Integration Test Environment Readiness",
       html: pageShell("Integration Test Environment Readiness", "integration-test-environment-readiness.html", `<section class="panel" data-source-pattern="Testcontainers"><h2>Integration Test Environment Snapshot</h2><p>${escapeHtml(input.integrationTestEnvironmentReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.integrationTestEnvironmentReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.integrationTestEnvironmentReadinessReport.integrationSetups.length}</dd></div><div><dt>containers</dt><dd>${input.integrationTestEnvironmentReadinessReport.containerSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>waits</dt><dd>${input.integrationTestEnvironmentReadinessReport.waitSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>lifecycle</dt><dd>${input.integrationTestEnvironmentReadinessReport.lifecycleSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records Testcontainers-style integration environment readiness only; it does not start Docker, Podman, Docker Compose, Testcontainers modules, resource reapers, service containers, or the analyzed project's tests.</p></section><section class="grid"><article class="integration-test-environment-readiness-card"><h3>Integration Setups</h3>${integrationTestEnvironmentReadinessSetupList(input.integrationTestEnvironmentReadinessReport.integrationSetups)}</article><article class="integration-test-environment-readiness-card"><h3>Container Signals</h3>${integrationTestEnvironmentReadinessSignalList(input.integrationTestEnvironmentReadinessReport.containerSignals, "signal")}</article><article class="integration-test-environment-readiness-card"><h3>Wait Signals</h3>${integrationTestEnvironmentReadinessSignalList(input.integrationTestEnvironmentReadinessReport.waitSignals, "signal")}</article><article class="integration-test-environment-readiness-card"><h3>Lifecycle Signals</h3>${integrationTestEnvironmentReadinessSignalList(input.integrationTestEnvironmentReadinessReport.lifecycleSignals, "signal")}</article></section><section class="grid"><article class="integration-test-environment-readiness-card"><h3>Runtime Signals</h3>${integrationTestEnvironmentReadinessSignalList(input.integrationTestEnvironmentReadinessReport.runtimeSignals, "signal")}</article><article class="integration-test-environment-readiness-card"><h3>Package Signals</h3>${integrationTestEnvironmentReadinessSignalList(input.integrationTestEnvironmentReadinessReport.packageSignals, "signal")}</article><article class="integration-test-environment-readiness-card"><h3>Recommended Commands</h3>${integrationTestEnvironmentReadinessCommandList(input.integrationTestEnvironmentReadinessReport.recommendedCommands)}</article><article class="integration-test-environment-readiness-card"><h3>Risk Queue</h3>${integrationTestEnvironmentReadinessRiskList(input.integrationTestEnvironmentReadinessReport.riskQueue)}</article><article class="integration-test-environment-readiness-card"><h3>다음 확인 단계</h3>${list(input.integrationTestEnvironmentReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "chaos-engineering-readiness.html",
+      title: "Chaos Engineering Readiness",
+      html: pageShell("Chaos Engineering Readiness", "chaos-engineering-readiness.html", `<section class="panel" data-source-pattern="Chaos Engineering"><h2>Chaos Engineering Snapshot</h2><p>${escapeHtml(input.chaosEngineeringReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.chaosEngineeringReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.chaosEngineeringReadinessReport.chaosSetups.length}</dd></div><div><dt>experiments</dt><dd>${input.chaosEngineeringReadinessReport.experimentSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>faults</dt><dd>${input.chaosEngineeringReadinessReport.faultSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>safety</dt><dd>${input.chaosEngineeringReadinessReport.safetySignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records Chaos Mesh, LitmusChaos, Toxiproxy, probe, scope, and cleanup readiness only. It does not run kubectl, helm, cluster chaos experiments, Toxiproxy faults, stress tests, or production workloads.</p></section><section class="grid"><article class="chaos-engineering-readiness-card"><h3>Chaos Setups</h3>${chaosEngineeringReadinessSetupList(input.chaosEngineeringReadinessReport.chaosSetups)}</article><article class="chaos-engineering-readiness-card"><h3>Experiment Signals</h3>${chaosEngineeringReadinessSignalList(input.chaosEngineeringReadinessReport.experimentSignals, "signal")}</article><article class="chaos-engineering-readiness-card"><h3>Fault Signals</h3>${chaosEngineeringReadinessSignalList(input.chaosEngineeringReadinessReport.faultSignals, "signal")}</article><article class="chaos-engineering-readiness-card"><h3>Scope Signals</h3>${chaosEngineeringReadinessSignalList(input.chaosEngineeringReadinessReport.scopeSignals, "signal")}</article></section><section class="grid"><article class="chaos-engineering-readiness-card"><h3>Safety Signals</h3>${chaosEngineeringReadinessSignalList(input.chaosEngineeringReadinessReport.safetySignals, "signal")}</article><article class="chaos-engineering-readiness-card"><h3>Observability Signals</h3>${chaosEngineeringReadinessSignalList(input.chaosEngineeringReadinessReport.observabilitySignals, "signal")}</article><article class="chaos-engineering-readiness-card"><h3>Package Signals</h3>${chaosEngineeringReadinessSignalList(input.chaosEngineeringReadinessReport.packageSignals, "signal")}</article><article class="chaos-engineering-readiness-card"><h3>Recommended Commands</h3>${chaosEngineeringReadinessCommandList(input.chaosEngineeringReadinessReport.recommendedCommands)}</article><article class="chaos-engineering-readiness-card"><h3>Risk Queue</h3>${chaosEngineeringReadinessRiskList(input.chaosEngineeringReadinessReport.riskQueue)}</article><article class="chaos-engineering-readiness-card"><h3>다음 확인 단계</h3>${list(input.chaosEngineeringReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "accessibility.html",
@@ -1341,6 +1350,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Performance Readiness", path: "html/performance.html", description: "k6식 load script, workload model, threshold, output 준비도를 확인합니다." },
       { label: "E2E Readiness", path: "html/e2e.html", description: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다." },
       { label: "Integration Test Environment Readiness", path: "html/integration-test-environment-readiness.html", description: "Testcontainers식 container fixture, wait strategy, lifecycle cleanup, runtime 준비도를 확인합니다." },
+      { label: "Chaos Engineering Readiness", path: "html/chaos-engineering-readiness.html", description: "Chaos Mesh, LitmusChaos, Toxiproxy식 fault, scope, probe, cleanup 준비도를 확인합니다." },
       { label: "Accessibility Readiness", path: "html/accessibility.html", description: "axe-core식 scan target, WCAG/category tag, result bucket, impact 준비도를 확인합니다." },
       { label: "Storybook Readiness", path: "html/storybook.html", description: "Storybook식 CSF story, args, addon, test/publish signal 준비도를 확인합니다." },
       { label: "Design Tokens Readiness", path: "html/design-tokens.html", description: "Style Dictionary식 token source, platform, transform, usage 준비도를 확인합니다." },
@@ -1703,6 +1713,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "integration-test-environment-readiness.html",
       goal: "Testcontainers식 container fixture, wait strategy, lifecycle cleanup, runtime 준비도를 확인합니다.",
       evidence: `setups ${input.integrationTestEnvironmentReadinessReport.integrationSetups.length}개, wait signals ${input.integrationTestEnvironmentReadinessReport.waitSignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Chaos engineering 준비도 확인",
+      href: "chaos-engineering-readiness.html",
+      goal: "Chaos Mesh, LitmusChaos, Toxiproxy식 experiment, fault, scope, probe/steady-state, cleanup 준비도를 확인합니다.",
+      evidence: `setups ${input.chaosEngineeringReadinessReport.chaosSetups.length}개, fault signals ${input.chaosEngineeringReadinessReport.faultSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Accessibility 준비도 확인",
@@ -3006,6 +3022,34 @@ function integrationTestEnvironmentReadinessRiskList(items: IntegrationTestEnvir
 }
 
 function integrationTestEnvironmentReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function chaosEngineeringReadinessSetupList(items: ChaosEngineeringReadinessReport["chaosSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">chaos setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)} / ${escapeHtml(item.readiness)}]<br>experiments ${item.experimentCount}, faults ${item.faultCount}, scope ${item.scopeCount}, safety ${item.safetyCount}, observability ${item.observabilityCount}<br>selector ${item.hasSelector ? "yes" : "no"}, duration ${item.hasDuration ? "yes" : "no"}, probe/steady-state ${item.hasProbeOrSteadyState ? "yes" : "no"}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(chaosEngineeringReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function chaosEngineeringReadinessSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">chaos readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(chaosEngineeringReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function chaosEngineeringReadinessCommandList(items: ChaosEngineeringReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function chaosEngineeringReadinessRiskList(items: ChaosEngineeringReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(chaosEngineeringReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function chaosEngineeringReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

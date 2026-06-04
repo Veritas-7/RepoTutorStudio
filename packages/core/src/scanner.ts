@@ -48,6 +48,7 @@ import {
   PerformanceReport,
   E2eReport,
   IntegrationTestEnvironmentReadinessReport,
+  ChaosEngineeringReadinessReport,
   AccessibilityReport,
   StorybookReport,
   DesignTokensReport,
@@ -191,6 +192,7 @@ export interface AnalysisBundle {
   performanceReport: PerformanceReport;
   e2eReport: E2eReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
+  chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
   accessibilityReport: AccessibilityReport;
   storybookReport: StorybookReport;
   designTokensReport: DesignTokensReport;
@@ -334,6 +336,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const performanceReport = await buildPerformanceReport(walk, runtimeEnvironmentReport);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
   const integrationTestEnvironmentReadinessReport = await buildIntegrationTestEnvironmentReadinessReport(walk, runtimeEnvironmentReport);
+  const chaosEngineeringReadinessReport = await buildChaosEngineeringReadinessReport(walk);
   const accessibilityReport = await buildAccessibilityReport(walk, e2eReport);
   const storybookReport = await buildStorybookReport(walk);
   const designTokensReport = await buildDesignTokensReport(walk, storybookReport);
@@ -424,7 +427,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, integrationTestEnvironmentReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -5751,6 +5754,313 @@ function integrationTestEnvironmentReadinessSignalFromSpecs<T extends Record<K, 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/integration-test-environment-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildChaosEngineeringReadinessReport(walk: WalkResult): Promise<ChaosEngineeringReadinessReport> {
+  const sourceFiles = await chaosEngineeringReadinessSourceFiles(walk);
+  const chaosSetups = chaosEngineeringReadinessSetups(sourceFiles);
+  const experimentSignals = chaosEngineeringReadinessExperimentSignals(sourceFiles);
+  const faultSignals = chaosEngineeringReadinessFaultSignals(sourceFiles);
+  const scopeSignals = chaosEngineeringReadinessScopeSignals(sourceFiles);
+  const safetySignals = chaosEngineeringReadinessSafetySignals(sourceFiles);
+  const observabilitySignals = chaosEngineeringReadinessObservabilitySignals(sourceFiles);
+  const packageSignals = chaosEngineeringReadinessPackageSignals(sourceFiles);
+  const riskQueue: ChaosEngineeringReadinessReport["riskQueue"] = [];
+  const readyExperiments = experimentSignals.filter((item) => item.readiness === "ready").length;
+  const readyFaults = faultSignals.filter((item) => item.readiness === "ready").length;
+  const hasPackageSignal = packageSignals.some((item) => item.readiness === "ready");
+  const hasToxicFault = faultSignals.some((item) => item.readiness === "ready" && item.signal.endsWith("-toxic"));
+  const hasToxicCleanup = safetySignals.some((item) => item.readiness === "ready" && ["cleanup", "rollback", "abort"].includes(item.signal));
+
+  if (sourceFiles.length === 0) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document whether this project intentionally has no chaos engineering or fault-injection strategy.",
+      why: "No Chaos Mesh, LitmusChaos, Toxiproxy, Gremlin, probe, steady-state, or fault-injection source signals were detected.",
+      relatedHref: "html/chaos-engineering-readiness.html"
+    });
+  }
+  if (hasPackageSignal && readyExperiments === 0) {
+    riskQueue.push({
+      priority: "high",
+      action: "Connect chaos engineering dependencies or cluster tooling to at least one reviewed experiment manifest or test fixture.",
+      why: "Package/tool evidence without experiment definitions often means the learner cannot see the actual failure mode being exercised.",
+      relatedHref: packageSignals.find((item) => item.readiness === "ready")?.relatedHref ?? "html/chaos-engineering-readiness.html"
+    });
+  }
+  if (readyExperiments > 0 && chaosSetups.some((setup) => !setup.hasSelector || setup.scopeCount === 0)) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add explicit selector, namespace, target, or blast-radius scope to every chaos experiment.",
+      why: "Chaos Mesh and Litmus examples make scope concrete through selectors, namespaces, modes, service accounts, and app info.",
+      relatedHref: chaosSetups.find((setup) => !setup.hasSelector || setup.scopeCount === 0)?.sourceHref ?? "html/chaos-engineering-readiness.html"
+    });
+  }
+  if (readyExperiments > 0 && chaosSetups.some((setup) => !setup.hasDuration)) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add duration, schedule, timeout, or bounded toxic lifetime controls before running chaos experiments.",
+      why: "Fault injection without a time boundary can turn a learning exercise into an unbounded outage.",
+      relatedHref: chaosSetups.find((setup) => !setup.hasDuration)?.sourceHref ?? "html/chaos-engineering-readiness.html"
+    });
+  }
+  if (readyExperiments > 0 && chaosSetups.some((setup) => !setup.hasProbeOrSteadyState)) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add probe, steady-state, rollback, abort, or cleanup evidence before promoting chaos experiments.",
+      why: "Litmus probe modes and Toxiproxy cleanup APIs are the safety boundary that turn a fault into a controlled experiment.",
+      relatedHref: chaosSetups.find((setup) => !setup.hasProbeOrSteadyState)?.sourceHref ?? "html/chaos-engineering-readiness.html"
+    });
+  }
+  if (readyExperiments > 0 && !observabilitySignals.some((item) => item.readiness === "ready")) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Attach Prometheus, alert rule, metrics, dashboard, ChaosResult, or report evidence to chaos runs.",
+      why: "Learners need observable results to compare steady state, injected fault, and recovery.",
+      relatedHref: "html/chaos-engineering-readiness.html"
+    });
+  }
+  if (hasToxicFault && !hasToxicCleanup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Pair each Toxiproxy toxic with RemoveToxic, UpdateToxic, cleanup, or rollback evidence.",
+      why: "Toxiproxy fault injection remains safer when the teardown path is visible next to AddToxic calls.",
+      relatedHref: faultSignals.find((item) => item.readiness === "ready" && item.signal.endsWith("-toxic"))?.relatedHref ?? "html/chaos-engineering-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Treat this report as static readiness only; run chaos experiments only in an approved non-production environment.",
+    why: "RepoTutor does not execute kubectl, helm, Chaos Mesh, LitmusChaos, Gremlin, Toxiproxy, network faults, stress tests, or cluster workloads.",
+    relatedHref: "html/chaos-engineering-readiness.html"
+  });
+
+  return {
+    summary: `Chaos engineering readiness report: ${chaosSetups.length} setup 후보, experiment signal ${readyExperiments}개, fault signal ${readyFaults}개, safety signal ${safetySignals.filter((item) => item.readiness === "ready").length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Chaos Mesh LitmusChaos Toxiproxy chaos experiments probes steady state blast radius schedules toxics cleanup",
+    chaosSetups,
+    experimentSignals,
+    faultSignals,
+    scopeSignals,
+    safetySignals,
+    observabilitySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"ChaosEngine|ChaosExperiment|PodChaos|NetworkChaos|StressChaos|Toxiproxy|AddToxic\" .", purpose: "Inventory cluster chaos manifests, Litmus engines, and Toxiproxy fault-injection fixtures." },
+      { command: "rg \"selector|namespace|mode|duration|containerNames|chaosServiceAccount|blast\" chaos charts tests .github", purpose: "Review experiment scope, blast radius, target, and time-bound controls." },
+      { command: "rg \"probe|steady-state|promProbe|httpProbe|k8sProbe|cmdProbe|ChaosResult|RemoveToxic|cleanup\" chaos charts tests .github", purpose: "Trace probe, steady-state, result, and cleanup evidence before any real run." },
+      { command: "helm template <chart> --dry-run", purpose: "Render chaos manifests for review without applying them to a cluster." },
+      { command: "kubectl apply --dry-run=server -f chaos/", purpose: "Validate manifests against the target cluster API without creating experiments." },
+      { command: "kubectl get chaosresults --all-namespaces", purpose: "Inspect Litmus result artifacts after an approved non-production chaos run." }
+    ],
+    learnerNextSteps: [
+      "먼저 chaos experiment가 어떤 플랫폼인지 구분하세요: Chaos Mesh CRD, Litmus ChaosEngine/Experiment, Toxiproxy fixture, 또는 custom fault injection.",
+      "selector, namespace, mode, duration, target, service account가 없으면 blast radius가 불명확합니다.",
+      "probe, steady-state, Prometheus/HTTP/K8s/CMD probe, ChaosResult, cleanup 신호가 있는지 확인하세요.",
+      "Toxiproxy는 AddToxic만 보지 말고 UpdateToxic, RemoveToxic, teardown 위치를 같이 보세요.",
+      "이 리포트는 정적 readiness입니다. 실제 chaos run은 승인된 개발/스테이징 환경에서 별도 절차로만 수행하세요."
+    ]
+  };
+}
+
+type ChaosEngineeringReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function chaosEngineeringReadinessSourceFiles(walk: WalkResult): Promise<ChaosEngineeringReadinessSourceFile[]> {
+  const files: ChaosEngineeringReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !chaosEngineeringReadinessInspectablePath(file.relPath)) continue;
+    const pathCandidate = chaosEngineeringReadinessPathSignal(file.relPath);
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!pathCandidate && !chaosEngineeringReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 240) break;
+  }
+  return files;
+}
+
+function chaosEngineeringReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|go\.mod|go\.sum|pyproject\.toml|requirements.*\.txt|poetry\.lock|Chart\.ya?ml|values.*\.ya?ml|docker-compose\.ya?ml|compose\.ya?ml)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(^|\/)(chaos|experiments?|litmus|toxiproxy|resilience|reliability|sre)(\/|$)/i.test(filePath)
+    || /\.(ts|tsx|js|jsx|mjs|cjs|py|go|java|rb|json|toml|ya?ml|md|sh)$/i.test(filePath);
+}
+
+function chaosEngineeringReadinessPathSignal(filePath: string): boolean {
+  return /(chaos|litmus|chaos-mesh|toxiproxy|gremlin|fault[-_ ]?injection|resilience|reliability|sre|network[-_ ]?latency|pod[-_ ]?delete|pod[-_ ]?kill|blast[-_ ]?radius|steady[-_ ]?state)/i.test(filePath);
+}
+
+function chaosEngineeringReadinessContentSignal(text: string): boolean {
+  return /\b(chaos-mesh|litmuschaos|Litmus|ChaosEngine|ChaosExperiment|ChaosSchedule|ChaosResult|PodChaos|NetworkChaos|StressChaos|IOChaos|DNSChaos|TimeChaos|HTTPChaos|Workflow|Toxiproxy|toxiproxy|AddToxic|CreateProxy|fault injection|fault-injection|steady-state|steady state|blast radius|pod-network-latency|pod-delete|pod-kill|promProbe|httpProbe|k8sProbe|cmdProbe|sloProbe|Chaos Mesh|kubectl apply --dry-run|helm template)\b/i.test(text);
+}
+
+function chaosEngineeringReadinessSetups(sourceFiles: ChaosEngineeringReadinessSourceFile[]): ChaosEngineeringReadinessReport["chaosSetups"] {
+  const rows: ChaosEngineeringReadinessReport["chaosSetups"] = [];
+  for (const source of sourceFiles) {
+    const experimentCount = countMatches(source.text, /\b(kind:\s*(PodChaos|NetworkChaos|StressChaos|IOChaos|DNSChaos|TimeChaos|HTTPChaos|Schedule|Workflow|ChaosEngine|ChaosExperiment|ChaosSchedule|ChaosResult)|Toxiproxy|toxiproxy\.NewClient|CreateProxy|AddToxic)\b/gi);
+    const faultCount = countMatches(source.text, /\b(action:\s*(pod-kill|pod-failure|pod-delete|container-kill|delay|loss|partition|bandwidth|netem|stress|latency|abort|http-abort|http-delay|random)|pod-network-latency|pod-delete|pod-kill|AddToxic|latency|timeout|bandwidth|slow_close|limit_data)\b/gi);
+    const scopeCount = countMatches(source.text, /\b(selector|namespace|labelSelector|mode|containerNames|target|listen|upstream|appinfo|chaosServiceAccount|annotationCheck|blast radius|blast-radius)\b/gi);
+    const safetyCount = countMatches(source.text, /\b(probe|steady-state|steady state|SOT|EOT|Edge|Continuous|OnChaos|promProbe|httpProbe|k8sProbe|cmdProbe|sloProbe|rollback|abort|pause|cleanup|jobCleanUpPolicy|RemoveToxic|UpdateToxic)\b/gi);
+    const observabilityCount = countMatches(source.text, /\b(Prometheus|promProbe|Grafana|OpenTelemetry|otel|alert|metrics|dashboard|ChaosResult|report)\b/gi);
+    const hasSelector = /\b(selector|labelSelector|namespace|appinfo|chaosServiceAccount|containerNames|target|listen|upstream|blast radius|blast-radius)\b/i.test(source.text);
+    const hasDuration = /\b(duration|scheduler|schedule|timeout|latency|toxicity|DURATION|TOTAL_CHAOS_DURATION|CHAOS_INTERVAL|stopAfter|deadline)\b/i.test(source.text);
+    const hasProbeOrSteadyState = /\b(probe|steady-state|steady state|SOT|EOT|promProbe|httpProbe|k8sProbe|cmdProbe|sloProbe|ChaosResult|RemoveToxic|UpdateToxic|cleanup|rollback|abort)\b/i.test(source.text);
+    const hasSetupSignal = experimentCount + faultCount + scopeCount + safetyCount + observabilityCount > 0 || chaosEngineeringReadinessPlatform(source) !== "unknown";
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: chaosEngineeringReadinessPlatform(source),
+      experimentCount,
+      faultCount,
+      scopeCount,
+      safetyCount,
+      observabilityCount,
+      hasSelector,
+      hasDuration,
+      hasProbeOrSteadyState,
+      readiness: experimentCount > 0 && faultCount > 0 && hasSelector && hasDuration && hasProbeOrSteadyState ? "ready" : "partial",
+      evidence: `${source.filePath} contains experiments ${experimentCount}, faults ${faultCount}, scope ${scopeCount}, safety ${safetyCount}, observability ${observabilityCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 120);
+}
+
+function chaosEngineeringReadinessPlatform(source: ChaosEngineeringReadinessSourceFile): ChaosEngineeringReadinessReport["chaosSetups"][number]["platform"] {
+  const haystack = `${source.filePath}\n${source.text}`;
+  if (/chaos-mesh|chaos-mesh\.org|PodChaos|NetworkChaos|StressChaos|IOChaos|DNSChaos|TimeChaos|HTTPChaos/i.test(haystack)) return "chaos-mesh";
+  if (/litmuschaos|ChaosEngine|ChaosExperiment|ChaosSchedule|ChaosResult|chaosServiceAccount|promProbe|sloProbe/i.test(haystack)) return "litmus";
+  if (/toxiproxy|Toxiproxy|AddToxic|CreateProxy|ToxicOptions/i.test(haystack)) return "toxiproxy";
+  if (/gremlin/i.test(haystack)) return "gremlin";
+  if (/fault[-_ ]?injection|chaos|resilience/i.test(haystack)) return "custom";
+  return "unknown";
+}
+
+function chaosEngineeringReadinessExperimentSignals(sourceFiles: ChaosEngineeringReadinessSourceFile[]): ChaosEngineeringReadinessReport["experimentSignals"] {
+  const specs: Array<{ signal: ChaosEngineeringReadinessReport["experimentSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "pod-chaos", pattern: /kind:\s*PodChaos|PodChaos\b/i, evidence: "Chaos Mesh PodChaos evidence was detected." },
+    { signal: "network-chaos", pattern: /kind:\s*NetworkChaos|NetworkChaos\b|pod-network-latency/i, evidence: "network chaos experiment evidence was detected." },
+    { signal: "stress-chaos", pattern: /kind:\s*StressChaos|StressChaos\b|stress-ng|cpu.*stress|memory.*stress/i, evidence: "stress chaos experiment evidence was detected." },
+    { signal: "io-chaos", pattern: /kind:\s*IOChaos|IOChaos\b|io.*delay/i, evidence: "IO chaos experiment evidence was detected." },
+    { signal: "dns-chaos", pattern: /kind:\s*DNSChaos|DNSChaos\b/i, evidence: "DNS chaos experiment evidence was detected." },
+    { signal: "time-chaos", pattern: /kind:\s*TimeChaos|TimeChaos\b|time.*shift/i, evidence: "time chaos experiment evidence was detected." },
+    { signal: "http-chaos", pattern: /kind:\s*HTTPChaos|HTTPChaos\b|http-abort|http-delay/i, evidence: "HTTP chaos experiment evidence was detected." },
+    { signal: "schedule", pattern: /kind:\s*(Schedule|ChaosSchedule)|scheduler:|ChaosSchedule\b/i, evidence: "scheduled chaos evidence was detected." },
+    { signal: "workflow", pattern: /kind:\s*Workflow|Workflow\b/i, evidence: "workflow-style chaos evidence was detected." },
+    { signal: "chaos-engine", pattern: /kind:\s*ChaosEngine|ChaosEngine\b/i, evidence: "Litmus ChaosEngine evidence was detected." },
+    { signal: "chaos-experiment", pattern: /kind:\s*ChaosExperiment|ChaosExperiment\b|experiments:/i, evidence: "Litmus ChaosExperiment evidence was detected." },
+    { signal: "chaos-result", pattern: /kind:\s*ChaosResult|ChaosResult\b/i, evidence: "Litmus ChaosResult evidence was detected." },
+    { signal: "toxiproxy", pattern: /Toxiproxy|toxiproxy\.NewClient|CreateProxy|AddToxic/i, evidence: "Toxiproxy fault-injection fixture evidence was detected." }
+  ];
+  return chaosEngineeringReadinessSignalFromSpecs(sourceFiles, specs, "experiment", "signal");
+}
+
+function chaosEngineeringReadinessFaultSignals(sourceFiles: ChaosEngineeringReadinessSourceFile[]): ChaosEngineeringReadinessReport["faultSignals"] {
+  const specs: Array<{ signal: ChaosEngineeringReadinessReport["faultSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "pod-kill", pattern: /pod-kill|pod kill|container-kill|action:\s*pod-kill/i, evidence: "pod kill fault evidence was detected." },
+    { signal: "pod-delete", pattern: /pod-delete|pod delete|action:\s*pod-delete/i, evidence: "pod delete fault evidence was detected." },
+    { signal: "network-delay", pattern: /action:\s*delay|pod-network-latency|network.*latency|latency:\s*['"]?\d/i, evidence: "network delay/latency fault evidence was detected." },
+    { signal: "network-loss", pattern: /action:\s*loss|packet.*loss|loss:\s*['"]?\d/i, evidence: "network loss fault evidence was detected." },
+    { signal: "network-partition", pattern: /partition|action:\s*partition/i, evidence: "network partition fault evidence was detected." },
+    { signal: "network-bandwidth", pattern: /bandwidth|rate limit|rate-limit/i, evidence: "network bandwidth fault evidence was detected." },
+    { signal: "cpu-stress", pattern: /cpu.*stress|StressChaos[\s\S]{0,120}cpu|CPU_CORES/i, evidence: "CPU stress fault evidence was detected." },
+    { signal: "memory-stress", pattern: /memory.*stress|StressChaos[\s\S]{0,120}memory|MEMORY_CONSUMPTION/i, evidence: "memory stress fault evidence was detected." },
+    { signal: "io-delay", pattern: /IOChaos|io.*delay|latency.*io/i, evidence: "IO delay fault evidence was detected." },
+    { signal: "time-shift", pattern: /TimeChaos|time.*shift|clock.*skew/i, evidence: "time shift fault evidence was detected." },
+    { signal: "dns-error", pattern: /DNSChaos|dns.*error|dns.*random/i, evidence: "DNS error fault evidence was detected." },
+    { signal: "http-abort", pattern: /http-abort|abort|HTTPChaos[\s\S]{0,120}abort/i, evidence: "HTTP abort fault evidence was detected." },
+    { signal: "http-delay", pattern: /http-delay|HTTPChaos[\s\S]{0,120}delay/i, evidence: "HTTP delay fault evidence was detected." },
+    { signal: "latency-toxic", pattern: /AddToxic\s*\([^)]*latency|toxic[^\n]*latency|type:\s*latency/i, evidence: "Toxiproxy latency toxic evidence was detected." },
+    { signal: "timeout-toxic", pattern: /AddToxic\s*\([^)]*timeout|toxic[^\n]*timeout|type:\s*timeout/i, evidence: "Toxiproxy timeout toxic evidence was detected." },
+    { signal: "bandwidth-toxic", pattern: /AddToxic\s*\([^)]*bandwidth|toxic[^\n]*bandwidth|type:\s*bandwidth/i, evidence: "Toxiproxy bandwidth toxic evidence was detected." },
+    { signal: "slow-close-toxic", pattern: /AddToxic\s*\([^)]*slow_close|slow_close|type:\s*slow_close/i, evidence: "Toxiproxy slow_close toxic evidence was detected." },
+    { signal: "limit-data-toxic", pattern: /AddToxic\s*\([^)]*limit_data|limit_data|type:\s*limit_data/i, evidence: "Toxiproxy limit_data toxic evidence was detected." }
+  ];
+  return chaosEngineeringReadinessSignalFromSpecs(sourceFiles, specs, "fault", "signal");
+}
+
+function chaosEngineeringReadinessScopeSignals(sourceFiles: ChaosEngineeringReadinessSourceFile[]): ChaosEngineeringReadinessReport["scopeSignals"] {
+  const specs: Array<{ signal: ChaosEngineeringReadinessReport["scopeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "selector", pattern: /\bselector\s*:|selector:/i, evidence: "selector scope evidence was detected." },
+    { signal: "namespace", pattern: /\bnamespace\s*:|metadata:\s*[\s\S]{0,120}namespace/i, evidence: "namespace scope evidence was detected." },
+    { signal: "label-selector", pattern: /labelSelector|matchLabels|labels?:/i, evidence: "label selector scope evidence was detected." },
+    { signal: "mode", pattern: /\bmode\s*:\s*(one|all|fixed|fixed-percent|random-max-percent|random)/i, evidence: "Chaos Mesh mode scope evidence was detected." },
+    { signal: "duration", pattern: /\bduration\s*:|TOTAL_CHAOS_DURATION|CHAOS_INTERVAL|deadline|timeout/i, evidence: "duration or timeout scope evidence was detected." },
+    { signal: "container-names", pattern: /containerNames|containerRuntime|containerName/i, evidence: "container-specific scope evidence was detected." },
+    { signal: "target", pattern: /\btarget\s*:|listen:|upstream:|CreateProxy|serviceName|appns|applabel/i, evidence: "target service evidence was detected." },
+    { signal: "blast-radius", pattern: /blast radius|blast-radius|radius|limited scope|failure domain/i, evidence: "blast radius language was detected." },
+    { signal: "service-account", pattern: /chaosServiceAccount|serviceAccountName|serviceAccount/i, evidence: "service account scope evidence was detected." },
+    { signal: "annotation-check", pattern: /annotationCheck|chaos\.alpha\.kubernetes\.io|annotation check/i, evidence: "annotation check scope guard evidence was detected." }
+  ];
+  return chaosEngineeringReadinessSignalFromSpecs(sourceFiles, specs, "scope", "signal");
+}
+
+function chaosEngineeringReadinessSafetySignals(sourceFiles: ChaosEngineeringReadinessSourceFile[]): ChaosEngineeringReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: ChaosEngineeringReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "probe", pattern: /\bprobe\b|probes:/i, evidence: "probe evidence was detected." },
+    { signal: "steady-state", pattern: /steady-state|steady state|sloProbe|SLO/i, evidence: "steady-state evidence was detected." },
+    { signal: "sot", pattern: /\bSOT\b|mode:\s*SOT/i, evidence: "start-of-test probe mode evidence was detected." },
+    { signal: "eot", pattern: /\bEOT\b|mode:\s*EOT/i, evidence: "end-of-test probe mode evidence was detected." },
+    { signal: "prometheus-probe", pattern: /promProbe|Prometheus|prometheus/i, evidence: "Prometheus probe evidence was detected." },
+    { signal: "http-probe", pattern: /httpProbe|http probe|url:/i, evidence: "HTTP probe evidence was detected." },
+    { signal: "k8s-probe", pattern: /k8sProbe|k8s probe|kubectl get/i, evidence: "Kubernetes probe evidence was detected." },
+    { signal: "cmd-probe", pattern: /cmdProbe|cmd probe|command:/i, evidence: "command probe evidence was detected." },
+    { signal: "rollback", pattern: /rollback|restore|revert/i, evidence: "rollback evidence was detected." },
+    { signal: "abort", pattern: /\babort\b|http-abort|abortOnFailure|stopOnFailure/i, evidence: "abort control evidence was detected." },
+    { signal: "pause", pattern: /\bpause\b|suspend/i, evidence: "pause/suspend control evidence was detected." },
+    { signal: "cleanup", pattern: /cleanup|jobCleanUpPolicy|RemoveToxic|DeleteProxy|defer|finally/i, evidence: "cleanup evidence was detected." },
+    { signal: "job-cleanup-policy", pattern: /jobCleanUpPolicy|delete|retain/i, evidence: "Litmus job cleanup policy evidence was detected." }
+  ];
+  return chaosEngineeringReadinessSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function chaosEngineeringReadinessObservabilitySignals(sourceFiles: ChaosEngineeringReadinessSourceFile[]): ChaosEngineeringReadinessReport["observabilitySignals"] {
+  const specs: Array<{ signal: ChaosEngineeringReadinessReport["observabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "prometheus", pattern: /Prometheus|prometheus|promProbe/i, evidence: "Prometheus observability evidence was detected." },
+    { signal: "grafana", pattern: /Grafana|grafana/i, evidence: "Grafana dashboard evidence was detected." },
+    { signal: "otel", pattern: /OpenTelemetry|otel|trace|span/i, evidence: "OpenTelemetry observability evidence was detected." },
+    { signal: "alert-rule", pattern: /PrometheusRule|alert:|alertname|Alertmanager/i, evidence: "alert rule evidence was detected." },
+    { signal: "metrics", pattern: /metrics|histogram|counter|gauge|slo/i, evidence: "metrics evidence was detected." },
+    { signal: "dashboard", pattern: /dashboard|panels|grafana/i, evidence: "dashboard evidence was detected." },
+    { signal: "chaos-result", pattern: /ChaosResult|chaosresults/i, evidence: "ChaosResult evidence was detected." },
+    { signal: "report", pattern: /report|junit|json.*result|artifact/i, evidence: "report artifact evidence was detected." }
+  ];
+  return chaosEngineeringReadinessSignalFromSpecs(sourceFiles, specs, "observability", "signal");
+}
+
+function chaosEngineeringReadinessPackageSignals(sourceFiles: ChaosEngineeringReadinessSourceFile[]): ChaosEngineeringReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ChaosEngineeringReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "chaos-mesh", pattern: /chaos-mesh|chaos-mesh\.org|helm.*chaos-mesh/i, evidence: "Chaos Mesh package/chart/API evidence was detected." },
+    { signal: "litmuschaos", pattern: /litmuschaos|litmus-portal|chaos-runner|ChaosEngine/i, evidence: "LitmusChaos package/API evidence was detected." },
+    { signal: "toxiproxy", pattern: /toxiproxy|github\.com\/Shopify\/toxiproxy|toxiproxy-node-client|Toxiproxy/i, evidence: "Toxiproxy package/import evidence was detected." },
+    { signal: "gremlin", pattern: /gremlin/i, evidence: "Gremlin package/tool evidence was detected." },
+    { signal: "helm", pattern: /\bhelm\b|Chart\.yaml|helm template/i, evidence: "Helm rendering evidence was detected." },
+    { signal: "kubectl", pattern: /\bkubectl\b|kubectl apply|kubectl get/i, evidence: "kubectl validation/run evidence was detected." }
+  ];
+  return chaosEngineeringReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function chaosEngineeringReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ChaosEngineeringReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/chaos-engineering-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
