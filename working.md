@@ -3171,6 +3171,45 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 168:
   - `dec711d` error tracking readiness report
 
+- 2026-06-04: AutoResearch Upgrade 169 candidate selected:
+  `PostHog/posthog-js`
+  (`https://github.com/PostHog/posthog-js`; public; GitHub licenseInfo key
+  `other`; 545 stars; 263 forks; updated 2026-06-03T23:19:22Z). Compared
+  with `segmentio/analytics-next`, `amplitude/Amplitude-TypeScript`, and
+  `mixpanel/mixpanel-js`; selected PostHog JavaScript because it directly
+  models product analytics readiness: `posthog.init`, `PostHogProvider`,
+  `posthog.capture`, `posthog.identify`, `posthog.reset`, groups, feature flag
+  hooks, feature payloads, SSR/bootstrap flags, session recording, consent,
+  opt-in/opt-out controls, and `before_send` filtering. Cloned ignored external
+  source to `research/external-src/PostHog-posthog-js` and inspected README,
+  package metadata, browser/react/node docs, examples, hooks, and type/source
+  hits without executing external source. Clone HEAD was `76a2d6b`;
+  tracked-file count for `research/external-src/PostHog-posthog-js` returned
+  `0`.
+- 2026-06-04: RED analytics-readiness smoke generated
+  `/tmp/repotutor-analytics-readiness-red-studies.eLChGX/2026-06-04/local__simple-ts-app__main__f9e07776`;
+  old build was missing `analysis/analytics-readiness-report.json`,
+  `markdown/analytics-readiness.md`, and `html/analytics-readiness.html`, and
+  `open --target analytics-readiness` failed as expected.
+- 2026-06-04: Implemented PostHog-style analytics-readiness report:
+  `AnalyticsReadinessReportSchema`,
+  `analysis/analytics-readiness-report.json`,
+  `markdown/analytics-readiness.md`, `html/analytics-readiness.html`,
+  analytics setups, event signals, identity signals, privacy signals, product
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target analytics-readiness`.
+- 2026-06-04: GREEN analytics-readiness smoke generated
+  `/tmp/repotutor-analytics-readiness-green-studies.2zbfvL/2026-06-04/local__simple-ts-app__main__f9e07776`;
+  confirmed `verificationCheckedRequiredArtifacts=207`, analytics setups 0,
+  event signals 7, identity signals 7, privacy signals 7, product signals 7,
+  package signals 8, risk queue 2, and `open --target analytics-readiness` ->
+  `html/analytics-readiness.html`.
+- 2026-06-04: Verification for Upgrade 169:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 67/67 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

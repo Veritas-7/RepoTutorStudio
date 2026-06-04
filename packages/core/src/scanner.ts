@@ -81,6 +81,7 @@ import {
   FeatureFlagReadinessReport,
   RateLimitReadinessReport,
   ErrorTrackingReadinessReport,
+  AnalyticsReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -168,6 +169,7 @@ export interface AnalysisBundle {
   featureFlagReadinessReport: FeatureFlagReadinessReport;
   rateLimitReadinessReport: RateLimitReadinessReport;
   errorTrackingReadinessReport: ErrorTrackingReadinessReport;
+  analyticsReadinessReport: AnalyticsReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -255,8 +257,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
   const rateLimitReadinessReport = await buildRateLimitReadinessReport(walk);
   const errorTrackingReadinessReport = await buildErrorTrackingReadinessReport(walk);
+  const analyticsReadinessReport = await buildAnalyticsReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -14850,6 +14853,263 @@ function errorTrackingReadinessSignalFromSpecs<T extends Record<K, string> & { p
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/error-tracking-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildAnalyticsReadinessReport(walk: WalkResult): Promise<AnalyticsReadinessReport> {
+  const sourceFiles = await analyticsReadinessSourceFiles(walk);
+  const analyticsSetups = analyticsReadinessSetups(sourceFiles);
+  const eventSignals = analyticsReadinessEventSignals(sourceFiles);
+  const identitySignals = analyticsReadinessIdentitySignals(sourceFiles);
+  const privacySignals = analyticsReadinessPrivacySignals(sourceFiles);
+  const productSignals = analyticsReadinessProductSignals(sourceFiles);
+  const packageSignals = analyticsReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasPostHogPackage = packageSignals.some((item) => ["posthog-js", "posthog-js-lite", "posthog-node", "@posthog/react", "@posthog/nextjs-config"].includes(item.signal) && item.readiness === "ready");
+  const hasSetup = analyticsSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = analyticsSetups.some((item) => item.readiness === "ready");
+  const hasCapture = eventSignals.some((item) => ["capture", "track", "custom-event"].includes(item.signal) && item.readiness === "ready") || analyticsSetups.some((item) => item.captureCount > 0);
+  const hasIdentity = identitySignals.some((item) => ["identify", "alias", "group", "reset", "distinct-id"].includes(item.signal) && item.readiness === "ready") || analyticsSetups.some((item) => item.identityCount > 0);
+  const hasPageview = eventSignals.some((item) => ["pageview", "autocapture"].includes(item.signal) && item.readiness === "ready") || analyticsSetups.some((item) => item.pageviewCount > 0);
+  const hasPrivacy = privacySignals.some((item) => ["opt-in", "opt-out", "before-send", "property-filter", "disable-session-recording"].includes(item.signal) && item.readiness === "ready") || analyticsSetups.some((item) => item.privacyCount > 0);
+  const hasProductTelemetry = productSignals.some((item) => ["feature-flags", "flag-payload", "session-recording", "surveys", "web-vitals"].includes(item.signal) && item.readiness === "ready");
+  const hasSessionRecording = productSignals.some((item) => item.signal === "session-recording" && item.readiness === "ready");
+  const disablesSessionRecording = privacySignals.some((item) => item.signal === "disable-session-recording" && item.readiness === "ready");
+
+  const riskQueue: AnalyticsReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasCapture) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the analytics strategy before claiming analytics readiness.",
+      why: "Analytics readiness starts with an explicit SDK package, init file, capture path, identity policy, pageview/autocapture behavior, or privacy control.",
+      relatedHref: "html/analytics-readiness.html"
+    });
+  }
+  if (hasPostHogPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair each PostHog package signal with posthog.init or PostHogProvider setup and a capture path.",
+      why: "PostHog packages do not produce useful product analytics until an app initializes the client and records events with stable options.",
+      relatedHref: "html/analytics-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasCapture) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add explicit capture, track, pageview, or custom-event calls for the learner-visible product events.",
+      why: "An analytics SDK without event capture cannot explain which user behaviors are measured or why.",
+      relatedHref: "html/analytics-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup || hasCapture) && !hasIdentity) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document identify, alias, group, reset, or distinct-id behavior before using analytics for user journeys.",
+      why: "Product analytics needs a clear identity boundary to avoid merging unrelated users or leaking account context.",
+      relatedHref: "html/analytics-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasCapture || hasPageview || hasProductTelemetry) && !hasPrivacy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review consent, opt-out, before_send, property filtering, and session-recording controls.",
+      why: "Analytics can collect behavioral and identifying data unless privacy and event filtering policy is explicit.",
+      relatedHref: "html/analytics-readiness.html"
+    });
+  }
+  if (hasSessionRecording && !disablesSessionRecording) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Confirm session recording is intentionally enabled and paired with privacy masking or disable controls.",
+      why: "Session replay changes the privacy profile of product analytics and should be reviewed before production traffic.",
+      relatedHref: "html/analytics-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run analytics integration checks only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not initialize analytics SDKs, send events to vendors, collect identities, start replay/heatmaps, mutate cookies or local storage, or run the analyzed project's tests.",
+    relatedHref: "html/analytics-readiness.html"
+  });
+
+  return {
+    summary: `PostHog식 analytics readiness report: setup ${analyticsSetups.length}개, event signal ${eventSignals.length}개, identity signal ${identitySignals.length}개, privacy signal ${privacySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "posthog.init posthog.capture posthog.identify posthog.alias posthog.group posthog.reset autocapture capture_pageview opt_in_capturing opt_out_capturing before_send getFeatureFlag onFeatureFlags session_recording",
+    analyticsSetups,
+    eventSignals,
+    identitySignals,
+    privacySignals,
+    productSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"posthog\\.init|PostHogProvider|analytics\\.load|init\\(|new PostHog|mixpanel\\.init|amplitude\\.init\" src app pages packages", purpose: "Inventory analytics SDK packages, browser/server init files, provider setup, and API host options." },
+      { command: "rg \"posthog\\.capture|analytics\\.track|track\\(|capture_pageview|pageview|autocapture|\\$feature_interaction|custom event\" src app pages packages", purpose: "Trace custom events, pageview behavior, autocapture, feature interactions, and event naming." },
+      { command: "rg \"identify\\(|alias\\(|group\\(|reset\\(|distinctId|distinct_id|setPersonPropertiesForFlags|setGroupPropertiesForFlags\" src app pages packages", purpose: "Review user identity, account/group identity, reset-on-logout, and flag property enrichment." },
+      { command: "rg \"opt_in_capturing|opt_out_capturing|has_opted|before_send|disable_session_recording|property_blacklist|mask|consent\" src app pages packages", purpose: "Check consent, opt-out, event filtering, property filtering, and session recording privacy controls." },
+      { command: "rg \"getFeatureFlag|getFeatureFlagPayload|onFeatureFlags|useFeatureFlag|session_recording|startSessionRecording|survey|web-vitals\" src app pages packages", purpose: "Inspect product analytics integrations such as feature flags, payloads, replay, surveys, and web vitals." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise analytics init, event capture, identity reset, consent gates, and feature flag behavior." }
+    ],
+    learnerNextSteps: [
+      "먼저 posthog.init, PostHogProvider, analytics.load, amplitude.init, mixpanel.init 같은 analytics client 초기화 위치를 확인하세요.",
+      "capture, track, pageview, autocapture, $feature_interaction 호출을 따라가며 어떤 product event가 실제로 측정되는지 확인하세요.",
+      "identify, alias, group, reset, distinctId가 로그인/로그아웃/조직 전환 흐름과 맞는지 검토하세요.",
+      "opt_in_capturing, opt_out_capturing, before_send, property filter, disable_session_recording으로 개인정보와 consent 위험을 줄이는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 이벤트 전송, cookie/localStorage 변경, session replay 시작, vendor dashboard 수신은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type AnalyticsReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function analyticsReadinessSourceFiles(walk: WalkResult): Promise<AnalyticsReadinessSourceFile[]> {
+  const files: AnalyticsReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !analyticsReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!analyticsReadinessPathSignal(file.relPath) && !analyticsReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function analyticsReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return analyticsReadinessPathSignal(filePath)
+    || /^(package\.json|\.env\.example|\.env\.sample|posthog\.[cm]?[jt]sx?|analytics\.[cm]?[jt]sx?|next\.config\.[cm]?[jt]s|vite\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env|toml)$/i.test(filePath);
+}
+
+function analyticsReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(analytics?|posthog|segment|amplitude|mixpanel|telemetry|tracking|events?|feature[-_ ]?flags?|session[-_ ]?recording|consent)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function analyticsReadinessContentSignal(text: string): boolean {
+  return /\b(posthog\.init|posthog\.capture|posthog\.identify|PostHogProvider|PostHogFeature|@posthog\/react|posthog-js|analytics\.track|@segment\/analytics-next|amplitude\.track|@amplitude\/analytics-browser|mixpanel\.track|mixpanel-browser|capture_pageview|autocapture|opt_in_capturing|opt_out_capturing|before_send|getFeatureFlag|onFeatureFlags|session_recording)\b/i.test(text);
+}
+
+function analyticsReadinessSetups(sourceFiles: AnalyticsReadinessSourceFile[]): AnalyticsReadinessReport["analyticsSetups"] {
+  const rows: AnalyticsReadinessReport["analyticsSetups"] = [];
+  for (const source of sourceFiles) {
+    const initCount = countMatches(source.text, /posthog\.init\s*\(|<PostHogProvider\b|new\s+PostHog\s*\(|analytics\.load\s*\(|createAnalytics\s*\(|amplitude\.init\s*\(|mixpanel\.init\s*\(/gi);
+    const captureCount = countMatches(source.text, /posthog\.capture\s*\(|\.capture\s*\(|analytics\.track\s*\(|\.track\s*\(|captureException\s*\(|\$feature_interaction|\$feature_view/gi);
+    const identityCount = countMatches(source.text, /\.identify\s*\(|posthog\.identify\s*\(|\.alias\s*\(|\.group\s*\(|\.reset\s*\(|distinctId|distinct_id|setPersonPropertiesForFlags|setGroupPropertiesForFlags/gi);
+    const pageviewCount = countMatches(source.text, /capture_pageview|pageview|PageView|autocapture|history_change|\$pageview/gi);
+    const privacyCount = countMatches(source.text, /opt_in_capturing|opt_out_capturing|has_opted_in_capturing|has_opted_out_capturing|before_send|disable_session_recording|property_blacklist|property_denylist|mask|consent/gi);
+    const hasSetupSignal = initCount + captureCount + identityCount + pageviewCount + privacyCount > 0 || /\b(PostHog|analytics|product analytics|Segment|Amplitude|Mixpanel)\b/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: analyticsReadinessProvider(source),
+      initCount,
+      captureCount,
+      identityCount,
+      pageviewCount,
+      privacyCount,
+      readiness: initCount > 0 && captureCount > 0 && (identityCount > 0 || pageviewCount > 0 || privacyCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains init ${initCount}, capture ${captureCount}, identity ${identityCount}, pageview/autocapture ${pageviewCount}, privacy controls ${privacyCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function analyticsReadinessProvider(source: AnalyticsReadinessSourceFile): AnalyticsReadinessReport["analyticsSetups"][number]["provider"] {
+  if (/posthog|@posthog\/|PostHog/i.test(source.text)) return "posthog";
+  if (/@segment\/analytics-next|analytics\.track|analytics\.load|Segment/i.test(source.text)) return "segment";
+  if (/@amplitude\/analytics-browser|amplitude\./i.test(source.text)) return "amplitude";
+  if (/mixpanel-browser|mixpanel\./i.test(source.text)) return "mixpanel";
+  if (/\b(analytics|telemetry|tracking|product event)\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function analyticsReadinessEventSignals(sourceFiles: AnalyticsReadinessSourceFile[]): AnalyticsReadinessReport["eventSignals"] {
+  const specs: Array<{ signal: AnalyticsReadinessReport["eventSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "capture", pattern: /posthog\.capture\s*\(|\.capture\s*\(/i, evidence: "PostHog-style capture evidence was detected." },
+    { signal: "track", pattern: /analytics\.track\s*\(|amplitude\.track\s*\(|mixpanel\.track\s*\(|\.track\s*\(/i, evidence: "track event evidence was detected." },
+    { signal: "pageview", pattern: /capture_pageview|pageview|PageView|\$pageview/i, evidence: "pageview evidence was detected." },
+    { signal: "autocapture", pattern: /autocapture/i, evidence: "autocapture evidence was detected." },
+    { signal: "feature-interaction", pattern: /\$feature_interaction|\$feature_view|PostHogFeature/i, evidence: "feature interaction/view analytics evidence was detected." },
+    { signal: "error-capture", pattern: /captureException|captureExceptionImmediate|\$exception|PostHogErrorBoundary/i, evidence: "analytics-backed error capture evidence was detected." },
+    { signal: "custom-event", pattern: /event\s*:|eventName|button_clicked|custom event|user did action/i, evidence: "custom event naming evidence was detected." }
+  ];
+  return analyticsReadinessSignalFromSpecs(sourceFiles, specs, "event", "signal");
+}
+
+function analyticsReadinessIdentitySignals(sourceFiles: AnalyticsReadinessSourceFile[]): AnalyticsReadinessReport["identitySignals"] {
+  const specs: Array<{ signal: AnalyticsReadinessReport["identitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "identify", pattern: /\.identify\s*\(|posthog\.identify\s*\(/i, evidence: "identify evidence was detected." },
+    { signal: "alias", pattern: /\.alias\s*\(|posthog\.alias\s*\(/i, evidence: "alias evidence was detected." },
+    { signal: "group", pattern: /\.group\s*\(|posthog\.group\s*\(|groupProperties/i, evidence: "group identity evidence was detected." },
+    { signal: "reset", pattern: /\.reset\s*\(|posthog\.reset\s*\(/i, evidence: "identity reset evidence was detected." },
+    { signal: "distinct-id", pattern: /distinctId|distinct_id|get_distinct_id|getDistinctId/i, evidence: "distinct ID evidence was detected." },
+    { signal: "person-properties", pattern: /setPersonPropertiesForFlags|personProperties|person_properties|\$set/i, evidence: "person property evidence was detected." },
+    { signal: "group-properties", pattern: /setGroupPropertiesForFlags|groupProperties|group_properties|\$groups/i, evidence: "group property evidence was detected." }
+  ];
+  return analyticsReadinessSignalFromSpecs(sourceFiles, specs, "identity", "signal");
+}
+
+function analyticsReadinessPrivacySignals(sourceFiles: AnalyticsReadinessSourceFile[]): AnalyticsReadinessReport["privacySignals"] {
+  const specs: Array<{ signal: AnalyticsReadinessReport["privacySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "opt-in", pattern: /opt_in_capturing|optIn|consent\s*:\s*true/i, evidence: "opt-in capture evidence was detected." },
+    { signal: "opt-out", pattern: /opt_out_capturing|optOut|consent\s*:\s*false/i, evidence: "opt-out capture evidence was detected." },
+    { signal: "has-opted-in", pattern: /has_opted_in_capturing|hasOptedIn/i, evidence: "has-opted-in check evidence was detected." },
+    { signal: "has-opted-out", pattern: /has_opted_out_capturing|hasOptedOut/i, evidence: "has-opted-out check evidence was detected." },
+    { signal: "disable-session-recording", pattern: /disable_session_recording|disableSessionRecording|session_recording\s*:\s*false/i, evidence: "session recording disable evidence was detected." },
+    { signal: "before-send", pattern: /before_send|beforeSend/i, evidence: "before_send event filtering evidence was detected." },
+    { signal: "property-filter", pattern: /property_blacklist|property_denylist|mask|redact|sanitize|ip_address|person_profiles/i, evidence: "property filtering or masking evidence was detected." }
+  ];
+  return analyticsReadinessSignalFromSpecs(sourceFiles, specs, "privacy", "signal");
+}
+
+function analyticsReadinessProductSignals(sourceFiles: AnalyticsReadinessSourceFile[]): AnalyticsReadinessReport["productSignals"] {
+  const specs: Array<{ signal: AnalyticsReadinessReport["productSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "feature-flags", pattern: /getFeatureFlag|useFeatureFlag|onFeatureFlags|reloadFeatureFlags|activeFeatureFlags/i, evidence: "feature flag analytics evidence was detected." },
+    { signal: "flag-payload", pattern: /getFeatureFlagPayload|useFeatureFlagPayload|featureFlagPayloads|flag payload/i, evidence: "feature flag payload evidence was detected." },
+    { signal: "flag-bootstrap", pattern: /bootstrapFlags|bootstrap\.featureFlags|bootstrap:\s*{|featureFlagPayloads/i, evidence: "flag bootstrap evidence was detected." },
+    { signal: "session-recording", pattern: /session_recording|startSessionRecording|disable_session_recording|recording/i, evidence: "session recording evidence was detected." },
+    { signal: "heatmaps", pattern: /heatmap|rageclick|deadclick/i, evidence: "heatmap interaction evidence was detected." },
+    { signal: "surveys", pattern: /survey|useSurvey|SurveyEventName/i, evidence: "survey analytics evidence was detected." },
+    { signal: "web-vitals", pattern: /web[-_ ]?vitals|reportWebVitals|CLS|LCP|INP|FID/i, evidence: "web vitals evidence was detected." }
+  ];
+  return analyticsReadinessSignalFromSpecs(sourceFiles, specs, "product", "signal");
+}
+
+function analyticsReadinessPackageSignals(sourceFiles: AnalyticsReadinessSourceFile[]): AnalyticsReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: AnalyticsReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "posthog-js", pattern: /posthog-js(?!-lite)|from ['"]posthog-js['"]|posthog-js\/react/i, evidence: "posthog-js package/import evidence was detected." },
+    { signal: "posthog-js-lite", pattern: /posthog-js-lite/i, evidence: "posthog-js-lite package/import evidence was detected." },
+    { signal: "posthog-node", pattern: /posthog-node/i, evidence: "posthog-node package/import evidence was detected." },
+    { signal: "@posthog/react", pattern: /@posthog\/react/i, evidence: "@posthog/react package/import evidence was detected." },
+    { signal: "@posthog/nextjs-config", pattern: /@posthog\/nextjs-config|@posthog\/next/i, evidence: "PostHog Next.js package/import evidence was detected." },
+    { signal: "@segment/analytics-next", pattern: /@segment\/analytics-next/i, evidence: "Segment analytics package/import evidence was detected." },
+    { signal: "@amplitude/analytics-browser", pattern: /@amplitude\/analytics-browser/i, evidence: "Amplitude browser analytics package/import evidence was detected." },
+    { signal: "mixpanel-browser", pattern: /mixpanel-browser/i, evidence: "Mixpanel browser package/import evidence was detected." }
+  ];
+  return analyticsReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function analyticsReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: AnalyticsReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/analytics-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

@@ -76,6 +76,7 @@ import type {
   FeatureFlagReadinessReport,
   RateLimitReadinessReport,
   ErrorTrackingReadinessReport,
+  AnalyticsReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -158,6 +159,7 @@ export interface StudyHtmlInput {
   featureFlagReadinessReport: FeatureFlagReadinessReport;
   rateLimitReadinessReport: RateLimitReadinessReport;
   errorTrackingReadinessReport: ErrorTrackingReadinessReport;
+  analyticsReadinessReport: AnalyticsReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -254,6 +256,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["auth-readiness.html", "Auth"],
     ["payment-readiness.html", "Payments"],
     ["email-readiness.html", "Email"],
+    ["analytics-readiness.html", "Analytics"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -726,6 +729,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Error Tracking Readiness", "error-tracking-readiness.html", `<section class="panel" data-source-pattern="Sentry"><h2>Error Tracking Snapshot</h2><p>${escapeHtml(input.errorTrackingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.errorTrackingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.errorTrackingReadinessReport.errorTrackingSetups.length}</dd></div><div><dt>capture</dt><dd>${input.errorTrackingReadinessReport.captureSignals.length}</dd></div><div><dt>context</dt><dd>${input.errorTrackingReadinessReport.contextSignals.length}</dd></div><div><dt>filtering</dt><dd>${input.errorTrackingReadinessReport.filteringSignals.length}</dd></div></dl><p class="muted">RepoTutor records error-tracking readiness only. It does not initialize SDKs, send events to vendors, upload source maps, start tracing/replay, collect PII, or run the analyzed project's tests.</p></section><section class="grid"><article class="error-tracking-readiness-card"><h3>Error Tracking Setups</h3>${errorTrackingReadinessSetupList(input.errorTrackingReadinessReport.errorTrackingSetups)}</article><article class="error-tracking-readiness-card"><h3>Capture Signals</h3>${errorTrackingReadinessSignalList(input.errorTrackingReadinessReport.captureSignals, "signal")}</article><article class="error-tracking-readiness-card"><h3>Context Signals</h3>${errorTrackingReadinessSignalList(input.errorTrackingReadinessReport.contextSignals, "signal")}</article><article class="error-tracking-readiness-card"><h3>Filtering Signals</h3>${errorTrackingReadinessSignalList(input.errorTrackingReadinessReport.filteringSignals, "signal")}</article></section><section class="grid"><article class="error-tracking-readiness-card"><h3>Observability Signals</h3>${errorTrackingReadinessSignalList(input.errorTrackingReadinessReport.observabilitySignals, "signal")}</article><article class="error-tracking-readiness-card"><h3>Package Signals</h3>${errorTrackingReadinessSignalList(input.errorTrackingReadinessReport.packageSignals, "signal")}</article><article class="error-tracking-readiness-card"><h3>Recommended Commands</h3>${errorTrackingReadinessCommandList(input.errorTrackingReadinessReport.recommendedCommands)}</article><article class="error-tracking-readiness-card"><h3>Risk Queue</h3>${errorTrackingReadinessRiskList(input.errorTrackingReadinessReport.riskQueue)}</article><article class="error-tracking-readiness-card"><h3>다음 확인 단계</h3>${list(input.errorTrackingReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "analytics-readiness.html",
+      title: "Analytics Readiness",
+      html: pageShell("Analytics Readiness", "analytics-readiness.html", `<section class="panel" data-source-pattern="PostHog"><h2>Analytics Snapshot</h2><p>${escapeHtml(input.analyticsReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.analyticsReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.analyticsReadinessReport.analyticsSetups.length}</dd></div><div><dt>events</dt><dd>${input.analyticsReadinessReport.eventSignals.length}</dd></div><div><dt>identity</dt><dd>${input.analyticsReadinessReport.identitySignals.length}</dd></div><div><dt>privacy</dt><dd>${input.analyticsReadinessReport.privacySignals.length}</dd></div></dl><p class="muted">RepoTutor records analytics readiness only. It does not initialize analytics SDKs, send events to vendors, collect identities, start replay or heatmaps, mutate cookies or local storage, or run the analyzed project's tests.</p></section><section class="grid"><article class="analytics-readiness-card"><h3>Analytics Setups</h3>${analyticsReadinessSetupList(input.analyticsReadinessReport.analyticsSetups)}</article><article class="analytics-readiness-card"><h3>Event Signals</h3>${analyticsReadinessSignalList(input.analyticsReadinessReport.eventSignals, "signal")}</article><article class="analytics-readiness-card"><h3>Identity Signals</h3>${analyticsReadinessSignalList(input.analyticsReadinessReport.identitySignals, "signal")}</article><article class="analytics-readiness-card"><h3>Privacy Signals</h3>${analyticsReadinessSignalList(input.analyticsReadinessReport.privacySignals, "signal")}</article></section><section class="grid"><article class="analytics-readiness-card"><h3>Product Signals</h3>${analyticsReadinessSignalList(input.analyticsReadinessReport.productSignals, "signal")}</article><article class="analytics-readiness-card"><h3>Package Signals</h3>${analyticsReadinessSignalList(input.analyticsReadinessReport.packageSignals, "signal")}</article><article class="analytics-readiness-card"><h3>Recommended Commands</h3>${analyticsReadinessCommandList(input.analyticsReadinessReport.recommendedCommands)}</article><article class="analytics-readiness-card"><h3>Risk Queue</h3>${analyticsReadinessRiskList(input.analyticsReadinessReport.riskQueue)}</article><article class="analytics-readiness-card"><h3>다음 확인 단계</h3>${list(input.analyticsReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -902,6 +910,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Feature Flag Readiness", path: "html/feature-flag-readiness.html", description: "OpenFeature식 provider, evaluation, targeting context, hooks, tracking 준비도를 확인합니다." },
       { label: "Rate Limit Readiness", path: "html/rate-limit-readiness.html", description: "rate-limiter-flexible식 limiter setup, quota, identity key, store, response header 준비도를 확인합니다." },
       { label: "Error Tracking Readiness", path: "html/error-tracking-readiness.html", description: "Sentry식 init, capture, context, filtering, tracing, replay 준비도를 확인합니다." },
+      { label: "Analytics Readiness", path: "html/analytics-readiness.html", description: "PostHog식 init, capture, identity, pageview, consent, feature flag, replay 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1381,6 +1390,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "error-tracking-readiness.html",
       goal: "Sentry식 SDK init, capture, scope/context, privacy filtering, tracing/replay 흐름을 보고 운영 에러 triage 관문을 확인합니다.",
       evidence: `error tracking setups ${input.errorTrackingReadinessReport.errorTrackingSetups.length}개, capture signals ${input.errorTrackingReadinessReport.captureSignals.length}개`
+    },
+    {
+      title: "Analytics readiness 확인",
+      href: "analytics-readiness.html",
+      goal: "PostHog식 analytics init, event capture, identity reset, pageview/autocapture, consent/privacy, feature flag/replay 흐름을 보고 product analytics 관문을 확인합니다.",
+      evidence: `analytics setups ${input.analyticsReadinessReport.analyticsSetups.length}개, event signals ${input.analyticsReadinessReport.eventSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3123,6 +3138,31 @@ function errorTrackingReadinessRiskList(items: ErrorTrackingReadinessReport["ris
 }
 
 function errorTrackingReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function analyticsReadinessSetupList(items: AnalyticsReadinessReport["analyticsSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">analytics setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>init/capture/identity/pageview/privacy ${item.initCount}/${item.captureCount}/${item.identityCount}/${item.pageviewCount}/${item.privacyCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(analyticsReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function analyticsReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">analytics signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(analyticsReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function analyticsReadinessCommandList(items: AnalyticsReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function analyticsReadinessRiskList(items: AnalyticsReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(analyticsReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function analyticsReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

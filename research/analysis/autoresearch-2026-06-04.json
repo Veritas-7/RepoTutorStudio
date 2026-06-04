@@ -1044,6 +1044,24 @@
         "package scanning for Sentry Browser Node React Next.js Vue plus Rollbar and Bugsnag dependencies",
         "safe static error-tracking readiness that never initializes SDKs sends events uploads source maps starts tracing or replay collects PII or runs analyzed project tests"
       ]
+    },
+    {
+      "repo": "PostHog/posthog-js",
+      "url": "https://github.com/PostHog/posthog-js",
+      "localPath": "research/external-src/PostHog-posthog-js",
+      "stars": 545,
+      "forks": 263,
+      "license": "other",
+      "updatedAt": "2026-06-03T23:19:22Z",
+      "adoptedPatterns": [
+        "PostHog setup scanning for posthog.init PostHogProvider API host options and package imports",
+        "event scanning for posthog.capture track pageview autocapture feature interaction error capture and custom event names",
+        "identity scanning for identify alias group reset distinctId person properties and group properties",
+        "privacy scanning for opt_in_capturing opt_out_capturing has_opted checks before_send property filtering masking and disable_session_recording",
+        "product analytics scanning for feature flags flag payloads bootstrap session recording heatmaps surveys and web vitals",
+        "package scanning for posthog-js posthog-js-lite posthog-node @posthog/react @posthog/nextjs-config Segment Amplitude and Mixpanel dependencies",
+        "safe static analytics readiness that never initializes SDKs sends events collects identities starts replay or heatmaps mutates cookies/local storage or runs analyzed project tests"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3647,6 +3665,25 @@
         "markdown/error-tracking-readiness.md",
         "html/error-tracking-readiness.html"
       ]
+    },
+    {
+      "name": "Analytics readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/analytics-readiness-report.json",
+        "markdown/analytics-readiness.md",
+        "html/analytics-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4261,6 +4298,12 @@
     "cliErrorTrackingReadinessOpenTargetSmoke": "PASS",
     "buildErrorTrackingReadiness": "PASS",
     "testErrorTrackingReadiness": "PASS",
-    "auditBriefErrorTrackingReadiness66": "PASS"
+    "auditBriefErrorTrackingReadiness66": "PASS",
+    "fixtureAnalyticsReadinessReport": "PASS",
+    "cliAnalyticsReadinessSmoke": "PASS",
+    "cliAnalyticsReadinessOpenTargetSmoke": "PASS",
+    "buildAnalyticsReadiness": "PASS",
+    "testAnalyticsReadiness": "PASS",
+    "auditBriefAnalyticsReadiness67": "PASS"
   }
 }
