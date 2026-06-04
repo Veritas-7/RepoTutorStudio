@@ -3202,6 +3202,45 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 43/43 audit checks across 13 generated reports
 
+### Upgrade 146: Package Manager Readiness Report
+
+- Cloned and inspected `pnpm/pnpm` under
+  `research/external-src/pnpm-pnpm` without executing external source.
+- GitHub metadata: public repo, MIT license, 35,358 stars, 1,475 forks,
+  updated 2026-06-04T02:33:19Z. Compared with `npm/cli`,
+  `yarnpkg/berry`, and `oven-sh/bun`; selected pnpm because it directly
+  models package-manager choice, deterministic lockfiles, monorepo
+  workspaces, workspace package includes/excludes, catalogs, build-script
+  allowlists, audit config, packageManager/devEngines, lifecycle hooks, and
+  recursive/filter commands. No source code was copied into RepoTutor.
+- Implemented pnpm-style package-manager readiness report:
+  `PackageManagerReportSchema`, `analysis/package-manager-report.json`,
+  `markdown/package-manager.md`, `html/package-manager.html`, manifest files,
+  workspace signals, lockfile signals, script signals, policy signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, and `open --target package-manager`.
+- Source pattern: pnpm separates `packageManager`, `devEngines`, workspace
+  package globs, catalog dependency versions, allowBuilds/audit policy,
+  lockfile importers/packages, recursive workspace commands, filters,
+  frozen-lockfile installs, and `.pnpmfile` hooks. RepoTutor maps that to
+  deterministic static package-manager readiness and explicitly does not run
+  install commands, resolve registry metadata, or execute lifecycle scripts.
+- RED smoke generated
+  `/tmp/repotutor-package-manager-red-studies.8KT87t/2026-06-04/local__simple-ts-app__main__9651bbfc`;
+  old behavior was missing `analysis/package-manager-report.json`,
+  `markdown/package-manager.md`, and `html/package-manager.html`, and
+  `open --target package-manager` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-package-manager-green-studies.OjoTZl/2026-06-04/local__simple-ts-app__main__9651bbfc`;
+  confirmed `verificationCheckedRequiredArtifacts=138`, manifest files 1,
+  workspace signals 8, lockfile signals 0, script signals 11, policy signals
+  10, recommended commands 6, risk queue 3, `package-manager-card`,
+  `data-source-pattern="pnpm"`, manifest/learning-path entries, and
+  `open --target package-manager` -> `html/package-manager.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 44/44 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
