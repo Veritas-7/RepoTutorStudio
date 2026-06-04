@@ -105,6 +105,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mobile-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "edge-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "compose-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "devcontainer-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -208,6 +209,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mobile-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "edge-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "compose-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "devcontainer-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -311,6 +313,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "mobile-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "edge-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "compose-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "devcontainer-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -445,6 +448,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/mobile-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/edge-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/compose-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/devcontainer-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -2228,6 +2232,19 @@ describe("RepoTutor core pipeline", () => {
     expect(composeReadinessMarkdown).toContain("# Compose Readiness");
     expect(composeReadinessMarkdown).toContain("Source pattern: Docker Compose");
     expect(composeReadinessMarkdown).toContain("## Workflow Signals");
+    const devContainerReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "devcontainer-readiness-report.json"), "utf8");
+    expect(devContainerReadinessText).toContain("Dev Containers devcontainer.json .devcontainer devcontainer build up exec read-configuration run-user-commands features templates postCreateCommand forwardPorts customizations remoteUser containerEnv mounts workspaceFolder");
+    expect(devContainerReadinessText).toContain("\"devContainerSetups\"");
+    expect(devContainerReadinessText).toContain("\"workflowSignals\"");
+    expect(devContainerReadinessText).toContain("\"lifecycleSignals\"");
+    const devContainerReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "devcontainer-readiness.html"), "utf8");
+    expect(devContainerReadinessHtml).toContain("Dev Container Readiness");
+    expect(devContainerReadinessHtml).toContain("devcontainer-readiness-card");
+    expect(devContainerReadinessHtml).toContain("data-source-pattern=\"Dev Containers\"");
+    const devContainerReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "devcontainer-readiness.md"), "utf8");
+    expect(devContainerReadinessMarkdown).toContain("# Dev Container Readiness");
+    expect(devContainerReadinessMarkdown).toContain("Source pattern: Dev Containers");
+    expect(devContainerReadinessMarkdown).toContain("## Lifecycle Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -2391,6 +2408,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/error-tracking-readiness.html");
     expect(exportManifestText).toContain("html/edge-readiness.html");
     expect(exportManifestText).toContain("html/compose-readiness.html");
+    expect(exportManifestText).toContain("html/devcontainer-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -3306,6 +3324,199 @@ describe("RepoTutor core pipeline", () => {
     expect(report.packageSignals.some((item) => item.signal === "dockerfile" && item.readiness === "ready")).toBe(true);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "compose-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "compose-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects Dev Container readiness patterns without running containers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-devcontainer-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-devcontainer-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".devcontainer"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.appendFile(path.join(sourceRoot, "README.md"), "\nDev Containers local development is supported through VS Code Dev Containers.\n");
+    await fs.writeFile(path.join(sourceRoot, ".devcontainer", "devcontainer.json"), JSON.stringify({
+      name: "RepoTutor Dev Container Fixture",
+      image: "mcr.microsoft.com/devcontainers/typescript-node:22",
+      build: {
+        dockerfile: "Dockerfile",
+        context: ".."
+      },
+      dockerComposeFile: "docker-compose.yml",
+      service: "app",
+      workspaceFolder: "/workspaces/repotutor",
+      workspaceMount: "source=${localWorkspaceFolder},target=/workspaces/repotutor,type=bind,consistency=cached",
+      features: {
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+      },
+      overrideFeatureInstallOrder: ["ghcr.io/devcontainers/features/github-cli"],
+      initializeCommand: "node --version",
+      onCreateCommand: "pnpm install",
+      updateContentCommand: "pnpm build",
+      postCreateCommand: "pnpm test",
+      postStartCommand: "pnpm devcontainer:ready",
+      postAttachCommand: "pnpm devcontainer:attach",
+      waitFor: "postCreateCommand",
+      containerEnv: {
+        APP_MODE: "devcontainer"
+      },
+      remoteEnv: {
+        NODE_OPTIONS: "--max-old-space-size=4096"
+      },
+      userEnvProbe: "loginInteractiveShell",
+      secrets: {
+        APP_TOKEN_NAME: {
+          description: "Name of the token env var supplied by the operator"
+        }
+      },
+      remoteUser: "node",
+      containerUser: "node",
+      updateRemoteUserUID: true,
+      mounts: ["source=repotutor-cache,target=/cache,type=volume"],
+      forwardPorts: [3000, 5173],
+      portsAttributes: {
+        "3000": { label: "app" }
+      },
+      otherPortsAttributes: {
+        onAutoForward: "notify"
+      },
+      customizations: {
+        vscode: {
+          extensions: ["dbaeumer.vscode-eslint"],
+          settings: { "editor.formatOnSave": true }
+        },
+        codespaces: { openFiles: ["README.md"] }
+      },
+      dotfiles: {
+        repository: "local/dotfiles"
+      },
+      capAdd: ["SYS_PTRACE"],
+      securityOpt: ["seccomp=unconfined"],
+      privileged: true,
+      hostRequirements: {
+        cpus: 2
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".devcontainer", "Dockerfile"), "FROM mcr.microsoft.com/devcontainers/typescript-node:22\nWORKDIR /workspaces/repotutor\n");
+    await fs.writeFile(path.join(sourceRoot, ".devcontainer", "docker-compose.yml"), [
+      "services:",
+      "  app:",
+      "    build:",
+      "      context: ..",
+      "      dockerfile: .devcontainer/Dockerfile",
+      "    volumes:",
+      "      - ..:/workspaces/repotutor",
+      "    command: sleep infinity"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".devcontainer", "devcontainer-feature.json"), JSON.stringify({
+      id: "repotutor-tooling",
+      version: "1.0.0",
+      name: "RepoTutor tooling",
+      installsAfter: ["ghcr.io/devcontainers/features/common-utils"],
+      options: {
+        installTools: {
+          type: "boolean",
+          default: true
+        }
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".devcontainer", "devcontainer-template.json"), JSON.stringify({
+      id: "repotutor-template",
+      version: "1.0.0",
+      name: "RepoTutor Template"
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".devcontainer-lock.json"), JSON.stringify({
+      features: {
+        "ghcr.io/devcontainers/features/github-cli:1": {
+          version: "1"
+        }
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "devcontainer:read": "devcontainer read-configuration --workspace-folder .",
+        "devcontainer:up": "devcontainer up --workspace-folder .",
+        "devcontainer:build": "devcontainer build --workspace-folder . --frozen-lockfile",
+        "devcontainer:exec": "devcontainer exec --workspace-folder . pnpm test",
+        "devcontainer:run-user": "devcontainer run-user-commands --workspace-folder .",
+        "devcontainer:features-test": "devcontainer features test .devcontainer",
+        "devcontainer:features-package": "devcontainer features package .devcontainer",
+        "devcontainer:outdated": "devcontainer outdated --workspace-folder .",
+        "devcontainer:upgrade": "devcontainer upgrade --workspace-folder .",
+        "devcontainer:templates": "devcontainer templates apply --template-id repotutor-template"
+      },
+      devDependencies: {
+        "@devcontainers/cli": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "devcontainer.yml"), [
+      "name: devcontainer",
+      "on: [push]",
+      "jobs:",
+      "  devcontainer:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: devcontainer build --workspace-folder . --frozen-lockfile",
+      "      - run: devcontainer read-configuration --workspace-folder ."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "devcontainer-readiness-report.json"), "utf8")) as {
+      devContainerSetups: Array<{ filePath: string; format: string; configCount: number; imageBuildCount: number; featureCount: number; lifecycleCount: number; environmentCount: number; mountCount: number; portCount: number; userCount: number; customizationCount: number; workflowCount: number; lockfileCount: number }>;
+      configSignals: Array<{ signal: string; readiness: string }>;
+      featureSignals: Array<{ signal: string; readiness: string }>;
+      lifecycleSignals: Array<{ signal: string; readiness: string }>;
+      environmentSignals: Array<{ signal: string; readiness: string }>;
+      workspaceSignals: Array<{ signal: string; readiness: string }>;
+      customizationSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    const setup = report.devContainerSetups.find((item) => item.filePath === ".devcontainer/devcontainer.json");
+    expect(report.devContainerSetups.length).toBeGreaterThan(0);
+    expect(setup?.format).toBe("devcontainer-json");
+    expect(setup?.configCount).toBeGreaterThan(0);
+    expect(setup?.imageBuildCount).toBeGreaterThan(0);
+    expect(setup?.featureCount).toBeGreaterThan(0);
+    expect(setup?.lifecycleCount).toBeGreaterThan(0);
+    expect(setup?.environmentCount).toBeGreaterThan(0);
+    expect(setup?.mountCount).toBeGreaterThan(0);
+    expect(setup?.portCount).toBeGreaterThan(0);
+    expect(setup?.userCount).toBeGreaterThan(0);
+    expect(setup?.customizationCount).toBeGreaterThan(0);
+    expect(report.devContainerSetups.some((item) => item.workflowCount > 0)).toBe(true);
+    expect(report.devContainerSetups.some((item) => item.lockfileCount > 0)).toBe(true);
+    for (const signal of ["devcontainer-json", "devcontainer-lock", "name", "image", "build", "dockerfile", "docker-compose-file", "service", "workspace-folder"]) {
+      expect(report.configSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["features", "feature-json", "template-json", "installs-after", "options", "override-feature-install-order", "lockfile"]) {
+      expect(report.featureSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["initialize-command", "on-create-command", "update-content-command", "post-create-command", "post-start-command", "post-attach-command", "wait-for"]) {
+      expect(report.lifecycleSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["container-env", "remote-env", "user-env-probe", "secrets", "remote-user", "container-user"]) {
+      expect(report.environmentSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["workspace-folder", "workspace-mount", "mounts", "forward-ports", "ports-attributes", "other-ports-attributes"]) {
+      expect(report.workspaceSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["customizations", "vscode-extensions", "vscode-settings", "codespaces", "dotfiles"]) {
+      expect(report.customizationSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["devcontainer-up", "devcontainer-build", "devcontainer-exec", "read-configuration", "run-user-commands", "features-test", "features-package", "outdated", "upgrade"]) {
+      expect(report.workflowSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["lockfile", "frozen-lockfile", "non-root-user", "cap-add", "security-opt", "privileged", "host-requirements"]) {
+      expect(report.safetySignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["devcontainers-cli", "devcontainer-cli", "devcontainer-feature", "devcontainer-template", "vscode-dev-containers"]) {
+      expect(report.packageSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "devcontainer-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "devcontainer-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("compares a new study session against the previous source snapshot", async () => {

@@ -4654,6 +4654,48 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 203:
   - `7409631` compose readiness report
 
+- 2026-06-05: AutoResearch Upgrade 204 candidate selected:
+  `devcontainers/cli` (`https://github.com/devcontainers/cli`; public;
+  MIT; 2,763 stars; 409 forks; updated 2026-06-04T12:57:22Z). Compared with
+  `devcontainers/spec`, `devcontainers/features`, and `devcontainers/images`;
+  selected the reference CLI because it directly exercises `devcontainer.json`,
+  lifecycle commands, features, mounts, ports, users, customizations, lockfile
+  behavior, and `devcontainer read-configuration/up/build/exec/
+  run-user-commands` workflows. Cloned sparse ignored external source to
+  `research/external-src/devcontainers-cli` and inspected README/source/tests/
+  workflows without executing external source. Clone HEAD was `65f98a5`;
+  tracked file count for `research/external-src/devcontainers-cli` returned
+  `0`.
+- 2026-06-05: RED devcontainer-readiness smoke generated
+  `/tmp/repotutor-devcontainer-red-studies.ZKG7GC/2026-06-05/local__repotutor-devcontainer-red-repo.ExLkMp__local__56ef4b60`;
+  old build had `verificationCheckedRequiredArtifacts=309`, was missing
+  `analysis/devcontainer-readiness-report.json`,
+  `markdown/devcontainer-readiness.md`, and `html/devcontainer-readiness.html`,
+  and `open --target devcontainer-readiness` failed as expected.
+- 2026-06-05: Implemented Dev Containers-style devcontainer-readiness report:
+  `DevContainerReadinessReportSchema`,
+  `analysis/devcontainer-readiness-report.json`,
+  `markdown/devcontainer-readiness.md`, `html/devcontainer-readiness.html`,
+  dev container setups, config signals, feature signals, lifecycle signals,
+  environment signals, workspace signals, customization signals, workflow
+  signals, safety signals, package signals, recommended commands, risk queue,
+  manifest/session verification coverage, learning-path linkage, nav entry,
+  CLI help target, and `open --target devcontainer-readiness`.
+- 2026-06-05: GREEN devcontainer-readiness smoke generated
+  `/tmp/repotutor-devcontainer-green-studies.OXNnS2/2026-06-05/local__repotutor-devcontainer-red-repo.ExLkMp__local__2ffaabd0`;
+  confirmed `verificationCheckedRequiredArtifacts=312`, devcontainer setups 8,
+  config signals 9, feature signals 7, lifecycle signals 7, environment
+  signals 6, workspace signals 6, customization signals 5, workflow signals
+  9, safety signals 7, package signals 5, risk queue 0, all three new
+  artifacts, and `open --target devcontainer-readiness` ->
+  `html/devcontainer-readiness.html`.
+- 2026-06-05: Verification for Upgrade 204:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 11/11 tests
+  - `pnpm audit:brief`: PASS, 102/102 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

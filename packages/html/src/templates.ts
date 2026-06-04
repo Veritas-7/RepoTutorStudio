@@ -111,6 +111,7 @@ import type {
   MobileReadinessReport,
   EdgeReadinessReport,
   ComposeReadinessReport,
+  DevContainerReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -228,6 +229,7 @@ export interface StudyHtmlInput {
   mobileReadinessReport: MobileReadinessReport;
   edgeReadinessReport: EdgeReadinessReport;
   composeReadinessReport: ComposeReadinessReport;
+  devContainerReadinessReport: DevContainerReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -507,6 +509,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Mobile Readiness</h3><p>${escapeHtml(input.mobileReadinessReport.summary)}</p><p>Expo 패턴으로 app config, platform identifiers, navigation, EAS build, OTA updates, assets, packages 준비도를 정리합니다.</p><a href="mobile-readiness.html">Mobile 열기</a></article>
           <article><h3>Edge Readiness</h3><p>${escapeHtml(input.edgeReadinessReport.summary)}</p><p>Cloudflare Workers 패턴으로 Wrangler config, module handlers, bindings, routes, dev/deploy/tail workflow 준비도를 정리합니다.</p><a href="edge-readiness.html">Edge 열기</a></article>
           <article><h3>Compose Readiness</h3><p>${escapeHtml(input.composeReadinessReport.summary)}</p><p>Docker Compose 패턴으로 compose files, services, dependencies, resources, safety, local workflow 준비도를 정리합니다.</p><a href="compose-readiness.html">Compose 열기</a></article>
+          <article><h3>Dev Container Readiness</h3><p>${escapeHtml(input.devContainerReadinessReport.summary)}</p><p>Dev Containers 패턴으로 devcontainer.json, features, lifecycle hooks, mounts, ports, customizations, CLI workflow 준비도를 정리합니다.</p><a href="devcontainer-readiness.html">Dev Container 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -1014,6 +1017,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "compose-readiness.html",
       title: "Compose Readiness",
       html: pageShell("Compose Readiness", "compose-readiness.html", `<section class="panel" data-source-pattern="Docker Compose"><h2>Compose Snapshot</h2><p>${escapeHtml(input.composeReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.composeReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.composeReadinessReport.composeSetups.length}</dd></div><div><dt>config</dt><dd>${input.composeReadinessReport.configSignals.length}</dd></div><div><dt>services</dt><dd>${input.composeReadinessReport.serviceSignals.length}</dd></div><div><dt>dependencies</dt><dd>${input.composeReadinessReport.dependencySignals.length}</dd></div><div><dt>resources</dt><dd>${input.composeReadinessReport.resourceSignals.length}</dd></div><div><dt>workflow</dt><dd>${input.composeReadinessReport.workflowSignals.length}</dd></div></dl><p class="muted">RepoTutor records Compose readiness only; it does not run Docker, Docker Compose, Docker daemon, build/pull/push images, start/stop containers, mutate networks/volumes/secrets/configs, or inspect local runtime state.</p></section><section class="grid"><article class="compose-readiness-card"><h3>Compose Setups</h3>${composeReadinessSetupList(input.composeReadinessReport.composeSetups)}</article><article class="compose-readiness-card"><h3>Config Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.configSignals, "signal")}</article><article class="compose-readiness-card"><h3>Service Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.serviceSignals, "signal")}</article><article class="compose-readiness-card"><h3>Dependency Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.dependencySignals, "signal")}</article></section><section class="grid"><article class="compose-readiness-card"><h3>Resource Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.resourceSignals, "signal")}</article><article class="compose-readiness-card"><h3>Workflow Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.workflowSignals, "signal")}</article><article class="compose-readiness-card"><h3>Safety Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.safetySignals, "signal")}</article><article class="compose-readiness-card"><h3>Package Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.packageSignals, "signal")}</article><article class="compose-readiness-card"><h3>Recommended Commands</h3>${composeReadinessCommandList(input.composeReadinessReport.recommendedCommands)}</article><article class="compose-readiness-card"><h3>Risk Queue</h3>${composeReadinessRiskList(input.composeReadinessReport.riskQueue)}</article><article class="compose-readiness-card"><h3>다음 확인 단계</h3>${list(input.composeReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "devcontainer-readiness.html",
+      title: "Dev Container Readiness",
+      html: pageShell("Dev Container Readiness", "devcontainer-readiness.html", `<section class="panel" data-source-pattern="Dev Containers"><h2>Dev Container Snapshot</h2><p>${escapeHtml(input.devContainerReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.devContainerReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.devContainerReadinessReport.devContainerSetups.length}</dd></div><div><dt>config</dt><dd>${input.devContainerReadinessReport.configSignals.length}</dd></div><div><dt>features</dt><dd>${input.devContainerReadinessReport.featureSignals.length}</dd></div><div><dt>lifecycle</dt><dd>${input.devContainerReadinessReport.lifecycleSignals.length}</dd></div><div><dt>workspace</dt><dd>${input.devContainerReadinessReport.workspaceSignals.length}</dd></div><div><dt>workflow</dt><dd>${input.devContainerReadinessReport.workflowSignals.length}</dd></div></dl><p class="muted">RepoTutor records Dev Container readiness only; it does not run devcontainer, Docker, Docker Compose, container builds, feature/template installs, lifecycle commands, mounts, ports, users, dotfiles, or secrets.</p></section><section class="grid"><article class="devcontainer-readiness-card"><h3>Dev Container Setups</h3>${devContainerReadinessSetupList(input.devContainerReadinessReport.devContainerSetups)}</article><article class="devcontainer-readiness-card"><h3>Config Signals</h3>${devContainerReadinessSignalList(input.devContainerReadinessReport.configSignals, "signal")}</article><article class="devcontainer-readiness-card"><h3>Feature Signals</h3>${devContainerReadinessSignalList(input.devContainerReadinessReport.featureSignals, "signal")}</article><article class="devcontainer-readiness-card"><h3>Lifecycle Signals</h3>${devContainerReadinessSignalList(input.devContainerReadinessReport.lifecycleSignals, "signal")}</article></section><section class="grid"><article class="devcontainer-readiness-card"><h3>Environment Signals</h3>${devContainerReadinessSignalList(input.devContainerReadinessReport.environmentSignals, "signal")}</article><article class="devcontainer-readiness-card"><h3>Workspace Signals</h3>${devContainerReadinessSignalList(input.devContainerReadinessReport.workspaceSignals, "signal")}</article><article class="devcontainer-readiness-card"><h3>Customization Signals</h3>${devContainerReadinessSignalList(input.devContainerReadinessReport.customizationSignals, "signal")}</article><article class="devcontainer-readiness-card"><h3>Workflow Signals</h3>${devContainerReadinessSignalList(input.devContainerReadinessReport.workflowSignals, "signal")}</article><article class="devcontainer-readiness-card"><h3>Safety Signals</h3>${devContainerReadinessSignalList(input.devContainerReadinessReport.safetySignals, "signal")}</article><article class="devcontainer-readiness-card"><h3>Package Signals</h3>${devContainerReadinessSignalList(input.devContainerReadinessReport.packageSignals, "signal")}</article><article class="devcontainer-readiness-card"><h3>Recommended Commands</h3>${devContainerReadinessCommandList(input.devContainerReadinessReport.recommendedCommands)}</article><article class="devcontainer-readiness-card"><h3>Risk Queue</h3>${devContainerReadinessRiskList(input.devContainerReadinessReport.riskQueue)}</article><article class="devcontainer-readiness-card"><h3>다음 확인 단계</h3>${list(input.devContainerReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "context-pack.html",
@@ -1912,6 +1920,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "compose-readiness.html",
       goal: "Docker Compose식 compose file, service topology, dependencies, resources, health, local workflow 흐름을 확인합니다.",
       evidence: `compose setups ${input.composeReadinessReport.composeSetups.length}개, workflow signals ${input.composeReadinessReport.workflowSignals.length}개`
+    },
+    {
+      title: "Dev Container readiness 확인",
+      href: "devcontainer-readiness.html",
+      goal: "Dev Containers식 devcontainer.json, features, lifecycle hooks, mounts, ports, customizations, CLI workflow 흐름을 확인합니다.",
+      evidence: `devcontainer setups ${input.devContainerReadinessReport.devContainerSetups.length}개, lifecycle signals ${input.devContainerReadinessReport.lifecycleSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -4529,6 +4543,31 @@ function composeReadinessRiskList(items: ComposeReadinessReport["riskQueue"]): s
 }
 
 function composeReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function devContainerReadinessSetupList(items: DevContainerReadinessReport["devContainerSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">devcontainer setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.format)}/${escapeHtml(item.readiness)}]<br>config/image-build/features/lifecycle/env/mounts/ports/users/customizations/workflows/lockfiles ${item.configCount}/${item.imageBuildCount}/${item.featureCount}/${item.lifecycleCount}/${item.environmentCount}/${item.mountCount}/${item.portCount}/${item.userCount}/${item.customizationCount}/${item.workflowCount}/${item.lockfileCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(devContainerReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function devContainerReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">devcontainer signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(devContainerReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function devContainerReadinessCommandList(items: DevContainerReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function devContainerReadinessRiskList(items: DevContainerReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(devContainerReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function devContainerReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

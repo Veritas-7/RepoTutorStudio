@@ -5966,6 +5966,60 @@ Local verification:
 - `pnpm test`: PASS, 10/10 tests
 - `pnpm audit:brief`: PASS, 101/101 audit checks across 13 generated reports
 
+### Upgrade 204: Dev Container Readiness Report
+
+- Cloned sparse and inspected `devcontainers/cli` under
+  `research/external-src/devcontainers-cli` without executing external source.
+  Clone HEAD was `65f98a5`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 2,763 stars, 409 forks, updated
+  2026-06-04T12:57:22Z. Compared with `devcontainers/spec`,
+  `devcontainers/features`, and `devcontainers/images`; selected
+  `devcontainers/cli` because it is the reference implementation for creating
+  and configuring a dev container from `devcontainer.json`, including lifecycle
+  commands, features, templates, mounts, ports, users, lockfiles, and CLI
+  workflows. No source code was copied into RepoTutor.
+- Implemented Dev Containers-style devcontainer-readiness report:
+  `DevContainerReadinessReportSchema`,
+  `analysis/devcontainer-readiness-report.json`,
+  `markdown/devcontainer-readiness.md`, `html/devcontainer-readiness.html`,
+  dev container setups, config signals, feature signals, lifecycle signals,
+  environment signals, workspace signals, customization signals, workflow
+  signals, safety signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target devcontainer-readiness`.
+- Source pattern: Dev Containers separates `.devcontainer/devcontainer.json`,
+  `.devcontainer-lock.json`, `devcontainer-feature.json`,
+  `devcontainer-template.json`, `image`, `build`, `Dockerfile`,
+  `dockerComposeFile`, `service`, `workspaceFolder`, `workspaceMount`,
+  `features`, `overrideFeatureInstallOrder`, lifecycle hooks
+  `initializeCommand`, `onCreateCommand`, `updateContentCommand`,
+  `postCreateCommand`, `postStartCommand`, `postAttachCommand`, env/user
+  fields, mounts, `forwardPorts`, `portsAttributes`, `customizations`,
+  Codespaces/VS Code settings, and `devcontainer read-configuration/up/build/
+  exec/run-user-commands/features/outdated/upgrade` workflows. RepoTutor maps
+  that to deterministic static devcontainer readiness and explicitly does not
+  run `devcontainer`, Docker, Docker Compose, container builds, feature or
+  template installs, lifecycle commands, mounts, ports, users, dotfiles, or
+  secrets.
+- RED smoke generated
+  `/tmp/repotutor-devcontainer-red-studies.ZKG7GC/2026-06-05/local__repotutor-devcontainer-red-repo.ExLkMp__local__56ef4b60`;
+  old behavior had `verificationCheckedRequiredArtifacts=309`, was missing
+  `analysis/devcontainer-readiness-report.json`,
+  `markdown/devcontainer-readiness.md`, and `html/devcontainer-readiness.html`,
+  and `open --target devcontainer-readiness` exited with `Unsupported open
+  target`.
+- GREEN smoke generated
+  `/tmp/repotutor-devcontainer-green-studies.OXNnS2/2026-06-05/local__repotutor-devcontainer-red-repo.ExLkMp__local__2ffaabd0`;
+  confirmed `verificationCheckedRequiredArtifacts=312`, devcontainer setups 8,
+  config signals 9, feature signals 7, lifecycle signals 7, environment
+  signals 6, workspace signals 6, customization signals 5, workflow signals 9,
+  safety signals 7, package signals 5, risk queue 0, all three new artifacts,
+  and `open --target devcontainer-readiness` ->
+  `html/devcontainer-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 11/11 tests
+- `pnpm audit:brief`: PASS, 102/102 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
