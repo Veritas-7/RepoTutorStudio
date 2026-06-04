@@ -51,6 +51,7 @@ import {
   I18nReport,
   ReleaseReadinessReport,
   SecretReadinessReport,
+  SecretManagementReadinessReport,
   ContainerReadinessReport,
   CodeQualityReport,
   DocumentationReport,
@@ -188,6 +189,7 @@ export interface AnalysisBundle {
   i18nReport: I18nReport;
   releaseReadinessReport: ReleaseReadinessReport;
   secretReadinessReport: SecretReadinessReport;
+  secretManagementReadinessReport: SecretManagementReadinessReport;
   containerReadinessReport: ContainerReadinessReport;
   codeQualityReport: CodeQualityReport;
   documentationReport: DocumentationReport;
@@ -325,6 +327,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const i18nReport = await buildI18nReport(walk);
   const releaseReadinessReport = await buildReleaseReadinessReport(walk);
   const secretReadinessReport = await buildSecretReadinessReport(walk);
+  const secretManagementReadinessReport = await buildSecretManagementReadinessReport(walk);
   const containerReadinessReport = await buildContainerReadinessReport(walk);
   const codeQualityReport = await buildCodeQualityReport(walk);
   const documentationReport = await buildDocumentationReport(walk);
@@ -406,7 +409,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -6724,6 +6727,278 @@ function secretReadinessFromSpecs<T extends string>(
     readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
     evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} ${label} evidence was not detected.`,
     relatedHref: match?.sourceHref ?? "html/secret-readiness.html"
+  };
+}
+
+async function buildSecretManagementReadinessReport(walk: WalkResult): Promise<SecretManagementReadinessReport> {
+  const sourceFiles = await secretManagementSourceFiles(walk);
+  const secretManagementSetups = secretManagementSetupRows(sourceFiles);
+  const platformSignals = secretManagementPlatformSignals(sourceFiles);
+  const authSignals = secretManagementAuthSignals(sourceFiles);
+  const storageSignals = secretManagementStorageSignals(sourceFiles);
+  const deliverySignals = secretManagementDeliverySignals(sourceFiles);
+  const governanceSignals = secretManagementGovernanceSignals(sourceFiles);
+  const packageSignals = secretManagementPackageSignals(sourceFiles);
+  const hasPlatform = platformSignals.some((item) => item.readiness === "ready" && item.signal !== "custom");
+  const hasAuth = authSignals.some((item) => item.readiness === "ready");
+  const hasPolicy = governanceSignals.some((item) => ["policy", "rbac"].includes(item.signal) && item.readiness === "ready");
+  const hasDelivery = deliverySignals.some((item) => item.readiness === "ready");
+  const hasRotationOrLease = governanceSignals.some((item) => ["rotation", "lease"].includes(item.signal) && item.readiness === "ready")
+    || secretManagementSetups.some((item) => item.rotationCount > 0 || item.leaseCount > 0);
+  const hasAudit = governanceSignals.some((item) => item.signal === "audit-log" && item.readiness === "ready")
+    || secretManagementSetups.some((item) => item.auditCount > 0);
+  const hasEncryption = storageSignals.some((item) => ["transit", "certificate"].includes(item.signal) && item.readiness === "ready")
+    || secretManagementSetups.some((item) => item.encryptionCount > 0);
+
+  const riskQueue: SecretManagementReadinessReport["riskQueue"] = [];
+  if (!hasPlatform) {
+    riskQueue.push({
+      priority: "high",
+      action: "Identify the runtime secret-management platform before treating secrets as operationally managed.",
+      why: "Secret scanning can catch leaks, but production operation also needs a system of record such as Vault, Infisical, Doppler, SOPS, or Kubernetes secret controllers.",
+      relatedHref: "html/secret-management-readiness.html"
+    });
+  }
+  if (hasPlatform && (!hasAuth || !hasPolicy)) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair the secret-management platform with explicit auth methods and policy or RBAC controls.",
+      why: "A configured platform without auth and authorization evidence can still expose broad tokens or unmanaged access paths.",
+      relatedHref: "html/secret-management-readiness.html"
+    });
+  }
+  if (hasPlatform && !hasDelivery) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document how applications receive secrets at runtime.",
+      why: "Operators need to know whether secrets are injected through CLI wrappers, agents, Kubernetes operators, sync controllers, CI/CD, or SDK/API calls.",
+      relatedHref: "html/secret-management-readiness.html"
+    });
+  }
+  if (hasPlatform && !hasRotationOrLease) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add rotation, TTL, lease, renew, or revoke evidence for secrets that should not be static.",
+      why: "Managed secret systems are strongest when credentials expire or rotate instead of persisting indefinitely.",
+      relatedHref: "html/secret-management-readiness.html"
+    });
+  }
+  if (hasPlatform && !hasAudit) {
+    riskQueue.push({
+      priority: "low",
+      action: "Expose audit logs or telemetry for secret access.",
+      why: "Access logs make incident review and permission drift visible.",
+      relatedHref: "html/secret-management-readiness.html"
+    });
+  }
+  if (hasPlatform && !hasEncryption) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record encryption, KMS, SOPS, transit, PKI, or certificate-management evidence.",
+      why: "Secret management often includes encryption workflows beyond simple key/value storage.",
+      relatedHref: "html/secret-management-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Secret-management readiness report: platform signal ${platformSignals.filter((item) => item.readiness === "ready").length}개, auth signal ${authSignals.filter((item) => item.readiness === "ready").length}개, delivery signal ${deliverySignals.filter((item) => item.readiness === "ready").length}개, governance signal ${governanceSignals.filter((item) => item.readiness === "ready").length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Secrets management readiness Vault Infisical Doppler SOPS Sealed Secrets External Secrets secret engines auth methods policies tokens leases rotation transit kv env injection sync Kubernetes operator agent CLI SDK API audit logs dynamic secrets",
+    secretManagementSetups,
+    platformSignals,
+    authSignals,
+    storageSignals,
+    deliverySignals,
+    governanceSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"Vault|VAULT_ADDR|vault kv|vault secrets|Infisical|infisical|Doppler|doppler run|doppler setup\" package.json src app docs .github", purpose: "Find platform-specific secret-management references across code, docs, and workflows." },
+      { command: "rg \"auth method|AppRole|kubernetes auth|oidc|aws auth|gcp auth|azure auth|universal auth|token|policy|rbac\" src app docs infra config", purpose: "Review auth method and authorization evidence for secret-management access." },
+      { command: "rg \"SOPS|\\.sops|SealedSecret|ExternalSecret|SecretStore|ClusterSecretStore|rotation|lease|audit log|transit|pki|dynamic secrets\" .", purpose: "Find encryption, Kubernetes sync, rotation, lease, and audit-log readiness signals." }
+    ],
+    learnerNextSteps: [
+      "Secret scanning과 secret management를 분리해서 보세요. 스캐너는 유출 탐지이고, Vault/Infisical/Doppler/SOPS 계열은 운영·전달·회전 체계입니다.",
+      "플랫폼 이름만 있으면 부족합니다. auth method, policy/RBAC, delivery path, audit log, rotation/lease 증거를 같이 확인하세요.",
+      "Kubernetes에서는 ExternalSecret, SecretStore, ClusterSecretStore, SealedSecret이 실제 배포 경로와 연결되는지 추적하세요.",
+      "RepoTutor는 설정을 실행하지 않습니다. 실제 플랫폼 CLI/API 검증은 원본 환경에서 별도 수행해야 합니다."
+    ]
+  };
+}
+
+type SecretManagementSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function secretManagementSourceFiles(walk: WalkResult): Promise<SecretManagementSourceFile[]> {
+  const files: SecretManagementSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !secretManagementInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 200_000);
+    if (!text) continue;
+    if (!secretManagementPathSignal(file.relPath) && !secretManagementContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 220) break;
+  }
+  return files;
+}
+
+function secretManagementInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|README\.md|SECURITY\.md|\.sops\.ya?ml|sops\.ya?ml|vault\.(hcl|json|ya?ml|toml)|infisical\.(json|ya?ml|toml)|doppler\.(json|ya?ml|toml))$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(vault|infisical|doppler|sops|sealed-?secret|external-?secret|secret-store|clustersecretstore|secrets?-management|secret-sync|pki|kms)/i.test(filePath)
+    || /\.(hcl|toml|ya?ml|json|md|js|jsx|ts|tsx|mjs|cjs|go|py|rb|sh|env|example|sample)$/i.test(filePath);
+}
+
+function secretManagementPathSignal(filePath: string): boolean {
+  return /(vault|infisical|doppler|sops|sealed-?secret|external-?secret|secret-store|clustersecretstore|secrets?-management|secret-sync|pki|kms|secret)/i.test(filePath);
+}
+
+function secretManagementContentSignal(text: string): boolean {
+  return /(Vault|vault\s+(kv|secrets|auth|policy|login)|VAULT_ADDR|VAULT_TOKEN|Infisical|infisical|Doppler|doppler\s+(run|setup|login|secrets)|SOPS|\.sops|SealedSecret|ExternalSecret|SecretStore|ClusterSecretStore|secret engine|auth method|AppRole|transit|lease|rotation|audit log|dynamic secrets|env injection|secret sync|machine identity|Universal Auth|Kubernetes Operator|External Secrets)/i.test(text);
+}
+
+function secretManagementSetupRows(sourceFiles: SecretManagementSourceFile[]): SecretManagementReadinessReport["secretManagementSetups"] {
+  return sourceFiles.map((source): SecretManagementReadinessReport["secretManagementSetups"][number] => {
+    const authCount = countMatches(source.text, /(auth method|login|token|AppRole|Kubernetes Auth|kubernetes auth|OIDC|AWS Auth|GCP Auth|Azure Auth|Universal Auth|machine identity|service token)/gi);
+    const engineCount = countMatches(source.text, /(secret engine|kv|transit|pki|database secrets|dynamic secrets|secret mount|vault secrets enable|certificates?)/gi);
+    const policyCount = countMatches(source.text, /(policy|policies|rbac|role|permission|least privilege|access request|break glass)/gi);
+    const injectionCount = countMatches(source.text, /(doppler run|infisical run|env injection|agent|sidecar|template|envFrom|secretRef|secrets\.inject)/gi);
+    const rotationCount = countMatches(source.text, /(rotation|rotate|dynamic|TTL|lease|renew|revoke|expiry|expiration)/gi);
+    const syncCount = countMatches(source.text, /(sync|Kubernetes Operator|ExternalSecret|SecretStore|ClusterSecretStore|SealedSecret|certificate sync)/gi);
+    const auditCount = countMatches(source.text, /(audit|audit log|logs|telemetry|metrics|access log|event)/gi);
+    const leaseCount = countMatches(source.text, /(lease|renew|revoke|ttl|token TTL|max_ttl)/gi);
+    const encryptionCount = countMatches(source.text, /(transit|kms|SOPS|age|pgp|sealed secret|encryption as a service|encrypt|decrypt)/gi);
+    const cliCount = countMatches(source.text, /(vault\s+(kv|login|secrets|auth|policy)|infisical\s+(run|login|secrets|export)|doppler\s+(run|setup|login|secrets)|sops\b)/gi);
+    const filledBuckets = [authCount, engineCount, policyCount, injectionCount, rotationCount, syncCount, auditCount, leaseCount, encryptionCount, cliCount].filter((count) => count > 0).length;
+    return {
+      filePath: source.filePath,
+      provider: secretManagementProvider(source),
+      authCount,
+      engineCount,
+      policyCount,
+      injectionCount,
+      rotationCount,
+      syncCount,
+      auditCount,
+      leaseCount,
+      encryptionCount,
+      cliCount,
+      readiness: filledBuckets >= 4 ? "ready" : filledBuckets > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains secret-management platform, delivery, governance, or package evidence.`,
+      sourceHref: source.sourceHref
+    };
+  }).slice(0, 140);
+}
+
+function secretManagementProvider(source: SecretManagementSourceFile): SecretManagementReadinessReport["secretManagementSetups"][number]["provider"] {
+  const combined = `${source.filePath}\n${source.text}`;
+  if (/Vault|VAULT_|vault\s+(kv|secrets|auth|policy|login)|node-vault/i.test(combined)) return "vault";
+  if (/Infisical|@infisical\/sdk|infisical/i.test(combined)) return "infisical";
+  if (/Doppler|doppler\s+(run|setup|login|secrets)/i.test(combined)) return "doppler";
+  if (/\.sops|SOPS|\bsops\b|age|pgp/i.test(combined)) return "sops";
+  if (/SealedSecret|sealed-?secrets?|kubeseal/i.test(combined)) return "sealed-secrets";
+  if (/ExternalSecret|SecretStore|ClusterSecretStore|external-?secrets?/i.test(combined)) return "external-secrets";
+  if (/secret management|secret sync|dynamic secrets|env injection/i.test(combined)) return "custom";
+  return "unknown";
+}
+
+function secretManagementPlatformSignals(sourceFiles: SecretManagementSourceFile[]): SecretManagementReadinessReport["platformSignals"] {
+  const specs: Array<{ signal: SecretManagementReadinessReport["platformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vault", pattern: /Vault|VAULT_|vault\s+(kv|secrets|auth|policy|login)|node-vault/i, evidence: "Vault platform evidence was detected." },
+    { signal: "infisical", pattern: /Infisical|@infisical\/sdk|infisical/i, evidence: "Infisical platform evidence was detected." },
+    { signal: "doppler", pattern: /Doppler|doppler\s+(run|setup|login|secrets)/i, evidence: "Doppler platform evidence was detected." },
+    { signal: "sops", pattern: /\.sops|SOPS|\bsops\b|age|pgp/i, evidence: "SOPS encrypted file workflow evidence was detected." },
+    { signal: "sealed-secrets", pattern: /SealedSecret|sealed-?secrets?|kubeseal/i, evidence: "Sealed Secrets evidence was detected." },
+    { signal: "external-secrets", pattern: /ExternalSecret|SecretStore|ClusterSecretStore|external-?secrets?/i, evidence: "External Secrets evidence was detected." },
+    { signal: "custom", pattern: /secret management|secret sync|dynamic secrets|env injection/i, evidence: "Custom secret-management evidence was detected." }
+  ];
+  return specs.map((spec) => secretManagementSignalFromSpecs(sourceFiles, spec, "platform"));
+}
+
+function secretManagementAuthSignals(sourceFiles: SecretManagementSourceFile[]): SecretManagementReadinessReport["authSignals"] {
+  const specs: Array<{ signal: SecretManagementReadinessReport["authSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "token", pattern: /\btoken\b|VAULT_TOKEN|service token|personal token/i, evidence: "token auth evidence was detected." },
+    { signal: "approle", pattern: /AppRole|approle|role_id|secret_id/i, evidence: "AppRole auth evidence was detected." },
+    { signal: "kubernetes-auth", pattern: /Kubernetes Auth|kubernetes auth|auth\/kubernetes|serviceaccount|service account/i, evidence: "Kubernetes auth evidence was detected." },
+    { signal: "oidc", pattern: /OIDC|OpenID Connect|JWT auth|auth\/jwt/i, evidence: "OIDC or JWT auth evidence was detected." },
+    { signal: "aws-auth", pattern: /AWS Auth|aws auth|auth\/aws|IAM role|IAM auth/i, evidence: "AWS auth evidence was detected." },
+    { signal: "gcp-auth", pattern: /GCP Auth|gcp auth|auth\/gcp|Google Cloud auth/i, evidence: "GCP auth evidence was detected." },
+    { signal: "azure-auth", pattern: /Azure Auth|azure auth|auth\/azure|managed identity/i, evidence: "Azure auth evidence was detected." },
+    { signal: "universal-auth", pattern: /Universal Auth|machine identity|client secret|client id/i, evidence: "Universal or machine identity auth evidence was detected." }
+  ];
+  return specs.map((spec) => secretManagementSignalFromSpecs(sourceFiles, spec, "auth"));
+}
+
+function secretManagementStorageSignals(sourceFiles: SecretManagementSourceFile[]): SecretManagementReadinessReport["storageSignals"] {
+  const specs: Array<{ signal: SecretManagementReadinessReport["storageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kv", pattern: /\bkv\b|key\/value|key-value|vault kv/i, evidence: "key/value secret storage evidence was detected." },
+    { signal: "secret-engine", pattern: /secret engine|vault secrets enable|secret mount/i, evidence: "secret engine evidence was detected." },
+    { signal: "dynamic-secrets", pattern: /dynamic secrets?|database credentials?|leased credentials?/i, evidence: "dynamic secret evidence was detected." },
+    { signal: "pki", pattern: /\bpki\b|PKI|certificate authority/i, evidence: "PKI evidence was detected." },
+    { signal: "transit", pattern: /transit|encryption as a service/i, evidence: "transit encryption evidence was detected." },
+    { signal: "certificate", pattern: /certificates?|certificate sync|TLS cert/i, evidence: "certificate management evidence was detected." },
+    { signal: "database-credentials", pattern: /database secrets?|database credentials?|db credentials?/i, evidence: "database credential evidence was detected." },
+    { signal: "environment-config", pattern: /environment config|app config|env injection|doppler run|infisical run/i, evidence: "environment configuration evidence was detected." }
+  ];
+  return specs.map((spec) => secretManagementSignalFromSpecs(sourceFiles, spec, "storage"));
+}
+
+function secretManagementDeliverySignals(sourceFiles: SecretManagementSourceFile[]): SecretManagementReadinessReport["deliverySignals"] {
+  const specs: Array<{ signal: SecretManagementReadinessReport["deliverySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "env-injection", pattern: /env injection|environment injection|envFrom|secretRef|doppler run|infisical run/i, evidence: "environment injection evidence was detected." },
+    { signal: "cli-run", pattern: /doppler run|infisical run|vault\s+(kv|login|secrets|auth|policy)|sops\b/i, evidence: "CLI runtime evidence was detected." },
+    { signal: "agent", pattern: /agent|sidecar|vault agent|infisical agent|template/i, evidence: "agent or sidecar delivery evidence was detected." },
+    { signal: "kubernetes-operator", pattern: /Kubernetes Operator|operator|ExternalSecret|SecretStore|ClusterSecretStore/i, evidence: "Kubernetes operator evidence was detected." },
+    { signal: "sync", pattern: /sync|secret sync|certificate sync|ExternalSecret|SealedSecret/i, evidence: "secret sync evidence was detected." },
+    { signal: "github-action", pattern: /GitHub Action|github action|uses:\s*.*(vault|infisical|doppler|sops|external-secrets)/i, evidence: "GitHub Action delivery evidence was detected." },
+    { signal: "ci-cd", pattern: /CI\/CD|continuous integration|pipeline|workflow|gitlab-ci|circleci|jenkins/i, evidence: "CI/CD delivery evidence was detected." },
+    { signal: "sdk-api", pattern: /SDK|API|@infisical\/sdk|node-vault|client\.secrets|vault client/i, evidence: "SDK/API access evidence was detected." }
+  ];
+  return specs.map((spec) => secretManagementSignalFromSpecs(sourceFiles, spec, "delivery"));
+}
+
+function secretManagementGovernanceSignals(sourceFiles: SecretManagementSourceFile[]): SecretManagementReadinessReport["governanceSignals"] {
+  const specs: Array<{ signal: SecretManagementReadinessReport["governanceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "policy", pattern: /policy|policies|vault policy|least privilege/i, evidence: "policy evidence was detected." },
+    { signal: "rbac", pattern: /rbac|role-based|role binding|permission|role:/i, evidence: "RBAC or role evidence was detected." },
+    { signal: "audit-log", pattern: /audit log|audit|access log|telemetry|metrics/i, evidence: "audit log or telemetry evidence was detected." },
+    { signal: "lease", pattern: /lease|renew|revoke|ttl|token TTL|max_ttl/i, evidence: "lease lifecycle evidence was detected." },
+    { signal: "rotation", pattern: /rotation|rotate|expiry|expiration|dynamic secret/i, evidence: "rotation evidence was detected." },
+    { signal: "versioning", pattern: /versioning|versions?|kv-v2|versioned secrets?/i, evidence: "versioning evidence was detected." },
+    { signal: "access-request", pattern: /access request|approval|temporary access|privileged access/i, evidence: "access request evidence was detected." },
+    { signal: "break-glass", pattern: /break glass|break-glass|emergency access/i, evidence: "break-glass evidence was detected." }
+  ];
+  return specs.map((spec) => secretManagementSignalFromSpecs(sourceFiles, spec, "governance"));
+}
+
+function secretManagementPackageSignals(sourceFiles: SecretManagementSourceFile[]): SecretManagementReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: SecretManagementReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@infisical/sdk", pattern: /@infisical\/sdk/i, evidence: "@infisical/sdk dependency evidence was detected." },
+    { signal: "infisical", pattern: /"infisical"|\binfisical\b/i, evidence: "Infisical package or CLI evidence was detected." },
+    { signal: "vault", pattern: /"vault"|\bvault\b/i, evidence: "Vault package or CLI evidence was detected." },
+    { signal: "node-vault", pattern: /node-vault/i, evidence: "node-vault dependency evidence was detected." },
+    { signal: "doppler", pattern: /"doppler"|\bdoppler\b/i, evidence: "Doppler package or CLI evidence was detected." },
+    { signal: "sops", pattern: /"sops"|\bsops\b|\.sops/i, evidence: "SOPS package or config evidence was detected." },
+    { signal: "sealed-secrets", pattern: /sealed-?secrets?|kubeseal|SealedSecret/i, evidence: "Sealed Secrets package or manifest evidence was detected." },
+    { signal: "external-secrets", pattern: /external-?secrets?|ExternalSecret|SecretStore|ClusterSecretStore/i, evidence: "External Secrets package or manifest evidence was detected." }
+  ];
+  return specs.map((spec) => secretManagementSignalFromSpecs(sourceFiles, spec, "package"));
+}
+
+function secretManagementSignalFromSpecs<T extends string>(
+  sourceFiles: SecretManagementSourceFile[],
+  spec: { signal: T; pattern: RegExp; evidence: string },
+  label: string
+): { signal: T; readiness: "ready" | "missing"; evidence: string; relatedHref: string } {
+  const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+  return {
+    signal: spec.signal,
+    readiness: match ? "ready" : "missing",
+    evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} ${label} evidence was not detected.`,
+    relatedHref: match?.sourceHref ?? "html/secret-management-readiness.html"
   };
 }
 

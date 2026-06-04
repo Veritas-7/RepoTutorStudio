@@ -1619,6 +1619,75 @@ export const SecretReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SecretManagementReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  secretManagementSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["vault", "infisical", "doppler", "sops", "sealed-secrets", "external-secrets", "custom", "unknown"]),
+    authCount: z.number().int().nonnegative(),
+    engineCount: z.number().int().nonnegative(),
+    policyCount: z.number().int().nonnegative(),
+    injectionCount: z.number().int().nonnegative(),
+    rotationCount: z.number().int().nonnegative(),
+    syncCount: z.number().int().nonnegative(),
+    auditCount: z.number().int().nonnegative(),
+    leaseCount: z.number().int().nonnegative(),
+    encryptionCount: z.number().int().nonnegative(),
+    cliCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  platformSignals: z.array(z.object({
+    signal: z.enum(["vault", "infisical", "doppler", "sops", "sealed-secrets", "external-secrets", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  authSignals: z.array(z.object({
+    signal: z.enum(["token", "approle", "kubernetes-auth", "oidc", "aws-auth", "gcp-auth", "azure-auth", "universal-auth", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  storageSignals: z.array(z.object({
+    signal: z.enum(["kv", "secret-engine", "dynamic-secrets", "pki", "transit", "certificate", "database-credentials", "environment-config", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  deliverySignals: z.array(z.object({
+    signal: z.enum(["env-injection", "cli-run", "agent", "kubernetes-operator", "sync", "github-action", "ci-cd", "sdk-api", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  governanceSignals: z.array(z.object({
+    signal: z.enum(["policy", "rbac", "audit-log", "lease", "rotation", "versioning", "access-request", "break-glass", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@infisical/sdk", "infisical", "vault", "node-vault", "doppler", "sops", "sealed-secrets", "external-secrets", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ContainerReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7220,6 +7289,7 @@ export type DesignTokensReport = z.infer<typeof DesignTokensReportSchema>;
 export type I18nReport = z.infer<typeof I18nReportSchema>;
 export type ReleaseReadinessReport = z.infer<typeof ReleaseReadinessReportSchema>;
 export type SecretReadinessReport = z.infer<typeof SecretReadinessReportSchema>;
+export type SecretManagementReadinessReport = z.infer<typeof SecretManagementReadinessReportSchema>;
 export type ContainerReadinessReport = z.infer<typeof ContainerReadinessReportSchema>;
 export type CodeQualityReport = z.infer<typeof CodeQualityReportSchema>;
 export type DocumentationReport = z.infer<typeof DocumentationReportSchema>;

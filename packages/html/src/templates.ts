@@ -46,6 +46,7 @@ import type {
   I18nReport,
   ReleaseReadinessReport,
   SecretReadinessReport,
+  SecretManagementReadinessReport,
   ContainerReadinessReport,
   CodeQualityReport,
   DocumentationReport,
@@ -178,6 +179,7 @@ export interface StudyHtmlInput {
   i18nReport: I18nReport;
   releaseReadinessReport: ReleaseReadinessReport;
   secretReadinessReport: SecretReadinessReport;
+  secretManagementReadinessReport: SecretManagementReadinessReport;
   containerReadinessReport: ContainerReadinessReport;
   codeQualityReport: CodeQualityReport;
   documentationReport: DocumentationReport;
@@ -330,6 +332,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["i18n.html", "I18n"],
     ["release-readiness.html", "Release"],
     ["secret-readiness.html", "Secrets"],
+    ["secret-management-readiness.html", "Secret Management"],
     ["container-readiness.html", "Containers"],
     ["code-quality.html", "Code Quality"],
     ["documentation.html", "Documentation"],
@@ -502,6 +505,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>I18n Readiness</h3><p>${escapeHtml(input.i18nReport.summary)}</p><p>FormatJS 패턴으로 message source, locale asset, runtime, extraction, ICU, QA signals를 정리합니다.</p><a href="i18n.html">I18n 열기</a></article>
           <article><h3>Release Readiness</h3><p>${escapeHtml(input.releaseReadinessReport.summary)}</p><p>semantic-release 패턴으로 config, branches, plugin steps, CI, auth, publish targets를 정리합니다.</p><a href="release-readiness.html">Release 열기</a></article>
           <article><h3>Secret Readiness</h3><p>${escapeHtml(input.secretReadinessReport.summary)}</p><p>Gitleaks 패턴으로 scan targets, secret surfaces, config, reports, prevention signals를 정리합니다.</p><a href="secret-readiness.html">Secrets 열기</a></article>
+          <article><h3>Secret Management Readiness</h3><p>${escapeHtml(input.secretManagementReadinessReport.summary)}</p><p>Vault/Infisical/Doppler/SOPS 패턴으로 runtime secret platform, auth, storage, delivery, governance 준비도를 정리합니다.</p><a href="secret-management-readiness.html">Secret Management 열기</a></article>
           <article><h3>Container Readiness</h3><p>${escapeHtml(input.containerReadinessReport.summary)}</p><p>Hadolint 패턴으로 Dockerfile, Compose, config, instruction risk, labels, CI signals를 정리합니다.</p><a href="container-readiness.html">Containers 열기</a></article>
           <article><h3>Code Quality</h3><p>${escapeHtml(input.codeQualityReport.summary)}</p><p>Biome 패턴으로 formatter, linter, assist, config, CI/editor signals를 정리합니다.</p><a href="code-quality.html">Code Quality 열기</a></article>
           <article><h3>Documentation</h3><p>${escapeHtml(input.documentationReport.summary)}</p><p>Docusaurus 패턴으로 docs, blog, pages, navigation, i18n, search, build/deploy 준비도를 정리합니다.</p><a href="documentation.html">Documentation 열기</a></article>
@@ -744,6 +748,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "secret-readiness.html",
       title: "Secret Readiness",
       html: pageShell("Secret Readiness", "secret-readiness.html", `<section class="panel" data-source-pattern="Gitleaks"><h2>Secret Snapshot</h2><p>${escapeHtml(input.secretReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.secretReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>targets</dt><dd>${input.secretReadinessReport.scanTargets.length}</dd></div><div><dt>surfaces</dt><dd>${input.secretReadinessReport.secretSurfaces.length}</dd></div><div><dt>configs</dt><dd>${input.secretReadinessReport.configSignals.length}</dd></div><div><dt>prevention</dt><dd>${input.secretReadinessReport.preventionSignals.length}</dd></div></dl><p class="muted">RepoTutor records Gitleaks readiness only. It does not scan excluded secret-like content or traverse full git history.</p></section><section class="grid"><article class="secret-card"><h3>Scan Targets</h3>${secretSignalList(input.secretReadinessReport.scanTargets, "target")}</article><article class="secret-card"><h3>Secret Surfaces</h3>${secretSurfaceList(input.secretReadinessReport.secretSurfaces)}</article><article class="secret-card"><h3>Config Signals</h3>${secretConfigList(input.secretReadinessReport.configSignals)}</article><article class="secret-card"><h3>Reporting Signals</h3>${secretSignalList(input.secretReadinessReport.reportingSignals, "signal")}</article></section><section class="grid"><article class="secret-card"><h3>Prevention Signals</h3>${secretSignalList(input.secretReadinessReport.preventionSignals, "signal")}</article><article class="secret-card"><h3>Advanced Signals</h3>${secretSignalList(input.secretReadinessReport.advancedSignals, "signal")}</article><article class="secret-card"><h3>Recommended Commands</h3>${secretCommandList(input.secretReadinessReport.recommendedCommands)}</article><article class="secret-card"><h3>Risk Queue</h3>${secretRiskList(input.secretReadinessReport.riskQueue)}</article><article class="secret-card"><h3>다음 확인 단계</h3>${list(input.secretReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "secret-management-readiness.html",
+      title: "Secret Management Readiness",
+      html: pageShell("Secret Management Readiness", "secret-management-readiness.html", `<section class="panel" data-source-pattern="Secret Management"><h2>Secret Management Snapshot</h2><p>${escapeHtml(input.secretManagementReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.secretManagementReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.secretManagementReadinessReport.secretManagementSetups.length}</dd></div><div><dt>platforms</dt><dd>${input.secretManagementReadinessReport.platformSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>auth</dt><dd>${input.secretManagementReadinessReport.authSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>delivery</dt><dd>${input.secretManagementReadinessReport.deliverySignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>governance</dt><dd>${input.secretManagementReadinessReport.governanceSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records secret-management readiness only. It does not execute Vault, Infisical, Doppler, SOPS, Kubernetes operators, CLIs, API calls, or live credential checks.</p></section><section class="grid"><article class="secret-management-readiness-card"><h3>Secret Management Setups</h3>${secretManagementReadinessSetupList(input.secretManagementReadinessReport.secretManagementSetups)}</article><article class="secret-management-readiness-card"><h3>Platform Signals</h3>${secretManagementReadinessSignalList(input.secretManagementReadinessReport.platformSignals, "signal")}</article><article class="secret-management-readiness-card"><h3>Auth Signals</h3>${secretManagementReadinessSignalList(input.secretManagementReadinessReport.authSignals, "signal")}</article><article class="secret-management-readiness-card"><h3>Storage Signals</h3>${secretManagementReadinessSignalList(input.secretManagementReadinessReport.storageSignals, "signal")}</article></section><section class="grid"><article class="secret-management-readiness-card"><h3>Delivery Signals</h3>${secretManagementReadinessSignalList(input.secretManagementReadinessReport.deliverySignals, "signal")}</article><article class="secret-management-readiness-card"><h3>Governance Signals</h3>${secretManagementReadinessSignalList(input.secretManagementReadinessReport.governanceSignals, "signal")}</article><article class="secret-management-readiness-card"><h3>Package Signals</h3>${secretManagementReadinessSignalList(input.secretManagementReadinessReport.packageSignals, "signal")}</article><article class="secret-management-readiness-card"><h3>Recommended Commands</h3>${secretManagementReadinessCommandList(input.secretManagementReadinessReport.recommendedCommands)}</article><article class="secret-management-readiness-card"><h3>Risk Queue</h3>${secretManagementReadinessRiskList(input.secretManagementReadinessReport.riskQueue)}</article><article class="secret-management-readiness-card"><h3>다음 확인 단계</h3>${list(input.secretManagementReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "container-readiness.html",
@@ -1292,6 +1301,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "I18n Readiness", path: "html/i18n.html", description: "FormatJS식 message source, locale asset, extraction, ICU, QA 준비도를 확인합니다." },
       { label: "Release Readiness", path: "html/release-readiness.html", description: "semantic-release식 config, branch, plugin, CI, auth, publish target 준비도를 확인합니다." },
       { label: "Secret Readiness", path: "html/secret-readiness.html", description: "Gitleaks식 scan target, secret surface, config, report, prevention 준비도를 확인합니다." },
+      { label: "Secret Management Readiness", path: "html/secret-management-readiness.html", description: "Vault/Infisical/Doppler/SOPS식 platform, auth, storage, delivery, governance 준비도를 확인합니다." },
       { label: "Container Readiness", path: "html/container-readiness.html", description: "Hadolint식 Dockerfile, Compose, config, instruction, label, CI 준비도를 확인합니다." },
       { label: "Code Quality", path: "html/code-quality.html", description: "Biome식 formatter, linter, assist, config, CI/editor 준비도를 확인합니다." },
       { label: "Documentation Readiness", path: "html/documentation.html", description: "Docusaurus식 docs, blog, pages, navigation, i18n, search, build/deploy 준비도를 확인합니다." },
@@ -1665,6 +1675,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       evidence: `secret surfaces ${input.secretReadinessReport.secretSurfaces.length}개, prevention signals ${input.secretReadinessReport.preventionSignals.length}개`
     },
     {
+      title: "Secret management 준비도 확인",
+      href: "secret-management-readiness.html",
+      goal: "Vault/Infisical/Doppler/SOPS식 platform, auth, storage, delivery, governance 흐름을 보고 runtime secret contract를 확인합니다.",
+      evidence: `secret-management setups ${input.secretManagementReadinessReport.secretManagementSetups.length}개, platform signals ${input.secretManagementReadinessReport.platformSignals.length}개`
+    },
+    {
       title: "Container 준비도 확인",
       href: "container-readiness.html",
       goal: "Hadolint식 Dockerfile, Compose, config, instruction risk, label, CI/report 준비도를 확인합니다.",
@@ -2035,6 +2051,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "consent-readiness.html",
       goal: "CookieConsent/Klaro/IAB TCF식 banner, category, script blocking, privacy control, vendor/purpose consent 흐름을 보고 consent contract를 확인합니다.",
       evidence: `consent setups ${input.consentReadinessReport.consentSetups.length}개, TCF signals ${input.consentReadinessReport.tcfSignals.length}개`
+    },
+    {
+      title: "Secret management readiness 확인",
+      href: "secret-management-readiness.html",
+      goal: "Vault/Infisical/Doppler/SOPS식 platform, auth, storage, delivery, governance 흐름을 보고 runtime secret contract를 확인합니다.",
+      evidence: `secret-management setups ${input.secretManagementReadinessReport.secretManagementSetups.length}개, governance signals ${input.secretManagementReadinessReport.governanceSignals.length}개`
     },
     {
       title: "Server framework readiness 확인",
@@ -3050,6 +3072,31 @@ function secretRiskList(items: SecretReadinessReport["riskQueue"]): string {
 }
 
 function secretHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function secretManagementReadinessSetupList(items: SecretManagementReadinessReport["secretManagementSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">secret management setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>auth/engine/policy/injection/rotation/sync/audit/lease/encryption/CLI ${item.authCount}/${item.engineCount}/${item.policyCount}/${item.injectionCount}/${item.rotationCount}/${item.syncCount}/${item.auditCount}/${item.leaseCount}/${item.encryptionCount}/${item.cliCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(secretManagementReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function secretManagementReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">secret management signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(secretManagementReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function secretManagementReadinessCommandList(items: SecretManagementReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function secretManagementReadinessRiskList(items: SecretManagementReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(secretManagementReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function secretManagementReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
