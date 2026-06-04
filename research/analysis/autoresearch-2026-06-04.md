@@ -4078,6 +4078,55 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 63/63 audit checks across 13 generated reports
 
+### Upgrade 166: Feature Flag Readiness Report
+
+- Cloned and inspected `open-feature/js-sdk` under
+  `research/external-src/open-feature-js-sdk` without executing external
+  source. Clone HEAD was `3854c5f`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, Apache-2.0 license, 269 stars, 63 forks,
+  updated 2026-06-02T11:57:25Z. Compared with `Unleash/unleash`,
+  `growthbook/growthbook`, and `launchdarkly/js-client-sdk`; selected
+  OpenFeature because it directly models vendor-neutral feature flag readiness:
+  `OpenFeature`, `setProviderAndWait`, `setProvider`, `getClient`,
+  boolean/string/number/object evaluation calls, detailed evaluations,
+  `EvaluationContext`, `targetingKey`, hooks, provider events, tracking,
+  shutdown, domains, React provider/hooks, Nest context factory, and
+  `MultiProvider`. No source code was copied into RepoTutor.
+- Implemented OpenFeature-style feature-flag-readiness report:
+  `FeatureFlagReadinessReportSchema`,
+  `analysis/feature-flag-readiness-report.json`,
+  `markdown/feature-flag-readiness.md`,
+  `html/feature-flag-readiness.html`, feature-flag setups, evaluation signals,
+  context signals, lifecycle signals, package signals, recommended commands,
+  risk queue, manifest/session-verification coverage, learning-path linkage,
+  and `open --target feature-flag-readiness`.
+- Source pattern: OpenFeature separates provider setup through
+  `setProviderAndWait`, `setProvider`, domains, and `MultiProvider`, client
+  access through `getClient` and React/Nest integrations, flag resolution
+  through boolean/string/number/object value and details calls, targeting
+  through `EvaluationContext`, `targetingKey`, user/request/transaction
+  context, lifecycle through hooks, READY/ERROR events, tracking, shutdown,
+  and package evidence across OpenFeature, LaunchDarkly, Unleash, GrowthBook,
+  and Flagsmith. RepoTutor maps that to deterministic static feature-flag
+  readiness and explicitly does not initialize providers, fetch remote flags,
+  evaluate live targeting rules, emit tracking events, close providers, or run
+  the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-feature-flag-readiness-red-studies.vGPC88/2026-06-04/local__simple-ts-app__main__0de5b192`;
+  old behavior was missing `analysis/feature-flag-readiness-report.json`,
+  `markdown/feature-flag-readiness.md`, and
+  `html/feature-flag-readiness.html`, and `open --target
+  feature-flag-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-feature-flag-readiness-green-studies.w2DAtE/2026-06-04/local__simple-ts-app__main__0de5b192`;
+  confirmed `verificationCheckedRequiredArtifacts=198`, feature flag setups
+  0, evaluation signals 8, context signals 8, lifecycle signals 8, package
+  signals 8, risk queue 2, manifest/learning-path entries, and `open --target
+  feature-flag-readiness` -> `html/feature-flag-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 64/64 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

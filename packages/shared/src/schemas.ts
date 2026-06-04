@@ -3178,6 +3178,58 @@ export const LoggingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const FeatureFlagReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  featureFlagSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["openfeature", "launchdarkly", "unleash", "growthbook", "flagsmith", "custom", "unknown"]),
+    providerSetupCount: z.number().int().nonnegative(),
+    clientCount: z.number().int().nonnegative(),
+    evaluationCount: z.number().int().nonnegative(),
+    contextCount: z.number().int().nonnegative(),
+    hookCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  evaluationSignals: z.array(z.object({
+    signal: z.enum(["boolean", "string", "number", "object", "details", "default-value", "variant", "flag-key", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["evaluation-context", "targeting-key", "user-attributes", "request-context", "transaction-context", "domain", "react-provider", "nest-context-factory", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lifecycleSignals: z.array(z.object({
+    signal: z.enum(["set-provider", "set-provider-and-wait", "ready-event", "error-event", "hooks", "tracking", "shutdown", "multi-provider", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@openfeature/server-sdk", "@openfeature/web-sdk", "@openfeature/react-sdk", "@openfeature/nestjs-sdk", "launchdarkly", "unleash", "growthbook", "flagsmith", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3445,6 +3497,7 @@ export type EmailReadinessReport = z.infer<typeof EmailReadinessReportSchema>;
 export type QueueReadinessReport = z.infer<typeof QueueReadinessReportSchema>;
 export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
+export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
