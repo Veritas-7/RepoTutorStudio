@@ -5722,6 +5722,51 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 226:
   - `9fe23e8` consumer contract readiness report
 
+- 2026-06-05: AutoResearch Upgrade 227 candidate selected:
+  `boyter/scc`
+  (`https://github.com/boyter/scc`; MIT, public, 8,442 stars, 319 forks,
+  updated 2026-06-04T17:39:53Z, ignored clone HEAD `1cc6998`) with
+  comparison sources `terryyin/lizard`
+  (`https://github.com/terryyin/lizard`; Other license, public, 2,381 stars,
+  298 forks, updated 2026-06-04T19:50:36Z, ignored clone HEAD `303c7dc`)
+  and `XAMPPRocky/tokei` (`https://github.com/XAMPPRocky/tokei`; Other
+  license, public, 14,520 stars, 679 forks, updated 2026-06-04T21:35:21Z,
+  ignored clone HEAD `fa44e51`). Static source inspection only; `git
+  ls-files` for all three external source paths returned `0`, and `git
+  status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented scc/lizard/tokei-style code-metrics-readiness
+  report: `CodeMetricsReadinessReportSchema`,
+  `analysis/code-metrics-readiness-report.json`,
+  `markdown/code-metrics-readiness.md`,
+  `html/code-metrics-readiness.html`, static line/comment/blank counting,
+  branch-token and function-like token estimation, language metric rollups,
+  hotspot reading priorities, tool/metric/workflow signals, static-only risk
+  queue, recommended review commands, manifest/session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target code-metrics-readiness`.
+- 2026-06-05: RED/GREEN code-metrics-readiness smoke recorded:
+  old behavior at `0446d24` had no `CodeMetricsReadinessReportSchema` and no
+  `code-metrics-readiness` CLI target (`RED missing-count=2 expected=2`).
+  GREEN fixture detected scc, lizard, tokei, cloc, ESLint complexity,
+  complexity-report, COCOMO/LOCOMO, LOC/code/comment/blank metrics,
+  partial cyclomatic/function/hotspot estimates, JSON/CSV/HTML/OpenMetrics,
+  threshold, CI complexity, baseline, diff-check, ignore-file, hotspot-report
+  workflow signals, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 227:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - focused code-metrics-readiness Vitest command: PASS, pipeline file 34/34
+    tests
+  - full pipeline Vitest: PASS, 34/34 tests
+  - `pnpm test`: PASS, 34/34 tests
+  - `pnpm audit:brief`: PASS, 125/125 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 227:
+  - `fd9abe1` code metrics readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
