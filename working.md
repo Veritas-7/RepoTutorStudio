@@ -2038,6 +2038,40 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 139:
   - `ea6ec44` container readiness report
 
+- 2026-06-04: AutoResearch Upgrade 140 candidate selected:
+  `biomejs/biome` (`https://github.com/biomejs/biome`; public Apache-2.0/MIT;
+  24,817 stars; 1,014 forks; updated 2026-06-03T22:12:06Z). Compared with
+  `eslint/eslint`, `prettier/prettier`, and `oxc-project/oxc`; selected Biome
+  for its unified formatter, linter, `check`, `ci`, config, assist/source
+  action, diagnostics, editor/LSP, and safe write workflow. Cloned ignored
+  external source to `research/external-src/biomejs-biome` and inspected
+  README, `.biome.json`, GitHub workflow/config files, package scripts, and
+  e2e config fixtures without executing external source.
+- 2026-06-04: RED code quality smoke generated
+  `/tmp/repotutor-code-quality-red-studies.99eopw/2026-06-04/local__simple-ts-app__main__80547f82`;
+  old build was missing `analysis/code-quality-report.json`,
+  `markdown/code-quality.md`, and `html/code-quality.html`, and
+  `open --target code-quality` failed as expected.
+- 2026-06-04: Implemented Biome-style code quality report:
+  `CodeQualityReportSchema`, `analysis/code-quality-report.json`,
+  `markdown/code-quality.md`, `html/code-quality.html`, tool configs,
+  formatter signals, linter signals, assist signals, CI/editor signals,
+  language coverage, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target code-quality`.
+- 2026-06-04: GREEN code quality smoke generated
+  `/tmp/repotutor-code-quality-green-studies.jk8kVy/2026-06-04/local__simple-ts-app__main__80547f82`;
+  confirmed `verificationCheckedRequiredArtifacts=120`, tool configs 0,
+  formatter signals 7, linter signals 9, assist signals 5, CI/editor signals
+  8, language coverage 8, recommended commands 5, risk queue 7,
+  `code-quality-card`, `data-source-pattern="Biome"`,
+  manifest/learning-path entries, and `open --target code-quality` ->
+  `html/code-quality.html`.
+- 2026-06-04: Verification for Upgrade 140:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 38/38 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

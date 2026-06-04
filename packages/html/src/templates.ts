@@ -47,6 +47,7 @@ import type {
   ReleaseReadinessReport,
   SecretReadinessReport,
   ContainerReadinessReport,
+  CodeQualityReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -100,6 +101,7 @@ export interface StudyHtmlInput {
   releaseReadinessReport: ReleaseReadinessReport;
   secretReadinessReport: SecretReadinessReport;
   containerReadinessReport: ContainerReadinessReport;
+  codeQualityReport: CodeQualityReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -173,6 +175,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["release-readiness.html", "Release"],
     ["secret-readiness.html", "Secrets"],
     ["container-readiness.html", "Containers"],
+    ["code-quality.html", "Code Quality"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -281,6 +284,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Release Readiness</h3><p>${escapeHtml(input.releaseReadinessReport.summary)}</p><p>semantic-release 패턴으로 config, branches, plugin steps, CI, auth, publish targets를 정리합니다.</p><a href="release-readiness.html">Release 열기</a></article>
           <article><h3>Secret Readiness</h3><p>${escapeHtml(input.secretReadinessReport.summary)}</p><p>Gitleaks 패턴으로 scan targets, secret surfaces, config, reports, prevention signals를 정리합니다.</p><a href="secret-readiness.html">Secrets 열기</a></article>
           <article><h3>Container Readiness</h3><p>${escapeHtml(input.containerReadinessReport.summary)}</p><p>Hadolint 패턴으로 Dockerfile, Compose, config, instruction risk, labels, CI signals를 정리합니다.</p><a href="container-readiness.html">Containers 열기</a></article>
+          <article><h3>Code Quality</h3><p>${escapeHtml(input.codeQualityReport.summary)}</p><p>Biome 패턴으로 formatter, linter, assist, config, CI/editor signals를 정리합니다.</p><a href="code-quality.html">Code Quality 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -477,6 +481,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Container Readiness", "container-readiness.html", `<section class="panel" data-source-pattern="Hadolint"><h2>Container Snapshot</h2><p>${escapeHtml(input.containerReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.containerReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>dockerfiles</dt><dd>${input.containerReadinessReport.dockerfiles.length}</dd></div><div><dt>compose</dt><dd>${input.containerReadinessReport.composeFiles.length}</dd></div><div><dt>configs</dt><dd>${input.containerReadinessReport.configSignals.length}</dd></div><div><dt>integrations</dt><dd>${input.containerReadinessReport.integrationSignals.length}</dd></div></dl><p class="muted">RepoTutor records Hadolint readiness only. It does not build images, parse the Dockerfile AST, execute ShellCheck, or verify registries.</p></section><section class="grid"><article class="container-card"><h3>Dockerfiles</h3>${containerDockerfileList(input.containerReadinessReport.dockerfiles)}</article><article class="container-card"><h3>Compose Files</h3>${containerComposeList(input.containerReadinessReport.composeFiles)}</article><article class="container-card"><h3>Config Signals</h3>${containerConfigList(input.containerReadinessReport.configSignals)}</article><article class="container-card"><h3>Instruction Risks</h3>${containerSignalList(input.containerReadinessReport.instructionRisks, "rule")}</article></section><section class="grid"><article class="container-card"><h3>Label Policy</h3>${containerSignalList(input.containerReadinessReport.labelPolicy, "label")}</article><article class="container-card"><h3>Integration Signals</h3>${containerSignalList(input.containerReadinessReport.integrationSignals, "signal")}</article><article class="container-card"><h3>Recommended Commands</h3>${containerCommandList(input.containerReadinessReport.recommendedCommands)}</article><article class="container-card"><h3>Risk Queue</h3>${containerRiskList(input.containerReadinessReport.riskQueue)}</article><article class="container-card"><h3>다음 확인 단계</h3>${list(input.containerReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "code-quality.html",
+      title: "Code Quality",
+      html: pageShell("Code Quality", "code-quality.html", `<section class="panel" data-source-pattern="Biome"><h2>Code Quality Snapshot</h2><p>${escapeHtml(input.codeQualityReport.summary)}</p><p class="muted">${escapeHtml(input.codeQualityReport.sourcePattern)}</p><dl class="meta"><div><dt>configs</dt><dd>${input.codeQualityReport.toolConfigs.length}</dd></div><div><dt>formatter</dt><dd>${input.codeQualityReport.formatterSignals.length}</dd></div><div><dt>linter</dt><dd>${input.codeQualityReport.linterSignals.length}</dd></div><div><dt>CI/editor</dt><dd>${input.codeQualityReport.ciSignals.length}</dd></div></dl><p class="muted">RepoTutor records Biome-style readiness only. It does not execute Biome, ESLint, Prettier, editor LSPs, or unsafe fixes.</p></section><section class="grid"><article class="code-quality-card"><h3>Tool Configs</h3>${codeQualityConfigList(input.codeQualityReport.toolConfigs)}</article><article class="code-quality-card"><h3>Formatter Signals</h3>${codeQualitySignalList(input.codeQualityReport.formatterSignals, "signal")}</article><article class="code-quality-card"><h3>Linter Signals</h3>${codeQualitySignalList(input.codeQualityReport.linterSignals, "signal")}</article><article class="code-quality-card"><h3>Assist Signals</h3>${codeQualitySignalList(input.codeQualityReport.assistSignals, "signal")}</article></section><section class="grid"><article class="code-quality-card"><h3>CI Signals</h3>${codeQualitySignalList(input.codeQualityReport.ciSignals, "signal")}</article><article class="code-quality-card"><h3>Language Coverage</h3>${codeQualityLanguageList(input.codeQualityReport.languageCoverage)}</article><article class="code-quality-card"><h3>Recommended Commands</h3>${codeQualityCommandList(input.codeQualityReport.recommendedCommands)}</article><article class="code-quality-card"><h3>Risk Queue</h3>${codeQualityRiskList(input.codeQualityReport.riskQueue)}</article><article class="code-quality-card"><h3>다음 확인 단계</h3>${list(input.codeQualityReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -624,6 +633,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Release Readiness", path: "html/release-readiness.html", description: "semantic-release식 config, branch, plugin, CI, auth, publish target 준비도를 확인합니다." },
       { label: "Secret Readiness", path: "html/secret-readiness.html", description: "Gitleaks식 scan target, secret surface, config, report, prevention 준비도를 확인합니다." },
       { label: "Container Readiness", path: "html/container-readiness.html", description: "Hadolint식 Dockerfile, Compose, config, instruction, label, CI 준비도를 확인합니다." },
+      { label: "Code Quality", path: "html/code-quality.html", description: "Biome식 formatter, linter, assist, config, CI/editor 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -929,6 +939,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "container-readiness.html",
       goal: "Hadolint식 Dockerfile, Compose, config, instruction risk, label, CI/report 준비도를 확인합니다.",
       evidence: `Dockerfile ${input.containerReadinessReport.dockerfiles.length}개, config signals ${input.containerReadinessReport.configSignals.length}개`
+    },
+    {
+      title: "Code quality 준비도 확인",
+      href: "code-quality.html",
+      goal: "Biome식 formatter, linter, assist, config, CI/editor 준비도를 확인합니다.",
+      evidence: `configs ${input.codeQualityReport.toolConfigs.length}개, linter signals ${input.codeQualityReport.linterSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -1871,6 +1887,36 @@ function containerRiskList(items: ContainerReadinessReport["riskQueue"]): string
 }
 
 function containerHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function codeQualityConfigList(items: CodeQualityReport["toolConfigs"]): string {
+  if (items.length === 0) return "<p class=\"muted\">code quality config가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)} / ${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(codeQualityHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function codeQualitySignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">code quality signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(codeQualityHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function codeQualityLanguageList(items: CodeQualityReport["languageCoverage"]): string {
+  if (items.length === 0) return "<p class=\"muted\">language coverage가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.language)}</strong> [${escapeHtml(item.readiness)}]: ${item.fileCount} file(s)<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(codeQualityHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function codeQualityCommandList(items: CodeQualityReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function codeQualityRiskList(items: CodeQualityReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(codeQualityHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function codeQualityHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

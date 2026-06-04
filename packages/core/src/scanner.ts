@@ -52,6 +52,7 @@ import {
   ReleaseReadinessReport,
   SecretReadinessReport,
   ContainerReadinessReport,
+  CodeQualityReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -110,6 +111,7 @@ export interface AnalysisBundle {
   releaseReadinessReport: ReleaseReadinessReport;
   secretReadinessReport: SecretReadinessReport;
   containerReadinessReport: ContainerReadinessReport;
+  codeQualityReport: CodeQualityReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -168,8 +170,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const releaseReadinessReport = await buildReleaseReadinessReport(walk);
   const secretReadinessReport = await buildSecretReadinessReport(walk);
   const containerReadinessReport = await buildContainerReadinessReport(walk);
+  const codeQualityReport = await buildCodeQualityReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -6790,6 +6793,253 @@ function containerIntegrationSignals(sourceFiles: ContainerSourceFile[]): Contai
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} integration evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/container-readiness.html"
+    };
+  });
+}
+
+async function buildCodeQualityReport(walk: WalkResult): Promise<CodeQualityReport> {
+  const sourceFiles = await codeQualitySourceFiles(walk);
+  const toolConfigs = codeQualityToolConfigs(sourceFiles);
+  const formatterSignals = codeQualityFormatterSignals(sourceFiles);
+  const linterSignals = codeQualityLinterSignals(sourceFiles);
+  const assistSignals = codeQualityAssistSignals(sourceFiles);
+  const ciSignals = codeQualityCiSignals(sourceFiles);
+  const languageCoverage = codeQualityLanguageCoverage(walk, toolConfigs);
+  const hasWebFiles = languageCoverage.some((item) => item.fileCount > 0 && item.language !== "unknown");
+  const hasBiomeConfig = toolConfigs.some((item) => item.tool === "biome-config");
+  const hasFormatter = formatterSignals.some((item) => ["formatter-enabled", "format-command"].includes(item.signal) && item.readiness === "ready");
+  const hasLinter = linterSignals.some((item) => ["linter-enabled", "rule-groups", "recommended-rules"].includes(item.signal) && item.readiness === "ready");
+  const hasAssist = assistSignals.some((item) => ["assist-enabled", "organize-imports"].includes(item.signal) && item.readiness === "ready");
+  const hasCi = ciSignals.some((item) => ["biome-ci", "biome-check", "github-action", "gitlab-ci", "pre-commit"].includes(item.signal) && item.readiness === "ready");
+  const hasReporter = ciSignals.some((item) => item.signal === "reporter" && item.readiness === "ready");
+
+  const riskQueue: CodeQualityReport["riskQueue"] = [];
+  if (hasWebFiles && !hasBiomeConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a biome.json or biome.jsonc config when this repo wants unified formatting and linting.",
+      why: "Biome works with sane defaults, but a committed config makes formatter, linter, assist, file include, and VCS ignore behavior reproducible.",
+      relatedHref: "html/code-quality.html"
+    });
+  }
+  if (hasWebFiles && !hasFormatter) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a formatter command such as biome format or biome check.",
+      why: "Biome's formatter is a first-class quality gate for JavaScript, TypeScript, JSX, JSON, CSS, and GraphQL files.",
+      relatedHref: "html/code-quality.html"
+    });
+  }
+  if (hasWebFiles && !hasLinter) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a linter command or enable linter rules in config.",
+      why: "Biome lint diagnostics and safe fixes give learners a concrete path from source findings to code health improvements.",
+      relatedHref: "html/code-quality.html"
+    });
+  }
+  if (hasWebFiles && !hasAssist) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Consider enabling assist actions such as organizeImports.",
+      why: "Biome can centralize import organization and source actions that otherwise drift between editor settings and ad hoc scripts.",
+      relatedHref: "html/code-quality.html"
+    });
+  }
+  if (hasWebFiles && !hasCi) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Run biome ci or biome check in CI before publishing generated learning artifacts.",
+      why: "Local formatting and linting are useful, but CI makes the code-quality contract visible to every contributor.",
+      relatedHref: "html/code-quality.html"
+    });
+  }
+  if (hasWebFiles && !hasReporter) {
+    riskQueue.push({
+      priority: "low",
+      action: "Choose a machine-readable or CI-friendly reporter when findings need review artifacts.",
+      why: "Biome supports diagnostics/reporting workflows; RepoTutor should surface whether a repo has a durable quality report path.",
+      relatedHref: "html/code-quality.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run Biome against the original source tree before treating this report as quality approval.",
+    why: "RepoTutor records static code-quality readiness only; it does not execute Biome, ESLint, Prettier, editor LSPs, or unsafe fixes.",
+    relatedHref: "html/code-quality.html"
+  });
+
+  return {
+    summary: `Biome식 code quality report: config ${toolConfigs.length}개, formatter signal ${formatterSignals.length}개, linter signal ${linterSignals.length}개, CI/editor signal ${ciSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Biome formatter linter check ci biome.json assist organize imports diagnostics reporter editor LSP VCS ignore safe fixes",
+    toolConfigs,
+    formatterSignals,
+    linterSignals,
+    assistSignals,
+    ciSignals,
+    languageCoverage,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx @biomejs/biome check .", purpose: "Run formatter, linter, assist, and other enabled checks without writing changes." },
+      { command: "npx @biomejs/biome check --write .", purpose: "Apply safe formatting, lint, and assist fixes where the project policy allows writes." },
+      { command: "npx @biomejs/biome ci .", purpose: "Run the CI-oriented quality gate for all configured files." },
+      { command: "npx @biomejs/biome format --write .", purpose: "Format supported web-language files." },
+      { command: "npx @biomejs/biome lint --write .", purpose: "Run lint rules and apply safe fixes." }
+    ],
+    learnerNextSteps: [
+      "package.json scripts, biome.json, editor settings, and CI workflows should agree on the same quality gate.",
+      "Formatter readiness answers style drift; linter readiness answers code-health diagnostics; assist readiness answers import/source-action drift.",
+      "If the repo already uses ESLint or Prettier, decide whether Biome complements, replaces, or intentionally stays out of that scope.",
+      "RepoTutor does not run Biome, so use the recommended commands on the original source tree before claiming code-quality pass/fail."
+    ]
+  };
+}
+
+type CodeQualitySourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function codeQualitySourceFiles(walk: WalkResult): Promise<CodeQualitySourceFile[]> {
+  const files: CodeQualitySourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !codeQualityInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!codeQualityPathSignal(file.relPath) && !codeQualityContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 220) break;
+  }
+  return files;
+}
+
+function codeQualityInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|biome\.jsonc?|\.biome\.jsonc?|\.editorconfig|\.prettierrc(\..*)?|prettier\.config\.[cm]?[jt]s|eslint\.config\.[cm]?[jt]s|\.eslintrc(\..*)?|\.pre-commit-config\.ya?ml)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /^\.vscode\/settings\.json$/i.test(filePath)
+    || /^\.gitlab-ci\.ya?ml$/i.test(filePath)
+    || /\.(json|jsonc|ya?ml|toml|md|[cm]?[jt]s)$/i.test(filePath);
+}
+
+function codeQualityPathSignal(filePath: string): boolean {
+  return /(biome|eslint|prettier|lint|format|pre-commit|workflow|gitlab-ci|\.vscode|editorconfig)/i.test(filePath);
+}
+
+function codeQualityContentSignal(text: string): boolean {
+  return /@biomejs\/biome|\bbiome\s+(format|lint|check|ci)\b|biome\.json|organizeImports|assist|formatter|linter|prettier|eslint|reporter|diagnostic|safe fix|unsafe/i.test(text);
+}
+
+function codeQualityToolConfigs(sourceFiles: CodeQualitySourceFile[]): CodeQualityReport["toolConfigs"] {
+  const rows: CodeQualityReport["toolConfigs"] = [];
+  for (const source of sourceFiles) {
+    const base = path.basename(source.filePath).toLowerCase();
+    const push = (tool: CodeQualityReport["toolConfigs"][number]["tool"], readiness: CodeQualityReport["toolConfigs"][number]["readiness"], evidence: string) => {
+      rows.push({ filePath: source.filePath, tool, readiness, evidence, sourceHref: source.sourceHref });
+    };
+    if (/^\.?biome\.jsonc?$/.test(base)) push("biome-config", "ready", `${source.filePath} is a Biome project configuration file.`);
+    if (/^package\.json$/.test(base) && /@biomejs\/biome|\bbiome\s+(format|lint|check|ci)\b/i.test(source.text)) push("package-script", "ready", `${source.filePath} references Biome dependency or commands.`);
+    if (/^package\.json$/.test(base) && /\b(eslint|prettier)\b/i.test(source.text) && !/@biomejs\/biome|\bbiome\s+(format|lint|check|ci)\b/i.test(source.text)) push("package-script", "partial", `${source.filePath} references ESLint or Prettier scripts without Biome.`);
+    if (/^(eslint\.config\.[cm]?[jt]s|\.eslintrc(\..*)?)$/i.test(base)) push("eslint-config", "partial", `${source.filePath} is an ESLint configuration file.`);
+    if (/^(\.prettierrc(\..*)?|prettier\.config\.[cm]?[jt]s)$/i.test(base)) push("prettier-config", "partial", `${source.filePath} is a Prettier configuration file.`);
+    if (/^(\.editorconfig|settings\.json)$/i.test(base) && /(format|biome|prettier|eslint|editor\.defaultFormatter)/i.test(source.text)) push("editor-config", "partial", `${source.filePath} contains editor formatting or linting configuration.`);
+    if (rows.length < 140 && /biome/i.test(source.text) && !rows.some((item) => item.filePath === source.filePath)) push("unknown", "partial", `${source.filePath} contains Biome-related text.`);
+  }
+  return rows.slice(0, 140);
+}
+
+function codeQualityFormatterSignals(sourceFiles: CodeQualitySourceFile[]): CodeQualityReport["formatterSignals"] {
+  const specs: Array<{ signal: CodeQualityReport["formatterSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "formatter-enabled", pattern: /"formatter"\s*:|formatter:\s|formatter\s+enabled|biome\s+format/i, evidence: "formatter configuration or command evidence was detected." },
+    { signal: "format-command", pattern: /\bbiome\s+format\b|@biomejs\/biome\s+format|"(format|fmt)"\s*:\s*"[^"]*(biome|prettier)/i, evidence: "format command evidence was detected." },
+    { signal: "write-mode", pattern: /--write|--fix|check\s+--write|lint\s+--write|format\s+--write/i, evidence: "write/fix mode evidence was detected." },
+    { signal: "language-support", pattern: /JavaScript|TypeScript|JSX|JSON|CSS|GraphQL|javascript|typescript|json|css|graphql/i, evidence: "supported language coverage evidence was detected." },
+    { signal: "line-width", pattern: /lineWidth|printWidth|max_line_length/i, evidence: "line width formatting policy evidence was detected." },
+    { signal: "indent-style", pattern: /indentStyle|indent_size|indent_style|tabWidth/i, evidence: "indent formatting policy evidence was detected." },
+    { signal: "prettier-compat", pattern: /prettier|Prettier/i, evidence: "Prettier compatibility or coexistence evidence was detected." }
+  ];
+  return codeQualitySignalFromSpecs(sourceFiles, specs, "formatter");
+}
+
+function codeQualityLinterSignals(sourceFiles: CodeQualitySourceFile[]): CodeQualityReport["linterSignals"] {
+  const specs: Array<{ signal: CodeQualityReport["linterSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "linter-enabled", pattern: /"linter"\s*:|linter:\s|biome\s+lint|biome\s+check/i, evidence: "linter configuration or command evidence was detected." },
+    { signal: "rule-groups", pattern: /"rules"\s*:|"style"\s*:|"correctness"\s*:|"suspicious"\s*:|"nursery"\s*:|"complexity"\s*:/i, evidence: "Biome-style rule group evidence was detected." },
+    { signal: "custom-rules", pattern: /plugins?|\.grit|rules\s*:/i, evidence: "custom rule or plugin evidence was detected." },
+    { signal: "recommended-rules", pattern: /recommended\s*:\s*(true|\"on\")|recommended/i, evidence: "recommended rule mode evidence was detected." },
+    { signal: "safe-fixes", pattern: /safe fix|safe fixes|lint\s+--write|check\s+--write/i, evidence: "safe fix workflow evidence was detected." },
+    { signal: "unsafe-fixes", pattern: /--unsafe|unsafe/i, evidence: "unsafe fix workflow evidence was detected." },
+    { signal: "dependency-rule", pattern: /noUndeclaredDependencies|no-undeclared-dependencies/i, evidence: "dependency declaration lint evidence was detected." },
+    { signal: "import-cycle-rule", pattern: /noImportCycles|import cycle|no-import-cycles/i, evidence: "import cycle lint evidence was detected." },
+    { signal: "promise-rule", pattern: /noFloatingPromises|floating promises|no-floating-promises/i, evidence: "promise lint evidence was detected." }
+  ];
+  return codeQualitySignalFromSpecs(sourceFiles, specs, "linter");
+}
+
+function codeQualityAssistSignals(sourceFiles: CodeQualitySourceFile[]): CodeQualityReport["assistSignals"] {
+  const specs: Array<{ signal: CodeQualityReport["assistSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "assist-enabled", pattern: /"assist"\s*:|assist:\s|source action|sourceAction/i, evidence: "assist/source-action configuration evidence was detected." },
+    { signal: "organize-imports", pattern: /organizeImports|organize imports|source\.organizeImports/i, evidence: "organize imports evidence was detected." },
+    { signal: "sorted-keys", pattern: /useSortedKeys|sorted keys|sort(ed)? keys/i, evidence: "sorted key assist evidence was detected." },
+    { signal: "plugins", pattern: /"plugins"\s*:|\.grit|plugin/i, evidence: "Biome plugin evidence was detected." },
+    { signal: "vcs-ignore", pattern: /"vcs"\s*:|useIgnoreFile|clientKind|\.gitignore/i, evidence: "VCS ignore integration evidence was detected." }
+  ];
+  return codeQualitySignalFromSpecs(sourceFiles, specs, "assist");
+}
+
+function codeQualityCiSignals(sourceFiles: CodeQualitySourceFile[]): CodeQualityReport["ciSignals"] {
+  const specs: Array<{ signal: CodeQualityReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "biome-ci", pattern: /\bbiome\s+ci\b|@biomejs\/biome\s+ci/i, evidence: "biome ci evidence was detected." },
+    { signal: "biome-check", pattern: /\bbiome\s+check\b|@biomejs\/biome\s+check/i, evidence: "biome check evidence was detected." },
+    { signal: "github-action", pattern: /\.github\/workflows|github actions|actions\/checkout|setup-node|biomejs\/setup-biome/i, evidence: "GitHub Actions quality gate evidence was detected." },
+    { signal: "gitlab-ci", pattern: /\.gitlab-ci|gitlab/i, evidence: "GitLab CI quality gate evidence was detected." },
+    { signal: "pre-commit", pattern: /pre-commit|repos:\s*\n|biome.*pre-commit/i, evidence: "pre-commit quality gate evidence was detected." },
+    { signal: "package-script", pattern: /"(lint|format|fmt|check|ci)"\s*:\s*"[^"]*(biome|eslint|prettier)/i, evidence: "package script quality gate evidence was detected." },
+    { signal: "editor-lsp", pattern: /biomejs\.biome|language server|LSP|editor\.defaultFormatter|\.vscode/i, evidence: "editor or LSP integration evidence was detected." },
+    { signal: "reporter", pattern: /--reporter|reporter|diagnostic|junit|github|json|summary/i, evidence: "reporter or diagnostic output evidence was detected." }
+  ];
+  return codeQualitySignalFromSpecs(sourceFiles, specs, "CI/editor");
+}
+
+function codeQualitySignalFromSpecs<T extends { signal: string; pattern: RegExp; evidence: string }>(
+  sourceFiles: CodeQualitySourceFile[],
+  specs: T[],
+  label: string
+): Array<{ signal: T["signal"]; readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    spec.pattern.lastIndex = 0;
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/code-quality.html"
+    };
+  });
+}
+
+function codeQualityLanguageCoverage(walk: WalkResult, toolConfigs: CodeQualityReport["toolConfigs"]): CodeQualityReport["languageCoverage"] {
+  const hasQualityTool = toolConfigs.some((item) => ["biome-config", "package-script", "eslint-config", "prettier-config"].includes(item.tool));
+  const specs: Array<{ language: CodeQualityReport["languageCoverage"][number]["language"]; pattern: RegExp }> = [
+    { language: "javascript", pattern: /\.(mjs|cjs|js)$/i },
+    { language: "typescript", pattern: /\.ts$/i },
+    { language: "jsx", pattern: /\.(jsx|tsx)$/i },
+    { language: "json", pattern: /\.jsonc?$/i },
+    { language: "css", pattern: /\.css$/i },
+    { language: "graphql", pattern: /\.(graphql|gql)$/i },
+    { language: "html", pattern: /\.html$/i },
+    { language: "markdown", pattern: /\.mdx?$/i }
+  ];
+  return specs.map((spec) => {
+    const count = walk.files.filter((file) => spec.pattern.test(file.relPath)).length;
+    const readiness = count === 0 ? "missing" : hasQualityTool ? "ready" : "external";
+    return {
+      language: spec.language,
+      fileCount: count,
+      readiness,
+      evidence: count === 0 ? `${spec.language} files were not detected.` : hasQualityTool ? `${count} ${spec.language} file(s) can be reviewed against detected quality tooling.` : `${count} ${spec.language} file(s) exist but no code-quality tool config was detected.`,
+      relatedHref: "html/code-quality.html"
     };
   });
 }
