@@ -510,6 +510,22 @@
         "multi-platform CSS Android Compose iOS and iOS Swift outputs",
         "custom transforms formats parsers output references and token governance examples"
       ]
+    },
+    {
+      "repo": "formatjs/formatjs",
+      "url": "https://github.com/formatjs/formatjs",
+      "localPath": "research/external-src/formatjs-formatjs",
+      "stars": 14715,
+      "forks": 1385,
+      "license": "not specified",
+      "updatedAt": "2026-06-03T23:48:10Z",
+      "adoptedPatterns": [
+        "React Intl message declarations with defineMessages defineMessage FormattedMessage and intl.formatMessage",
+        "FormatJS extract compile verify and compile-folder catalog workflow",
+        "ICU message syntax for plural select selectordinal number date time placeholders and rich text",
+        "IntlProvider locale/messages runtime boundary and ECMA-402 polyfill locale data requirements",
+        "eslint-plugin-formatjs rules for translator descriptions message IDs invalid ICU and vendor constraints"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2477,6 +2493,28 @@
         "DesignTokensReportSchema",
         "Style Dictionary design tokens source include platforms transformGroup transforms buildPath files formats CTI aliases multi-platform CSS Android iOS"
       ]
+    },
+    {
+      "name": "I18n readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/i18n-report.json",
+        "markdown/i18n.md",
+        "html/i18n.html",
+        "open --target i18n",
+        "I18nReportSchema",
+        "FormatJS React Intl ICU messages extract compile verify IntlProvider polyfills locale data ESLint TMS"
+      ]
     }
   ],
   "verification": {
@@ -2791,6 +2829,12 @@
     "cliDesignTokensOpenTargetSmoke": "PASS",
     "buildDesignTokens": "PASS",
     "testDesignTokens": "PASS",
-    "auditBriefDesignTokens33": "PASS"
+    "auditBriefDesignTokens33": "PASS",
+    "fixtureI18nReport": "PASS",
+    "cliI18nSmoke": "PASS",
+    "cliI18nOpenTargetSmoke": "PASS",
+    "buildI18n": "PASS",
+    "testI18n": "PASS",
+    "auditBriefI18n34": "PASS"
   }
 }

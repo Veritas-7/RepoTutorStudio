@@ -1891,6 +1891,38 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 135:
   - `38b7cd1` design tokens readiness report
 
+- 2026-06-04: AutoResearch Upgrade 136 candidate selected:
+  `formatjs/formatjs` (`https://github.com/formatjs/formatjs`; public;
+  license not specified by `gh repo view`; 14,715 stars; 1,385 forks; updated
+  2026-06-03T23:48:10Z). Compared with `i18next/i18next`,
+  `lingui/js-lingui`, and `facebook/fbt`; selected FormatJS for its broad
+  React Intl, ICU message, extract/compile/verify, polyfill, and ESLint tooling
+  model. Cloned ignored external source to
+  `research/external-src/formatjs-formatjs` and inspected README, CLI docs,
+  React Intl docs, Intl MessageFormat docs, application workflow docs,
+  polyfill docs, and linter docs without executing external source.
+- 2026-06-04: RED i18n smoke generated
+  `/tmp/repotutor-i18n-red-studies.hqox29/2026-06-04/local__simple-ts-app__main__ada41a1b`;
+  old build was missing `analysis/i18n-report.json`, `markdown/i18n.md`, and
+  `html/i18n.html` as expected.
+- 2026-06-04: Implemented FormatJS-style i18n readiness report:
+  `I18nReportSchema`, `analysis/i18n-report.json`, `markdown/i18n.md`,
+  `html/i18n.html`, message sources, locale assets, runtime signals,
+  extraction signals, ICU signals, QA signals, recommended commands, risk
+  queue, manifest/session-verification coverage, learning-path linkage, and
+  `open --target i18n`.
+- 2026-06-04: GREEN i18n smoke generated
+  `/tmp/repotutor-i18n-green-studies.zbv6Sc/2026-06-04/local__simple-ts-app__main__ada41a1b`;
+  confirmed `verificationCheckedRequiredArtifacts=108`, message sources 0,
+  locale assets 0, runtime signals 8, extraction signals 10, ICU signals 10,
+  QA signals 9, recommended commands 5, risk queue 2, `i18n-card`,
+  `data-source-pattern="FormatJS"`, manifest/learning-path entries, and
+  `open --target i18n` -> `html/i18n.html`.
+- 2026-06-04: Verification for Upgrade 136:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 34/34 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

@@ -2790,6 +2790,44 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 33/33 audit checks across 13 generated reports
 
+### Upgrade 136: I18n Readiness Report
+
+- Cloned and inspected `formatjs/formatjs` under
+  `research/external-src/formatjs-formatjs` without executing external source.
+- GitHub metadata: public repo, license not specified by `gh repo view`,
+  14,715 stars, 1,385 forks, updated 2026-06-03T23:48:10Z. Compared with
+  `i18next/i18next`, `lingui/js-lingui`, and `facebook/fbt`; selected FormatJS
+  for the broad React Intl, ICU message, extract/compile/verify, polyfill, and
+  ESLint tooling model. No source code was copied into RepoTutor.
+- Added `I18nReportSchema` and `analysis/i18n-report.json` with message
+  sources, locale assets, runtime signals, extraction signals, ICU signals, QA
+  signals, risk queue, recommended commands, and learner next steps.
+- Added `markdown/i18n.md`, `html/i18n.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target i18n`.
+- Source pattern: FormatJS separates React Intl message declarations
+  (`defineMessages`, `defineMessage`, `FormattedMessage`, `intl.formatMessage`),
+  `IntlProvider` runtime locale/messages, ICU plural/select/selectordinal
+  syntax, `formatjs extract`, `compile`, `compile-folder`, `verify`,
+  pseudo-locale and source-location options, ECMA-402 polyfills/locale data,
+  and `eslint-plugin-formatjs` rules. RepoTutor maps that to deterministic
+  static i18n readiness and explicitly does not extract, compile, or verify
+  ICU catalogs.
+- RED smoke generated
+  `/tmp/repotutor-i18n-red-studies.hqox29/2026-06-04/local__simple-ts-app__main__ada41a1b`;
+  old behavior was missing `analysis/i18n-report.json`, `markdown/i18n.md`,
+  and `html/i18n.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-i18n-green-studies.zbv6Sc/2026-06-04/local__simple-ts-app__main__ada41a1b`;
+  confirmed `verificationCheckedRequiredArtifacts=108`, message sources 0,
+  locale assets 0, runtime signals 8, extraction signals 10, ICU signals 10,
+  QA signals 9, recommended commands 5, risk queue 2, `i18n-card`,
+  `data-source-pattern="FormatJS"`, manifest/learning-path entries, and
+  `open --target i18n` -> `html/i18n.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 34/34 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
