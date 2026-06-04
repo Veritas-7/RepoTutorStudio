@@ -31,6 +31,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "vex-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "policy-gate-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "api-contract-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "observability-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -60,6 +61,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "vex.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "policy-gates.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "api-contracts.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "observability.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -92,6 +94,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "vex.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "policy-gates.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "api-contracts.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "observability.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -154,6 +157,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/vex.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/policy-gates.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/api-contracts.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/observability.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -461,6 +465,26 @@ describe("RepoTutor core pipeline", () => {
     expect(apiContractMarkdown).toContain("Source pattern: Schemathesis");
     expect(apiContractMarkdown).toContain("## Schema Documents");
     expect(apiContractMarkdown).toContain("## Reporting Outputs");
+    const observabilityText = await fs.readFile(path.join(result.session.outputPaths.analysis, "observability-report.json"), "utf8");
+    expect(observabilityText).toContain("OpenTelemetry traces metrics logs resource context propagation exporter instrumentation semantic conventions diagnostics");
+    expect(observabilityText).toContain("\"signalPipelines\"");
+    expect(observabilityText).toContain("\"instrumentationSignals\"");
+    expect(observabilityText).toContain("\"exporterTargets\"");
+    expect(observabilityText).toContain("\"resourceAttributes\"");
+    expect(observabilityText).toContain("\"propagationContext\"");
+    expect(observabilityText).toContain("\"diagnostics\"");
+    expect(observabilityText).toContain("OTEL_EXPORTER_OTLP_ENDPOINT");
+    const observabilityHtml = await fs.readFile(path.join(result.session.outputPaths.html, "observability.html"), "utf8");
+    expect(observabilityHtml).toContain("Observability Readiness");
+    expect(observabilityHtml).toContain("observability-card");
+    expect(observabilityHtml).toContain("data-source-pattern=\"OpenTelemetry\"");
+    expect(observabilityHtml).toContain("Signal Pipelines");
+    expect(observabilityHtml).toContain("Diagnostics");
+    const observabilityMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "observability.md"), "utf8");
+    expect(observabilityMarkdown).toContain("# Observability Readiness");
+    expect(observabilityMarkdown).toContain("Source pattern: OpenTelemetry");
+    expect(observabilityMarkdown).toContain("## Signal Pipelines");
+    expect(observabilityMarkdown).toContain("## Diagnostics");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -583,6 +607,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/vex.html");
     expect(exportManifestText).toContain("html/policy-gates.html");
     expect(exportManifestText).toContain("html/api-contracts.html");
+    expect(exportManifestText).toContain("html/observability.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -669,6 +694,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("vex.html");
     expect(learningPathHtml).toContain("policy-gates.html");
     expect(learningPathHtml).toContain("api-contracts.html");
+    expect(learningPathHtml).toContain("observability.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");
