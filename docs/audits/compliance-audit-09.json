@@ -1,6 +1,6 @@
 {
   "iteration": 9,
-  "createdAt": "2026-06-04T00:49:16.229Z",
+  "createdAt": "2026-06-04T00:59:08.616Z",
   "checks": [
     {
       "name": "project setup",
@@ -144,6 +144,13 @@
     },
     {
       "name": "openvex impact readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "policy gate readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

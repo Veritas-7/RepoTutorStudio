@@ -29,6 +29,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "provenance-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "advisory-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "vex-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "policy-gate-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -56,6 +57,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "provenance.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "advisories.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "vex.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "policy-gates.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -86,6 +88,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "provenance.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "advisories.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "vex.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "policy-gates.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -146,6 +149,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/provenance.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/advisories.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/vex.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/policy-gates.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -412,6 +416,27 @@ describe("RepoTutor core pipeline", () => {
     expect(vexMarkdown).toContain("Source pattern: OpenVEX");
     expect(vexMarkdown).toContain("## Product Targets");
     expect(vexMarkdown).toContain("## Attestation Readiness");
+    const policyGateText = await fs.readFile(path.join(result.session.outputPaths.analysis, "policy-gate-report.json"), "utf8");
+    expect(policyGateText).toContain("OPA Rego policy input data decision eval test bundle schema strict fail gate");
+    expect(policyGateText).toContain("\"policyDocuments\"");
+    expect(policyGateText).toContain("\"inputDocuments\"");
+    expect(policyGateText).toContain("\"gateQueries\"");
+    expect(policyGateText).toContain("\"testCoverage\"");
+    expect(policyGateText).toContain("\"bundleReadiness\"");
+    expect(policyGateText).toContain("\"decisionOutputs\"");
+    expect(policyGateText).toContain("opa check --strict");
+    expect(policyGateText).toContain("opa test <policy-dir> --fail-on-empty");
+    const policyGateHtml = await fs.readFile(path.join(result.session.outputPaths.html, "policy-gates.html"), "utf8");
+    expect(policyGateHtml).toContain("Policy Gate Readiness");
+    expect(policyGateHtml).toContain("policy-gate-card");
+    expect(policyGateHtml).toContain("data-source-pattern=\"OPA\"");
+    expect(policyGateHtml).toContain("Policy Gate Snapshot");
+    expect(policyGateHtml).toContain("Recommended Commands");
+    const policyGateMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "policy-gates.md"), "utf8");
+    expect(policyGateMarkdown).toContain("# Policy Gate Readiness");
+    expect(policyGateMarkdown).toContain("Source pattern: OPA");
+    expect(policyGateMarkdown).toContain("## Policy Documents");
+    expect(policyGateMarkdown).toContain("## Bundle Readiness");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -532,6 +557,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/provenance.html");
     expect(exportManifestText).toContain("html/advisories.html");
     expect(exportManifestText).toContain("html/vex.html");
+    expect(exportManifestText).toContain("html/policy-gates.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -616,6 +642,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("provenance.html");
     expect(learningPathHtml).toContain("advisories.html");
     expect(learningPathHtml).toContain("vex.html");
+    expect(learningPathHtml).toContain("policy-gates.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");

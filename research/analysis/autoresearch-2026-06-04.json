@@ -382,6 +382,22 @@
         "SARIF scanner-result filtering only for reviewed fixed or not_affected statements",
         "VEX attestation subject digest DSSE signature and transparency-log readiness"
       ]
+    },
+    {
+      "repo": "open-policy-agent/opa",
+      "url": "https://github.com/open-policy-agent/opa",
+      "localPath": "research/external-src/open-policy-agent-opa",
+      "stars": 11817,
+      "forks": 1578,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-03T15:45:37Z",
+      "adoptedPatterns": [
+        "Rego policy modules with package and rule entrypoints",
+        "opa check strict compile and schema validation before eval",
+        "opa test discovery of test_ rules with fail-on-empty CI behavior",
+        "opa eval input data bundle schema fail and fail-defined decision gates",
+        "opa build and inspect bundle readiness with manifest signature and capabilities metadata"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2173,6 +2189,28 @@
         "VexReportSchema",
         "OpenVEX affected not_affected fixed under_investigation justification product subcomponent vulnerability statement attestation SARIF filter"
       ]
+    },
+    {
+      "name": "Policy gate readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/policy-gate-report.json",
+        "markdown/policy-gates.md",
+        "html/policy-gates.html",
+        "open --target policy-gates",
+        "PolicyGateReportSchema",
+        "OPA Rego policy input data decision eval test bundle schema strict fail gate"
+      ]
     }
   ],
   "verification": {
@@ -2439,6 +2477,12 @@
     "cliVexOpenTargetSmoke": "PASS",
     "buildVex": "PASS",
     "testVex": "PASS",
-    "auditBriefVex25": "PASS"
+    "auditBriefVex25": "PASS",
+    "fixturePolicyGateReport": "PASS",
+    "cliPolicyGatesSmoke": "PASS",
+    "cliPolicyGatesOpenTargetSmoke": "PASS",
+    "buildPolicyGates": "PASS",
+    "testPolicyGates": "PASS",
+    "auditBriefPolicyGates26": "PASS"
   }
 }

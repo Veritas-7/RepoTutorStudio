@@ -35,6 +35,7 @@ import type {
   ProvenanceReport,
   AdvisoryReport,
   VexReport,
+  PolicyGateReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -76,6 +77,7 @@ export interface StudyHtmlInput {
   provenanceReport: ProvenanceReport;
   advisoryReport: AdvisoryReport;
   vexReport: VexReport;
+  policyGateReport: PolicyGateReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -137,6 +139,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["provenance.html", "Provenance Readiness"],
     ["advisories.html", "Advisory Readiness"],
     ["vex.html", "OpenVEX Readiness"],
+    ["policy-gates.html", "Policy Gates"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -233,6 +236,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Provenance Readiness</h3><p>${escapeHtml(input.provenanceReport.summary)}</p><p>Cosign 패턴으로 signature material, bundle, attestation, identity requirement를 정리합니다.</p><a href="provenance.html">Provenance Readiness 열기</a></article>
           <article><h3>Advisory Query Readiness</h3><p>${escapeHtml(input.advisoryReport.summary)}</p><p>OSV-Scanner 패턴으로 package advisory query target, lockfile, ignore policy를 정리합니다.</p><a href="advisories.html">Advisory Readiness 열기</a></article>
           <article><h3>OpenVEX Impact Readiness</h3><p>${escapeHtml(input.vexReport.summary)}</p><p>OpenVEX 패턴으로 product, vulnerability input, status justification, SARIF filter 준비도를 정리합니다.</p><a href="vex.html">OpenVEX Readiness 열기</a></article>
+          <article><h3>Policy Gate Readiness</h3><p>${escapeHtml(input.policyGateReport.summary)}</p><p>OPA 패턴으로 Rego policy, input/data fixture, test, bundle, decision output 준비도를 정리합니다.</p><a href="policy-gates.html">Policy Gates 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -367,6 +371,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "vex.html",
       title: "OpenVEX Impact Readiness",
       html: pageShell("OpenVEX Impact Readiness", "vex.html", `<section class="panel" data-source-pattern="OpenVEX"><h2>OpenVEX Snapshot</h2><p>${escapeHtml(input.vexReport.summary)}</p><p class="muted">${escapeHtml(input.vexReport.sourcePattern)}</p><dl class="meta"><div><dt>products</dt><dd>${input.vexReport.productTargets.length}</dd></div><div><dt>inputs</dt><dd>${input.vexReport.vulnerabilityInputs.length}</dd></div><div><dt>statuses</dt><dd>${input.vexReport.statusMatrix.length}</dd></div><div><dt>workflow</dt><dd>${input.vexReport.documentWorkflow.length}</dd></div></dl><p class="muted">RepoTutor records readiness metadata only. It does not claim any actual vulnerability status.</p></section><section class="grid"><article class="vex-card"><h3>Vulnerability Inputs</h3>${vexInputList(input.vexReport.vulnerabilityInputs)}</article><article class="vex-card"><h3>Status Matrix</h3>${vexStatusList(input.vexReport.statusMatrix)}</article><article class="vex-card"><h3>Justification Catalog</h3>${vexJustificationList(input.vexReport.justificationCatalog)}</article><article class="vex-card"><h3>Risk Queue</h3>${vexRiskList(input.vexReport.riskQueue)}</article></section><section class="cards vex-product-cards">${vexProductCards(input.vexReport.productTargets)}</section><section class="grid"><article class="vex-card"><h3>Statement Drafts</h3>${vexStatementList(input.vexReport.statementDrafts)}</article><article class="vex-card"><h3>Document Workflow</h3>${vexWorkflowList(input.vexReport.documentWorkflow)}</article><article class="vex-card"><h3>Attestation Readiness</h3>${vexAttestationList(input.vexReport.attestationReadiness)}</article><article class="vex-card"><h3>다음 확인 단계</h3>${list(input.vexReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "policy-gates.html",
+      title: "Policy Gate Readiness",
+      html: pageShell("Policy Gate Readiness", "policy-gates.html", `<section class="panel" data-source-pattern="OPA"><h2>Policy Gate Snapshot</h2><p>${escapeHtml(input.policyGateReport.summary)}</p><p class="muted">${escapeHtml(input.policyGateReport.sourcePattern)}</p><dl class="meta"><div><dt>policies</dt><dd>${input.policyGateReport.policyDocuments.length}</dd></div><div><dt>inputs</dt><dd>${input.policyGateReport.inputDocuments.length}</dd></div><div><dt>queries</dt><dd>${input.policyGateReport.gateQueries.length}</dd></div><div><dt>bundle reqs</dt><dd>${input.policyGateReport.bundleReadiness.length}</dd></div></dl><p class="muted">RepoTutor records OPA readiness only. It does not evaluate allow, deny, or violation decisions.</p></section><section class="grid"><article class="policy-gate-card"><h3>Gate Queries</h3>${policyGateQueryList(input.policyGateReport.gateQueries)}</article><article class="policy-gate-card"><h3>Test Coverage</h3>${policyCoverageList(input.policyGateReport.testCoverage)}</article><article class="policy-gate-card"><h3>Bundle Readiness</h3>${policyBundleList(input.policyGateReport.bundleReadiness)}</article><article class="policy-gate-card"><h3>Decision Outputs</h3>${policyDecisionList(input.policyGateReport.decisionOutputs)}</article></section><section class="cards policy-document-cards">${policyDocumentCards(input.policyGateReport.policyDocuments)}</section><section class="grid"><article class="policy-gate-card"><h3>Input Documents</h3>${policyInputList(input.policyGateReport.inputDocuments)}</article><article class="policy-gate-card"><h3>Recommended Commands</h3>${policyCommandList(input.policyGateReport.recommendedCommands)}</article><article class="policy-gate-card"><h3>Risk Queue</h3>${policyRiskList(input.policyGateReport.riskQueue)}</article><article class="policy-gate-card"><h3>다음 확인 단계</h3>${list(input.policyGateReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "context-pack.html",
@@ -504,6 +513,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Provenance Readiness", path: "html/provenance.html", description: "Cosign식 signature material, bundle, attestation, identity requirement를 확인합니다." },
       { label: "Advisory Query Readiness", path: "html/advisories.html", description: "OSV-Scanner식 package advisory query target, lockfile, policy control 준비도를 확인합니다." },
       { label: "OpenVEX Impact Readiness", path: "html/vex.html", description: "OpenVEX식 product, status, justification, SARIF filter, attestation 준비도를 확인합니다." },
+      { label: "Policy Gate Readiness", path: "html/policy-gates.html", description: "OPA식 Rego policy, input/data, test, bundle, decision gate 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -737,6 +747,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "vex.html",
       goal: "OpenVEX식 product identity, status justification, SARIF filter, attestation 준비도를 분리해 확인합니다.",
       evidence: `product targets ${input.vexReport.productTargets.length}개, workflow ${input.vexReport.documentWorkflow.length}개`
+    },
+    {
+      title: "Policy gate 준비도 확인",
+      href: "policy-gates.html",
+      goal: "OPA식 Rego policy, input/data fixture, test, bundle, decision output 준비도를 확인합니다.",
+      evidence: `policy documents ${input.policyGateReport.policyDocuments.length}개, gate queries ${input.policyGateReport.gateQueries.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -1194,6 +1210,51 @@ function vexRiskList(items: VexReport["riskQueue"]): string {
 }
 
 function vexHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function policyDocumentCards(items: PolicyGateReport["policyDocuments"]): string {
+  if (items.length === 0) return "<article class=\"policy-gate-card\"><h3>Rego policy가 없습니다.</h3><p>OPA gate를 만들려면 .rego policy module이 필요합니다.</p></article>";
+  return items.map((item) => `<article class="policy-gate-card" data-policy-readiness="${escapeHtml(item.readiness)}"><h3>${escapeHtml(item.filePath)}</h3><p class="muted">${escapeHtml(item.packageName ?? "unknown package")} · ${escapeHtml(item.readiness)}</p><p>rules ${item.ruleCount} · tests ${item.testRuleCount}</p><p>decision rules: ${escapeHtml(item.decisionRules.join(", ") || "none")}</p><a href="${escapeHtml(policyHref(item.sourceHref))}">원본 열기</a></article>`).join("");
+}
+
+function policyInputList(items: PolicyGateReport["inputDocuments"]): string {
+  if (items.length === 0) return "<p class=\"muted\">input/data document가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.documentType)} / ${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(policyHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function policyGateQueryList(items: PolicyGateReport["gateQueries"]): string {
+  if (items.length === 0) return "<p class=\"muted\">gate query 후보가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.query)}</code> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.purpose)}<br><a href="${escapeHtml(policyHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function policyCoverageList(items: PolicyGateReport["testCoverage"]): string {
+  if (items.length === 0) return "<p class=\"muted\">test coverage readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.target)}</strong> [${escapeHtml(item.status)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(policyHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function policyBundleList(items: PolicyGateReport["bundleReadiness"]): string {
+  if (items.length === 0) return "<p class=\"muted\">bundle readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.requirement)}</strong> [${escapeHtml(item.status)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(policyHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function policyDecisionList(items: PolicyGateReport["decisionOutputs"]): string {
+  if (items.length === 0) return "<p class=\"muted\">decision output 모델이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.field)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.purpose)}<br><span class="muted">${escapeHtml(item.evidence)}</span><br><a href="${escapeHtml(policyHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function policyCommandList(items: PolicyGateReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function policyRiskList(items: PolicyGateReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(policyHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function policyHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

@@ -1004,6 +1004,63 @@ export const VexReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PolicyGateReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  policyDocuments: z.array(z.object({
+    filePath: z.string(),
+    packageName: z.string().nullable(),
+    ruleCount: z.number().int().nonnegative(),
+    testRuleCount: z.number().int().nonnegative(),
+    decisionRules: z.array(z.string()),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    sourceHref: z.string()
+  })),
+  inputDocuments: z.array(z.object({
+    filePath: z.string(),
+    documentType: z.enum(["input", "data", "manifest", "iac", "schema", "unknown"]),
+    readiness: z.enum(["ready", "partial"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  gateQueries: z.array(z.object({
+    query: z.string(),
+    purpose: z.string(),
+    readiness: z.enum(["ready", "partial", "external"]),
+    relatedHref: z.string()
+  })),
+  testCoverage: z.array(z.object({
+    target: z.enum(["rego-policy-tests", "compile-check", "schema-validation", "decision-fixtures"]),
+    status: z.enum(["covered", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  bundleReadiness: z.array(z.object({
+    requirement: z.enum(["policy-files", "data-files", "entrypoints", "manifest", "signature", "capabilities"]),
+    status: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  decisionOutputs: z.array(z.object({
+    field: z.string(),
+    purpose: z.string(),
+    readiness: z.enum(["ready", "partial", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1233,6 +1290,7 @@ export type ScorecardReport = z.infer<typeof ScorecardReportSchema>;
 export type ProvenanceReport = z.infer<typeof ProvenanceReportSchema>;
 export type AdvisoryReport = z.infer<typeof AdvisoryReportSchema>;
 export type VexReport = z.infer<typeof VexReportSchema>;
+export type PolicyGateReport = z.infer<typeof PolicyGateReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
