@@ -102,6 +102,7 @@ import type {
   VectorDbReadinessReport,
   SearchServiceReadinessReport,
   ObjectStorageReadinessReport,
+  RealtimeCollaborationReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -228,6 +229,7 @@ export interface StudyHtmlInput {
   vectorDbReadinessReport: VectorDbReadinessReport;
   searchServiceReadinessReport: SearchServiceReadinessReport;
   objectStorageReadinessReport: ObjectStorageReadinessReport;
+  realtimeCollaborationReadinessReport: RealtimeCollaborationReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -368,6 +370,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["vector-db-readiness.html", "Vector DB"],
     ["search-service-readiness.html", "Search Service"],
     ["object-storage-readiness.html", "Object Storage"],
+    ["realtime-collaboration-readiness.html", "Realtime Collab"],
     ["server-framework-readiness.html", "Server Framework"],
     ["rpc-readiness.html", "RPC"],
     ["workspace-graph-readiness.html", "Workspace Graph"],
@@ -521,6 +524,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Vector DB Readiness</h3><p>${escapeHtml(input.vectorDbReadinessReport.summary)}</p><p>Qdrant/Weaviate/Chroma 패턴으로 collection, embedding, ingestion, query, index, ops 준비도를 정리합니다.</p><a href="vector-db-readiness.html">Vector DB 열기</a></article>
           <article><h3>Search Service Readiness</h3><p>${escapeHtml(input.searchServiceReadinessReport.summary)}</p><p>Meilisearch/Typesense/OpenSearch 패턴으로 index, document, query, relevance, ops 준비도를 정리합니다.</p><a href="search-service-readiness.html">Search Service 열기</a></article>
           <article><h3>Object Storage Readiness</h3><p>${escapeHtml(input.objectStorageReadinessReport.summary)}</p><p>S3/MinIO/R2/Supabase Storage 패턴으로 bucket, object lifecycle, access, reliability, security, ops 준비도를 정리합니다.</p><a href="object-storage-readiness.html">Object Storage 열기</a></article>
+          <article><h3>Realtime Collaboration Readiness</h3><p>${escapeHtml(input.realtimeCollaborationReadinessReport.summary)}</p><p>Yjs/Automerge/Liveblocks 패턴으로 shared document, provider, presence, sync, persistence, history 준비도를 정리합니다.</p><a href="realtime-collaboration-readiness.html">Realtime Collab 열기</a></article>
           <article><h3>Server Framework Readiness</h3><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p>Fastify 패턴으로 routes, schemas, plugins, hooks, decorators, errors, runtime, tests 준비도를 정리합니다.</p><a href="server-framework-readiness.html">Server Framework 열기</a></article>
           <article><h3>RPC Readiness</h3><p>${escapeHtml(input.rpcReadinessReport.summary)}</p><p>tRPC 패턴으로 routers, procedures, validation, context, clients, adapters, errors 준비도를 정리합니다.</p><a href="rpc-readiness.html">RPC 열기</a></article>
           <article><h3>Workspace Graph Readiness</h3><p>${escapeHtml(input.workspaceGraphReadinessReport.summary)}</p><p>Nx 패턴으로 project graph, targets, affected, boundaries, plugins 준비도를 정리합니다.</p><a href="workspace-graph-readiness.html">Workspace Graph 열기</a></article>
@@ -1003,6 +1007,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Object Storage Readiness", "object-storage-readiness.html", `<section class="panel" data-source-pattern="Object Storage"><h2>Object Storage Snapshot</h2><p>${escapeHtml(input.objectStorageReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.objectStorageReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.objectStorageReadinessReport.storageSetups.length}</dd></div><div><dt>buckets</dt><dd>${input.objectStorageReadinessReport.bucketSignals.length}</dd></div><div><dt>objects</dt><dd>${input.objectStorageReadinessReport.objectSignals.length}</dd></div><div><dt>access</dt><dd>${input.objectStorageReadinessReport.accessSignals.length}</dd></div><div><dt>ops</dt><dd>${input.objectStorageReadinessReport.opsSignals.length}</dd></div></dl><p class="muted">RepoTutor records object storage readiness only; it does not create buckets, upload/download/list/delete/copy objects, sign URLs, read credentials, contact storage endpoints, mutate policies, or inspect live dashboards.</p></section><section class="grid"><article class="object-storage-readiness-card"><h3>Storage Setups</h3>${objectStorageReadinessSetupList(input.objectStorageReadinessReport.storageSetups)}</article><article class="object-storage-readiness-card"><h3>Bucket Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.bucketSignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Client Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.clientSignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Object Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.objectSignals, "signal")}</article></section><section class="grid"><article class="object-storage-readiness-card"><h3>Access Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.accessSignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Reliability Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.reliabilitySignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Security Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.securitySignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Ops Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.opsSignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Package Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.packageSignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Recommended Commands</h3>${objectStorageReadinessCommandList(input.objectStorageReadinessReport.recommendedCommands)}</article><article class="object-storage-readiness-card"><h3>Risk Queue</h3>${objectStorageReadinessRiskList(input.objectStorageReadinessReport.riskQueue)}</article><article class="object-storage-readiness-card"><h3>다음 확인 단계</h3>${list(input.objectStorageReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "realtime-collaboration-readiness.html",
+      title: "Realtime Collaboration Readiness",
+      html: pageShell("Realtime Collaboration Readiness", "realtime-collaboration-readiness.html", `<section class="panel" data-source-pattern="Realtime Collaboration"><h2>Realtime Collaboration Snapshot</h2><p>${escapeHtml(input.realtimeCollaborationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.realtimeCollaborationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.realtimeCollaborationReadinessReport.collaborationSetups.length}</dd></div><div><dt>crdt</dt><dd>${input.realtimeCollaborationReadinessReport.crdtSignals.length}</dd></div><div><dt>providers</dt><dd>${input.realtimeCollaborationReadinessReport.providerSignals.length}</dd></div><div><dt>presence</dt><dd>${input.realtimeCollaborationReadinessReport.presenceSignals.length}</dd></div><div><dt>sync</dt><dd>${input.realtimeCollaborationReadinessReport.syncSignals.length}</dd></div></dl><p class="muted">RepoTutor records realtime collaboration readiness only; it does not connect providers, join rooms, sync CRDT documents, mutate shared state, broadcast presence, call collaboration services, or run analyzed project tests.</p></section><section class="grid"><article class="realtime-collaboration-readiness-card"><h3>Collaboration Setups</h3>${realtimeCollaborationReadinessSetupList(input.realtimeCollaborationReadinessReport.collaborationSetups)}</article><article class="realtime-collaboration-readiness-card"><h3>CRDT Signals</h3>${realtimeCollaborationReadinessSignalList(input.realtimeCollaborationReadinessReport.crdtSignals, "signal")}</article><article class="realtime-collaboration-readiness-card"><h3>Provider Signals</h3>${realtimeCollaborationReadinessSignalList(input.realtimeCollaborationReadinessReport.providerSignals, "signal")}</article><article class="realtime-collaboration-readiness-card"><h3>Presence Signals</h3>${realtimeCollaborationReadinessSignalList(input.realtimeCollaborationReadinessReport.presenceSignals, "signal")}</article></section><section class="grid"><article class="realtime-collaboration-readiness-card"><h3>Sync Signals</h3>${realtimeCollaborationReadinessSignalList(input.realtimeCollaborationReadinessReport.syncSignals, "signal")}</article><article class="realtime-collaboration-readiness-card"><h3>Persistence Signals</h3>${realtimeCollaborationReadinessSignalList(input.realtimeCollaborationReadinessReport.persistenceSignals, "signal")}</article><article class="realtime-collaboration-readiness-card"><h3>History Signals</h3>${realtimeCollaborationReadinessSignalList(input.realtimeCollaborationReadinessReport.historySignals, "signal")}</article><article class="realtime-collaboration-readiness-card"><h3>Access Signals</h3>${realtimeCollaborationReadinessSignalList(input.realtimeCollaborationReadinessReport.accessSignals, "signal")}</article><article class="realtime-collaboration-readiness-card"><h3>Package Signals</h3>${realtimeCollaborationReadinessSignalList(input.realtimeCollaborationReadinessReport.packageSignals, "signal")}</article><article class="realtime-collaboration-readiness-card"><h3>Recommended Commands</h3>${realtimeCollaborationReadinessCommandList(input.realtimeCollaborationReadinessReport.recommendedCommands)}</article><article class="realtime-collaboration-readiness-card"><h3>Risk Queue</h3>${realtimeCollaborationReadinessRiskList(input.realtimeCollaborationReadinessReport.riskQueue)}</article><article class="realtime-collaboration-readiness-card"><h3>다음 확인 단계</h3>${list(input.realtimeCollaborationReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "server-framework-readiness.html",
       title: "Server Framework Readiness",
       html: pageShell("Server Framework Readiness", "server-framework-readiness.html", `<section class="panel" data-source-pattern="Fastify"><h2>Server Framework Snapshot</h2><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.serverFrameworkReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.serverFrameworkReadinessReport.serverSetups.length}</dd></div><div><dt>routes</dt><dd>${input.serverFrameworkReadinessReport.routeSignals.length}</dd></div><div><dt>schemas</dt><dd>${input.serverFrameworkReadinessReport.schemaSignals.length}</dd></div><div><dt>plugins</dt><dd>${input.serverFrameworkReadinessReport.pluginSignals.length}</dd></div></dl><p class="muted">RepoTutor records server framework readiness only; it does not start listeners, execute handlers, send HTTP requests, run plugins, compile schemas, or mutate runtime state.</p></section><section class="grid"><article class="server-framework-readiness-card"><h3>Server Setups</h3>${serverFrameworkReadinessSetupList(input.serverFrameworkReadinessReport.serverSetups)}</article><article class="server-framework-readiness-card"><h3>Route Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.routeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Schema Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.schemaSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Plugin Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.pluginSignals, "signal")}</article></section><section class="grid"><article class="server-framework-readiness-card"><h3>Lifecycle Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.lifecycleSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Runtime Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.runtimeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Error Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.errorSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Test Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.testSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Package Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.packageSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Recommended Commands</h3>${serverFrameworkReadinessCommandList(input.serverFrameworkReadinessReport.recommendedCommands)}</article><article class="server-framework-readiness-card"><h3>Risk Queue</h3>${serverFrameworkReadinessRiskList(input.serverFrameworkReadinessReport.riskQueue)}</article><article class="server-framework-readiness-card"><h3>다음 확인 단계</h3>${list(input.serverFrameworkReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1295,6 +1304,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Vector DB Readiness", path: "html/vector-db-readiness.html", description: "Qdrant/Weaviate/Chroma식 collection, embedding, ingestion, query, index, ops 준비도를 확인합니다." },
       { label: "Search Service Readiness", path: "html/search-service-readiness.html", description: "Meilisearch/Typesense/OpenSearch식 index, document, query, relevance, ops 준비도를 확인합니다." },
       { label: "Object Storage Readiness", path: "html/object-storage-readiness.html", description: "S3/MinIO/R2/Supabase Storage식 bucket, object lifecycle, access, reliability, security, ops 준비도를 확인합니다." },
+      { label: "Realtime Collaboration Readiness", path: "html/realtime-collaboration-readiness.html", description: "Yjs/Automerge/Liveblocks식 shared document, provider, presence, sync, persistence 준비도를 확인합니다." },
       { label: "Server Framework Readiness", path: "html/server-framework-readiness.html", description: "Fastify식 route, schema, plugin, hook, runtime, test 준비도를 확인합니다." },
       { label: "RPC Readiness", path: "html/rpc-readiness.html", description: "tRPC식 router, procedure, validation, context, client, adapter 준비도를 확인합니다." },
       { label: "Workspace Graph Readiness", path: "html/workspace-graph-readiness.html", description: "Nx식 project graph, target, affected, boundary, plugin 준비도를 확인합니다." },
@@ -1940,6 +1950,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "object-storage-readiness.html",
       goal: "S3/MinIO/R2/Supabase Storage식 bucket, object lifecycle, access, reliability, security, ops 흐름을 보고 object storage contract를 확인합니다.",
       evidence: `object storage setups ${input.objectStorageReadinessReport.storageSetups.length}개, object signals ${input.objectStorageReadinessReport.objectSignals.length}개`
+    },
+    {
+      title: "Realtime collaboration readiness 확인",
+      href: "realtime-collaboration-readiness.html",
+      goal: "Yjs/Automerge/Liveblocks식 shared document, provider, presence, sync, persistence, history 흐름을 보고 multiplayer collaboration contract를 확인합니다.",
+      evidence: `collaboration setups ${input.realtimeCollaborationReadinessReport.collaborationSetups.length}개, provider signals ${input.realtimeCollaborationReadinessReport.providerSignals.length}개`
     },
     {
       title: "Server framework readiness 확인",
@@ -4440,6 +4456,31 @@ function objectStorageReadinessRiskList(items: ObjectStorageReadinessReport["ris
 }
 
 function objectStorageReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function realtimeCollaborationReadinessSetupList(items: RealtimeCollaborationReadinessReport["collaborationSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">realtime collaboration setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)}/${escapeHtml(item.readiness)}]<br>doc/shared/provider/presence/sync/persistence/conflict/history/auth/comments ${item.docCount}/${item.sharedTypeCount}/${item.providerCount}/${item.presenceCount}/${item.syncCount}/${item.persistenceCount}/${item.conflictCount}/${item.historyCount}/${item.authCount}/${item.commentsCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(realtimeCollaborationReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function realtimeCollaborationReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">realtime collaboration signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(realtimeCollaborationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function realtimeCollaborationReadinessCommandList(items: RealtimeCollaborationReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function realtimeCollaborationReadinessRiskList(items: RealtimeCollaborationReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(realtimeCollaborationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function realtimeCollaborationReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

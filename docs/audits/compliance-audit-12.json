@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-04T19:36:46.790Z",
+  "createdAt": "2026-06-04T19:53:57.626Z",
   "checks": [
     {
       "name": "project setup",
@@ -739,6 +739,13 @@
     },
     {
       "name": "Object storage readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Realtime collaboration readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

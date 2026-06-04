@@ -5067,6 +5067,54 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 212:
   - `a38f338` object-storage readiness report
 
+- 2026-06-05: AutoResearch Upgrade 213 candidate selected:
+  `yjs/yjs` (`https://github.com/yjs/yjs`; CRDT shared types and provider
+  ecosystem; sparse ignored clone HEAD `a11907d`), compared with
+  `automerge/automerge` (local-first CRDT changes, sync, heads, conflicts;
+  sparse ignored clone HEAD `44cd915`) and `liveblocks/liveblocks`
+  (presence, rooms, storage, comments, Yjs integration; sparse ignored clone
+  HEAD `859ea82`). Selected realtime-collaboration readiness because RepoTutor
+  had static network/service reports, but no dedicated CRDT, provider,
+  presence, sync, persistence, history, access, and package readiness target.
+  All three external source paths remained ignored and `git ls-files` returned
+  `0`.
+- 2026-06-05: RED realtime-collaboration-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-realtime-collab-red-studies.XXXXXX.f0I4xD8cbr/2026-06-05/local__repotutor-realtime-collab-red-repo.XXXXXX.tQj3OSUxU2__local__05bbd75e`;
+  old behavior had `verificationCheckedRequiredArtifacts=336`, was missing
+  `analysis/realtime-collaboration-readiness-report.json`,
+  `markdown/realtime-collaboration-readiness.md`, and
+  `html/realtime-collaboration-readiness.html`, and
+  `open --target realtime-collaboration-readiness` failed with
+  `Unsupported open target`.
+- 2026-06-05: Implemented Yjs/Automerge/Liveblocks-style
+  realtime-collaboration-readiness report:
+  `RealtimeCollaborationReadinessReportSchema`,
+  `analysis/realtime-collaboration-readiness-report.json`,
+  `markdown/realtime-collaboration-readiness.md`,
+  `html/realtime-collaboration-readiness.html`, collaboration setup
+  detection, CRDT signals, provider signals, presence signals, sync signals,
+  persistence signals, history signals, access signals, package signals,
+  recommended commands, risk queue, manifest/session verification coverage,
+  learning-path linkage, nav entry, CLI help target, and
+  `open --target realtime-collaboration-readiness`.
+- 2026-06-05: GREEN realtime-collaboration-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-realtime-collab-green-studies.XXXXXX.pW8jrZ21Zs/2026-06-05/local__repotutor-realtime-collab-red-repo.XXXXXX.tQj3OSUxU2__local__2ac9ca22`;
+  confirmed `verificationCheckedRequiredArtifacts=339`, platforms
+  `yjs`, `automerge`, `liveblocks`, and `custom`, all three new artifacts,
+  risk queue 0, and `open --target realtime-collaboration-readiness` ->
+  `html/realtime-collaboration-readiness.html`. The focused Vitest fixture
+  covered Yjs shared types/providers/awareness/UndoManager, Automerge
+  change/sync/persistence/conflicts/patches, and Liveblocks rooms/presence/
+  storage/comments/Yjs integration with risk queue 0.
+- 2026-06-05: Verification for Upgrade 213:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 20/20 tests
+  - `pnpm audit:brief`: PASS, 111/111 audit checks across 13 reports
+- 2026-06-05: AutoResearch Upgrade 213 implementation commit pending:
+  - realtime-collaboration readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

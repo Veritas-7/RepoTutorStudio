@@ -107,6 +107,7 @@ import {
   VectorDbReadinessReport,
   SearchServiceReadinessReport,
   ObjectStorageReadinessReport,
+  RealtimeCollaborationReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -238,6 +239,7 @@ export interface AnalysisBundle {
   vectorDbReadinessReport: VectorDbReadinessReport;
   searchServiceReadinessReport: SearchServiceReadinessReport;
   objectStorageReadinessReport: ObjectStorageReadinessReport;
+  realtimeCollaborationReadinessReport: RealtimeCollaborationReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -369,6 +371,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const vectorDbReadinessReport = await buildVectorDbReadinessReport(walk);
   const searchServiceReadinessReport = await buildSearchServiceReadinessReport(walk);
   const objectStorageReadinessReport = await buildObjectStorageReadinessReport(walk);
+  const realtimeCollaborationReadinessReport = await buildRealtimeCollaborationReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
@@ -388,7 +391,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -22171,6 +22174,271 @@ function objectStorageSignalFromSpecs<T extends Record<K, string> & { pattern: R
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/object-storage-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildRealtimeCollaborationReadinessReport(walk: WalkResult): Promise<RealtimeCollaborationReadinessReport> {
+  const sourceFiles = await realtimeCollaborationSourceFiles(walk);
+  const collaborationSetups = realtimeCollaborationSetups(sourceFiles);
+  const crdtSignals = realtimeCollaborationCrdtSignals(sourceFiles);
+  const providerSignals = realtimeCollaborationProviderSignals(sourceFiles);
+  const presenceSignals = realtimeCollaborationPresenceSignals(sourceFiles);
+  const syncSignals = realtimeCollaborationSyncSignals(sourceFiles);
+  const persistenceSignals = realtimeCollaborationPersistenceSignals(sourceFiles);
+  const historySignals = realtimeCollaborationHistorySignals(sourceFiles);
+  const accessSignals = realtimeCollaborationAccessSignals(sourceFiles);
+  const packageSignals = realtimeCollaborationPackageSignals(sourceFiles);
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasDoc = crdtSignals.some((item) => item.readiness === "ready") || collaborationSetups.some((item) => item.docCount > 0 || item.sharedTypeCount > 0);
+  const hasProvider = providerSignals.some((item) => item.readiness === "ready") || collaborationSetups.some((item) => item.providerCount > 0);
+  const hasPresence = presenceSignals.some((item) => item.readiness === "ready") || collaborationSetups.some((item) => item.presenceCount > 0);
+  const hasSync = syncSignals.some((item) => item.readiness === "ready") || collaborationSetups.some((item) => item.syncCount > 0);
+  const hasPersistence = persistenceSignals.some((item) => item.readiness === "ready") || collaborationSetups.some((item) => item.persistenceCount > 0);
+  const hasHistory = historySignals.some((item) => item.readiness === "ready") || collaborationSetups.some((item) => item.historyCount > 0);
+  const hasAccess = accessSignals.some((item) => item.readiness === "ready") || collaborationSetups.some((item) => item.authCount > 0);
+  const riskQueue: RealtimeCollaborationReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasDoc) riskQueue.push({ priority: "medium", action: "Add or document the realtime collaboration strategy before claiming multiplayer readiness.", why: "Realtime collaboration readiness starts with a visible Yjs, Automerge, Liveblocks, provider, room, or shared-document boundary.", relatedHref: "html/realtime-collaboration-readiness.html" });
+  if ((hasPackage || hasProvider) && !hasDoc) riskQueue.push({ priority: "high", action: "Pair collaboration packages/providers with a concrete shared document, CRDT type, room, or storage model.", why: "A provider package alone does not tell learners which data structure is merged or synchronized.", relatedHref: "html/realtime-collaboration-readiness.html" });
+  if (hasDoc && !hasProvider) riskQueue.push({ priority: "high", action: "Record the provider boundary that synchronizes peers.", why: "CRDT documents need a visible WebSocket, IndexedDB, Liveblocks, broadcast, custom, or offline provider boundary.", relatedHref: "html/realtime-collaboration-readiness.html" });
+  if (hasProvider && !hasPresence) riskQueue.push({ priority: "medium", action: "Document awareness, presence, cursors, avatars, self/others, or broadcast events.", why: "Collaborative interfaces usually need ephemeral user state separate from persisted document state.", relatedHref: "html/realtime-collaboration-readiness.html" });
+  if (hasProvider && !hasSync) riskQueue.push({ priority: "medium", action: "Expose update/sync/save-load semantics for peer reconciliation.", why: "Learners need to see whether the app uses Yjs updates, Automerge sync messages, Liveblocks room state, or another sync contract.", relatedHref: "html/realtime-collaboration-readiness.html" });
+  if (hasDoc && !hasPersistence) riskQueue.push({ priority: "low", action: "Add persistence, offline, snapshot, save/load, or storage-root evidence.", why: "Local-first and multiplayer systems need a recovery story when tabs, devices, or networks restart.", relatedHref: "html/realtime-collaboration-readiness.html" });
+  if (hasDoc && !hasHistory) riskQueue.push({ priority: "low", action: "Record undo/redo, history, heads, versions, or patch-listener behavior.", why: "Collaborative editing needs explicit history semantics so conflicts and user mistakes are recoverable.", relatedHref: "html/realtime-collaboration-readiness.html" });
+  if (hasProvider && !hasAccess) riskQueue.push({ priority: "low", action: "Document auth endpoints, room IDs, permissions, tokens, and initial presence/storage boundaries.", why: "Room access and identity controls decide who can join, read, write, and broadcast collaboration state.", relatedHref: "html/realtime-collaboration-readiness.html" });
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Realtime collaboration readiness report: setup ${collaborationSetups.length}개, CRDT signal ${crdtSignals.length}개, provider signal ${providerSignals.length}개, presence signal ${presenceSignals.length}개, sync signal ${syncSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Realtime collaboration readiness Yjs Y.Doc shared types WebsocketProvider awareness UndoManager encodeStateAsUpdate applyUpdate Automerge change merge sync save load conflicts heads patches Liveblocks LiveblocksProvider RoomProvider useOthers useMyPresence useMutation storage presence comments threads authEndpoint room permissions",
+    collaborationSetups,
+    crdtSignals,
+    providerSignals,
+    presenceSignals,
+    syncSignals,
+    persistenceSignals,
+    historySignals,
+    accessSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"Y\\.Doc|getText|getMap|getArray|Automerge\\.init|Automerge\\.change|RoomProvider|LiveblocksProvider\" src app packages", purpose: "Find shared document, CRDT type, and room/provider boundaries." },
+      { command: "rg \"WebsocketProvider|IndexeddbPersistence|getYjsProviderForRoom|createClient|broadcast-channel|provider\" src app packages", purpose: "Map realtime providers, offline providers, and sync transport ownership." },
+      { command: "rg \"awareness|presence|cursor|avatar|useOthers|useMyPresence|setLocalStateField|broadcast\" src app packages", purpose: "Separate ephemeral presence from persisted shared document state." },
+      { command: "rg \"encodeStateAsUpdate|applyUpdate|mergeUpdates|initSyncState|generateSyncMessage|saveIncremental|getHeads|getConflicts|patches\" src app packages", purpose: "Review sync, conflict, persistence, and patch semantics without joining rooms." },
+      { command: "rg \"authEndpoint|publicApiKey|roomId|permission|initialPresence|initialStorage|token|authorize\" src app packages", purpose: "Check room identity, auth, permission, initial presence, and storage boundaries." }
+    ],
+    learnerNextSteps: [
+      "먼저 Y.Doc, Automerge document, Liveblocks RoomProvider 중 실제 shared document boundary를 찾으세요.",
+      "shared text/map/array/storage와 provider를 분리해서 어떤 상태가 병합되고 어떤 상태가 전송되는지 확인하세요.",
+      "awareness, presence, cursor, avatar, useOthers/useMyPresence는 저장 문서가 아니라 ephemeral user state로 읽으세요.",
+      "encode/apply update, sync message, save/load, heads, patches, conflicts 신호로 merge와 recovery 모델을 따라가세요.",
+      "authEndpoint, room id, permission, token, initialPresence, initialStorage 신호로 누가 room에 접근하고 쓸 수 있는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. RepoTutor는 provider에 연결하거나, room에 join하거나, CRDT 문서를 mutate/sync하거나, 원격 협업 서비스를 호출하지 않습니다."
+    ]
+  };
+}
+
+type RealtimeCollaborationSourceFile = { filePath: string; text: string; sourceHref: string };
+
+async function realtimeCollaborationSourceFiles(walk: WalkResult): Promise<RealtimeCollaborationSourceFile[]> {
+  const files: RealtimeCollaborationSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !realtimeCollaborationInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!realtimeCollaborationPathSignal(file.relPath) && !realtimeCollaborationContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 240) break;
+  }
+  return files;
+}
+
+function realtimeCollaborationInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return realtimeCollaborationPathSignal(filePath)
+    || /(^|\/)(README|docs?|collab|collaboration|realtime|real-time|multiplayer|rooms?|presence|awareness|cursors?|comments?|threads?|sync|crdt|yjs|automerge|liveblocks|editor|whiteboard)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|pnpm-lock\.yaml|yarn\.lock|package-lock\.json|requirements\.txt)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml)$/i.test(filePath);
+}
+
+function realtimeCollaborationPathSignal(filePath: string): boolean {
+  return /(^|\/)(collab|collaboration|realtime|real-time|multiplayer|rooms?|presence|awareness|cursors?|comments?|threads?|sync|crdt|yjs|automerge|liveblocks|editor|whiteboard)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function realtimeCollaborationContentSignal(text: string): boolean {
+  return /(Y\.Doc|new\s+Y\.|getText|getMap|getArray|WebsocketProvider|IndexeddbPersistence|awareness|UndoManager|encodeStateAsUpdate|applyUpdate|Automerge\.|@automerge\/automerge|initSyncState|generateSyncMessage|getConflicts|LiveblocksProvider|RoomProvider|useOthers|useMyPresence|useMutation|getYjsProviderForRoom|@liveblocks\/(client|react|yjs)|presence|initialStorage|authEndpoint)/i.test(text);
+}
+
+function realtimeCollaborationSetups(sourceFiles: RealtimeCollaborationSourceFile[]): RealtimeCollaborationReadinessReport["collaborationSetups"] {
+  const rows: RealtimeCollaborationReadinessReport["collaborationSetups"] = [];
+  for (const source of sourceFiles) {
+    const docCount = countMatches(source.text, /Y\.Doc|new\s+Y\.Doc|Automerge\.(init|from|load)|RoomProvider|enterRoom|roomId|room-?id/gi);
+    const sharedTypeCount = countMatches(source.text, /getText|getMap|getArray|getXml|Y\.(Text|Map|Array|XmlFragment)|LiveList|LiveMap|LiveObject|Automerge\.Text|storage\.get|initialStorage/gi);
+    const providerCount = countMatches(source.text, /WebsocketProvider|IndexeddbPersistence|LiveblocksProvider|RoomProvider|getYjsProviderForRoom|createClient|broadcast-channel|BroadcastChannel|provider/gi);
+    const presenceCount = countMatches(source.text, /awareness|presence|cursor|avatar|useOthers|useSelf|useMyPresence|setLocalStateField|broadcast|userInfo/gi);
+    const syncCount = countMatches(source.text, /encodeStateAsUpdate|applyUpdate|mergeUpdates|initSyncState|generateSyncMessage|receiveSyncMessage|getLastLocalChange|applyChanges|sync|synchronize/gi);
+    const persistenceCount = countMatches(source.text, /IndexeddbPersistence|localStorage|saveIncremental|loadIncremental|Automerge\.(save|load)|DocHandle|Repo|storageRoot|snapshot|persist/gi);
+    const conflictCount = countMatches(source.text, /Automerge\.merge|getConflicts|conflict|getHeads|getMissingDeps|heads|mergeUpdates/gi);
+    const historyCount = countMatches(source.text, /UndoManager|undo\s*\(|redo\s*\(|history|version|getHeads|patches|patch-listener|listen/gi);
+    const authCount = countMatches(source.text, /authEndpoint|publicApiKey|secret|token|permission|authorize|roomId|id=|initialPresence|initialStorage|userId/gi);
+    const commentsCount = countMatches(source.text, /comments?|threads?|useThreads|Comment|Notifications?|broadcastEvent|useBroadcastEvent/gi);
+    const totalSignals = docCount + sharedTypeCount + providerCount + presenceCount + syncCount + persistenceCount + conflictCount + historyCount + authCount + commentsCount;
+    if (totalSignals === 0 && !realtimeCollaborationPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: realtimeCollaborationPlatform(source),
+      docCount,
+      sharedTypeCount,
+      providerCount,
+      presenceCount,
+      syncCount,
+      persistenceCount,
+      conflictCount,
+      historyCount,
+      authCount,
+      commentsCount,
+      readiness: docCount + sharedTypeCount > 0 && providerCount > 0 && (presenceCount > 0 || syncCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} realtime collaboration signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => (b.docCount + b.sharedTypeCount + b.providerCount + b.presenceCount + b.syncCount) - (a.docCount + a.sharedTypeCount + a.providerCount + a.presenceCount + a.syncCount) || a.filePath.localeCompare(b.filePath)).slice(0, 100);
+}
+
+function realtimeCollaborationPlatform(source: RealtimeCollaborationSourceFile): RealtimeCollaborationReadinessReport["collaborationSetups"][number]["platform"] {
+  if (/liveblocks/i.test(source.filePath) || /LiveblocksProvider|RoomProvider|@liveblocks\/(client|react|yjs)|useOthers|useMyPresence/i.test(source.text)) return "liveblocks";
+  if (/automerge/i.test(source.filePath) || /Automerge\.|@automerge\/automerge/i.test(source.text)) return "automerge";
+  if (/yjs|\/y-/i.test(source.filePath) || /Y\.Doc|new\s+Y\.|WebsocketProvider|IndexeddbPersistence|@liveblocks\/yjs|y-websocket|y-indexeddb/i.test(source.text)) return "yjs";
+  if (/WebsocketProvider|BroadcastChannel|provider/i.test(source.text)) return "socket-provider";
+  if (/collab|collaboration|realtime|multiplayer|presence|sync/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function realtimeCollaborationCrdtSignals(sourceFiles: RealtimeCollaborationSourceFile[]): RealtimeCollaborationReadinessReport["crdtSignals"] {
+  const specs: Array<{ signal: RealtimeCollaborationReadinessReport["crdtSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "y-doc", pattern: /Y\.Doc|new\s+Y\.Doc/i, evidence: "Y.Doc evidence was detected." },
+    { signal: "shared-map", pattern: /getMap|Y\.Map|LiveMap/i, evidence: "shared map evidence was detected." },
+    { signal: "shared-array", pattern: /getArray|Y\.Array|LiveList/i, evidence: "shared array/list evidence was detected." },
+    { signal: "shared-text", pattern: /getText|Y\.Text|Automerge\.Text|withYjs|sharedType/i, evidence: "shared text evidence was detected." },
+    { signal: "automerge-doc", pattern: /Automerge\.(init|from|load)|@automerge\/automerge/i, evidence: "Automerge document evidence was detected." },
+    { signal: "change", pattern: /Automerge\.change|change\s*\([^)]*doc|useMutation/i, evidence: "change/mutation evidence was detected." },
+    { signal: "merge", pattern: /Automerge\.merge|mergeUpdates|merge\s*\(/i, evidence: "merge evidence was detected." },
+    { signal: "conflict", pattern: /getConflicts|conflict/i, evidence: "conflict inspection evidence was detected." },
+    { signal: "transaction", pattern: /transact|transaction|doc\.transact|Y\.transact/i, evidence: "transaction evidence was detected." }
+  ];
+  return realtimeCollaborationSignalFromSpecs(sourceFiles, specs, "crdt", "signal");
+}
+
+function realtimeCollaborationProviderSignals(sourceFiles: RealtimeCollaborationSourceFile[]): RealtimeCollaborationReadinessReport["providerSignals"] {
+  const specs: Array<{ signal: RealtimeCollaborationReadinessReport["providerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "websocket-provider", pattern: /WebsocketProvider|y-websocket|websocket provider/i, evidence: "WebSocket provider evidence was detected." },
+    { signal: "indexeddb-provider", pattern: /IndexeddbPersistence|y-indexeddb|indexeddb provider/i, evidence: "IndexedDB provider evidence was detected." },
+    { signal: "liveblocks-provider", pattern: /LiveblocksProvider|createClient|@liveblocks\/client/i, evidence: "Liveblocks provider evidence was detected." },
+    { signal: "room-provider", pattern: /RoomProvider|enterRoom|roomId|room-?id/i, evidence: "room provider evidence was detected." },
+    { signal: "yjs-provider", pattern: /getYjsProviderForRoom|LiveblocksYjsProvider|yjs provider|provider\.doc/i, evidence: "Yjs provider evidence was detected." },
+    { signal: "broadcast-channel", pattern: /BroadcastChannel|broadcast-channel|useBroadcastEvent|broadcast\s*\(/i, evidence: "broadcast channel/event evidence was detected." },
+    { signal: "network-agnostic", pattern: /network agnostic|offline editing|offline-first|local-first|p2p|peer-to-peer/i, evidence: "network-agnostic or offline collaboration evidence was detected." },
+    { signal: "custom-provider", pattern: /provider|syncProvider|collaborationProvider|roomProvider|transport/i, evidence: "custom provider evidence was detected." }
+  ];
+  return realtimeCollaborationSignalFromSpecs(sourceFiles, specs, "provider", "signal");
+}
+
+function realtimeCollaborationPresenceSignals(sourceFiles: RealtimeCollaborationSourceFile[]): RealtimeCollaborationReadinessReport["presenceSignals"] {
+  const specs: Array<{ signal: RealtimeCollaborationReadinessReport["presenceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "awareness", pattern: /awareness|setLocalStateField|getLocalState/i, evidence: "Yjs awareness evidence was detected." },
+    { signal: "presence", pattern: /presence|initialPresence|useMyPresence|updateMyPresence/i, evidence: "presence evidence was detected." },
+    { signal: "cursor", pattern: /cursor|caret|selection|withCursors/i, evidence: "cursor/caret evidence was detected." },
+    { signal: "avatars", pattern: /avatar|avatars|useSelf|userInfo/i, evidence: "avatar/user info evidence was detected." },
+    { signal: "others", pattern: /useOthers|getOthers|others\.|connectionId/i, evidence: "others/remote user evidence was detected." },
+    { signal: "self", pattern: /useSelf|getSelf|self\.|myPresence/i, evidence: "self presence evidence was detected." },
+    { signal: "broadcast-event", pattern: /useBroadcastEvent|broadcastEvent|broadcast\s*\(/i, evidence: "broadcast event evidence was detected." },
+    { signal: "user-info", pattern: /userInfo|userId|name|color|displayName/i, evidence: "user info evidence was detected." }
+  ];
+  return realtimeCollaborationSignalFromSpecs(sourceFiles, specs, "presence", "signal");
+}
+
+function realtimeCollaborationSyncSignals(sourceFiles: RealtimeCollaborationSourceFile[]): RealtimeCollaborationReadinessReport["syncSignals"] {
+  const specs: Array<{ signal: RealtimeCollaborationReadinessReport["syncSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "encode-state", pattern: /encodeStateAsUpdate|encodeStateVector|encodeState/i, evidence: "Yjs encode state evidence was detected." },
+    { signal: "apply-update", pattern: /applyUpdate|applyUpdateV2|mergeUpdates/i, evidence: "Yjs apply/merge update evidence was detected." },
+    { signal: "sync-state", pattern: /initSyncState|syncState|sync state/i, evidence: "sync state evidence was detected." },
+    { signal: "sync-message", pattern: /generateSyncMessage|receiveSyncMessage|sync message/i, evidence: "sync message evidence was detected." },
+    { signal: "save-load", pattern: /Automerge\.(save|load)|save\s*\(|load\s*\(/i, evidence: "save/load evidence was detected." },
+    { signal: "incremental-save", pattern: /saveIncremental|loadIncremental|incremental/i, evidence: "incremental save/load evidence was detected." },
+    { signal: "heads", pattern: /getHeads|getMissingDeps|getChanges|heads/i, evidence: "heads/change-set evidence was detected." },
+    { signal: "patches", pattern: /patches|applyPatch|Patch|listen|onChange/i, evidence: "patch listener evidence was detected." }
+  ];
+  return realtimeCollaborationSignalFromSpecs(sourceFiles, specs, "sync", "signal");
+}
+
+function realtimeCollaborationPersistenceSignals(sourceFiles: RealtimeCollaborationSourceFile[]): RealtimeCollaborationReadinessReport["persistenceSignals"] {
+  const specs: Array<{ signal: RealtimeCollaborationReadinessReport["persistenceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "indexeddb", pattern: /IndexeddbPersistence|indexedDB|y-indexeddb/i, evidence: "IndexedDB persistence evidence was detected." },
+    { signal: "local-storage", pattern: /localStorage|sessionStorage|AsyncStorage/i, evidence: "local storage evidence was detected." },
+    { signal: "doc-handle", pattern: /DocHandle|docHandle|handle\.doc/i, evidence: "doc handle evidence was detected." },
+    { signal: "repo", pattern: /new\s+Repo|AutomergeRepo|storageRoot|repo\.find|repo\.create/i, evidence: "Automerge Repo evidence was detected." },
+    { signal: "save", pattern: /Automerge\.save|saveIncremental|\.save\s*\(/i, evidence: "save evidence was detected." },
+    { signal: "load", pattern: /Automerge\.load|loadIncremental|\.load\s*\(/i, evidence: "load evidence was detected." },
+    { signal: "storage-root", pattern: /storageRoot|storage root|persistenceDir|dataDir/i, evidence: "storage root evidence was detected." },
+    { signal: "snapshot", pattern: /snapshot|version snapshot|saveSnapshot|restoreSnapshot/i, evidence: "snapshot evidence was detected." }
+  ];
+  return realtimeCollaborationSignalFromSpecs(sourceFiles, specs, "persistence", "signal");
+}
+
+function realtimeCollaborationHistorySignals(sourceFiles: RealtimeCollaborationSourceFile[]): RealtimeCollaborationReadinessReport["historySignals"] {
+  const specs: Array<{ signal: RealtimeCollaborationReadinessReport["historySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "undo-manager", pattern: /UndoManager|new\s+Y\.UndoManager/i, evidence: "Y.UndoManager evidence was detected." },
+    { signal: "undo", pattern: /\.undo\s*\(|history\.undo|undoStack/i, evidence: "undo evidence was detected." },
+    { signal: "redo", pattern: /\.redo\s*\(|history\.redo|redoStack/i, evidence: "redo evidence was detected." },
+    { signal: "history", pattern: /history|useHistory|getHistory/i, evidence: "history evidence was detected." },
+    { signal: "version", pattern: /version|versionId|heads|snapshot/i, evidence: "version/head evidence was detected." },
+    { signal: "heads", pattern: /getHeads|heads/i, evidence: "heads evidence was detected." },
+    { signal: "patch-listener", pattern: /patches|patch listener|listen|onChange|observeDeep|observe\s*\(/i, evidence: "patch/observer evidence was detected." }
+  ];
+  return realtimeCollaborationSignalFromSpecs(sourceFiles, specs, "history", "signal");
+}
+
+function realtimeCollaborationAccessSignals(sourceFiles: RealtimeCollaborationSourceFile[]): RealtimeCollaborationReadinessReport["accessSignals"] {
+  const specs: Array<{ signal: RealtimeCollaborationReadinessReport["accessSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "auth-endpoint", pattern: /authEndpoint|\/api\/liveblocks-auth|authorize|prepareSession/i, evidence: "auth endpoint evidence was detected." },
+    { signal: "public-api-key", pattern: /publicApiKey|pk_[A-Za-z0-9_]+|LIVEBLOCKS_PUBLIC_KEY/i, evidence: "public API key boundary evidence was detected." },
+    { signal: "room-id", pattern: /RoomProvider\s+id=|roomId|room-?id|enterRoom\s*\(/i, evidence: "room ID evidence was detected." },
+    { signal: "permission", pattern: /permission|allow|deny|canWrite|canComment|readOnly|full-access/i, evidence: "permission evidence was detected." },
+    { signal: "initial-presence", pattern: /initialPresence|presence\s*:/i, evidence: "initial presence evidence was detected." },
+    { signal: "initial-storage", pattern: /initialStorage|storage\s*:/i, evidence: "initial storage evidence was detected." },
+    { signal: "user-id", pattern: /userId|user\.id|connectionId|identity/i, evidence: "user ID evidence was detected." },
+    { signal: "token", pattern: /token|secret|accessToken|jwt|Bearer/i, evidence: "token evidence was detected." }
+  ];
+  return realtimeCollaborationSignalFromSpecs(sourceFiles, specs, "access", "signal");
+}
+
+function realtimeCollaborationPackageSignals(sourceFiles: RealtimeCollaborationSourceFile[]): RealtimeCollaborationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: RealtimeCollaborationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "yjs", pattern: /"yjs"|from ["']yjs["']|Y\.Doc|new\s+Y\./i, evidence: "Yjs package/import evidence was detected." },
+    { signal: "y-websocket", pattern: /"y-websocket"|WebsocketProvider|from ["']y-websocket["']/i, evidence: "y-websocket evidence was detected." },
+    { signal: "y-indexeddb", pattern: /"y-indexeddb"|IndexeddbPersistence|from ["']y-indexeddb["']/i, evidence: "y-indexeddb evidence was detected." },
+    { signal: "@automerge/automerge", pattern: /"@automerge\/automerge"|@automerge\/automerge|Automerge\./i, evidence: "Automerge package/import evidence was detected." },
+    { signal: "@automerge/automerge-repo", pattern: /"@automerge\/automerge-repo"|@automerge\/automerge-repo|new\s+Repo|DocHandle/i, evidence: "Automerge Repo evidence was detected." },
+    { signal: "@liveblocks/client", pattern: /"@liveblocks\/client"|@liveblocks\/client|createClient/i, evidence: "Liveblocks client evidence was detected." },
+    { signal: "@liveblocks/react", pattern: /"@liveblocks\/react"|@liveblocks\/react|LiveblocksProvider|RoomProvider|useOthers|useMyPresence/i, evidence: "Liveblocks React evidence was detected." },
+    { signal: "@liveblocks/yjs", pattern: /"@liveblocks\/yjs"|@liveblocks\/yjs|getYjsProviderForRoom|LiveblocksYjsProvider/i, evidence: "Liveblocks Yjs evidence was detected." }
+  ];
+  return realtimeCollaborationSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function realtimeCollaborationSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: RealtimeCollaborationSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/realtime-collaboration-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

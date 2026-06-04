@@ -6461,6 +6461,61 @@ Local verification:
 - `pnpm audit:brief`: PASS, 110/110 audit checks across 13 generated reports
 - Pushed implementation commit: `a38f338` object-storage readiness report
 
+### Upgrade 213: Realtime Collaboration Readiness Report
+
+- Cloned and inspected `yjs/yjs` under `research/external-src/yjs-yjs`,
+  `automerge/automerge` under `research/external-src/automerge-automerge`,
+  and `liveblocks/liveblocks` under `research/external-src/liveblocks-liveblocks`
+  without executing external source. Clone HEADs were `a11907d`, `44cd915`,
+  and `859ea82`; all three clones remain ignored by RepoTutor and tracked file
+  count returned `0`.
+- GitHub metadata: `yjs/yjs` is public, license key `other`, 21,966 stars,
+  780 forks, updated 2026-06-04T15:24:48Z. `automerge/automerge` is public,
+  MIT licensed, 6,316 stars, 251 forks, updated 2026-06-04T17:55:59Z.
+  `liveblocks/liveblocks` is public, license key `other`, 4,623 stars,
+  419 forks, updated 2026-06-04T05:41:52Z. Selected the three-source slice
+  because together they model Yjs shared types/providers/awareness/undo,
+  Automerge local-first change/sync/persistence/conflict semantics, and
+  Liveblocks room/presence/storage/comment/Yjs integration. No source code was
+  copied into RepoTutor.
+- Implemented Yjs/Automerge/Liveblocks-style
+  realtime-collaboration-readiness report:
+  `RealtimeCollaborationReadinessReportSchema`,
+  `analysis/realtime-collaboration-readiness-report.json`,
+  `markdown/realtime-collaboration-readiness.md`,
+  `html/realtime-collaboration-readiness.html`, collaboration setup detection,
+  CRDT signals, provider signals, presence signals, sync signals, persistence
+  signals, history signals, access signals, package signals, recommended
+  commands, risk queue, manifest/session-verification coverage, learning-path
+  linkage, nav entry, and `open --target realtime-collaboration-readiness`.
+- Source pattern: realtime collaboration readiness separates Yjs `Y.Doc`,
+  shared text/map/array types, websocket/offline providers, awareness,
+  cursors, UndoManager, update encoding/application; Automerge init/change,
+  merge, sync messages, save/load, conflicts, heads, patches; and Liveblocks
+  providers, rooms, presence, storage mutations, comments/threads, auth
+  endpoints, room IDs, permissions, and Yjs provider integration. RepoTutor
+  maps that to deterministic static readiness and explicitly does not connect
+  providers, join rooms, sync/mutate CRDT docs, broadcast presence, or call
+  collaboration services.
+- RED smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-realtime-collab-red-studies.XXXXXX.f0I4xD8cbr/2026-06-05/local__repotutor-realtime-collab-red-repo.XXXXXX.tQj3OSUxU2__local__05bbd75e`;
+  old behavior had `verificationCheckedRequiredArtifacts=336`, was missing
+  `analysis/realtime-collaboration-readiness-report.json`,
+  `markdown/realtime-collaboration-readiness.md`, and
+  `html/realtime-collaboration-readiness.html`, and
+  `open --target realtime-collaboration-readiness` exited with
+  `Unsupported open target`.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-realtime-collab-green-studies.XXXXXX.pW8jrZ21Zs/2026-06-05/local__repotutor-realtime-collab-red-repo.XXXXXX.tQj3OSUxU2__local__2ac9ca22`;
+  confirmed `verificationCheckedRequiredArtifacts=339`, platforms `yjs`,
+  `automerge`, `liveblocks`, and `custom`, all three new artifacts, risk queue
+  0, and `open --target realtime-collaboration-readiness` ->
+  `html/realtime-collaboration-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 20/20 tests
+- `pnpm audit:brief`: PASS, 111/111 audit checks across 13 generated reports
+- Pushed implementation commit: pending realtime-collaboration readiness report
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
