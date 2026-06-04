@@ -446,6 +446,22 @@
         "summary export handleSummary cloud Prometheus InfluxDB StatsD and OpenTelemetry outputs",
         "runtime controls for env vars archives browser flows and distributed/cloud execution"
       ]
+    },
+    {
+      "repo": "microsoft/playwright",
+      "url": "https://github.com/microsoft/playwright",
+      "localPath": "research/external-src/microsoft-playwright",
+      "stars": 90218,
+      "forks": 5853,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T01:39:58Z",
+      "adoptedPatterns": [
+        "Playwright Test browser projects for Chromium Firefox and WebKit",
+        "web-first locators and assertions with auto-waiting",
+        "trace screenshot video and HTML/JUnit/JSON reporter artifacts",
+        "webServer baseURL retries workers storageState and CI artifact readiness",
+        "Playwright CLI and MCP browser automation patterns"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2325,6 +2341,28 @@
         "PerformanceReportSchema",
         "k6 load testing scripts scenarios executors thresholds checks metrics outputs summaries cloud performance SLO"
       ]
+    },
+    {
+      "name": "E2E readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/e2e-report.json",
+        "markdown/e2e.md",
+        "html/e2e.html",
+        "open --target e2e",
+        "E2eReportSchema",
+        "Playwright browser E2E tests config projects locators assertions traces screenshots video reporters CI webServer"
+      ]
     }
   ],
   "verification": {
@@ -2615,6 +2653,12 @@
     "cliPerformanceOpenTargetSmoke": "PASS",
     "buildPerformance": "PASS",
     "testPerformance": "PASS",
-    "auditBriefPerformance29": "PASS"
+    "auditBriefPerformance29": "PASS",
+    "fixtureE2eReport": "PASS",
+    "cliE2eSmoke": "PASS",
+    "cliE2eOpenTargetSmoke": "PASS",
+    "buildE2e": "PASS",
+    "testE2e": "PASS",
+    "auditBriefE2e30": "PASS"
   }
 }

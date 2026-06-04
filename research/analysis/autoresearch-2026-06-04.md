@@ -2639,6 +2639,41 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 29/29 audit checks across 13 generated reports
 
+### Upgrade 132: E2E Readiness Report
+
+- Cloned and inspected `microsoft/playwright` under
+  `research/external-src/microsoft-playwright` without executing external
+  source.
+- GitHub metadata: public repo, Apache-2.0 license, 90,218 stars, 5,853 forks,
+  updated 2026-06-04T01:39:58Z. No source code was copied into RepoTutor.
+- Added `E2eReportSchema` and `analysis/e2e-report.json` with
+  Playwright-style test suites, browser projects, locator signals, assertions,
+  artifacts, runtime targets, risk queue, recommended commands, and learner
+  next steps.
+- Added `markdown/e2e.md`, `html/e2e.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target e2e`.
+- Source pattern: Playwright separates browser projects for Chromium, Firefox,
+  WebKit/mobile/API flows, web-first locators and assertions, trace/screenshot/
+  video/report artifacts, `webServer`/`baseURL`, retries, workers, storage
+  state, and CI artifact readiness. RepoTutor maps that to deterministic static
+  E2E readiness and explicitly does not launch browsers or claim user-flow
+  pass/fail results.
+- RED smoke generated
+  `/tmp/repotutor-e2e-red-studies.T2zTjI/2026-06-04/local__simple-ts-app__main__c688d74e`;
+  old behavior was missing `analysis/e2e-report.json`, `markdown/e2e.md`, and
+  `html/e2e.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-e2e-green-studies.Ce8iow/2026-06-04/local__simple-ts-app__main__c688d74e`;
+  confirmed `verificationCheckedRequiredArtifacts=96`, test suites 0, browser
+  projects 5, locator signals 0, assertions 7, artifacts 1, runtime targets 7,
+  recommended commands 5, risk queue 2, `e2e-card`,
+  `data-source-pattern="Playwright"`, manifest/learning-path entries, and
+  `open --target e2e` -> `html/e2e.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 30/30 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

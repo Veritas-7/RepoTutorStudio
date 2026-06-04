@@ -1,6 +1,6 @@
 {
   "iteration": 3,
-  "createdAt": "2026-06-04T01:38:02.818Z",
+  "createdAt": "2026-06-04T01:49:02.318Z",
   "checks": [
     {
       "name": "project setup",
@@ -172,6 +172,13 @@
     },
     {
       "name": "performance readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "e2e readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
