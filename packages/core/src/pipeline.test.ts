@@ -101,6 +101,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "visual-regression-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "infrastructure-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "deployment-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "serverless-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -200,6 +201,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "visual-regression-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "infrastructure-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "deployment-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "serverless-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -299,6 +301,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "visual-regression-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "infrastructure-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "deployment-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "serverless-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -429,6 +432,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/visual-regression-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/infrastructure-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/deployment-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/serverless-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -2160,6 +2164,19 @@ describe("RepoTutor core pipeline", () => {
     expect(deploymentReadinessMarkdown).toContain("Source pattern: Helm");
     expect(deploymentReadinessMarkdown).toContain("## Release Signals");
     expect(deploymentReadinessMarkdown).toContain("## Safety Signals");
+    const serverlessReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "serverless-readiness-report.json"), "utf8");
+    expect(serverlessReadinessText).toContain("Serverless Framework serverless.yml service provider runtime stage region functions handler events httpApi schedule sqs sns resources package plugins deploy invoke offline logs");
+    expect(serverlessReadinessText).toContain("\"serverlessSetups\"");
+    expect(serverlessReadinessText).toContain("\"eventSignals\"");
+    expect(serverlessReadinessText).toContain("\"deploymentSignals\"");
+    const serverlessReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "serverless-readiness.html"), "utf8");
+    expect(serverlessReadinessHtml).toContain("Serverless Readiness");
+    expect(serverlessReadinessHtml).toContain("serverless-readiness-card");
+    expect(serverlessReadinessHtml).toContain("data-source-pattern=\"Serverless Framework\"");
+    const serverlessReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "serverless-readiness.md"), "utf8");
+    expect(serverlessReadinessMarkdown).toContain("# Serverless Readiness");
+    expect(serverlessReadinessMarkdown).toContain("Source pattern: Serverless Framework");
+    expect(serverlessReadinessMarkdown).toContain("## Event Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -2716,6 +2733,102 @@ describe("RepoTutor core pipeline", () => {
     expect(report.valueSignals.some((item) => item.signal === "global-values" && item.readiness === "ready")).toBe(true);
     expect(report.releaseSignals.some((item) => item.signal === "upgrade-command" && item.readiness === "ready")).toBe(true);
     expect(report.safetySignals.some((item) => item.signal === "rollback-on-failure" && item.readiness === "ready")).toBe(true);
+  });
+
+  it("detects Serverless Framework readiness in service files", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-serverless-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-serverless-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        deploy: "serverless deploy --stage prod --region us-east-1",
+        package: "serverless package --stage prod",
+        local: "serverless invoke local -f api"
+      },
+      dependencies: {
+        serverless: "^4.0.0",
+        "serverless-offline": "^14.0.0",
+        "serverless-prune-plugin": "^2.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "serverless.yml"), [
+      "service: demo-api",
+      "frameworkVersion: '4'",
+      "provider:",
+      "  name: aws",
+      "  runtime: nodejs22.x",
+      "  region: us-east-1",
+      "  stage: ${opt:stage, 'dev'}",
+      "  logRetentionInDays: 14",
+      "  tracing:",
+      "    lambda: true",
+      "  environment:",
+      "    TABLE_NAME: ${self:service}-${sls:stage}-items",
+      "    TOKEN: ${ssm:/demo/token}",
+      "  iam:",
+      "    role:",
+      "      statements:",
+      "        - Effect: Allow",
+      "          Action:",
+      "            - dynamodb:PutItem",
+      "          Resource: !GetAtt ItemsTable.Arn",
+      "functions:",
+      "  api:",
+      "    handler: src/handler.main",
+      "    timeout: 10",
+      "    memorySize: 256",
+      "    events:",
+      "      - httpApi:",
+      "          path: /items",
+      "          method: post",
+      "      - schedule: rate(5 minutes)",
+      "package:",
+      "  patterns:",
+      "    - '!tests/**'",
+      "plugins:",
+      "  - serverless-offline",
+      "  - serverless-prune-plugin",
+      "resources:",
+      "  Resources:",
+      "    ItemsTable:",
+      "      Type: AWS::DynamoDB::Table",
+      "      Properties:",
+      "        BillingMode: PAY_PER_REQUEST"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "handler.js"), "export async function main() { return { statusCode: 200, body: 'ok' }; }\n");
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "serverless-readiness-report.json"), "utf8")) as {
+      serverlessSetups: Array<{ filePath: string; framework: string; serviceCount: number; providerCount: number; functionCount: number; eventCount: number; iamCount: number; resourceCount: number; commandCount: number }>;
+      configSignals: Array<{ signal: string; readiness: string }>;
+      functionSignals: Array<{ signal: string; readiness: string }>;
+      eventSignals: Array<{ signal: string; readiness: string }>;
+      deploymentSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const setup = report.serverlessSetups.find((item) => item.filePath === "serverless.yml");
+    expect(report.serverlessSetups.length).toBeGreaterThan(0);
+    expect(setup?.framework).toBe("serverless-framework");
+    expect(setup?.serviceCount).toBeGreaterThan(0);
+    expect(setup?.providerCount).toBeGreaterThan(0);
+    expect(setup?.functionCount).toBeGreaterThan(0);
+    expect(setup?.eventCount).toBeGreaterThan(0);
+    expect(setup?.iamCount).toBeGreaterThan(0);
+    expect(setup?.resourceCount).toBeGreaterThan(0);
+    expect(report.serverlessSetups.some((item) => item.commandCount > 0)).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "serverless-yml" && item.readiness === "ready")).toBe(true);
+    expect(report.configSignals.some((item) => item.signal === "variables" && item.readiness === "ready")).toBe(true);
+    expect(report.functionSignals.some((item) => item.signal === "handler" && item.readiness === "ready")).toBe(true);
+    expect(report.eventSignals.some((item) => item.signal === "http-api" && item.readiness === "ready")).toBe(true);
+    expect(report.eventSignals.some((item) => item.signal === "schedule" && item.readiness === "ready")).toBe(true);
+    expect(report.deploymentSignals.some((item) => item.signal === "deploy" && item.readiness === "ready")).toBe(true);
+    expect(report.deploymentSignals.some((item) => item.signal === "invoke-local" && item.readiness === "ready")).toBe(true);
+    expect(report.safetySignals.some((item) => item.signal === "iam-role-statements" && item.readiness === "ready")).toBe(true);
+    expect(report.safetySignals.some((item) => item.signal === "secrets" && item.readiness === "ready")).toBe(true);
+    expect(report.packageSignals.some((item) => item.signal === "serverless-offline" && item.readiness === "ready")).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "serverless-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "serverless-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("compares a new study session against the previous source snapshot", async () => {

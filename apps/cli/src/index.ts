@@ -1853,6 +1853,7 @@ function openTargetEntries(): Array<{ target: string; fileName: string }> {
     { target: "visual-regression-readiness", fileName: "visual-regression-readiness.html" },
     { target: "infrastructure-readiness", fileName: "infrastructure-readiness.html" },
     { target: "deployment-readiness", fileName: "deployment-readiness.html" },
+    { target: "serverless-readiness", fileName: "serverless-readiness.html" },
     { target: "context-pack", fileName: "context-pack.html" },
     { target: "mcp-handoff", fileName: "mcp-handoff.html" },
     { target: "agent-memory", fileName: "agent-memory.html" },

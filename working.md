@@ -4489,6 +4489,46 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 199:
   - `a017c51` deployment readiness report
 
+- 2026-06-05: AutoResearch Upgrade 200 candidate selected:
+  `serverless/serverless`
+  (`https://github.com/serverless/serverless`; public; license `NOASSERTION`;
+  46,923 stars; 5,734 forks; updated 2026-06-04T02:40:16Z). Compared with
+  `aws/serverless-application-model`, `anomalyco/sst`, and `vercel/vercel`;
+  selected Serverless Framework because it directly models serverless service
+  readiness through `serverless.yml`, provider/runtime/stage/region, functions,
+  handlers, events, resources, packaging, plugins, deploy, invoke, offline,
+  logs, and safety guardrails. Cloned ignored external source to
+  `research/external-src/serverless-serverless` and inspected docs/source hits
+  without executing external source. Clone HEAD was `94663bd`; tracked file
+  count for `research/external-src/serverless-serverless` returned `0`.
+- 2026-06-05: RED serverless-readiness smoke generated
+  `/tmp/repotutor-serverless-red-studies.JGaMIf/2026-06-05/local__repotutor-serverless-red-repo.BkBQ33__local__6d946f40`;
+  old build had `verificationCheckedRequiredArtifacts=297`, was missing
+  `analysis/serverless-readiness-report.json`,
+  `markdown/serverless-readiness.md`, and `html/serverless-readiness.html`,
+  and `open --target serverless-readiness` failed as expected.
+- 2026-06-05: Implemented Serverless Framework-style serverless-readiness
+  report: `ServerlessReadinessReportSchema`,
+  `analysis/serverless-readiness-report.json`,
+  `markdown/serverless-readiness.md`, `html/serverless-readiness.html`,
+  serverless setups, config signals, function signals, event signals, runtime
+  signals, deployment signals, safety signals, package signals, recommended
+  commands, risk queue, manifest/session verification coverage, learning-path
+  linkage, nav entry, and `open --target serverless-readiness`.
+- 2026-06-05: GREEN serverless-readiness smoke generated
+  `/tmp/repotutor-serverless-green-studies.H9Kb7c/2026-06-05/local__repotutor-serverless-green-repo.Ypcwpj__local__cb27279a`;
+  confirmed `verificationCheckedRequiredArtifacts=300`, serverless setups 2,
+  config signals 10, function signals 8, event signals 10, deployment signals
+  10, safety signals 9, package signals 11, risk queue 0, all three new
+  artifacts, and `open --target serverless-readiness` ->
+  `html/serverless-readiness.html`.
+- 2026-06-05: Verification for Upgrade 200:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 7/7 tests
+  - `pnpm audit:brief`: PASS, 98/98 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

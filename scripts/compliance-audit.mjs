@@ -838,6 +838,16 @@ const checks = [
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
   ], ["DeploymentReadinessReportSchema", "DeploymentReadinessReport", "deploymentReadinessReport", "deployment-readiness-report.json", "deployment-readiness.md", "deployment-readiness.html", "Helm Chart.yaml values.yaml templates helm lint template install upgrade rollback dependency package repo test", "deploymentSetups", "chartSignals", "templateSignals", "valueSignals", "releaseSignals", "safetySignals", "packageSignals", "Helm", "deployment-readiness-card", "data-source-pattern=\"Helm\"", "openTargetEntries", "deployment-readiness"]),
+  check("Serverless readiness report", [
+    "packages/shared/src/schemas.ts",
+    "packages/core/src/scanner.ts",
+    "packages/core/src/pipeline.ts",
+    "packages/core/src/markdown.ts",
+    "packages/html/src/templates.ts",
+    "apps/cli/src/index.ts",
+    "packages/core/src/session-verifier.ts",
+    "packages/core/src/pipeline.test.ts"
+  ], ["ServerlessReadinessReportSchema", "ServerlessReadinessReport", "serverlessReadinessReport", "serverless-readiness-report.json", "serverless-readiness.md", "serverless-readiness.html", "Serverless Framework serverless.yml service provider runtime stage region functions handler events httpApi schedule sqs sns resources package plugins deploy invoke offline logs", "serverlessSetups", "configSignals", "functionSignals", "eventSignals", "runtimeSignals", "deploymentSignals", "safetySignals", "packageSignals", "serverless", "serverless-readiness-card", "data-source-pattern=\"Serverless Framework\"", "openTargetEntries", "serverless-readiness"]),
   check("source-backed component graph", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",

@@ -5784,6 +5784,54 @@ Local verification:
 - `pnpm test`: PASS, 6/6 tests
 - `pnpm audit:brief`: PASS, 97/97 audit checks across 13 generated reports
 
+### Upgrade 200: Serverless Readiness Report
+
+- Cloned and inspected `serverless/serverless` under
+  `research/external-src/serverless-serverless` without executing external
+  source. Clone HEAD was `94663bd`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, license `NOASSERTION`, 46,923 stars, 5,734
+  forks, updated 2026-06-04T02:40:16Z. Compared with
+  `aws/serverless-application-model`, `anomalyco/sst`, and `vercel/vercel`;
+  selected Serverless Framework because it directly models portable serverless
+  service readiness through `serverless.yml`, provider/runtime/stage/region,
+  functions, handlers, event triggers, resources, packaging, plugins, deploy,
+  invoke, offline, logs, and safety guardrails. No source code was copied into
+  RepoTutor.
+- Implemented Serverless Framework-style serverless-readiness report:
+  `ServerlessReadinessReportSchema`,
+  `analysis/serverless-readiness-report.json`,
+  `markdown/serverless-readiness.md`, `html/serverless-readiness.html`,
+  serverless setups, config signals, function signals, event signals, runtime
+  signals, deployment signals, safety signals, package signals, recommended
+  commands, risk queue, manifest/session-verification coverage, learning-path
+  linkage, nav entry, and `open --target serverless-readiness`.
+- Source pattern: Serverless Framework separates `service`, `frameworkVersion`,
+  `provider`, `runtime`, `stage`, `region`, variable resolvers, `functions`,
+  handlers, HTTP/API/schedule/queue/topic/storage/stream/websocket events,
+  resources, packaging patterns, plugins, `serverless deploy`,
+  `serverless package`, `serverless invoke local`, `serverless info`,
+  `serverless logs`, offline emulation, IAM, secrets, log retention, tracing,
+  rollback, and pruning. RepoTutor maps that to deterministic static serverless
+  readiness and explicitly does not run Serverless Framework, SAM, SST, Vercel,
+  Netlify, Wrangler, package artifacts, deploy functions, invoke cloud
+  resources, tail logs, mutate IAM, or remove stacks.
+- RED smoke generated
+  `/tmp/repotutor-serverless-red-studies.JGaMIf/2026-06-05/local__repotutor-serverless-red-repo.BkBQ33__local__6d946f40`;
+  old behavior had `verificationCheckedRequiredArtifacts=297`, was missing
+  `analysis/serverless-readiness-report.json`,
+  `markdown/serverless-readiness.md`, and `html/serverless-readiness.html`, and
+  `open --target serverless-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-serverless-green-studies.H9Kb7c/2026-06-05/local__repotutor-serverless-green-repo.Ypcwpj__local__cb27279a`;
+  confirmed `verificationCheckedRequiredArtifacts=300`, serverless setups 2,
+  config signals 10, function signals 8, event signals 10, deployment signals
+  10, safety signals 9, package signals 11, risk queue 0, all three new
+  artifacts, and `open --target serverless-readiness` ->
+  `html/serverless-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 7/7 tests
+- `pnpm audit:brief`: PASS, 98/98 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
