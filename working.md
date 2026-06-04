@@ -3212,6 +3212,46 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 169:
   - `3e2e592` analytics readiness report
 
+- 2026-06-04: AutoResearch Upgrade 170 candidate selected:
+  `sindresorhus/got`
+  (`https://github.com/sindresorhus/got`; public; MIT; 14,910 stars; 988
+  forks; updated 2026-06-03T07:51:29Z). Compared with `axios/axios`,
+  `unjs/ofetch`, and `sindresorhus/ky`; selected Got because it directly
+  models HTTP client readiness: request methods, `got.extend`, `prefixUrl`,
+  `searchParams`, `responseType`, `resolveBodyOnly`, timeout blocks, retry
+  limits/methods/status codes, `Retry-After`, hooks, metadata errors, agents,
+  cache, HTTP/2, proxies, cookies, Unix sockets, and pagination. Cloned ignored
+  external source to `research/external-src/sindresorhus-got` and inspected
+  README, package metadata, docs, examples, source hits, and tests without
+  executing external source. Clone HEAD was `a5b76bf`; tracked-file count for
+  `research/external-src/sindresorhus-got` returned `0`.
+- 2026-06-04: RED http-client-readiness smoke generated
+  `/tmp/repotutor-http-client-readiness-red-studies.lFCvAE/2026-06-04/local__simple-ts-app__main__b9061c6d`;
+  old build was missing `analysis/http-client-readiness-report.json`,
+  `markdown/http-client-readiness.md`, and
+  `html/http-client-readiness.html`, and `open --target
+  http-client-readiness` failed as expected.
+- 2026-06-04: Implemented Got-style http-client-readiness report:
+  `HttpClientReadinessReportSchema`,
+  `analysis/http-client-readiness-report.json`,
+  `markdown/http-client-readiness.md`,
+  `html/http-client-readiness.html`, HTTP client setups, request signals,
+  resilience signals, configuration signals, transport signals, error signals,
+  package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target http-client-readiness`.
+- 2026-06-04: GREEN http-client-readiness smoke generated
+  `/tmp/repotutor-http-client-readiness-green-studies.H96obf/2026-06-04/local__simple-ts-app__main__b9061c6d`;
+  confirmed `verificationCheckedRequiredArtifacts=210`, HTTP client setups 0,
+  request signals 7, resilience signals 7, configuration signals 7, transport
+  signals 7, error signals 7, package signals 7, risk queue 2, all three new
+  artifacts, and `open --target http-client-readiness` ->
+  `html/http-client-readiness.html`.
+- 2026-06-04: Verification for Upgrade 170:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 68/68 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

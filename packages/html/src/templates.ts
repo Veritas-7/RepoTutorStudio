@@ -77,6 +77,7 @@ import type {
   RateLimitReadinessReport,
   ErrorTrackingReadinessReport,
   AnalyticsReadinessReport,
+  HttpClientReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -160,6 +161,7 @@ export interface StudyHtmlInput {
   rateLimitReadinessReport: RateLimitReadinessReport;
   errorTrackingReadinessReport: ErrorTrackingReadinessReport;
   analyticsReadinessReport: AnalyticsReadinessReport;
+  httpClientReadinessReport: HttpClientReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -257,6 +259,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["payment-readiness.html", "Payments"],
     ["email-readiness.html", "Email"],
     ["analytics-readiness.html", "Analytics"],
+    ["http-client-readiness.html", "HTTP Client"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -734,6 +737,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Analytics Readiness", "analytics-readiness.html", `<section class="panel" data-source-pattern="PostHog"><h2>Analytics Snapshot</h2><p>${escapeHtml(input.analyticsReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.analyticsReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.analyticsReadinessReport.analyticsSetups.length}</dd></div><div><dt>events</dt><dd>${input.analyticsReadinessReport.eventSignals.length}</dd></div><div><dt>identity</dt><dd>${input.analyticsReadinessReport.identitySignals.length}</dd></div><div><dt>privacy</dt><dd>${input.analyticsReadinessReport.privacySignals.length}</dd></div></dl><p class="muted">RepoTutor records analytics readiness only. It does not initialize analytics SDKs, send events to vendors, collect identities, start replay or heatmaps, mutate cookies or local storage, or run the analyzed project's tests.</p></section><section class="grid"><article class="analytics-readiness-card"><h3>Analytics Setups</h3>${analyticsReadinessSetupList(input.analyticsReadinessReport.analyticsSetups)}</article><article class="analytics-readiness-card"><h3>Event Signals</h3>${analyticsReadinessSignalList(input.analyticsReadinessReport.eventSignals, "signal")}</article><article class="analytics-readiness-card"><h3>Identity Signals</h3>${analyticsReadinessSignalList(input.analyticsReadinessReport.identitySignals, "signal")}</article><article class="analytics-readiness-card"><h3>Privacy Signals</h3>${analyticsReadinessSignalList(input.analyticsReadinessReport.privacySignals, "signal")}</article></section><section class="grid"><article class="analytics-readiness-card"><h3>Product Signals</h3>${analyticsReadinessSignalList(input.analyticsReadinessReport.productSignals, "signal")}</article><article class="analytics-readiness-card"><h3>Package Signals</h3>${analyticsReadinessSignalList(input.analyticsReadinessReport.packageSignals, "signal")}</article><article class="analytics-readiness-card"><h3>Recommended Commands</h3>${analyticsReadinessCommandList(input.analyticsReadinessReport.recommendedCommands)}</article><article class="analytics-readiness-card"><h3>Risk Queue</h3>${analyticsReadinessRiskList(input.analyticsReadinessReport.riskQueue)}</article><article class="analytics-readiness-card"><h3>다음 확인 단계</h3>${list(input.analyticsReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "http-client-readiness.html",
+      title: "HTTP Client Readiness",
+      html: pageShell("HTTP Client Readiness", "http-client-readiness.html", `<section class="panel" data-source-pattern="Got"><h2>HTTP Client Snapshot</h2><p>${escapeHtml(input.httpClientReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.httpClientReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.httpClientReadinessReport.httpClientSetups.length}</dd></div><div><dt>requests</dt><dd>${input.httpClientReadinessReport.requestSignals.length}</dd></div><div><dt>resilience</dt><dd>${input.httpClientReadinessReport.resilienceSignals.length}</dd></div><div><dt>errors</dt><dd>${input.httpClientReadinessReport.errorSignals.length}</dd></div></dl><p class="muted">RepoTutor records HTTP client readiness only. It does not make outbound requests, open sockets, mutate caches or cookies, follow redirects, call hooks, or run the analyzed project's tests.</p></section><section class="grid"><article class="http-client-readiness-card"><h3>HTTP Client Setups</h3>${httpClientReadinessSetupList(input.httpClientReadinessReport.httpClientSetups)}</article><article class="http-client-readiness-card"><h3>Request Signals</h3>${httpClientReadinessSignalList(input.httpClientReadinessReport.requestSignals, "signal")}</article><article class="http-client-readiness-card"><h3>Resilience Signals</h3>${httpClientReadinessSignalList(input.httpClientReadinessReport.resilienceSignals, "signal")}</article><article class="http-client-readiness-card"><h3>Configuration Signals</h3>${httpClientReadinessSignalList(input.httpClientReadinessReport.configurationSignals, "signal")}</article></section><section class="grid"><article class="http-client-readiness-card"><h3>Transport Signals</h3>${httpClientReadinessSignalList(input.httpClientReadinessReport.transportSignals, "signal")}</article><article class="http-client-readiness-card"><h3>Error Signals</h3>${httpClientReadinessSignalList(input.httpClientReadinessReport.errorSignals, "signal")}</article><article class="http-client-readiness-card"><h3>Package Signals</h3>${httpClientReadinessSignalList(input.httpClientReadinessReport.packageSignals, "signal")}</article><article class="http-client-readiness-card"><h3>Recommended Commands</h3>${httpClientReadinessCommandList(input.httpClientReadinessReport.recommendedCommands)}</article><article class="http-client-readiness-card"><h3>Risk Queue</h3>${httpClientReadinessRiskList(input.httpClientReadinessReport.riskQueue)}</article><article class="http-client-readiness-card"><h3>다음 확인 단계</h3>${list(input.httpClientReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -911,6 +919,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Rate Limit Readiness", path: "html/rate-limit-readiness.html", description: "rate-limiter-flexible식 limiter setup, quota, identity key, store, response header 준비도를 확인합니다." },
       { label: "Error Tracking Readiness", path: "html/error-tracking-readiness.html", description: "Sentry식 init, capture, context, filtering, tracing, replay 준비도를 확인합니다." },
       { label: "Analytics Readiness", path: "html/analytics-readiness.html", description: "PostHog식 init, capture, identity, pageview, consent, feature flag, replay 준비도를 확인합니다." },
+      { label: "HTTP Client Readiness", path: "html/http-client-readiness.html", description: "Got식 request, timeout, retry, hooks, transport, error metadata 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1396,6 +1405,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "analytics-readiness.html",
       goal: "PostHog식 analytics init, event capture, identity reset, pageview/autocapture, consent/privacy, feature flag/replay 흐름을 보고 product analytics 관문을 확인합니다.",
       evidence: `analytics setups ${input.analyticsReadinessReport.analyticsSetups.length}개, event signals ${input.analyticsReadinessReport.eventSignals.length}개`
+    },
+    {
+      title: "HTTP client readiness 확인",
+      href: "http-client-readiness.html",
+      goal: "Got식 outbound request, timeout, retry, hooks, transport, cache/proxy/agent, structured error metadata 흐름을 보고 외부 API 호출 관문을 확인합니다.",
+      evidence: `http client setups ${input.httpClientReadinessReport.httpClientSetups.length}개, resilience signals ${input.httpClientReadinessReport.resilienceSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3163,6 +3178,31 @@ function analyticsReadinessRiskList(items: AnalyticsReadinessReport["riskQueue"]
 }
 
 function analyticsReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function httpClientReadinessSetupList(items: HttpClientReadinessReport["httpClientSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">HTTP client setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>requests/timeouts/retries/hooks/errors ${item.requestCount}/${item.timeoutCount}/${item.retryCount}/${item.hookCount}/${item.errorCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(httpClientReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function httpClientReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">HTTP client signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(httpClientReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function httpClientReadinessCommandList(items: HttpClientReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function httpClientReadinessRiskList(items: HttpClientReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(httpClientReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function httpClientReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

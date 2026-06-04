@@ -3410,6 +3410,70 @@ export const AnalyticsReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const HttpClientReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  httpClientSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["got", "axios", "fetch", "ky", "ofetch", "superagent", "custom", "unknown"]),
+    requestCount: z.number().int().nonnegative(),
+    timeoutCount: z.number().int().nonnegative(),
+    retryCount: z.number().int().nonnegative(),
+    hookCount: z.number().int().nonnegative(),
+    errorCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  requestSignals: z.array(z.object({
+    signal: z.enum(["get", "post", "put-patch-delete", "json-body", "form-body", "query-params", "base-url", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resilienceSignals: z.array(z.object({
+    signal: z.enum(["timeout", "retry-limit", "retry-methods", "retry-status-codes", "retry-after", "abort-signal", "throw-http-errors", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  configurationSignals: z.array(z.object({
+    signal: z.enum(["prefix-url", "headers", "search-params", "response-type", "resolve-body-only", "hooks", "extend-instance", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  transportSignals: z.array(z.object({
+    signal: z.enum(["agent", "http2", "proxy", "cache", "cookie-jar", "decompress", "unix-socket", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  errorSignals: z.array(z.object({
+    signal: z.enum(["http-error", "request-error", "timeout-error", "cancel-error", "metadata", "validate-status", "catch-handling", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["got", "axios", "ky", "ofetch", "node-fetch", "undici", "superagent", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3681,6 +3745,7 @@ export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessRepo
 export type RateLimitReadinessReport = z.infer<typeof RateLimitReadinessReportSchema>;
 export type ErrorTrackingReadinessReport = z.infer<typeof ErrorTrackingReadinessReportSchema>;
 export type AnalyticsReadinessReport = z.infer<typeof AnalyticsReadinessReportSchema>;
+export type HttpClientReadinessReport = z.infer<typeof HttpClientReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

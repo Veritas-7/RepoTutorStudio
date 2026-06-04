@@ -1062,6 +1062,24 @@
         "package scanning for posthog-js posthog-js-lite posthog-node @posthog/react @posthog/nextjs-config Segment Amplitude and Mixpanel dependencies",
         "safe static analytics readiness that never initializes SDKs sends events collects identities starts replay or heatmaps mutates cookies/local storage or runs analyzed project tests"
       ]
+    },
+    {
+      "repo": "sindresorhus/got",
+      "url": "https://github.com/sindresorhus/got",
+      "localPath": "research/external-src/sindresorhus-got",
+      "stars": 14910,
+      "forks": 988,
+      "license": "MIT",
+      "updatedAt": "2026-06-03T07:51:29Z",
+      "adoptedPatterns": [
+        "Got setup scanning for got got.extend prefixUrl searchParams responseType resolveBodyOnly and package imports",
+        "request scanning for method helpers JSON bodies form bodies query parameters base URLs and fetch-compatible clients",
+        "resilience scanning for timeout retry limit methods statusCodes maxRetryAfter Retry-After AbortController and AbortSignal",
+        "configuration scanning for headers searchParams responseType resolveBodyOnly hooks beforeRequest afterResponse beforeRetry and beforeError",
+        "transport scanning for agent http2 proxy cache cookieJar decompress Unix sockets and related packages",
+        "error scanning for HTTPError RequestError TimeoutError CancelError throwHttpErrors validateStatus catch handling and metadata",
+        "safe static HTTP client readiness that never makes outbound requests opens sockets mutates caches or cookies follows redirects calls hooks or runs analyzed project tests"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3684,6 +3702,25 @@
         "markdown/analytics-readiness.md",
         "html/analytics-readiness.html"
       ]
+    },
+    {
+      "name": "HTTP client readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/http-client-readiness-report.json",
+        "markdown/http-client-readiness.md",
+        "html/http-client-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4304,6 +4341,12 @@
     "cliAnalyticsReadinessOpenTargetSmoke": "PASS",
     "buildAnalyticsReadiness": "PASS",
     "testAnalyticsReadiness": "PASS",
-    "auditBriefAnalyticsReadiness67": "PASS"
+    "auditBriefAnalyticsReadiness67": "PASS",
+    "fixtureHttpClientReadinessReport": "PASS",
+    "cliHttpClientReadinessSmoke": "PASS",
+    "cliHttpClientReadinessOpenTargetSmoke": "PASS",
+    "buildHttpClientReadiness": "PASS",
+    "testHttpClientReadiness": "PASS",
+    "auditBriefHttpClientReadiness68": "PASS"
   }
 }
