@@ -57,6 +57,7 @@ import {
   DatabaseReadinessReport,
   CiCdReport,
   UnitTestReport,
+  TypecheckReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -120,6 +121,7 @@ export interface AnalysisBundle {
   databaseReadinessReport: DatabaseReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
+  typecheckReadinessReport: TypecheckReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -183,8 +185,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const databaseReadinessReport = await buildDatabaseReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
+  const typecheckReadinessReport = await buildTypecheckReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -8173,6 +8176,283 @@ function unitTestSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/unit-tests.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildTypecheckReadinessReport(walk: WalkResult): Promise<TypecheckReadinessReport> {
+  const sourceFiles = await typecheckSourceFiles(walk);
+  const tsconfigFiles = typecheckTsconfigFiles(sourceFiles);
+  const compilerOptionSignals = typecheckCompilerOptionSignals(sourceFiles);
+  const projectSignals = typecheckProjectSignals(sourceFiles);
+  const moduleResolutionSignals = typecheckModuleResolutionSignals(sourceFiles);
+  const declarationSignals = typecheckDeclarationSignals(sourceFiles);
+  const scriptSignals = typecheckScriptSignals(sourceFiles);
+  const hasTsconfig = tsconfigFiles.length > 0;
+  const hasStrict = compilerOptionSignals.some((item) => item.signal === "strict" && item.readiness === "ready");
+  const hasTypecheckCommand = scriptSignals.some((item) => ["typecheck-script", "tsc", "noEmit-command", "project-build"].includes(item.signal) && item.readiness === "ready");
+  const usesProjectReferences = projectSignals.some((item) => item.signal === "references" && item.readiness === "ready");
+  const hasComposite = projectSignals.some((item) => item.signal === "composite" && item.readiness === "ready");
+  const hasIncremental = projectSignals.some((item) => item.signal === "incremental" && item.readiness === "ready");
+  const hasModuleResolution = moduleResolutionSignals.some((item) => item.signal === "moduleResolution" && item.readiness === "ready");
+  const hasPaths = moduleResolutionSignals.some((item) => ["paths", "baseUrl"].includes(item.signal) && item.readiness === "ready");
+  const hasDeclaration = declarationSignals.some((item) => ["declaration", "emitDeclarationOnly"].includes(item.signal) && item.readiness === "ready");
+  const hasNoEmitOnError = compilerOptionSignals.some((item) => item.signal === "noEmitOnError" && item.readiness === "ready");
+  const hasSkipLibCheck = compilerOptionSignals.some((item) => item.signal === "skipLibCheck" && item.readiness === "ready");
+
+  const riskQueue: TypecheckReadinessReport["riskQueue"] = [];
+  if (!hasTsconfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a tsconfig.json or jsconfig.json before claiming TypeScript typecheck readiness.",
+      why: "TypeScript's project mode centers on compilerOptions, files/include/exclude, and references loaded from config files.",
+      relatedHref: "html/typecheck-readiness.html"
+    });
+  }
+  if (!hasTypecheckCommand) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a package script or documented command that runs tsc.",
+      why: "A static tsconfig is not enough; the repository needs a repeatable typecheck command such as tsc --noEmit or tsc --build.",
+      relatedHref: "html/typecheck-readiness.html"
+    });
+  }
+  if (hasTsconfig && !hasStrict) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Enable strict or document why strict type checking is intentionally disabled.",
+      why: "TypeScript treats strict as the umbrella for strictNullChecks, noImplicitAny, noImplicitThis, and related strict flags.",
+      relatedHref: "html/typecheck-readiness.html"
+    });
+  }
+  if (usesProjectReferences && !hasComposite) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair project references with composite projects.",
+      why: "TypeScript's compiler options describe composite as the constraint that allows a project to participate in project references.",
+      relatedHref: "html/typecheck-readiness.html"
+    });
+  }
+  if (usesProjectReferences && !hasIncremental) {
+    riskQueue.push({
+      priority: "low",
+      action: "Review incremental build info settings for referenced projects.",
+      why: "TypeScript supports incremental and tsBuildInfoFile to persist project build state across runs.",
+      relatedHref: "html/typecheck-readiness.html"
+    });
+  }
+  if (hasPaths && !hasModuleResolution) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Make moduleResolution explicit when using paths or baseUrl.",
+      why: "TypeScript's moduleResolution strategy controls how non-relative imports and path aliases are resolved.",
+      relatedHref: "html/typecheck-readiness.html"
+    });
+  }
+  if (hasDeclaration && !hasNoEmitOnError) {
+    riskQueue.push({
+      priority: "low",
+      action: "Consider noEmitOnError for declaration-producing packages.",
+      why: "Declaration outputs can become misleading if emitted while type checking errors are present.",
+      relatedHref: "html/typecheck-readiness.html"
+    });
+  }
+  if (hasSkipLibCheck) {
+    riskQueue.push({
+      priority: "low",
+      action: "Review skipLibCheck as a tradeoff, not as proof that dependency types are healthy.",
+      why: "TypeScript describes skipLibCheck as skipping type checking for declaration files, which can hide third-party type conflicts.",
+      relatedHref: "html/typecheck-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: hasTypecheckCommand ? "Run the typecheck command before treating this static report as approval." : "If this repository later adds a tsc command, rerun RepoTutor to populate typecheck readiness.",
+    why: "RepoTutor records static TypeScript readiness only; it does not execute tsc, resolve modules, emit declarations, or inspect real diagnostics.",
+    relatedHref: "html/typecheck-readiness.html"
+  });
+
+  return {
+    summary: `TypeScript typecheck readiness report: tsconfig files ${tsconfigFiles.length}개, compiler option signals ${compilerOptionSignals.length}개, project signals ${projectSignals.length}개, script signals ${scriptSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "TypeScript compilerOptions strict noImplicitAny strictNullChecks composite references declaration noEmit moduleResolution paths types skipLibCheck tsc build",
+    tsconfigFiles,
+    compilerOptionSignals,
+    projectSignals,
+    moduleResolutionSignals,
+    declarationSignals,
+    scriptSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx tsc --noEmit", purpose: "Run a no-output semantic typecheck for the current project." },
+      { command: "npx tsc --build", purpose: "Build project references using TypeScript project mode." },
+      { command: "npx tsc --showConfig", purpose: "Inspect the final compilerOptions after extends resolution." },
+      { command: "npx tsc --watch --noEmit", purpose: "Keep type diagnostics running during local development." },
+      { command: "npx tsc --extendedDiagnostics --noEmit", purpose: "Review typecheck performance and file counts." },
+      { command: "npx tsc --traceResolution --noEmit", purpose: "Debug moduleResolution, paths, typeRoots, and types lookup behavior." }
+    ],
+    learnerNextSteps: [
+      "Start with tsconfig files: read compilerOptions, extends, include/files/exclude, and references before looking at source code.",
+      "Separate strictness flags from project build flags and declaration emit flags; they answer different readiness questions.",
+      "Use --showConfig when extends or base configs are involved, then run --noEmit or --build to confirm real diagnostics.",
+      "RepoTutor does not execute tsc or resolve imports; treat this report as a static checklist, not typecheck approval."
+    ]
+  };
+}
+
+type TypecheckSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function typecheckSourceFiles(walk: WalkResult): Promise<TypecheckSourceFile[]> {
+  const files: TypecheckSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !typecheckInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!typecheckPathSignal(file.relPath) && !typecheckContentSignal(text) && path.basename(file.relPath) !== "package.json") continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function typecheckInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^tsconfig.*\.json$/i.test(base)
+    || /^jsconfig.*\.json$/i.test(base)
+    || /^(package\.json|pnpm-workspace\.yaml|README\.md)$/i.test(base)
+    || /(typescript|typecheck|tsc|tsconfig|declaration|types|compilerOptions)/i.test(filePath)
+    || /\.(json|md|ya?ml|[cm]?[jt]sx?)$/i.test(filePath);
+}
+
+function typecheckPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^tsconfig.*\.json$/i.test(base)
+    || /^jsconfig.*\.json$/i.test(base)
+    || /(typescript|typecheck|tsc|tsconfig|declaration|types|compilerOptions)/i.test(filePath);
+}
+
+function typecheckContentSignal(text: string): boolean {
+  return /typescript|tsc\b|tsconfig|compilerOptions|strictNullChecks|noImplicitAny|noEmit|declaration|composite|references|moduleResolution|skipLibCheck|typecheck/i.test(text);
+}
+
+function typecheckTsconfigFiles(sourceFiles: TypecheckSourceFile[]): TypecheckReadinessReport["tsconfigFiles"] {
+  return sourceFiles
+    .filter((source) => /^tsconfig.*\.json$/i.test(path.basename(source.filePath)) || /^jsconfig.*\.json$/i.test(path.basename(source.filePath)))
+    .slice(0, 120)
+    .map((source) => {
+      const compilerOptionsCount = typecheckOptionCount(source.text);
+      const referencesCount = countMatches(source.text, /"references"\s*:\s*\[[\s\S]*?\]/g) > 0 ? countMatches(source.text, /"path"\s*:/g) : 0;
+      const includeCount = countMatches(source.text, /"(include|files)"\s*:\s*\[[\s\S]*?\]/g);
+      return {
+        filePath: source.filePath,
+        compilerOptionsCount,
+        referencesCount,
+        includeCount,
+        readiness: compilerOptionsCount > 0 ? "ready" : referencesCount > 0 || includeCount > 0 ? "partial" : "missing",
+        evidence: `${source.filePath} has ${compilerOptionsCount} recognized compiler option signal(s), ${referencesCount} reference path(s), and ${includeCount} include/files list signal(s).`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function typecheckOptionCount(text: string): number {
+  const options = ["strict", "noImplicitAny", "strictNullChecks", "noUncheckedIndexedAccess", "exactOptionalPropertyTypes", "noEmit", "noEmitOnError", "skipLibCheck", "isolatedModules", "moduleDetection", "jsx", "target", "module", "moduleResolution", "baseUrl", "paths", "typeRoots", "types", "lib", "declaration", "declarationMap", "emitDeclarationOnly", "declarationDir", "sourceMap", "composite", "incremental", "tsBuildInfoFile"];
+  return options.filter((option) => new RegExp(`"${option}"\\s*:`, "i").test(text)).length;
+}
+
+function typecheckCompilerOptionSignals(sourceFiles: TypecheckSourceFile[]): TypecheckReadinessReport["compilerOptionSignals"] {
+  const specs: Array<{ signal: TypecheckReadinessReport["compilerOptionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "strict", pattern: /"strict"\s*:\s*true/i, evidence: "strict compiler option evidence was detected." },
+    { signal: "noImplicitAny", pattern: /"noImplicitAny"\s*:\s*true/i, evidence: "noImplicitAny evidence was detected." },
+    { signal: "strictNullChecks", pattern: /"strictNullChecks"\s*:\s*true/i, evidence: "strictNullChecks evidence was detected." },
+    { signal: "noUncheckedIndexedAccess", pattern: /"noUncheckedIndexedAccess"\s*:\s*true/i, evidence: "noUncheckedIndexedAccess evidence was detected." },
+    { signal: "exactOptionalPropertyTypes", pattern: /"exactOptionalPropertyTypes"\s*:\s*true/i, evidence: "exactOptionalPropertyTypes evidence was detected." },
+    { signal: "noEmit", pattern: /"noEmit"\s*:\s*true|tsc[^"\n]*--noEmit/i, evidence: "noEmit evidence was detected." },
+    { signal: "noEmitOnError", pattern: /"noEmitOnError"\s*:\s*true/i, evidence: "noEmitOnError evidence was detected." },
+    { signal: "skipLibCheck", pattern: /"skipLibCheck"\s*:\s*true/i, evidence: "skipLibCheck evidence was detected." },
+    { signal: "isolatedModules", pattern: /"isolatedModules"\s*:\s*true/i, evidence: "isolatedModules evidence was detected." },
+    { signal: "moduleDetection", pattern: /"moduleDetection"\s*:/i, evidence: "moduleDetection evidence was detected." },
+    { signal: "jsx", pattern: /"jsx"\s*:/i, evidence: "jsx compiler option evidence was detected." },
+    { signal: "target", pattern: /"target"\s*:/i, evidence: "target compiler option evidence was detected." },
+    { signal: "module", pattern: /"module"\s*:/i, evidence: "module compiler option evidence was detected." }
+  ];
+  return typecheckSignalFromSpecs(sourceFiles, specs, "compiler option", "signal");
+}
+
+function typecheckProjectSignals(sourceFiles: TypecheckSourceFile[]): TypecheckReadinessReport["projectSignals"] {
+  const specs: Array<{ signal: TypecheckReadinessReport["projectSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "references", pattern: /"references"\s*:\s*\[/i, evidence: "project references evidence was detected." },
+    { signal: "composite", pattern: /"composite"\s*:\s*true/i, evidence: "composite project evidence was detected." },
+    { signal: "incremental", pattern: /"incremental"\s*:\s*true/i, evidence: "incremental build evidence was detected." },
+    { signal: "tsBuildInfoFile", pattern: /"tsBuildInfoFile"\s*:/i, evidence: "tsBuildInfoFile evidence was detected." },
+    { signal: "include", pattern: /"include"\s*:\s*\[/i, evidence: "include list evidence was detected." },
+    { signal: "exclude", pattern: /"exclude"\s*:\s*\[/i, evidence: "exclude list evidence was detected." },
+    { signal: "files", pattern: /"files"\s*:\s*\[/i, evidence: "files list evidence was detected." },
+    { signal: "rootDir", pattern: /"rootDir"\s*:/i, evidence: "rootDir evidence was detected." },
+    { signal: "outDir", pattern: /"outDir"\s*:/i, evidence: "outDir evidence was detected." },
+    { signal: "extends", pattern: /"extends"\s*:/i, evidence: "extends base config evidence was detected." }
+  ];
+  return typecheckSignalFromSpecs(sourceFiles, specs, "project", "signal");
+}
+
+function typecheckModuleResolutionSignals(sourceFiles: TypecheckSourceFile[]): TypecheckReadinessReport["moduleResolutionSignals"] {
+  const specs: Array<{ signal: TypecheckReadinessReport["moduleResolutionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "moduleResolution", pattern: /"moduleResolution"\s*:/i, evidence: "moduleResolution evidence was detected." },
+    { signal: "baseUrl", pattern: /"baseUrl"\s*:/i, evidence: "baseUrl evidence was detected." },
+    { signal: "paths", pattern: /"paths"\s*:\s*\{/i, evidence: "paths mapping evidence was detected." },
+    { signal: "typeRoots", pattern: /"typeRoots"\s*:\s*\[/i, evidence: "typeRoots evidence was detected." },
+    { signal: "types", pattern: /"types"\s*:\s*\[/i, evidence: "types package allowlist evidence was detected." },
+    { signal: "lib", pattern: /"lib"\s*:\s*\[/i, evidence: "lib declaration bundle evidence was detected." },
+    { signal: "allowImportingTsExtensions", pattern: /"allowImportingTsExtensions"\s*:\s*true/i, evidence: "allowImportingTsExtensions evidence was detected." },
+    { signal: "rewriteRelativeImportExtensions", pattern: /"rewriteRelativeImportExtensions"\s*:\s*true/i, evidence: "rewriteRelativeImportExtensions evidence was detected." },
+    { signal: "esModuleInterop", pattern: /"esModuleInterop"\s*:\s*true/i, evidence: "esModuleInterop evidence was detected." },
+    { signal: "resolveJsonModule", pattern: /"resolveJsonModule"\s*:\s*true/i, evidence: "resolveJsonModule evidence was detected." }
+  ];
+  return typecheckSignalFromSpecs(sourceFiles, specs, "module resolution", "signal");
+}
+
+function typecheckDeclarationSignals(sourceFiles: TypecheckSourceFile[]): TypecheckReadinessReport["declarationSignals"] {
+  const specs: Array<{ signal: TypecheckReadinessReport["declarationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "declaration", pattern: /"declaration"\s*:\s*true/i, evidence: "declaration emit evidence was detected." },
+    { signal: "declarationMap", pattern: /"declarationMap"\s*:\s*true/i, evidence: "declarationMap evidence was detected." },
+    { signal: "emitDeclarationOnly", pattern: /"emitDeclarationOnly"\s*:\s*true/i, evidence: "emitDeclarationOnly evidence was detected." },
+    { signal: "declarationDir", pattern: /"declarationDir"\s*:/i, evidence: "declarationDir evidence was detected." },
+    { signal: "sourceMap", pattern: /"sourceMap"\s*:\s*true/i, evidence: "sourceMap evidence was detected." },
+    { signal: "noEmit", pattern: /"noEmit"\s*:\s*true|tsc[^"\n]*--noEmit/i, evidence: "noEmit evidence was detected." },
+    { signal: "composite-declaration", pattern: /"composite"\s*:\s*true[\s\S]{0,500}"declaration"\s*:\s*true|"declaration"\s*:\s*true[\s\S]{0,500}"composite"\s*:\s*true/i, evidence: "composite plus declaration evidence was detected." }
+  ];
+  return typecheckSignalFromSpecs(sourceFiles, specs, "declaration", "signal");
+}
+
+function typecheckScriptSignals(sourceFiles: TypecheckSourceFile[]): TypecheckReadinessReport["scriptSignals"] {
+  const specs: Array<{ signal: TypecheckReadinessReport["scriptSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tsc", pattern: /"[^"]*"\s*:\s*"[^"]*\btsc\b[^"]*"|\btsc\b/i, evidence: "tsc command evidence was detected." },
+    { signal: "typecheck-script", pattern: /"type(check|s)?"\s*:\s*"[^"]*\b(tsc|vue-tsc|svelte-check)\b/i, evidence: "typecheck script evidence was detected." },
+    { signal: "build-script", pattern: /"build"\s*:\s*"[^"]*\b(tsc|tsc\s+-b|tsc\s+--build)\b/i, evidence: "build script typecheck evidence was detected." },
+    { signal: "noEmit-command", pattern: /\btsc\b[^"\n]*--noEmit/i, evidence: "noEmit command evidence was detected." },
+    { signal: "project-build", pattern: /\btsc\b[^"\n]*(--build|-b)\b/i, evidence: "project build command evidence was detected." },
+    { signal: "watch", pattern: /\btsc\b[^"\n]*(--watch|-w)\b/i, evidence: "watch command evidence was detected." },
+    { signal: "generated-types", pattern: /"types"\s*:|\.d\.ts|declaration/i, evidence: "generated type output evidence was detected." }
+  ];
+  return typecheckSignalFromSpecs(sourceFiles, specs, "script", "signal");
+}
+
+function typecheckSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: TypecheckSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/typecheck-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
