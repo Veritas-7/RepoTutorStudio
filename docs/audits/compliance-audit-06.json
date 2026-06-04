@@ -1,6 +1,6 @@
 {
   "iteration": 6,
-  "createdAt": "2026-06-04T10:01:02.947Z",
+  "createdAt": "2026-06-04T10:09:26.986Z",
   "checks": [
     {
       "name": "project setup",
@@ -466,6 +466,13 @@
     },
     {
       "name": "id generation readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "image processing readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

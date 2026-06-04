@@ -3687,6 +3687,71 @@ export const IdGenerationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ImageProcessingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  imageProcessingSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["sharp", "jimp", "imagemin", "image-js", "canvas", "custom", "unknown"]),
+    pipelineCount: z.number().int().nonnegative(),
+    resizeCount: z.number().int().nonnegative(),
+    formatCount: z.number().int().nonnegative(),
+    metadataCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    safetyCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  inputSignals: z.array(z.object({
+    signal: z.enum(["file-input", "buffer-input", "stream-input", "raw-create", "animated-pages", "density", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  transformSignals: z.array(z.object({
+    signal: z.enum(["resize", "rotate", "extract", "composite", "trim", "effects", "colourspace", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["to-file", "to-buffer", "jpeg", "png", "webp-avif", "tiff-gif", "metadata-output", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["limit-input-pixels", "fail-on", "timeout", "without-enlargement", "sequential-read", "error-handling", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  performanceSignals: z.array(z.object({
+    signal: z.enum(["cache", "concurrency", "libvips", "stream-pipeline", "clone", "queue", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["sharp", "jimp", "imagemin", "image-js", "canvas", "squoosh", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3962,6 +4027,7 @@ export type HttpClientReadinessReport = z.infer<typeof HttpClientReadinessReport
 export type SchemaValidationReadinessReport = z.infer<typeof SchemaValidationReadinessReportSchema>;
 export type DateTimeReadinessReport = z.infer<typeof DateTimeReadinessReportSchema>;
 export type IdGenerationReadinessReport = z.infer<typeof IdGenerationReadinessReportSchema>;
+export type ImageProcessingReadinessReport = z.infer<typeof ImageProcessingReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

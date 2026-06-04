@@ -4482,6 +4482,57 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 71/71 audit checks across 13 generated reports
 
+### Upgrade 174: Image Processing Readiness Report
+
+- Cloned and inspected `lovell/sharp` under
+  `research/external-src/lovell-sharp` without executing external source.
+  Clone HEAD was `7b4c4762`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, Apache-2.0 license, 32,275 stars, 1,412 forks,
+  updated 2026-06-04T08:27:33Z. Compared with `jimp-dev/jimp`,
+  `image-js/image-js`, and `imagemin/imagemin`; selected Sharp because it
+  directly models image processing readiness: file/buffer/stream/raw input,
+  resize, format conversion, metadata, rotation, extraction, compositing,
+  output buffers/files, safety limits, performance controls, and libvips/native
+  deployment. No source code was copied into RepoTutor.
+- Implemented Sharp-style image-processing-readiness report:
+  `ImageProcessingReadinessReportSchema`,
+  `analysis/image-processing-readiness-report.json`,
+  `markdown/image-processing-readiness.md`,
+  `html/image-processing-readiness.html`, image processing setups, input
+  signals, transform signals, output signals, safety signals, performance
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target image-processing-readiness`.
+- Source pattern: Sharp separates input through files, buffers, streams,
+  raw/create objects, animated pages, and density/orientation; transforms
+  through `resize`, `rotate`, `extract`, `composite`, `trim`, effects, and
+  colourspace/channel operations; output through `toFile`, `toBuffer`, JPEG,
+  PNG, WebP, AVIF, TIFF/GIF, and metadata retention; safety through
+  `limitInputPixels`, `failOn`, `timeout`, `withoutEnlargement`,
+  `sequentialRead`, and error handling; and production behavior through cache,
+  concurrency, libvips/native binaries, stream pipelines, clone, and queue
+  signals. RepoTutor maps that to deterministic static image processing
+  readiness and explicitly does not decode images, load native binaries,
+  transform pixels, read image metadata, write output files, or run the
+  analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-image-processing-readiness-red-studies.wBp0uT/2026-06-04/local__simple-ts-app__main__76adf013`;
+  old behavior was missing
+  `analysis/image-processing-readiness-report.json`,
+  `markdown/image-processing-readiness.md`, and
+  `html/image-processing-readiness.html`, and `open --target
+  image-processing-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-image-processing-readiness-green-studies.4YACcH/2026-06-04/local__simple-ts-app__main__76adf013`;
+  confirmed `verificationCheckedRequiredArtifacts=222`, image processing
+  setups 0, input signals 6, transform signals 7, output signals 7, safety
+  signals 6, performance signals 6, package signals 6, risk queue 2, all three
+  new artifacts, and `open --target image-processing-readiness` ->
+  `html/image-processing-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 72/72 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

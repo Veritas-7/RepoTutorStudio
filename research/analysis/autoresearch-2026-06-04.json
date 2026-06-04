@@ -1134,6 +1134,24 @@
         "usage and validation scanning for model IDs database IDs React key risks mock IDs branded types public URLs positive size guards collision uniqueness distribution and type tests",
         "safe static ID generation readiness that never generates IDs calls crypto or Math.random runs CLI generators mutates stores or runs analyzed project tests"
       ]
+    },
+    {
+      "repo": "lovell/sharp",
+      "url": "https://github.com/lovell/sharp",
+      "localPath": "research/external-src/lovell-sharp",
+      "stars": 32275,
+      "forks": 1412,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T08:27:33Z",
+      "adoptedPatterns": [
+        "Sharp setup scanning for sharp pipelines resize format metadata output and safety controls",
+        "input scanning for file Buffer stream raw/create animated page and density/orientation sources",
+        "transform scanning for resize rotate extract composite trim effects and colourspace/channel operations",
+        "output scanning for toFile toBuffer jpeg png webp avif tiff gif and metadata output policy",
+        "safety scanning for limitInputPixels failOn timeout withoutEnlargement sequentialRead and error handling",
+        "performance scanning for cache concurrency libvips native binaries stream pipelines clone and queue/parallelism evidence",
+        "safe static image processing readiness that never decodes images loads native binaries transforms pixels reads image metadata writes output files or runs analyzed project tests"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3832,6 +3850,25 @@
         "markdown/id-generation-readiness.md",
         "html/id-generation-readiness.html"
       ]
+    },
+    {
+      "name": "Image processing readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/image-processing-readiness-report.json",
+        "markdown/image-processing-readiness.md",
+        "html/image-processing-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4476,6 +4513,12 @@
     "cliIdGenerationReadinessOpenTargetSmoke": "PASS",
     "buildIdGenerationReadiness": "PASS",
     "testIdGenerationReadiness": "PASS",
-    "auditBriefIdGenerationReadiness71": "PASS"
+    "auditBriefIdGenerationReadiness71": "PASS",
+    "fixtureImageProcessingReadinessReport": "PASS",
+    "cliImageProcessingReadinessSmoke": "PASS",
+    "cliImageProcessingReadinessOpenTargetSmoke": "PASS",
+    "buildImageProcessingReadiness": "PASS",
+    "testImageProcessingReadiness": "PASS",
+    "auditBriefImageProcessingReadiness72": "PASS"
   }
 }

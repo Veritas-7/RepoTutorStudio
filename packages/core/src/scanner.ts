@@ -86,6 +86,7 @@ import {
   SchemaValidationReadinessReport,
   DateTimeReadinessReport,
   IdGenerationReadinessReport,
+  ImageProcessingReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -178,6 +179,7 @@ export interface AnalysisBundle {
   schemaValidationReadinessReport: SchemaValidationReadinessReport;
   dateTimeReadinessReport: DateTimeReadinessReport;
   idGenerationReadinessReport: IdGenerationReadinessReport;
+  imageProcessingReadinessReport: ImageProcessingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -270,8 +272,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const schemaValidationReadinessReport = await buildSchemaValidationReadinessReport(walk);
   const dateTimeReadinessReport = await buildDateTimeReadinessReport(walk);
   const idGenerationReadinessReport = await buildIdGenerationReadinessReport(walk);
+  const imageProcessingReadinessReport = await buildImageProcessingReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -16255,6 +16258,264 @@ function idGenerationReadinessSignalFromSpecs<T extends Record<K, string> & { pa
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/id-generation-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildImageProcessingReadinessReport(walk: WalkResult): Promise<ImageProcessingReadinessReport> {
+  const sourceFiles = await imageProcessingReadinessSourceFiles(walk);
+  const imageProcessingSetups = imageProcessingReadinessSetups(sourceFiles);
+  const inputSignals = imageProcessingReadinessInputSignals(sourceFiles);
+  const transformSignals = imageProcessingReadinessTransformSignals(sourceFiles);
+  const outputSignals = imageProcessingReadinessOutputSignals(sourceFiles);
+  const safetySignals = imageProcessingReadinessSafetySignals(sourceFiles);
+  const performanceSignals = imageProcessingReadinessPerformanceSignals(sourceFiles);
+  const packageSignals = imageProcessingReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasSharpPackage = packageSignals.some((item) => item.signal === "sharp" && item.readiness === "ready");
+  const hasSetup = imageProcessingSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = imageProcessingSetups.some((item) => item.readiness === "ready");
+  const hasOutput = outputSignals.some((item) => ["to-file", "to-buffer"].includes(item.signal) && item.readiness === "ready") || imageProcessingSetups.some((item) => item.outputCount > 0);
+  const hasResize = transformSignals.some((item) => item.signal === "resize" && item.readiness === "ready") || imageProcessingSetups.some((item) => item.resizeCount > 0);
+  const hasSafety = safetySignals.some((item) => item.readiness === "ready") || imageProcessingSetups.some((item) => item.safetyCount > 0);
+  const hasPerformance = performanceSignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: ImageProcessingReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the image processing strategy before claiming image readiness.",
+      why: "Image readiness starts with explicit input, transform, output, safety, performance, or package evidence.",
+      relatedHref: "html/image-processing-readiness.html"
+    });
+  }
+  if (hasSharpPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair Sharp package evidence with concrete sharp(), resize, format, metadata, output, and safety call sites.",
+      why: "A native image dependency alone does not prove that transforms, output formats, or input limits are handled in application paths.",
+      relatedHref: "html/image-processing-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && hasResize && !hasSafety) {
+    riskQueue.push({
+      priority: "high",
+      action: "Review input limits, failOn policy, timeout, and enlargement controls before resizing untrusted images.",
+      why: "Image pipelines can be exposed to oversized, corrupt, animated, or hostile files if safety controls are implicit.",
+      relatedHref: "html/image-processing-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasOutput) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add explicit toFile or toBuffer output handling and error paths.",
+      why: "Transform chains need a terminal output and observable failures to be operationally useful.",
+      relatedHref: "html/image-processing-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasPerformance) {
+    riskQueue.push({
+      priority: "low",
+      action: "Consider cache, concurrency, stream pipeline, clone, and libvips deployment checks for production image workloads.",
+      why: "Image processing can be CPU, memory, and native-binary sensitive even when the API calls are correct.",
+      relatedHref: "html/image-processing-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run representative image conversion tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not decode images, load native binaries, transform pixels, read image metadata, write output files, or run the analyzed project's tests.",
+    relatedHref: "html/image-processing-readiness.html"
+  });
+
+  return {
+    summary: `Sharp-style image processing readiness report: setup ${imageProcessingSetups.length}개, input signal ${inputSignals.length}개, transform signal ${transformSignals.length}개, safety signal ${safetySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "sharp resize toFormat jpeg png webp avif metadata rotate composite pipeline stream toBuffer toFile cache concurrency limitInputPixels",
+    imageProcessingSetups,
+    inputSignals,
+    transformSignals,
+    outputSignals,
+    safetySignals,
+    performanceSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"sharp\\(|Jimp|imagemin|Image\\(|createCanvas|resize\\(|toBuffer\\(|toFile\\(\" src app packages", purpose: "Inventory image processing libraries, transform chains, and output terminals." },
+      { command: "rg \"metadata\\(|limitInputPixels|failOn|timeout|withoutEnlargement|sequentialRead|animated|density\" src app packages test tests", purpose: "Review image input metadata, safety limits, animated input, and read policy." },
+      { command: "rg \"jpeg\\(|png\\(|webp\\(|avif\\(|gif\\(|tiff\\(|toFormat|withMetadata|keepMetadata\" src app packages", purpose: "Inspect output format, quality, metadata retention, and color profile decisions." },
+      { command: "rg \"cache\\(|concurrency\\(|pipeline\\(|pipe\\(|clone\\(|libvips|@img/sharp\" src app packages package.json", purpose: "Check performance, streaming, native binary, and deployment readiness." },
+      { command: "npx vitest run", purpose: "Run local tests that cover representative image inputs, transforms, output formats, safety limits, and error paths." }
+    ],
+    learnerNextSteps: [
+      "먼저 sharp(), resize(), toBuffer(), toFile(), toFormat() 호출 위치를 찾아 이미지 pipeline의 시작과 끝을 확인하세요.",
+      "limitInputPixels, failOn, timeout, withoutEnlargement, sequentialRead 같은 safety option이 untrusted image 경로에 있는지 확인하세요.",
+      "jpeg, png, webp, avif, gif, tiff 출력은 품질, metadata retention, ICC/EXIF 정책과 함께 확인하세요.",
+      "stream, pipeline, clone, cache, concurrency, libvips/native package 신호를 보며 운영 환경의 CPU/메모리/native binary 리스크를 분리하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 이미지 decoding, 변환, metadata, 파일 출력은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type ImageProcessingReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function imageProcessingReadinessSourceFiles(walk: WalkResult): Promise<ImageProcessingReadinessSourceFile[]> {
+  const files: ImageProcessingReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !imageProcessingReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!imageProcessingReadinessPathSignal(file.relPath) && !imageProcessingReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function imageProcessingReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return imageProcessingReadinessPathSignal(filePath)
+    || /^(package\.json|image\.[cm]?[jt]sx?|images\.[cm]?[jt]sx?|thumbnail\.[cm]?[jt]sx?|media\.[cm]?[jt]sx?|upload\.[cm]?[jt]sx?)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml)$/i.test(filePath);
+}
+
+function imageProcessingReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(image|images|img|media|asset|assets|thumbnail|thumbnails|picture|photo|photos|sharp|jimp|resize|upload|uploads)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function imageProcessingReadinessContentSignal(text: string): boolean {
+  return /(from ['"]sharp|require\(['"]sharp|sharp\s*\(|\.resize\s*\(|\.toFormat\s*\(|\.toBuffer\s*\(|\.toFile\s*\(|\.metadata\s*\(|limitInputPixels|withoutEnlargement|imagemin|Jimp|createCanvas|ImageData)/i.test(text);
+}
+
+function imageProcessingReadinessSetups(sourceFiles: ImageProcessingReadinessSourceFile[]): ImageProcessingReadinessReport["imageProcessingSetups"] {
+  const rows: ImageProcessingReadinessReport["imageProcessingSetups"] = [];
+  for (const source of sourceFiles) {
+    const pipelineCount = countMatches(source.text, /sharp\s*\(|Jimp\.|imagemin\s*\(|pipeline\s*\(|pipe\s*\(|createCanvas\s*\(/gi);
+    const resizeCount = countMatches(source.text, /\.resize\s*\(|resize\s*[:=]|thumbnail|width\s*[:=]|height\s*[:=]|fit\s*:/gi);
+    const formatCount = countMatches(source.text, /\.toFormat\s*\(|\.jpeg\s*\(|\.png\s*\(|\.webp\s*\(|\.avif\s*\(|\.gif\s*\(|\.tiff\s*\(|format\s*:/gi);
+    const metadataCount = countMatches(source.text, /\.metadata\s*\(|withMetadata|keepMetadata|EXIF|ICC|xmp|density|orientation/gi);
+    const outputCount = countMatches(source.text, /\.toBuffer\s*\(|\.toFile\s*\(|createWriteStream|writeFile|pipe\s*\(/gi);
+    const safetyCount = countMatches(source.text, /limitInputPixels|failOn|timeout|withoutEnlargement|withoutReduction|sequentialRead|animated|error\s*=>|catch\s*\(/gi);
+    const hasSetupSignal = pipelineCount + resizeCount + formatCount + metadataCount + outputCount + safetyCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: imageProcessingReadinessProvider(source),
+      pipelineCount,
+      resizeCount,
+      formatCount,
+      metadataCount,
+      outputCount,
+      safetyCount,
+      readiness: pipelineCount > 0 && outputCount > 0 && (resizeCount > 0 || formatCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains pipeline ${pipelineCount}, resize ${resizeCount}, format ${formatCount}, metadata ${metadataCount}, output ${outputCount}, safety ${safetyCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function imageProcessingReadinessProvider(source: ImageProcessingReadinessSourceFile): ImageProcessingReadinessReport["imageProcessingSetups"][number]["provider"] {
+  if (/from ['"]sharp|require\(['"]sharp|sharp\s*\(/i.test(source.text)) return "sharp";
+  if (/from ['"]jimp|require\(['"]jimp|Jimp\./i.test(source.text)) return "jimp";
+  if (/from ['"]imagemin|require\(['"]imagemin|imagemin\s*\(/i.test(source.text)) return "imagemin";
+  if (/image-js|from ['"]image-js|Image\.load/i.test(source.text)) return "image-js";
+  if (/canvas|createCanvas|ImageData/i.test(source.text)) return "canvas";
+  if (/resize|thumbnail|image processing|transform image/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function imageProcessingReadinessInputSignals(sourceFiles: ImageProcessingReadinessSourceFile[]): ImageProcessingReadinessReport["inputSignals"] {
+  const specs: Array<{ signal: ImageProcessingReadinessReport["inputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "file-input", pattern: /sharp\s*\(\s*['"`]|createReadStream|input\.(jpg|jpeg|png|webp|gif|tiff|avif)/i, evidence: "file input evidence was detected." },
+    { signal: "buffer-input", pattern: /Buffer\.|inputBuffer|toBuffer|Uint8Array|ArrayBuffer/i, evidence: "Buffer or typed-array input evidence was detected." },
+    { signal: "stream-input", pattern: /\.pipe\s*\(|pipeline\s*\(|readableStream|writableStream|createReadStream/i, evidence: "stream input evidence was detected." },
+    { signal: "raw-create", pattern: /sharp\s*\(\s*\{|create\s*:|raw\s*:|channels\s*:/i, evidence: "raw/create input evidence was detected." },
+    { signal: "animated-pages", pattern: /animated\s*:|pages\s*:|pageHeight|gif|multi-page/i, evidence: "animated or multi-page input evidence was detected." },
+    { signal: "density", pattern: /density\s*:|dpi|resolutionUnit|EXIF|orientation/i, evidence: "density or orientation input evidence was detected." }
+  ];
+  return imageProcessingReadinessSignalFromSpecs(sourceFiles, specs, "input", "signal");
+}
+
+function imageProcessingReadinessTransformSignals(sourceFiles: ImageProcessingReadinessSourceFile[]): ImageProcessingReadinessReport["transformSignals"] {
+  const specs: Array<{ signal: ImageProcessingReadinessReport["transformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "resize", pattern: /\.resize\s*\(|fit\s*:|cover|contain|inside|outside|withoutEnlargement/i, evidence: "resize evidence was detected." },
+    { signal: "rotate", pattern: /\.rotate\s*\(|auto-orientation|orientation/i, evidence: "rotation/orientation evidence was detected." },
+    { signal: "extract", pattern: /\.extract\s*\(|left\s*:|top\s*:|region|crop/i, evidence: "extract/crop evidence was detected." },
+    { signal: "composite", pattern: /\.composite\s*\(|overlay|gravity|blend/i, evidence: "composite evidence was detected." },
+    { signal: "trim", pattern: /\.trim\s*\(|threshold|lineArt/i, evidence: "trim evidence was detected." },
+    { signal: "effects", pattern: /\.blur\s*\(|\.sharpen\s*\(|\.negate\s*\(|\.flatten\s*\(|\.gamma\s*\(|\.clahe\s*\(/i, evidence: "image effect evidence was detected." },
+    { signal: "colourspace", pattern: /colourspace|colorspace|ICC|pipelineColourspace|toColourspace|ensureAlpha|extractChannel/i, evidence: "colourspace/channel evidence was detected." }
+  ];
+  return imageProcessingReadinessSignalFromSpecs(sourceFiles, specs, "transform", "signal");
+}
+
+function imageProcessingReadinessOutputSignals(sourceFiles: ImageProcessingReadinessSourceFile[]): ImageProcessingReadinessReport["outputSignals"] {
+  const specs: Array<{ signal: ImageProcessingReadinessReport["outputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "to-file", pattern: /\.toFile\s*\(|writeFile|createWriteStream/i, evidence: "file output evidence was detected." },
+    { signal: "to-buffer", pattern: /\.toBuffer\s*\(|resolveWithObject|Buffer/i, evidence: "buffer output evidence was detected." },
+    { signal: "jpeg", pattern: /\.jpeg\s*\(|toFormat\s*\(\s*['"]jpe?g|mozjpeg|chromaSubsampling/i, evidence: "JPEG output evidence was detected." },
+    { signal: "png", pattern: /\.png\s*\(|toFormat\s*\(\s*['"]png|compressionLevel|dither/i, evidence: "PNG output evidence was detected." },
+    { signal: "webp-avif", pattern: /\.webp\s*\(|\.avif\s*\(|toFormat\s*\(\s*['"](webp|avif)|effort|lossless/i, evidence: "WebP/AVIF output evidence was detected." },
+    { signal: "tiff-gif", pattern: /\.tiff\s*\(|\.gif\s*\(|toFormat\s*\(\s*['"](tiff|tif|gif)|animated/i, evidence: "TIFF/GIF output evidence was detected." },
+    { signal: "metadata-output", pattern: /withMetadata|keepMetadata|metadata\(\)|EXIF|ICC|XMP|IPTC/i, evidence: "metadata output evidence was detected." }
+  ];
+  return imageProcessingReadinessSignalFromSpecs(sourceFiles, specs, "output", "signal");
+}
+
+function imageProcessingReadinessSafetySignals(sourceFiles: ImageProcessingReadinessSourceFile[]): ImageProcessingReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: ImageProcessingReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "limit-input-pixels", pattern: /limitInputPixels|unlimited\s*:/i, evidence: "input pixel limit evidence was detected." },
+    { signal: "fail-on", pattern: /failOn\s*:|truncated|warning|unsupported image format/i, evidence: "failOn/corrupt input policy evidence was detected." },
+    { signal: "timeout", pattern: /\.timeout\s*\(|timeout\s*:/i, evidence: "processing timeout evidence was detected." },
+    { signal: "without-enlargement", pattern: /withoutEnlargement|withoutReduction/i, evidence: "resize enlargement/reduction guard evidence was detected." },
+    { signal: "sequential-read", pattern: /sequentialRead|sequential read/i, evidence: "sequential read policy evidence was detected." },
+    { signal: "error-handling", pattern: /catch\s*\(|err\s*=>|error\s*=>|on\(['"]error|assert\.rejects/i, evidence: "error handling evidence was detected." }
+  ];
+  return imageProcessingReadinessSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function imageProcessingReadinessPerformanceSignals(sourceFiles: ImageProcessingReadinessSourceFile[]): ImageProcessingReadinessReport["performanceSignals"] {
+  const specs: Array<{ signal: ImageProcessingReadinessReport["performanceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "cache", pattern: /sharp\.cache|cache\s*\(/i, evidence: "Sharp cache evidence was detected." },
+    { signal: "concurrency", pattern: /sharp\.concurrency|concurrency\s*\(/i, evidence: "Sharp concurrency evidence was detected." },
+    { signal: "libvips", pattern: /libvips|@img\/sharp-libvips|detect-libc|native binary/i, evidence: "libvips/native binary evidence was detected." },
+    { signal: "stream-pipeline", pattern: /pipeline\s*\(|\.pipe\s*\(|createReadStream|createWriteStream/i, evidence: "stream pipeline evidence was detected." },
+    { signal: "clone", pattern: /\.clone\s*\(|clone pipeline/i, evidence: "Sharp clone pipeline evidence was detected." },
+    { signal: "queue", pattern: /queue|Queue contains|task\(s\)|parallel|bench/i, evidence: "queue or parallelism evidence was detected." }
+  ];
+  return imageProcessingReadinessSignalFromSpecs(sourceFiles, specs, "performance", "signal");
+}
+
+function imageProcessingReadinessPackageSignals(sourceFiles: ImageProcessingReadinessSourceFile[]): ImageProcessingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ImageProcessingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "sharp", pattern: /"sharp"|from ['"]sharp|require\(['"]sharp|sharp\s*\(/i, evidence: "Sharp package/import evidence was detected." },
+    { signal: "jimp", pattern: /"jimp"|from ['"]jimp|require\(['"]jimp|Jimp\./i, evidence: "Jimp package/import evidence was detected." },
+    { signal: "imagemin", pattern: /"imagemin"|from ['"]imagemin|imagemin\s*\(/i, evidence: "imagemin package/import evidence was detected." },
+    { signal: "image-js", pattern: /"image-js"|from ['"]image-js|Image\.load/i, evidence: "image-js package/import evidence was detected." },
+    { signal: "canvas", pattern: /"canvas"|from ['"]canvas|createCanvas|ImageData/i, evidence: "canvas package/import evidence was detected." },
+    { signal: "squoosh", pattern: /squoosh|@squoosh\/lib/i, evidence: "Squoosh package/import evidence was detected." }
+  ];
+  return imageProcessingReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function imageProcessingReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ImageProcessingReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/image-processing-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
