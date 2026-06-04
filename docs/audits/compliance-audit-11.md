@@ -1,6 +1,6 @@
 # Compliance Audit 11
 
-Created: 2026-06-04T22:27:48.782Z
+Created: 2026-06-04T22:45:11.283Z
 
 Status: PASS
 
@@ -89,6 +89,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - code ownership readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - large asset readiness report
 
 - missing files: none
 - missing strings: none

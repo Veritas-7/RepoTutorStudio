@@ -29,6 +29,7 @@ import type {
   LearningJournalReport,
   ProjectActivityReport,
   CodeOwnershipReadinessReport,
+  LargeAssetReadinessReport,
   LicenseRightsReport,
   SbomReport,
   SecurityReadinessReport,
@@ -165,6 +166,7 @@ export interface StudyHtmlInput {
   learningJournalReport: LearningJournalReport;
   projectActivityReport: ProjectActivityReport;
   codeOwnershipReadinessReport: CodeOwnershipReadinessReport;
+  largeAssetReadinessReport: LargeAssetReadinessReport;
   licenseRightsReport: LicenseRightsReport;
   sbomReport: SbomReport;
   securityReadinessReport: SecurityReadinessReport;
@@ -321,6 +323,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["learning-journal.html", "Learning Journal"],
     ["project-activity.html", "Project Activity"],
     ["code-ownership-readiness.html", "Code Ownership"],
+    ["large-asset-readiness.html", "Large Assets"],
     ["license-rights.html", "License Rights"],
     ["sbom.html", "SBOM"],
     ["security-readiness.html", "Security Readiness"],
@@ -497,6 +500,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Learning Journal</h3><p>${escapeHtml(input.learningJournalReport.summary)}</p><p>learn-codebase 패턴으로 예측 질문, mastery map, spaced review queue를 남깁니다.</p><a href="learning-journal.html">Learning Journal 열기</a></article>
           <article><h3>Project Activity</h3><p>${escapeHtml(input.projectActivityReport.summary)}</p><p>Repowise 패턴으로 snapshot-only activity, hotspot, dead-code, decision queue를 묶습니다.</p><a href="project-activity.html">Project Activity 열기</a></article>
           <article><h3>Code Ownership Readiness</h3><p>${escapeHtml(input.codeOwnershipReadinessReport.summary)}</p><p>CODEOWNERS, validator, required review, branch protection 신호를 분리해 소유권 리뷰 준비도를 확인합니다.</p><a href="code-ownership-readiness.html">Code Ownership 열기</a></article>
+          <article><h3>Large Asset Readiness</h3><p>${escapeHtml(input.largeAssetReadinessReport.summary)}</p><p>Git LFS/DVC 패턴으로 large file, dataset, model, media asset versioning 준비도를 분리합니다.</p><a href="large-asset-readiness.html">Large Assets 열기</a></article>
           <article><h3>License Rights</h3><p>${escapeHtml(input.licenseRightsReport.summary)}</p><p>Licensee 패턴으로 license file, package metadata, README 참조를 분리합니다.</p><a href="license-rights.html">License Rights 열기</a></article>
           <article><h3>SBOM</h3><p>${escapeHtml(input.sbomReport.summary)}</p><p>Syft 패턴으로 source descriptor, package artifacts, file artifacts, relationships를 inventory로 묶습니다.</p><a href="sbom.html">SBOM 열기</a></article>
           <article><h3>Security Readiness</h3><p>${escapeHtml(input.securityReadinessReport.summary)}</p><p>Trivy 패턴으로 targets, scanners, security signals, action queue를 분리합니다.</p><a href="security-readiness.html">Security Readiness 열기</a></article>
@@ -675,6 +679,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "code-ownership-readiness.html",
       title: "Code Ownership Readiness",
       html: pageShell("Code Ownership Readiness", "code-ownership-readiness.html", `<section class="panel" data-source-pattern="CODEOWNERS"><h2>Code Ownership Readiness</h2><p>${escapeHtml(input.codeOwnershipReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.codeOwnershipReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>CODEOWNERS files</dt><dd>${input.codeOwnershipReadinessReport.codeownerFiles.length}</dd></div><div><dt>ownership signals</dt><dd>${input.codeOwnershipReadinessReport.ownershipSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>validation signals</dt><dd>${input.codeOwnershipReadinessReport.validationSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>review signals</dt><dd>${input.codeOwnershipReadinessReport.reviewSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records CODEOWNERS readiness only; it does not contact GitHub, verify team visibility, inspect private branch protection remotely, or run third-party validators.</p></section><section class="grid"><article class="code-ownership-readiness-card"><h3>CODEOWNERS Files</h3>${codeOwnershipFileList(input.codeOwnershipReadinessReport.codeownerFiles)}</article><article class="code-ownership-readiness-card"><h3>Ownership Signals</h3>${codeOwnershipSignalList(input.codeOwnershipReadinessReport.ownershipSignals, "signal")}</article><article class="code-ownership-readiness-card"><h3>Validation Signals</h3>${codeOwnershipSignalList(input.codeOwnershipReadinessReport.validationSignals, "signal")}</article><article class="code-ownership-readiness-card"><h3>Review Signals</h3>${codeOwnershipSignalList(input.codeOwnershipReadinessReport.reviewSignals, "signal")}</article></section><section class="grid"><article class="code-ownership-readiness-card"><h3>Coverage Signals</h3>${codeOwnershipSignalList(input.codeOwnershipReadinessReport.coverageSignals, "signal")}</article><article class="code-ownership-readiness-card"><h3>Package Signals</h3>${codeOwnershipSignalList(input.codeOwnershipReadinessReport.packageSignals, "signal")}</article><article class="code-ownership-readiness-card"><h3>Recommended Commands</h3>${codeOwnershipCommandList(input.codeOwnershipReadinessReport.recommendedCommands)}</article><article class="code-ownership-readiness-card"><h3>Risk Queue</h3>${codeOwnershipRiskList(input.codeOwnershipReadinessReport.riskQueue)}</article><article class="code-ownership-readiness-card"><h3>다음 확인 단계</h3>${list(input.codeOwnershipReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "large-asset-readiness.html",
+      title: "Large Asset Readiness",
+      html: pageShell("Large Asset Readiness", "large-asset-readiness.html", `<section class="panel" data-source-pattern="Git LFS DVC"><h2>Large Asset Snapshot</h2><p>${escapeHtml(input.largeAssetReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.largeAssetReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.largeAssetReadinessReport.assetSetups.length}</dd></div><div><dt>Git LFS</dt><dd>${input.largeAssetReadinessReport.lfsSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>DVC</dt><dd>${input.largeAssetReadinessReport.dvcSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>workflow</dt><dd>${input.largeAssetReadinessReport.workflowSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records large-asset readiness only; it does not run Git LFS, DVC, submodule update, package managers, network remotes, object storage calls, or asset downloads.</p></section><section class="grid"><article class="large-asset-readiness-card"><h3>Asset Setups</h3>${largeAssetSetupList(input.largeAssetReadinessReport.assetSetups)}</article><article class="large-asset-readiness-card"><h3>Git LFS Signals</h3>${largeAssetSignalList(input.largeAssetReadinessReport.lfsSignals, "signal")}</article><article class="large-asset-readiness-card"><h3>DVC Signals</h3>${largeAssetSignalList(input.largeAssetReadinessReport.dvcSignals, "signal")}</article><article class="large-asset-readiness-card"><h3>Submodule Signals</h3>${largeAssetSignalList(input.largeAssetReadinessReport.submoduleSignals, "signal")}</article></section><section class="grid"><article class="large-asset-readiness-card"><h3>Workflow Signals</h3>${largeAssetSignalList(input.largeAssetReadinessReport.workflowSignals, "signal")}</article><article class="large-asset-readiness-card"><h3>Package Signals</h3>${largeAssetSignalList(input.largeAssetReadinessReport.packageSignals, "signal")}</article><article class="large-asset-readiness-card"><h3>Recommended Commands</h3>${largeAssetCommandList(input.largeAssetReadinessReport.recommendedCommands)}</article><article class="large-asset-readiness-card"><h3>Risk Queue</h3>${largeAssetRiskList(input.largeAssetReadinessReport.riskQueue)}</article><article class="large-asset-readiness-card"><h3>다음 확인 단계</h3>${list(input.largeAssetReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "license-rights.html",
@@ -1311,6 +1320,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Learning Journal", path: "html/learning-journal.html", description: "learn-codebase식 active recall 질문, mastery map, spaced review queue를 확인합니다." },
       { label: "Project Activity", path: "html/project-activity.html", description: "Repowise식 activity snapshot, hotspot, dead-code, decision review queue를 확인합니다." },
       { label: "Code Ownership Readiness", path: "html/code-ownership-readiness.html", description: "CODEOWNERS식 위치, 규칙, owner, validator, required review 준비도를 확인합니다." },
+      { label: "Large Asset Readiness", path: "html/large-asset-readiness.html", description: "Git LFS/DVC식 large file, dataset, model, media asset versioning 준비도를 확인합니다." },
       { label: "License Rights", path: "html/license-rights.html", description: "Licensee식 license file, package metadata, README license reference 검토 상태를 확인합니다." },
       { label: "SBOM", path: "html/sbom.html", description: "Syft식 package artifact, file artifact, relationship inventory를 확인합니다." },
       { label: "Security Readiness", path: "html/security-readiness.html", description: "Trivy식 scan target, scanner coverage, security signal, action queue를 확인합니다." },
@@ -1601,6 +1611,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "code-ownership-readiness.html",
       goal: "CODEOWNERS 위치, rule, owner, validator, required review 신호를 보고 리뷰 소유권 contract를 확인합니다.",
       evidence: `CODEOWNERS files ${input.codeOwnershipReadinessReport.codeownerFiles.length}개, review signals ${input.codeOwnershipReadinessReport.reviewSignals.length}개`
+    },
+    {
+      title: "Large asset versioning 준비도 확인",
+      href: "large-asset-readiness.html",
+      goal: "Git LFS/DVC/submodule 신호를 보고 large file, dataset, model, media asset을 어떻게 재현할지 확인합니다.",
+      evidence: `asset setups ${input.largeAssetReadinessReport.assetSetups.length}개, DVC signals ${input.largeAssetReadinessReport.dvcSignals.length}개`
     },
     {
       title: "라이선스와 소스 권리 확인",
@@ -2471,6 +2487,30 @@ function codeOwnershipRiskList(items: CodeOwnershipReadinessReport["riskQueue"])
 }
 
 function codeOwnershipHref(href: string): string {
+  return href.startsWith("source/") ? `../${href}` : htmlPageHref(href);
+}
+
+function largeAssetSetupList(items: LargeAssetReadinessReport["assetSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">large asset setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)}/${escapeHtml(item.setupType)}/${escapeHtml(item.readiness)}]<br>LFS pattern/pointer/lockable/command ${item.patternCount}/${item.pointerCount}/${item.lockableCount}/${item.commandCount}<br>DVC outs/deps/metrics/remotes/cache ${item.outCount}/${item.depCount}/${item.metricCount}/${item.remoteCount}/${item.cacheCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(largeAssetHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function largeAssetSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">large asset signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(largeAssetHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function largeAssetCommandList(items: LargeAssetReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function largeAssetRiskList(items: LargeAssetReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(largeAssetHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function largeAssetHref(href: string): string {
   return href.startsWith("source/") ? `../${href}` : htmlPageHref(href);
 }
 
