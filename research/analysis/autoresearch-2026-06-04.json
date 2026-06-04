@@ -1989,6 +1989,51 @@
         "Hosted collaboration evidence that separates room identity, authentication, ephemeral presence, shared storage, comments/threads, and CRDT integration",
         "Static-only Liveblocks guardrails that do not connect clients, join rooms, broadcast presence, mutate storage, create comments, or call auth endpoints"
       ]
+    },
+    {
+      "repo": "temporalio/sdk-typescript",
+      "url": "https://github.com/temporalio/sdk-typescript",
+      "localPath": "research/external-src/temporalio-sdk-typescript",
+      "stars": 858,
+      "forks": 182,
+      "license": "MIT",
+      "updatedAt": "2026-06-04T19:17:33Z",
+      "cloneHead": "f3e11c5",
+      "adoptedPatterns": [
+        "Temporal readiness through workflows, activities, Workers, task queues, schedules, signals, queries, retry, timeout, heartbeat, event history, replay, and continue-as-new recovery",
+        "Durable workflow evidence that separates trigger surfaces, execution surfaces, worker/runtime setup, durability controls, and observability cues",
+        "Static-only Temporal guardrails that do not start workers, connect clients, register schedules, send signals, or execute workflow/activity code"
+      ]
+    },
+    {
+      "repo": "inngest/inngest",
+      "url": "https://github.com/inngest/inngest",
+      "localPath": "research/external-src/inngest-inngest",
+      "stars": 5451,
+      "forks": 311,
+      "license": "Other",
+      "updatedAt": "2026-06-04T18:58:19Z",
+      "cloneHead": "b31360b",
+      "adoptedPatterns": [
+        "Inngest readiness through createFunction, events, cron, webhook handlers, step.run, step.sleep, waitForEvent, invoke, cancelOn, concurrency, throttle, debounce, rate limiting, priority, batching, state store, runner, executor, and serve endpoint registration",
+        "Durable function evidence that distinguishes trigger configuration, step execution, waits/cancellation, flow control, state, and local dev/runtime boundaries",
+        "Static-only Inngest guardrails that do not send events, run functions, start dev servers, connect endpoints, or call dashboards"
+      ]
+    },
+    {
+      "repo": "triggerdotdev/trigger.dev",
+      "url": "https://github.com/triggerdotdev/trigger.dev",
+      "localPath": "research/external-src/triggerdotdev-trigger.dev",
+      "stars": 15215,
+      "forks": 1285,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T15:44:05Z",
+      "cloneHead": "64151d6",
+      "adoptedPatterns": [
+        "Trigger.dev readiness through task, schemaTask, schedules.task, task queues, triggerAndWait, batchTrigger, waits, retries, maxDuration, idempotencyKey, metadata, tags, logger, tracing, alerts, metrics, machines, environments, deploy, runs, and checkpoint/resume semantics",
+        "Task orchestration evidence that separates task definitions, trigger APIs, schedules, waits, queues, runtime sizing, observability, and deployment signals",
+        "Static-only Trigger.dev guardrails that do not execute tasks, trigger runs, deploy code, contact dashboards, or mutate runtime state"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -5457,6 +5502,26 @@
         "html/realtime-collaboration-readiness.html"
       ],
       "commit": "d004486"
+    },
+    {
+      "name": "workflow-orchestration readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/workflow-orchestration-readiness-report.json",
+        "markdown/workflow-orchestration-readiness.md",
+        "html/workflow-orchestration-readiness.html"
+      ],
+      "commit": "pending"
     }
   ],
   "verification": {
@@ -6057,7 +6122,13 @@
     "cliLlmEvalReadinessOpenTargetSmoke": "PASS",
     "buildLlmEvalReadiness": "PASS",
     "testLlmEvalReadiness": "PASS",
-    "auditBriefLlmEvalReadiness106": "PASS"
+    "auditBriefLlmEvalReadiness106": "PASS",
+    "fixtureWorkflowOrchestrationReadinessReport": "PASS",
+    "cliWorkflowOrchestrationReadinessSmoke": "PASS",
+    "cliWorkflowOrchestrationReadinessOpenTargetSmoke": "PASS",
+    "buildWorkflowOrchestrationReadiness": "PASS",
+    "testWorkflowOrchestrationReadiness": "PASS",
+    "auditBriefWorkflowOrchestrationReadiness112": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -6581,6 +6652,18 @@
     "buildRealtimeCollaborationReadiness": "PASS",
     "testRealtimeCollaborationReadiness": "PASS",
     "auditBriefRealtimeCollaborationReadiness111": "PASS",
-    "realtimeCollaborationReadinessImplementationPushed": "PASS"
+    "realtimeCollaborationReadinessImplementationPushed": "PASS",
+    "externalTemporalSdkTypescriptCloneIgnored": "PASS",
+    "externalInngestCloneIgnored": "PASS",
+    "externalTriggerDevCloneIgnored": "PASS",
+    "workflowOrchestrationReadinessRedSmoke": "PASS",
+    "workflowOrchestrationReadinessGreenSmoke": "PASS",
+    "fixtureWorkflowOrchestrationReadinessReport": "PASS",
+    "cliWorkflowOrchestrationReadinessSmoke": "PASS",
+    "cliWorkflowOrchestrationReadinessOpenTargetSmoke": "PASS",
+    "buildWorkflowOrchestrationReadiness": "PASS",
+    "testWorkflowOrchestrationReadiness": "PASS",
+    "auditBriefWorkflowOrchestrationReadiness112": "PASS",
+    "workflowOrchestrationReadinessImplementationPushed": "PENDING"
   }
 }

@@ -108,6 +108,7 @@ import {
   SearchServiceReadinessReport,
   ObjectStorageReadinessReport,
   RealtimeCollaborationReadinessReport,
+  WorkflowOrchestrationReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -240,6 +241,7 @@ export interface AnalysisBundle {
   searchServiceReadinessReport: SearchServiceReadinessReport;
   objectStorageReadinessReport: ObjectStorageReadinessReport;
   realtimeCollaborationReadinessReport: RealtimeCollaborationReadinessReport;
+  workflowOrchestrationReadinessReport: WorkflowOrchestrationReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -372,6 +374,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const searchServiceReadinessReport = await buildSearchServiceReadinessReport(walk);
   const objectStorageReadinessReport = await buildObjectStorageReadinessReport(walk);
   const realtimeCollaborationReadinessReport = await buildRealtimeCollaborationReadinessReport(walk);
+  const workflowOrchestrationReadinessReport = await buildWorkflowOrchestrationReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
@@ -391,7 +394,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -22439,6 +22442,261 @@ function realtimeCollaborationSignalFromSpecs<T extends Record<K, string> & { pa
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/realtime-collaboration-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildWorkflowOrchestrationReadinessReport(walk: WalkResult): Promise<WorkflowOrchestrationReadinessReport> {
+  const sourceFiles = await workflowOrchestrationSourceFiles(walk);
+  const workflowSetups = workflowOrchestrationSetups(sourceFiles);
+  const triggerSignals = workflowOrchestrationTriggerSignals(sourceFiles);
+  const executionSignals = workflowOrchestrationExecutionSignals(sourceFiles);
+  const durabilitySignals = workflowOrchestrationDurabilitySignals(sourceFiles);
+  const flowSignals = workflowOrchestrationFlowSignals(sourceFiles);
+  const runtimeSignals = workflowOrchestrationRuntimeSignals(sourceFiles);
+  const observabilitySignals = workflowOrchestrationObservabilitySignals(sourceFiles);
+  const packageSignals = workflowOrchestrationPackageSignals(sourceFiles);
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasWorkflow = executionSignals.some((item) => item.readiness === "ready") || workflowSetups.some((item) => item.workflowCount + item.stepCount + item.activityCount > 0);
+  const hasTrigger = triggerSignals.some((item) => item.readiness === "ready") || workflowSetups.some((item) => item.eventCount + item.scheduleCount > 0);
+  const hasDurability = durabilitySignals.some((item) => item.readiness === "ready") || workflowSetups.some((item) => item.retryCount + item.timeoutCount + item.stateCount > 0);
+  const hasFlow = flowSignals.some((item) => item.readiness === "ready") || workflowSetups.some((item) => item.waitCount + item.cancelCount + item.concurrencyCount + item.queueCount > 0);
+  const hasRuntime = runtimeSignals.some((item) => item.readiness === "ready") || workflowSetups.some((item) => item.queueCount > 0);
+  const hasObservability = observabilitySignals.some((item) => item.readiness === "ready") || workflowSetups.some((item) => item.observabilityCount > 0);
+  const riskQueue: WorkflowOrchestrationReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasWorkflow) riskQueue.push({ priority: "medium", action: "Add or document the workflow orchestration strategy before claiming durable background-job readiness.", why: "Durable workflow readiness starts with a visible Temporal, Inngest, Trigger.dev, Cloudflare Workflow, task, step, activity, or worker boundary.", relatedHref: "html/workflow-orchestration-readiness.html" });
+  if ((hasPackage || hasWorkflow) && !hasTrigger) riskQueue.push({ priority: "high", action: "Pair workflow definitions with event, schedule, API, webhook, or manual trigger evidence.", why: "A durable task definition without a trigger leaves learners unable to see when the work starts.", relatedHref: "html/workflow-orchestration-readiness.html" });
+  if (hasTrigger && !hasWorkflow) riskQueue.push({ priority: "high", action: "Trace the task, workflow, activity, step, or worker that handles each trigger.", why: "Triggers need an execution boundary so background logic is not confused with ordinary request handling.", relatedHref: "html/workflow-orchestration-readiness.html" });
+  if (hasWorkflow && !hasDurability) riskQueue.push({ priority: "medium", action: "Document retry, timeout, heartbeat, checkpoint, state-store, resume, history, or idempotency behavior.", why: "Workflow orchestration is valuable because work can recover across failures, restarts, and long waits.", relatedHref: "html/workflow-orchestration-readiness.html" });
+  if (hasWorkflow && !hasFlow) riskQueue.push({ priority: "medium", action: "Expose waits, sleeps, wait-for-event, cancellation, batching, concurrency, rate limit, throttle, priority, or child-workflow controls.", why: "Durable workflows need visible coordination semantics beyond one fire-and-forget function.", relatedHref: "html/workflow-orchestration-readiness.html" });
+  if (hasWorkflow && !hasRuntime) riskQueue.push({ priority: "low", action: "Record dev server, deploy, worker pool, isolated runtime, machine, environment, serve, or dashboard evidence.", why: "Learners need to know where long-running work is executed and observed.", relatedHref: "html/workflow-orchestration-readiness.html" });
+  if (hasWorkflow && !hasObservability) riskQueue.push({ priority: "low", action: "Add logger, tracing, metadata, tags, run status, dashboard, alerts, or metrics evidence.", why: "Long-running jobs need progress and failure visibility so operators can inspect stuck or failed runs.", relatedHref: "html/workflow-orchestration-readiness.html" });
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Workflow orchestration readiness report: setup ${workflowSetups.length}개, trigger signal ${triggerSignals.length}개, execution signal ${executionSignals.length}개, durability signal ${durabilitySignals.length}개, flow signal ${flowSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Workflow orchestration readiness Temporal workflows activities Worker taskQueue schedules signals queries retry timeout heartbeat continueAsNew Inngest createFunction events cron step.run step.sleep waitForEvent invoke cancelOn concurrency throttle debounce rate limit Trigger.dev task schemaTask schedules cron wait queue retry maxDuration idempotency metadata logger deploy runs",
+    workflowSetups,
+    triggerSignals,
+    executionSignals,
+    durabilitySignals,
+    flowSignals,
+    runtimeSignals,
+    observabilitySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"@temporalio/(workflow|worker|client)|proxyActivities|Worker\\.create|taskQueue|Client\\(|workflow\\.start\" src app packages", purpose: "Find Temporal workflow, activity, worker, task queue, and client boundaries." },
+      { command: "rg \"new Inngest|createFunction|inngest\\.send|step\\.run|step\\.sleep|step\\.waitForEvent|step\\.invoke|serve\\(\" src app packages", purpose: "Trace Inngest event functions, steps, waits, invokes, and serve endpoints." },
+      { command: "rg \"@trigger\\.dev/sdk|task\\(|schemaTask|schedules\\.task|tasks\\.trigger|triggerAndWait|batchTrigger|wait\\.for|metadata|logger\" src app packages", purpose: "Map Trigger.dev tasks, schedules, waits, child runs, metadata, and logging." },
+      { command: "rg \"retry|retries|timeout|maxDuration|heartbeat|checkpoint|state store|history|idempotency|continueAsNew|resume\" src app packages docs", purpose: "Review durability, recovery, and idempotency semantics without executing jobs." },
+      { command: "rg \"concurrency|queue|rateLimit|throttle|debounce|priority|cancelOn|AbortTaskRun|waitForEvent|batch\" src app packages docs", purpose: "Check coordination, cancellation, batching, and flow-control behavior." },
+      { command: "rg \"dev server|trigger.dev dev|deploy|Worker\\.run|dashboard|run status|tags|metrics|alerts|tracing\" src app packages docs", purpose: "Find runtime and observability evidence for long-running work." }
+    ],
+    learnerNextSteps: [
+      "먼저 Temporal workflow/activity/worker, Inngest createFunction, Trigger.dev task/schemaTask 중 실제 durable work boundary를 찾으세요.",
+      "event, cron, schedule, webhook, API trigger를 task/workflow/step과 연결해서 언제 작업이 시작되는지 확인하세요.",
+      "retry, timeout, heartbeat, checkpoint, state store, resume, history, idempotency 신호로 실패 복구 모델을 읽으세요.",
+      "wait, sleep, waitForEvent, cancelOn, batch, concurrency, rate limit, child workflow 신호로 coordination semantics를 분리하세요.",
+      "dev server, deploy, worker pool, isolated runtime, machine, environment, dashboard 신호로 작업이 어디서 실행되고 관찰되는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. RepoTutor는 workflow worker를 시작하거나, 이벤트를 전송하거나, schedule을 등록하거나, task/run을 실행하거나, 외부 orchestration 서비스를 호출하지 않습니다."
+    ]
+  };
+}
+
+type WorkflowOrchestrationSourceFile = { filePath: string; text: string; sourceHref: string };
+
+async function workflowOrchestrationSourceFiles(walk: WalkResult): Promise<WorkflowOrchestrationSourceFile[]> {
+  const files: WorkflowOrchestrationSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !workflowOrchestrationInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!workflowOrchestrationPathSignal(file.relPath) && !workflowOrchestrationContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function workflowOrchestrationInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return workflowOrchestrationPathSignal(filePath)
+    || /(^|\/)(README|docs?|workflows?|workflow-orchestration|durable|background|jobs?|tasks?|temporal|inngest|trigger|schedules?|cron|workers?|activities?|queue|queues|runs?|events?|serverless|api|routes?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|pnpm-lock\.yaml|yarn\.lock|package-lock\.json|wrangler\.(toml|json|jsonc))$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|go|rs|py|json|md|mdx|ya?ml|toml)$/i.test(filePath);
+}
+
+function workflowOrchestrationPathSignal(filePath: string): boolean {
+  return /(^|\/)(workflows?|workflow-orchestration|durable|background|jobs?|tasks?|temporal|inngest|trigger|schedules?|cron|workers?|activities?|queue|queues|runs?|events?)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function workflowOrchestrationContentSignal(text: string): boolean {
+  return /(@temporalio\/(workflow|worker|client)|proxyActivities|defineSignal|defineQuery|Worker\.create|taskQueue|continueAsNew|new Inngest|createFunction|step\.(run|sleep|waitForEvent|invoke)|cancelOn|@trigger\.dev\/sdk|schemaTask|task\(|schedules\.task|tasks\.(trigger|batchTrigger)|triggerAndWait|wait\.for|AbortTaskRun|WorkflowEntrypoint|workflows?\s*[=:])/i.test(text);
+}
+
+function workflowOrchestrationSetups(sourceFiles: WorkflowOrchestrationSourceFile[]): WorkflowOrchestrationReadinessReport["workflowSetups"] {
+  const rows: WorkflowOrchestrationReadinessReport["workflowSetups"] = [];
+  for (const source of sourceFiles) {
+    const workflowCount = countMatches(source.text, /workflow|Workflow|createFunction|task\(|schemaTask|WorkflowEntrypoint|workflows?\s*[=:]/g);
+    const eventCount = countMatches(source.text, /event|events|inngest\.send|webhook|trigger\(|tasks\.trigger|api trigger/gi);
+    const scheduleCount = countMatches(source.text, /cron|schedule|schedules\.task|scheduled|interval/gi);
+    const stepCount = countMatches(source.text, /step\.run|step\.sleep|step\.waitForEvent|step\.invoke|step\(|wait\.for|wait\.until/gi);
+    const activityCount = countMatches(source.text, /activity|activities|proxyActivities|Activity|executeActivity/gi);
+    const queueCount = countMatches(source.text, /taskQueue|queue|queues|worker pool|Queue<|concurrencyLimit/gi);
+    const retryCount = countMatches(source.text, /retry|retries|maxAttempts|maximumAttempts|backoff/gi);
+    const timeoutCount = countMatches(source.text, /timeout|startToCloseTimeout|scheduleToCloseTimeout|maxDuration|deadline/gi);
+    const waitCount = countMatches(source.text, /waitForEvent|wait\.for|wait\.until|sleep|pause|waitpoint/gi);
+    const cancelCount = countMatches(source.text, /cancel|cancelOn|AbortTaskRun|CancellationScope|terminate/gi);
+    const concurrencyCount = countMatches(source.text, /concurrency|rateLimit|rate limit|throttle|debounce|priority|batch|batchTrigger/gi);
+    const stateCount = countMatches(source.text, /checkpoint|state store|history|continueAsNew|resume|idempotency|idempotencyKey|metadata\.set|persist/gi);
+    const observabilityCount = countMatches(source.text, /logger|log\.|tracing|trace|metadata|tags|run status|dashboard|metrics|alerts|observability/gi);
+    const totalSignals = workflowCount + eventCount + scheduleCount + stepCount + activityCount + queueCount + retryCount + timeoutCount + waitCount + cancelCount + concurrencyCount + stateCount + observabilityCount;
+    if (totalSignals === 0 && !workflowOrchestrationPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: workflowOrchestrationPlatform(source),
+      workflowCount,
+      eventCount,
+      scheduleCount,
+      stepCount,
+      activityCount,
+      queueCount,
+      retryCount,
+      timeoutCount,
+      waitCount,
+      cancelCount,
+      concurrencyCount,
+      stateCount,
+      observabilityCount,
+      readiness: workflowCount + stepCount + activityCount > 0 && (eventCount + scheduleCount > 0) && (retryCount + timeoutCount + stateCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} workflow orchestration signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => (b.workflowCount + b.stepCount + b.activityCount + b.eventCount + b.retryCount + b.concurrencyCount + b.stateCount) - (a.workflowCount + a.stepCount + a.activityCount + a.eventCount + a.retryCount + a.concurrencyCount + a.stateCount) || a.filePath.localeCompare(b.filePath)).slice(0, 100);
+}
+
+function workflowOrchestrationPlatform(source: WorkflowOrchestrationSourceFile): WorkflowOrchestrationReadinessReport["workflowSetups"][number]["platform"] {
+  if (/trigger|@trigger\.dev|schemaTask|schedules\.task|tasks\.trigger/i.test(source.filePath) || /@trigger\.dev\/sdk|schemaTask|schedules\.task|tasks\.(trigger|batchTrigger)|AbortTaskRun/i.test(source.text)) return "triggerdotdev";
+  if (/inngest/i.test(source.filePath) || /new Inngest|createFunction|step\.(run|sleep|waitForEvent|invoke)|inngest\.send/i.test(source.text)) return "inngest";
+  if (/temporal/i.test(source.filePath) || /@temporalio\/(workflow|worker|client)|proxyActivities|Worker\.create|taskQueue|continueAsNew/i.test(source.text)) return "temporal";
+  if (/WorkflowEntrypoint|workflows?\s*[=:]/i.test(source.text)) return "cloudflare-workflows";
+  if (/workflow|durable|background|job|task|queue|cron|schedule/i.test(source.filePath) || /workflow|durable|background job|queue|cron|schedule/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function workflowOrchestrationTriggerSignals(sourceFiles: WorkflowOrchestrationSourceFile[]): WorkflowOrchestrationReadinessReport["triggerSignals"] {
+  const specs: Array<{ signal: WorkflowOrchestrationReadinessReport["triggerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "event", pattern: /event\s*:|events?|inngest\.send|Trigger|triggering event/i, evidence: "event trigger evidence was detected." },
+    { signal: "cron", pattern: /cron|crontab|scheduled tasks/i, evidence: "cron trigger evidence was detected." },
+    { signal: "schedule", pattern: /schedule|schedules\.task|interval|scheduled/i, evidence: "schedule evidence was detected." },
+    { signal: "webhook", pattern: /webhook|serve\(|endpoint|HTTP|https/i, evidence: "webhook/HTTP trigger evidence was detected." },
+    { signal: "manual", pattern: /manual|workflow_dispatch|trigger\.dev dev|dashboard/i, evidence: "manual trigger evidence was detected." },
+    { signal: "api-trigger", pattern: /tasks\.trigger|task\.trigger|client\.workflow\.start|workflow\.execute|startWorkflow|executeWorkflow/i, evidence: "API trigger evidence was detected." },
+    { signal: "child-trigger", pattern: /triggerAndWait|executeChild|child workflow|step\.invoke|tasks\.trigger/i, evidence: "child trigger evidence was detected." }
+  ];
+  return workflowOrchestrationSignalFromSpecs(sourceFiles, specs, "trigger", "signal");
+}
+
+function workflowOrchestrationExecutionSignals(sourceFiles: WorkflowOrchestrationSourceFile[]): WorkflowOrchestrationReadinessReport["executionSignals"] {
+  const specs: Array<{ signal: WorkflowOrchestrationReadinessReport["executionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "task", pattern: /task\(|schemaTask|@trigger\.dev\/sdk|durable task/i, evidence: "task evidence was detected." },
+    { signal: "workflow", pattern: /workflow|Workflow|WorkflowEntrypoint|@temporalio\/workflow/i, evidence: "workflow evidence was detected." },
+    { signal: "activity", pattern: /activity|activities|proxyActivities|executeActivity/i, evidence: "activity evidence was detected." },
+    { signal: "step", pattern: /step\.run|step\.sleep|step\.waitForEvent|step\.invoke|steps are/i, evidence: "step evidence was detected." },
+    { signal: "worker", pattern: /Worker\.create|Worker\.run|worker pool|polling task queues|@temporalio\/worker/i, evidence: "worker evidence was detected." },
+    { signal: "task-queue", pattern: /taskQueue|task queue|queue:/i, evidence: "task queue evidence was detected." },
+    { signal: "function-run", pattern: /function runs|run state|run:/i, evidence: "function run evidence was detected." },
+    { signal: "handler", pattern: /serve\(|handler|endpoint|executor/i, evidence: "handler/executor evidence was detected." }
+  ];
+  return workflowOrchestrationSignalFromSpecs(sourceFiles, specs, "execution", "signal");
+}
+
+function workflowOrchestrationDurabilitySignals(sourceFiles: WorkflowOrchestrationSourceFile[]): WorkflowOrchestrationReadinessReport["durabilitySignals"] {
+  const specs: Array<{ signal: WorkflowOrchestrationReadinessReport["durabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "retry", pattern: /retry|retries|maxAttempts|maximumAttempts|backoff/i, evidence: "retry evidence was detected." },
+    { signal: "timeout", pattern: /timeout|startToCloseTimeout|scheduleToCloseTimeout|maxDuration|deadline/i, evidence: "timeout evidence was detected." },
+    { signal: "heartbeat", pattern: /heartbeat|recordActivityHeartbeat|Heartbeat/i, evidence: "heartbeat evidence was detected." },
+    { signal: "checkpoint", pattern: /checkpoint|Checkpoint|CRIU|restore/i, evidence: "checkpoint evidence was detected." },
+    { signal: "state-store", pattern: /state store|run state|State store|database|persist/i, evidence: "state-store evidence was detected." },
+    { signal: "resume", pattern: /resume|resumption|waitForEvent|restore/i, evidence: "resume evidence was detected." },
+    { signal: "history", pattern: /history|workflow history|event history|run history/i, evidence: "history evidence was detected." },
+    { signal: "continue-as-new", pattern: /continueAsNew|continue as new/i, evidence: "continue-as-new evidence was detected." },
+    { signal: "idempotency", pattern: /idempotency|idempotencyKey|idempotent|dedupe/i, evidence: "idempotency evidence was detected." }
+  ];
+  return workflowOrchestrationSignalFromSpecs(sourceFiles, specs, "durability", "signal");
+}
+
+function workflowOrchestrationFlowSignals(sourceFiles: WorkflowOrchestrationSourceFile[]): WorkflowOrchestrationReadinessReport["flowSignals"] {
+  const specs: Array<{ signal: WorkflowOrchestrationReadinessReport["flowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "wait", pattern: /wait\.for|wait\.until|waitpoint|wait for/i, evidence: "wait evidence was detected." },
+    { signal: "sleep", pattern: /sleep\(|step\.sleep|timer/i, evidence: "sleep/timer evidence was detected." },
+    { signal: "wait-for-event", pattern: /waitForEvent|wait for event/i, evidence: "wait-for-event evidence was detected." },
+    { signal: "cancel", pattern: /cancelOn|cancel|AbortTaskRun|CancellationScope|terminate/i, evidence: "cancellation evidence was detected." },
+    { signal: "batch", pattern: /batch|batchTrigger|batching/i, evidence: "batch evidence was detected." },
+    { signal: "concurrency", pattern: /concurrency|concurrencyLimit|maxConcurrent/i, evidence: "concurrency evidence was detected." },
+    { signal: "rate-limit", pattern: /rateLimit|rate limit|rate limiting/i, evidence: "rate limit evidence was detected." },
+    { signal: "throttle", pattern: /throttle|throttling/i, evidence: "throttle evidence was detected." },
+    { signal: "priority", pattern: /priority|prioritization/i, evidence: "priority evidence was detected." },
+    { signal: "child-workflow", pattern: /triggerAndWait|executeChild|child workflow|step\.invoke|subtask/i, evidence: "child workflow/subtask evidence was detected." }
+  ];
+  return workflowOrchestrationSignalFromSpecs(sourceFiles, specs, "flow", "signal");
+}
+
+function workflowOrchestrationRuntimeSignals(sourceFiles: WorkflowOrchestrationSourceFile[]): WorkflowOrchestrationReadinessReport["runtimeSignals"] {
+  const specs: Array<{ signal: WorkflowOrchestrationReadinessReport["runtimeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dev-server", pattern: /dev server|trigger\.dev dev|inngest dev|localhost:8288/i, evidence: "dev server evidence was detected." },
+    { signal: "deploy", pattern: /deploy|trigger\.dev deploy|deployment|versioning/i, evidence: "deploy evidence was detected." },
+    { signal: "worker-pool", pattern: /worker pool|Worker\.run|polling task queues|executor|runner/i, evidence: "worker pool evidence was detected." },
+    { signal: "isolated-runtime", pattern: /isolated environment|isolated runtime|sandbox|worker thread|vm context/i, evidence: "isolated runtime evidence was detected." },
+    { signal: "machine", pattern: /machine|vCPU|GBs of RAM|large-1x|resources/i, evidence: "machine/resource evidence was detected." },
+    { signal: "environment", pattern: /environment|DEV|PREVIEW|STAGING|PROD|namespace/i, evidence: "environment evidence was detected." },
+    { signal: "serve", pattern: /serve\(|serve endpoint|registration|introspection/i, evidence: "serve endpoint evidence was detected." },
+    { signal: "dashboard", pattern: /dashboard|web app|cloud\.trigger|Inngest Dev Server dashboard/i, evidence: "dashboard evidence was detected." }
+  ];
+  return workflowOrchestrationSignalFromSpecs(sourceFiles, specs, "runtime", "signal");
+}
+
+function workflowOrchestrationObservabilitySignals(sourceFiles: WorkflowOrchestrationSourceFile[]): WorkflowOrchestrationReadinessReport["observabilitySignals"] {
+  const specs: Array<{ signal: WorkflowOrchestrationReadinessReport["observabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "logger", pattern: /logger|log\.|console\.log/i, evidence: "logger evidence was detected." },
+    { signal: "tracing", pattern: /tracing|trace|span|otel|OpenTelemetry/i, evidence: "tracing evidence was detected." },
+    { signal: "metadata", pattern: /metadata|metadata\.set|run metadata/i, evidence: "metadata evidence was detected." },
+    { signal: "tags", pattern: /tags?|tagging/i, evidence: "tag evidence was detected." },
+    { signal: "run-status", pattern: /run status|runs?|status|FAILED|STOPPED|RUNNING/i, evidence: "run status evidence was detected." },
+    { signal: "dashboard", pattern: /dashboard|trace view|cloud\.trigger|localhost:8288/i, evidence: "dashboard evidence was detected." },
+    { signal: "alerts", pattern: /alerts?|notification|failure alert/i, evidence: "alert evidence was detected." },
+    { signal: "metrics", pattern: /metrics|monitoring|observability|deletionCyclesTotal/i, evidence: "metrics evidence was detected." }
+  ];
+  return workflowOrchestrationSignalFromSpecs(sourceFiles, specs, "observability", "signal");
+}
+
+function workflowOrchestrationPackageSignals(sourceFiles: WorkflowOrchestrationSourceFile[]): WorkflowOrchestrationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: WorkflowOrchestrationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@temporalio/workflow", pattern: /"@temporalio\/workflow"|@temporalio\/workflow|proxyActivities|defineSignal/i, evidence: "Temporal workflow package/import evidence was detected." },
+    { signal: "@temporalio/worker", pattern: /"@temporalio\/worker"|@temporalio\/worker|Worker\.create/i, evidence: "Temporal worker package/import evidence was detected." },
+    { signal: "@temporalio/client", pattern: /"@temporalio\/client"|@temporalio\/client|new Client|workflow\.start/i, evidence: "Temporal client package/import evidence was detected." },
+    { signal: "inngest", pattern: /"inngest"|from ["']inngest["']|new Inngest|createFunction/i, evidence: "Inngest package/import evidence was detected." },
+    { signal: "@trigger.dev/sdk", pattern: /"@trigger\.dev\/sdk"|@trigger\.dev\/sdk|task\(|schemaTask|schedules\.task/i, evidence: "Trigger.dev SDK evidence was detected." },
+    { signal: "@trigger.dev/react", pattern: /"@trigger\.dev\/react"|@trigger\.dev\/react|useRealtimeRun|useTaskTrigger/i, evidence: "Trigger.dev React evidence was detected." },
+    { signal: "cloudflare-workflows", pattern: /WorkflowEntrypoint|workflows?\s*[=:]|Workflow</i, evidence: "Cloudflare Workflows evidence was detected." }
+  ];
+  return workflowOrchestrationSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function workflowOrchestrationSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: WorkflowOrchestrationSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/workflow-orchestration-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
