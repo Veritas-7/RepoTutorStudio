@@ -1,6 +1,6 @@
 {
   "iteration": 9,
-  "createdAt": "2026-06-04T03:58:52.875Z",
+  "createdAt": "2026-06-04T04:12:36.702Z",
   "checks": [
     {
       "name": "project setup",
@@ -256,6 +256,13 @@
     },
     {
       "name": "ci cd readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "unit test readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

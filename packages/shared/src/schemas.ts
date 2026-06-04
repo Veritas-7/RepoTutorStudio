@@ -1896,6 +1896,68 @@ export const CiCdReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const UnitTestReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  testFiles: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["vitest", "jest", "mocha", "ava", "node-test", "unknown"]),
+    testCount: z.number().int().nonnegative(),
+    assertionCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configFiles: z.array(z.object({
+    filePath: z.string(),
+    configType: z.enum(["vitest-config", "vite-config-test", "package-script", "workspace", "setup-file", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  assertionSignals: z.array(z.object({
+    assertion: z.enum(["expect", "assert", "toEqual", "toBe", "toMatchSnapshot", "throws", "resolves", "rejects", "custom-matcher", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  mockSignals: z.array(z.object({
+    signal: z.enum(["vi-fn", "vi-mock", "vi-spyOn", "fake-timers", "mock-reset", "fixture-data", "module-mock", "request-mock", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  coverageSignals: z.array(z.object({
+    signal: z.enum(["coverage-enabled", "coverage-provider-v8", "coverage-provider-istanbul", "coverage-include", "coverage-exclude", "coverage-thresholds", "coverage-reporters", "coverage-script", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  environmentSignals: z.array(z.object({
+    signal: z.enum(["node", "jsdom", "happy-dom", "browser-mode", "globals", "setup-files", "pool", "isolate", "projects", "workspace", "typecheck", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reportingSignals: z.array(z.object({
+    signal: z.enum(["watch", "run", "ui", "reporter", "junit", "json", "html", "snapshot-update", "filtering", "sharding", "benchmark", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2141,6 +2203,7 @@ export type CodeQualityReport = z.infer<typeof CodeQualityReportSchema>;
 export type DocumentationReport = z.infer<typeof DocumentationReportSchema>;
 export type DatabaseReadinessReport = z.infer<typeof DatabaseReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
+export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

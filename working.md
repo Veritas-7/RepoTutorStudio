@@ -2182,6 +2182,41 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 143:
   - `ee68545` CI/CD readiness report
 
+- 2026-06-04: AutoResearch Upgrade 144 candidate selected:
+  `vitest-dev/vitest` (`https://github.com/vitest-dev/vitest`; public MIT;
+  16,625 stars; 1,799 forks; updated 2026-06-04T00:58:09Z). Compared with
+  `jestjs/jest`, `mochajs/mocha`, and `avajs/ava`; selected Vitest for
+  test file/config discovery, expect/assert assertions, snapshots, `vi`
+  mocks/spies/fake timers, v8/istanbul coverage, jsdom/happy-dom/browser
+  environments, projects/workspaces, typecheck, UI/reporters, watch/run, and
+  sharding. Cloned ignored external source to
+  `research/external-src/vitest-dev-vitest` and inspected README, docs, config
+  examples, packages, and examples without executing external source.
+- 2026-06-04: RED unit test readiness smoke generated
+  `/tmp/repotutor-unit-tests-red-studies.Kjl4iU/2026-06-04/local__simple-ts-app__main__78437cc2`;
+  old build was missing `analysis/unit-test-report.json`,
+  `markdown/unit-tests.md`, and `html/unit-tests.html`, and
+  `open --target unit-tests` failed as expected.
+- 2026-06-04: Implemented Vitest-style unit test readiness report:
+  `UnitTestReportSchema`, `analysis/unit-test-report.json`,
+  `markdown/unit-tests.md`, `html/unit-tests.html`, test files, config files,
+  assertion signals, mock signals, coverage signals, environment signals,
+  reporting signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target unit-tests`.
+- 2026-06-04: GREEN unit test readiness smoke generated
+  `/tmp/repotutor-unit-tests-green-studies.SERqqs/2026-06-04/local__simple-ts-app__main__78437cc2`;
+  confirmed `verificationCheckedRequiredArtifacts=132`, test files 0,
+  config files 1, assertion signals 9, mock signals 8, coverage signals 8,
+  environment signals 11, reporting signals 11, recommended commands 6, risk
+  queue 4, `unit-test-card`, `data-source-pattern="Vitest"`,
+  manifest/learning-path entries, and `open --target unit-tests` ->
+  `html/unit-tests.html`.
+- 2026-06-04: Verification for Upgrade 144:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 42/42 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

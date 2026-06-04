@@ -51,6 +51,7 @@ import type {
   DocumentationReport,
   DatabaseReadinessReport,
   CiCdReport,
+  UnitTestReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -108,6 +109,7 @@ export interface StudyHtmlInput {
   documentationReport: DocumentationReport;
   databaseReadinessReport: DatabaseReadinessReport;
   ciCdReport: CiCdReport;
+  unitTestReport: UnitTestReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -185,6 +187,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["documentation.html", "Documentation"],
     ["database-readiness.html", "Database"],
     ["ci-cd.html", "CI/CD"],
+    ["unit-tests.html", "Unit Tests"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -297,6 +300,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Documentation</h3><p>${escapeHtml(input.documentationReport.summary)}</p><p>Docusaurus 패턴으로 docs, blog, pages, navigation, i18n, search, build/deploy 준비도를 정리합니다.</p><a href="documentation.html">Documentation 열기</a></article>
           <article><h3>Database Readiness</h3><p>${escapeHtml(input.databaseReadinessReport.summary)}</p><p>Prisma 패턴으로 schema, datasource, migrations, generated client, seed, env 준비도를 정리합니다.</p><a href="database-readiness.html">Database 열기</a></article>
           <article><h3>CI/CD Readiness</h3><p>${escapeHtml(input.ciCdReport.summary)}</p><p>GitHub Actions 패턴으로 workflow, trigger, job, permission, artifact/cache, deployment 준비도를 정리합니다.</p><a href="ci-cd.html">CI/CD 열기</a></article>
+          <article><h3>Unit Test Readiness</h3><p>${escapeHtml(input.unitTestReport.summary)}</p><p>Vitest 패턴으로 test files, assertions, mocks, coverage, environment, reporters 준비도를 정리합니다.</p><a href="unit-tests.html">Unit Tests 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -513,6 +517,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("CI/CD Readiness", "ci-cd.html", `<section class="panel" data-source-pattern="GitHub Actions"><h2>CI/CD Snapshot</h2><p>${escapeHtml(input.ciCdReport.summary)}</p><p class="muted">${escapeHtml(input.ciCdReport.sourcePattern)}</p><dl class="meta"><div><dt>workflows</dt><dd>${input.ciCdReport.workflowFiles.length}</dd></div><div><dt>triggers</dt><dd>${input.ciCdReport.triggerSignals.length}</dd></div><div><dt>jobs</dt><dd>${input.ciCdReport.jobSignals.length}</dd></div><div><dt>delivery</dt><dd>${input.ciCdReport.deliverySignals.length}</dd></div></dl><p class="muted">RepoTutor records GitHub Actions readiness only. It does not execute workflows, validate YAML semantics, or call GitHub APIs.</p></section><section class="grid"><article class="ci-cd-card"><h3>Workflow Files</h3>${ciCdWorkflowList(input.ciCdReport.workflowFiles)}</article><article class="ci-cd-card"><h3>Trigger Signals</h3>${ciCdSignalList(input.ciCdReport.triggerSignals, "trigger")}</article><article class="ci-cd-card"><h3>Job Signals</h3>${ciCdSignalList(input.ciCdReport.jobSignals, "signal")}</article><article class="ci-cd-card"><h3>Security Signals</h3>${ciCdSignalList(input.ciCdReport.securitySignals, "signal")}</article></section><section class="grid"><article class="ci-cd-card"><h3>Delivery Signals</h3>${ciCdSignalList(input.ciCdReport.deliverySignals, "signal")}</article><article class="ci-cd-card"><h3>Platform Signals</h3>${ciCdSignalList(input.ciCdReport.platformSignals, "signal")}</article><article class="ci-cd-card"><h3>Recommended Commands</h3>${ciCdCommandList(input.ciCdReport.recommendedCommands)}</article><article class="ci-cd-card"><h3>Risk Queue</h3>${ciCdRiskList(input.ciCdReport.riskQueue)}</article><article class="ci-cd-card"><h3>다음 확인 단계</h3>${list(input.ciCdReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "unit-tests.html",
+      title: "Unit Test Readiness",
+      html: pageShell("Unit Test Readiness", "unit-tests.html", `<section class="panel" data-source-pattern="Vitest"><h2>Unit Test Snapshot</h2><p>${escapeHtml(input.unitTestReport.summary)}</p><p class="muted">${escapeHtml(input.unitTestReport.sourcePattern)}</p><dl class="meta"><div><dt>tests</dt><dd>${input.unitTestReport.testFiles.length}</dd></div><div><dt>configs</dt><dd>${input.unitTestReport.configFiles.length}</dd></div><div><dt>assertions</dt><dd>${input.unitTestReport.assertionSignals.length}</dd></div><div><dt>coverage</dt><dd>${input.unitTestReport.coverageSignals.length}</dd></div></dl><p class="muted">RepoTutor records Vitest-style readiness only. It does not execute tests, measure coverage, update snapshots, or validate jsdom/browser behavior.</p></section><section class="grid"><article class="unit-test-card"><h3>Test Files</h3>${unitTestFileList(input.unitTestReport.testFiles)}</article><article class="unit-test-card"><h3>Config Files</h3>${unitTestConfigList(input.unitTestReport.configFiles)}</article><article class="unit-test-card"><h3>Assertion Signals</h3>${unitTestSignalList(input.unitTestReport.assertionSignals, "assertion")}</article><article class="unit-test-card"><h3>Mock Signals</h3>${unitTestSignalList(input.unitTestReport.mockSignals, "signal")}</article></section><section class="grid"><article class="unit-test-card"><h3>Coverage Signals</h3>${unitTestSignalList(input.unitTestReport.coverageSignals, "signal")}</article><article class="unit-test-card"><h3>Environment Signals</h3>${unitTestSignalList(input.unitTestReport.environmentSignals, "signal")}</article><article class="unit-test-card"><h3>Reporting Signals</h3>${unitTestSignalList(input.unitTestReport.reportingSignals, "signal")}</article><article class="unit-test-card"><h3>Recommended Commands</h3>${unitTestCommandList(input.unitTestReport.recommendedCommands)}</article><article class="unit-test-card"><h3>Risk Queue</h3>${unitTestRiskList(input.unitTestReport.riskQueue)}</article><article class="unit-test-card"><h3>다음 확인 단계</h3>${list(input.unitTestReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -664,6 +673,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Documentation Readiness", path: "html/documentation.html", description: "Docusaurus식 docs, blog, pages, navigation, i18n, search, build/deploy 준비도를 확인합니다." },
       { label: "Database Readiness", path: "html/database-readiness.html", description: "Prisma식 schema, datasource, migration, generated client, seed/env 준비도를 확인합니다." },
       { label: "CI/CD Readiness", path: "html/ci-cd.html", description: "GitHub Actions식 workflow, trigger, job, permission, cache/artifact, deployment 준비도를 확인합니다." },
+      { label: "Unit Test Readiness", path: "html/unit-tests.html", description: "Vitest식 test file, assertion, mock, coverage, environment, reporter 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -993,6 +1003,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "ci-cd.html",
       goal: "GitHub Actions식 workflow, trigger, job, permission, cache/artifact, deployment 준비도를 확인합니다.",
       evidence: `workflows ${input.ciCdReport.workflowFiles.length}개, trigger signals ${input.ciCdReport.triggerSignals.length}개`
+    },
+    {
+      title: "Unit test 준비도 확인",
+      href: "unit-tests.html",
+      goal: "Vitest식 test file, assertion, mock, coverage, environment, reporter 준비도를 확인합니다.",
+      evidence: `test files ${input.unitTestReport.testFiles.length}개, coverage signals ${input.unitTestReport.coverageSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -2050,6 +2066,36 @@ function ciCdRiskList(items: CiCdReport["riskQueue"]): string {
 }
 
 function ciCdHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function unitTestFileList(items: UnitTestReport["testFiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">test file이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)} / ${escapeHtml(item.readiness)}]<br>tests ${item.testCount} · assertions ${item.assertionCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(unitTestHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function unitTestConfigList(items: UnitTestReport["configFiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">unit test config signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.configType)} / ${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(unitTestHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function unitTestSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">unit test signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(unitTestHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function unitTestCommandList(items: UnitTestReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function unitTestRiskList(items: UnitTestReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(unitTestHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function unitTestHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
