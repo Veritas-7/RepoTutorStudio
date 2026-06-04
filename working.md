@@ -5543,6 +5543,47 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 222:
   - `98ee290` code ownership readiness report
 
+- 2026-06-05: AutoResearch Upgrade 223 candidate selected:
+  `git-lfs/git-lfs` (`https://github.com/git-lfs/git-lfs`; public,
+  license key `other`, 14,296 stars, 2,225 forks, updated
+  2026-06-04T03:26:42Z, ignored clone HEAD `fcc19a9`) with comparison source
+  `treeverse/dvc` (`https://github.com/treeverse/dvc`; Apache-2.0, public,
+  15,654 stars, 1,302 forks, updated 2026-06-04T08:37:17Z, ignored clone HEAD
+  `8131c32`). Static source inspection only; `git ls-files` for both external
+  source paths returned `0`, and `git status --ignored=matching` showed the
+  clones only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Git LFS/DVC-style large-asset-readiness report:
+  `LargeAssetReadinessReportSchema`,
+  `analysis/large-asset-readiness-report.json`,
+  `markdown/large-asset-readiness.md`,
+  `html/large-asset-readiness.html`, LFS `.gitattributes`/pointer/lockable
+  detection, DVC pipeline/config/remote/cache detection, submodule and workflow
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target large-asset-readiness`.
+- 2026-06-05: RED/GREEN large-asset-readiness smoke recorded:
+  old behavior at `a27e671` had no `LargeAssetReadinessReportSchema` and no
+  `large-asset-readiness` CLI target (`RED missing-count=2 expected=2`).
+  GREEN focused fixture detected `.gitattributes`, LFS pointer/version/SHA,
+  track/install/status/pull/fetch/push/fsck/migrate/prune/lock/skip-smudge
+  signals, DVC `dvc.yaml`, `dvc.lock`, `.dvc/config`, `.dvcignore`, `.dvc`
+  outs/deps/metrics/params/remote/cache/push/pull/status/repro signals,
+  `.gitmodules` and recursive clone signals, package signals, risk queue 0,
+  and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 223:
+  - RED baseline smoke: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - focused large-asset Vitest command: PASS, pipeline file 30/30 tests
+  - full pipeline Vitest: PASS, 30/30 tests
+  - `pnpm test`: PASS, 30/30 tests
+  - `pnpm audit:brief`: PASS, 121/121 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 223:
+  - `016654b` large asset readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
