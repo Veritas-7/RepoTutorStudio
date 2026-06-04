@@ -103,6 +103,7 @@ import type {
   ScaffoldingReadinessReport,
   SchedulerReadinessReport,
   BuildToolReadinessReport,
+  StylingReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -212,6 +213,7 @@ export interface StudyHtmlInput {
   scaffoldingReadinessReport: ScaffoldingReadinessReport;
   schedulerReadinessReport: SchedulerReadinessReport;
   buildToolReadinessReport: BuildToolReadinessReport;
+  stylingReadinessReport: StylingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -335,6 +337,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["scaffolding-readiness.html", "Scaffolding"],
     ["scheduler-readiness.html", "Scheduler"],
     ["build-tool-readiness.html", "Build Tool"],
+    ["styling-readiness.html", "Styling"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -479,6 +482,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Scaffolding Readiness</h3><p>${escapeHtml(input.scaffoldingReadinessReport.summary)}</p><p>Plop 패턴으로 generators, prompts, actions, templates, helpers, safety 준비도를 정리합니다.</p><a href="scaffolding-readiness.html">Scaffolding 열기</a></article>
           <article><h3>Scheduler Readiness</h3><p>${escapeHtml(input.schedulerReadinessReport.summary)}</p><p>node-cron 패턴으로 schedules, tasks, lifecycle, reliability, packages 준비도를 정리합니다.</p><a href="scheduler-readiness.html">Scheduler 열기</a></article>
           <article><h3>Build Tool Readiness</h3><p>${escapeHtml(input.buildToolReadinessReport.summary)}</p><p>Vite 패턴으로 config, plugins, dev server, build, env, SSR, dependency optimization 준비도를 정리합니다.</p><a href="build-tool-readiness.html">Build Tool 열기</a></article>
+          <article><h3>Styling Readiness</h3><p>${escapeHtml(input.stylingReadinessReport.summary)}</p><p>Tailwind CSS 패턴으로 config, directives, utility classes, theme, plugins, build integration 준비도를 정리합니다.</p><a href="styling-readiness.html">Styling 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -948,6 +952,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Build Tool Readiness", "build-tool-readiness.html", `<section class="panel" data-source-pattern="Vite"><h2>Build Tool Snapshot</h2><p>${escapeHtml(input.buildToolReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.buildToolReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.buildToolReadinessReport.buildToolSetups.length}</dd></div><div><dt>configs</dt><dd>${input.buildToolReadinessReport.configSignals.length}</dd></div><div><dt>plugins</dt><dd>${input.buildToolReadinessReport.pluginSignals.length}</dd></div><div><dt>build</dt><dd>${input.buildToolReadinessReport.buildSignals.length}</dd></div><div><dt>env</dt><dd>${input.buildToolReadinessReport.environmentSignals.length}</dd></div><div><dt>SSR</dt><dd>${input.buildToolReadinessReport.ssrSignals.length}</dd></div></dl><p class="muted">RepoTutor records build-tool readiness only; it does not start dev servers, run production builds, transform modules, execute plugins, pre-bundle dependencies, load env files, or validate SSR output.</p></section><section class="grid"><article class="build-tool-readiness-card"><h3>Build Tool Setups</h3>${buildToolReadinessSetupList(input.buildToolReadinessReport.buildToolSetups)}</article><article class="build-tool-readiness-card"><h3>Config Signals</h3>${buildToolReadinessSignalList(input.buildToolReadinessReport.configSignals, "signal")}</article><article class="build-tool-readiness-card"><h3>Plugin Signals</h3>${buildToolReadinessSignalList(input.buildToolReadinessReport.pluginSignals, "signal")}</article><article class="build-tool-readiness-card"><h3>Dev Server Signals</h3>${buildToolReadinessSignalList(input.buildToolReadinessReport.devServerSignals, "signal")}</article></section><section class="grid"><article class="build-tool-readiness-card"><h3>Build Signals</h3>${buildToolReadinessSignalList(input.buildToolReadinessReport.buildSignals, "signal")}</article><article class="build-tool-readiness-card"><h3>Environment Signals</h3>${buildToolReadinessSignalList(input.buildToolReadinessReport.environmentSignals, "signal")}</article><article class="build-tool-readiness-card"><h3>SSR Signals</h3>${buildToolReadinessSignalList(input.buildToolReadinessReport.ssrSignals, "signal")}</article><article class="build-tool-readiness-card"><h3>Dependency Optimization Signals</h3>${buildToolReadinessSignalList(input.buildToolReadinessReport.dependencyOptimizationSignals, "signal")}</article><article class="build-tool-readiness-card"><h3>Package Signals</h3>${buildToolReadinessSignalList(input.buildToolReadinessReport.packageSignals, "signal")}</article><article class="build-tool-readiness-card"><h3>Recommended Commands</h3>${buildToolReadinessCommandList(input.buildToolReadinessReport.recommendedCommands)}</article><article class="build-tool-readiness-card"><h3>Risk Queue</h3>${buildToolReadinessRiskList(input.buildToolReadinessReport.riskQueue)}</article><article class="build-tool-readiness-card"><h3>다음 확인 단계</h3>${list(input.buildToolReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "styling-readiness.html",
+      title: "Styling Readiness",
+      html: pageShell("Styling Readiness", "styling-readiness.html", `<section class="panel" data-source-pattern="Tailwind CSS"><h2>Styling Snapshot</h2><p>${escapeHtml(input.stylingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.stylingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.stylingReadinessReport.stylingSetups.length}</dd></div><div><dt>config</dt><dd>${input.stylingReadinessReport.configSignals.length}</dd></div><div><dt>directives</dt><dd>${input.stylingReadinessReport.directiveSignals.length}</dd></div><div><dt>classes</dt><dd>${input.stylingReadinessReport.classSignals.length}</dd></div><div><dt>theme</dt><dd>${input.stylingReadinessReport.themeSignals.length}</dd></div><div><dt>integration</dt><dd>${input.stylingReadinessReport.integrationSignals.length}</dd></div></dl><p class="muted">RepoTutor records styling readiness only; it does not compile Tailwind, scan class candidates, run PostCSS/Vite plugins, update caches, or validate final CSS size.</p></section><section class="grid"><article class="styling-readiness-card"><h3>Styling Setups</h3>${stylingReadinessSetupList(input.stylingReadinessReport.stylingSetups)}</article><article class="styling-readiness-card"><h3>Config Signals</h3>${stylingReadinessSignalList(input.stylingReadinessReport.configSignals, "signal")}</article><article class="styling-readiness-card"><h3>Directive Signals</h3>${stylingReadinessSignalList(input.stylingReadinessReport.directiveSignals, "signal")}</article><article class="styling-readiness-card"><h3>Class Signals</h3>${stylingReadinessSignalList(input.stylingReadinessReport.classSignals, "signal")}</article></section><section class="grid"><article class="styling-readiness-card"><h3>Theme Signals</h3>${stylingReadinessSignalList(input.stylingReadinessReport.themeSignals, "signal")}</article><article class="styling-readiness-card"><h3>Integration Signals</h3>${stylingReadinessSignalList(input.stylingReadinessReport.integrationSignals, "signal")}</article><article class="styling-readiness-card"><h3>Package Signals</h3>${stylingReadinessSignalList(input.stylingReadinessReport.packageSignals, "signal")}</article><article class="styling-readiness-card"><h3>Recommended Commands</h3>${stylingReadinessCommandList(input.stylingReadinessReport.recommendedCommands)}</article><article class="styling-readiness-card"><h3>Risk Queue</h3>${stylingReadinessRiskList(input.stylingReadinessReport.riskQueue)}</article><article class="styling-readiness-card"><h3>다음 확인 단계</h3>${list(input.stylingReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -1151,6 +1160,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Scaffolding Readiness", path: "html/scaffolding-readiness.html", description: "Plop식 generator, prompt, action, template, safety 준비도를 확인합니다." },
       { label: "Scheduler Readiness", path: "html/scheduler-readiness.html", description: "node-cron식 schedule, task, lifecycle, reliability 준비도를 확인합니다." },
       { label: "Build Tool Readiness", path: "html/build-tool-readiness.html", description: "Vite식 config, plugin, dev server, build, env, SSR 준비도를 확인합니다." },
+      { label: "Styling Readiness", path: "html/styling-readiness.html", description: "Tailwind CSS식 config, directive, utility, theme, plugin, build integration 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1792,6 +1802,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "build-tool-readiness.html",
       goal: "Vite식 config, plugin, dev server, build, env, SSR 흐름을 보고 빌드 도구 contract를 확인합니다.",
       evidence: `build tool setups ${input.buildToolReadinessReport.buildToolSetups.length}개, plugin signals ${input.buildToolReadinessReport.pluginSignals.length}개`
+    },
+    {
+      title: "Styling readiness 확인",
+      href: "styling-readiness.html",
+      goal: "Tailwind CSS식 config, directive, utility class, theme, plugin, build integration 흐름을 확인합니다.",
+      evidence: `styling setups ${input.stylingReadinessReport.stylingSetups.length}개, directive signals ${input.stylingReadinessReport.directiveSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -4209,6 +4225,31 @@ function buildToolReadinessRiskList(items: BuildToolReadinessReport["riskQueue"]
 }
 
 function buildToolReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function stylingReadinessSetupList(items: StylingReadinessReport["stylingSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">styling setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>config/directives/utilities/theme/variants/content/plugins/build ${item.configCount}/${item.directiveCount}/${item.utilityCount}/${item.themeCount}/${item.variantCount}/${item.contentScanCount}/${item.pluginCount}/${item.buildIntegrationCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(stylingReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function stylingReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">styling signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(stylingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function stylingReadinessCommandList(items: StylingReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function stylingReadinessRiskList(items: StylingReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(stylingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function stylingReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

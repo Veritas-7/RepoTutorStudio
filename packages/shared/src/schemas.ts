@@ -5221,6 +5221,73 @@ export const BuildToolReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const StylingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  stylingSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["tailwind", "unocss", "bootstrap", "sass", "postcss", "css-modules", "custom", "unknown"]),
+    configCount: z.number().int().nonnegative(),
+    directiveCount: z.number().int().nonnegative(),
+    utilityCount: z.number().int().nonnegative(),
+    themeCount: z.number().int().nonnegative(),
+    variantCount: z.number().int().nonnegative(),
+    contentScanCount: z.number().int().nonnegative(),
+    pluginCount: z.number().int().nonnegative(),
+    buildIntegrationCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["config-file", "tailwind-config", "content-globs", "safelist", "dark-mode", "prefix", "important", "presets", "core-plugins", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  directiveSignals: z.array(z.object({
+    signal: z.enum(["import-tailwind", "tailwind-directive", "theme-directive", "utility-directive", "variant-directive", "source-directive", "config-directive", "plugin-directive", "apply-directive", "layer-directive", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  classSignals: z.array(z.object({
+    signal: z.enum(["utility-class", "arbitrary-value", "variant-prefix", "responsive-prefix", "state-prefix", "group-peer", "dark-class", "important-modifier", "prefix-usage", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  themeSignals: z.array(z.object({
+    signal: z.enum(["css-theme-vars", "colors", "spacing", "typography", "breakpoints", "container", "custom-property", "theme-function", "design-token-bridge", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  integrationSignals: z.array(z.object({
+    signal: z.enum(["postcss-plugin", "vite-plugin", "webpack-loader", "cli-command", "watch-mode", "build-script", "css-entry", "import-css", "lightning-css", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["tailwindcss", "@tailwindcss/postcss", "@tailwindcss/vite", "@tailwindcss/cli", "@tailwindcss/forms", "@tailwindcss/typography", "@tailwindcss/oxide", "unocss", "bootstrap", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -5518,6 +5585,7 @@ export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadine
 export type ScaffoldingReadinessReport = z.infer<typeof ScaffoldingReadinessReportSchema>;
 export type SchedulerReadinessReport = z.infer<typeof SchedulerReadinessReportSchema>;
 export type BuildToolReadinessReport = z.infer<typeof BuildToolReadinessReportSchema>;
+export type StylingReadinessReport = z.infer<typeof StylingReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
