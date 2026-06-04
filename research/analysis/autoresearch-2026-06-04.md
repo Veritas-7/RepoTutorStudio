@@ -2465,6 +2465,39 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 14/14 audit checks across 13 generated reports
 
+### Upgrade 127: OpenVEX Impact Readiness Report
+
+- Cloned and inspected `openvex/vexctl` under
+  `research/external-src/openvex-vexctl` without executing external source.
+- GitHub metadata: public repo, Apache-2.0 license, 194 stars, 27 forks,
+  updated 2026-06-03T07:27:47Z. No source code was copied into RepoTutor.
+- Added `VexReportSchema` and `analysis/vex-report.json` with OpenVEX-style
+  product targets, vulnerability inputs, status matrix, justification catalog,
+  statement drafts, document workflow, attestation readiness, risk queue, and
+  learner next steps.
+- Added `markdown/vex.md`, `html/vex.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target vex`.
+- Source pattern: OpenVEX separates product identity, vulnerability IDs,
+  status transitions (`affected`, `not_affected`, `fixed`,
+  `under_investigation`), justifications, SARIF filtering, and signed
+  attestations. RepoTutor maps that to deterministic static impact readiness
+  and explicitly does not claim actual vulnerability impact status.
+- RED smoke generated
+  `/tmp/repotutor-vex-red-studies.SHPpdU/2026-06-04/local__simple-ts-app__main__076b7e4b`;
+  old behavior was missing `analysis/vex-report.json`,
+  `markdown/vex.md`, and `html/vex.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-vex-green-studies.xgwwZK/2026-06-04/local__simple-ts-app__main__076b7e4b`;
+  confirmed `verificationCheckedRequiredArtifacts=81`, product targets 5,
+  vulnerability inputs 5, status matrix 4, justifications 5, statement drafts
+  5, workflow 6, attestation readiness 5, risk queue 4, `vex-card`,
+  `data-source-pattern="OpenVEX"`, manifest/learning path entries, and
+  `open --target vex` -> `html/vex.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 25/25 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

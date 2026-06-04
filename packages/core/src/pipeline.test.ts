@@ -28,6 +28,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "scorecard-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "provenance-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "advisory-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "vex-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -54,6 +55,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "scorecard.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "provenance.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "advisories.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "vex.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -83,6 +85,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "scorecard.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "provenance.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "advisories.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "vex.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -142,6 +145,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/scorecard.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/provenance.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/advisories.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/vex.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -386,6 +390,28 @@ describe("RepoTutor core pipeline", () => {
     expect(advisoryMarkdown).toContain("Source pattern: OSV-Scanner");
     expect(advisoryMarkdown).toContain("## Package Query Targets");
     expect(advisoryMarkdown).toContain("## Policy Controls");
+    const vexText = await fs.readFile(path.join(result.session.outputPaths.analysis, "vex-report.json"), "utf8");
+    expect(vexText).toContain("OpenVEX affected not_affected fixed under_investigation justification product subcomponent vulnerability statement attestation SARIF filter");
+    expect(vexText).toContain("\"productTargets\"");
+    expect(vexText).toContain("\"vulnerabilityInputs\"");
+    expect(vexText).toContain("\"statusMatrix\"");
+    expect(vexText).toContain("\"justificationCatalog\"");
+    expect(vexText).toContain("\"statementDrafts\"");
+    expect(vexText).toContain("\"documentWorkflow\"");
+    expect(vexText).toContain("\"attestationReadiness\"");
+    expect(vexText).toContain("pending-advisory-id");
+    expect(vexText).toContain("vexctl filter");
+    const vexHtml = await fs.readFile(path.join(result.session.outputPaths.html, "vex.html"), "utf8");
+    expect(vexHtml).toContain("OpenVEX Impact Readiness");
+    expect(vexHtml).toContain("vex-card");
+    expect(vexHtml).toContain("data-source-pattern=\"OpenVEX\"");
+    expect(vexHtml).toContain("OpenVEX Snapshot");
+    expect(vexHtml).toContain("Document Workflow");
+    const vexMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "vex.md"), "utf8");
+    expect(vexMarkdown).toContain("# OpenVEX Impact Readiness");
+    expect(vexMarkdown).toContain("Source pattern: OpenVEX");
+    expect(vexMarkdown).toContain("## Product Targets");
+    expect(vexMarkdown).toContain("## Attestation Readiness");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -505,6 +531,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/scorecard.html");
     expect(exportManifestText).toContain("html/provenance.html");
     expect(exportManifestText).toContain("html/advisories.html");
+    expect(exportManifestText).toContain("html/vex.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -588,6 +615,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("scorecard.html");
     expect(learningPathHtml).toContain("provenance.html");
     expect(learningPathHtml).toContain("advisories.html");
+    expect(learningPathHtml).toContain("vex.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");

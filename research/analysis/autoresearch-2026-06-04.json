@@ -366,6 +366,22 @@
         "osv-scanner.toml IgnoredVulns and PackageOverrides policy readiness",
         "offline vulnerability database and guided remediation command handoff"
       ]
+    },
+    {
+      "repo": "openvex/vexctl",
+      "url": "https://github.com/openvex/vexctl",
+      "localPath": "research/external-src/openvex-vexctl",
+      "stars": 194,
+      "forks": 27,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-03T07:27:47Z",
+      "adoptedPatterns": [
+        "OpenVEX product and vulnerability statements with affected not_affected fixed and under_investigation status flows",
+        "not_affected justification and impact statement readiness before scanner suppression",
+        "chronological create add merge generate document workflow from templates",
+        "SARIF scanner-result filtering only for reviewed fixed or not_affected statements",
+        "VEX attestation subject digest DSSE signature and transparency-log readiness"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2135,6 +2151,28 @@
         "AdvisoryReportSchema",
         "OSV-Scanner package extraction vulnerability matching OSV.dev lockfile SBOM offline remediation ignore policy"
       ]
+    },
+    {
+      "name": "OpenVEX impact readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/vex-report.json",
+        "markdown/vex.md",
+        "html/vex.html",
+        "open --target vex",
+        "VexReportSchema",
+        "OpenVEX affected not_affected fixed under_investigation justification product subcomponent vulnerability statement attestation SARIF filter"
+      ]
     }
   ],
   "verification": {
@@ -2395,6 +2433,12 @@
     "cliAdvisoryOpenTargetSmoke": "PASS",
     "buildAdvisory": "PASS",
     "testAdvisory": "PASS",
-    "auditBriefAdvisory14": "PASS"
+    "auditBriefAdvisory14": "PASS",
+    "fixtureVexReport": "PASS",
+    "cliVexSmoke": "PASS",
+    "cliVexOpenTargetSmoke": "PASS",
+    "buildVex": "PASS",
+    "testVex": "PASS",
+    "auditBriefVex25": "PASS"
   }
 }

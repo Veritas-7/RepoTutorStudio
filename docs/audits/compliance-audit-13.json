@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-04T00:38:22.364Z",
+  "createdAt": "2026-06-04T00:49:16.768Z",
   "checks": [
     {
       "name": "project setup",
@@ -137,6 +137,13 @@
     },
     {
       "name": "advisory query readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "openvex impact readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

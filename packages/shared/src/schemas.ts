@@ -945,6 +945,65 @@ export const AdvisoryReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const VexReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  productTargets: z.array(z.object({
+    productId: z.string(),
+    productType: z.enum(["package", "container", "source", "sbom"]),
+    version: z.string().nullable(),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  vulnerabilityInputs: z.array(z.object({
+    source: z.enum(["advisory-query", "security-readiness", "scanner-sarif", "manual-cve", "attestation"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  statusMatrix: z.array(z.object({
+    status: z.enum(["affected", "not_affected", "fixed", "under_investigation"]),
+    requiredEvidence: z.string(),
+    allowedFields: z.array(z.string()),
+    filtersScannerResult: z.boolean(),
+    readiness: z.enum(["ready", "partial", "external"])
+  })),
+  justificationCatalog: z.array(z.object({
+    justification: z.string(),
+    useWhen: z.string(),
+    requiresImpactStatement: z.boolean(),
+    readiness: z.enum(["ready", "partial", "external"])
+  })),
+  statementDrafts: z.array(z.object({
+    vulnerabilityId: z.string(),
+    productIds: z.array(z.string()),
+    status: z.enum(["affected", "not_affected", "fixed", "under_investigation"]),
+    justification: z.string().nullable(),
+    needsHumanReview: z.boolean(),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  documentWorkflow: z.array(z.object({
+    step: z.enum(["create", "add", "merge", "attest", "filter", "generate"]),
+    command: z.string(),
+    purpose: z.string(),
+    readiness: z.enum(["ready", "partial", "external"])
+  })),
+  attestationReadiness: z.array(z.object({
+    requirement: z.enum(["subject-digest", "dsse-envelope", "signature", "transparency-log", "product-match"]),
+    status: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1173,6 +1232,7 @@ export type SecurityReadinessReport = z.infer<typeof SecurityReadinessReportSche
 export type ScorecardReport = z.infer<typeof ScorecardReportSchema>;
 export type ProvenanceReport = z.infer<typeof ProvenanceReportSchema>;
 export type AdvisoryReport = z.infer<typeof AdvisoryReportSchema>;
+export type VexReport = z.infer<typeof VexReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
