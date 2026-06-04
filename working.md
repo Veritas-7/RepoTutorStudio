@@ -3536,6 +3536,46 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 177:
   - `f4e965b` PDF generation readiness report
 
+- 2026-06-04: AutoResearch Upgrade 178 candidate selected:
+  `SheetJS/sheetjs`
+  (`https://github.com/SheetJS/sheetjs`; public; Apache-2.0; 36,259 stars;
+  7,948 forks; updated 2026-06-04T03:36:57Z). Compared with
+  `exceljs/exceljs`, `mholt/PapaParse`, and `adaltas/node-csv`; selected
+  SheetJS because it directly models spreadsheet/CSV readiness: workbook
+  read/write, sheet creation and conversion, CSV/XLSX/ODS/HTML/JSON formats,
+  browser/Node output, and spreadsheet safety boundaries. Cloned ignored
+  external source to `research/external-src/SheetJS-sheetjs` and inspected
+  README/demo hits without executing external source. Clone HEAD was
+  `3f44ddd`; tracked-file count for
+  `research/external-src/SheetJS-sheetjs` returned `0`.
+- 2026-06-04: RED spreadsheet-readiness smoke generated
+  `/tmp/repotutor-spreadsheet-red-studies.lNRD8A/2026-06-04/local__simple-ts-app__main__918e9e6a`;
+  old build was missing `analysis/spreadsheet-readiness-report.json`,
+  `markdown/spreadsheet-readiness.md`, and
+  `html/spreadsheet-readiness.html`, and `open --target
+  spreadsheet-readiness` failed as expected.
+- 2026-06-04: Implemented SheetJS-style spreadsheet-readiness report:
+  `SpreadsheetReadinessReportSchema`,
+  `analysis/spreadsheet-readiness-report.json`,
+  `markdown/spreadsheet-readiness.md`, `html/spreadsheet-readiness.html`,
+  spreadsheet setups, workbook signals, sheet signals, format signals, input
+  signals, output signals, safety signals, package signals, recommended
+  commands, risk queue, manifest/session-verification coverage, learning-path
+  linkage, nav entry, and `open --target spreadsheet-readiness`.
+- 2026-06-04: GREEN spreadsheet-readiness smoke generated
+  `/tmp/repotutor-spreadsheet-green-studies.ZE5rGg/2026-06-04/local__simple-ts-app__main__918e9e6a`;
+  confirmed `verificationCheckedRequiredArtifacts=234`, spreadsheet setups 0,
+  workbook signals 5, sheet signals 6, format signals 6, input signals 6,
+  output signals 6, safety signals 6, package signals 6, risk queue 2, all
+  three new artifacts, and `open --target spreadsheet-readiness` ->
+  `html/spreadsheet-readiness.html`.
+- 2026-06-04: Verification for Upgrade 178:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 76/76 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
