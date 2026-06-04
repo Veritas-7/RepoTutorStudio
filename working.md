@@ -2526,6 +2526,45 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 152:
   - `743e68c` commit convention report
 
+- 2026-06-04: AutoResearch Upgrade 153 candidate selected:
+  `changesets/changesets` (`https://github.com/changesets/changesets`;
+  public MIT; 11,936 stars; 791 forks; updated 2026-06-02T21:11:56Z).
+  Compared with `conventional-changelog/conventional-changelog`,
+  `semantic-release/semantic-release`, and `googleapis/release-please`;
+  selected Changesets for release-intent markdown files, changelog config,
+  `status` checks, version PRs, publish/tag handoff, prerelease/snapshot
+  policy, fixed/linked packages, internal dependency updates, access/private
+  package policy, bot/action automation, and monorepo-focused release notes.
+  Cloned ignored external source to `research/external-src/changesets-changesets`
+  and inspected README, license, config docs, command docs, automation docs,
+  checking docs, package metadata, and package changelog helpers without
+  executing external source. Clone HEAD was `18e1661`; tracked-file count for
+  `research/external-src/changesets-changesets` returned `0`.
+- 2026-06-04: RED changelog-readiness smoke generated
+  `/tmp/repotutor-changelog-readiness-red-studies.zoN99g/2026-06-04/local__simple-ts-app__main__6fe1d17b`;
+  old build was missing `analysis/changelog-readiness-report.json`,
+  `markdown/changelog-readiness.md`, and `html/changelog-readiness.html`, and
+  `open --target changelog-readiness` failed as expected.
+- 2026-06-04: Implemented Changesets-style changelog-readiness report:
+  `ChangelogReadinessReportSchema`,
+  `analysis/changelog-readiness-report.json`,
+  `markdown/changelog-readiness.md`, `html/changelog-readiness.html`, config
+  files, changeset files, workflow signals, command signals, package signals,
+  policy signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target changelog-readiness`.
+- 2026-06-04: GREEN changelog-readiness smoke generated
+  `/tmp/repotutor-changelog-readiness-green-studies.KZxOaK/2026-06-04/local__simple-ts-app__main__6fe1d17b`;
+  confirmed `verificationCheckedRequiredArtifacts=159`, config files 0,
+  changeset files 0, workflow signals 7, command signals 10, package signals
+  6, policy signals 9, recommended commands 6, risk queue 2,
+  manifest/learning-path entries, and `open --target changelog-readiness` ->
+  `html/changelog-readiness.html`.
+- 2026-06-04: Verification for Upgrade 153:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 51/51 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

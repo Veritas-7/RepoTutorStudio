@@ -65,6 +65,7 @@ import {
   LintReadinessReport,
   FormatReadinessReport,
   CommitConventionReport,
+  ChangelogReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -136,6 +137,7 @@ export interface AnalysisBundle {
   lintReadinessReport: LintReadinessReport;
   formatReadinessReport: FormatReadinessReport;
   commitConventionReport: CommitConventionReport;
+  changelogReadinessReport: ChangelogReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -207,8 +209,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const lintReadinessReport = await buildLintReadinessReport(walk);
   const formatReadinessReport = await buildFormatReadinessReport(walk);
   const commitConventionReport = await buildCommitConventionReport(walk);
+  const changelogReadinessReport = await buildChangelogReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -10410,6 +10413,334 @@ function commitConventionSignalFromSpecs<T extends Record<K, string> & { pattern
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/commit-conventions.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildChangelogReadinessReport(walk: WalkResult): Promise<ChangelogReadinessReport> {
+  const sourceFiles = await changelogReadinessSourceFiles(walk);
+  const configFiles = changelogReadinessConfigFiles(sourceFiles);
+  const changesetFiles = changelogReadinessChangesetFiles(sourceFiles);
+  const workflowSignals = changelogReadinessWorkflowSignals(sourceFiles);
+  const commandSignals = changelogReadinessCommandSignals(sourceFiles);
+  const packageSignals = changelogReadinessPackageSignals(sourceFiles);
+  const policySignals = changelogReadinessPolicySignals(sourceFiles);
+
+  const hasConfig = configFiles.some((item) => item.configType === "changeset-config" || item.configType === "package-json");
+  const hasChangesets = changesetFiles.length > 0;
+  const hasStatus = commandSignals.some((item) => item.signal === "status" && item.readiness === "ready")
+    || workflowSignals.some((item) => item.signal === "status-check" && item.readiness === "ready");
+  const hasAction = workflowSignals.some((item) => item.signal === "changesets-action" && item.readiness === "ready");
+  const hasPublish = commandSignals.some((item) => item.signal === "publish" && item.readiness === "ready")
+    || workflowSignals.some((item) => item.signal === "publish" && item.readiness === "ready");
+  const hasChangelog = configFiles.some((item) => item.changelogMode !== "missing" && item.changelogMode !== "disabled");
+  const hasBaseBranch = configFiles.some((item) => item.baseBranch);
+  const hasFollowTags = workflowSignals.some((item) => item.signal === "follow-tags" && item.readiness === "ready");
+
+  const riskQueue: ChangelogReadinessReport["riskQueue"] = [];
+  if (!hasConfig && !hasChangesets && !hasStatus && !hasAction) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add Changesets config, changeset files, or a status/action workflow before treating changelog readiness as present.",
+      why: "Changesets readiness starts from explicit release intent files plus the workflow that turns them into versions and changelogs.",
+      relatedHref: "html/changelog-readiness.html"
+    });
+  }
+  if (hasChangesets && !hasConfig) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Run changeset init or add `.changeset/config.json` so changeset files have visible release policy.",
+      why: "Without config, learners cannot see baseBranch, changelog mode, fixed/linked groups, access, and private package policy.",
+      relatedHref: "html/changelog-readiness.html"
+    });
+  }
+  if ((hasConfig || hasChangesets) && !hasStatus && !hasAction) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add a Changesets bot/action or `changeset status --since=main` CI check for pull requests.",
+      why: "Reviewers can miss absent changeset files; a status surface makes release-note intent visible before merge.",
+      relatedHref: "html/changelog-readiness.html"
+    });
+  }
+  if (hasPublish && !hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Do not publish from Changesets automation until config and package access policy are visible.",
+      why: "`changeset publish` can create npm releases and git tags; static readiness should show the publishing boundary first.",
+      relatedHref: "html/changelog-readiness.html"
+    });
+  }
+  if (hasConfig && !hasChangelog) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Confirm whether changelog generation is intentionally disabled or customize the changelog generator.",
+      why: "The report is about release notes; disabled changelog output should be a deliberate product decision.",
+      relatedHref: "html/changelog-readiness.html"
+    });
+  }
+  if (hasConfig && !hasBaseBranch) {
+    riskQueue.push({
+      priority: "low",
+      action: "Set or document the Changesets baseBranch used for status and changed-package detection.",
+      why: "Wrong base branches make `status --since` and contributor prompts harder to trust.",
+      relatedHref: "html/changelog-readiness.html"
+    });
+  }
+  if (hasPublish && !hasFollowTags) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document `git push --follow-tags` or equivalent tag publishing after releases.",
+      why: "Changesets publish/tag workflows create git tags that must be pushed if consumers rely on source tags.",
+      relatedHref: "html/changelog-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run Changesets commands only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not create changesets, version packages, publish to npm, create tags, or push release commits.",
+    relatedHref: "html/changelog-readiness.html"
+  });
+
+  return {
+    summary: `Changesets식 changelog readiness report: config file ${configFiles.length}개, changeset file ${changesetFiles.length}개, workflow signal ${workflowSignals.length}개, command signal ${commandSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Changesets config changeset files changelog version publish status pre snapshot fixed linked private packages",
+    configFiles,
+    changesetFiles,
+    workflowSignals,
+    commandSignals,
+    packageSignals,
+    policySignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx changeset", purpose: "Create a release-intent markdown file with package bump metadata." },
+      { command: "npx changeset status --verbose", purpose: "Inspect pending changesets and planned package versions." },
+      { command: "npx changeset status --since=main --output=changeset-status.json", purpose: "Write CI-readable status output for pull request checks." },
+      { command: "npx changeset version", purpose: "Apply pending changesets to package versions and changelogs in a release PR." },
+      { command: "npx changeset publish --tag latest", purpose: "Publish packages only after reviewing the release commit and npm access policy." },
+      { command: "git push --follow-tags", purpose: "Publish git tags created by the release process." }
+    ],
+    learnerNextSteps: [
+      "Start with `.changeset/config.json` to learn changelog mode, baseBranch, access, private package, fixed, and linked package policy.",
+      "Then inspect `.changeset/*.md` files because those are the human-written release-note and semver bump intent.",
+      "Check CI for changeset status, bot comments, or Changesets action version PRs before trusting release automation.",
+      "RepoTutor never runs `changeset version`, `publish`, or tag commands; use this page as a static map before executing release tooling yourself."
+    ]
+  };
+}
+
+type ChangelogReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function changelogReadinessSourceFiles(walk: WalkResult): Promise<ChangelogReadinessSourceFile[]> {
+  const files: ChangelogReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !changelogReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!changelogReadinessPathSignal(file.relPath) && !changelogReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function changelogReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return changelogReadinessPathSignal(filePath)
+    || /^(package\.json|CHANGELOG\.md|RELEASES?\.md)$/i.test(base)
+    || filePath.startsWith(".github/workflows/")
+    || /\.(json|ya?ml|md|js|cjs|mjs|ts|sh)$/i.test(filePath);
+}
+
+function changelogReadinessPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return filePath.startsWith(".changeset/")
+    || /changeset|CHANGELOG|release-notes|release-notes|versioning|publishing/i.test(filePath)
+    || /^(CHANGELOG\.md|RELEASES?\.md)$/i.test(base);
+}
+
+function changelogReadinessContentSignal(text: string): boolean {
+  return /@changesets\/cli|changeset (status|version|publish|pre|tag)|changesets\/action|changeset-bot|\.changeset|baseBranch|updateInternalDependencies|fixed|linked|privatePackages|changelog|snapshot|follow-tags/i.test(text);
+}
+
+function changelogReadinessConfigFiles(sourceFiles: ChangelogReadinessSourceFile[]): ChangelogReadinessReport["configFiles"] {
+  return sourceFiles
+    .filter((source) => changelogReadinessConfigPathSignal(source.filePath, source.text))
+    .slice(0, 80)
+    .map((source) => {
+      const configType = changelogReadinessConfigType(source.filePath, source.text);
+      const changelogMode = changelogReadinessChangelogMode(source.text);
+      const baseBranch = firstMatch(source.text, /"baseBranch"\s*:\s*"([^"]+)"/) ?? firstMatch(source.text, /baseBranch:\s*["']?([^"'\n]+)/);
+      const fixedCount = changelogReadinessArrayCount(source.text, "fixed");
+      const linkedCount = changelogReadinessArrayCount(source.text, "linked");
+      const ignoredCount = changelogReadinessArrayCount(source.text, "ignore");
+      const privatePackagePolicy = changelogReadinessPrivatePolicy(source.text);
+      const readiness = changelogMode !== "missing" || baseBranch || fixedCount > 0 || linkedCount > 0 || /@changesets\/cli|changesets\/action|changeset status/i.test(source.text) ? "ready" : "partial";
+      return {
+        filePath: source.filePath,
+        configType,
+        changelogMode,
+        baseBranch,
+        fixedCount,
+        linkedCount,
+        ignoredCount,
+        privatePackagePolicy,
+        readiness,
+        evidence: `${source.filePath} contains ${configType} Changesets signal with changelog ${changelogMode}, baseBranch ${baseBranch ?? "missing"}, fixed ${fixedCount}, linked ${linkedCount}, ignored ${ignoredCount}, private policy ${privatePackagePolicy}.`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function changelogReadinessConfigPathSignal(filePath: string, text: string): boolean {
+  const base = path.basename(filePath);
+  return filePath === ".changeset/config.json"
+    || (base === "package.json" && /@changesets\/cli|changeset (status|version|publish)|"changeset"\s*:/i.test(text))
+    || (filePath.startsWith(".github/workflows/") && /changesets\/action|changeset (status|version|publish)|@changesets\/cli/i.test(text));
+}
+
+function changelogReadinessConfigType(filePath: string, text: string): ChangelogReadinessReport["configFiles"][number]["configType"] {
+  const base = path.basename(filePath).toLowerCase();
+  if (filePath === ".changeset/config.json") return "changeset-config";
+  if (base === "package.json") return "package-json";
+  if (filePath.startsWith(".github/workflows/")) return "workflow";
+  if (/\.changeset|@changesets\/cli|changesets\/action/i.test(text)) return "changeset-config";
+  return "unknown";
+}
+
+function changelogReadinessChangelogMode(text: string): ChangelogReadinessReport["configFiles"][number]["changelogMode"] {
+  if (/"changelog"\s*:\s*false|changelog:\s*false/i.test(text)) return "disabled";
+  if (/@changesets\/changelog-github/i.test(text)) return "github";
+  if (/"changelog"\s*:\s*"@changesets\/cli\/changelog"|@changesets\/cli\/changelog/i.test(text)) return "default";
+  if (/"changelog"\s*:\s*(\[|"[^"]+")|changelog:\s*(\[|['"][^'"]+['"])/i.test(text)) return "custom";
+  return "missing";
+}
+
+function changelogReadinessPrivatePolicy(text: string): ChangelogReadinessReport["configFiles"][number]["privatePackagePolicy"] {
+  if (/"privatePackages"\s*:\s*false|privatePackages:\s*false/i.test(text)) return "disabled";
+  if (/"privatePackages"[\s\S]*"tag"\s*:\s*true|privatePackages[\s\S]*tag:\s*true/i.test(text)) return "tagged";
+  if (/"privatePackages"[\s\S]*"version"\s*:\s*true|privatePackages[\s\S]*version:\s*true/i.test(text)) return "version-only";
+  return "missing";
+}
+
+function changelogReadinessArrayCount(text: string, field: string): number {
+  try {
+    const json = JSON.parse(text) as Record<string, unknown>;
+    const value = json[field];
+    return Array.isArray(value) ? value.length : 0;
+  } catch {
+    return countMatches(text, new RegExp(`${field}\\s*:`, "gi"));
+  }
+}
+
+function changelogReadinessChangesetFiles(sourceFiles: ChangelogReadinessSourceFile[]): ChangelogReadinessReport["changesetFiles"] {
+  return sourceFiles
+    .filter((source) => /^\.changeset\/(?!config\.json|README\.md)[^/]+\.md$/i.test(source.filePath))
+    .slice(0, 120)
+    .map((source) => {
+      const parsed = changelogReadinessChangesetFrontmatter(source.text);
+      const bumpTypes = changelogReadinessBumpTypes(parsed.frontmatter, parsed.summary);
+      const packageCount = countMatches(parsed.frontmatter, /["']?[^"'\n:]+["']?\s*:\s*(major|minor|patch)\b/g);
+      const summaryLines = parsed.summary.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).length;
+      const empty = packageCount === 0 && summaryLines === 0;
+      const readiness = empty || (packageCount > 0 && summaryLines > 0) ? "ready" : packageCount > 0 || summaryLines > 0 ? "partial" : "missing";
+      return {
+        filePath: source.filePath,
+        packageCount,
+        bumpTypes,
+        summaryLines,
+        empty,
+        readiness,
+        evidence: `${source.filePath} declares ${packageCount} package bump(s), ${bumpTypes.join(", ")} bump type(s), and ${summaryLines} summary line(s).`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function changelogReadinessChangesetFrontmatter(text: string): { frontmatter: string; summary: string } {
+  const match = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+  return { frontmatter: match?.[1] ?? "", summary: match?.[2] ?? text };
+}
+
+function changelogReadinessBumpTypes(frontmatter: string, summary: string): Array<ChangelogReadinessReport["changesetFiles"][number]["bumpTypes"][number]> {
+  const bumps = [...frontmatter.matchAll(/:\s*(major|minor|patch)\b/g)].map((match) => match[1] as "major" | "minor" | "patch");
+  if (bumps.length > 0) return Array.from(new Set(bumps));
+  if (!frontmatter.trim() && !summary.trim()) return ["none"];
+  return ["unknown"];
+}
+
+function changelogReadinessWorkflowSignals(sourceFiles: ChangelogReadinessSourceFile[]): ChangelogReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: ChangelogReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "status-check", pattern: /changeset status|@changesets\/cli status|status --since/i, evidence: "changeset status check evidence was detected." },
+    { signal: "changeset-bot", pattern: /changeset-bot|github\.com\/apps\/changeset-bot/i, evidence: "Changeset bot evidence was detected." },
+    { signal: "changesets-action", pattern: /changesets\/action|@changesets\/action/i, evidence: "Changesets GitHub action evidence was detected." },
+    { signal: "version-pr", pattern: /version.?pr|changeset version|versioning pull request/i, evidence: "version PR or version command evidence was detected." },
+    { signal: "publish", pattern: /changeset publish|publish:\s|NPM_TOKEN|npm publish/i, evidence: "publish workflow evidence was detected." },
+    { signal: "follow-tags", pattern: /push --follow-tags|follow-tags|git push.*tags/i, evidence: "tag push evidence was detected." },
+    { signal: "manual-release", pattern: /release coordinator|manual release|stop any merging|release PR/i, evidence: "manual release coordination evidence was detected." }
+  ];
+  return changelogReadinessSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function changelogReadinessCommandSignals(sourceFiles: ChangelogReadinessSourceFile[]): ChangelogReadinessReport["commandSignals"] {
+  const specs: Array<{ signal: ChangelogReadinessReport["commandSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "add", pattern: /changeset add|npx changeset\b|changeset --empty|changeset --open|changeset -m/i, evidence: "changeset add evidence was detected." },
+    { signal: "status", pattern: /changeset status|status --verbose/i, evidence: "changeset status evidence was detected." },
+    { signal: "version", pattern: /changeset version|version packages|update package versions/i, evidence: "changeset version evidence was detected." },
+    { signal: "publish", pattern: /changeset publish|publish --tag|publish --otp/i, evidence: "changeset publish evidence was detected." },
+    { signal: "pre", pattern: /changeset pre|pre enter|pre exit|prerelease/i, evidence: "pre-release command evidence was detected." },
+    { signal: "tag", pattern: /changeset tag|push --follow-tags|git tags/i, evidence: "tag command evidence was detected." },
+    { signal: "snapshot", pattern: /--snapshot|snapshot release|snapshot/i, evidence: "snapshot release evidence was detected." },
+    { signal: "since", pattern: /--since|baseBranch/i, evidence: "since/baseBranch command evidence was detected." },
+    { signal: "output", pattern: /--output|changeset-status\.json/i, evidence: "status output evidence was detected." },
+    { signal: "otp", pattern: /--otp|one-time password|NPM_CONFIG_OTP/i, evidence: "npm OTP evidence was detected." }
+  ];
+  return changelogReadinessSignalFromSpecs(sourceFiles, specs, "command", "signal");
+}
+
+function changelogReadinessPackageSignals(sourceFiles: ChangelogReadinessSourceFile[]): ChangelogReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ChangelogReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "changesets-cli", pattern: /@changesets\/cli|changeset\b/i, evidence: "@changesets/cli evidence was detected." },
+    { signal: "changesets-action", pattern: /changesets\/action|@changesets\/action/i, evidence: "Changesets action evidence was detected." },
+    { signal: "changelog-github", pattern: /@changesets\/changelog-github|changelog-github/i, evidence: "GitHub changelog generator evidence was detected." },
+    { signal: "workspace", pattern: /workspaces|pnpm-workspace|workspace:\*|workspace:/i, evidence: "workspace package evidence was detected." },
+    { signal: "package-manager", pattern: /pnpm|yarn|npm|bun|packageManager/i, evidence: "package manager evidence was detected." },
+    { signal: "npm-publish", pattern: /npm publish|pnpm publish|NPM_TOKEN|registry\.npmjs/i, evidence: "npm publish evidence was detected." }
+  ];
+  return changelogReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function changelogReadinessPolicySignals(sourceFiles: ChangelogReadinessSourceFile[]): ChangelogReadinessReport["policySignals"] {
+  const specs: Array<{ signal: ChangelogReadinessReport["policySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "fixed", pattern: /"fixed"\s*:|fixed packages|fixedPackages/i, evidence: "fixed package policy evidence was detected." },
+    { signal: "linked", pattern: /"linked"\s*:|linked packages|linkedPackages/i, evidence: "linked package policy evidence was detected." },
+    { signal: "base-branch", pattern: /baseBranch|--since/i, evidence: "base branch policy evidence was detected." },
+    { signal: "internal-deps", pattern: /updateInternalDependencies|bumpVersionsWithWorkspaceProtocolOnly|internal dependencies/i, evidence: "internal dependency update policy evidence was detected." },
+    { signal: "access", pattern: /"access"\s*:|access:\s*(public|restricted)|restricted|public registry/i, evidence: "npm access policy evidence was detected." },
+    { signal: "ignore", pattern: /"ignore"\s*:|--ignore|ignored packages/i, evidence: "ignore package policy evidence was detected." },
+    { signal: "private-packages", pattern: /privatePackages|private packages|private:\s*true/i, evidence: "private package policy evidence was detected." },
+    { signal: "pre-mode", pattern: /changeset pre|pre\.json|pre mode|prerelease/i, evidence: "pre-release mode evidence was detected." },
+    { signal: "snapshot", pattern: /snapshot|--snapshot|prereleaseTemplate/i, evidence: "snapshot policy evidence was detected." }
+  ];
+  return changelogReadinessSignalFromSpecs(sourceFiles, specs, "policy", "signal");
+}
+
+function changelogReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ChangelogReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/changelog-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
