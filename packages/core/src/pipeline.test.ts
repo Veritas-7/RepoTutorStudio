@@ -77,6 +77,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "id-generation-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "image-processing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "file-upload-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "websocket-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -152,6 +153,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "id-generation-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "image-processing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "file-upload-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "websocket-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -227,6 +229,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "id-generation-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "image-processing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "file-upload-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "websocket-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -333,6 +336,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/id-generation-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/image-processing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/file-upload-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/websocket-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -1568,6 +1572,26 @@ describe("RepoTutor core pipeline", () => {
     expect(fileUploadReadinessMarkdown).toContain("Source pattern: Uppy");
     expect(fileUploadReadinessMarkdown).toContain("## Restriction Signals");
     expect(fileUploadReadinessMarkdown).toContain("## Lifecycle Signals");
+    const webSocketReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "websocket-readiness-report.json"), "utf8");
+    expect(webSocketReadinessText).toContain("ws WebSocket WebSocketServer upgrade connection message send close error ping pong perMessageDeflate backpressure maxPayload");
+    expect(webSocketReadinessText).toContain("\"webSocketSetups\"");
+    expect(webSocketReadinessText).toContain("\"connectionSignals\"");
+    expect(webSocketReadinessText).toContain("\"messageSignals\"");
+    expect(webSocketReadinessText).toContain("\"lifecycleSignals\"");
+    expect(webSocketReadinessText).toContain("\"safetySignals\"");
+    expect(webSocketReadinessText).toContain("\"packageSignals\"");
+    expect(webSocketReadinessText).toContain("npx vitest run");
+    const webSocketReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "websocket-readiness.html"), "utf8");
+    expect(webSocketReadinessHtml).toContain("WebSocket Readiness");
+    expect(webSocketReadinessHtml).toContain("websocket-readiness-card");
+    expect(webSocketReadinessHtml).toContain("data-source-pattern=\"ws\"");
+    expect(webSocketReadinessHtml).toContain("WebSocket Setups");
+    expect(webSocketReadinessHtml).toContain("Message Signals");
+    const webSocketReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "websocket-readiness.md"), "utf8");
+    expect(webSocketReadinessMarkdown).toContain("# WebSocket Readiness");
+    expect(webSocketReadinessMarkdown).toContain("Source pattern: ws");
+    expect(webSocketReadinessMarkdown).toContain("## Connection Signals");
+    expect(webSocketReadinessMarkdown).toContain("## Safety Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");

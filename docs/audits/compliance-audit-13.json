@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-04T10:21:14.574Z",
+  "createdAt": "2026-06-04T10:31:13.762Z",
   "checks": [
     {
       "name": "project setup",
@@ -480,6 +480,13 @@
     },
     {
       "name": "file upload readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "websocket readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
