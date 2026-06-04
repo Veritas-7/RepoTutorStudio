@@ -5676,6 +5676,52 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 225:
   - `3949a32` chaos engineering readiness report
 
+- 2026-06-05: AutoResearch Upgrade 226 candidate selected:
+  `pact-foundation/pact-js`
+  (`https://github.com/pact-foundation/pact-js`; Other license, public,
+  1,776 stars, 356 forks, updated 2026-06-02T10:41:00Z, ignored clone HEAD
+  `4ac4de4`) with comparison sources `pact-foundation/pact-jvm`
+  (`https://github.com/pact-foundation/pact-jvm`; Apache-2.0, public,
+  1,133 stars, 485 forks, updated 2026-06-04T15:31:28Z, ignored clone HEAD
+  `a5ea6c6`) and `pact-foundation/pact-ruby`
+  (`https://github.com/pact-foundation/pact-ruby`; MIT, public, 2,196 stars,
+  219 forks, updated 2026-05-31T11:41:13Z, ignored clone HEAD `aa7e274`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Pact-style consumer-contract-readiness report:
+  `ConsumerContractReadinessReportSchema`,
+  `analysis/consumer-contract-readiness-report.json`,
+  `markdown/consumer-contract-readiness.md`,
+  `html/consumer-contract-readiness.html`, Pact JS/JVM/Ruby package and setup
+  detection, consumer interaction/provider-state/provider verifier/
+  broker/can-i-deploy/matcher/CI signals, static-only risk queue,
+  recommended review commands, manifest/session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target consumer-contract-readiness`.
+- 2026-06-05: RED/GREEN consumer-contract-readiness smoke recorded:
+  old behavior at `fe518db` had no `ConsumerContractReadinessReportSchema`
+  and no `consumer-contract-readiness` CLI target
+  (`RED missing-count=2 expected=2`). GREEN fixture detected PactV3 consumer
+  interactions, provider states, withRequest/willRespondWith/executeTest,
+  message/GraphQL/plugin hints, provider verifier, stateHandlers,
+  providerBaseUrl, Pact Broker/PactFlow/can-i-deploy, consumer version
+  selectors, pending/WIP pacts, broker token auth, matchers, GitHub Actions,
+  npm scripts, package signals, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 226:
+  - RED baseline smoke: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - focused consumer-contract-readiness Vitest command: PASS, pipeline file
+    33/33 tests
+  - full pipeline Vitest: PASS, 33/33 tests
+  - `pnpm test`: PASS, 33/33 tests
+  - `pnpm audit:brief`: PASS, 124/124 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 226:
+  - `9fe23e8` consumer contract readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
