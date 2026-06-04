@@ -1,6 +1,6 @@
 {
   "iteration": 2,
-  "createdAt": "2026-06-04T20:59:53.502Z",
+  "createdAt": "2026-06-04T21:15:11.424Z",
   "checks": [
     {
       "name": "project setup",
@@ -774,6 +774,13 @@
     },
     {
       "name": "notification readiness",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "consent readiness",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

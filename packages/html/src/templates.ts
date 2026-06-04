@@ -107,6 +107,7 @@ import type {
   OpenApiClientReadinessReport,
   WebhookReadinessReport,
   NotificationReadinessReport,
+  ConsentReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -238,6 +239,7 @@ export interface StudyHtmlInput {
   openApiClientReadinessReport: OpenApiClientReadinessReport;
   webhookReadinessReport: WebhookReadinessReport;
   notificationReadinessReport: NotificationReadinessReport;
+  consentReadinessReport: ConsentReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -541,6 +543,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>OpenAPI Client Readiness</h3><p>${escapeHtml(input.openApiClientReadinessReport.summary)}</p><p>openapi-typescript/Orval/OpenAPI Generator 패턴으로 spec, generator, output, runtime, quality 준비도를 정리합니다.</p><a href="openapi-client-readiness.html">OpenAPI Client 열기</a></article>
           <article><h3>Webhook Readiness</h3><p>${escapeHtml(input.webhookReadinessReport.summary)}</p><p>Svix/Standard Webhooks/Hookdeck 패턴으로 endpoint, signature, replay, idempotency, delivery, local debug 준비도를 정리합니다.</p><a href="webhook-readiness.html">Webhook 열기</a></article>
           <article><h3>Notification Readiness</h3><p>${escapeHtml(input.notificationReadinessReport.summary)}</p><p>Novu 패턴으로 workflows, subscribers, topics, preferences, channels, templates, delivery operations 준비도를 정리합니다.</p><a href="notification-readiness.html">Notifications 열기</a></article>
+          <article><h3>Consent Readiness</h3><p>${escapeHtml(input.consentReadinessReport.summary)}</p><p>CookieConsent/Klaro/IAB TCF 패턴으로 banner, categories, scripts, privacy controls, vendor/purpose consent 준비도를 정리합니다.</p><a href="consent-readiness.html">Consent 열기</a></article>
           <article><h3>Server Framework Readiness</h3><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p>Fastify 패턴으로 routes, schemas, plugins, hooks, decorators, errors, runtime, tests 준비도를 정리합니다.</p><a href="server-framework-readiness.html">Server Framework 열기</a></article>
           <article><h3>RPC Readiness</h3><p>${escapeHtml(input.rpcReadinessReport.summary)}</p><p>tRPC 패턴으로 routers, procedures, validation, context, clients, adapters, errors 준비도를 정리합니다.</p><a href="rpc-readiness.html">RPC 열기</a></article>
           <article><h3>Workspace Graph Readiness</h3><p>${escapeHtml(input.workspaceGraphReadinessReport.summary)}</p><p>Nx 패턴으로 project graph, targets, affected, boundaries, plugins 준비도를 정리합니다.</p><a href="workspace-graph-readiness.html">Workspace Graph 열기</a></article>
@@ -1048,6 +1051,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Notification Readiness", "notification-readiness.html", `<section class="panel" data-source-pattern="Notifications"><h2>Notification Snapshot</h2><p>${escapeHtml(input.notificationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.notificationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.notificationReadinessReport.notificationSetups.length}</dd></div><div><dt>workflows</dt><dd>${input.notificationReadinessReport.workflowSignals.length}</dd></div><div><dt>audience</dt><dd>${input.notificationReadinessReport.audienceSignals.length}</dd></div><div><dt>channels</dt><dd>${input.notificationReadinessReport.channelSignals.length}</dd></div><div><dt>operations</dt><dd>${input.notificationReadinessReport.operationsSignals.length}</dd></div></dl><p class="muted">RepoTutor records notification readiness only; it does not send notifications, call provider APIs, mutate subscribers/topics/preferences, inspect live dashboards, or verify real delivery.</p></section><section class="grid"><article class="notification-readiness-card"><h3>Notification Setups</h3>${notificationReadinessSetupList(input.notificationReadinessReport.notificationSetups)}</article><article class="notification-readiness-card"><h3>Workflow Signals</h3>${notificationReadinessSignalList(input.notificationReadinessReport.workflowSignals, "signal")}</article><article class="notification-readiness-card"><h3>Audience Signals</h3>${notificationReadinessSignalList(input.notificationReadinessReport.audienceSignals, "signal")}</article><article class="notification-readiness-card"><h3>Channel Signals</h3>${notificationReadinessSignalList(input.notificationReadinessReport.channelSignals, "signal")}</article></section><section class="grid"><article class="notification-readiness-card"><h3>Template Signals</h3>${notificationReadinessSignalList(input.notificationReadinessReport.templateSignals, "signal")}</article><article class="notification-readiness-card"><h3>Operations Signals</h3>${notificationReadinessSignalList(input.notificationReadinessReport.operationsSignals, "signal")}</article><article class="notification-readiness-card"><h3>Package Signals</h3>${notificationReadinessSignalList(input.notificationReadinessReport.packageSignals, "signal")}</article><article class="notification-readiness-card"><h3>Recommended Commands</h3>${notificationReadinessCommandList(input.notificationReadinessReport.recommendedCommands)}</article><article class="notification-readiness-card"><h3>Risk Queue</h3>${notificationReadinessRiskList(input.notificationReadinessReport.riskQueue)}</article><article class="notification-readiness-card"><h3>다음 확인 단계</h3>${list(input.notificationReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "consent-readiness.html",
+      title: "Consent Readiness",
+      html: pageShell("Consent Readiness", "consent-readiness.html", `<section class="panel" data-source-pattern="Consent"><h2>Consent Snapshot</h2><p>${escapeHtml(input.consentReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.consentReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.consentReadinessReport.consentSetups.length}</dd></div><div><dt>banners</dt><dd>${input.consentReadinessReport.bannerSignals.length}</dd></div><div><dt>categories</dt><dd>${input.consentReadinessReport.categorySignals.length}</dd></div><div><dt>scripts</dt><dd>${input.consentReadinessReport.scriptSignals.length}</dd></div><div><dt>TCF</dt><dd>${input.consentReadinessReport.tcfSignals.length}</dd></div></dl><p class="muted">RepoTutor records consent readiness only; it does not execute CMP scripts, set cookies, mutate local storage, call TCF APIs, load vendors, or verify legal compliance.</p></section><section class="grid"><article class="consent-readiness-card"><h3>Consent Setups</h3>${consentReadinessSetupList(input.consentReadinessReport.consentSetups)}</article><article class="consent-readiness-card"><h3>Banner Signals</h3>${consentReadinessSignalList(input.consentReadinessReport.bannerSignals, "signal")}</article><article class="consent-readiness-card"><h3>Category Signals</h3>${consentReadinessSignalList(input.consentReadinessReport.categorySignals, "signal")}</article><article class="consent-readiness-card"><h3>Script Signals</h3>${consentReadinessSignalList(input.consentReadinessReport.scriptSignals, "signal")}</article></section><section class="grid"><article class="consent-readiness-card"><h3>Privacy Signals</h3>${consentReadinessSignalList(input.consentReadinessReport.privacySignals, "signal")}</article><article class="consent-readiness-card"><h3>TCF Signals</h3>${consentReadinessSignalList(input.consentReadinessReport.tcfSignals, "signal")}</article><article class="consent-readiness-card"><h3>Package Signals</h3>${consentReadinessSignalList(input.consentReadinessReport.packageSignals, "signal")}</article><article class="consent-readiness-card"><h3>Recommended Commands</h3>${consentReadinessCommandList(input.consentReadinessReport.recommendedCommands)}</article><article class="consent-readiness-card"><h3>Risk Queue</h3>${consentReadinessRiskList(input.consentReadinessReport.riskQueue)}</article><article class="consent-readiness-card"><h3>다음 확인 단계</h3>${list(input.consentReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "server-framework-readiness.html",
       title: "Server Framework Readiness",
       html: pageShell("Server Framework Readiness", "server-framework-readiness.html", `<section class="panel" data-source-pattern="Fastify"><h2>Server Framework Snapshot</h2><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.serverFrameworkReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.serverFrameworkReadinessReport.serverSetups.length}</dd></div><div><dt>routes</dt><dd>${input.serverFrameworkReadinessReport.routeSignals.length}</dd></div><div><dt>schemas</dt><dd>${input.serverFrameworkReadinessReport.schemaSignals.length}</dd></div><div><dt>plugins</dt><dd>${input.serverFrameworkReadinessReport.pluginSignals.length}</dd></div></dl><p class="muted">RepoTutor records server framework readiness only; it does not start listeners, execute handlers, send HTTP requests, run plugins, compile schemas, or mutate runtime state.</p></section><section class="grid"><article class="server-framework-readiness-card"><h3>Server Setups</h3>${serverFrameworkReadinessSetupList(input.serverFrameworkReadinessReport.serverSetups)}</article><article class="server-framework-readiness-card"><h3>Route Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.routeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Schema Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.schemaSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Plugin Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.pluginSignals, "signal")}</article></section><section class="grid"><article class="server-framework-readiness-card"><h3>Lifecycle Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.lifecycleSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Runtime Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.runtimeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Error Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.errorSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Test Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.testSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Package Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.packageSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Recommended Commands</h3>${serverFrameworkReadinessCommandList(input.serverFrameworkReadinessReport.recommendedCommands)}</article><article class="server-framework-readiness-card"><h3>Risk Queue</h3>${serverFrameworkReadinessRiskList(input.serverFrameworkReadinessReport.riskQueue)}</article><article class="server-framework-readiness-card"><h3>다음 확인 단계</h3>${list(input.serverFrameworkReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1345,6 +1353,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "OpenAPI Client Readiness", path: "html/openapi-client-readiness.html", description: "openapi-typescript/Orval/OpenAPI Generator식 spec, generator, output, runtime, quality 준비도를 확인합니다." },
       { label: "Webhook Readiness", path: "html/webhook-readiness.html", description: "Svix/Standard Webhooks/Hookdeck식 endpoint, signature, replay, idempotency, delivery, local debug 준비도를 확인합니다." },
       { label: "Notification Readiness", path: "html/notification-readiness.html", description: "Novu식 workflow, subscriber, topic, preference, channel, template, delivery operation 준비도를 확인합니다." },
+      { label: "Consent Readiness", path: "html/consent-readiness.html", description: "CookieConsent/Klaro/IAB TCF식 banner, category, script blocking, privacy control, vendor/purpose consent 준비도를 확인합니다." },
       { label: "Server Framework Readiness", path: "html/server-framework-readiness.html", description: "Fastify식 route, schema, plugin, hook, runtime, test 준비도를 확인합니다." },
       { label: "RPC Readiness", path: "html/rpc-readiness.html", description: "tRPC식 router, procedure, validation, context, client, adapter 준비도를 확인합니다." },
       { label: "Workspace Graph Readiness", path: "html/workspace-graph-readiness.html", description: "Nx식 project graph, target, affected, boundary, plugin 준비도를 확인합니다." },
@@ -2020,6 +2029,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "notification-readiness.html",
       goal: "Novu식 workflow, subscriber, topic, preference, channel, template, delivery operation 흐름을 보고 notification contract를 확인합니다.",
       evidence: `notification setups ${input.notificationReadinessReport.notificationSetups.length}개, channel signals ${input.notificationReadinessReport.channelSignals.length}개`
+    },
+    {
+      title: "Consent readiness 확인",
+      href: "consent-readiness.html",
+      goal: "CookieConsent/Klaro/IAB TCF식 banner, category, script blocking, privacy control, vendor/purpose consent 흐름을 보고 consent contract를 확인합니다.",
+      evidence: `consent setups ${input.consentReadinessReport.consentSetups.length}개, TCF signals ${input.consentReadinessReport.tcfSignals.length}개`
     },
     {
       title: "Server framework readiness 확인",
@@ -4645,6 +4660,31 @@ function notificationReadinessRiskList(items: NotificationReadinessReport["riskQ
 }
 
 function notificationReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function consentReadinessSetupList(items: ConsentReadinessReport["consentSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">consent setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>banner/modal/category/service/purpose/vendor/script/storage/localization/API ${item.bannerCount}/${item.modalCount}/${item.categoryCount}/${item.serviceCount}/${item.purposeCount}/${item.vendorCount}/${item.scriptBlockingCount}/${item.storageCount}/${item.localizationCount}/${item.apiCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(consentReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function consentReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">consent signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(consentReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function consentReadinessCommandList(items: ConsentReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function consentReadinessRiskList(items: ConsentReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(consentReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function consentReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
