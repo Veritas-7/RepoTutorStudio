@@ -1911,6 +1911,39 @@
         "Production search operations evidence through shards, replicas, snapshots, aliases, cluster state, analytics, and monitoring signals",
         "Static-only OpenSearch guardrails that do not start clusters, run REST clients, index/search/delete data, create snapshots, or inspect live dashboards"
       ]
+    },
+    {
+      "repo": "minio/minio",
+      "url": "https://github.com/minio/minio",
+      "localPath": "research/external-src/minio",
+      "cloneHead": "7aac2a2",
+      "adoptedPatterns": [
+        "MinIO readiness through S3-compatible buckets, mc bucket creation, object upload/download/list flows, lifecycle, replication, object lock, encryption, notifications, metrics, and heal/admin operations",
+        "Object-storage service evidence that separates bucket setup, client configuration, object lifecycle operations, access controls, reliability, security, operations, and packages",
+        "Static-only MinIO guardrails that do not start servers, create buckets, upload/list/delete objects, mutate policies, or inspect live dashboards"
+      ]
+    },
+    {
+      "repo": "aws/aws-sdk-js-v3",
+      "url": "https://github.com/aws/aws-sdk-js-v3",
+      "localPath": "research/external-src/aws-sdk-js-v3",
+      "cloneHead": "f5235bb",
+      "adoptedPatterns": [
+        "AWS SDK S3 readiness through S3Client, bucket commands, PutObject, GetObject, ListObjects, DeleteObject, CopyObject, multipart upload, checksums, ETags, and presigning helpers",
+        "Client readiness evidence for region, endpoint, path-style, credentials, request timeout, retry, multipart, signed URL, and browser-upload boundaries",
+        "Static-only AWS SDK guardrails that do not construct live clients, read credentials, sign URLs, contact endpoints, or mutate bucket/object state"
+      ]
+    },
+    {
+      "repo": "supabase/storage",
+      "url": "https://github.com/supabase/storage",
+      "localPath": "research/external-src/supabase-storage",
+      "cloneHead": "d2e814b",
+      "adoptedPatterns": [
+        "Supabase Storage readiness through bucket metadata, HTTP/TUS/S3 protocol surfaces, Postgres-backed object metadata, create/list bucket examples, and S3-compatible configuration",
+        "Access and policy evidence through signed URLs, upload APIs, bucket policies, RLS/RBAC, service configuration, vectorS3Buckets, and S3 protocol keys",
+        "Static-only Supabase Storage guardrails that do not connect to services, create buckets, upload objects, read credentials, or modify policies"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -5339,6 +5372,26 @@
         "html/search-service-readiness.html"
       ],
       "commit": "b569062"
+    },
+    {
+      "name": "object-storage readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/object-storage-readiness-report.json",
+        "markdown/object-storage-readiness.md",
+        "html/object-storage-readiness.html"
+      ],
+      "commit": "pending"
     }
   ],
   "verification": {
@@ -6439,6 +6492,17 @@
     "buildSearchServiceReadiness": "PASS",
     "testSearchServiceReadiness": "PASS",
     "auditBriefSearchServiceReadiness109": "PASS",
-    "searchServiceReadinessImplementationPushed": "PASS"
+    "searchServiceReadinessImplementationPushed": "PASS",
+    "externalMinioCloneIgnored": "PASS",
+    "externalAwsSdkJsV3CloneIgnored": "PASS",
+    "externalSupabaseStorageCloneIgnored": "PASS",
+    "objectStorageReadinessRedSmoke": "PASS",
+    "objectStorageReadinessGreenSmoke": "PASS",
+    "fixtureObjectStorageReadinessReport": "PASS",
+    "cliObjectStorageReadinessSmoke": "PASS",
+    "cliObjectStorageReadinessOpenTargetSmoke": "PASS",
+    "buildObjectStorageReadiness": "PASS",
+    "testObjectStorageReadiness": "PASS",
+    "auditBriefObjectStorageReadiness110": "PASS"
   }
 }

@@ -5121,6 +5121,90 @@ export const SearchServiceReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ObjectStorageReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  storageSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["s3", "minio", "r2", "gcs", "azure-blob", "supabase-storage", "local", "unknown"]),
+    bucketCount: z.number().int().nonnegative(),
+    clientCount: z.number().int().nonnegative(),
+    uploadCount: z.number().int().nonnegative(),
+    downloadCount: z.number().int().nonnegative(),
+    listCount: z.number().int().nonnegative(),
+    deleteCount: z.number().int().nonnegative(),
+    presignCount: z.number().int().nonnegative(),
+    metadataCount: z.number().int().nonnegative(),
+    policyCount: z.number().int().nonnegative(),
+    lifecycleCount: z.number().int().nonnegative(),
+    replicationCount: z.number().int().nonnegative(),
+    encryptionCount: z.number().int().nonnegative(),
+    opsCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  bucketSignals: z.array(z.object({
+    signal: z.enum(["bucket", "region", "endpoint", "path-style", "public-private", "namespace", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  clientSignals: z.array(z.object({
+    signal: z.enum(["s3-client", "minio-client", "r2-client", "gcs-client", "azure-blob-client", "supabase-storage-client", "credentials", "timeout", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  objectSignals: z.array(z.object({
+    signal: z.enum(["put-object", "upload", "multipart", "get-object", "download", "list-objects", "delete-object", "copy-object", "metadata", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessSignals: z.array(z.object({
+    signal: z.enum(["signed-url", "presigned-post", "public-url", "policy", "acl", "cors", "rbac", "rls", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reliabilitySignals: z.array(z.object({
+    signal: z.enum(["versioning", "lifecycle", "retention", "object-lock", "replication", "checksum", "etag", "retry", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  securitySignals: z.array(z.object({
+    signal: z.enum(["sse", "kms", "encryption", "secret-key", "least-privilege", "scan", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  opsSignals: z.array(z.object({
+    signal: z.enum(["health", "metrics", "backup", "restore", "migration", "event-notification", "queue", "cdn-cache", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["aws-sdk-s3", "lib-storage", "minio", "supabase-storage", "gcs", "azure-blob", "r2", "s3-compatible", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ServerFrameworkReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -6762,6 +6846,7 @@ export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
 export type VectorDbReadinessReport = z.infer<typeof VectorDbReadinessReportSchema>;
 export type SearchServiceReadinessReport = z.infer<typeof SearchServiceReadinessReportSchema>;
+export type ObjectStorageReadinessReport = z.infer<typeof ObjectStorageReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;

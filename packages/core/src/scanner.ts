@@ -106,6 +106,7 @@ import {
   LlmObservabilityReadinessReport,
   VectorDbReadinessReport,
   SearchServiceReadinessReport,
+  ObjectStorageReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -236,6 +237,7 @@ export interface AnalysisBundle {
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
   vectorDbReadinessReport: VectorDbReadinessReport;
   searchServiceReadinessReport: SearchServiceReadinessReport;
+  objectStorageReadinessReport: ObjectStorageReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -366,6 +368,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const llmObservabilityReadinessReport = await buildLlmObservabilityReadinessReport(walk);
   const vectorDbReadinessReport = await buildVectorDbReadinessReport(walk);
   const searchServiceReadinessReport = await buildSearchServiceReadinessReport(walk);
+  const objectStorageReadinessReport = await buildObjectStorageReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
@@ -385,7 +388,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -21898,6 +21901,276 @@ function searchServiceSignalFromSpecs<T extends Record<K, string> & { pattern: R
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/search-service-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildObjectStorageReadinessReport(walk: WalkResult): Promise<ObjectStorageReadinessReport> {
+  const sourceFiles = await objectStorageSourceFiles(walk);
+  const storageSetups = objectStorageSetups(sourceFiles);
+  const bucketSignals = objectStorageBucketSignals(sourceFiles);
+  const clientSignals = objectStorageClientSignals(sourceFiles);
+  const objectSignals = objectStorageObjectSignals(sourceFiles);
+  const accessSignals = objectStorageAccessSignals(sourceFiles);
+  const reliabilitySignals = objectStorageReliabilitySignals(sourceFiles);
+  const securitySignals = objectStorageSecuritySignals(sourceFiles);
+  const opsSignals = objectStorageOpsSignals(sourceFiles);
+  const packageSignals = objectStoragePackageSignals(sourceFiles);
+  const hasClient = storageSetups.length > 0 || packageSignals.some((item) => item.readiness === "ready");
+  const hasBucket = bucketSignals.some((item) => item.readiness === "ready") || storageSetups.some((item) => item.bucketCount > 0);
+  const hasObjectFlow = objectSignals.some((item) => item.readiness === "ready") || storageSetups.some((item) => item.uploadCount + item.downloadCount + item.listCount + item.deleteCount > 0);
+  const hasAccess = accessSignals.some((item) => item.readiness === "ready") || storageSetups.some((item) => item.presignCount + item.policyCount > 0);
+  const hasReliability = reliabilitySignals.some((item) => item.readiness === "ready") || storageSetups.some((item) => item.lifecycleCount + item.replicationCount > 0);
+  const hasSecurity = securitySignals.some((item) => item.readiness === "ready") || storageSetups.some((item) => item.encryptionCount > 0);
+  const hasOps = opsSignals.some((item) => item.readiness === "ready") || storageSetups.some((item) => item.opsCount > 0);
+  const riskQueue: ObjectStorageReadinessReport["riskQueue"] = [];
+  if (!hasClient) riskQueue.push({ priority: "high", action: "Add a visible S3, MinIO, R2, GCS, Azure Blob, Supabase Storage, or S3-compatible client boundary.", why: "Object-storage readiness starts with a concrete bucket/object client, not only generic file paths.", relatedHref: "html/object-storage-readiness.html" });
+  if (hasClient && !hasBucket) riskQueue.push({ priority: "high", action: "Record bucket, region, endpoint, path-style, public/private, or namespace setup.", why: "Object keys are only meaningful when learners can see which bucket namespace and endpoint own them.", relatedHref: "html/object-storage-readiness.html" });
+  if (hasBucket && !hasObjectFlow) riskQueue.push({ priority: "medium", action: "Add put/upload/get/download/list/delete/copy object evidence.", why: "Storage integrations need a visible object lifecycle, not just bucket configuration.", relatedHref: "html/object-storage-readiness.html" });
+  if (hasObjectFlow && !hasAccess) riskQueue.push({ priority: "medium", action: "Document signed URLs, presigned posts, public URLs, policies, ACL, CORS, RBAC, or RLS.", why: "Object storage failures often happen at the access boundary between app users, buckets, and object keys.", relatedHref: "html/object-storage-readiness.html" });
+  if (hasObjectFlow && !hasReliability) riskQueue.push({ priority: "low", action: "Add versioning, lifecycle, retention, object lock, replication, checksum, ETag, or retry evidence.", why: "Production object storage needs durability and recovery behavior beyond basic put/get calls.", relatedHref: "html/object-storage-readiness.html" });
+  if (hasObjectFlow && !hasSecurity) riskQueue.push({ priority: "low", action: "Record SSE, KMS, encryption, secret-key handling, least-privilege IAM, or scanning controls.", why: "Buckets frequently store sensitive user content and need explicit data-protection evidence.", relatedHref: "html/object-storage-readiness.html" });
+  if (hasClient && !hasOps) riskQueue.push({ priority: "low", action: "Document health, metrics, backup, restore, migration, events, queues, or CDN/cache operations.", why: "Object storage becomes operational state once uploads are accepted from users or jobs.", relatedHref: "html/object-storage-readiness.html" });
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Object storage readiness report: setup ${storageSetups.length}개, bucket signal ${bucketSignals.length}개, object signal ${objectSignals.length}개, access signal ${accessSignals.length}개, ops signal ${opsSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Object storage readiness S3 MinIO R2 Supabase Storage buckets regions endpoints path-style credentials PutObject GetObject ListObjects DeleteObject CopyObject multipart upload download metadata tags presigned URL signed URL policy ACL CORS RLS RBAC versioning lifecycle retention object lock replication checksum ETag SSE KMS encryption event notifications queues CDN cache health metrics backup restore migration",
+    storageSetups,
+    bucketSignals,
+    clientSignals,
+    objectSignals,
+    accessSignals,
+    reliabilitySignals,
+    securitySignals,
+    opsSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"S3Client|@aws-sdk/client-s3|Minio\\.Client|R2Bucket|@google-cloud/storage|BlobServiceClient|supabase\\.storage|storage\\.from\" .", purpose: "Find object storage client boundaries and packages." },
+      { command: "rg \"Bucket|bucket_name|region|endpoint|forcePathStyle|path-style|storage\\.from|containerName|namespace\" .", purpose: "Map bucket names, regions, endpoints, path-style mode, and namespace ownership." },
+      { command: "rg \"PutObject|putObject|Upload|multipart|GetObject|getObject|download|ListObjects|DeleteObject|CopyObject|metadata|tags\" .", purpose: "Review object lifecycle evidence without contacting storage endpoints." },
+      { command: "rg \"getSignedUrl|presigned|createSignedUrl|createPresignedPost|getPublicUrl|policy|ACL|CORS|RBAC|RLS\" .", purpose: "Trace access controls, signed URLs, browser upload boundaries, and policy models." },
+      { command: "rg \"versioning|lifecycle|retention|object lock|replication|checksum|ETag|SSE|KMS|encryption|health|metrics|backup|restore|migration|notification|queue|CDN|cache\" .", purpose: "Check reliability, security, and operational evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 S3, MinIO, R2, GCS, Azure Blob, Supabase Storage 중 어떤 client가 bucket boundary인지 확인하세요.",
+      "bucket, region, endpoint, forcePathStyle/path-style, namespace, public/private 설정은 object key의 소유 범위를 설명합니다.",
+      "PutObject/upload/multipart/GetObject/download/ListObjects/DeleteObject/CopyObject로 object lifecycle을 따라가세요.",
+      "signed URL, presigned post, public URL, policy, ACL, CORS, RBAC, RLS는 사용자 접근 경계입니다.",
+      "versioning, lifecycle, retention, object lock, replication, checksum, ETag, retry는 durability와 recovery 근거입니다.",
+      "SSE, KMS, encryption, secret key, least privilege, scanning 신호로 민감 파일 보호를 확인하세요.",
+      "이 리포트는 정적 readiness입니다. RepoTutor는 bucket을 만들거나, object를 upload/download/list/delete/copy하거나, signed URL을 발급하거나, storage endpoint와 통신하지 않습니다."
+    ]
+  };
+}
+
+type ObjectStorageSourceFile = { filePath: string; text: string; sourceHref: string };
+
+async function objectStorageSourceFiles(walk: WalkResult): Promise<ObjectStorageSourceFile[]> {
+  const files: ObjectStorageSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !objectStorageInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!objectStoragePathSignal(file.relPath) && !objectStorageContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 240) break;
+  }
+  return files;
+}
+
+function objectStorageInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return objectStoragePathSignal(filePath)
+    || /(^|\/)(README|docs?|storage|storages|object-storage|objects?|buckets?|uploads?|assets?|files?|media|s3|minio|r2|gcs|blob|supabase|config|workflows?|scripts?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|pyproject\.toml|requirements\.txt|setup\.py|docker-compose\.ya?ml|compose\.ya?ml|wrangler\.toml)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|py|go|java|kt|rs|json|md|mdx|ya?ml|toml|tf|hcl|txt)$/i.test(filePath);
+}
+
+function objectStoragePathSignal(filePath: string): boolean {
+  return /(^|\/)(s3|minio|r2|gcs|google-cloud-storage|azure-blob|blob|supabase|storage|storages|object-storage|objects?|buckets?|uploads?|assets?|files?)(\/|\.|-|_|$)|wrangler\.toml$/i.test(filePath)
+    || /\.github\/workflows\/.*(s3|minio|r2|gcs|blob|storage|bucket).*\.(ya?ml)$/i.test(filePath);
+}
+
+function objectStorageContentSignal(text: string): boolean {
+  return /(S3Client|@aws-sdk\/client-s3|PutObjectCommand|GetObjectCommand|ListObjects|DeleteObjectCommand|CopyObjectCommand|@aws-sdk\/lib-storage|createPresignedPost|getSignedUrl|Minio\.Client|minio|R2Bucket|r2_buckets|@google-cloud\/storage|BlobServiceClient|@azure\/storage-blob|supabase\.storage|storage\.from|createSignedUrl|getPublicUrl|S3 compatible|S3-compatible|forcePathStyle|presigned|signed URL|bucket policy|ServerSideEncryption|SSE|KMS|ObjectLock|Lifecycle|Replication|checksum|ETag)/i.test(text);
+}
+
+function objectStorageSetups(sourceFiles: ObjectStorageSourceFile[]): ObjectStorageReadinessReport["storageSetups"] {
+  const rows: ObjectStorageReadinessReport["storageSetups"] = [];
+  for (const source of sourceFiles) {
+    const bucketCount = countMatches(source.text, /\bBucket\b|bucket_name|bucketName|buckets?|r2_buckets|createBucket|makeBucket|storage\.from|containerName|ContainerClient|BUCKET/gi);
+    const clientCount = countMatches(source.text, /S3Client|new\s+S3|Minio\.Client|minio\.Client|R2Bucket|Storage\(|new\s+Storage|BlobServiceClient|createClient|supabase\.storage|S3-compatible|S3 compatible/gi);
+    const uploadCount = countMatches(source.text, /PutObjectCommand|putObject|\.upload\s*\(|new\s+Upload|multipartUpload|createMultipartUpload|uploadData|uploadStream|storage\.from\([^)]*\)\.upload|put\s*\(/gi);
+    const downloadCount = countMatches(source.text, /GetObjectCommand|getObject|\.download\s*\(|downloadToBuffer|downloadToFile|createReadStream|getBlobClient|storage\.from\([^)]*\)\.download/gi);
+    const listCount = countMatches(source.text, /ListObjects|listObjects|listBuckets|\.list\s*\(|listBlobs|storage\.from\([^)]*\)\.list/gi);
+    const deleteCount = countMatches(source.text, /DeleteObjectCommand|deleteObject|removeObject|removeObjects|\.delete\s*\(|\.remove\s*\(|DeleteBlob|storage\.from\([^)]*\)\.remove/gi);
+    const presignCount = countMatches(source.text, /getSignedUrl|presigned|pre-signed|signedUrl|signed URL|createSignedUrl|createPresignedPost|presignedGetObject|presignedPutObject/gi);
+    const metadataCount = countMatches(source.text, /Metadata|metadata|Tagging|tags|ContentType|CacheControl|ContentDisposition|ETag|etag|customMetadata/gi);
+    const policyCount = countMatches(source.text, /policy|Policy|ACL|CORS|cors|publicUrl|public URL|getPublicUrl|private|public|RBAC|RLS|row level security|bucket policy/gi);
+    const lifecycleCount = countMatches(source.text, /versioning|lifecycle|Lifecycle|retention|ObjectLock|object lock|expiration|expire|ttl/gi);
+    const replicationCount = countMatches(source.text, /replication|Replication|replica|multi-region|MultiRegion|cross-region/gi);
+    const encryptionCount = countMatches(source.text, /ServerSideEncryption|SSE|SSEKMSKeyId|KMS|kms|encryption|encrypted|secretKey|accessKey|SecretAccessKey/gi);
+    const opsCount = countMatches(source.text, /health|metrics|monitoring|backup|restore|migration|notification|event notification|queue|Queue|CDN|cache|Cache-Control|snapshot|audit/gi);
+    const totalSignals = bucketCount + clientCount + uploadCount + downloadCount + listCount + deleteCount + presignCount + metadataCount + policyCount + lifecycleCount + replicationCount + encryptionCount + opsCount;
+    if (totalSignals === 0 && !objectStoragePathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: objectStoragePlatform(source),
+      bucketCount,
+      clientCount,
+      uploadCount,
+      downloadCount,
+      listCount,
+      deleteCount,
+      presignCount,
+      metadataCount,
+      policyCount,
+      lifecycleCount,
+      replicationCount,
+      encryptionCount,
+      opsCount,
+      readiness: bucketCount > 0 && clientCount > 0 && uploadCount + downloadCount + listCount + deleteCount > 0 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} object storage signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => (b.bucketCount + b.clientCount + b.uploadCount + b.downloadCount + b.presignCount + b.opsCount) - (a.bucketCount + a.clientCount + a.uploadCount + a.downloadCount + a.presignCount + a.opsCount) || a.filePath.localeCompare(b.filePath)).slice(0, 100);
+}
+
+function objectStoragePlatform(source: ObjectStorageSourceFile): ObjectStorageReadinessReport["storageSetups"][number]["platform"] {
+  if (/supabase|storage\.from|supabase\.storage/i.test(source.filePath) || /supabase|storage\.from|supabase\.storage/i.test(source.text)) return "supabase-storage";
+  if (/minio/i.test(source.filePath) || /Minio\.Client|minio/i.test(source.text)) return "minio";
+  if (/r2|wrangler/i.test(source.filePath) || /R2Bucket|r2_buckets|\bR2\b/i.test(source.text)) return "r2";
+  if (/gcs|google-cloud-storage|google cloud storage/i.test(source.filePath) || /@google-cloud\/storage|Google Cloud Storage|\bGCS\b/i.test(source.text)) return "gcs";
+  if (/azure|blob/i.test(source.filePath) || /@azure\/storage-blob|BlobServiceClient|Azure Blob/i.test(source.text)) return "azure-blob";
+  if (/\bs3\b/i.test(source.filePath) || /@aws-sdk\/client-s3|S3Client|PutObjectCommand|GetObjectCommand|S3-compatible|S3 compatible|\bAWS S3\b/i.test(source.text)) return "s3";
+  if (/local|filesystem|fs\.|disk/i.test(source.filePath) || /local storage|filesystem|disk storage/i.test(source.text)) return "local";
+  return "unknown";
+}
+
+function objectStorageBucketSignals(sourceFiles: ObjectStorageSourceFile[]): ObjectStorageReadinessReport["bucketSignals"] {
+  const specs: Array<{ signal: ObjectStorageReadinessReport["bucketSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "bucket", pattern: /\bBucket\b|bucket_name|bucketName|buckets?|createBucket|makeBucket|r2_buckets/i, evidence: "bucket evidence was detected." },
+    { signal: "region", pattern: /region\s*:|AWS_REGION|storageS3Region|locationConstraint/i, evidence: "region evidence was detected." },
+    { signal: "endpoint", pattern: /endpoint\s*:|storageS3Endpoint|endPoint|accountid\.r2\.cloudflarestorage|blob\.core\.windows\.net|storage\.googleapis/i, evidence: "endpoint evidence was detected." },
+    { signal: "path-style", pattern: /forcePathStyle|path-style|pathStyle|storageS3ForcePathStyle|s3ForcePathStyle/i, evidence: "path-style evidence was detected." },
+    { signal: "public-private", pattern: /public|private|publicUrl|getPublicUrl|ACL|authenticated|anonymous/i, evidence: "public/private evidence was detected." },
+    { signal: "namespace", pattern: /prefix|folder|keyPrefix|object key|Key\s*:|path\s*:|storage\.from|containerName|namespace/i, evidence: "namespace/key-prefix evidence was detected." }
+  ];
+  return objectStorageSignalFromSpecs(sourceFiles, specs, "bucket", "signal");
+}
+
+function objectStorageClientSignals(sourceFiles: ObjectStorageSourceFile[]): ObjectStorageReadinessReport["clientSignals"] {
+  const specs: Array<{ signal: ObjectStorageReadinessReport["clientSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "s3-client", pattern: /S3Client|new\s+S3|@aws-sdk\/client-s3|boto3\.client\(["']s3/i, evidence: "S3 client evidence was detected." },
+    { signal: "minio-client", pattern: /Minio\.Client|minio\.Client|from ["']minio["']|require\(["']minio["']\)/i, evidence: "MinIO client evidence was detected." },
+    { signal: "r2-client", pattern: /R2Bucket|r2_buckets|\bR2\b|cloudflarestorage\.com/i, evidence: "Cloudflare R2 evidence was detected." },
+    { signal: "gcs-client", pattern: /@google-cloud\/storage|new\s+Storage|google-cloud-storage|storage\.Client/i, evidence: "GCS client evidence was detected." },
+    { signal: "azure-blob-client", pattern: /@azure\/storage-blob|BlobServiceClient|ContainerClient|BlockBlobClient/i, evidence: "Azure Blob client evidence was detected." },
+    { signal: "supabase-storage-client", pattern: /supabase\.storage|storage\.from|@supabase\/supabase-js/i, evidence: "Supabase Storage client evidence was detected." },
+    { signal: "credentials", pattern: /credentials|accessKey|secretKey|AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|accountKey|serviceAccount|SUPABASE_SERVICE_ROLE_KEY/i, evidence: "credential boundary evidence was detected." },
+    { signal: "timeout", pattern: /timeout|requestTimeout|clientTimeout|storageS3ClientTimeout|maxAttempts|retry/i, evidence: "timeout/retry config evidence was detected." }
+  ];
+  return objectStorageSignalFromSpecs(sourceFiles, specs, "client", "signal");
+}
+
+function objectStorageObjectSignals(sourceFiles: ObjectStorageSourceFile[]): ObjectStorageReadinessReport["objectSignals"] {
+  const specs: Array<{ signal: ObjectStorageReadinessReport["objectSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "put-object", pattern: /PutObjectCommand|putObject|put\s*\([^)]*Bucket|uploadData/i, evidence: "put object evidence was detected." },
+    { signal: "upload", pattern: /\.upload\s*\(|storage\.from\([^)]*\)\.upload|uploadFile|uploadStream/i, evidence: "upload evidence was detected." },
+    { signal: "multipart", pattern: /new\s+Upload|@aws-sdk\/lib-storage|multipart|createMultipartUpload|uploadPart|completeMultipartUpload/i, evidence: "multipart evidence was detected." },
+    { signal: "get-object", pattern: /GetObjectCommand|getObject|getObjectCommand/i, evidence: "get object evidence was detected." },
+    { signal: "download", pattern: /\.download\s*\(|downloadToBuffer|downloadToFile|createReadStream|storage\.from\([^)]*\)\.download/i, evidence: "download evidence was detected." },
+    { signal: "list-objects", pattern: /ListObjects|listObjects|listBuckets|\.list\s*\(|listBlobs|storage\.from\([^)]*\)\.list/i, evidence: "list object evidence was detected." },
+    { signal: "delete-object", pattern: /DeleteObjectCommand|deleteObject|removeObject|removeObjects|\.remove\s*\(|DeleteBlob/i, evidence: "delete object evidence was detected." },
+    { signal: "copy-object", pattern: /CopyObjectCommand|copyObject|startCopyFromURL|copyFrom|rewriteObject/i, evidence: "copy object evidence was detected." },
+    { signal: "metadata", pattern: /Metadata|metadata|Tagging|tags|ContentType|CacheControl|ContentDisposition|ETag|customMetadata/i, evidence: "metadata/tag evidence was detected." }
+  ];
+  return objectStorageSignalFromSpecs(sourceFiles, specs, "object", "signal");
+}
+
+function objectStorageAccessSignals(sourceFiles: ObjectStorageSourceFile[]): ObjectStorageReadinessReport["accessSignals"] {
+  const specs: Array<{ signal: ObjectStorageReadinessReport["accessSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "signed-url", pattern: /getSignedUrl|createSignedUrl|signedUrl|signed URL|presignedGetObject|presignedPutObject/i, evidence: "signed URL evidence was detected." },
+    { signal: "presigned-post", pattern: /createPresignedPost|presigned post|POST policy|policyFields/i, evidence: "presigned POST evidence was detected." },
+    { signal: "public-url", pattern: /getPublicUrl|publicUrl|public URL|public-read/i, evidence: "public URL evidence was detected." },
+    { signal: "policy", pattern: /bucket policy|setBucketPolicy|PutBucketPolicy|policy\s*:|Statement|Effect|Principal|Action/i, evidence: "policy evidence was detected." },
+    { signal: "acl", pattern: /ACL|public-read|private|PutObjectAcl|GrantRead|GrantFullControl/i, evidence: "ACL evidence was detected." },
+    { signal: "cors", pattern: /CORS|cors|AllowedOrigins|AllowedMethods|PutBucketCors/i, evidence: "CORS evidence was detected." },
+    { signal: "rbac", pattern: /RBAC|role-based|IAM|least privilege|least-privilege|iam:|s3:PutObject|s3:GetObject/i, evidence: "RBAC/IAM evidence was detected." },
+    { signal: "rls", pattern: /RLS|row level security|create policy|storage\.objects|auth\.uid/i, evidence: "RLS evidence was detected." }
+  ];
+  return objectStorageSignalFromSpecs(sourceFiles, specs, "access", "signal");
+}
+
+function objectStorageReliabilitySignals(sourceFiles: ObjectStorageSourceFile[]): ObjectStorageReadinessReport["reliabilitySignals"] {
+  const specs: Array<{ signal: ObjectStorageReadinessReport["reliabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "versioning", pattern: /versioning|VersioningConfiguration|PutBucketVersioning|versionId/i, evidence: "versioning evidence was detected." },
+    { signal: "lifecycle", pattern: /lifecycle|LifecycleConfiguration|PutBucketLifecycle|expiration|transition/i, evidence: "lifecycle evidence was detected." },
+    { signal: "retention", pattern: /retention|RetainUntilDate|retentionMode|governance|compliance/i, evidence: "retention evidence was detected." },
+    { signal: "object-lock", pattern: /ObjectLock|object lock|LegalHold|PutObjectLockConfiguration/i, evidence: "object lock evidence was detected." },
+    { signal: "replication", pattern: /replication|ReplicationConfiguration|replica|cross-region|multi-region/i, evidence: "replication evidence was detected." },
+    { signal: "checksum", pattern: /checksum|ChecksumSHA256|ContentMD5|crc32|sha256/i, evidence: "checksum evidence was detected." },
+    { signal: "etag", pattern: /ETag|etag|IfMatch|IfNoneMatch/i, evidence: "ETag evidence was detected." },
+    { signal: "retry", pattern: /retry|maxAttempts|backoff|RetryStrategy|retryDelayOptions/i, evidence: "retry evidence was detected." }
+  ];
+  return objectStorageSignalFromSpecs(sourceFiles, specs, "reliability", "signal");
+}
+
+function objectStorageSecuritySignals(sourceFiles: ObjectStorageSourceFile[]): ObjectStorageReadinessReport["securitySignals"] {
+  const specs: Array<{ signal: ObjectStorageReadinessReport["securitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "sse", pattern: /ServerSideEncryption|SSE|aws:kms|AES256|SSECustomer/i, evidence: "SSE evidence was detected." },
+    { signal: "kms", pattern: /KMS|kms|SSEKMSKeyId|kmsKeyId|customer managed key/i, evidence: "KMS evidence was detected." },
+    { signal: "encryption", pattern: /encrypt|encryption|encrypted|crypto|storageS3Encrypt/i, evidence: "encryption evidence was detected." },
+    { signal: "secret-key", pattern: /secretKey|SecretAccessKey|AWS_SECRET_ACCESS_KEY|SUPABASE_SERVICE_ROLE_KEY|accountKey|accessKeySecret/i, evidence: "secret key boundary evidence was detected." },
+    { signal: "least-privilege", pattern: /least privilege|least-privilege|s3:GetObject|s3:PutObject|s3:ListBucket|deny|allow/i, evidence: "least-privilege/IAM evidence was detected." },
+    { signal: "scan", pattern: /virus|malware|clamav|av scan|content scan|scan upload|quarantine/i, evidence: "upload scanning evidence was detected." }
+  ];
+  return objectStorageSignalFromSpecs(sourceFiles, specs, "security", "signal");
+}
+
+function objectStorageOpsSignals(sourceFiles: ObjectStorageSourceFile[]): ObjectStorageReadinessReport["opsSignals"] {
+  const specs: Array<{ signal: ObjectStorageReadinessReport["opsSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "health", pattern: /health|ready|liveness|bucketExists|statObject|headBucket|HeadBucket/i, evidence: "health evidence was detected." },
+    { signal: "metrics", pattern: /metrics|prometheus|observability|monitoring|storage usage|bucket size/i, evidence: "metrics evidence was detected." },
+    { signal: "backup", pattern: /backup|snapshot|replicate to|archive/i, evidence: "backup evidence was detected." },
+    { signal: "restore", pattern: /restore|recovery|restoreObject|restore request/i, evidence: "restore evidence was detected." },
+    { signal: "migration", pattern: /migration|migrate|copy between buckets|sync buckets|mirror/i, evidence: "migration evidence was detected." },
+    { signal: "event-notification", pattern: /notification|event notification|ObjectCreated|ObjectRemoved|PutBucketNotification|setBucketNotification/i, evidence: "event notification evidence was detected." },
+    { signal: "queue", pattern: /queue|Queue|SQS|PubSub|EventBridge|workers queue/i, evidence: "queue integration evidence was detected." },
+    { signal: "cdn-cache", pattern: /CDN|cache|Cache-Control|CloudFront|Cloudflare cache|asset cache/i, evidence: "CDN/cache evidence was detected." }
+  ];
+  return objectStorageSignalFromSpecs(sourceFiles, specs, "ops", "signal");
+}
+
+function objectStoragePackageSignals(sourceFiles: ObjectStorageSourceFile[]): ObjectStorageReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ObjectStorageReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "aws-sdk-s3", pattern: /"@aws-sdk\/client-s3"|@aws-sdk\/client-s3|boto3|aws-sdk\/clients\/s3/i, evidence: "AWS S3 package evidence was detected." },
+    { signal: "lib-storage", pattern: /"@aws-sdk\/lib-storage"|@aws-sdk\/lib-storage|new\s+Upload/i, evidence: "AWS lib-storage evidence was detected." },
+    { signal: "minio", pattern: /"minio"|Minio\.Client|minio\.Client|github\.com\/minio\/minio-go/i, evidence: "MinIO package evidence was detected." },
+    { signal: "supabase-storage", pattern: /"@supabase\/supabase-js"|supabase\.storage|storage\.from|@supabase\/storage-js/i, evidence: "Supabase Storage evidence was detected." },
+    { signal: "gcs", pattern: /"@google-cloud\/storage"|@google-cloud\/storage|google-cloud-storage/i, evidence: "GCS package evidence was detected." },
+    { signal: "azure-blob", pattern: /"@azure\/storage-blob"|@azure\/storage-blob|azure-storage-blob/i, evidence: "Azure Blob package evidence was detected." },
+    { signal: "r2", pattern: /R2Bucket|r2_buckets|cloudflarestorage\.com|wrangler/i, evidence: "Cloudflare R2 evidence was detected." },
+    { signal: "s3-compatible", pattern: /S3-compatible|S3 compatible|forcePathStyle|path-style|storageS3Endpoint/i, evidence: "S3-compatible storage evidence was detected." }
+  ];
+  return objectStorageSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function objectStorageSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ObjectStorageSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/object-storage-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
