@@ -1789,6 +1789,37 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 132:
   - `e30247d` e2e readiness report
 
+- 2026-06-04: AutoResearch Upgrade 133 candidate selected:
+  `dequelabs/axe-core` (`https://github.com/dequelabs/axe-core`; public
+  MPL-2.0; 7,215 stars; 891 forks; updated 2026-06-03T17:43:51Z). Compared
+  with `pa11y/pa11y`, `GoogleChrome/lighthouse`, and `webhintio/hint`;
+  selected axe-core for focused accessibility engine/rule/result modeling.
+  Cloned ignored external source to `research/external-src/dequelabs-axe-core`
+  and inspected README, API docs, rule descriptions, impact docs, partial run
+  docs, and integration examples without executing external source.
+- 2026-06-04: RED accessibility smoke generated
+  `/tmp/repotutor-accessibility-red-studies.adt06F/2026-06-04/local__simple-ts-app__main__538313d3`;
+  old build was missing `analysis/accessibility-report.json`,
+  `markdown/accessibility.md`, and `html/accessibility.html` as expected.
+- 2026-06-04: Implemented axe-core-style accessibility readiness report:
+  `AccessibilityReportSchema`, `analysis/accessibility-report.json`,
+  `markdown/accessibility.md`, `html/accessibility.html`, scan targets,
+  WCAG/category rule tags, result buckets, impact levels, integration signals,
+  context controls, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target accessibility`.
+- 2026-06-04: GREEN accessibility smoke generated
+  `/tmp/repotutor-accessibility-green-studies.z7ESax/2026-06-04/local__simple-ts-app__main__538313d3`;
+  confirmed `verificationCheckedRequiredArtifacts=99`, scan targets 0, rule
+  tags 19, result buckets 4, impact levels 5, integration signals 0, context
+  controls 9, recommended commands 5, risk queue 2, `accessibility-card`,
+  `data-source-pattern="axe-core"`, manifest/learning-path entries, and
+  `open --target accessibility` -> `html/accessibility.html`.
+- 2026-06-04: Verification for Upgrade 133:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 31/31 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

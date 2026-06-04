@@ -1786,6 +1786,7 @@ function openTargetEntries(): Array<{ target: string; fileName: string }> {
     { target: "observability", fileName: "observability.html" },
     { target: "performance", fileName: "performance.html" },
     { target: "e2e", fileName: "e2e.html" },
+    { target: "accessibility", fileName: "accessibility.html" },
     { target: "context-pack", fileName: "context-pack.html" },
     { target: "mcp-handoff", fileName: "mcp-handoff.html" },
     { target: "agent-memory", fileName: "agent-memory.html" },
@@ -1877,7 +1878,7 @@ function help(): void {
   verify-session <session-id-or-path> --format json|markdown
   verify-list-output <output-file> --manifest output.manifest.json --report [verification.json] --format json|markdown
   list --repo owner/name --summary --fields sessionId,repo,score,path --field-preset compact|scores|handoff|verification|paths --output reports/list.json --output-manifest [manifest.json] --created-from YYYY-MM-DD --created-to YYYY-MM-DD --mode quick|standard|deep|all --level beginner|junior|senior|all --status passed|failed|missing|all --html-targets complete|missing|all --sort newest|oldest|score-desc|score-asc --verified-only --wrong-only --unattempted-only --scored-only --min-score 80 --max-score 100 --limit 10 --format json|markdown|jsonl|csv
-  open <session-id-or-path> --target verification|evidence|suggested-reads|runtime-environment|interface-map|symbol-map|api-reference|search-index|learning-journal|project-activity|license-rights|sbom|security-readiness|scorecard|provenance|advisories|vex|policy-gates|api-contracts|observability|performance|e2e|context-pack|mcp-handoff|agent-memory|graph-query|tutorial-abstractions|decision-records|dependency-health|learning-path|quiz|quiz-print|all --format json|markdown
+  open <session-id-or-path> --target verification|evidence|suggested-reads|runtime-environment|interface-map|symbol-map|api-reference|search-index|learning-journal|project-activity|license-rights|sbom|security-readiness|scorecard|provenance|advisories|vex|policy-gates|api-contracts|observability|performance|e2e|accessibility|context-pack|mcp-handoff|agent-memory|graph-query|tutorial-abstractions|decision-records|dependency-health|learning-path|quiz|quiz-print|all --format json|markdown
   open --list-targets --format json|markdown
   doctor --format json|markdown
   study/list/doctor option: --studies-root <dir>`);
