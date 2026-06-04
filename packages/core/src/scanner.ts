@@ -67,6 +67,7 @@ import {
   CommitConventionReport,
   ChangelogReadinessReport,
   BundleAnalysisReport,
+  MockingReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -140,6 +141,7 @@ export interface AnalysisBundle {
   commitConventionReport: CommitConventionReport;
   changelogReadinessReport: ChangelogReadinessReport;
   bundleAnalysisReport: BundleAnalysisReport;
+  mockingReadinessReport: MockingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -213,8 +215,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const commitConventionReport = await buildCommitConventionReport(walk);
   const changelogReadinessReport = await buildChangelogReadinessReport(walk);
   const bundleAnalysisReport = await buildBundleAnalysisReport(walk);
+  const mockingReadinessReport = await buildMockingReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -11021,6 +11024,260 @@ function bundleAnalysisSignalFromSpecs<T extends Record<K, string> & { pattern: 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/bundle-analysis.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildMockingReadinessReport(walk: WalkResult): Promise<MockingReadinessReport> {
+  const sourceFiles = await mockingReadinessSourceFiles(walk);
+  const handlerFiles = mockingReadinessHandlerFiles(sourceFiles);
+  const serverSetups = mockingReadinessServerSetups(sourceFiles);
+  const protocolSignals = mockingReadinessProtocolSignals(sourceFiles);
+  const lifecycleSignals = mockingReadinessLifecycleSignals(sourceFiles);
+  const packageSignals = mockingReadinessPackageSignals(sourceFiles);
+
+  const hasHandlers = handlerFiles.some((item) => item.readiness === "ready");
+  const hasSetup = serverSetups.some((item) => item.readiness === "ready");
+  const hasLifecycle = serverSetups.some((item) => item.lifecycleSignal)
+    || lifecycleSignals.some((item) => ["resetHandlers", "restoreHandlers", "close"].includes(item.signal) && item.readiness === "ready");
+  const hasUnhandledPolicy = serverSetups.some((item) => item.unhandledPolicy !== "missing")
+    || lifecycleSignals.some((item) => item.signal === "onUnhandledRequest" && item.readiness === "ready");
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: MockingReadinessReport["riskQueue"] = [];
+  if (!hasHandlers && !hasSetup && !hasPackage) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add request handlers and a test or development mock setup before claiming API mocking coverage.",
+      why: "MSW-style mocking starts from explicit handlers that describe network behavior without changing application code.",
+      relatedHref: "html/mocking-readiness.html"
+    });
+  }
+  if (hasPackage && !hasHandlers) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Create reusable HTTP, GraphQL, or WebSocket handlers next to the tests or app mock layer.",
+      why: "A mocking package dependency alone does not prove learners can see what network behavior is replaced.",
+      relatedHref: "html/mocking-readiness.html"
+    });
+  }
+  if (hasHandlers && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Wire handlers into setupWorker for browser/dev flows or setupServer for Node test flows.",
+      why: "Handlers need an interception boundary before tests or local development can rely on them.",
+      relatedHref: "html/mocking-readiness.html"
+    });
+  }
+  if (hasSetup && !hasLifecycle) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add lifecycle cleanup such as resetHandlers, restoreHandlers, and close in test hooks.",
+      why: "Mock handlers can leak between tests unless runtime overrides are reset after each case.",
+      relatedHref: "html/unit-tests.html"
+    });
+  }
+  if (hasSetup && !hasUnhandledPolicy) {
+    riskQueue.push({
+      priority: "low",
+      action: "Set an explicit onUnhandledRequest policy for unexpected live network calls.",
+      why: "Beginners can trust mock coverage more when unhandled requests fail or warn intentionally.",
+      relatedHref: "html/mocking-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run mock-enabled tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not start service workers, open network servers, execute handlers, or run the analyzed project's tests.",
+    relatedHref: "html/mocking-readiness.html"
+  });
+
+  return {
+    summary: `MSW식 mocking readiness report: handler file ${handlerFiles.length}개, setup surface ${serverSetups.length}개, protocol signal ${protocolSignals.length}개, package signal ${packageSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Mock Service Worker setupWorker setupServer http graphql ws HttpResponse handlers onUnhandledRequest resetHandlers passthrough bypass",
+    handlerFiles,
+    serverSetups,
+    protocolSignals,
+    lifecycleSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx msw init public/ --save", purpose: "Create a browser service-worker file for MSW development flows." },
+      { command: "rg \"setupWorker|setupServer|http\\.|graphql\\.|ws\\.\" src test", purpose: "Inventory mock setup and handler definitions before running tests." },
+      { command: "npx vitest run", purpose: "Run Node/jsdom tests that may use setupServer or shared handlers." },
+      { command: "npx playwright test", purpose: "Run browser tests that may depend on setupWorker or route-level mocking." },
+      { command: "MSW_UNHANDLED_REQUEST=error pnpm test", purpose: "Use a strict local test policy when the project supports it." },
+      { command: "rg \"resetHandlers|restoreHandlers|server.close|worker.stop|onUnhandledRequest\" src test", purpose: "Check mock lifecycle cleanup and unexpected-request policy." }
+    ],
+    learnerNextSteps: [
+      "먼저 handlers 파일에서 어떤 API 경로와 응답이 가짜로 정의되어 있는지 확인하세요.",
+      "브라우저 개발 흐름은 setupWorker, Node 테스트 흐름은 setupServer 연결을 찾으세요.",
+      "테스트마다 resetHandlers나 restoreHandlers가 있는지 확인해 mock 상태가 새지 않게 하세요.",
+      "이 리포트는 mock 실행 결과가 아닙니다. 실제 API 대체 동작은 원본 프로젝트의 테스트나 브라우저에서 별도 확인하세요."
+    ]
+  };
+}
+
+type MockingReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function mockingReadinessSourceFiles(walk: WalkResult): Promise<MockingReadinessSourceFile[]> {
+  const files: MockingReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !mockingReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!mockingReadinessPathSignal(file.relPath) && !mockingReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 220) break;
+  }
+  return files;
+}
+
+function mockingReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return mockingReadinessPathSignal(filePath)
+    || /^(package\.json|vitest\.config\.[cm]?[jt]s|jest\.config\.[cm]?[jt]s|playwright\.config\.[cm]?[jt]s|setupTests\.[cm]?[jt]sx?)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|json|md|ya?ml)$/i.test(filePath);
+}
+
+function mockingReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(__mocks__|mocks?|mock[-_]?server|mock[-_]?worker|handlers?|fixtures?|test|tests|spec|e2e|msw)(\/|\.|-|_)/i.test(filePath)
+    || /setup[-_.]?(tests?|server|worker|msw)|mockServiceWorker\.js/i.test(filePath);
+}
+
+function mockingReadinessContentSignal(text: string): boolean {
+  return /\b(msw|setupWorker|setupServer|http\.(get|post|put|patch|delete|all)|graphql\.(query|mutation|operation|link)|ws\.link|HttpResponse|server\.listen|worker\.start|resetHandlers|restoreHandlers|onUnhandledRequest|passthrough|bypass|nock\(|pact|wiremock|fetch-mock|axios-mock-adapter)\b/i.test(text);
+}
+
+function mockingReadinessHandlerFiles(sourceFiles: MockingReadinessSourceFile[]): MockingReadinessReport["handlerFiles"] {
+  const rows: MockingReadinessReport["handlerFiles"] = [];
+  for (const source of sourceFiles) {
+    const usesHttp = /\b(http\.(get|post|put|patch|delete|head|options|all)|rest\.(get|post|put|patch|delete|all))\b/i.test(source.text);
+    const usesGraphql = /\bgraphql\.(query|mutation|operation|link)\b/i.test(source.text);
+    const usesWebSocket = /\b(ws\.link|WebSocketHandler|webSocket|WebSocket)\b/i.test(source.text);
+    const handlerCount = countMatches(source.text, /\b(http|rest)\.(get|post|put|patch|delete|head|options|all)\b|\bgraphql\.(query|mutation|operation|link)\b|\bws\.link\b/gi);
+    const responseSignals = countMatches(source.text, /\b(HttpResponse|Response\.json|ctx\.|res\(|delay\(|passthrough\(|bypass\(|status\s*:|status\()/gi);
+    if (handlerCount === 0 && responseSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      environment: mockingReadinessEnvironment(source),
+      handlerCount,
+      usesHttp,
+      usesGraphql,
+      usesWebSocket,
+      responseSignals,
+      readiness: handlerCount > 0 && responseSignals > 0 ? "ready" : "partial",
+      evidence: `${source.filePath} contains ${handlerCount} handler definition(s), HTTP ${usesHttp ? "yes" : "no"}, GraphQL ${usesGraphql ? "yes" : "no"}, WebSocket ${usesWebSocket ? "yes" : "no"}, response signal ${responseSignals}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 80);
+}
+
+function mockingReadinessEnvironment(source: MockingReadinessSourceFile): MockingReadinessReport["handlerFiles"][number]["environment"] {
+  if (/setupWorker|msw\/browser|mockServiceWorker|service worker/i.test(source.text) || /browser|worker/i.test(source.filePath)) return "browser";
+  if (/setupServer|msw\/node|server\.listen|node/i.test(source.text) || /node|server/i.test(source.filePath)) return "node";
+  if (/test|spec|vitest|jest|playwright/i.test(source.filePath)) return "test";
+  if (/handlers?/i.test(source.filePath)) return "shared";
+  return "unknown";
+}
+
+function mockingReadinessServerSetups(sourceFiles: MockingReadinessSourceFile[]): MockingReadinessReport["serverSetups"] {
+  const rows: MockingReadinessReport["serverSetups"] = [];
+  for (const source of sourceFiles) {
+    const setupType = mockingReadinessSetupType(source.text);
+    const startSignal = /\b(worker\.start|server\.listen|setupWorker\(|setupServer\()/i.test(source.text);
+    const lifecycleSignal = /\b(resetHandlers|restoreHandlers|server\.close|worker\.stop|afterEach|afterAll|beforeAll|beforeEach|server\.use|worker\.use)\b/i.test(source.text);
+    const unhandledPolicy = mockingReadinessUnhandledPolicy(source.text);
+    if (setupType === "unknown" && !startSignal && !lifecycleSignal && unhandledPolicy === "missing") continue;
+    rows.push({
+      filePath: source.filePath,
+      setupType,
+      startSignal,
+      lifecycleSignal,
+      unhandledPolicy,
+      readiness: setupType !== "unknown" && startSignal ? "ready" : "partial",
+      evidence: `${source.filePath} contains ${setupType} setup with start ${startSignal ? "yes" : "no"}, lifecycle ${lifecycleSignal ? "yes" : "no"}, unhandled policy ${unhandledPolicy}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 80);
+}
+
+function mockingReadinessSetupType(text: string): MockingReadinessReport["serverSetups"][number]["setupType"] {
+  if (/setupWorker|msw\/browser/i.test(text)) return "setupWorker";
+  if (/setupServer|msw\/node/i.test(text)) return "setupServer";
+  if (/msw\/native/i.test(text)) return "native";
+  return "unknown";
+}
+
+function mockingReadinessUnhandledPolicy(text: string): MockingReadinessReport["serverSetups"][number]["unhandledPolicy"] {
+  const match = firstMatch(text, /onUnhandledRequest\s*:\s*["'](error|warn|bypass)["']/i);
+  if (match === "error" || match === "warn" || match === "bypass") return match;
+  if (/onUnhandledRequest\s*:/i.test(text)) return "custom";
+  return "missing";
+}
+
+function mockingReadinessProtocolSignals(sourceFiles: MockingReadinessSourceFile[]): MockingReadinessReport["protocolSignals"] {
+  const specs: Array<{ signal: MockingReadinessReport["protocolSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "rest", pattern: /\b(http|rest)\.(get|post|put|patch|delete|head|options|all)\b/i, evidence: "REST/HTTP handler evidence was detected." },
+    { signal: "graphql", pattern: /\bgraphql\.(query|mutation|operation|link)\b/i, evidence: "GraphQL handler evidence was detected." },
+    { signal: "websocket", pattern: /\b(ws\.link|WebSocketHandler|webSocket|WebSocket)\b/i, evidence: "WebSocket mock evidence was detected." },
+    { signal: "http-response", pattern: /\bHttpResponse|Response\.json|ctx\.json|res\(/i, evidence: "mock response builder evidence was detected." },
+    { signal: "delay", pattern: /\bdelay\(/i, evidence: "mock latency/delay evidence was detected." },
+    { signal: "passthrough", pattern: /\bpassthrough\(|x-msw-bypass/i, evidence: "passthrough evidence was detected." },
+    { signal: "bypass", pattern: /\bbypass\(/i, evidence: "bypass request evidence was detected." },
+    { signal: "cookies", pattern: /\bcookies\b|cookieStore|Set-Cookie/i, evidence: "cookie-aware mock evidence was detected." },
+    { signal: "params", pattern: /\bparams\b|path-to-regexp|:id\b|:slug\b/i, evidence: "route parameter evidence was detected." }
+  ];
+  return mockingReadinessSignalFromSpecs(sourceFiles, specs, "protocol", "signal");
+}
+
+function mockingReadinessLifecycleSignals(sourceFiles: MockingReadinessSourceFile[]): MockingReadinessReport["lifecycleSignals"] {
+  const specs: Array<{ signal: MockingReadinessReport["lifecycleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "setupWorker", pattern: /\bsetupWorker\b|msw\/browser/i, evidence: "browser worker setup evidence was detected." },
+    { signal: "setupServer", pattern: /\bsetupServer\b|msw\/node/i, evidence: "Node server setup evidence was detected." },
+    { signal: "listen", pattern: /\bserver\.listen\b/i, evidence: "server listen lifecycle evidence was detected." },
+    { signal: "start", pattern: /\bworker\.start\b/i, evidence: "worker start lifecycle evidence was detected." },
+    { signal: "use", pattern: /\b(server|worker)\.use\b/i, evidence: "runtime handler override evidence was detected." },
+    { signal: "resetHandlers", pattern: /\bresetHandlers\b/i, evidence: "handler reset evidence was detected." },
+    { signal: "restoreHandlers", pattern: /\brestoreHandlers\b/i, evidence: "handler restore evidence was detected." },
+    { signal: "close", pattern: /\bserver\.close\b|\bworker\.stop\b/i, evidence: "mock shutdown evidence was detected." },
+    { signal: "boundary", pattern: /\bboundary\(/i, evidence: "scoped mock boundary evidence was detected." },
+    { signal: "onUnhandledRequest", pattern: /\bonUnhandledRequest\b/i, evidence: "unhandled request policy evidence was detected." }
+  ];
+  return mockingReadinessSignalFromSpecs(sourceFiles, specs, "lifecycle", "signal");
+}
+
+function mockingReadinessPackageSignals(sourceFiles: MockingReadinessSourceFile[]): MockingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: MockingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "msw", pattern: /["']msw["']|msw\/browser|msw\/node|Mock Service Worker/i, evidence: "MSW package evidence was detected." },
+    { signal: "nock", pattern: /["']nock["']|\bnock\(/i, evidence: "Nock package evidence was detected." },
+    { signal: "pact", pattern: /@pact-foundation\/pact|pact-js|\bPact\b/i, evidence: "Pact package evidence was detected." },
+    { signal: "wiremock", pattern: /wiremock/i, evidence: "WireMock package evidence was detected." },
+    { signal: "fetch-mock", pattern: /fetch-mock/i, evidence: "fetch-mock package evidence was detected." },
+    { signal: "axios-mock-adapter", pattern: /axios-mock-adapter/i, evidence: "axios-mock-adapter package evidence was detected." }
+  ];
+  return mockingReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function mockingReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: MockingReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/mocking-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

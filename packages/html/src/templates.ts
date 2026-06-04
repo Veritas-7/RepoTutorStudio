@@ -62,6 +62,7 @@ import type {
   CommitConventionReport,
   ChangelogReadinessReport,
   BundleAnalysisReport,
+  MockingReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -130,6 +131,7 @@ export interface StudyHtmlInput {
   commitConventionReport: CommitConventionReport;
   changelogReadinessReport: ChangelogReadinessReport;
   bundleAnalysisReport: BundleAnalysisReport;
+  mockingReadinessReport: MockingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -218,6 +220,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["commit-conventions.html", "Commits"],
     ["changelog-readiness.html", "Changelog"],
     ["bundle-analysis.html", "Bundles"],
+    ["mocking-readiness.html", "Mocks"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -341,6 +344,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Commit Conventions</h3><p>${escapeHtml(input.commitConventionReport.summary)}</p><p>commitlint 패턴으로 config, rules, commit-msg hooks, CI ranges, prompt/CLI commands를 정리합니다.</p><a href="commit-conventions.html">Commits 열기</a></article>
           <article><h3>Changelog Readiness</h3><p>${escapeHtml(input.changelogReadinessReport.summary)}</p><p>Changesets 패턴으로 changeset files, changelog config, status/version/publish workflows, package policy를 정리합니다.</p><a href="changelog-readiness.html">Changelog 열기</a></article>
           <article><h3>Bundle Analysis</h3><p>${escapeHtml(input.bundleAnalysisReport.summary)}</p><p>Webpack Bundle Analyzer 패턴으로 analyzer config, stats JSON, chunks, source maps, gzip/Brotli/Zstd size signals를 정리합니다.</p><a href="bundle-analysis.html">Bundles 열기</a></article>
+          <article><h3>Mocking Readiness</h3><p>${escapeHtml(input.mockingReadinessReport.summary)}</p><p>MSW 패턴으로 handlers, setupWorker/setupServer, lifecycle, unhandled request policy, package signals를 정리합니다.</p><a href="mocking-readiness.html">Mocks 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -612,6 +616,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Bundle Analysis", "bundle-analysis.html", `<section class="panel" data-source-pattern="Webpack Bundle Analyzer"><h2>Bundle Snapshot</h2><p>${escapeHtml(input.bundleAnalysisReport.summary)}</p><p class="muted">${escapeHtml(input.bundleAnalysisReport.sourcePattern)}</p><dl class="meta"><div><dt>configs</dt><dd>${input.bundleAnalysisReport.configFiles.length}</dd></div><div><dt>artifacts</dt><dd>${input.bundleAnalysisReport.bundleArtifacts.length}</dd></div><div><dt>sizes</dt><dd>${input.bundleAnalysisReport.sizeSignals.length}</dd></div><div><dt>packages</dt><dd>${input.bundleAnalysisReport.packageSignals.length}</dd></div></dl><p class="muted">RepoTutor records bundle-analysis readiness only. It does not build the project, start analyzer servers, parse arbitrary bundles, or open generated reports.</p></section><section class="grid"><article class="bundle-analysis-card"><h3>Config Files</h3>${bundleAnalysisConfigList(input.bundleAnalysisReport.configFiles)}</article><article class="bundle-analysis-card"><h3>Bundle Artifacts</h3>${bundleAnalysisArtifactList(input.bundleAnalysisReport.bundleArtifacts)}</article><article class="bundle-analysis-card"><h3>Size Signals</h3>${bundleAnalysisSignalList(input.bundleAnalysisReport.sizeSignals, "signal")}</article><article class="bundle-analysis-card"><h3>Script Signals</h3>${bundleAnalysisSignalList(input.bundleAnalysisReport.scriptSignals, "signal")}</article></section><section class="grid"><article class="bundle-analysis-card"><h3>Package Signals</h3>${bundleAnalysisSignalList(input.bundleAnalysisReport.packageSignals, "signal")}</article><article class="bundle-analysis-card"><h3>Recommended Commands</h3>${bundleAnalysisCommandList(input.bundleAnalysisReport.recommendedCommands)}</article><article class="bundle-analysis-card"><h3>Risk Queue</h3>${bundleAnalysisRiskList(input.bundleAnalysisReport.riskQueue)}</article><article class="bundle-analysis-card"><h3>다음 확인 단계</h3>${list(input.bundleAnalysisReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "mocking-readiness.html",
+      title: "Mocking Readiness",
+      html: pageShell("Mocking Readiness", "mocking-readiness.html", `<section class="panel" data-source-pattern="Mock Service Worker"><h2>Mocking Snapshot</h2><p>${escapeHtml(input.mockingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.mockingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>handlers</dt><dd>${input.mockingReadinessReport.handlerFiles.length}</dd></div><div><dt>setups</dt><dd>${input.mockingReadinessReport.serverSetups.length}</dd></div><div><dt>protocols</dt><dd>${input.mockingReadinessReport.protocolSignals.length}</dd></div><div><dt>packages</dt><dd>${input.mockingReadinessReport.packageSignals.length}</dd></div></dl><p class="muted">RepoTutor records mocking readiness only. It does not start service workers, open network servers, execute handlers, or run the analyzed project's tests.</p></section><section class="grid"><article class="mocking-readiness-card"><h3>Handler Files</h3>${mockingReadinessHandlerList(input.mockingReadinessReport.handlerFiles)}</article><article class="mocking-readiness-card"><h3>Server Setups</h3>${mockingReadinessSetupList(input.mockingReadinessReport.serverSetups)}</article><article class="mocking-readiness-card"><h3>Protocol Signals</h3>${mockingReadinessSignalList(input.mockingReadinessReport.protocolSignals, "signal")}</article><article class="mocking-readiness-card"><h3>Lifecycle Signals</h3>${mockingReadinessSignalList(input.mockingReadinessReport.lifecycleSignals, "signal")}</article></section><section class="grid"><article class="mocking-readiness-card"><h3>Package Signals</h3>${mockingReadinessSignalList(input.mockingReadinessReport.packageSignals, "signal")}</article><article class="mocking-readiness-card"><h3>Recommended Commands</h3>${mockingReadinessCommandList(input.mockingReadinessReport.recommendedCommands)}</article><article class="mocking-readiness-card"><h3>Risk Queue</h3>${mockingReadinessRiskList(input.mockingReadinessReport.riskQueue)}</article><article class="mocking-readiness-card"><h3>다음 확인 단계</h3>${list(input.mockingReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -774,6 +783,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Commit Conventions", path: "html/commit-conventions.html", description: "commitlint식 config, rules, commit-msg hook, CI range, prompt/CLI 준비도를 확인합니다." },
       { label: "Changelog Readiness", path: "html/changelog-readiness.html", description: "Changesets식 changeset files, changelog config, status/version/publish 준비도를 확인합니다." },
       { label: "Bundle Analysis", path: "html/bundle-analysis.html", description: "Webpack Bundle Analyzer식 stats JSON, chunks, source maps, compression size 준비도를 확인합니다." },
+      { label: "Mocking Readiness", path: "html/mocking-readiness.html", description: "MSW식 handlers, setupWorker/setupServer, lifecycle, unhandled request policy 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1169,6 +1179,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "bundle-analysis.html",
       goal: "Webpack Bundle Analyzer식 stats JSON, chunks, source maps, gzip/Brotli/Zstd size 신호를 보고 번들 점검 관문을 확인합니다.",
       evidence: `config files ${input.bundleAnalysisReport.configFiles.length}개, artifacts ${input.bundleAnalysisReport.bundleArtifacts.length}개`
+    },
+    {
+      title: "Mocking readiness 확인",
+      href: "mocking-readiness.html",
+      goal: "MSW식 handlers, setupWorker/setupServer, lifecycle cleanup, unhandled request policy를 보고 mock API 관문을 확인합니다.",
+      evidence: `handler files ${input.mockingReadinessReport.handlerFiles.length}개, setup surfaces ${input.mockingReadinessReport.serverSetups.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -2531,6 +2547,36 @@ function bundleAnalysisRiskList(items: BundleAnalysisReport["riskQueue"]): strin
 }
 
 function bundleAnalysisHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function mockingReadinessHandlerList(items: MockingReadinessReport["handlerFiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">mock handler file이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.environment)}/${escapeHtml(item.readiness)}]<br>handlers ${item.handlerCount} · HTTP/GraphQL/WebSocket ${item.usesHttp ? "yes" : "no"}/${item.usesGraphql ? "yes" : "no"}/${item.usesWebSocket ? "yes" : "no"} · responses ${item.responseSignals}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(mockingReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function mockingReadinessSetupList(items: MockingReadinessReport["serverSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">mock setup surface가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.setupType)}/${escapeHtml(item.readiness)}]<br>start/lifecycle ${item.startSignal ? "yes" : "no"}/${item.lifecycleSignal ? "yes" : "no"} · unhandled ${escapeHtml(item.unhandledPolicy)}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(mockingReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function mockingReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">mocking signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(mockingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function mockingReadinessCommandList(items: MockingReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function mockingReadinessRiskList(items: MockingReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(mockingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function mockingReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
