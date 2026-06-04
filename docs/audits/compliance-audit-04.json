@@ -1,6 +1,6 @@
 {
   "iteration": 4,
-  "createdAt": "2026-06-04T06:57:02.493Z",
+  "createdAt": "2026-06-04T07:10:59.774Z",
   "checks": [
     {
       "name": "project setup",
@@ -361,6 +361,13 @@
     },
     {
       "name": "state management readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "form readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

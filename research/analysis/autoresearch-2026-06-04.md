@@ -3766,6 +3766,50 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 56/56 audit checks across 13 generated reports
 
+### Upgrade 159: Form Readiness Report
+
+- Cloned and inspected `react-hook-form/react-hook-form` under
+  `research/external-src/react-hook-form-react-hook-form` without executing
+  external source. Clone HEAD was `6a501e0`; the clone remains ignored by
+  RepoTutor.
+- GitHub metadata: public repo, MIT license, 44,754 stars, 2,408 forks,
+  updated 2026-06-04T06:47:19Z. Compared with `jaredpalmer/formik`,
+  `TanStack/form`, and `colinhacks/zod`; selected React Hook Form because it
+  directly models form readiness: `useForm`, `register`, `handleSubmit`,
+  `Controller`, `FormProvider`, `useFormContext`, `useFieldArray`, validation
+  rules, schema resolvers, `formState.errors`, default values, value helpers,
+  and package signals. No source code was copied into RepoTutor.
+- Implemented React Hook Form-style form-readiness report:
+  `FormReadinessReportSchema`, `analysis/form-readiness-report.json`,
+  `markdown/form-readiness.md`, `html/form-readiness.html`, form setups, field
+  registrations, validation signals, error signals, value-flow signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, and `open --target form-readiness`.
+- Source pattern: React Hook Form separates `useForm` setup, field
+  registration, submit handling through `handleSubmit`, controlled inputs
+  through `Controller`/`useController`, context sharing through `FormProvider`
+  and `useFormContext`, dynamic fields through `useFieldArray`, validation
+  rules and resolvers, visible error state, default values, reset/watch/value
+  helpers, and package-level resolver/schema choices. RepoTutor maps that to
+  deterministic static form readiness and explicitly does not mount forms,
+  submit values, execute schema validators, or run the analyzed project's
+  tests.
+- RED smoke generated
+  `/tmp/repotutor-form-readiness-red-studies.t4Op5n/2026-06-04/local__simple-ts-app__main__e86e1089`;
+  old behavior was missing `analysis/form-readiness-report.json`,
+  `markdown/form-readiness.md`, and `html/form-readiness.html`, and
+  `open --target form-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-form-readiness-green-studies.v0vTVE/2026-06-04/local__simple-ts-app__main__e86e1089`;
+  confirmed `verificationCheckedRequiredArtifacts=177`, form setups 0, field
+  registrations 0, validation signals 11, error signals 9, value-flow signals
+  10, package signals 7, recommended commands 6, risk queue 2,
+  manifest/learning-path entries, and `open --target form-readiness` ->
+  `html/form-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 57/57 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
