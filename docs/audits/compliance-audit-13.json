@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-04T10:09:38.417Z",
+  "createdAt": "2026-06-04T10:21:14.574Z",
   "checks": [
     {
       "name": "project setup",
@@ -473,6 +473,13 @@
     },
     {
       "name": "image processing readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "file upload readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

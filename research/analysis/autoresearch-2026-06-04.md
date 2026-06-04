@@ -4533,6 +4533,56 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 72/72 audit checks across 13 generated reports
 
+### Upgrade 175: File Upload Readiness Report
+
+- Cloned and inspected `transloadit/uppy` under
+  `research/external-src/transloadit-uppy` without executing external source.
+  Clone HEAD was `981fced`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 30,804 stars, 2,096 forks, updated
+  2026-06-04T07:27:43Z. Compared with `react-dropzone/react-dropzone`,
+  `expressjs/multer`, and `node-formidable/formidable`; selected Uppy because
+  it directly models file upload readiness across browser inputs, file
+  restrictions, metadata, XHR/Tus/S3/Companion transports, progress/status,
+  cancellation/retry, and safety boundaries. No source code was copied into
+  RepoTutor.
+- Implemented Uppy-style file-upload-readiness report:
+  `FileUploadReadinessReportSchema`,
+  `analysis/file-upload-readiness-report.json`,
+  `markdown/file-upload-readiness.md`,
+  `html/file-upload-readiness.html`, file upload setups, input signals,
+  restriction signals, transport signals, lifecycle signals, safety signals,
+  package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target file-upload-readiness`.
+- Source pattern: Uppy separates inputs through Dashboard, DragDrop, FileInput,
+  dropzone, webcam/screen capture, and remote providers; restrictions through
+  `allowedFileTypes`, `maxFileSize`, `maxNumberOfFiles`, dimensions, and
+  required metadata fields; transport through `XHRUpload`, `Tus`, `AwsS3`,
+  `Companion`, endpoints, and headers; lifecycle through upload progress,
+  status, completion, errors, cancel/retry, and pause/resume; and safety through
+  auth headers, CSRF, content validation, storage paths, virus scanning, and
+  rate limits. RepoTutor maps that to deterministic static file upload
+  readiness and explicitly does not select files, open browsers, send uploads,
+  contact Companion, write storage objects, scan content, or run the analyzed
+  project's tests.
+- RED smoke generated
+  `/tmp/repotutor-file-upload-red-studies.xbUM4A/2026-06-04/local__simple-ts-app__HEAD__3a16f802`;
+  old behavior was missing
+  `analysis/file-upload-readiness-report.json`,
+  `markdown/file-upload-readiness.md`, and
+  `html/file-upload-readiness.html`, and `open --target
+  file-upload-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-file-upload-green-studies.qXQgki/2026-06-04/local__simple-ts-app__main__3a16f802`;
+  confirmed `verificationCheckedRequiredArtifacts=225`, file upload setups 0,
+  input signals 6, restriction signals 5, transport signals 6, lifecycle
+  signals 6, safety signals 6, package signals 7, risk queue 2, all three new
+  artifacts, and `open --target file-upload-readiness` ->
+  `html/file-upload-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 73/73 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

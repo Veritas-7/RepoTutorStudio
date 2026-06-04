@@ -3417,6 +3417,46 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 174:
   - `cd2aef0` image processing readiness report
 
+- 2026-06-04: AutoResearch Upgrade 175 candidate selected:
+  `transloadit/uppy`
+  (`https://github.com/transloadit/uppy`; public; MIT; 30,804 stars; 2,096
+  forks; updated 2026-06-04T07:27:43Z). Compared with
+  `react-dropzone/react-dropzone`, `expressjs/multer`, and
+  `node-formidable/formidable`; selected Uppy because it directly models file
+  upload readiness: browser widgets, drag/drop and file input, restrictions,
+  metadata fields, XHR/Tus/S3/Companion transports, progress/status,
+  cancellation/retry, and safety boundaries. Cloned ignored external source to
+  `research/external-src/transloadit-uppy` and inspected package/source hits
+  without executing external source. Clone HEAD was `981fced`; tracked-file
+  count for `research/external-src/transloadit-uppy` returned `0`.
+- 2026-06-04: RED file-upload-readiness smoke generated
+  `/tmp/repotutor-file-upload-red-studies.xbUM4A/2026-06-04/local__simple-ts-app__HEAD__3a16f802`;
+  old build was missing `analysis/file-upload-readiness-report.json`,
+  `markdown/file-upload-readiness.md`, and
+  `html/file-upload-readiness.html`, and `open --target
+  file-upload-readiness` failed as expected.
+- 2026-06-04: Implemented Uppy-style file-upload-readiness report:
+  `FileUploadReadinessReportSchema`,
+  `analysis/file-upload-readiness-report.json`,
+  `markdown/file-upload-readiness.md`, `html/file-upload-readiness.html`, file
+  upload setups, input signals, restriction signals, transport signals,
+  lifecycle signals, safety signals, package signals, recommended commands,
+  risk queue, manifest/session-verification coverage, learning-path linkage,
+  nav entry, and `open --target file-upload-readiness`.
+- 2026-06-04: GREEN file-upload-readiness smoke generated
+  `/tmp/repotutor-file-upload-green-studies.qXQgki/2026-06-04/local__simple-ts-app__main__3a16f802`;
+  confirmed `verificationCheckedRequiredArtifacts=225`, file upload setups 0,
+  input signals 6, restriction signals 5, transport signals 6, lifecycle
+  signals 6, safety signals 6, package signals 7, risk queue 2, all three new
+  artifacts, and `open --target file-upload-readiness` ->
+  `html/file-upload-readiness.html`.
+- 2026-06-04: Verification for Upgrade 175:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 73/73 audit checks across 13 reports
+
 ## Next Actions
 
-1. Continue next AutoResearch upgrade candidate unless the user stops.
+1. Stage explicit Upgrade 175 paths, run staged diff/gitleaks gates, commit,
+   push to `origin main`, then log the push in `working.md`.
+2. Continue next AutoResearch upgrade candidate unless the user stops.
