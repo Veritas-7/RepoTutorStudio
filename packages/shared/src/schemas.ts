@@ -2822,6 +2822,73 @@ export const FormReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const AuthReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  authSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["authjs", "next-auth", "better-auth", "clerk", "auth0", "custom", "unknown"]),
+    handlerCount: z.number().int().nonnegative(),
+    hasAuthFunction: z.boolean(),
+    hasRouteHandler: z.boolean(),
+    hasMiddleware: z.boolean(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  sessionSurfaces: z.array(z.object({
+    filePath: z.string(),
+    clientSessionCount: z.number().int().nonnegative(),
+    serverSessionCount: z.number().int().nonnegative(),
+    providerBoundaryCount: z.number().int().nonnegative(),
+    signInOutCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  protectionSignals: z.array(z.object({
+    signal: z.enum(["middleware", "authorized-callback", "protected-route", "redirect", "role-check", "session-required", "csrf", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  providerSignals: z.array(z.object({
+    signal: z.enum(["oauth-provider", "credentials-provider", "email-provider", "webauthn-passkey", "adapter", "database-session", "jwt-session", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  callbackSignals: z.array(z.object({
+    signal: z.enum(["signIn", "redirect", "session", "jwt", "authorized", "account", "profile", "events", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  credentialSignals: z.array(z.object({
+    signal: z.enum(["AUTH_SECRET", "NEXTAUTH_SECRET", "AUTH_URL", "NEXTAUTH_URL", "provider-client-id", "provider-client-secret", "cookie-policy", "csrf-token", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["next-auth", "@auth/core", "@auth-adapter", "better-auth", "@clerk/nextjs", "@auth0/nextjs-auth0", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3083,6 +3150,7 @@ export type DataFetchingReadinessReport = z.infer<typeof DataFetchingReadinessRe
 export type RoutingReadinessReport = z.infer<typeof RoutingReadinessReportSchema>;
 export type StateManagementReadinessReport = z.infer<typeof StateManagementReadinessReportSchema>;
 export type FormReadinessReport = z.infer<typeof FormReadinessReportSchema>;
+export type AuthReadinessReport = z.infer<typeof AuthReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

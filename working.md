@@ -2809,6 +2809,43 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 159:
   - `c1dc796` form readiness report
 
+- 2026-06-04: AutoResearch Upgrade 160 candidate selected:
+  `nextauthjs/next-auth` (`https://github.com/nextauthjs/next-auth`;
+  public ISC; 28,268 stars; 4,039 forks; updated
+  2026-06-04T05:12:37Z). Compared with `better-auth/better-auth`,
+  `clerk/javascript`, and `auth0/nextjs-auth0`; selected Auth.js/NextAuth
+  because it directly models authentication readiness: `NextAuth`, `auth`,
+  `handlers`, providers, callbacks, sessions, JWT/database strategy,
+  middleware, protected routes, env secrets, adapters, `signIn`, `signOut`,
+  `useSession`, and `SessionProvider`. Cloned ignored external source to
+  `research/external-src/nextauthjs-next-auth` and inspected README, license,
+  package metadata, examples, docs, and package source without executing
+  external source. Clone HEAD was `dab3cfb`; tracked-file count for
+  `research/external-src/nextauthjs-next-auth` returned `0`.
+- 2026-06-04: RED auth-readiness smoke generated
+  `/tmp/repotutor-auth-readiness-red-studies.2vFU8G/2026-06-04/local__simple-ts-app__main__9e34bd67`;
+  old build was missing `analysis/auth-readiness-report.json`,
+  `markdown/auth-readiness.md`, and `html/auth-readiness.html`, and
+  `open --target auth-readiness` failed as expected.
+- 2026-06-04: Implemented Auth.js-style auth-readiness report:
+  `AuthReadinessReportSchema`, `analysis/auth-readiness-report.json`,
+  `markdown/auth-readiness.md`, `html/auth-readiness.html`, auth setups,
+  session surfaces, protection signals, provider signals, callback signals,
+  credential signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target auth-readiness`.
+- 2026-06-04: GREEN auth-readiness smoke generated
+  `/tmp/repotutor-auth-readiness-green-studies.GUbWzS/2026-06-04/local__simple-ts-app__main__9e34bd67`;
+  confirmed `verificationCheckedRequiredArtifacts=180`, auth setups 0,
+  session surfaces 0, protection signals 7, provider signals 7, callback
+  signals 8, credential signals 8, package signals 6, recommended commands 6,
+  risk queue 2, manifest/learning-path entries, and
+  `open --target auth-readiness` -> `html/auth-readiness.html`.
+- 2026-06-04: Verification for Upgrade 160:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 58/58 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

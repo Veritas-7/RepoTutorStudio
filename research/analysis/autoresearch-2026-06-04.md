@@ -3810,6 +3810,49 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 57/57 audit checks across 13 generated reports
 
+### Upgrade 160: Auth Readiness Report
+
+- Cloned and inspected `nextauthjs/next-auth` under
+  `research/external-src/nextauthjs-next-auth` without executing external
+  source. Clone HEAD was `dab3cfb`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, ISC license, 28,268 stars, 4,039 forks,
+  updated 2026-06-04T05:12:37Z. Compared with `better-auth/better-auth`,
+  `clerk/javascript`, and `auth0/nextjs-auth0`; selected Auth.js/NextAuth
+  because it directly models authentication readiness: `NextAuth`, `auth`,
+  `handlers`, providers, callbacks, sessions, JWT/database strategy,
+  middleware, protected routes, env secrets, adapters, `signIn`, `signOut`,
+  `useSession`, and `SessionProvider`. No source code was copied into
+  RepoTutor.
+- Implemented Auth.js-style auth-readiness report:
+  `AuthReadinessReportSchema`, `analysis/auth-readiness-report.json`,
+  `markdown/auth-readiness.md`, `html/auth-readiness.html`, auth setups,
+  session surfaces, protection signals, provider signals, callback signals,
+  credential signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target auth-readiness`.
+- Source pattern: Auth.js separates request handlers and auth helpers,
+  sign-in providers, adapters, session strategy, callback/event logic, client
+  and server session consumers, middleware/protected-route gates, redirects,
+  role checks, cookies/CSRF hints, and deployment secret variables. RepoTutor
+  maps that to deterministic static auth readiness and explicitly does not
+  start auth servers, call providers, mint tokens, submit credentials, or run
+  the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-auth-readiness-red-studies.2vFU8G/2026-06-04/local__simple-ts-app__main__9e34bd67`;
+  old behavior was missing `analysis/auth-readiness-report.json`,
+  `markdown/auth-readiness.md`, and `html/auth-readiness.html`, and
+  `open --target auth-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-auth-readiness-green-studies.GUbWzS/2026-06-04/local__simple-ts-app__main__9e34bd67`;
+  confirmed `verificationCheckedRequiredArtifacts=180`, auth setups 0,
+  session surfaces 0, protection signals 7, provider signals 7, callback
+  signals 8, credential signals 8, package signals 6, recommended commands 6,
+  risk queue 2, manifest/learning-path entries, and
+  `open --target auth-readiness` -> `html/auth-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 58/58 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
