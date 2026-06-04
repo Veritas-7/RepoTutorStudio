@@ -1061,6 +1061,64 @@ export const PolicyGateReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ApiContractReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  schemaDocuments: z.array(z.object({
+    filePath: z.string(),
+    schemaType: z.enum(["openapi", "swagger", "graphql", "postman", "asyncapi", "unknown"]),
+    version: z.string().nullable(),
+    operationCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  operationTargets: z.array(z.object({
+    operationId: z.string().nullable(),
+    method: z.string().nullable(),
+    path: z.string().nullable(),
+    source: z.string(),
+    readiness: z.enum(["ready", "partial", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testPhases: z.array(z.object({
+    phase: z.enum(["examples", "coverage", "fuzzing", "stateful", "negative"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  checkMatrix: z.array(z.object({
+    check: z.enum(["not-a-server-error", "schema-conformance", "status-code-conformance", "content-type-conformance", "response-headers", "auth-required"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runtimeTargets: z.array(z.object({
+    target: z.enum(["base-url", "asgi-wsgi", "pytest", "ci-action", "mock-server"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reportingOutputs: z.array(z.object({
+    output: z.enum(["junit-xml", "allure", "cassette", "replay", "curl-repro", "coverage"]),
+    readiness: z.enum(["ready", "partial", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1291,6 +1349,7 @@ export type ProvenanceReport = z.infer<typeof ProvenanceReportSchema>;
 export type AdvisoryReport = z.infer<typeof AdvisoryReportSchema>;
 export type VexReport = z.infer<typeof VexReportSchema>;
 export type PolicyGateReport = z.infer<typeof PolicyGateReportSchema>;
+export type ApiContractReport = z.infer<typeof ApiContractReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

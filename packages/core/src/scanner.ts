@@ -41,6 +41,7 @@ import {
   AdvisoryReport,
   VexReport,
   PolicyGateReport,
+  ApiContractReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -88,6 +89,7 @@ export interface AnalysisBundle {
   advisoryReport: AdvisoryReport;
   vexReport: VexReport;
   policyGateReport: PolicyGateReport;
+  apiContractReport: ApiContractReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -135,8 +137,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const provenanceReport = buildProvenanceReport(context, walk, sbomReport, securityReadinessReport, sourceSnapshotReport);
   const vexReport = buildVexReport(walk, sbomReport, securityReadinessReport, advisoryReport, provenanceReport, sourceSnapshotReport);
   const policyGateReport = await buildPolicyGateReport(walk, securityReadinessReport);
+  const apiContractReport = await buildApiContractReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -3149,6 +3152,566 @@ function policyDocumentEvidence(filePath: string, type: PolicyGateReport["inputD
   if (type === "iac") return `${filePath} is an IaC/config candidate for policy-as-code gates.`;
   if (type === "manifest") return `${filePath} is a project/deployment manifest candidate for policy checks.`;
   return `${filePath} looks policy-related but needs a human to classify its role.`;
+}
+
+async function buildApiContractReport(walk: WalkResult): Promise<ApiContractReport> {
+  const detected = await apiContractSchemaEvidence(walk);
+  const schemaDocuments = detected.map((item) => item.document);
+  const operationTargets = detected.flatMap((item) => item.operations).slice(0, 80);
+  const primarySchema = schemaDocuments[0]?.filePath ?? "<schema>";
+  const primarySchemaHref = schemaDocuments[0]?.sourceHref ?? "html/api-contracts.html";
+  const hasSchema = schemaDocuments.length > 0;
+  const hasOperation = operationTargets.length > 0 || schemaDocuments.some((doc) => doc.operationCount > 0);
+  const hasExamples = detected.some((item) => item.hasExamples);
+  const hasServers = detected.some((item) => item.hasServers);
+  const hasAuth = detected.some((item) => item.hasAuth);
+  const hasResponses = detected.some((item) => item.hasResponses);
+  const hasHeaders = detected.some((item) => item.hasHeaders);
+  const hasContentTypes = detected.some((item) => item.hasContentTypes);
+  const hasLinks = detected.some((item) => item.hasLinks);
+  const repoSignals = await apiContractRepoSignals(walk);
+
+  const testPhases: ApiContractReport["testPhases"] = [
+    {
+      phase: "examples",
+      readiness: hasExamples ? "ready" : hasSchema ? "partial" : "missing",
+      evidence: hasExamples ? "Schema example/example(s) fields can seed Schemathesis examples phase." : hasSchema ? "Schema files exist, but no explicit examples were detected." : "No API schema was detected.",
+      relatedHref: primarySchemaHref
+    },
+    {
+      phase: "coverage",
+      readiness: hasOperation ? "ready" : hasSchema ? "partial" : "missing",
+      evidence: hasOperation ? `${operationTargets.length || schemaDocuments.reduce((sum, doc) => sum + doc.operationCount, 0)} operation target(s) can be exercised by the coverage phase.` : hasSchema ? "A schema exists, but no operation target could be counted." : "Coverage phase needs an OpenAPI or GraphQL schema.",
+      relatedHref: primarySchemaHref
+    },
+    {
+      phase: "fuzzing",
+      readiness: hasSchema ? "external" : "missing",
+      evidence: hasSchema ? "Schemathesis can generate property-based inputs, but RepoTutor does not execute the API." : "No schema was detected for generated test cases.",
+      relatedHref: primarySchemaHref
+    },
+    {
+      phase: "stateful",
+      readiness: hasLinks ? "ready" : hasOperation ? "external" : hasSchema ? "partial" : "missing",
+      evidence: hasLinks ? "Schema link/relationship signals exist for stateful workflows." : hasOperation ? "Operations exist; stateful execution still needs discoverable links or runtime responses." : hasSchema ? "Schema exists but operation links were not detected." : "Stateful workflows need schema operations.",
+      relatedHref: primarySchemaHref
+    },
+    {
+      phase: "negative",
+      readiness: hasSchema ? "external" : "missing",
+      evidence: hasSchema ? "Negative cases require executing generated invalid inputs against a running target." : "No schema was detected for negative contract tests.",
+      relatedHref: primarySchemaHref
+    }
+  ];
+
+  const checkMatrix: ApiContractReport["checkMatrix"] = [
+    {
+      check: "not-a-server-error",
+      readiness: hasSchema ? "external" : "missing",
+      evidence: hasSchema ? "Schemathesis can flag 5xx responses once a target URL or app adapter is available." : "No schema target exists for server-error checks.",
+      relatedHref: "html/api-contracts.html"
+    },
+    {
+      check: "schema-conformance",
+      readiness: hasResponses ? "ready" : hasSchema ? "partial" : "missing",
+      evidence: hasResponses ? "Response schema/status definitions were detected." : hasSchema ? "Schema exists, but response definitions were not obvious in the static scan." : "No schema was detected.",
+      relatedHref: primarySchemaHref
+    },
+    {
+      check: "status-code-conformance",
+      readiness: hasResponses ? "ready" : hasSchema ? "partial" : "missing",
+      evidence: hasResponses ? "Response status definitions can be checked against observed responses." : hasSchema ? "Status-code checking needs response definitions and a live target." : "No schema was detected.",
+      relatedHref: primarySchemaHref
+    },
+    {
+      check: "content-type-conformance",
+      readiness: hasContentTypes ? "ready" : hasSchema ? "partial" : "missing",
+      evidence: hasContentTypes ? "Content/media type definitions were detected." : hasSchema ? "No explicit content/media type definitions were detected." : "No schema was detected.",
+      relatedHref: primarySchemaHref
+    },
+    {
+      check: "response-headers",
+      readiness: hasHeaders ? "ready" : hasSchema ? "partial" : "missing",
+      evidence: hasHeaders ? "Response/header definitions were detected." : hasSchema ? "No response header contract was detected." : "No schema was detected.",
+      relatedHref: primarySchemaHref
+    },
+    {
+      check: "auth-required",
+      readiness: hasAuth ? "ready" : hasSchema ? "partial" : "missing",
+      evidence: hasAuth ? "Security/auth scheme definitions or authorization hints were detected." : hasSchema ? "No explicit auth scheme was detected; protected APIs need configured headers or hooks." : "No schema was detected.",
+      relatedHref: primarySchemaHref
+    }
+  ];
+
+  const runtimeTargets: ApiContractReport["runtimeTargets"] = [
+    {
+      target: "base-url",
+      readiness: hasServers ? "ready" : hasSchema ? "partial" : "missing",
+      evidence: hasServers ? "OpenAPI server/base URL signal exists in the schema." : hasSchema ? "A static schema exists; provide --url or serve the schema from a running API." : "No schema or base URL was detected.",
+      relatedHref: primarySchemaHref
+    },
+    {
+      target: "asgi-wsgi",
+      readiness: repoSignals.pythonAppFiles.length > 0 ? "partial" : "missing",
+      evidence: repoSignals.pythonAppFiles.length > 0 ? `Python app adapter candidate(s): ${repoSignals.pythonAppFiles.slice(0, 6).join(", ")}.` : "No ASGI/WSGI framework signal was detected.",
+      relatedHref: repoSignals.pythonAppFiles[0] ? `source/${encodedPath(repoSignals.pythonAppFiles[0])}` : "html/runtime-environment.html"
+    },
+    {
+      target: "pytest",
+      readiness: repoSignals.schemathesisMentions.length > 0 && repoSignals.testFiles.length > 0 ? "ready" : repoSignals.testFiles.length > 0 ? "partial" : "missing",
+      evidence: repoSignals.testFiles.length > 0 ? `${repoSignals.testFiles.length} test file(s) exist; Schemathesis pytest integration ${repoSignals.schemathesisMentions.length > 0 ? "is mentioned" : "was not detected"}.` : "No pytest/test file signal was detected.",
+      relatedHref: repoSignals.testFiles[0] ? `source/${encodedPath(repoSignals.testFiles[0])}` : "html/files.html"
+    },
+    {
+      target: "ci-action",
+      readiness: repoSignals.schemathesisWorkflowFiles.length > 0 ? "ready" : repoSignals.workflowFiles.length > 0 ? "partial" : "missing",
+      evidence: repoSignals.schemathesisWorkflowFiles.length > 0 ? `Schemathesis CI workflow signal(s): ${repoSignals.schemathesisWorkflowFiles.join(", ")}.` : repoSignals.workflowFiles.length > 0 ? `${repoSignals.workflowFiles.length} workflow file(s) exist, but Schemathesis action/command was not detected.` : "No CI workflow was detected.",
+      relatedHref: repoSignals.workflowFiles[0] ? `source/${encodedPath(repoSignals.workflowFiles[0])}` : "html/security-readiness.html"
+    },
+    {
+      target: "mock-server",
+      readiness: repoSignals.mockServerFiles.length > 0 ? "ready" : hasSchema ? "external" : "missing",
+      evidence: repoSignals.mockServerFiles.length > 0 ? `Mock server signal(s): ${repoSignals.mockServerFiles.join(", ")}.` : hasSchema ? "A schema exists, but no Prism/WireMock/MSW-style mock server config was detected." : "No schema exists to back a mock server.",
+      relatedHref: repoSignals.mockServerFiles[0] ? `source/${encodedPath(repoSignals.mockServerFiles[0])}` : "html/api-contracts.html"
+    }
+  ];
+
+  const reportingOutputs: ApiContractReport["reportingOutputs"] = [
+    {
+      output: "junit-xml",
+      readiness: repoSignals.junitMentions.length > 0 ? "ready" : repoSignals.workflowFiles.length > 0 ? "partial" : "external",
+      evidence: repoSignals.junitMentions.length > 0 ? `JUnit report signal(s): ${repoSignals.junitMentions.join(", ")}.` : "Schemathesis can emit --report junit; no committed JUnit setup was detected.",
+      relatedHref: repoSignals.junitMentions[0] ? `source/${encodedPath(repoSignals.junitMentions[0])}` : "html/api-contracts.html"
+    },
+    {
+      output: "allure",
+      readiness: repoSignals.allureMentions.length > 0 ? "ready" : "external",
+      evidence: repoSignals.allureMentions.length > 0 ? `Allure signal(s): ${repoSignals.allureMentions.join(", ")}.` : "Allure output requires schemathesis[allure] and --report-allure-path.",
+      relatedHref: repoSignals.allureMentions[0] ? `source/${encodedPath(repoSignals.allureMentions[0])}` : "html/api-contracts.html"
+    },
+    {
+      output: "cassette",
+      readiness: repoSignals.vcrMentions.length > 0 ? "ready" : hasSchema ? "external" : "external",
+      evidence: repoSignals.vcrMentions.length > 0 ? `VCR/cassette signal(s): ${repoSignals.vcrMentions.join(", ")}.` : "Schemathesis can emit --report vcr with --report-vcr-path for replayable HTTP evidence.",
+      relatedHref: repoSignals.vcrMentions[0] ? `source/${encodedPath(repoSignals.vcrMentions[0])}` : "html/api-contracts.html"
+    },
+    {
+      output: "replay",
+      readiness: repoSignals.replayMentions.length > 0 ? "ready" : "external",
+      evidence: repoSignals.replayMentions.length > 0 ? `Replay signal(s): ${repoSignals.replayMentions.join(", ")}.` : "Replay/triage is external until failing cases or cassette/HAR output exists.",
+      relatedHref: repoSignals.replayMentions[0] ? `source/${encodedPath(repoSignals.replayMentions[0])}` : "html/api-contracts.html"
+    },
+    {
+      output: "curl-repro",
+      readiness: hasSchema ? "external" : "external",
+      evidence: hasSchema ? "Schemathesis reports curl reproduction commands for failures after a real run." : "Curl reproduction commands require an executed contract test.",
+      relatedHref: "html/api-contracts.html"
+    },
+    {
+      output: "coverage",
+      readiness: repoSignals.coverageMentions.length > 0 ? "ready" : hasSchema ? "partial" : "external",
+      evidence: repoSignals.coverageMentions.length > 0 ? `Coverage/TraceCov signal(s): ${repoSignals.coverageMentions.join(", ")}.` : hasSchema ? "Schemathesis coverage phase can target schema constraints; TraceCov setup was not detected." : "Coverage output requires schema execution.",
+      relatedHref: repoSignals.coverageMentions[0] ? `source/${encodedPath(repoSignals.coverageMentions[0])}` : "html/api-contracts.html"
+    }
+  ];
+
+  const riskQueue: ApiContractReport["riskQueue"] = [];
+  if (!hasSchema) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add an OpenAPI, Swagger, GraphQL, Postman, or AsyncAPI contract before advertising contract tests.",
+      why: "Schemathesis-style generated tests need a machine-readable API schema.",
+      relatedHref: "html/api-contracts.html"
+    });
+  }
+  if (hasSchema && !hasOperation) {
+    riskQueue.push({
+      priority: "high",
+      action: "Define at least one operation target in the API schema.",
+      why: "Contract testing cannot generate request cases without operations, paths, or GraphQL fields.",
+      relatedHref: primarySchemaHref
+    });
+  }
+  if (hasSchema && !hasServers && repoSignals.pythonAppFiles.length === 0) {
+    riskQueue.push({
+      priority: "high",
+      action: "Declare a runnable target with --url, a served schema URL, or a pytest app adapter.",
+      why: "Generated requests need a live base URL or in-process application target.",
+      relatedHref: "html/runtime-environment.html"
+    });
+  }
+  if (hasSchema && repoSignals.schemathesisWorkflowFiles.length === 0) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add Schemathesis to CI with JUnit or artifact upload before enforcing API contracts.",
+      why: "Contract failures should be reproducible and visible in pull request checks.",
+      relatedHref: "html/security-readiness.html"
+    });
+  }
+  if (hasSchema && !hasExamples) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add example/example(s) values for important request bodies and parameters.",
+      why: "Examples improve deterministic coverage before fuzzing explores edge cases.",
+      relatedHref: primarySchemaHref
+    });
+  }
+  if (hasSchema && !hasAuth && /auth|login|token|session|user/i.test(schemaDocuments.map((doc) => doc.filePath).join(" "))) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document authentication headers or hooks for protected API paths.",
+      why: "Schemathesis needs configured credentials for endpoints that reject anonymous requests.",
+      relatedHref: primarySchemaHref
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run Schemathesis against the original API before treating this as a pass/fail contract result.",
+    why: "RepoTutor only reports static readiness and never sends generated requests.",
+    relatedHref: "html/api-contracts.html"
+  });
+
+  return {
+    summary: `Schemathesis식 API contract readiness report: schema document ${schemaDocuments.length}개, operation target ${operationTargets.length}개, test phase ${testPhases.length}개, check ${checkMatrix.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Schemathesis OpenAPI GraphQL schema generated cases Hypothesis checks stateful workflows JUnit Allure contract testing",
+    schemaDocuments,
+    operationTargets,
+    testPhases,
+    checkMatrix,
+    runtimeTargets,
+    reportingOutputs,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      {
+        command: `schemathesis run ${primarySchema} --url <base-url>`,
+        purpose: "Run generated API checks against a local or deployed target when the schema is stored in the repository."
+      },
+      {
+        command: `schemathesis run ${primarySchema} --checks all --report junit --report-junit-path reports/schemathesis-junit.xml`,
+        purpose: "Capture CI-readable JUnit XML while keeping all response checks enabled."
+      },
+      {
+        command: `schemathesis run ${primarySchema} --report vcr --report-vcr-path reports/schemathesis-vcr.yaml`,
+        purpose: "Record replayable HTTP cassette evidence for triage."
+      },
+      {
+        command: `schemathesis run ${primarySchema} --report-allure-path allure-results`,
+        purpose: "Write Allure result files for operation-level failure review."
+      },
+      {
+        command: `SCHEMATHESIS_HOOKS=hooks schemathesis run ${primarySchema}`,
+        purpose: "Enable custom hooks or TraceCov schema coverage instrumentation."
+      },
+      {
+        command: `schemathesis run ${primarySchema} --phases=stateful`,
+        purpose: "Focus on linked/stateful API workflows after links or producer responses are available."
+      }
+    ],
+    learnerNextSteps: [
+      "먼저 schema document와 operation target이 있는지 확인하고, missing이면 OpenAPI/GraphQL contract부터 추가하세요.",
+      "base URL, app adapter, auth header 중 하나를 명시해야 generated request가 실제 API에 도달합니다.",
+      "response schema, status code, content type, header check는 schema 정의와 실제 응답을 함께 봐야 합니다.",
+      "이 리포트는 Schemathesis 실행 결과가 아닙니다. 실제 버그 판정은 원본 API에서 별도 실행하세요."
+    ]
+  };
+}
+
+type ApiContractDetectedSchema = {
+  document: ApiContractReport["schemaDocuments"][number];
+  operations: ApiContractReport["operationTargets"];
+  hasExamples: boolean;
+  hasServers: boolean;
+  hasAuth: boolean;
+  hasResponses: boolean;
+  hasHeaders: boolean;
+  hasContentTypes: boolean;
+  hasLinks: boolean;
+};
+
+async function apiContractSchemaEvidence(walk: WalkResult): Promise<ApiContractDetectedSchema[]> {
+  const detected: ApiContractDetectedSchema[] = [];
+  const seen = new Set<string>();
+  for (const file of walk.files) {
+    const pathCandidate = apiContractCandidatePath(file.relPath);
+    const canInspect = /\.(json|ya?ml|graphql|gql|toml|md)$/i.test(file.relPath);
+    if (!pathCandidate && !canInspect) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!pathCandidate && !apiContractContentSignal(text ?? "")) continue;
+    const schemaType = apiContractSchemaType(file.relPath, text ?? "");
+    if (!schemaType || seen.has(file.relPath)) continue;
+    seen.add(file.relPath);
+    const operations = apiContractOperationsFor(file.relPath, text ?? "", schemaType);
+    const operationCount = operations.length || apiContractOperationCount(text ?? "", schemaType);
+    const version = apiContractVersion(text ?? "", schemaType);
+    const evidence = apiContractDocumentEvidence(file.relPath, schemaType, operationCount, Boolean(text));
+    const sourceHref = `source/${encodedPath(file.relPath)}`;
+    detected.push({
+      document: {
+        filePath: file.relPath,
+        schemaType,
+        version,
+        operationCount,
+        readiness: operationCount > 0 ? "ready" : text ? "partial" : "missing",
+        evidence,
+        sourceHref
+      },
+      operations: operations.map((operation) => ({
+        ...operation,
+        source: file.relPath,
+        readiness: operation.method || operation.path || operation.operationId ? "ready" as const : "partial" as const,
+        relatedHref: sourceHref
+      })),
+      hasExamples: /\bexamples?\b\s*[:=]/i.test(text ?? ""),
+      hasServers: /\bservers?\b\s*[:=]|https?:\/\/|localhost:\d+/i.test(text ?? ""),
+      hasAuth: /\b(securitySchemes|securityDefinitions|authorization|bearerAuth|apiKey|oauth2|cookieAuth)\b/i.test(text ?? ""),
+      hasResponses: /\bresponses?\b\s*[:=]|"responses"\s*:/i.test(text ?? ""),
+      hasHeaders: /\bheaders?\b\s*[:=]|"headers"\s*:/i.test(text ?? ""),
+      hasContentTypes: /\b(application\/json|text\/plain|multipart\/form-data|content)\b/i.test(text ?? ""),
+      hasLinks: /\blinks?\b\s*[:=]|operationRef|operationId/i.test(text ?? "")
+    });
+  }
+  return detected.slice(0, 60);
+}
+
+function apiContractCandidatePath(filePath: string): boolean {
+  const base = path.basename(filePath).toLowerCase();
+  return /(^|\/)(openapi|swagger|asyncapi)(\.|[-_])/i.test(filePath)
+    || /(^|\/)(schema|schemas|api|contract|contracts|spec|specs)\//i.test(filePath)
+    || /\.(graphql|gql)$/i.test(filePath)
+    || base === "schemathesis.toml"
+    || base.endsWith(".postman_collection.json");
+}
+
+function apiContractContentSignal(text: string): boolean {
+  return /\b(openapi|swagger|asyncapi)\b\s*[:=]/i.test(text)
+    || /"info"\s*:\s*\{[\s\S]{0,800}"title"\s*:/i.test(text)
+    || /\b(type\s+(Query|Mutation|Subscription)|schema\s*\{)\b/i.test(text)
+    || /"item"\s*:\s*\[[\s\S]{0,1200}"request"\s*:/i.test(text);
+}
+
+function apiContractSchemaType(filePath: string, text: string): ApiContractReport["schemaDocuments"][number]["schemaType"] | null {
+  const lower = filePath.toLowerCase();
+  if (/\.(graphql|gql)$/i.test(filePath) || /\btype\s+(Query|Mutation|Subscription)\b|schema\s*\{/i.test(text)) return "graphql";
+  if (/postman_collection\.json$/i.test(filePath) || /"item"\s*:\s*\[[\s\S]{0,1200}"request"\s*:/i.test(text)) return "postman";
+  if (/\basyncapi\b\s*[:=]|"asyncapi"\s*:/i.test(text) || /(^|\/)asyncapi[._-]/i.test(lower)) return "asyncapi";
+  if (/\bswagger\b\s*[:=]|"swagger"\s*:/i.test(text) || /(^|\/)swagger[._-]/i.test(lower)) return "swagger";
+  if (/\bopenapi\b\s*[:=]|"openapi"\s*:/i.test(text) || /(^|\/)openapi[._-]/i.test(lower)) return "openapi";
+  if (apiContractCandidatePath(filePath)) return "unknown";
+  return null;
+}
+
+function apiContractVersion(text: string, schemaType: ApiContractReport["schemaDocuments"][number]["schemaType"]): string | null {
+  const field = schemaType === "swagger" ? "swagger" : schemaType === "asyncapi" ? "asyncapi" : schemaType === "openapi" ? "openapi" : null;
+  if (!field) return null;
+  const match = text.match(new RegExp(`["']?${field}["']?\\s*[:=]\\s*["']?([^"',\\n\\r\\s]+)`, "i"));
+  return match?.[1] ?? null;
+}
+
+function apiContractOperationsFor(
+  filePath: string,
+  text: string,
+  schemaType: ApiContractReport["schemaDocuments"][number]["schemaType"]
+): Array<Omit<ApiContractReport["operationTargets"][number], "source" | "readiness" | "relatedHref">> {
+  if (!text) return [];
+  if (schemaType === "openapi" || schemaType === "swagger") return openApiOperationTargets(text);
+  if (schemaType === "graphql") return graphqlOperationTargets(text);
+  if (schemaType === "postman") return postmanOperationTargets(text);
+  if (schemaType === "asyncapi") {
+    const channels = [...text.matchAll(/^\s{0,8}([A-Za-z0-9_./{}-]+)\s*:\s*$/gm)]
+      .map((match) => match[1])
+      .filter((value) => value.includes("/") || value.includes("{"))
+      .slice(0, 40);
+    return channels.map((channel) => ({
+      operationId: null,
+      method: null,
+      path: channel,
+      evidence: `${filePath} declares AsyncAPI channel ${channel}.`
+    }));
+  }
+  return [];
+}
+
+function openApiOperationTargets(text: string): Array<Omit<ApiContractReport["operationTargets"][number], "source" | "readiness" | "relatedHref">> {
+  const methods = new Set(["get", "put", "post", "delete", "options", "head", "patch", "trace"]);
+  const parsed = parseJsonObject(text);
+  if (parsed && typeof parsed === "object" && "paths" in parsed) {
+    const paths = (parsed as { paths?: unknown }).paths;
+    if (paths && typeof paths === "object") {
+      const rows: Array<Omit<ApiContractReport["operationTargets"][number], "source" | "readiness" | "relatedHref">> = [];
+      for (const [route, value] of Object.entries(paths as Record<string, unknown>)) {
+        if (!value || typeof value !== "object") continue;
+        for (const [method, operation] of Object.entries(value as Record<string, unknown>)) {
+          if (!methods.has(method.toLowerCase())) continue;
+          const operationId = operation && typeof operation === "object" && "operationId" in operation
+            ? String((operation as { operationId?: unknown }).operationId ?? "") || null
+            : null;
+          rows.push({ operationId, method: method.toUpperCase(), path: route, evidence: `${method.toUpperCase()} ${route} is declared in the API schema.` });
+        }
+      }
+      return rows.slice(0, 80);
+    }
+  }
+  const rows: Array<Omit<ApiContractReport["operationTargets"][number], "source" | "readiness" | "relatedHref">> = [];
+  const lines = text.split(/\r?\n/);
+  let currentPath: string | null = null;
+  for (let index = 0; index < lines.length; index += 1) {
+    const pathMatch = lines[index].match(/^\s{0,8}(['"]?\/[^:'"]+['"]?)\s*:\s*(?:#.*)?$/);
+    if (pathMatch) currentPath = pathMatch[1].replace(/^['"]|['"]$/g, "");
+    const methodMatch = lines[index].match(/^\s{2,12}(get|put|post|delete|options|head|patch|trace)\s*:\s*(?:#.*)?$/i);
+    if (!methodMatch || !currentPath) continue;
+    const lookahead = lines.slice(index, Math.min(index + 10, lines.length)).join("\n");
+    const operationId = lookahead.match(/^\s*operationId\s*:\s*["']?([^"'\n\r#]+)/m)?.[1]?.trim() ?? null;
+    rows.push({
+      operationId,
+      method: methodMatch[1].toUpperCase(),
+      path: currentPath,
+      evidence: `${methodMatch[1].toUpperCase()} ${currentPath} is declared in the API schema.`
+    });
+  }
+  return rows.slice(0, 80);
+}
+
+function graphqlOperationTargets(text: string): Array<Omit<ApiContractReport["operationTargets"][number], "source" | "readiness" | "relatedHref">> {
+  const rows: Array<Omit<ApiContractReport["operationTargets"][number], "source" | "readiness" | "relatedHref">> = [];
+  for (const match of text.matchAll(/type\s+(Query|Mutation|Subscription)\s*\{([\s\S]*?)\}/g)) {
+    const group = match[1];
+    const body = match[2];
+    for (const field of body.matchAll(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*(?:\(|:)/gm)) {
+      rows.push({
+        operationId: `${group}.${field[1]}`,
+        method: group.toUpperCase(),
+        path: field[1],
+        evidence: `GraphQL ${group}.${field[1]} field is declared.`
+      });
+    }
+  }
+  return rows.slice(0, 80);
+}
+
+function postmanOperationTargets(text: string): Array<Omit<ApiContractReport["operationTargets"][number], "source" | "readiness" | "relatedHref">> {
+  const rows: Array<Omit<ApiContractReport["operationTargets"][number], "source" | "readiness" | "relatedHref">> = [];
+  const parsed = parseJsonObject(text);
+  const visit = (value: unknown): void => {
+    if (rows.length >= 80 || !value || typeof value !== "object") return;
+    const record = value as Record<string, unknown>;
+    if (record.request && typeof record.request === "object") {
+      const request = record.request as Record<string, unknown>;
+      const method = typeof request.method === "string" ? request.method.toUpperCase() : null;
+      const urlValue = request.url;
+      const url = typeof urlValue === "string"
+        ? urlValue
+        : urlValue && typeof urlValue === "object" && "raw" in urlValue
+          ? String((urlValue as { raw?: unknown }).raw ?? "")
+          : null;
+      rows.push({
+        operationId: typeof record.name === "string" ? record.name : null,
+        method,
+        path: url,
+        evidence: `${method ?? "REQUEST"} ${url ?? "Postman request"} is declared in the collection.`
+      });
+    }
+    for (const child of Object.values(record)) {
+      if (Array.isArray(child)) child.forEach(visit);
+      else if (child && typeof child === "object") visit(child);
+    }
+  };
+  if (parsed) visit(parsed);
+  return rows;
+}
+
+function apiContractOperationCount(text: string, schemaType: ApiContractReport["schemaDocuments"][number]["schemaType"]): number {
+  if (!text) return 0;
+  if (schemaType === "openapi" || schemaType === "swagger") return openApiOperationTargets(text).length;
+  if (schemaType === "graphql") return graphqlOperationTargets(text).length;
+  if (schemaType === "postman") return postmanOperationTargets(text).length;
+  if (schemaType === "asyncapi") return (text.match(/^\s{0,8}([A-Za-z0-9_./{}-]+)\s*:\s*$/gm) ?? []).length;
+  return 0;
+}
+
+function apiContractDocumentEvidence(
+  filePath: string,
+  schemaType: ApiContractReport["schemaDocuments"][number]["schemaType"],
+  operationCount: number,
+  readable: boolean
+): string {
+  if (!readable) return `${filePath} is a ${schemaType} path candidate but was too large or unsafe to inspect.`;
+  if (operationCount > 0) return `${filePath} exposes ${operationCount} ${schemaType} operation target(s) for generated contract checks.`;
+  return `${filePath} looks like a ${schemaType} contract document, but no operation target was counted.`;
+}
+
+type ApiContractRepoSignals = {
+  workflowFiles: string[];
+  schemathesisWorkflowFiles: string[];
+  schemathesisMentions: string[];
+  junitMentions: string[];
+  allureMentions: string[];
+  vcrMentions: string[];
+  replayMentions: string[];
+  coverageMentions: string[];
+  pythonAppFiles: string[];
+  testFiles: string[];
+  mockServerFiles: string[];
+};
+
+async function apiContractRepoSignals(walk: WalkResult): Promise<ApiContractRepoSignals> {
+  const workflowFiles = walk.files.filter((file) => /^\.github\/workflows\/.+\.ya?ml$/i.test(file.relPath)).map((file) => file.relPath);
+  const testFiles = walk.files.filter((file) => /(^|\/)(__tests__|tests?|spec)\/|(\.test|\.spec)\.[cm]?[jt]sx?$|test_.*\.py$/i.test(file.relPath)).map((file) => file.relPath);
+  const mockServerFiles = walk.files.filter((file) => /(^|\/)(mocks?|mock-server|wiremock|prism|msw)\b|prism\.ya?ml|wiremock\.json/i.test(file.relPath)).map((file) => file.relPath);
+  const signals: ApiContractRepoSignals = {
+    workflowFiles,
+    schemathesisWorkflowFiles: [],
+    schemathesisMentions: [],
+    junitMentions: [],
+    allureMentions: [],
+    vcrMentions: [],
+    replayMentions: [],
+    coverageMentions: [],
+    pythonAppFiles: [],
+    testFiles,
+    mockServerFiles
+  };
+  const candidates = walk.files.filter((file) => {
+    if (!file.isTextCandidate) return false;
+    if (/^\.github\/workflows\/.+\.ya?ml$/i.test(file.relPath)) return true;
+    if (/(schemathesis|openapi|swagger|graphql|pytest|tox|nox|Dockerfile|docker-compose|package\.json|pyproject\.toml)/i.test(file.relPath)) return true;
+    if (/\.(py|toml|json|ya?ml|md)$/i.test(file.relPath) && /(api|contract|test|spec|coverage|allure|junit|vcr|replay|mock)/i.test(file.relPath)) return true;
+    return false;
+  });
+  for (const file of candidates.slice(0, 300)) {
+    const text = await readTextIfSafe(file.absPath, 160_000);
+    if (!text) continue;
+    if (/schemathesis|st\s+run|schemathesis\/action/i.test(text)) {
+      signals.schemathesisMentions.push(file.relPath);
+      if (/^\.github\/workflows\//i.test(file.relPath)) signals.schemathesisWorkflowFiles.push(file.relPath);
+    }
+    if (/junit|report-junit|--report\s+junit/i.test(text)) signals.junitMentions.push(file.relPath);
+    if (/allure|report-allure/i.test(text)) signals.allureMentions.push(file.relPath);
+    if (/\bvcr\b|cassette|report-vcr/i.test(text)) signals.vcrMentions.push(file.relPath);
+    if (/replay|har|ndjson|curl\s+-X/i.test(text)) signals.replayMentions.push(file.relPath);
+    if (/tracecov|schema-coverage|SCHEMATHESIS_COVERAGE|coverage/i.test(text)) signals.coverageMentions.push(file.relPath);
+    if (/\.py$/i.test(file.relPath) && /\b(FastAPI|Flask|Django|Sanic|Starlette|ASGI|WSGI)\b/.test(text)) signals.pythonAppFiles.push(file.relPath);
+  }
+  return {
+    workflowFiles: [...new Set(signals.workflowFiles)].slice(0, 40),
+    schemathesisWorkflowFiles: [...new Set(signals.schemathesisWorkflowFiles)].slice(0, 40),
+    schemathesisMentions: [...new Set(signals.schemathesisMentions)].slice(0, 40),
+    junitMentions: [...new Set(signals.junitMentions)].slice(0, 40),
+    allureMentions: [...new Set(signals.allureMentions)].slice(0, 40),
+    vcrMentions: [...new Set(signals.vcrMentions)].slice(0, 40),
+    replayMentions: [...new Set(signals.replayMentions)].slice(0, 40),
+    coverageMentions: [...new Set(signals.coverageMentions)].slice(0, 40),
+    pythonAppFiles: [...new Set(signals.pythonAppFiles)].slice(0, 40),
+    testFiles: [...new Set(signals.testFiles)].slice(0, 80),
+    mockServerFiles: [...new Set(signals.mockServerFiles)].slice(0, 40)
+  };
+}
+
+function parseJsonObject(text: string): unknown | null {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
 }
 
 function advisoryEcosystemForPackage(packageType: string, fallback: string): string {

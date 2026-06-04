@@ -2533,6 +2533,42 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 26/26 audit checks across 13 generated reports
 
+### Upgrade 129: API Contract Readiness Report
+
+- Cloned and inspected `schemathesis/schemathesis` under
+  `research/external-src/schemathesis-schemathesis` without executing
+  external source.
+- GitHub metadata: public repo, MIT license, 3,337 stars, 216 forks, updated
+  2026-06-03T13:37:58Z. No source code was copied into RepoTutor.
+- Added `ApiContractReportSchema` and `analysis/api-contract-report.json` with
+  Schemathesis-style schema documents, operation targets, test phases, check
+  matrix, runtime targets, reporting outputs, recommended commands, risk queue,
+  and learner next steps.
+- Added `markdown/api-contracts.md`, `html/api-contracts.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target api-contracts`.
+- Source pattern: Schemathesis separates OpenAPI/GraphQL schema discovery,
+  generated examples/coverage/fuzzing/stateful phases, response checks,
+  pytest/CI targets, JUnit/Allure/VCR reporting, curl reproduction, and
+  TraceCov-style coverage evidence. RepoTutor maps that to deterministic
+  static API contract readiness and explicitly does not execute generated API
+  requests or claim pass/fail contract results.
+- RED smoke generated
+  `/tmp/repotutor-contracts-red-studies.TF2TRb/2026-06-04/local__simple-ts-app__main__4d7cbd26`;
+  old behavior was missing `analysis/api-contract-report.json`,
+  `markdown/api-contracts.md`, and `html/api-contracts.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-contracts-green-studies.ROVc7l/2026-06-04/local__simple-ts-app__main__4d7cbd26`;
+  confirmed `verificationCheckedRequiredArtifacts=87`, schema documents 0,
+  operation targets 0, test phases 5, checks 6, runtime targets 5,
+  reporting outputs 6, recommended commands 6, risk queue 2,
+  `api-contract-card`, `data-source-pattern="Schemathesis"`,
+  manifest/learning path entries, and `open --target api-contracts` ->
+  `html/api-contracts.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 27/27 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

@@ -398,6 +398,22 @@
         "opa eval input data bundle schema fail and fail-defined decision gates",
         "opa build and inspect bundle readiness with manifest signature and capabilities metadata"
       ]
+    },
+    {
+      "repo": "schemathesis/schemathesis",
+      "url": "https://github.com/schemathesis/schemathesis",
+      "localPath": "research/external-src/schemathesis-schemathesis",
+      "stars": 3337,
+      "forks": 216,
+      "license": "MIT",
+      "updatedAt": "2026-06-03T13:37:58Z",
+      "adoptedPatterns": [
+        "OpenAPI and GraphQL schema-driven generated API cases",
+        "examples coverage fuzzing and stateful test phases",
+        "core checks for server error status code response schema and content type conformance",
+        "pytest and CI integration with JUnit report output",
+        "Allure VCR/cassette curl reproduction and TraceCov-style coverage evidence"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2211,6 +2227,28 @@
         "PolicyGateReportSchema",
         "OPA Rego policy input data decision eval test bundle schema strict fail gate"
       ]
+    },
+    {
+      "name": "API contract readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/api-contract-report.json",
+        "markdown/api-contracts.md",
+        "html/api-contracts.html",
+        "open --target api-contracts",
+        "ApiContractReportSchema",
+        "Schemathesis OpenAPI GraphQL schema generated cases Hypothesis checks stateful workflows JUnit Allure contract testing"
+      ]
     }
   ],
   "verification": {
@@ -2483,6 +2521,12 @@
     "cliPolicyGatesOpenTargetSmoke": "PASS",
     "buildPolicyGates": "PASS",
     "testPolicyGates": "PASS",
-    "auditBriefPolicyGates26": "PASS"
+    "auditBriefPolicyGates26": "PASS",
+    "fixtureApiContractReport": "PASS",
+    "cliApiContractsSmoke": "PASS",
+    "cliApiContractsOpenTargetSmoke": "PASS",
+    "buildApiContracts": "PASS",
+    "testApiContracts": "PASS",
+    "auditBriefApiContracts27": "PASS"
   }
 }

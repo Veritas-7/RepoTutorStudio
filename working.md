@@ -1660,6 +1660,34 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 128:
   - `24570c7` policy gate readiness report
 
+- 2026-06-04: AutoResearch Upgrade 129 candidate selected:
+  `schemathesis/schemathesis` (`https://github.com/schemathesis/schemathesis`;
+  public MIT; 3,337 stars; 216 forks; updated 2026-06-03T13:37:58Z). Cloned
+  ignored external source to `research/external-src/schemathesis-schemathesis`
+  and inspected README, quick start, CI/CD, Allure, coverage, stateful testing,
+  CLI reference, and generation/check code without executing external source.
+- 2026-06-04: RED api-contracts smoke generated
+  `/tmp/repotutor-contracts-red-studies.TF2TRb/2026-06-04/local__simple-ts-app__main__4d7cbd26`;
+  old build was missing `analysis/api-contract-report.json`,
+  `markdown/api-contracts.md`, and `html/api-contracts.html` as expected.
+- 2026-06-04: Implemented Schemathesis-style API contract readiness report:
+  `ApiContractReportSchema`, `analysis/api-contract-report.json`,
+  `markdown/api-contracts.md`, `html/api-contracts.html`, schema documents,
+  operation targets, test phases, check matrix, runtime targets, reporting
+  outputs, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, and `open --target api-contracts`.
+- 2026-06-04: GREEN api-contracts smoke generated
+  `/tmp/repotutor-contracts-green-studies.ROVc7l/2026-06-04/local__simple-ts-app__main__4d7cbd26`;
+  confirmed `verificationCheckedRequiredArtifacts=87`, schema documents 0,
+  operation targets 0, test phases 5, checks 6, runtime targets 5, reporting
+  outputs 6, recommended commands 6, risk queue 2, `api-contract-card`,
+  `data-source-pattern="Schemathesis"`, manifest/learning-path entries, and
+  `open --target api-contracts` -> `html/api-contracts.html`.
+- 2026-06-04: Verification for Upgrade 129:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 27/27 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

@@ -36,6 +36,7 @@ import type {
   AdvisoryReport,
   VexReport,
   PolicyGateReport,
+  ApiContractReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -78,6 +79,7 @@ export interface StudyHtmlInput {
   advisoryReport: AdvisoryReport;
   vexReport: VexReport;
   policyGateReport: PolicyGateReport;
+  apiContractReport: ApiContractReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -140,6 +142,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["advisories.html", "Advisory Readiness"],
     ["vex.html", "OpenVEX Readiness"],
     ["policy-gates.html", "Policy Gates"],
+    ["api-contracts.html", "API Contracts"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -237,6 +240,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Advisory Query Readiness</h3><p>${escapeHtml(input.advisoryReport.summary)}</p><p>OSV-Scanner 패턴으로 package advisory query target, lockfile, ignore policy를 정리합니다.</p><a href="advisories.html">Advisory Readiness 열기</a></article>
           <article><h3>OpenVEX Impact Readiness</h3><p>${escapeHtml(input.vexReport.summary)}</p><p>OpenVEX 패턴으로 product, vulnerability input, status justification, SARIF filter 준비도를 정리합니다.</p><a href="vex.html">OpenVEX Readiness 열기</a></article>
           <article><h3>Policy Gate Readiness</h3><p>${escapeHtml(input.policyGateReport.summary)}</p><p>OPA 패턴으로 Rego policy, input/data fixture, test, bundle, decision output 준비도를 정리합니다.</p><a href="policy-gates.html">Policy Gates 열기</a></article>
+          <article><h3>API Contract Readiness</h3><p>${escapeHtml(input.apiContractReport.summary)}</p><p>Schemathesis 패턴으로 schema, generated case phase, response check, runtime/reporting 준비도를 정리합니다.</p><a href="api-contracts.html">API Contracts 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -378,6 +382,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Policy Gate Readiness", "policy-gates.html", `<section class="panel" data-source-pattern="OPA"><h2>Policy Gate Snapshot</h2><p>${escapeHtml(input.policyGateReport.summary)}</p><p class="muted">${escapeHtml(input.policyGateReport.sourcePattern)}</p><dl class="meta"><div><dt>policies</dt><dd>${input.policyGateReport.policyDocuments.length}</dd></div><div><dt>inputs</dt><dd>${input.policyGateReport.inputDocuments.length}</dd></div><div><dt>queries</dt><dd>${input.policyGateReport.gateQueries.length}</dd></div><div><dt>bundle reqs</dt><dd>${input.policyGateReport.bundleReadiness.length}</dd></div></dl><p class="muted">RepoTutor records OPA readiness only. It does not evaluate allow, deny, or violation decisions.</p></section><section class="grid"><article class="policy-gate-card"><h3>Gate Queries</h3>${policyGateQueryList(input.policyGateReport.gateQueries)}</article><article class="policy-gate-card"><h3>Test Coverage</h3>${policyCoverageList(input.policyGateReport.testCoverage)}</article><article class="policy-gate-card"><h3>Bundle Readiness</h3>${policyBundleList(input.policyGateReport.bundleReadiness)}</article><article class="policy-gate-card"><h3>Decision Outputs</h3>${policyDecisionList(input.policyGateReport.decisionOutputs)}</article></section><section class="cards policy-document-cards">${policyDocumentCards(input.policyGateReport.policyDocuments)}</section><section class="grid"><article class="policy-gate-card"><h3>Input Documents</h3>${policyInputList(input.policyGateReport.inputDocuments)}</article><article class="policy-gate-card"><h3>Recommended Commands</h3>${policyCommandList(input.policyGateReport.recommendedCommands)}</article><article class="policy-gate-card"><h3>Risk Queue</h3>${policyRiskList(input.policyGateReport.riskQueue)}</article><article class="policy-gate-card"><h3>다음 확인 단계</h3>${list(input.policyGateReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "api-contracts.html",
+      title: "API Contract Readiness",
+      html: pageShell("API Contract Readiness", "api-contracts.html", `<section class="panel" data-source-pattern="Schemathesis"><h2>API Contract Snapshot</h2><p>${escapeHtml(input.apiContractReport.summary)}</p><p class="muted">${escapeHtml(input.apiContractReport.sourcePattern)}</p><dl class="meta"><div><dt>schemas</dt><dd>${input.apiContractReport.schemaDocuments.length}</dd></div><div><dt>operations</dt><dd>${input.apiContractReport.operationTargets.length}</dd></div><div><dt>phases</dt><dd>${input.apiContractReport.testPhases.length}</dd></div><div><dt>checks</dt><dd>${input.apiContractReport.checkMatrix.length}</dd></div></dl><p class="muted">RepoTutor records API contract readiness only. It does not send generated requests or claim test pass/fail results.</p></section><section class="grid"><article class="api-contract-card"><h3>Test Phases</h3>${apiContractPhaseList(input.apiContractReport.testPhases)}</article><article class="api-contract-card"><h3>Check Matrix</h3>${apiContractCheckList(input.apiContractReport.checkMatrix)}</article><article class="api-contract-card"><h3>Runtime Targets</h3>${apiContractRuntimeList(input.apiContractReport.runtimeTargets)}</article><article class="api-contract-card"><h3>Reporting Outputs</h3>${apiContractReportingList(input.apiContractReport.reportingOutputs)}</article></section><section class="cards api-contract-schema-cards">${apiContractSchemaCards(input.apiContractReport.schemaDocuments)}</section><section class="grid"><article class="api-contract-card"><h3>Operation Targets</h3>${apiContractOperationList(input.apiContractReport.operationTargets)}</article><article class="api-contract-card"><h3>Recommended Commands</h3>${apiContractCommandList(input.apiContractReport.recommendedCommands)}</article><article class="api-contract-card"><h3>Risk Queue</h3>${apiContractRiskList(input.apiContractReport.riskQueue)}</article><article class="api-contract-card"><h3>다음 확인 단계</h3>${list(input.apiContractReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -514,6 +523,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Advisory Query Readiness", path: "html/advisories.html", description: "OSV-Scanner식 package advisory query target, lockfile, policy control 준비도를 확인합니다." },
       { label: "OpenVEX Impact Readiness", path: "html/vex.html", description: "OpenVEX식 product, status, justification, SARIF filter, attestation 준비도를 확인합니다." },
       { label: "Policy Gate Readiness", path: "html/policy-gates.html", description: "OPA식 Rego policy, input/data, test, bundle, decision gate 준비도를 확인합니다." },
+      { label: "API Contract Readiness", path: "html/api-contracts.html", description: "Schemathesis식 schema, generated phase, response check, runtime/reporting 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -753,6 +763,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "policy-gates.html",
       goal: "OPA식 Rego policy, input/data fixture, test, bundle, decision output 준비도를 확인합니다.",
       evidence: `policy documents ${input.policyGateReport.policyDocuments.length}개, gate queries ${input.policyGateReport.gateQueries.length}개`
+    },
+    {
+      title: "API contract 준비도 확인",
+      href: "api-contracts.html",
+      goal: "Schemathesis식 schema, generated phase, response check, runtime target, reporting output 준비도를 확인합니다.",
+      evidence: `schema documents ${input.apiContractReport.schemaDocuments.length}개, operation targets ${input.apiContractReport.operationTargets.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -1255,6 +1271,51 @@ function policyRiskList(items: PolicyGateReport["riskQueue"]): string {
 }
 
 function policyHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function apiContractSchemaCards(items: ApiContractReport["schemaDocuments"]): string {
+  if (items.length === 0) return "<article class=\"api-contract-card\"><h3>API schema가 없습니다.</h3><p>OpenAPI, Swagger, GraphQL, Postman, AsyncAPI contract를 추가해야 generated API checks를 준비할 수 있습니다.</p></article>";
+  return items.map((item) => `<article class="api-contract-card" data-contract-schema-type="${escapeHtml(item.schemaType)}"><h3>${escapeHtml(item.filePath)}</h3><p class="muted">${escapeHtml(item.schemaType)} · ${escapeHtml(item.readiness)} · ${escapeHtml(item.version ?? "unknown version")}</p><p>operations ${item.operationCount}</p><p>${escapeHtml(item.evidence)}</p><a href="${escapeHtml(apiContractHref(item.sourceHref))}">원본 열기</a></article>`).join("");
+}
+
+function apiContractOperationList(items: ApiContractReport["operationTargets"]): string {
+  if (items.length === 0) return "<p class=\"muted\">operation target이 없습니다.</p>";
+  return `<ul>${items.slice(0, 80).map((item) => `<li><strong>${escapeHtml(item.method ?? "operation")}</strong> ${escapeHtml(item.path ?? item.operationId ?? "unknown")} [${escapeHtml(item.readiness)}]<br><span class="muted">${escapeHtml(item.source)} · ${escapeHtml(item.operationId ?? "no operationId")}</span><br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(apiContractHref(item.relatedHref))}">관련 schema 열기</a></li>`).join("")}</ul>`;
+}
+
+function apiContractPhaseList(items: ApiContractReport["testPhases"]): string {
+  if (items.length === 0) return "<p class=\"muted\">test phase readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.phase)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(apiContractHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function apiContractCheckList(items: ApiContractReport["checkMatrix"]): string {
+  if (items.length === 0) return "<p class=\"muted\">check matrix가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.check)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(apiContractHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function apiContractRuntimeList(items: ApiContractReport["runtimeTargets"]): string {
+  if (items.length === 0) return "<p class=\"muted\">runtime target readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.target)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(apiContractHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function apiContractReportingList(items: ApiContractReport["reportingOutputs"]): string {
+  if (items.length === 0) return "<p class=\"muted\">reporting output readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.output)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(apiContractHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function apiContractCommandList(items: ApiContractReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function apiContractRiskList(items: ApiContractReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(apiContractHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function apiContractHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
