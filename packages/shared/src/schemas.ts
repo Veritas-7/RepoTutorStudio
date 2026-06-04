@@ -4963,6 +4963,88 @@ export const LlmObservabilityReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const VectorDbReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  vectorSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["qdrant", "weaviate", "chroma", "pinecone", "milvus", "pgvector", "faiss", "custom", "unknown"]),
+    collectionCount: z.number().int().nonnegative(),
+    vectorConfigCount: z.number().int().nonnegative(),
+    embeddingCount: z.number().int().nonnegative(),
+    upsertCount: z.number().int().nonnegative(),
+    queryCount: z.number().int().nonnegative(),
+    filterCount: z.number().int().nonnegative(),
+    hybridCount: z.number().int().nonnegative(),
+    rerankCount: z.number().int().nonnegative(),
+    tenantCount: z.number().int().nonnegative(),
+    replicationCount: z.number().int().nonnegative(),
+    snapshotCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  collectionSignals: z.array(z.object({
+    signal: z.enum(["collection", "class", "schema", "vector-config", "distance", "dimensions", "hnsw", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  clientSignals: z.array(z.object({
+    signal: z.enum(["qdrant-client", "weaviate-client", "chromadb-client", "http-client", "persistent-client", "api-key", "endpoint", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ingestionSignals: z.array(z.object({
+    signal: z.enum(["add", "upsert", "batch", "ids", "documents", "metadata", "payload", "delete", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  querySignals: z.array(z.object({
+    signal: z.enum(["search", "query", "nearest-neighbor", "similarity", "hybrid", "full-text", "filter", "limit", "score", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  embeddingSignals: z.array(z.object({
+    signal: z.enum(["embedding-function", "vectorizer", "model-provider", "precomputed-vector", "sparse-vector", "multimodal", "text-splitter", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  indexSignals: z.array(z.object({
+    signal: z.enum(["hnsw", "quantization", "payload-index", "vector-index", "distance-metric", "shard", "replication", "consistency", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  opsSignals: z.array(z.object({
+    signal: z.enum(["snapshot", "backup", "restore", "health", "metrics", "migration", "multi-tenancy", "ttl", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["qdrant-client", "weaviate-client", "chromadb", "pinecone", "pymilvus", "pgvector", "faiss", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ServerFrameworkReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -6602,6 +6684,7 @@ export type CliReadinessReport = z.infer<typeof CliReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
+export type VectorDbReadinessReport = z.infer<typeof VectorDbReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;

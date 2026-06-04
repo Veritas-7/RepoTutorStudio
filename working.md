@@ -4923,6 +4923,52 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 209:
   - `9d66764` llm-observability readiness report
 
+- 2026-06-05: AutoResearch Upgrade 210 candidate selected:
+  `qdrant/qdrant` (`https://github.com/qdrant/qdrant`; public;
+  Apache-2.0; 31,799 stars; 2,320 forks; updated
+  2026-06-04T18:40:11Z). Compared with `weaviate/weaviate`
+  (`https://github.com/weaviate/weaviate`; public; BSD-3-Clause; 16,272
+  stars; 1,305 forks; updated 2026-06-04T10:10:46Z) and
+  `chroma-core/chroma` (`https://github.com/chroma-core/chroma`; public;
+  Apache-2.0; 28,213 stars; 2,286 forks; updated
+  2026-06-04T18:42:14Z); selected the three-source vector DB readiness slice
+  because RepoTutor had shallow LLM vector-store/RAG signals but no dedicated
+  Qdrant/Weaviate/Chroma collection, embedding, ingestion, query, index, and
+  operations readiness target. Cloned sparse ignored external sources to
+  `research/external-src/qdrant`, `research/external-src/weaviate`, and
+  `research/external-src/chroma` and inspected docs/configs/examples without
+  executing external source. Clone HEADs were `44ad62f`, `8269596`, and
+  `43171c5`; tracked file count for all three ignored source paths returned
+  `0`.
+- 2026-06-05: RED vector-db-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-vector-db-red-studies.MwvcMl/2026-06-05/local__repotutor-vector-db-red-repo.MhcsBh__local__31f779a6`;
+  old behavior had `verificationCheckedRequiredArtifacts=327`, was missing
+  `analysis/vector-db-readiness-report.json`,
+  `markdown/vector-db-readiness.md`, and `html/vector-db-readiness.html`, and
+  `open --target vector-db-readiness` failed with `Unsupported open target`.
+- 2026-06-05: Implemented Qdrant/Weaviate/Chroma-style
+  vector-db-readiness report: `VectorDbReadinessReportSchema`,
+  `analysis/vector-db-readiness-report.json`,
+  `markdown/vector-db-readiness.md`, `html/vector-db-readiness.html`, vector
+  setup detection, collection signals, client signals, ingestion signals,
+  query signals, embedding signals, index signals, ops signals, package
+  signals, recommended commands, risk queue, manifest/session verification
+  coverage, learning-path linkage, nav entry, CLI help target, and
+  `open --target vector-db-readiness`.
+- 2026-06-05: GREEN vector-db-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-vector-db-green-studies.ESYoQx/2026-06-05/local__repotutor-vector-db-green-repo.JgYSDu__local__51e9f978`;
+  confirmed `verificationCheckedRequiredArtifacts=330`, vector setups 8,
+  collection ready signals 7, query ready signals 9, embedding ready signals
+  7, index ready signals 8, ops ready signals 8, package ready signals 7,
+  risk queue 0, all three new artifacts, and
+  `open --target vector-db-readiness` -> `html/vector-db-readiness.html`.
+- 2026-06-05: Verification for Upgrade 210:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 17/17 tests
+  - `pnpm audit:brief`: PASS, 108/108 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
