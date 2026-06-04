@@ -91,6 +91,7 @@ import {
   WebSocketReadinessReport,
   PdfGenerationReadinessReport,
   SpreadsheetReadinessReport,
+  ChartVisualizationReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -188,6 +189,7 @@ export interface AnalysisBundle {
   webSocketReadinessReport: WebSocketReadinessReport;
   pdfGenerationReadinessReport: PdfGenerationReadinessReport;
   spreadsheetReadinessReport: SpreadsheetReadinessReport;
+  chartVisualizationReadinessReport: ChartVisualizationReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -285,8 +287,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const webSocketReadinessReport = await buildWebSocketReadinessReport(walk);
   const pdfGenerationReadinessReport = await buildPdfGenerationReadinessReport(walk);
   const spreadsheetReadinessReport = await buildSpreadsheetReadinessReport(walk);
+  const chartVisualizationReadinessReport = await buildChartVisualizationReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -17598,6 +17601,304 @@ function spreadsheetReadinessSignalFromSpecs<T extends Record<K, string> & { pat
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/spreadsheet-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildChartVisualizationReadinessReport(walk: WalkResult): Promise<ChartVisualizationReadinessReport> {
+  const sourceFiles = await chartVisualizationReadinessSourceFiles(walk);
+  const chartSetups = chartVisualizationReadinessSetups(sourceFiles);
+  const chartTypeSignals = chartVisualizationReadinessChartTypeSignals(sourceFiles);
+  const dataSignals = chartVisualizationReadinessDataSignals(sourceFiles);
+  const scaleSignals = chartVisualizationReadinessScaleSignals(sourceFiles);
+  const interactionSignals = chartVisualizationReadinessInteractionSignals(sourceFiles);
+  const renderSignals = chartVisualizationReadinessRenderSignals(sourceFiles);
+  const lifecycleSignals = chartVisualizationReadinessLifecycleSignals(sourceFiles);
+  const safetySignals = chartVisualizationReadinessSafetySignals(sourceFiles);
+  const packageSignals = chartVisualizationReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasChartJsPackage = packageSignals.some((item) => item.signal === "chart.js" && item.readiness === "ready");
+  const hasSetup = chartSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = chartSetups.some((item) => item.readiness === "ready");
+  const hasData = dataSignals.some((item) => item.readiness === "ready") || chartSetups.some((item) => item.dataCount > 0);
+  const hasRender = renderSignals.some((item) => item.readiness === "ready") || chartSetups.some((item) => item.renderCount > 0);
+  const hasLifecycle = lifecycleSignals.some((item) => item.readiness === "ready") || chartSetups.some((item) => item.lifecycleCount > 0);
+  const hasSafety = safetySignals.some((item) => item.readiness === "ready") || chartSetups.some((item) => item.safetyCount > 0);
+
+  const riskQueue: ChartVisualizationReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the chart visualization strategy before claiming analytics/dashboard readiness.",
+      why: "Chart readiness starts with explicit chart config, data, scale, render, lifecycle, or package evidence.",
+      relatedHref: "html/chart-visualization-readiness.html"
+    });
+  }
+  if (hasChartJsPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair Chart.js package evidence with concrete Chart config, data, scale, render, and lifecycle call sites.",
+      why: "A chart package alone does not prove that datasets, axes, canvas rendering, updates, and cleanup are wired.",
+      relatedHref: "html/chart-visualization-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasData) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add labels, datasets, series, parsing, object data, or stacking evidence.",
+      why: "Charts are misleading without explicit data shape and dataset mapping.",
+      relatedHref: "html/chart-visualization-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasRender) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add canvas/SVG mounting, responsive layout, animation, or export-image handling.",
+      why: "Visualization readiness needs an explicit render target and viewport/export behavior.",
+      relatedHref: "html/chart-visualization-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasLifecycle) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add update, resize, destroy, plugin hook, or registry lifecycle handling.",
+      why: "Charts embedded in apps need updates and cleanup to avoid stale data, memory leaks, and broken resizing.",
+      relatedHref: "html/chart-visualization-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasSafety) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review large dataset limits, decimation, parsing policy, accessibility labels, SSR guards, and error handling.",
+      why: "Charting code often handles large datasets, browser-only APIs, and visuals that need accessible fallbacks.",
+      relatedHref: "html/chart-visualization-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run representative chart rendering tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor records chart visualization readiness only; it does not render charts, open canvases, measure pixels, execute plugins, export images, mutate DOM, or run the analyzed project's tests.",
+    relatedHref: "html/chart-visualization-readiness.html"
+  });
+
+  return {
+    summary: `Chart.js-style chart visualization readiness report: setup ${chartSetups.length}개, chart type signal ${chartTypeSignals.length}개, data signal ${dataSignals.length}개, render signal ${renderSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Chart.js new Chart Chart.register registerables datasets scales tooltip legend responsive canvas update resize destroy toBase64Image decimation",
+    chartSetups,
+    chartTypeSignals,
+    dataSignals,
+    scaleSignals,
+    interactionSignals,
+    renderSignals,
+    lifecycleSignals,
+    safetySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"Chart\\(|new Chart|Chart\\.register|registerables|recharts|echarts|d3|ResponsiveContainer\" src app packages", purpose: "Inventory chart providers, registration, and chart entry points." },
+      { command: "rg \"datasets|dataset|series|labels|data:|parsing|stacked\" src app packages", purpose: "Review chart data shape, dataset mapping, parsing, and stacking." },
+      { command: "rg \"scales|category|linear|time|logarithmic|radial|xAxis|yAxis\" src app packages", purpose: "Check axes, scales, and multi-axis chart behavior." },
+      { command: "rg \"tooltip|legend|hover|onClick|interaction|zoom|pan|htmlLegend\" src app packages", purpose: "Check chart interaction and annotation surfaces." },
+      { command: "rg \"canvas|svg|responsive|maintainAspectRatio|animation|toBase64Image|update\\(|resize\\(|destroy\\(\" src app packages", purpose: "Confirm render target, layout, export, and lifecycle handling." },
+      { command: "npx vitest run", purpose: "Run local tests that cover chart configs, data mapping, render fallbacks, and lifecycle cleanup." }
+    ],
+    learnerNextSteps: [
+      "먼저 Chart.js, Recharts, ECharts, D3, visx, Nivo import와 chart creation 지점을 찾으세요.",
+      "labels, datasets, series, parsing, object data, stacking 신호로 데이터가 시각화에 어떻게 매핑되는지 확인하세요.",
+      "scales, category, linear, time, logarithmic, radial, multi-axis 신호로 축과 단위 정책을 확인하세요.",
+      "tooltip, legend, hover, click, zoom/pan 신호로 사용자 interaction과 설명 가능성을 확인하세요.",
+      "canvas, svg, responsive, animation, toBase64Image, update, resize, destroy 신호로 렌더링과 lifecycle을 추적하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 chart 렌더링, canvas pixel 검사, plugin 실행, 이미지 export는 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type ChartVisualizationReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function chartVisualizationReadinessSourceFiles(walk: WalkResult): Promise<ChartVisualizationReadinessSourceFile[]> {
+  const files: ChartVisualizationReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !chartVisualizationReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!chartVisualizationReadinessPathSignal(file.relPath) && !chartVisualizationReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function chartVisualizationReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return chartVisualizationReadinessPathSignal(filePath)
+    || /^(chart\.[cm]?[jt]sx?|charts\.[cm]?[jt]sx?|graph\.[cm]?[jt]sx?|graphs\.[cm]?[jt]sx?|visualization\.[cm]?[jt]sx?|visualizations\.[cm]?[jt]sx?|dashboard\.[cm]?[jt]sx?|analytics\.[cm]?[jt]sx?|package\.json)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml)$/i.test(filePath);
+}
+
+function chartVisualizationReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(chart|charts|graph|graphs|visualization|visualizations|dashboard|dashboards|analytics|metric|metrics|plot|plots)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function chartVisualizationReadinessContentSignal(text: string): boolean {
+  return /(new Chart|Chart\.register|registerables|datasets|scales|Tooltip|Legend|toBase64Image|ResponsiveContainer|recharts|echarts|d3\.|@visx|nivo)/i.test(text);
+}
+
+function chartVisualizationReadinessSetups(sourceFiles: ChartVisualizationReadinessSourceFile[]): ChartVisualizationReadinessReport["chartSetups"] {
+  const rows: ChartVisualizationReadinessReport["chartSetups"] = [];
+  for (const source of sourceFiles) {
+    const configCount = countMatches(source.text, /new Chart|Chart\s*\(|type\s*:|ChartConfiguration|options\s*:|plugins\s*:|Chart\.register|registerables/gi);
+    const dataCount = countMatches(source.text, /labels|datasets|dataset|series|data\s*:|parsing|stacked|ChartData/gi);
+    const scaleCount = countMatches(source.text, /scales|scale|category|linear|time|logarithmic|radial|xAxis|yAxis|axis/gi);
+    const interactionCount = countMatches(source.text, /tooltip|legend|hover|onClick|click|interaction|zoom|pan|htmlLegend/gi);
+    const renderCount = countMatches(source.text, /canvas|svg|responsive|maintainAspectRatio|animation|layout|toBase64Image|render/gi);
+    const lifecycleCount = countMatches(source.text, /update\s*\(|resize\s*\(|destroy\s*\(|beforeInit|afterInit|beforeDraw|afterDraw|Chart\.register|unregister/gi);
+    const safetyCount = countMatches(source.text, /decimation|threshold|samples|parsing\s*:|aria|role=|accessible|typeof window|window\?|try\s*\{|catch\s*\(|throw/gi);
+    const hasSetupSignal = configCount + dataCount + scaleCount + interactionCount + renderCount + lifecycleCount + safetyCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: chartVisualizationReadinessProvider(source),
+      configCount,
+      dataCount,
+      scaleCount,
+      interactionCount,
+      renderCount,
+      lifecycleCount,
+      safetyCount,
+      readiness: configCount > 0 && dataCount > 0 && renderCount > 0 && (scaleCount > 0 || interactionCount > 0 || lifecycleCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains config ${configCount}, data ${dataCount}, scale ${scaleCount}, interaction ${interactionCount}, render ${renderCount}, lifecycle ${lifecycleCount}, safety ${safetyCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function chartVisualizationReadinessProvider(source: ChartVisualizationReadinessSourceFile): ChartVisualizationReadinessReport["chartSetups"][number]["provider"] {
+  if (/chart\.js|new Chart|Chart\.register|registerables/i.test(source.text)) return "chartjs";
+  if (/recharts|ResponsiveContainer|LineChart|BarChart|PieChart/i.test(source.text)) return "recharts";
+  if (/echarts|ECharts|setOption|init\s*\(/i.test(source.text)) return "echarts";
+  if (/d3\.|from ['"]d3|require\(['"]d3/i.test(source.text)) return "d3";
+  if (/@visx|visx/i.test(source.text)) return "visx";
+  if (/nivo|@nivo/i.test(source.text)) return "nivo";
+  if (/chart|visualization|dashboard|graph/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function chartVisualizationReadinessChartTypeSignals(sourceFiles: ChartVisualizationReadinessSourceFile[]): ChartVisualizationReadinessReport["chartTypeSignals"] {
+  const specs: Array<{ signal: ChartVisualizationReadinessReport["chartTypeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "bar", pattern: /type\s*:\s*['"]bar|BarChart|BarController/i, evidence: "bar chart evidence was detected." },
+    { signal: "line", pattern: /type\s*:\s*['"]line|LineChart|LineController/i, evidence: "line chart evidence was detected." },
+    { signal: "pie-doughnut", pattern: /type\s*:\s*['"](pie|doughnut)|PieChart|DoughnutController/i, evidence: "pie or doughnut chart evidence was detected." },
+    { signal: "scatter-bubble", pattern: /type\s*:\s*['"](scatter|bubble)|ScatterChart|BubbleController/i, evidence: "scatter or bubble chart evidence was detected." },
+    { signal: "radar-polar", pattern: /type\s*:\s*['"](radar|polarArea)|RadarChart|PolarAreaController/i, evidence: "radar or polar chart evidence was detected." },
+    { signal: "mixed", pattern: /datasets[\s\S]{0,400}type\s*:|mixed chart|ChartTypeRegistry/i, evidence: "mixed chart evidence was detected." },
+    { signal: "area", pattern: /fill\s*:|area chart|AreaChart/i, evidence: "area chart evidence was detected." }
+  ];
+  return chartVisualizationReadinessSignalFromSpecs(sourceFiles, specs, "chart type", "signal");
+}
+
+function chartVisualizationReadinessDataSignals(sourceFiles: ChartVisualizationReadinessSourceFile[]): ChartVisualizationReadinessReport["dataSignals"] {
+  const specs: Array<{ signal: ChartVisualizationReadinessReport["dataSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "labels", pattern: /labels\s*:|label\s*:/i, evidence: "label mapping evidence was detected." },
+    { signal: "datasets", pattern: /datasets|dataset|ChartDataset/i, evidence: "dataset mapping evidence was detected." },
+    { signal: "series", pattern: /series|dataKey|values|points/i, evidence: "series mapping evidence was detected." },
+    { signal: "object-data", pattern: /\{x\s*:|\{y\s*:|parsing\s*:\s*\{|xAxisKey|yAxisKey/i, evidence: "object data mapping evidence was detected." },
+    { signal: "parsing", pattern: /parsing\s*:|parse\s*\(|normalized/i, evidence: "parsing policy evidence was detected." },
+    { signal: "stacking", pattern: /stacked|stack\s*:|stackId/i, evidence: "stacking evidence was detected." }
+  ];
+  return chartVisualizationReadinessSignalFromSpecs(sourceFiles, specs, "data", "signal");
+}
+
+function chartVisualizationReadinessScaleSignals(sourceFiles: ChartVisualizationReadinessSourceFile[]): ChartVisualizationReadinessReport["scaleSignals"] {
+  const specs: Array<{ signal: ChartVisualizationReadinessReport["scaleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "category", pattern: /type\s*:\s*['"]category|CategoryScale|XAxis|xAxis/i, evidence: "category scale evidence was detected." },
+    { signal: "linear", pattern: /type\s*:\s*['"]linear|LinearScale|YAxis|yAxis/i, evidence: "linear scale evidence was detected." },
+    { signal: "time", pattern: /type\s*:\s*['"]time|TimeScale|time\s*:|adapter/i, evidence: "time scale evidence was detected." },
+    { signal: "logarithmic", pattern: /type\s*:\s*['"]logarithmic|LogarithmicScale/i, evidence: "logarithmic scale evidence was detected." },
+    { signal: "radial", pattern: /radial|RadialLinearScale|rAxis/i, evidence: "radial scale evidence was detected." },
+    { signal: "multi-axis", pattern: /yAxisID|xAxisID|axisId|scales\s*:\s*\{[\s\S]{0,300}(x|y)2/i, evidence: "multi-axis evidence was detected." }
+  ];
+  return chartVisualizationReadinessSignalFromSpecs(sourceFiles, specs, "scale", "signal");
+}
+
+function chartVisualizationReadinessInteractionSignals(sourceFiles: ChartVisualizationReadinessSourceFile[]): ChartVisualizationReadinessReport["interactionSignals"] {
+  const specs: Array<{ signal: ChartVisualizationReadinessReport["interactionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tooltip", pattern: /tooltip|Tooltip/i, evidence: "tooltip evidence was detected." },
+    { signal: "legend", pattern: /legend|Legend/i, evidence: "legend evidence was detected." },
+    { signal: "hover", pattern: /hover|onHover|activeElements/i, evidence: "hover evidence was detected." },
+    { signal: "click", pattern: /onClick|click|setActiveElements|getElementsAtEvent/i, evidence: "click evidence was detected." },
+    { signal: "zoom-pan", pattern: /zoom|pan|chartjs-plugin-zoom/i, evidence: "zoom or pan evidence was detected." },
+    { signal: "html-legend", pattern: /htmlLegend|generateLabels|legendCallback|setDatasetVisibility/i, evidence: "HTML legend evidence was detected." }
+  ];
+  return chartVisualizationReadinessSignalFromSpecs(sourceFiles, specs, "interaction", "signal");
+}
+
+function chartVisualizationReadinessRenderSignals(sourceFiles: ChartVisualizationReadinessSourceFile[]): ChartVisualizationReadinessReport["renderSignals"] {
+  const specs: Array<{ signal: ChartVisualizationReadinessReport["renderSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "canvas", pattern: /canvas|getContext\(['"]2d|HTMLCanvasElement/i, evidence: "canvas render target evidence was detected." },
+    { signal: "svg", pattern: /svg|<svg|SVGElement/i, evidence: "SVG render target evidence was detected." },
+    { signal: "responsive", pattern: /responsive|maintainAspectRatio|ResizeObserver|ResponsiveContainer/i, evidence: "responsive layout evidence was detected." },
+    { signal: "animation", pattern: /animation|animations|easing|duration/i, evidence: "animation evidence was detected." },
+    { signal: "layout", pattern: /layout|padding|chartArea|aspectRatio|width|height/i, evidence: "layout evidence was detected." },
+    { signal: "export-image", pattern: /toBase64Image|toDataURL|save image|download/i, evidence: "image export evidence was detected." }
+  ];
+  return chartVisualizationReadinessSignalFromSpecs(sourceFiles, specs, "render", "signal");
+}
+
+function chartVisualizationReadinessLifecycleSignals(sourceFiles: ChartVisualizationReadinessSourceFile[]): ChartVisualizationReadinessReport["lifecycleSignals"] {
+  const specs: Array<{ signal: ChartVisualizationReadinessReport["lifecycleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "create", pattern: /new Chart|Chart\s*\(|echarts\.init|<LineChart|<BarChart/i, evidence: "chart creation evidence was detected." },
+    { signal: "update", pattern: /\.update\s*\(|setOption|updateOptions/i, evidence: "chart update evidence was detected." },
+    { signal: "resize", pattern: /\.resize\s*\(|resizeObserver|onResize|ResponsiveContainer/i, evidence: "chart resize evidence was detected." },
+    { signal: "destroy", pattern: /\.destroy\s*\(|dispose\s*\(|cleanup|unmount/i, evidence: "chart destroy cleanup evidence was detected." },
+    { signal: "plugin-hook", pattern: /beforeInit|afterInit|beforeDraw|afterDraw|beforeEvent|afterEvent/i, evidence: "plugin hook evidence was detected." },
+    { signal: "registry", pattern: /Chart\.register|registerables|Chart\.unregister|Registry/i, evidence: "registry evidence was detected." }
+  ];
+  return chartVisualizationReadinessSignalFromSpecs(sourceFiles, specs, "lifecycle", "signal");
+}
+
+function chartVisualizationReadinessSafetySignals(sourceFiles: ChartVisualizationReadinessSourceFile[]): ChartVisualizationReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: ChartVisualizationReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "large-dataset", pattern: /large dataset|threshold|samples|dataLimit|maxTicksLimit|normalized/i, evidence: "large dataset boundary evidence was detected." },
+    { signal: "decimation", pattern: /decimation|lttb|min-max|sampleSize/i, evidence: "decimation evidence was detected." },
+    { signal: "parsing-policy", pattern: /parsing\s*:|normalized|skipNull|spanGaps/i, evidence: "parsing policy evidence was detected." },
+    { signal: "accessibility-label", pattern: /aria-label|role=['"]img|figcaption|description|accessible/i, evidence: "accessibility label evidence was detected." },
+    { signal: "ssr-guard", pattern: /typeof window|window\?|document\?|useEffect|onMount/i, evidence: "browser-only or SSR guard evidence was detected." },
+    { signal: "error-handling", pattern: /try\s*\{|catch\s*\(|throw new Error|onError|fallback/i, evidence: "error handling evidence was detected." }
+  ];
+  return chartVisualizationReadinessSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function chartVisualizationReadinessPackageSignals(sourceFiles: ChartVisualizationReadinessSourceFile[]): ChartVisualizationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ChartVisualizationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "chart.js", pattern: /"chart\.js"|from ['"]chart\.js|require\(['"]chart\.js|new Chart|Chart\.register/i, evidence: "Chart.js package/import evidence was detected." },
+    { signal: "recharts", pattern: /"recharts"|from ['"]recharts|ResponsiveContainer|LineChart|BarChart/i, evidence: "Recharts package/import evidence was detected." },
+    { signal: "echarts", pattern: /"echarts"|from ['"]echarts|echarts\.init|setOption/i, evidence: "ECharts package/import evidence was detected." },
+    { signal: "d3", pattern: /"d3"|from ['"]d3|require\(['"]d3|d3\./i, evidence: "D3 package/import evidence was detected." },
+    { signal: "visx", pattern: /"@visx|from ['"]@visx|visx/i, evidence: "visx package/import evidence was detected." },
+    { signal: "nivo", pattern: /"@nivo|from ['"]@nivo|nivo/i, evidence: "Nivo package/import evidence was detected." }
+  ];
+  return chartVisualizationReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function chartVisualizationReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ChartVisualizationReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/chart-visualization-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

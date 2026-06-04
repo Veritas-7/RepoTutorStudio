@@ -3578,6 +3578,48 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 178:
   - `9f32cde` spreadsheet readiness report
 
+- 2026-06-04: AutoResearch Upgrade 179 candidate selected:
+  `chartjs/Chart.js`
+  (`https://github.com/chartjs/Chart.js`; public; MIT; 67,476 stars; 11,948
+  forks; updated 2026-06-04T05:49:47Z). Compared with `recharts/recharts`,
+  `apache/echarts`, and `d3/d3`; selected Chart.js because it directly models
+  chart visualization readiness: chart creation, registration, datasets,
+  scales, tooltips, legends, interactions, responsive canvas rendering,
+  lifecycle, plugins, decimation, and accessibility/SSR boundaries. Cloned
+  ignored external source to `research/external-src/chartjs-Chart.js` and
+  inspected docs/source/test hits without executing external source. Clone HEAD
+  was `cb02e1d`; tracked-file count for
+  `research/external-src/chartjs-Chart.js` returned `0`.
+- 2026-06-04: RED chart-visualization-readiness smoke generated
+  `/tmp/repotutor-chart-red-studies.NQGNyj/2026-06-04/local__simple-ts-app__main__4c3bd50d`;
+  old build was missing
+  `analysis/chart-visualization-readiness-report.json`,
+  `markdown/chart-visualization-readiness.md`, and
+  `html/chart-visualization-readiness.html`, and `open --target
+  chart-visualization-readiness` failed as expected.
+- 2026-06-04: Implemented Chart.js-style chart-visualization-readiness report:
+  `ChartVisualizationReadinessReportSchema`,
+  `analysis/chart-visualization-readiness-report.json`,
+  `markdown/chart-visualization-readiness.md`,
+  `html/chart-visualization-readiness.html`, chart setups, chart type signals,
+  data signals, scale signals, interaction signals, render signals, lifecycle
+  signals, safety signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target chart-visualization-readiness`.
+- 2026-06-04: GREEN chart-visualization-readiness smoke generated
+  `/tmp/repotutor-chart-green-studies.W31jA2/2026-06-04/local__simple-ts-app__main__4c3bd50d`;
+  confirmed `verificationCheckedRequiredArtifacts=237`, chart setups 0, chart
+  type signals 7, data signals 6, scale signals 6, interaction signals 6,
+  render signals 6, lifecycle signals 6, safety signals 6, package signals 6,
+  risk queue 2, all three new artifacts, and `open --target
+  chart-visualization-readiness` -> `html/chart-visualization-readiness.html`.
+- 2026-06-04: Verification for Upgrade 179:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 77/77 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

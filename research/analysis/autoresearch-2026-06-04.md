@@ -158,6 +158,26 @@ Transferable patterns:
 - Keep static readiness separate from opening or parsing untrusted spreadsheet
   files.
 
+### chartjs/Chart.js
+
+- URL: https://github.com/chartjs/Chart.js
+- Local source: `research/external-src/chartjs-Chart.js`
+- Stars at check: 67,476
+- Forks at check: 11,948
+- License: MIT
+- Updated: 2026-06-04T05:49:47Z
+- Relevance: canvas chart configuration, datasets, scales, interactions,
+  responsive rendering, lifecycle, plugins, and export-image readiness.
+
+Transferable patterns:
+
+- Separate chart type, data shape, scale, interaction, render, lifecycle, and
+  safety readiness instead of treating charts as a single widget.
+- Track chart safety explicitly: large datasets, decimation, parsing policy,
+  accessibility labels, SSR/browser guards, and error handling.
+- Keep static readiness separate from rendering canvases, measuring pixels, or
+  executing chart plugins.
+
 ## Adopted Upgrade
 
 ### Upgrade 1: CodeBoarding-Inspired Coverage Report
@@ -4747,6 +4767,59 @@ Local verification:
 - `pnpm build`: PASS
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 76/76 audit checks across 13 generated reports
+
+### Upgrade 179: Chart Visualization Readiness Report
+
+- Cloned and inspected `chartjs/Chart.js` under
+  `research/external-src/chartjs-Chart.js` without executing external source.
+  Clone HEAD was `cb02e1d`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 67,476 stars, 11,948 forks,
+  updated 2026-06-04T05:49:47Z. Compared with `recharts/recharts`,
+  `apache/echarts`, and `d3/d3`; selected Chart.js because it directly models
+  chart visualization readiness: chart creation, `Chart.register`,
+  `registerables`, chart types, datasets, scales, tooltips, legends,
+  interactions, responsive canvas rendering, image export, update/resize/destroy
+  lifecycle, plugins, decimation, and accessibility/SSR boundaries. No source
+  code was copied into RepoTutor.
+- Implemented Chart.js-style chart-visualization-readiness report:
+  `ChartVisualizationReadinessReportSchema`,
+  `analysis/chart-visualization-readiness-report.json`,
+  `markdown/chart-visualization-readiness.md`,
+  `html/chart-visualization-readiness.html`, chart setups, chart type signals,
+  data signals, scale signals, interaction signals, render signals, lifecycle
+  signals, safety signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target chart-visualization-readiness`.
+- Source pattern: Chart.js separates chart creation and registration through
+  `new Chart`, `Chart.register`, and `registerables`; data through labels,
+  datasets, series, object data, parsing, and stacking; scales through
+  category, linear, time, logarithmic, radial, and multi-axis config;
+  interaction through tooltip, legend, hover, click, zoom/pan, and HTML legend;
+  rendering through canvas/SVG, responsive layout, animation, layout, and
+  export-image signals; lifecycle through create, update, resize, destroy,
+  plugin hooks, and registry; and safety through large dataset limits,
+  decimation, parsing policy, accessibility labels, SSR guards, and error
+  handling. RepoTutor maps that to deterministic static chart visualization
+  readiness and explicitly does not render charts, open canvases, measure
+  pixels, execute plugins, export images, mutate DOM, or run the analyzed
+  project's tests.
+- RED smoke generated
+  `/tmp/repotutor-chart-red-studies.NQGNyj/2026-06-04/local__simple-ts-app__main__4c3bd50d`;
+  old behavior was missing
+  `analysis/chart-visualization-readiness-report.json`,
+  `markdown/chart-visualization-readiness.md`, and
+  `html/chart-visualization-readiness.html`, and `open --target
+  chart-visualization-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-chart-green-studies.W31jA2/2026-06-04/local__simple-ts-app__main__4c3bd50d`;
+  confirmed `verificationCheckedRequiredArtifacts=237`, chart setups 0, chart
+  type signals 7, data signals 6, scale signals 6, interaction signals 6,
+  render signals 6, lifecycle signals 6, safety signals 6, package signals 6,
+  risk queue 2, all three new artifacts, and `open --target
+  chart-visualization-readiness` -> `html/chart-visualization-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 77/77 audit checks across 13 generated reports
 
 ## Deferred Candidate Backlog
 

@@ -4018,6 +4018,84 @@ export const SpreadsheetReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ChartVisualizationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  chartSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["chartjs", "recharts", "echarts", "d3", "visx", "nivo", "custom", "unknown"]),
+    configCount: z.number().int().nonnegative(),
+    dataCount: z.number().int().nonnegative(),
+    scaleCount: z.number().int().nonnegative(),
+    interactionCount: z.number().int().nonnegative(),
+    renderCount: z.number().int().nonnegative(),
+    lifecycleCount: z.number().int().nonnegative(),
+    safetyCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  chartTypeSignals: z.array(z.object({
+    signal: z.enum(["bar", "line", "pie-doughnut", "scatter-bubble", "radar-polar", "mixed", "area", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dataSignals: z.array(z.object({
+    signal: z.enum(["labels", "datasets", "series", "object-data", "parsing", "stacking", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scaleSignals: z.array(z.object({
+    signal: z.enum(["category", "linear", "time", "logarithmic", "radial", "multi-axis", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["tooltip", "legend", "hover", "click", "zoom-pan", "html-legend", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  renderSignals: z.array(z.object({
+    signal: z.enum(["canvas", "svg", "responsive", "animation", "layout", "export-image", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lifecycleSignals: z.array(z.object({
+    signal: z.enum(["create", "update", "resize", "destroy", "plugin-hook", "registry", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["large-dataset", "decimation", "parsing-policy", "accessibility-label", "ssr-guard", "error-handling", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["chart.js", "recharts", "echarts", "d3", "visx", "nivo", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4298,6 +4376,7 @@ export type FileUploadReadinessReport = z.infer<typeof FileUploadReadinessReport
 export type WebSocketReadinessReport = z.infer<typeof WebSocketReadinessReportSchema>;
 export type PdfGenerationReadinessReport = z.infer<typeof PdfGenerationReadinessReportSchema>;
 export type SpreadsheetReadinessReport = z.infer<typeof SpreadsheetReadinessReportSchema>;
+export type ChartVisualizationReadinessReport = z.infer<typeof ChartVisualizationReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

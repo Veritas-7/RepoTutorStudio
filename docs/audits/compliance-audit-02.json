@@ -1,6 +1,6 @@
 {
   "iteration": 2,
-  "createdAt": "2026-06-04T10:59:27.945Z",
+  "createdAt": "2026-06-04T11:10:12.766Z",
   "checks": [
     {
       "name": "project setup",
@@ -501,6 +501,13 @@
     },
     {
       "name": "spreadsheet readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "chart visualization readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

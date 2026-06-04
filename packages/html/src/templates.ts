@@ -86,6 +86,7 @@ import type {
   WebSocketReadinessReport,
   PdfGenerationReadinessReport,
   SpreadsheetReadinessReport,
+  ChartVisualizationReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -178,6 +179,7 @@ export interface StudyHtmlInput {
   webSocketReadinessReport: WebSocketReadinessReport;
   pdfGenerationReadinessReport: PdfGenerationReadinessReport;
   spreadsheetReadinessReport: SpreadsheetReadinessReport;
+  chartVisualizationReadinessReport: ChartVisualizationReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -284,6 +286,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["websocket-readiness.html", "WebSockets"],
     ["pdf-generation-readiness.html", "PDF Generation"],
     ["spreadsheet-readiness.html", "Spreadsheets"],
+    ["chart-visualization-readiness.html", "Charts"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -806,6 +809,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Spreadsheet Readiness", "spreadsheet-readiness.html", `<section class="panel" data-source-pattern="SheetJS"><h2>Spreadsheet Snapshot</h2><p>${escapeHtml(input.spreadsheetReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.spreadsheetReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.spreadsheetReadinessReport.spreadsheetSetups.length}</dd></div><div><dt>workbooks</dt><dd>${input.spreadsheetReadinessReport.workbookSignals.length}</dd></div><div><dt>sheets</dt><dd>${input.spreadsheetReadinessReport.sheetSignals.length}</dd></div><div><dt>outputs</dt><dd>${input.spreadsheetReadinessReport.outputSignals.length}</dd></div></dl><p class="muted">RepoTutor records spreadsheet readiness only; it does not open spreadsheet files, parse workbooks, evaluate formulas, convert tables, stream rows, write files, trigger downloads, or run the analyzed project's tests.</p></section><section class="grid"><article class="spreadsheet-readiness-card"><h3>Spreadsheet Setups</h3>${spreadsheetReadinessSetupList(input.spreadsheetReadinessReport.spreadsheetSetups)}</article><article class="spreadsheet-readiness-card"><h3>Workbook Signals</h3>${spreadsheetReadinessSignalList(input.spreadsheetReadinessReport.workbookSignals, "signal")}</article><article class="spreadsheet-readiness-card"><h3>Sheet Signals</h3>${spreadsheetReadinessSignalList(input.spreadsheetReadinessReport.sheetSignals, "signal")}</article><article class="spreadsheet-readiness-card"><h3>Format Signals</h3>${spreadsheetReadinessSignalList(input.spreadsheetReadinessReport.formatSignals, "signal")}</article></section><section class="grid"><article class="spreadsheet-readiness-card"><h3>Input Signals</h3>${spreadsheetReadinessSignalList(input.spreadsheetReadinessReport.inputSignals, "signal")}</article><article class="spreadsheet-readiness-card"><h3>Output Signals</h3>${spreadsheetReadinessSignalList(input.spreadsheetReadinessReport.outputSignals, "signal")}</article><article class="spreadsheet-readiness-card"><h3>Safety Signals</h3>${spreadsheetReadinessSignalList(input.spreadsheetReadinessReport.safetySignals, "signal")}</article><article class="spreadsheet-readiness-card"><h3>Package Signals</h3>${spreadsheetReadinessSignalList(input.spreadsheetReadinessReport.packageSignals, "signal")}</article><article class="spreadsheet-readiness-card"><h3>Recommended Commands</h3>${spreadsheetReadinessCommandList(input.spreadsheetReadinessReport.recommendedCommands)}</article><article class="spreadsheet-readiness-card"><h3>Risk Queue</h3>${spreadsheetReadinessRiskList(input.spreadsheetReadinessReport.riskQueue)}</article><article class="spreadsheet-readiness-card"><h3>다음 확인 단계</h3>${list(input.spreadsheetReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "chart-visualization-readiness.html",
+      title: "Chart Visualization Readiness",
+      html: pageShell("Chart Visualization Readiness", "chart-visualization-readiness.html", `<section class="panel" data-source-pattern="Chart.js"><h2>Chart Visualization Snapshot</h2><p>${escapeHtml(input.chartVisualizationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.chartVisualizationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.chartVisualizationReadinessReport.chartSetups.length}</dd></div><div><dt>types</dt><dd>${input.chartVisualizationReadinessReport.chartTypeSignals.length}</dd></div><div><dt>data</dt><dd>${input.chartVisualizationReadinessReport.dataSignals.length}</dd></div><div><dt>render</dt><dd>${input.chartVisualizationReadinessReport.renderSignals.length}</dd></div></dl><p class="muted">RepoTutor records chart visualization readiness only; it does not render charts, open canvases, measure pixels, execute plugins, export images, mutate DOM, or run the analyzed project's tests.</p></section><section class="grid"><article class="chart-visualization-readiness-card"><h3>Chart Setups</h3>${chartVisualizationReadinessSetupList(input.chartVisualizationReadinessReport.chartSetups)}</article><article class="chart-visualization-readiness-card"><h3>Chart Type Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.chartTypeSignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Data Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.dataSignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Scale Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.scaleSignals, "signal")}</article></section><section class="grid"><article class="chart-visualization-readiness-card"><h3>Interaction Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.interactionSignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Render Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.renderSignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Lifecycle Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.lifecycleSignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Safety Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.safetySignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Package Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.packageSignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Recommended Commands</h3>${chartVisualizationReadinessCommandList(input.chartVisualizationReadinessReport.recommendedCommands)}</article><article class="chart-visualization-readiness-card"><h3>Risk Queue</h3>${chartVisualizationReadinessRiskList(input.chartVisualizationReadinessReport.riskQueue)}</article><article class="chart-visualization-readiness-card"><h3>다음 확인 단계</h3>${list(input.chartVisualizationReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -992,6 +1000,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "WebSocket Readiness", path: "html/websocket-readiness.html", description: "ws식 server/client, upgrade, message, lifecycle, safety 준비도를 확인합니다." },
       { label: "PDF Generation Readiness", path: "html/pdf-generation-readiness.html", description: "pdf-lib식 document, page, asset, form, output, safety 준비도를 확인합니다." },
       { label: "Spreadsheet Readiness", path: "html/spreadsheet-readiness.html", description: "SheetJS식 workbook, sheet, format, input, output, safety 준비도를 확인합니다." },
+      { label: "Chart Visualization Readiness", path: "html/chart-visualization-readiness.html", description: "Chart.js식 chart type, data, scale, interaction, render, lifecycle 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1531,6 +1540,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "spreadsheet-readiness.html",
       goal: "SheetJS식 workbook, sheet, format, input, output, safety 흐름을 보고 spreadsheet/CSV 관문을 확인합니다.",
       evidence: `spreadsheet setups ${input.spreadsheetReadinessReport.spreadsheetSetups.length}개, output signals ${input.spreadsheetReadinessReport.outputSignals.length}개`
+    },
+    {
+      title: "Chart visualization readiness 확인",
+      href: "chart-visualization-readiness.html",
+      goal: "Chart.js식 chart type, data, scale, interaction, render, lifecycle 흐름을 보고 시각화 관문을 확인합니다.",
+      evidence: `chart setups ${input.chartVisualizationReadinessReport.chartSetups.length}개, render signals ${input.chartVisualizationReadinessReport.renderSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3523,6 +3538,31 @@ function spreadsheetReadinessRiskList(items: SpreadsheetReadinessReport["riskQue
 }
 
 function spreadsheetReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function chartVisualizationReadinessSetupList(items: ChartVisualizationReadinessReport["chartSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">chart setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>config/data/scale/interaction/render/lifecycle/safety ${item.configCount}/${item.dataCount}/${item.scaleCount}/${item.interactionCount}/${item.renderCount}/${item.lifecycleCount}/${item.safetyCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(chartVisualizationReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function chartVisualizationReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">chart signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(chartVisualizationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function chartVisualizationReadinessCommandList(items: ChartVisualizationReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function chartVisualizationReadinessRiskList(items: ChartVisualizationReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(chartVisualizationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function chartVisualizationReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
