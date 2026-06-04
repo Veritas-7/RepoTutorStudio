@@ -98,6 +98,7 @@ import {
   PwaReadinessReport,
   BrowserCompatibilityReadinessReport,
   EnvValidationReadinessReport,
+  SecurityHeadersReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -202,6 +203,7 @@ export interface AnalysisBundle {
   pwaReadinessReport: PwaReadinessReport;
   browserCompatibilityReadinessReport: BrowserCompatibilityReadinessReport;
   envValidationReadinessReport: EnvValidationReadinessReport;
+  securityHeadersReadinessReport: SecurityHeadersReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -306,8 +308,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const pwaReadinessReport = await buildPwaReadinessReport(walk);
   const browserCompatibilityReadinessReport = await buildBrowserCompatibilityReadinessReport(walk);
   const envValidationReadinessReport = await buildEnvValidationReadinessReport(walk);
+  const securityHeadersReadinessReport = await buildSecurityHeadersReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -19483,6 +19486,269 @@ function envValidationReadinessSignalFromSpecs<T extends Record<K, string> & { p
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/env-validation-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildSecurityHeadersReadinessReport(walk: WalkResult): Promise<SecurityHeadersReadinessReport> {
+  const sourceFiles = await securityHeadersReadinessSourceFiles(walk);
+  const headerSetups = securityHeadersReadinessSetups(sourceFiles);
+  const cspSignals = securityHeadersReadinessCspSignals(sourceFiles);
+  const transportSignals = securityHeadersReadinessTransportSignals(sourceFiles);
+  const crossOriginSignals = securityHeadersReadinessCrossOriginSignals(sourceFiles);
+  const legacyHeaderSignals = securityHeadersReadinessLegacySignals(sourceFiles);
+  const middlewareSignals = securityHeadersReadinessMiddlewareSignals(sourceFiles);
+  const packageSignals = securityHeadersReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasSetup = headerSetups.some((item) => item.readiness !== "missing");
+  const hasCsp = cspSignals.some((item) => item.readiness === "ready") || headerSetups.some((item) => item.cspCount > 0);
+  const hasTransport = transportSignals.some((item) => item.readiness === "ready") || headerSetups.some((item) => item.hstsCount > 0);
+  const hasCrossOrigin = crossOriginSignals.some((item) => item.readiness === "ready") || headerSetups.some((item) => item.crossOriginCount > 0);
+  const hasLegacyHardening = legacyHeaderSignals.some((item) => item.readiness === "ready") || headerSetups.some((item) => item.frameCount + item.referrerCount + item.hardeningCount > 0);
+  const hasMiddleware = middlewareSignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: SecurityHeadersReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document HTTP security header ownership before claiming web hardening readiness.",
+      why: "Helmet-style readiness starts with middleware, framework headers, or reverse-proxy header configuration evidence.",
+      relatedHref: "html/security-headers-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasCsp) {
+    riskQueue.push({
+      priority: "high",
+      action: "Define a Content-Security-Policy with default-src and application-specific script/style/frame directives.",
+      why: "CSP is powerful but needs app-specific directives, nonce/hash strategy, and report-only rollout evidence.",
+      relatedHref: "html/security-headers-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasTransport) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review HSTS, max-age, includeSubDomains, preload, and HTTPS redirect behavior.",
+      why: "Transport security headers only protect users after HTTPS is working and can create rollback risk if preload/subdomain scope is wrong.",
+      relatedHref: "html/security-headers-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && (!hasCrossOrigin || !hasLegacyHardening)) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Check cross-origin isolation/resource policy and legacy hardening headers together.",
+      why: "COOP/COEP/CORP, X-Frame-Options, nosniff, Referrer-Policy, and X-Powered-By removal cover different browser attack surfaces.",
+      relatedHref: "html/security-headers-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasMiddleware) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document where headers are applied: app middleware, framework config, edge worker, CDN, or reverse proxy.",
+      why: "Duplicate or split ownership can silently disable headers, override CSP, or create environment drift.",
+      relatedHref: "html/security-headers-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify final response headers with a real deployed or preview URL.",
+    why: "RepoTutor records security header readiness only; it does not start servers, send HTTP requests, evaluate CSP, follow redirects, or inspect CDN/proxy behavior.",
+    relatedHref: "html/security-headers-readiness.html"
+  });
+
+  return {
+    summary: `Helmet-style security headers readiness report: setup ${headerSetups.length}개, CSP signal ${cspSignals.length}개, transport signal ${transportSignals.length}개, cross-origin signal ${crossOriginSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Helmet Content-Security-Policy Strict-Transport-Security Cross-Origin-Opener-Policy Cross-Origin-Resource-Policy X-Frame-Options Referrer-Policy X-Content-Type-Options X-Powered-By",
+    headerSetups,
+    cspSignals,
+    transportSignals,
+    crossOriginSignals,
+    legacyHeaderSignals,
+    middlewareSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"helmet|contentSecurityPolicy|Content-Security-Policy|Strict-Transport-Security|X-Frame-Options|Referrer-Policy\" package.json src app server middleware next.config.* nginx.conf", purpose: "Inventory app, framework, and proxy security header ownership." },
+      { command: "rg \"default-src|script-src|style-src|frame-ancestors|object-src|nonce-|sha256-|reportOnly|Report-Only\" src app server middleware config", purpose: "Review CSP directives, nonce/hash strategy, and report-only rollout." },
+      { command: "rg \"max-age|includeSubDomains|preload|upgrade-insecure-requests|https redirect|force ssl\" src app server middleware config", purpose: "Check HSTS and HTTPS transport assumptions." },
+      { command: "rg \"Cross-Origin-Embedder-Policy|Cross-Origin-Opener-Policy|Cross-Origin-Resource-Policy|Origin-Agent-Cluster|cors\" src app server middleware config", purpose: "Check cross-origin isolation and resource policy." },
+      { command: "rg \"X-Content-Type-Options|nosniff|X-Powered-By|removeHeader|X-XSS-Protection|X-DNS-Prefetch-Control\" src app server middleware config", purpose: "Review legacy hardening and information disclosure headers." },
+      { command: "curl -I <preview-url>", purpose: "Verify final response headers after CDN/proxy/app layers are composed." }
+    ],
+    learnerNextSteps: [
+      "먼저 Helmet, Express/Fastify/Koa middleware, Next headers, nginx/CDN config 중 어디가 header owner인지 찾으세요.",
+      "Content-Security-Policy의 default-src, script-src, style-src, frame-ancestors, object-src, nonce/hash, report-only 신호를 확인하세요.",
+      "Strict-Transport-Security의 max-age, includeSubDomains, preload와 개발 환경의 upgrade-insecure-requests 예외를 검토하세요.",
+      "COEP, COOP, CORP, Origin-Agent-Cluster가 실제 cross-origin resource 정책과 충돌하지 않는지 확인하세요.",
+      "X-Frame-Options, X-Content-Type-Options nosniff, Referrer-Policy, X-Powered-By 제거, X-XSS-Protection 0 같은 legacy hardening을 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 응답 header는 배포/preview URL에서 curl -I 또는 브라우저 devtools로 별도 확인하세요."
+    ]
+  };
+}
+
+type SecurityHeadersReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function securityHeadersReadinessSourceFiles(walk: WalkResult): Promise<SecurityHeadersReadinessSourceFile[]> {
+  const files: SecurityHeadersReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !securityHeadersReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!securityHeadersReadinessPathSignal(file.relPath) && !securityHeadersReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function securityHeadersReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return securityHeadersReadinessPathSignal(filePath)
+    || /^(package\.json|README\.md|helmet\.(js|mjs|cjs|ts)|security\.(js|mjs|cjs|ts)|middleware\.(js|mjs|cjs|ts)|server\.(js|mjs|cjs|ts)|next\.config\.(js|mjs|cjs|ts)|nginx\.conf|_headers|headers)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml|conf)$/i.test(filePath);
+}
+
+function securityHeadersReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(helmet|security|headers?|middleware|server|app|api|routes?|next|nginx|cloudflare|workers?|edge|proxy|config|test|tests)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function securityHeadersReadinessContentSignal(text: string): boolean {
+  return /(helmet|Content-Security-Policy|contentSecurityPolicy|Strict-Transport-Security|Cross-Origin-(Embedder|Opener|Resource)-Policy|Origin-Agent-Cluster|X-Frame-Options|X-Content-Type-Options|Referrer-Policy|X-DNS-Prefetch-Control|X-Download-Options|X-Permitted-Cross-Domain-Policies|X-Powered-By|X-XSS-Protection|default-src|script-src|frame-ancestors|upgrade-insecure-requests)/i.test(text);
+}
+
+function securityHeadersReadinessSetups(sourceFiles: SecurityHeadersReadinessSourceFile[]): SecurityHeadersReadinessReport["headerSetups"] {
+  const rows: SecurityHeadersReadinessReport["headerSetups"] = [];
+  for (const source of sourceFiles) {
+    const cspCount = countMatches(source.text, /Content-Security-Policy|contentSecurityPolicy|default-src|script-src|style-src|frame-ancestors|object-src|reportOnly|Report-Only/gi);
+    const hstsCount = countMatches(source.text, /Strict-Transport-Security|strictTransportSecurity|hsts|max-age|includeSubDomains|preload/gi);
+    const crossOriginCount = countMatches(source.text, /Cross-Origin-(Embedder|Opener|Resource)-Policy|crossOrigin(Embedder|Opener|Resource)Policy|Origin-Agent-Cluster|cors/gi);
+    const frameCount = countMatches(source.text, /X-Frame-Options|xFrameOptions|frameguard|frame-ancestors|DENY|SAMEORIGIN/gi);
+    const referrerCount = countMatches(source.text, /Referrer-Policy|referrerPolicy|no-referrer|same-origin|strict-origin/gi);
+    const hardeningCount = countMatches(source.text, /X-Content-Type-Options|nosniff|X-DNS-Prefetch-Control|X-Download-Options|X-Permitted-Cross-Domain-Policies|X-Powered-By|X-XSS-Protection|removeHeader/gi);
+    const disableCount = countMatches(source.text, /false|null|dangerouslyDisableDefaultSrc|disable|disabled|reportOnly|development|isDevelopment/gi);
+    const hasSetupSignal = cspCount + hstsCount + crossOriginCount + frameCount + referrerCount + hardeningCount + disableCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: securityHeadersReadinessProvider(source),
+      cspCount,
+      hstsCount,
+      crossOriginCount,
+      frameCount,
+      referrerCount,
+      hardeningCount,
+      disableCount,
+      readiness: cspCount > 0 && (hstsCount > 0 || hardeningCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains CSP ${cspCount}, HSTS ${hstsCount}, cross-origin ${crossOriginCount}, frame ${frameCount}, referrer ${referrerCount}, hardening ${hardeningCount}, disable/report ${disableCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function securityHeadersReadinessProvider(source: SecurityHeadersReadinessSourceFile): SecurityHeadersReadinessReport["headerSetups"][number]["provider"] {
+  if (/helmet|contentSecurityPolicy|strictTransportSecurity/i.test(source.text)) return "helmet";
+  if (/express|app\.use|res\.setHeader|removeHeader/i.test(source.text)) return "express";
+  if (/next\.config|headers\(\)|NextResponse|middleware/i.test(source.text) || /next\.config/i.test(source.filePath)) return "next-headers";
+  if (/nginx|add_header|proxy_set_header/i.test(source.text) || /nginx/i.test(source.filePath)) return "nginx";
+  if (/cloudflare|workers?|_headers/i.test(source.text) || /(^|\/)_headers$/i.test(source.filePath)) return "cloudflare";
+  if (/Content-Security-Policy|Strict-Transport-Security|X-Frame-Options|setHeader/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function securityHeadersReadinessCspSignals(sourceFiles: SecurityHeadersReadinessSourceFile[]): SecurityHeadersReadinessReport["cspSignals"] {
+  const specs: Array<{ signal: SecurityHeadersReadinessReport["cspSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "content-security-policy", pattern: /Content-Security-Policy|contentSecurityPolicy/i, evidence: "Content-Security-Policy evidence was detected." },
+    { signal: "default-src", pattern: /default-src|defaultSrc/i, evidence: "default-src evidence was detected." },
+    { signal: "script-src", pattern: /script-src|scriptSrc|nonce-|sha(256|384|512)-|strict-dynamic/i, evidence: "script-src/nonce/hash evidence was detected." },
+    { signal: "style-src", pattern: /style-src|styleSrc|unsafe-inline/i, evidence: "style-src evidence was detected." },
+    { signal: "frame-ancestors", pattern: /frame-ancestors|frameAncestors/i, evidence: "frame-ancestors evidence was detected." },
+    { signal: "object-src", pattern: /object-src|objectSrc/i, evidence: "object-src evidence was detected." },
+    { signal: "nonce", pattern: /nonce-|cspNonce|randomBytes|sha(256|384|512)-/i, evidence: "nonce/hash source evidence was detected." },
+    { signal: "report-only", pattern: /Content-Security-Policy-Report-Only|reportOnly|report-uri|report-to/i, evidence: "CSP report-only/reporting evidence was detected." },
+    { signal: "upgrade-insecure-requests", pattern: /upgrade-insecure-requests|upgradeInsecureRequests/i, evidence: "upgrade-insecure-requests evidence was detected." }
+  ];
+  return securityHeadersReadinessSignalFromSpecs(sourceFiles, specs, "csp", "signal");
+}
+
+function securityHeadersReadinessTransportSignals(sourceFiles: SecurityHeadersReadinessSourceFile[]): SecurityHeadersReadinessReport["transportSignals"] {
+  const specs: Array<{ signal: SecurityHeadersReadinessReport["transportSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "strict-transport-security", pattern: /Strict-Transport-Security|strictTransportSecurity|hsts/i, evidence: "HSTS evidence was detected." },
+    { signal: "max-age", pattern: /max-age|maxAge/i, evidence: "HSTS max-age evidence was detected." },
+    { signal: "include-subdomains", pattern: /includeSubDomains|includeSubdomains|include-subdomains/i, evidence: "includeSubDomains evidence was detected." },
+    { signal: "preload", pattern: /\bpreload\b/i, evidence: "HSTS preload evidence was detected." },
+    { signal: "https-redirect", pattern: /https redirect|force ssl|enforce ssl|redirect.*https|upgrade-insecure-requests/i, evidence: "HTTPS redirect/upgrade evidence was detected." },
+    { signal: "development-exception", pattern: /development|isDevelopment|NODE_ENV|localhost|upgrade-insecure-requests.*null/i, evidence: "development exception evidence was detected." }
+  ];
+  return securityHeadersReadinessSignalFromSpecs(sourceFiles, specs, "transport", "signal");
+}
+
+function securityHeadersReadinessCrossOriginSignals(sourceFiles: SecurityHeadersReadinessSourceFile[]): SecurityHeadersReadinessReport["crossOriginSignals"] {
+  const specs: Array<{ signal: SecurityHeadersReadinessReport["crossOriginSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "cross-origin-embedder-policy", pattern: /Cross-Origin-Embedder-Policy|crossOriginEmbedderPolicy|require-corp|credentialless/i, evidence: "COEP evidence was detected." },
+    { signal: "cross-origin-opener-policy", pattern: /Cross-Origin-Opener-Policy|crossOriginOpenerPolicy|same-origin-allow-popups/i, evidence: "COOP evidence was detected." },
+    { signal: "cross-origin-resource-policy", pattern: /Cross-Origin-Resource-Policy|crossOriginResourcePolicy|same-site|same-origin/i, evidence: "CORP evidence was detected." },
+    { signal: "origin-agent-cluster", pattern: /Origin-Agent-Cluster|originAgentCluster/i, evidence: "Origin-Agent-Cluster evidence was detected." },
+    { signal: "cors-boundary", pattern: /\bcors\b|Access-Control-Allow-Origin|allowedOrigins?|credentials/i, evidence: "CORS boundary evidence was detected." }
+  ];
+  return securityHeadersReadinessSignalFromSpecs(sourceFiles, specs, "cross-origin", "signal");
+}
+
+function securityHeadersReadinessLegacySignals(sourceFiles: SecurityHeadersReadinessSourceFile[]): SecurityHeadersReadinessReport["legacyHeaderSignals"] {
+  const specs: Array<{ signal: SecurityHeadersReadinessReport["legacyHeaderSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "x-frame-options", pattern: /X-Frame-Options|xFrameOptions|frameguard|SAMEORIGIN|DENY/i, evidence: "X-Frame-Options evidence was detected." },
+    { signal: "x-content-type-options", pattern: /X-Content-Type-Options|xContentTypeOptions|noSniff|nosniff/i, evidence: "X-Content-Type-Options evidence was detected." },
+    { signal: "referrer-policy", pattern: /Referrer-Policy|referrerPolicy|no-referrer|strict-origin/i, evidence: "Referrer-Policy evidence was detected." },
+    { signal: "x-dns-prefetch-control", pattern: /X-DNS-Prefetch-Control|xDnsPrefetchControl|dnsPrefetchControl/i, evidence: "X-DNS-Prefetch-Control evidence was detected." },
+    { signal: "x-download-options", pattern: /X-Download-Options|xDownloadOptions|ieNoOpen|noopen/i, evidence: "X-Download-Options evidence was detected." },
+    { signal: "x-permitted-cross-domain-policies", pattern: /X-Permitted-Cross-Domain-Policies|xPermittedCrossDomainPolicies|permittedCrossDomainPolicies/i, evidence: "X-Permitted-Cross-Domain-Policies evidence was detected." },
+    { signal: "x-powered-by", pattern: /X-Powered-By|xPoweredBy|hidePoweredBy|removeHeader/i, evidence: "X-Powered-By removal evidence was detected." },
+    { signal: "x-xss-protection", pattern: /X-XSS-Protection|xXssProtection|xssFilter/i, evidence: "X-XSS-Protection evidence was detected." }
+  ];
+  return securityHeadersReadinessSignalFromSpecs(sourceFiles, specs, "legacy", "signal");
+}
+
+function securityHeadersReadinessMiddlewareSignals(sourceFiles: SecurityHeadersReadinessSourceFile[]): SecurityHeadersReadinessReport["middlewareSignals"] {
+  const specs: Array<{ signal: SecurityHeadersReadinessReport["middlewareSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "helmet", pattern: /helmet\(|from ["']helmet["']|require\(["']helmet["']\)/i, evidence: "Helmet middleware evidence was detected." },
+    { signal: "app-use", pattern: /app\.use|server\.use|fastify\.register|router\.use/i, evidence: "middleware registration evidence was detected." },
+    { signal: "disable-header", pattern: /contentSecurityPolicy:\s*false|xFrameOptions:\s*false|strictTransportSecurity:\s*false|false|null|disable/i, evidence: "header disable/override evidence was detected." },
+    { signal: "standalone-middleware", pattern: /helmet\.(contentSecurityPolicy|strictTransportSecurity|xFrameOptions|referrerPolicy)|contentSecurityPolicy\(/i, evidence: "standalone header middleware evidence was detected." },
+    { signal: "next-headers", pattern: /headers\(\)|NextResponse|next\.config|middleware\.(ts|js)/i, evidence: "Next/framework header config evidence was detected." },
+    { signal: "reverse-proxy-headers", pattern: /add_header|proxy_set_header|_headers|cloudflare|nginx/i, evidence: "reverse proxy/CDN header evidence was detected." }
+  ];
+  return securityHeadersReadinessSignalFromSpecs(sourceFiles, specs, "middleware", "signal");
+}
+
+function securityHeadersReadinessPackageSignals(sourceFiles: SecurityHeadersReadinessSourceFile[]): SecurityHeadersReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: SecurityHeadersReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "helmet", pattern: /"helmet"|from ["']helmet["']|helmet\(/i, evidence: "Helmet package evidence was detected." },
+    { signal: "express", pattern: /"express"|from ["']express["']|express\(/i, evidence: "Express evidence was detected." },
+    { signal: "fastify-helmet", pattern: /fastify-helmet|@fastify\/helmet/i, evidence: "Fastify Helmet evidence was detected." },
+    { signal: "koa-helmet", pattern: /koa-helmet/i, evidence: "Koa Helmet evidence was detected." },
+    { signal: "next", pattern: /"next"|next\.config|NextResponse/i, evidence: "Next.js header config evidence was detected." },
+    { signal: "csp-evaluator", pattern: /csp-evaluator|CSP Evaluator/i, evidence: "CSP evaluator evidence was detected." }
+  ];
+  return securityHeadersReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function securityHeadersReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: SecurityHeadersReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/security-headers-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

@@ -1,6 +1,6 @@
 {
   "iteration": 5,
-  "createdAt": "2026-06-04T12:18:25.291Z",
+  "createdAt": "2026-06-04T12:30:18.280Z",
   "checks": [
     {
       "name": "project setup",
@@ -550,6 +550,13 @@
     },
     {
       "name": "env validation readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "security headers readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

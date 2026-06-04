@@ -3891,6 +3891,49 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 185:
   - `3d51791` env validation readiness report
 
+- 2026-06-04: AutoResearch Upgrade 186 candidate selected:
+  `helmetjs/helmet`
+  (`https://github.com/helmetjs/helmet`; public; MIT; 10,684 stars; 407
+  forks; updated 2026-06-03T02:56:47Z). Compared with
+  `google/csp-evaluator`, `helmetjs/csp`, and framework-level header examples;
+  selected Helmet because it directly models HTTP security header ownership:
+  `helmet()`, per-header enable/disable, Content-Security-Policy directives,
+  report-only mode, HSTS, COEP/COOP/CORP, Origin-Agent-Cluster,
+  Referrer-Policy, X-Frame-Options, X-Content-Type-Options, X-Powered-By
+  removal, and legacy hardening headers. Cloned ignored external source to
+  `research/external-src/helmetjs-helmet` and inspected docs/source hits
+  without executing external source. Clone HEAD was `5aaf544`; tracked file
+  count for `research/external-src/helmetjs-helmet` returned `0`.
+- 2026-06-04: RED security-headers-readiness smoke generated
+  `/tmp/repotutor-security-headers-red-studies.7af80e/2026-06-04/local__simple-ts-app__HEAD__5c4d2cd5`;
+  old build had `verificationCheckedRequiredArtifacts=255`, was missing
+  `analysis/security-headers-readiness-report.json`,
+  `markdown/security-headers-readiness.md`, and
+  `html/security-headers-readiness.html`, and `open --target
+  security-headers-readiness` failed as expected.
+- 2026-06-04: Implemented Helmet-style security-headers-readiness report:
+  `SecurityHeadersReadinessReportSchema`,
+  `analysis/security-headers-readiness-report.json`,
+  `markdown/security-headers-readiness.md`,
+  `html/security-headers-readiness.html`, header setups, CSP signals,
+  transport signals, cross-origin signals, legacy header signals, middleware
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target security-headers-readiness`.
+- 2026-06-04: GREEN security-headers-readiness smoke generated
+  `/tmp/repotutor-security-headers-green-studies.bf5dd0/2026-06-04/local__simple-ts-app__main__5c4d2cd5`;
+  confirmed `verificationCheckedRequiredArtifacts=258`, header setups 0, CSP
+  signals 9, transport signals 6, cross-origin signals 5, legacy header
+  signals 8, middleware signals 6, package signals 6, risk queue 2, all three
+  new artifacts, and `open --target security-headers-readiness` ->
+  `html/security-headers-readiness.html`.
+- 2026-06-04: Verification for Upgrade 186:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 84/84 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

@@ -5142,6 +5142,52 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 83/83 audit checks across 13 generated reports
 
+### Upgrade 186: Security Headers Readiness Report
+
+- Cloned and inspected `helmetjs/helmet` under
+  `research/external-src/helmetjs-helmet` without executing external source.
+  Clone HEAD was `5aaf544`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 10,684 stars, 407 forks, updated
+  2026-06-03T02:56:47Z. Compared with `google/csp-evaluator`,
+  `helmetjs/csp`, and framework-level header examples; selected Helmet because
+  it directly models HTTP security header ownership across CSP, HSTS,
+  cross-origin headers, referrer policy, frame protection, nosniff, X-Powered-By
+  removal, and legacy hardening. No source code was copied into RepoTutor.
+- Implemented Helmet-style security-headers-readiness report:
+  `SecurityHeadersReadinessReportSchema`,
+  `analysis/security-headers-readiness-report.json`,
+  `markdown/security-headers-readiness.md`,
+  `html/security-headers-readiness.html`, header setups, CSP signals, transport
+  signals, cross-origin signals, legacy header signals, middleware signals,
+  package signals, recommended commands, risk queue, manifest/session-
+  verification coverage, learning-path linkage, nav entry, and `open --target
+  security-headers-readiness`.
+- Source pattern: Helmet composes `Content-Security-Policy`,
+  `Strict-Transport-Security`, `Cross-Origin-Embedder-Policy`,
+  `Cross-Origin-Opener-Policy`, `Cross-Origin-Resource-Policy`,
+  `Origin-Agent-Cluster`, `X-Frame-Options`, `X-Content-Type-Options`,
+  `Referrer-Policy`, X-DNS/X-Download/X-Permitted/X-XSS legacy headers, and
+  X-Powered-By removal; RepoTutor maps that to deterministic static security
+  headers readiness and explicitly does not start servers, send HTTP requests,
+  evaluate CSP, follow redirects, or inspect CDN/proxy behavior.
+- RED smoke generated
+  `/tmp/repotutor-security-headers-red-studies.7af80e/2026-06-04/local__simple-ts-app__HEAD__5c4d2cd5`;
+  old behavior had `verificationCheckedRequiredArtifacts=255`, was missing
+  `analysis/security-headers-readiness-report.json`,
+  `markdown/security-headers-readiness.md`, and
+  `html/security-headers-readiness.html`, and `open --target
+  security-headers-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-security-headers-green-studies.bf5dd0/2026-06-04/local__simple-ts-app__main__5c4d2cd5`;
+  confirmed `verificationCheckedRequiredArtifacts=258`, header setups 0, CSP
+  signals 9, transport signals 6, cross-origin signals 5, legacy header signals
+  8, middleware signals 6, package signals 6, risk queue 2, all three new
+  artifacts, and `open --target security-headers-readiness` ->
+  `html/security-headers-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 84/84 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
