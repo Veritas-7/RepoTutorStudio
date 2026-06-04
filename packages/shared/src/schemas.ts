@@ -5651,6 +5651,85 @@ export const MobileReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const EdgeReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  edgeSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["cloudflare-workers", "wrangler", "pages-functions", "miniflare", "custom", "unknown"]),
+    configCount: z.number().int().nonnegative(),
+    handlerCount: z.number().int().nonnegative(),
+    bindingCount: z.number().int().nonnegative(),
+    routingCount: z.number().int().nonnegative(),
+    devWorkflowCount: z.number().int().nonnegative(),
+    deploymentWorkflowCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    packageCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["wrangler-toml", "wrangler-json", "name", "main", "compatibility-date", "compatibility-flags", "env", "vars", "limits", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  handlerSignals: z.array(z.object({
+    signal: z.enum(["module-worker", "fetch-handler", "scheduled", "queue-handler", "durable-object-class", "workflow-class", "email-handler", "assets-worker", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  bindingSignals: z.array(z.object({
+    signal: z.enum(["kv", "r2", "d1", "durable-objects", "queues", "services", "workflows", "analytics-engine", "secrets", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  routingSignals: z.array(z.object({
+    signal: z.enum(["workers-dev", "route", "routes", "custom-domain", "assets", "site", "durable-object-migrations", "placement", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  devSignals: z.array(z.object({
+    signal: z.enum(["wrangler-dev", "local-mode", "remote-bindings", "dev-vars", "miniflare", "vitest-pool-workers", "typegen", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  deploymentSignals: z.array(z.object({
+    signal: z.enum(["wrangler-deploy", "wrangler-versions", "wrangler-tail", "wrangler-secret", "wrangler-kv", "wrangler-r2", "wrangler-d1", "ci-deploy", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observabilitySignals: z.array(z.object({
+    signal: z.enum(["tail", "logs", "console", "traces", "analytics-engine", "version-metadata", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["wrangler", "cloudflare-workers-types", "miniflare", "vitest-pool-workers", "vite-plugin-cloudflare", "workers-tsconfig", "kv-asset-handler", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -5954,6 +6033,7 @@ export type InfrastructureReadinessReport = z.infer<typeof InfrastructureReadine
 export type DeploymentReadinessReport = z.infer<typeof DeploymentReadinessReportSchema>;
 export type ServerlessReadinessReport = z.infer<typeof ServerlessReadinessReportSchema>;
 export type MobileReadinessReport = z.infer<typeof MobileReadinessReportSchema>;
+export type EdgeReadinessReport = z.infer<typeof EdgeReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

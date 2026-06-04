@@ -4571,6 +4571,47 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 201:
   - `351786e` mobile readiness report
 
+- 2026-06-05: AutoResearch Upgrade 202 candidate selected:
+  `cloudflare/workers-sdk`
+  (`https://github.com/cloudflare/workers-sdk`; public; Apache-2.0; 4,124
+  stars; 1,291 forks; updated 2026-06-04T15:52:29Z). Compared with
+  `cloudflare/miniflare` and `vercel/edge-runtime`; selected Workers SDK
+  because Wrangler directly models edge runtime readiness through
+  `wrangler.toml`, `compatibility_date`, module Worker handlers, KV/R2/D1/
+  Durable Object/Queue/service/workflow/analytics/secret bindings, routes,
+  `.dev.vars`, Miniflare, Workers Vitest pool, `wrangler dev`, deploy, tail,
+  secret, KV, R2, D1, and CI workflow signals. Cloned sparse ignored external
+  source to `research/external-src/cloudflare-workers-sdk` and inspected
+  docs/source hits without executing external source. Clone HEAD was `23aecac`;
+  tracked file count for `research/external-src/cloudflare-workers-sdk`
+  returned `0`.
+- 2026-06-05: RED edge-readiness smoke generated
+  `/tmp/repotutor-edge-red-studies.ixB8QO/2026-06-05/local__repotutor-edge-red-repo.7BZjQy__local__4137a999`;
+  old build had `verificationCheckedRequiredArtifacts=303`, was missing
+  `analysis/edge-readiness-report.json`, `markdown/edge-readiness.md`, and
+  `html/edge-readiness.html`, and `open --target edge-readiness` failed as
+  expected.
+- 2026-06-05: Implemented Cloudflare Workers-style edge-readiness report:
+  `EdgeReadinessReportSchema`, `analysis/edge-readiness-report.json`,
+  `markdown/edge-readiness.md`, `html/edge-readiness.html`, edge setups, config
+  signals, handler signals, binding signals, routing signals, dev signals,
+  deployment signals, observability signals, package signals, recommended
+  commands, risk queue, manifest/session verification coverage, learning-path
+  linkage, nav entry, and `open --target edge-readiness`.
+- 2026-06-05: GREEN edge-readiness smoke generated
+  `/tmp/repotutor-edge-green-studies.f7rPej/2026-06-05/local__repotutor-edge-green-repo.Bsplww__local__9845eab5`;
+  confirmed `verificationCheckedRequiredArtifacts=306`, edge setups 6, config
+  signals 9, handler signals 8, binding signals 9, routing signals 8, dev
+  signals 7, deployment signals 8, observability signals 6, package signals 7,
+  risk queue 0, all three new artifacts, and `open --target edge-readiness` ->
+  `html/edge-readiness.html`.
+- 2026-06-05: Verification for Upgrade 202:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 9/9 tests
+  - `pnpm audit:brief`: PASS, 100/100 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

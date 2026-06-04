@@ -858,6 +858,16 @@ const checks = [
     "packages/core/src/session-verifier.ts",
     "packages/core/src/pipeline.test.ts"
   ], ["MobileReadinessReportSchema", "MobileReadinessReport", "mobileReadinessReport", "mobile-readiness-report.json", "mobile-readiness.md", "mobile-readiness.html", "packages/core/src/scanner.ts:Expo app.json app.config eas.json expo start expo run:ios expo run:android eas build eas update expo-updates runtimeVersion scheme plugins assets permissions", "mobileSetups", "configSignals", "platformSignals", "navigationSignals", "buildSignals", "updateSignals", "assetSignals", "packageSignals", "mobile", "mobile-readiness-card", "data-source-pattern=\"Expo\"", "openTargetEntries", "mobile-readiness"]),
+  check("Edge readiness report", [
+    "packages/shared/src/schemas.ts",
+    "packages/core/src/scanner.ts",
+    "packages/core/src/pipeline.ts",
+    "packages/core/src/markdown.ts",
+    "packages/html/src/templates.ts",
+    "apps/cli/src/index.ts",
+    "packages/core/src/session-verifier.ts",
+    "packages/core/src/pipeline.test.ts"
+  ], ["EdgeReadinessReportSchema", "EdgeReadinessReport", "edgeReadinessReport", "edge-readiness-report.json", "edge-readiness.md", "edge-readiness.html", "Cloudflare Workers wrangler.toml compatibility_date main fetch handler bindings kv_namespaces r2_buckets d1_databases durable_objects queues services vars routes workers_dev wrangler dev deploy tail secret Miniflare vitest-pool-workers", "edgeSetups", "configSignals", "handlerSignals", "bindingSignals", "routingSignals", "devSignals", "deploymentSignals", "observabilitySignals", "packageSignals", "edge", "edge-readiness-card", "data-source-pattern=\"Cloudflare Workers\"", "openTargetEntries", "edge-readiness"]),
   check("source-backed component graph", [
     "packages/shared/src/schemas.ts",
     "packages/core/src/scanner.ts",
