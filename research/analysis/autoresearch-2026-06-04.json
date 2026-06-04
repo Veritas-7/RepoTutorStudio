@@ -942,6 +942,22 @@
         "webhook verification delivery event bounce complaint open click unsubscribe and idempotency signal scanning",
         "safe static email readiness that never sends email calls provider APIs verifies live DNS processes live callbacks or runs analyzed project tests"
       ]
+    },
+    {
+      "repo": "taskforcesh/bullmq",
+      "url": "https://github.com/taskforcesh/bullmq",
+      "localPath": "research/external-src/taskforcesh-bullmq",
+      "stars": 8964,
+      "forks": 626,
+      "license": "MIT",
+      "updatedAt": "2026-06-04T07:43:54Z",
+      "adoptedPatterns": [
+        "BullMQ queue producer and worker setup scanning for Queue Worker QueueEvents and FlowProducer readiness",
+        "job payload and scheduling scans for queue.add addBulk priority delay repeat jobId and parent flow evidence",
+        "retry reliability scans for attempts backoff failed completed stalled retry removeOnComplete removeOnFail and dead-letter handling",
+        "Redis connection and worker-control scans for REDIS_URL connection ioredis node-redis concurrency limiter metrics and telemetry",
+        "safe static queue readiness that never starts Redis enqueues jobs runs workers processes queues retries failed jobs or runs analyzed project tests"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3431,6 +3447,25 @@
         "markdown/email-readiness.md",
         "html/email-readiness.html"
       ]
+    },
+    {
+      "name": "Queue readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/queue-readiness-report.json",
+        "markdown/queue-readiness.md",
+        "html/queue-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4009,6 +4044,12 @@
     "cliEmailReadinessOpenTargetSmoke": "PASS",
     "buildEmailReadiness": "PASS",
     "testEmailReadiness": "PASS",
-    "auditBriefEmailReadiness60": "PASS"
+    "auditBriefEmailReadiness60": "PASS",
+    "fixtureQueueReadinessReport": "PASS",
+    "cliQueueReadinessSmoke": "PASS",
+    "cliQueueReadinessOpenTargetSmoke": "PASS",
+    "buildQueueReadiness": "PASS",
+    "testQueueReadiness": "PASS",
+    "auditBriefQueueReadiness61": "PASS"
   }
 }

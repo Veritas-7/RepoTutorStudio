@@ -64,6 +64,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "auth-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "payment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "email-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "queue-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -126,6 +127,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "auth-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "payment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "email-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "queue-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -191,6 +193,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "auth-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "payment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "email-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "queue-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -286,6 +289,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/auth-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/payment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/email-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/queue-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -1252,6 +1256,26 @@ describe("RepoTutor core pipeline", () => {
     expect(emailReadinessMarkdown).toContain("Source pattern: Resend");
     expect(emailReadinessMarkdown).toContain("## Recipient Signals");
     expect(emailReadinessMarkdown).toContain("## Template Signals");
+    const queueReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "queue-readiness-report.json"), "utf8");
+    expect(queueReadinessText).toContain("BullMQ Queue Worker QueueEvents FlowProducer JobScheduler queue.add addBulk repeat attempts backoff removeOnComplete removeOnFail Redis connection concurrency limiter stalled failed completed metrics telemetry");
+    expect(queueReadinessText).toContain("\"queueSetups\"");
+    expect(queueReadinessText).toContain("\"producerSignals\"");
+    expect(queueReadinessText).toContain("\"workerSignals\"");
+    expect(queueReadinessText).toContain("\"reliabilitySignals\"");
+    expect(queueReadinessText).toContain("\"connectionSignals\"");
+    expect(queueReadinessText).toContain("\"packageSignals\"");
+    expect(queueReadinessText).toContain("npx vitest run");
+    const queueReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "queue-readiness.html"), "utf8");
+    expect(queueReadinessHtml).toContain("Queue Readiness");
+    expect(queueReadinessHtml).toContain("queue-readiness-card");
+    expect(queueReadinessHtml).toContain("data-source-pattern=\"BullMQ\"");
+    expect(queueReadinessHtml).toContain("Queue Setups");
+    expect(queueReadinessHtml).toContain("Reliability Signals");
+    const queueReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "queue-readiness.md"), "utf8");
+    expect(queueReadinessMarkdown).toContain("# Queue Readiness");
+    expect(queueReadinessMarkdown).toContain("Source pattern: BullMQ");
+    expect(queueReadinessMarkdown).toContain("## Producer Signals");
+    expect(queueReadinessMarkdown).toContain("## Connection Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -1407,6 +1431,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/auth-readiness.html");
     expect(exportManifestText).toContain("html/payment-readiness.html");
     expect(exportManifestText).toContain("html/email-readiness.html");
+    expect(exportManifestText).toContain("html/queue-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -1526,6 +1551,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("auth-readiness.html");
     expect(learningPathHtml).toContain("payment-readiness.html");
     expect(learningPathHtml).toContain("email-readiness.html");
+    expect(learningPathHtml).toContain("queue-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");

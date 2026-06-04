@@ -3004,6 +3004,64 @@ export const EmailReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const QueueReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  queueSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["bullmq", "bull", "graphile-worker", "bree", "agenda", "custom", "unknown"]),
+    queueCount: z.number().int().nonnegative(),
+    workerCount: z.number().int().nonnegative(),
+    schedulerCount: z.number().int().nonnegative(),
+    eventCount: z.number().int().nonnegative(),
+    flowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  producerSignals: z.array(z.object({
+    signal: z.enum(["queue-add", "add-bulk", "job-name", "job-data", "priority", "delay", "repeat", "job-id", "parent", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workerSignals: z.array(z.object({
+    signal: z.enum(["worker", "processor", "concurrency", "rate-limit", "sandbox", "stalled-check", "lock-renewal", "remove-on-complete", "remove-on-fail", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reliabilitySignals: z.array(z.object({
+    signal: z.enum(["attempts", "backoff", "failed-event", "completed-event", "queue-events", "retry", "dead-letter", "metrics", "telemetry", "dashboard", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  connectionSignals: z.array(z.object({
+    signal: z.enum(["REDIS_URL", "REDIS_HOST", "REDIS_PORT", "REDIS_PASSWORD", "connection", "ioredis", "node-redis", "docker-compose-redis", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["bullmq", "bull", "@nestjs/bullmq", "graphile-worker", "bree", "agenda", "ioredis", "redis", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3268,6 +3326,7 @@ export type FormReadinessReport = z.infer<typeof FormReadinessReportSchema>;
 export type AuthReadinessReport = z.infer<typeof AuthReadinessReportSchema>;
 export type PaymentReadinessReport = z.infer<typeof PaymentReadinessReportSchema>;
 export type EmailReadinessReport = z.infer<typeof EmailReadinessReportSchema>;
+export type QueueReadinessReport = z.infer<typeof QueueReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
