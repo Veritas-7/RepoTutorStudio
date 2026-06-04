@@ -4060,6 +4060,47 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 189:
   - `4de4615` LLM readiness report
 
+- 2026-06-04: AutoResearch Upgrade 190 candidate selected:
+  `fastify/fastify`
+  (`https://github.com/fastify/fastify`; public; MIT; 36,365 stars; 2,700
+  forks; updated 2026-06-04T09:17:25Z). Compared with `expressjs/express`,
+  `koajs/koa`, and `honojs/hono`; selected Fastify because it exposes explicit
+  server framework ownership boundaries: route shorthands, route objects, JSON
+  Schema validation, plugins, hooks, decorators, listen/runtime configuration,
+  error handlers, and inject-style tests. Cloned ignored external source to
+  `research/external-src/fastify-fastify` and inspected docs/source/test hits
+  without executing external source. Clone HEAD was `66128b0`; tracked file
+  count for `research/external-src/fastify-fastify` returned `0`.
+- 2026-06-04: RED server-framework-readiness smoke generated
+  `/tmp/repotutor-server-framework-red-studies.qaHUyw/2026-06-04/local__simple-ts-app__HEAD__f2fdfcbf`;
+  old build had `verificationCheckedRequiredArtifacts=267`, was missing
+  `analysis/server-framework-readiness-report.json`,
+  `markdown/server-framework-readiness.md`, and
+  `html/server-framework-readiness.html`, and `open --target
+  server-framework-readiness` failed as expected.
+- 2026-06-04: Implemented Fastify-style server-framework-readiness report:
+  `ServerFrameworkReadinessReportSchema`,
+  `analysis/server-framework-readiness-report.json`,
+  `markdown/server-framework-readiness.md`,
+  `html/server-framework-readiness.html`, server setups, route signals, schema
+  signals, plugin signals, lifecycle signals, runtime signals, error signals,
+  test signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target server-framework-readiness`.
+- 2026-06-04: GREEN server-framework-readiness smoke generated
+  `/tmp/repotutor-server-framework-green-studies.uWtHsN/2026-06-04/local__simple-ts-app__main__f2fdfcbf`;
+  confirmed `verificationCheckedRequiredArtifacts=270`, server setups 0, route
+  signals 9, schema signals 8, plugin signals 7, lifecycle signals 9, runtime
+  signals 7, error signals 5, test signals 5, package signals 8, risk queue 2,
+  all three new artifacts, and `open --target server-framework-readiness` ->
+  `html/server-framework-readiness.html`.
+- 2026-06-04: Verification for Upgrade 190:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 88/88 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

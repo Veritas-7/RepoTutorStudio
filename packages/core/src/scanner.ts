@@ -102,6 +102,7 @@ import {
   GraphqlReadinessReport,
   CliReadinessReport,
   LlmReadinessReport,
+  ServerFrameworkReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -210,6 +211,7 @@ export interface AnalysisBundle {
   graphqlReadinessReport: GraphqlReadinessReport;
   cliReadinessReport: CliReadinessReport;
   llmReadinessReport: LlmReadinessReport;
+  serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -318,8 +320,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const graphqlReadinessReport = await buildGraphqlReadinessReport(walk);
   const cliReadinessReport = await buildCliReadinessReport(walk);
   const llmReadinessReport = await buildLlmReadinessReport(walk);
+  const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -20629,6 +20632,323 @@ function llmReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: Re
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/llm-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildServerFrameworkReadinessReport(walk: WalkResult): Promise<ServerFrameworkReadinessReport> {
+  const sourceFiles = await serverFrameworkReadinessSourceFiles(walk);
+  const serverSetups = serverFrameworkReadinessSetups(sourceFiles);
+  const routeSignals = serverFrameworkReadinessRouteSignals(sourceFiles);
+  const schemaSignals = serverFrameworkReadinessSchemaSignals(sourceFiles);
+  const pluginSignals = serverFrameworkReadinessPluginSignals(sourceFiles);
+  const lifecycleSignals = serverFrameworkReadinessLifecycleSignals(sourceFiles);
+  const runtimeSignals = serverFrameworkReadinessRuntimeSignals(sourceFiles);
+  const errorSignals = serverFrameworkReadinessErrorSignals(sourceFiles);
+  const testSignals = serverFrameworkReadinessTestSignals(sourceFiles);
+  const packageSignals = serverFrameworkReadinessPackageSignals(sourceFiles);
+
+  const hasServer = serverSetups.length > 0 || packageSignals.some((item) => item.readiness === "ready");
+  const hasRoutes = routeSignals.some((item) => item.readiness === "ready") || serverSetups.some((item) => item.routeCount > 0);
+  const hasSchemas = schemaSignals.some((item) => item.readiness === "ready") || serverSetups.some((item) => item.schemaCount > 0);
+  const hasPlugins = pluginSignals.some((item) => item.readiness === "ready") || serverSetups.some((item) => item.pluginCount > 0);
+  const hasRuntime = runtimeSignals.some((item) => item.readiness === "ready") || serverSetups.some((item) => item.listenCount > 0);
+  const hasErrors = errorSignals.some((item) => item.readiness === "ready") || serverSetups.some((item) => item.errorCount > 0);
+  const hasTests = testSignals.some((item) => item.readiness === "ready") || serverSetups.some((item) => item.testCount > 0);
+
+  const riskQueue: ServerFrameworkReadinessReport["riskQueue"] = [];
+  if (!hasServer) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the server framework entry point before claiming server readiness.",
+      why: "Fastify-style readiness starts with a framework instance, route registration, plugin registration, or package evidence learners can trace.",
+      relatedHref: "html/server-framework-readiness.html"
+    });
+  }
+  if (hasServer && !hasRoutes) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace route declarations and HTTP method handlers.",
+      why: "A server framework dependency without route evidence does not show request entry points or learner navigation paths.",
+      relatedHref: "html/server-framework-readiness.html"
+    });
+  }
+  if (hasRoutes && !hasSchemas) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document request/response schemas for important routes.",
+      why: "Fastify emphasizes JSON Schema validation and serialization; routes without schemas are harder to rebuild and verify safely.",
+      relatedHref: "html/server-framework-readiness.html"
+    });
+  }
+  if (hasRoutes && !hasPlugins) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record plugin registration, encapsulation, or route prefix ownership.",
+      why: "Plugins explain how framework apps organize cross-cutting behavior, shared decorators, and scoped routes.",
+      relatedHref: "html/server-framework-readiness.html"
+    });
+  }
+  if (hasRoutes && !hasErrors) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document error and not-found handlers for request failures.",
+      why: "Learners need to see how validation errors, framework errors, not-found responses, and reply codes are handled.",
+      relatedHref: "html/server-framework-readiness.html"
+    });
+  }
+  if (hasServer && !hasRuntime) {
+    riskQueue.push({
+      priority: "low",
+      action: "Trace listen/host/port/logger/body-limit runtime configuration.",
+      why: "Framework setup is incomplete until learners can see where the server binds, logs, and limits incoming requests.",
+      relatedHref: "html/server-framework-readiness.html"
+    });
+  }
+  if (hasServer && !hasTests) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add inject, light-my-request, supertest, or integration test evidence for server routes.",
+      why: "Fastify exposes inject-style testing so routes can be verified without opening a real network listener.",
+      relatedHref: "html/server-framework-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify server behavior with trusted tests or a local dev server outside RepoTutor.",
+    why: "RepoTutor records server framework readiness only; it does not start listeners, execute handlers, send HTTP requests, run plugins, compile schemas, or mutate runtime state.",
+    relatedHref: "html/server-framework-readiness.html"
+  });
+
+  return {
+    summary: `Fastify-style server framework readiness report: setup ${serverSetups.length}개, route signal ${routeSignals.length}개, schema signal ${schemaSignals.length}개, plugin signal ${pluginSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger",
+    serverSetups,
+    routeSignals,
+    schemaSignals,
+    pluginSignals,
+    lifecycleSignals,
+    runtimeSignals,
+    errorSignals,
+    testSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"fastify\\(|Fastify\\(|express\\(|new Koa|new Hono|NestFactory\" package.json src app server packages", purpose: "Find server framework instance creation and package ownership." },
+      { command: "rg \"\\.route\\(|\\.get\\(|\\.post\\(|\\.put\\(|\\.patch\\(|\\.delete\\(|router\\.\" src app server packages", purpose: "Trace HTTP routes, methods, parameters, and route options." },
+      { command: "rg \"schema\\s*:|body\\s*:|querystring\\s*:|params\\s*:|response\\s*:|addSchema|setValidatorCompiler|setSerializerCompiler\" src app server packages", purpose: "Review request validation and response serialization schemas." },
+      { command: "rg \"\\.register\\(|fastify-plugin|@fastify/autoload|addHook|decorate|decorateRequest|decorateReply\" src app server packages", purpose: "Map plugin encapsulation, hooks, decorators, and shared request/reply behavior." },
+      { command: "rg \"setErrorHandler|setNotFoundHandler|frameworkErrors|reply\\.code|validation error|onError\" src app server packages", purpose: "Inspect framework error, not-found, validation, and response-code handling." },
+      { command: "rg \"\\.listen\\(|host\\s*:|port\\s*:|logger\\s*:|bodyLimit|addContentTypeParser|\\.inject\\(|supertest\" src app server packages test tests", purpose: "Check runtime binding, logging, parser limits, and route test coverage." }
+    ],
+    learnerNextSteps: [
+      "먼저 Fastify(), fastify(), express(), new Koa(), new Hono(), NestFactory 같은 server instance 생성 지점을 찾으세요.",
+      "get/post/put/patch/delete/route 신호로 실제 HTTP entry point와 parameter path를 확인하세요.",
+      "schema.body, schema.querystring, schema.params, schema.response, addSchema로 request/response contract를 분리해서 보세요.",
+      "register, fastify-plugin, @fastify/autoload, addHook, decorate 신호가 있으면 plugin encapsulation과 shared behavior 경계를 확인하세요.",
+      "setErrorHandler, setNotFoundHandler, validation error, reply.code 신호로 실패 응답 경로를 확인하세요.",
+      "listen host/port/logger/bodyLimit/content-type parser와 inject/supertest 테스트 신호를 runtime과 verification 관점에서 분리하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 listener, route handler, plugin lifecycle, schema compiler, HTTP request behavior는 원본 프로젝트 테스트나 안전한 dev server에서 별도 확인하세요."
+    ]
+  };
+}
+
+type ServerFrameworkReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function serverFrameworkReadinessSourceFiles(walk: WalkResult): Promise<ServerFrameworkReadinessSourceFile[]> {
+  const files: ServerFrameworkReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !serverFrameworkReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!serverFrameworkReadinessPathSignal(file.relPath) && !serverFrameworkReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function serverFrameworkReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return serverFrameworkReadinessPathSignal(filePath)
+    || /^(package\.json|server\.[cm]?[jt]sx?|app\.[cm]?[jt]sx?|index\.[cm]?[jt]sx?|main\.[cm]?[jt]sx?|routes?\.[cm]?[jt]sx?)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml)$/i.test(filePath);
+}
+
+function serverFrameworkReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(server|servers|api|apis|routes?|router|routers|controllers?|plugins?|middleware|middlewares|hooks?|decorators?|fastify|express|koa|hono|nestjs|hapi)(\/|\.|-|_|$)|package\.json$/i.test(filePath);
+}
+
+function serverFrameworkReadinessContentSignal(text: string): boolean {
+  return /(fastify\s*\(|Fastify\s*\(|express\s*\(|new\s+Koa|new\s+Hono|NestFactory|new\s+Hapi|\.route\s*\(|\.get\s*\(|\.post\s*\(|\.put\s*\(|\.patch\s*\(|\.delete\s*\(|\.register\s*\(|fastify-plugin|@fastify\/autoload|addHook|decorateRequest|decorateReply|setErrorHandler|setNotFoundHandler|addSchema|setValidatorCompiler|setSerializerCompiler|\.listen\s*\(|\.inject\s*\()|"(fastify|express|koa|hono|@nestjs\/core|@hapi\/hapi)"/i.test(text);
+}
+
+function serverFrameworkReadinessSetups(sourceFiles: ServerFrameworkReadinessSourceFile[]): ServerFrameworkReadinessReport["serverSetups"] {
+  const rows: ServerFrameworkReadinessReport["serverSetups"] = [];
+  for (const source of sourceFiles) {
+    const routeCount = countMatches(source.text, /\.(route|get|post|put|patch|delete|head|options|all)\s*\(|method\s*:|url\s*:|path\s*:/gi);
+    const schemaCount = countMatches(source.text, /schema\s*:|body\s*:|querystring\s*:|params\s*:|headers\s*:|response\s*:|addSchema|setValidatorCompiler|setSerializerCompiler/gi);
+    const pluginCount = countMatches(source.text, /\.register\s*\(|fastify-plugin|@fastify\/autoload|autoload|plugin\s*:|plugins\s*:/gi);
+    const hookCount = countMatches(source.text, /addHook|onRequest|preParsing|preValidation|preHandler|preSerialization|onSend|onResponse|onError|onClose|onListen|onRoute/gi);
+    const decoratorCount = countMatches(source.text, /decorate\s*\(|decorateRequest|decorateReply|hasDecorator|hasRequestDecorator|hasReplyDecorator/gi);
+    const errorCount = countMatches(source.text, /setErrorHandler|setNotFoundHandler|frameworkErrors|validationError|reply\.code|statusCode|notFound/gi);
+    const listenCount = countMatches(source.text, /\.listen\s*\(|host\s*:|port\s*:|logger\s*:|trustProxy|bodyLimit|addContentTypeParser/gi);
+    const testCount = countMatches(source.text, /\.inject\s*\(|light-my-request|supertest|tap|vitest|request\(/gi);
+    const hasSetupSignal = routeCount + schemaCount + pluginCount + hookCount + decoratorCount + errorCount + listenCount + testCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework: serverFrameworkReadinessFramework(source),
+      routeCount,
+      schemaCount,
+      pluginCount,
+      hookCount,
+      decoratorCount,
+      errorCount,
+      listenCount,
+      testCount,
+      readiness: routeCount > 0 && (schemaCount > 0 || pluginCount > 0 || listenCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains routes ${routeCount}, schemas ${schemaCount}, plugins ${pluginCount}, hooks ${hookCount}, decorators ${decoratorCount}, errors ${errorCount}, runtime ${listenCount}, tests ${testCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function serverFrameworkReadinessFramework(source: ServerFrameworkReadinessSourceFile): ServerFrameworkReadinessReport["serverSetups"][number]["framework"] {
+  if (/fastify|Fastify|@fastify\/autoload|fastify-plugin/i.test(source.text)) return "fastify";
+  if (/express|express\s*\(/i.test(source.text)) return "express";
+  if (/koa|new\s+Koa/i.test(source.text)) return "koa";
+  if (/hono|new\s+Hono/i.test(source.text)) return "hono";
+  if (/NestFactory|@nestjs\/core/i.test(source.text)) return "nestjs";
+  if (/Hapi|@hapi\/hapi/i.test(source.text)) return "hapi";
+  if (/server|router|route|middleware/i.test(source.filePath) || /HTTP server|route handler/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function serverFrameworkReadinessRouteSignals(sourceFiles: ServerFrameworkReadinessSourceFile[]): ServerFrameworkReadinessReport["routeSignals"] {
+  const specs: Array<{ signal: ServerFrameworkReadinessReport["routeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "get", pattern: /\.get\s*\(/i, evidence: "GET route evidence was detected." },
+    { signal: "post", pattern: /\.post\s*\(/i, evidence: "POST route evidence was detected." },
+    { signal: "put", pattern: /\.put\s*\(/i, evidence: "PUT route evidence was detected." },
+    { signal: "patch", pattern: /\.patch\s*\(/i, evidence: "PATCH route evidence was detected." },
+    { signal: "delete", pattern: /\.delete\s*\(/i, evidence: "DELETE route evidence was detected." },
+    { signal: "route", pattern: /\.route\s*\(|method\s*:|url\s*:/i, evidence: "route object evidence was detected." },
+    { signal: "all", pattern: /\.all\s*\(|method\s*:\s*['"]\*/i, evidence: "catch-all route evidence was detected." },
+    { signal: "params", pattern: /\/:[A-Za-z0-9_]+|params\s*:/i, evidence: "path params evidence was detected." },
+    { signal: "prefix", pattern: /prefix\s*:|routePrefix|basePath/i, evidence: "route prefix evidence was detected." }
+  ];
+  return serverFrameworkReadinessSignalFromSpecs(sourceFiles, specs, "route", "signal");
+}
+
+function serverFrameworkReadinessSchemaSignals(sourceFiles: ServerFrameworkReadinessSourceFile[]): ServerFrameworkReadinessReport["schemaSignals"] {
+  const specs: Array<{ signal: ServerFrameworkReadinessReport["schemaSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "body", pattern: /body\s*:/i, evidence: "request body schema evidence was detected." },
+    { signal: "querystring", pattern: /querystring\s*:|query\s*:/i, evidence: "query schema evidence was detected." },
+    { signal: "params", pattern: /params\s*:/i, evidence: "params schema evidence was detected." },
+    { signal: "headers", pattern: /headers\s*:/i, evidence: "headers schema evidence was detected." },
+    { signal: "response", pattern: /response\s*:/i, evidence: "response schema evidence was detected." },
+    { signal: "add-schema", pattern: /addSchema|getSchema|getSchemas/i, evidence: "shared schema registry evidence was detected." },
+    { signal: "validator-compiler", pattern: /setValidatorCompiler|validatorCompiler|schemaController/i, evidence: "validator compiler evidence was detected." },
+    { signal: "serializer-compiler", pattern: /setSerializerCompiler|serializerCompiler|compileSerializationSchema/i, evidence: "serializer compiler evidence was detected." }
+  ];
+  return serverFrameworkReadinessSignalFromSpecs(sourceFiles, specs, "schema", "signal");
+}
+
+function serverFrameworkReadinessPluginSignals(sourceFiles: ServerFrameworkReadinessSourceFile[]): ServerFrameworkReadinessReport["pluginSignals"] {
+  const specs: Array<{ signal: ServerFrameworkReadinessReport["pluginSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "register", pattern: /\.register\s*\(/i, evidence: "plugin registration evidence was detected." },
+    { signal: "fastify-plugin", pattern: /fastify-plugin|fp\s*\(/i, evidence: "fastify-plugin wrapper evidence was detected." },
+    { signal: "autoload", pattern: /@fastify\/autoload|autoload/i, evidence: "autoload plugin evidence was detected." },
+    { signal: "encapsulation", pattern: /encapsulation|pluginName|prefix\s*:/i, evidence: "encapsulation/prefix evidence was detected." },
+    { signal: "plugin-options", pattern: /pluginTimeout|FastifyPluginOptions|options\s*:/i, evidence: "plugin option evidence was detected." },
+    { signal: "ready", pattern: /\.ready\s*\(/i, evidence: "ready lifecycle evidence was detected." },
+    { signal: "after", pattern: /\.after\s*\(/i, evidence: "after lifecycle evidence was detected." }
+  ];
+  return serverFrameworkReadinessSignalFromSpecs(sourceFiles, specs, "plugin", "signal");
+}
+
+function serverFrameworkReadinessLifecycleSignals(sourceFiles: ServerFrameworkReadinessSourceFile[]): ServerFrameworkReadinessReport["lifecycleSignals"] {
+  const specs: Array<{ signal: ServerFrameworkReadinessReport["lifecycleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "on-request", pattern: /onRequest/i, evidence: "onRequest hook evidence was detected." },
+    { signal: "pre-parsing", pattern: /preParsing/i, evidence: "preParsing hook evidence was detected." },
+    { signal: "pre-validation", pattern: /preValidation/i, evidence: "preValidation hook evidence was detected." },
+    { signal: "pre-handler", pattern: /preHandler/i, evidence: "preHandler hook evidence was detected." },
+    { signal: "pre-serialization", pattern: /preSerialization/i, evidence: "preSerialization hook evidence was detected." },
+    { signal: "on-send", pattern: /onSend/i, evidence: "onSend hook evidence was detected." },
+    { signal: "on-response", pattern: /onResponse/i, evidence: "onResponse hook evidence was detected." },
+    { signal: "on-error", pattern: /onError/i, evidence: "onError hook evidence was detected." },
+    { signal: "on-close", pattern: /onClose/i, evidence: "onClose hook evidence was detected." }
+  ];
+  return serverFrameworkReadinessSignalFromSpecs(sourceFiles, specs, "lifecycle", "signal");
+}
+
+function serverFrameworkReadinessRuntimeSignals(sourceFiles: ServerFrameworkReadinessSourceFile[]): ServerFrameworkReadinessReport["runtimeSignals"] {
+  const specs: Array<{ signal: ServerFrameworkReadinessReport["runtimeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "listen", pattern: /\.listen\s*\(/i, evidence: "listen evidence was detected." },
+    { signal: "host", pattern: /host\s*:|HOST|0\.0\.0\.0|127\.0\.0\.1/i, evidence: "host binding evidence was detected." },
+    { signal: "port", pattern: /port\s*:|PORT|process\.env\.PORT/i, evidence: "port evidence was detected." },
+    { signal: "logger", pattern: /logger\s*:|pino|createLogger|logLevel/i, evidence: "logger evidence was detected." },
+    { signal: "trust-proxy", pattern: /trustProxy|trust proxy/i, evidence: "trust proxy evidence was detected." },
+    { signal: "body-limit", pattern: /bodyLimit|limit\s*:/i, evidence: "body limit evidence was detected." },
+    { signal: "content-type-parser", pattern: /addContentTypeParser|contentTypeParser|content-type parser/i, evidence: "content-type parser evidence was detected." }
+  ];
+  return serverFrameworkReadinessSignalFromSpecs(sourceFiles, specs, "runtime", "signal");
+}
+
+function serverFrameworkReadinessErrorSignals(sourceFiles: ServerFrameworkReadinessSourceFile[]): ServerFrameworkReadinessReport["errorSignals"] {
+  const specs: Array<{ signal: ServerFrameworkReadinessReport["errorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "set-error-handler", pattern: /setErrorHandler/i, evidence: "error handler evidence was detected." },
+    { signal: "set-not-found-handler", pattern: /setNotFoundHandler|notFound/i, evidence: "not-found handler evidence was detected." },
+    { signal: "framework-errors", pattern: /frameworkErrors|FST_ERR|FastifyError/i, evidence: "framework error evidence was detected." },
+    { signal: "validation-error", pattern: /validationError|schemaErrorFormatter|ValidationError/i, evidence: "validation error evidence was detected." },
+    { signal: "reply-code", pattern: /reply\.code|reply\.status|statusCode|code\(\d{3}\)/i, evidence: "reply status/code evidence was detected." }
+  ];
+  return serverFrameworkReadinessSignalFromSpecs(sourceFiles, specs, "error", "signal");
+}
+
+function serverFrameworkReadinessTestSignals(sourceFiles: ServerFrameworkReadinessSourceFile[]): ServerFrameworkReadinessReport["testSignals"] {
+  const specs: Array<{ signal: ServerFrameworkReadinessReport["testSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "inject", pattern: /\.inject\s*\(/i, evidence: "inject test evidence was detected." },
+    { signal: "light-my-request", pattern: /light-my-request/i, evidence: "light-my-request evidence was detected." },
+    { signal: "supertest", pattern: /supertest|request\(app\)/i, evidence: "supertest evidence was detected." },
+    { signal: "tap", pattern: /from ['"]node:test|from ['"]tap|require\(['"]tap|test\(/i, evidence: "tap/node test evidence was detected." },
+    { signal: "vitest", pattern: /vitest|describe\(|it\(/i, evidence: "Vitest evidence was detected." }
+  ];
+  return serverFrameworkReadinessSignalFromSpecs(sourceFiles, specs, "test", "signal");
+}
+
+function serverFrameworkReadinessPackageSignals(sourceFiles: ServerFrameworkReadinessSourceFile[]): ServerFrameworkReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ServerFrameworkReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "fastify", pattern: /"fastify"|from ["']fastify["']|require\(["']fastify["']\)|Fastify\(/i, evidence: "Fastify package evidence was detected." },
+    { signal: "@fastify/autoload", pattern: /"@fastify\/autoload"|from ["']@fastify\/autoload/i, evidence: "@fastify/autoload evidence was detected." },
+    { signal: "fastify-plugin", pattern: /"fastify-plugin"|from ["']fastify-plugin|require\(["']fastify-plugin/i, evidence: "fastify-plugin evidence was detected." },
+    { signal: "express", pattern: /"express"|from ["']express["']|require\(["']express["']\)|express\(/i, evidence: "Express evidence was detected." },
+    { signal: "koa", pattern: /"koa"|from ["']koa["']|new\s+Koa/i, evidence: "Koa evidence was detected." },
+    { signal: "hono", pattern: /"hono"|from ["']hono["']|new\s+Hono/i, evidence: "Hono evidence was detected." },
+    { signal: "@nestjs/core", pattern: /"@nestjs\/core"|NestFactory/i, evidence: "NestJS evidence was detected." },
+    { signal: "@hapi/hapi", pattern: /"@hapi\/hapi"|new\s+Hapi/i, evidence: "Hapi evidence was detected." }
+  ];
+  return serverFrameworkReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function serverFrameworkReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ServerFrameworkReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/server-framework-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
