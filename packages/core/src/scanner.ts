@@ -80,6 +80,7 @@ import {
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
   RateLimitReadinessReport,
+  ErrorTrackingReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -166,6 +167,7 @@ export interface AnalysisBundle {
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
   rateLimitReadinessReport: RateLimitReadinessReport;
+  errorTrackingReadinessReport: ErrorTrackingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -252,8 +254,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const loggingReadinessReport = await buildLoggingReadinessReport(walk);
   const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
   const rateLimitReadinessReport = await buildRateLimitReadinessReport(walk);
+  const errorTrackingReadinessReport = await buildErrorTrackingReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -14592,6 +14595,261 @@ function rateLimitReadinessSignalFromSpecs<T extends Record<K, string> & { patte
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/rate-limit-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildErrorTrackingReadinessReport(walk: WalkResult): Promise<ErrorTrackingReadinessReport> {
+  const sourceFiles = await errorTrackingReadinessSourceFiles(walk);
+  const errorTrackingSetups = errorTrackingReadinessSetups(sourceFiles);
+  const captureSignals = errorTrackingReadinessCaptureSignals(sourceFiles);
+  const contextSignals = errorTrackingReadinessContextSignals(sourceFiles);
+  const filteringSignals = errorTrackingReadinessFilteringSignals(sourceFiles);
+  const observabilitySignals = errorTrackingReadinessObservabilitySignals(sourceFiles);
+  const packageSignals = errorTrackingReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasSentryPackage = packageSignals.some((item) => item.signal.startsWith("@sentry/") && item.readiness === "ready");
+  const hasSetup = errorTrackingSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = errorTrackingSetups.some((item) => item.readiness === "ready");
+  const hasCapture = captureSignals.some((item) => ["capture-exception", "capture-message", "capture-event", "error-boundary", "react-error-handler"].includes(item.signal) && item.readiness === "ready");
+  const hasDsn = errorTrackingSetups.some((item) => item.dsnCount > 0);
+  const hasContext = contextSignals.some((item) => ["set-user", "set-tag", "set-context", "set-extra", "with-scope", "release-environment"].includes(item.signal) && item.readiness === "ready");
+  const hasFiltering = filteringSignals.some((item) => ["before-send", "before-breadcrumb", "ignore-errors", "allow-deny-urls", "scrubbers", "sample-rate"].includes(item.signal) && item.readiness === "ready");
+  const sendsPii = filteringSignals.some((item) => item.signal === "send-default-pii" && item.readiness === "ready");
+  const hasTracing = observabilitySignals.some((item) => ["traces-sample-rate", "traces-sampler", "trace-propagation-targets", "browser-tracing"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: ErrorTrackingReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasCapture) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the error-tracking strategy before claiming error-tracking readiness.",
+      why: "Error-tracking readiness starts with an explicit SDK package, init file, DSN, capture path, scope/context, filtering hook, or framework boundary.",
+      relatedHref: "html/error-tracking-readiness.html"
+    });
+  }
+  if (hasSentryPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair each Sentry package signal with early Sentry.init configuration and capture coverage.",
+      why: "Sentry SDK packages do not capture useful events until the app initializes them before relevant framework or runtime code executes.",
+      relatedHref: "html/error-tracking-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup || hasCapture) && !hasDsn) {
+    riskQueue.push({
+      priority: "high",
+      action: "Confirm DSN and environment-specific routing are configured outside source secrets.",
+      why: "Error events cannot reach the intended project without a DSN, and source-embedded DSNs or secrets should be reviewed carefully.",
+      relatedHref: "html/error-tracking-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasCapture) && !hasContext) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Attach release, environment, user-safe tags, and request/component context to error events.",
+      why: "Error tracking is much less actionable without release/environment and stable context for grouping and triage.",
+      relatedHref: "html/error-tracking-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasCapture || hasTracing) && !hasFiltering) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review beforeSend, beforeBreadcrumb, ignoreErrors, URL filters, scrubbers, and sample rates.",
+      why: "Error trackers can collect noisy events or sensitive data unless filtering and sampling policies are explicit.",
+      relatedHref: "html/error-tracking-readiness.html"
+    });
+  }
+  if (sendsPii) {
+    riskQueue.push({
+      priority: "high",
+      action: "Review sendDefaultPii and related user/request payload collection before enabling production traffic.",
+      why: "PII collection changes the privacy profile of error events, breadcrumbs, replay, and request context.",
+      relatedHref: "html/error-tracking-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run error-tracking integration checks only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not initialize SDKs, send events to Sentry or other vendors, upload source maps, start tracing/replay, collect PII, or run the analyzed project's tests.",
+    relatedHref: "html/error-tracking-readiness.html"
+  });
+
+  return {
+    summary: `Sentry식 error-tracking readiness report: setup ${errorTrackingSetups.length}개, capture signal ${captureSignals.length}개, context signal ${contextSignals.length}개, filtering signal ${filteringSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Sentry.init dsn captureException captureMessage captureEvent withScope setUser setContext setTag beforeSend ignoreErrors tracesSampleRate tracePropagationTargets replayIntegration ErrorBoundary",
+    errorTrackingSetups,
+    captureSignals,
+    contextSignals,
+    filteringSignals,
+    observabilitySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"Sentry\\.init|@sentry/(browser|node|react|nextjs|vue)|dsn|instrument\\.(js|ts|mjs)\" src app pages packages", purpose: "Inventory SDK packages, early init files, DSN setup, and runtime instrumentation entrypoints." },
+      { command: "rg \"captureException|captureMessage|captureEvent|ErrorBoundary|reactErrorHandler|onUncaughtError|onRecoverableError|addBreadcrumb\" src app pages packages", purpose: "Find manual captures, framework boundaries, React root error hooks, and breadcrumbs." },
+      { command: "rg \"setUser|setTag|setTags|setContext|setExtra|withScope|release|environment|componentStack\" src app pages packages", purpose: "Review event context, scope enrichment, release/environment tagging, and component stack capture." },
+      { command: "rg \"beforeSend|beforeBreadcrumb|ignoreErrors|denyUrls|allowUrls|sendDefaultPii|sampleRate|normalizeDepth|scrub\" src app pages packages", purpose: "Check event filtering, privacy, noise control, and sampling policy." },
+      { command: "rg \"tracesSampleRate|tracesSampler|tracePropagationTargets|browserTracingIntegration|profilesSampleRate|replayIntegration|feedbackIntegration\" src app pages packages", purpose: "Inspect tracing, profiling, replay, feedback, and trace propagation readiness." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise error boundaries, capture calls, filtering hooks, privacy controls, and tracing setup." }
+    ],
+    learnerNextSteps: [
+      "먼저 Sentry.init 또는 다른 error tracker init 파일이 앱 진입점보다 먼저 실행되는지 확인하세요.",
+      "captureException, captureMessage, captureEvent, ErrorBoundary, reactErrorHandler 호출을 따라가며 실제 에러 경로가 잡히는지 확인하세요.",
+      "release, environment, setUser, setTag, setContext, withScope가 이벤트 triage에 필요한 맥락을 충분히 제공하는지 검토하세요.",
+      "beforeSend, beforeBreadcrumb, ignoreErrors, allowUrls/denyUrls, sendDefaultPii, sampleRate 설정으로 노이즈와 개인정보 위험을 줄이는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 이벤트 전송, source map upload, tracing/replay 시작, PII 수집은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type ErrorTrackingReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function errorTrackingReadinessSourceFiles(walk: WalkResult): Promise<ErrorTrackingReadinessSourceFile[]> {
+  const files: ErrorTrackingReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !errorTrackingReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!errorTrackingReadinessPathSignal(file.relPath) && !errorTrackingReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function errorTrackingReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return errorTrackingReadinessPathSignal(filePath)
+    || /^(package\.json|\.env\.example|\.env\.sample|instrument\.[cm]?[jt]s|sentry\.[cm]?[jt]s|sentry\.client\.config\.[cm]?[jt]s|sentry\.server\.config\.[cm]?[jt]s|next\.config\.[cm]?[jt]s|vite\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env|toml)$/i.test(filePath);
+}
+
+function errorTrackingReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(sentry|rollbar|bugsnag|airbrake|errors?|exceptions?|error[-_ ]?tracking|monitoring|observability|instrument)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function errorTrackingReadinessContentSignal(text: string): boolean {
+  return /\b(Sentry\.init|@sentry\/(browser|node|react|nextjs|vue)|captureException|captureMessage|captureEvent|ErrorBoundary|reactErrorHandler|setUser|setContext|setTag|withScope|beforeSend|ignoreErrors|tracesSampleRate|tracePropagationTargets|replayIntegration|Rollbar|Bugsnag)\b/i.test(text);
+}
+
+function errorTrackingReadinessSetups(sourceFiles: ErrorTrackingReadinessSourceFile[]): ErrorTrackingReadinessReport["errorTrackingSetups"] {
+  const rows: ErrorTrackingReadinessReport["errorTrackingSetups"] = [];
+  for (const source of sourceFiles) {
+    const initCount = countMatches(source.text, /Sentry\.init\s*\(|\binit\s*\(\s*{[^}]*dsn|new\s+Rollbar\s*\(|Bugsnag\.start\s*\(|Airbrake\.Notifier/gi);
+    const dsnCount = countMatches(source.text, /\bdsn\s*:|SENTRY_DSN|ROLLBAR_ACCESS_TOKEN|BUGSNAG_API_KEY|AIRBRAKE_PROJECT_KEY/gi);
+    const captureCount = countMatches(source.text, /captureException\s*\(|captureMessage\s*\(|captureEvent\s*\(|notify\s*\(|Bugsnag\.notify\s*\(|Rollbar\.(error|warning|info)\s*\(/gi);
+    const scopeCount = countMatches(source.text, /withScope\s*\(|setUser\s*\(|setTag[s]?\s*\(|setContext\s*\(|setExtra\s*\(|configureScope\s*\(/gi);
+    const integrationCount = countMatches(source.text, /integrations\s*:|browserTracingIntegration|replayIntegration|feedbackIntegration|ErrorBoundary|reactErrorHandler|httpIntegration|nodeProfilingIntegration/gi);
+    const hasSetupSignal = initCount + dsnCount + captureCount + scopeCount + integrationCount > 0 || /\b(Sentry|error tracking|Rollbar|Bugsnag|Airbrake)\b/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: errorTrackingReadinessProvider(source),
+      initCount,
+      dsnCount,
+      captureCount,
+      scopeCount,
+      integrationCount,
+      readiness: initCount > 0 && dsnCount > 0 && captureCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains init ${initCount}, DSN signals ${dsnCount}, captures ${captureCount}, scopes/context ${scopeCount}, integrations ${integrationCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function errorTrackingReadinessProvider(source: ErrorTrackingReadinessSourceFile): ErrorTrackingReadinessReport["errorTrackingSetups"][number]["provider"] {
+  if (/@sentry\/|Sentry\.|sentry/i.test(source.text)) return "sentry";
+  if (/Rollbar|rollbar/i.test(source.text)) return "rollbar";
+  if (/Bugsnag|bugsnag/i.test(source.text)) return "bugsnag";
+  if (/Airbrake|airbrake/i.test(source.text)) return "airbrake";
+  if (/\b(error tracking|captureException|exception monitor|error monitor)\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function errorTrackingReadinessCaptureSignals(sourceFiles: ErrorTrackingReadinessSourceFile[]): ErrorTrackingReadinessReport["captureSignals"] {
+  const specs: Array<{ signal: ErrorTrackingReadinessReport["captureSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "capture-exception", pattern: /captureException\s*\(|Bugsnag\.notify\s*\(|Rollbar\.error\s*\(/i, evidence: "exception capture evidence was detected." },
+    { signal: "capture-message", pattern: /captureMessage\s*\(|Rollbar\.(info|warning|log)\s*\(/i, evidence: "message capture evidence was detected." },
+    { signal: "capture-event", pattern: /captureEvent\s*\(|EventHint|event_id/i, evidence: "manual event capture evidence was detected." },
+    { signal: "error-boundary", pattern: /ErrorBoundary|withErrorBoundary/i, evidence: "framework error boundary evidence was detected." },
+    { signal: "react-error-handler", pattern: /reactErrorHandler|onUncaughtError|onCaughtError|onRecoverableError/i, evidence: "React root error hook evidence was detected." },
+    { signal: "unhandled-errors", pattern: /unhandledrejection|uncaughtException|unhandledRejection|onerror|GlobalHandlers/i, evidence: "unhandled error capture evidence was detected." },
+    { signal: "breadcrumbs", pattern: /addBreadcrumb|Breadcrumb|beforeBreadcrumb/i, evidence: "breadcrumb capture evidence was detected." }
+  ];
+  return errorTrackingReadinessSignalFromSpecs(sourceFiles, specs, "capture", "signal");
+}
+
+function errorTrackingReadinessContextSignals(sourceFiles: ErrorTrackingReadinessSourceFile[]): ErrorTrackingReadinessReport["contextSignals"] {
+  const specs: Array<{ signal: ErrorTrackingReadinessReport["contextSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "set-user", pattern: /setUser\s*\(|user\s*:/i, evidence: "user context evidence was detected." },
+    { signal: "set-tag", pattern: /setTag[s]?\s*\(|tags\s*:/i, evidence: "tag context evidence was detected." },
+    { signal: "set-context", pattern: /setContext\s*\(|contexts\s*:/i, evidence: "structured context evidence was detected." },
+    { signal: "set-extra", pattern: /setExtra[s]?\s*\(|extra\s*:/i, evidence: "extra context evidence was detected." },
+    { signal: "with-scope", pattern: /withScope\s*\(|configureScope\s*\(|scope\s*=>/i, evidence: "scoped event enrichment evidence was detected." },
+    { signal: "component-stack", pattern: /componentStack|errorInfo|React ErrorBoundary/i, evidence: "component stack evidence was detected." },
+    { signal: "release-environment", pattern: /\brelease\s*:|\benvironment\s*:|SENTRY_RELEASE|SENTRY_ENVIRONMENT|dist\s*:/i, evidence: "release/environment evidence was detected." }
+  ];
+  return errorTrackingReadinessSignalFromSpecs(sourceFiles, specs, "context", "signal");
+}
+
+function errorTrackingReadinessFilteringSignals(sourceFiles: ErrorTrackingReadinessSourceFile[]): ErrorTrackingReadinessReport["filteringSignals"] {
+  const specs: Array<{ signal: ErrorTrackingReadinessReport["filteringSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "before-send", pattern: /beforeSend\s*:|beforeSend\s*\(/i, evidence: "beforeSend event filtering evidence was detected." },
+    { signal: "before-breadcrumb", pattern: /beforeBreadcrumb\s*:|beforeBreadcrumb\s*\(/i, evidence: "beforeBreadcrumb filtering evidence was detected." },
+    { signal: "ignore-errors", pattern: /ignoreErrors|ignoredErrors|ignoreError/i, evidence: "ignored error evidence was detected." },
+    { signal: "allow-deny-urls", pattern: /denyUrls|allowUrls|tracePropagationTargets|urlFilter/i, evidence: "URL allow/deny filtering evidence was detected." },
+    { signal: "send-default-pii", pattern: /sendDefaultPii\s*:\s*true|sendDefaultPii/i, evidence: "sendDefaultPii evidence was detected." },
+    { signal: "scrubbers", pattern: /scrub|redact|sanitize|normalizeDepth|normalizeMaxBreadth|password|token|authorization|cookie/i, evidence: "scrubbing or sensitive-field evidence was detected." },
+    { signal: "sample-rate", pattern: /\bsampleRate\s*:|tracesSampleRate|profilesSampleRate|replaysSessionSampleRate|replaysOnErrorSampleRate/i, evidence: "event or telemetry sample-rate evidence was detected." }
+  ];
+  return errorTrackingReadinessSignalFromSpecs(sourceFiles, specs, "filtering", "signal");
+}
+
+function errorTrackingReadinessObservabilitySignals(sourceFiles: ErrorTrackingReadinessSourceFile[]): ErrorTrackingReadinessReport["observabilitySignals"] {
+  const specs: Array<{ signal: ErrorTrackingReadinessReport["observabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "traces-sample-rate", pattern: /tracesSampleRate/i, evidence: "tracing sample-rate evidence was detected." },
+    { signal: "traces-sampler", pattern: /tracesSampler/i, evidence: "custom traces sampler evidence was detected." },
+    { signal: "trace-propagation-targets", pattern: /tracePropagationTargets/i, evidence: "trace propagation target evidence was detected." },
+    { signal: "browser-tracing", pattern: /browserTracingIntegration|BrowserTracing|startBrowserTracing/i, evidence: "browser tracing integration evidence was detected." },
+    { signal: "profiles-sample-rate", pattern: /profilesSampleRate|nodeProfilingIntegration|profileLifecycle/i, evidence: "profiling evidence was detected." },
+    { signal: "replay", pattern: /replayIntegration|replaysSessionSampleRate|replaysOnErrorSampleRate|Replay/i, evidence: "session replay evidence was detected." },
+    { signal: "feedback", pattern: /feedbackIntegration|feedbackAsyncIntegration|showReportDialog|userFeedback/i, evidence: "feedback/report dialog evidence was detected." }
+  ];
+  return errorTrackingReadinessSignalFromSpecs(sourceFiles, specs, "observability", "signal");
+}
+
+function errorTrackingReadinessPackageSignals(sourceFiles: ErrorTrackingReadinessSourceFile[]): ErrorTrackingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ErrorTrackingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@sentry/browser", pattern: /@sentry\/browser/i, evidence: "@sentry/browser package/import evidence was detected." },
+    { signal: "@sentry/node", pattern: /@sentry\/node/i, evidence: "@sentry/node package/import evidence was detected." },
+    { signal: "@sentry/react", pattern: /@sentry\/react/i, evidence: "@sentry/react package/import evidence was detected." },
+    { signal: "@sentry/nextjs", pattern: /@sentry\/nextjs/i, evidence: "@sentry/nextjs package/import evidence was detected." },
+    { signal: "@sentry/vue", pattern: /@sentry\/vue/i, evidence: "@sentry/vue package/import evidence was detected." },
+    { signal: "rollbar", pattern: /rollbar/i, evidence: "Rollbar package/import evidence was detected." },
+    { signal: "@bugsnag/js", pattern: /@bugsnag\/js|bugsnag-js|Bugsnag/i, evidence: "Bugsnag package/import evidence was detected." }
+  ];
+  return errorTrackingReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function errorTrackingReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ErrorTrackingReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/error-tracking-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

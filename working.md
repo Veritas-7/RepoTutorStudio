@@ -3125,6 +3125,50 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 167:
   - `ec321f0` rate limit readiness report
 
+- 2026-06-04: AutoResearch Upgrade 168 candidate selected:
+  `getsentry/sentry-javascript`
+  (`https://github.com/getsentry/sentry-javascript`; public MIT; 8,662
+  stars; 1,777 forks; updated 2026-06-03T19:49:45Z). Compared with
+  `open-telemetry/opentelemetry-js`, `rollbar/rollbar.js`, and
+  `bugsnag/bugsnag-js`; selected Sentry JavaScript because it directly models
+  production error-tracking readiness: `Sentry.init`, DSN setup, early
+  instrumentation, `captureException`, `captureMessage`, `captureEvent`,
+  `ErrorBoundary`, `reactErrorHandler`, breadcrumbs, `withScope`, `setUser`,
+  `setContext`, `setTag`, `beforeSend`, `beforeBreadcrumb`, `ignoreErrors`,
+  URL filters, `sendDefaultPii`, `tracesSampleRate`,
+  `tracePropagationTargets`, replay, profiling, and feedback integrations.
+  Cloned ignored external source to
+  `research/external-src/getsentry-sentry-javascript` and inspected README,
+  package metadata, browser/node/react docs, and source hits without executing
+  external source. Clone HEAD was `983fbac`; tracked-file count for
+  `research/external-src/getsentry-sentry-javascript` returned `0`.
+- 2026-06-04: RED error-tracking-readiness smoke generated
+  `/tmp/repotutor-error-tracking-readiness-red-studies.9MpSbM/2026-06-04/local__simple-ts-app__main__9e64e605`;
+  old build was missing `analysis/error-tracking-readiness-report.json`,
+  `markdown/error-tracking-readiness.md`, and
+  `html/error-tracking-readiness.html`, and `open --target
+  error-tracking-readiness` failed as expected.
+- 2026-06-04: Implemented Sentry-style error-tracking-readiness report:
+  `ErrorTrackingReadinessReportSchema`,
+  `analysis/error-tracking-readiness-report.json`,
+  `markdown/error-tracking-readiness.md`,
+  `html/error-tracking-readiness.html`, error-tracking setups, capture
+  signals, context signals, filtering signals, observability signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, nav entry, and `open --target
+  error-tracking-readiness`.
+- 2026-06-04: GREEN error-tracking-readiness smoke generated
+  `/tmp/repotutor-error-tracking-readiness-green-studies.Wzf5W4/2026-06-04/local__simple-ts-app__main__9e64e605`;
+  confirmed `verificationCheckedRequiredArtifacts=204`, error-tracking setups
+  0, capture signals 7, context signals 7, filtering signals 7, observability
+  signals 7, package signals 7, risk queue 2, manifest/learning-path entries,
+  and `open --target error-tracking-readiness` ->
+  `html/error-tracking-readiness.html`.
+- 2026-06-04: Verification for Upgrade 168:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 66/66 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

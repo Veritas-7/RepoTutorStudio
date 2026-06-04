@@ -3294,6 +3294,64 @@ export const RateLimitReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ErrorTrackingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  errorTrackingSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["sentry", "rollbar", "bugsnag", "airbrake", "custom", "unknown"]),
+    initCount: z.number().int().nonnegative(),
+    dsnCount: z.number().int().nonnegative(),
+    captureCount: z.number().int().nonnegative(),
+    scopeCount: z.number().int().nonnegative(),
+    integrationCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  captureSignals: z.array(z.object({
+    signal: z.enum(["capture-exception", "capture-message", "capture-event", "error-boundary", "react-error-handler", "unhandled-errors", "breadcrumbs", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["set-user", "set-tag", "set-context", "set-extra", "with-scope", "component-stack", "release-environment", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  filteringSignals: z.array(z.object({
+    signal: z.enum(["before-send", "before-breadcrumb", "ignore-errors", "allow-deny-urls", "send-default-pii", "scrubbers", "sample-rate", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observabilitySignals: z.array(z.object({
+    signal: z.enum(["traces-sample-rate", "traces-sampler", "trace-propagation-targets", "browser-tracing", "profiles-sample-rate", "replay", "feedback", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@sentry/browser", "@sentry/node", "@sentry/react", "@sentry/nextjs", "@sentry/vue", "rollbar", "@bugsnag/js", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3563,6 +3621,7 @@ export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
 export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;
 export type RateLimitReadinessReport = z.infer<typeof RateLimitReadinessReportSchema>;
+export type ErrorTrackingReadinessReport = z.infer<typeof ErrorTrackingReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

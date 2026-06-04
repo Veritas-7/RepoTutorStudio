@@ -75,6 +75,7 @@ import type {
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
   RateLimitReadinessReport,
+  ErrorTrackingReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -156,6 +157,7 @@ export interface StudyHtmlInput {
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
   rateLimitReadinessReport: RateLimitReadinessReport;
+  errorTrackingReadinessReport: ErrorTrackingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -719,6 +721,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Rate Limit Readiness", "rate-limit-readiness.html", `<section class="panel" data-source-pattern="rate-limiter-flexible"><h2>Rate Limit Snapshot</h2><p>${escapeHtml(input.rateLimitReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.rateLimitReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.rateLimitReadinessReport.rateLimitSetups.length}</dd></div><div><dt>quota</dt><dd>${input.rateLimitReadinessReport.quotaSignals.length}</dd></div><div><dt>identity</dt><dd>${input.rateLimitReadinessReport.identitySignals.length}</dd></div><div><dt>stores</dt><dd>${input.rateLimitReadinessReport.storeSignals.length}</dd></div></dl><p class="muted">RepoTutor records rate-limit readiness only. It does not initialize limiters, consume points, mutate Redis or other stores, sleep for windows, emit responses, or run the analyzed project's tests.</p></section><section class="grid"><article class="rate-limit-readiness-card"><h3>Rate Limit Setups</h3>${rateLimitReadinessSetupList(input.rateLimitReadinessReport.rateLimitSetups)}</article><article class="rate-limit-readiness-card"><h3>Quota Signals</h3>${rateLimitReadinessSignalList(input.rateLimitReadinessReport.quotaSignals, "signal")}</article><article class="rate-limit-readiness-card"><h3>Identity Signals</h3>${rateLimitReadinessSignalList(input.rateLimitReadinessReport.identitySignals, "signal")}</article><article class="rate-limit-readiness-card"><h3>Store Signals</h3>${rateLimitReadinessSignalList(input.rateLimitReadinessReport.storeSignals, "signal")}</article></section><section class="grid"><article class="rate-limit-readiness-card"><h3>Response Signals</h3>${rateLimitReadinessSignalList(input.rateLimitReadinessReport.responseSignals, "signal")}</article><article class="rate-limit-readiness-card"><h3>Resilience Signals</h3>${rateLimitReadinessSignalList(input.rateLimitReadinessReport.resilienceSignals, "signal")}</article><article class="rate-limit-readiness-card"><h3>Package Signals</h3>${rateLimitReadinessSignalList(input.rateLimitReadinessReport.packageSignals, "signal")}</article><article class="rate-limit-readiness-card"><h3>Recommended Commands</h3>${rateLimitReadinessCommandList(input.rateLimitReadinessReport.recommendedCommands)}</article><article class="rate-limit-readiness-card"><h3>Risk Queue</h3>${rateLimitReadinessRiskList(input.rateLimitReadinessReport.riskQueue)}</article><article class="rate-limit-readiness-card"><h3>다음 확인 단계</h3>${list(input.rateLimitReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "error-tracking-readiness.html",
+      title: "Error Tracking Readiness",
+      html: pageShell("Error Tracking Readiness", "error-tracking-readiness.html", `<section class="panel" data-source-pattern="Sentry"><h2>Error Tracking Snapshot</h2><p>${escapeHtml(input.errorTrackingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.errorTrackingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.errorTrackingReadinessReport.errorTrackingSetups.length}</dd></div><div><dt>capture</dt><dd>${input.errorTrackingReadinessReport.captureSignals.length}</dd></div><div><dt>context</dt><dd>${input.errorTrackingReadinessReport.contextSignals.length}</dd></div><div><dt>filtering</dt><dd>${input.errorTrackingReadinessReport.filteringSignals.length}</dd></div></dl><p class="muted">RepoTutor records error-tracking readiness only. It does not initialize SDKs, send events to vendors, upload source maps, start tracing/replay, collect PII, or run the analyzed project's tests.</p></section><section class="grid"><article class="error-tracking-readiness-card"><h3>Error Tracking Setups</h3>${errorTrackingReadinessSetupList(input.errorTrackingReadinessReport.errorTrackingSetups)}</article><article class="error-tracking-readiness-card"><h3>Capture Signals</h3>${errorTrackingReadinessSignalList(input.errorTrackingReadinessReport.captureSignals, "signal")}</article><article class="error-tracking-readiness-card"><h3>Context Signals</h3>${errorTrackingReadinessSignalList(input.errorTrackingReadinessReport.contextSignals, "signal")}</article><article class="error-tracking-readiness-card"><h3>Filtering Signals</h3>${errorTrackingReadinessSignalList(input.errorTrackingReadinessReport.filteringSignals, "signal")}</article></section><section class="grid"><article class="error-tracking-readiness-card"><h3>Observability Signals</h3>${errorTrackingReadinessSignalList(input.errorTrackingReadinessReport.observabilitySignals, "signal")}</article><article class="error-tracking-readiness-card"><h3>Package Signals</h3>${errorTrackingReadinessSignalList(input.errorTrackingReadinessReport.packageSignals, "signal")}</article><article class="error-tracking-readiness-card"><h3>Recommended Commands</h3>${errorTrackingReadinessCommandList(input.errorTrackingReadinessReport.recommendedCommands)}</article><article class="error-tracking-readiness-card"><h3>Risk Queue</h3>${errorTrackingReadinessRiskList(input.errorTrackingReadinessReport.riskQueue)}</article><article class="error-tracking-readiness-card"><h3>다음 확인 단계</h3>${list(input.errorTrackingReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -894,6 +901,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Logging Readiness", path: "html/logging-readiness.html", description: "Pino식 logger setup, level, context binding, redaction, transport 준비도를 확인합니다." },
       { label: "Feature Flag Readiness", path: "html/feature-flag-readiness.html", description: "OpenFeature식 provider, evaluation, targeting context, hooks, tracking 준비도를 확인합니다." },
       { label: "Rate Limit Readiness", path: "html/rate-limit-readiness.html", description: "rate-limiter-flexible식 limiter setup, quota, identity key, store, response header 준비도를 확인합니다." },
+      { label: "Error Tracking Readiness", path: "html/error-tracking-readiness.html", description: "Sentry식 init, capture, context, filtering, tracing, replay 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1367,6 +1375,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "rate-limit-readiness.html",
       goal: "rate-limiter-flexible식 limiter setup, quota/window, identity key, backing store, 429/Retry-After 응답 흐름을 보고 abuse 방어 관문을 확인합니다.",
       evidence: `rate limit setups ${input.rateLimitReadinessReport.rateLimitSetups.length}개, quota signals ${input.rateLimitReadinessReport.quotaSignals.length}개`
+    },
+    {
+      title: "Error tracking readiness 확인",
+      href: "error-tracking-readiness.html",
+      goal: "Sentry식 SDK init, capture, scope/context, privacy filtering, tracing/replay 흐름을 보고 운영 에러 triage 관문을 확인합니다.",
+      evidence: `error tracking setups ${input.errorTrackingReadinessReport.errorTrackingSetups.length}개, capture signals ${input.errorTrackingReadinessReport.captureSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3084,6 +3098,31 @@ function rateLimitReadinessRiskList(items: RateLimitReadinessReport["riskQueue"]
 }
 
 function rateLimitReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function errorTrackingReadinessSetupList(items: ErrorTrackingReadinessReport["errorTrackingSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">error tracking setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>init/DSN/capture/scope/integrations ${item.initCount}/${item.dsnCount}/${item.captureCount}/${item.scopeCount}/${item.integrationCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(errorTrackingReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function errorTrackingReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">error tracking signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(errorTrackingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function errorTrackingReadinessCommandList(items: ErrorTrackingReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function errorTrackingReadinessRiskList(items: ErrorTrackingReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(errorTrackingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function errorTrackingReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
