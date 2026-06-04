@@ -1944,6 +1944,51 @@
         "Access and policy evidence through signed URLs, upload APIs, bucket policies, RLS/RBAC, service configuration, vectorS3Buckets, and S3 protocol keys",
         "Static-only Supabase Storage guardrails that do not connect to services, create buckets, upload objects, read credentials, or modify policies"
       ]
+    },
+    {
+      "repo": "yjs/yjs",
+      "url": "https://github.com/yjs/yjs",
+      "localPath": "research/external-src/yjs-yjs",
+      "stars": 21966,
+      "forks": 780,
+      "license": "Other",
+      "updatedAt": "2026-06-04T15:24:48Z",
+      "cloneHead": "a11907d",
+      "adoptedPatterns": [
+        "Yjs readiness through Y.Doc shared text/map/array types, transactions, observers, websocket/offline providers, awareness, cursors, update encoding/application, and UndoManager history",
+        "Network-agnostic CRDT collaboration evidence that separates shared document state, provider boundaries, ephemeral presence, persistence, sync, and history",
+        "Static-only Yjs guardrails that do not connect providers, join rooms, mutate shared docs, broadcast awareness, or contact collaboration services"
+      ]
+    },
+    {
+      "repo": "automerge/automerge",
+      "url": "https://github.com/automerge/automerge",
+      "localPath": "research/external-src/automerge-automerge",
+      "stars": 6316,
+      "forks": 251,
+      "license": "MIT",
+      "updatedAt": "2026-06-04T17:55:59Z",
+      "cloneHead": "44cd915",
+      "adoptedPatterns": [
+        "Automerge readiness through init/change, merge, sync state/messages, save/load, incremental persistence, conflicts, heads, patches, and local-first document handles",
+        "CRDT conflict and persistence evidence that distinguishes durable document state from sync transport and patch/change streams",
+        "Static-only Automerge guardrails that do not execute mutations, exchange sync messages, persist external state, or resolve conflicts automatically"
+      ]
+    },
+    {
+      "repo": "liveblocks/liveblocks",
+      "url": "https://github.com/liveblocks/liveblocks",
+      "localPath": "research/external-src/liveblocks-liveblocks",
+      "stars": 4623,
+      "forks": 419,
+      "license": "Other",
+      "updatedAt": "2026-06-04T05:41:52Z",
+      "cloneHead": "859ea82",
+      "adoptedPatterns": [
+        "Liveblocks readiness through LiveblocksProvider, RoomProvider, createClient, authEndpoint, room IDs, initial presence/storage, permissions, presence hooks, storage mutations, comments, and Yjs provider integration",
+        "Hosted collaboration evidence that separates room identity, authentication, ephemeral presence, shared storage, comments/threads, and CRDT integration",
+        "Static-only Liveblocks guardrails that do not connect clients, join rooms, broadcast presence, mutate storage, create comments, or call auth endpoints"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -5392,6 +5437,26 @@
         "html/object-storage-readiness.html"
       ],
       "commit": "a38f338"
+    },
+    {
+      "name": "realtime-collaboration readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/realtime-collaboration-readiness-report.json",
+        "markdown/realtime-collaboration-readiness.md",
+        "html/realtime-collaboration-readiness.html"
+      ],
+      "commit": "pending"
     }
   ],
   "verification": {
@@ -6504,6 +6569,17 @@
     "buildObjectStorageReadiness": "PASS",
     "testObjectStorageReadiness": "PASS",
     "auditBriefObjectStorageReadiness110": "PASS",
-    "objectStorageReadinessImplementationPushed": "PASS"
+    "objectStorageReadinessImplementationPushed": "PASS",
+    "externalYjsCloneIgnored": "PASS",
+    "externalAutomergeCloneIgnored": "PASS",
+    "externalLiveblocksCloneIgnored": "PASS",
+    "realtimeCollaborationReadinessRedSmoke": "PASS",
+    "realtimeCollaborationReadinessGreenSmoke": "PASS",
+    "fixtureRealtimeCollaborationReadinessReport": "PASS",
+    "cliRealtimeCollaborationReadinessSmoke": "PASS",
+    "cliRealtimeCollaborationReadinessOpenTargetSmoke": "PASS",
+    "buildRealtimeCollaborationReadiness": "PASS",
+    "testRealtimeCollaborationReadiness": "PASS",
+    "auditBriefRealtimeCollaborationReadiness111": "PASS"
   }
 }

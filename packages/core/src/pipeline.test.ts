@@ -96,6 +96,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "search-service-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "object-storage-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "realtime-collaboration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workspace-graph-readiness-report.json"))).resolves.toBeUndefined();
@@ -208,6 +209,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "vector-db-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "search-service-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "object-storage-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "realtime-collaboration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rpc-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workspace-graph-readiness.md"))).resolves.toBeUndefined();
@@ -320,6 +322,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "vector-db-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "search-service-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "object-storage-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "realtime-collaboration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "server-framework-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rpc-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workspace-graph-readiness.html"))).resolves.toBeUndefined();
@@ -463,6 +466,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/vector-db-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/search-service-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/object-storage-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/realtime-collaboration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/server-framework-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rpc-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workspace-graph-readiness.html\"");
@@ -2130,6 +2134,28 @@ describe("RepoTutor core pipeline", () => {
     expect(objectStorageReadinessMarkdown).toContain("Source pattern: Object storage readiness");
     expect(objectStorageReadinessMarkdown).toContain("## Bucket Signals");
     expect(objectStorageReadinessMarkdown).toContain("## Ops Signals");
+    const realtimeCollaborationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "realtime-collaboration-readiness-report.json"), "utf8");
+    expect(realtimeCollaborationReadinessText).toContain("Realtime collaboration readiness Yjs Y.Doc shared types WebsocketProvider awareness UndoManager encodeStateAsUpdate applyUpdate Automerge change merge sync save load conflicts heads patches Liveblocks LiveblocksProvider RoomProvider useOthers useMyPresence useMutation storage presence comments threads authEndpoint room permissions");
+    expect(realtimeCollaborationReadinessText).toContain("\"collaborationSetups\"");
+    expect(realtimeCollaborationReadinessText).toContain("\"crdtSignals\"");
+    expect(realtimeCollaborationReadinessText).toContain("\"providerSignals\"");
+    expect(realtimeCollaborationReadinessText).toContain("\"presenceSignals\"");
+    expect(realtimeCollaborationReadinessText).toContain("\"syncSignals\"");
+    expect(realtimeCollaborationReadinessText).toContain("\"persistenceSignals\"");
+    expect(realtimeCollaborationReadinessText).toContain("\"historySignals\"");
+    expect(realtimeCollaborationReadinessText).toContain("\"accessSignals\"");
+    expect(realtimeCollaborationReadinessText).toContain("\"packageSignals\"");
+    const realtimeCollaborationReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "realtime-collaboration-readiness.html"), "utf8");
+    expect(realtimeCollaborationReadinessHtml).toContain("Realtime Collaboration Readiness");
+    expect(realtimeCollaborationReadinessHtml).toContain("realtime-collaboration-readiness-card");
+    expect(realtimeCollaborationReadinessHtml).toContain("data-source-pattern=\"Realtime Collaboration\"");
+    expect(realtimeCollaborationReadinessHtml).toContain("Collaboration Setups");
+    expect(realtimeCollaborationReadinessHtml).toContain("Provider Signals");
+    const realtimeCollaborationReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "realtime-collaboration-readiness.md"), "utf8");
+    expect(realtimeCollaborationReadinessMarkdown).toContain("# Realtime Collaboration Readiness");
+    expect(realtimeCollaborationReadinessMarkdown).toContain("Source pattern: Realtime collaboration readiness");
+    expect(realtimeCollaborationReadinessMarkdown).toContain("## CRDT Signals");
+    expect(realtimeCollaborationReadinessMarkdown).toContain("## Sync Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
     expect(serverFrameworkReadinessText).toContain("Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
@@ -2600,6 +2626,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/vector-db-readiness.html");
     expect(exportManifestText).toContain("html/search-service-readiness.html");
     expect(exportManifestText).toContain("html/object-storage-readiness.html");
+    expect(exportManifestText).toContain("html/realtime-collaboration-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -2730,6 +2757,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("vector-db-readiness.html");
     expect(learningPathHtml).toContain("search-service-readiness.html");
     expect(learningPathHtml).toContain("object-storage-readiness.html");
+    expect(learningPathHtml).toContain("realtime-collaboration-readiness.html");
     expect(learningPathHtml).toContain("backup-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
@@ -5194,6 +5222,152 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "search-service-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "search-service-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects realtime collaboration readiness patterns without connecting providers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-realtime-collab-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-realtime-collab-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "collab"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "app", "rooms"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        yjs: "latest",
+        "y-websocket": "latest",
+        "y-indexeddb": "latest",
+        "@automerge/automerge": "latest",
+        "@automerge/automerge-repo": "latest",
+        "@liveblocks/client": "latest",
+        "@liveblocks/react": "latest",
+        "@liveblocks/yjs": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "docs", "collaboration.md"), [
+      "# Collaboration",
+      "The realtime collaboration layer is network agnostic, local-first, p2p capable, and supports offline editing.",
+      "Rooms use permissions, tokens, userId, publicApiKey, initialPresence, and initialStorage boundaries."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "collab", "yjs.ts"), [
+      "import * as Y from \"yjs\";",
+      "import { WebsocketProvider } from \"y-websocket\";",
+      "import { IndexeddbPersistence } from \"y-indexeddb\";",
+      "",
+      "const doc = new Y.Doc();",
+      "const sharedText = doc.getText(\"body\");",
+      "const sharedMap = doc.getMap(\"meta\");",
+      "const sharedArray = doc.getArray(\"cards\");",
+      "const provider = new WebsocketProvider(\"wss://collab.example\", \"room-1\", doc);",
+      "new IndexeddbPersistence(\"room-1\", doc);",
+      "provider.awareness.setLocalStateField(\"user\", { name: \"Ada\", avatar: \"ada.png\", cursor: { x: 1, y: 2 } });",
+      "const undoManager = new Y.UndoManager([sharedText, sharedMap, sharedArray]);",
+      "undoManager.undo();",
+      "undoManager.redo();",
+      "doc.transact(() => sharedText.insert(0, \"hello\"));",
+      "sharedText.observe(() => undoManager.undoStack.length);",
+      "const update = Y.encodeStateAsUpdate(doc);",
+      "Y.applyUpdate(doc, update);",
+      "Y.mergeUpdates([update]);",
+      "localStorage.setItem(\"snapshot\", JSON.stringify(Array.from(update)));"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "collab", "automerge.ts"), [
+      "import * as Automerge from \"@automerge/automerge\";",
+      "import { Repo, DocHandle } from \"@automerge/automerge-repo\";",
+      "",
+      "type Doc = { title?: string; cards: Array<Automerge.Text> };",
+      "let local = Automerge.init<Doc>();",
+      "local = Automerge.change(local, doc => { doc.title = \"Plan\"; doc.cards = [new Automerge.Text(\"one\")]; });",
+      "const saved = Automerge.save(local);",
+      "let remote = Automerge.load<Doc>(saved);",
+      "remote = Automerge.change(remote, doc => { doc.cards.push(new Automerge.Text(\"two\")); });",
+      "const merged = Automerge.merge(local, remote);",
+      "Automerge.getConflicts(merged, \"title\");",
+      "const heads = Automerge.getHeads(merged);",
+      "const before = Automerge.view(merged, heads);",
+      "const changes = Automerge.getChanges(before, merged);",
+      "Automerge.applyChanges(remote, changes);",
+      "Automerge.saveIncremental(merged);",
+      "Automerge.loadIncremental(merged, new Uint8Array());",
+      "const sync = Automerge.initSyncState();",
+      "const [, message] = Automerge.generateSyncMessage(merged, sync);",
+      "if (message) Automerge.receiveSyncMessage(merged, sync, message);",
+      "const repo = new Repo({ storage: { storageRoot: \"./.automerge\" } as never });",
+      "const handle: DocHandle<Doc> = repo.create<Doc>({ cards: [] });",
+      "handle.on(\"change\", ({ patches }) => patches);"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "app", "rooms", "Room.tsx"), [
+      "import { LiveblocksProvider, RoomProvider, useBroadcastEvent, useHistory, useMutation, useMyPresence, useOthers, useSelf, useThreads } from \"@liveblocks/react/suspense\";",
+      "import { createClient } from \"@liveblocks/client\";",
+      "import { getYjsProviderForRoom, LiveblocksYjsProvider } from \"@liveblocks/yjs\";",
+      "",
+      "const client = createClient({ publicApiKey: \"pk_test\", authEndpoint: \"/api/liveblocks-auth\" });",
+      "const roomId = \"room-1\";",
+      "const permissions = [\"room:read\", \"room:write\"];",
+      "const token = \"test-token\";",
+      "export function Providers({ children }: { children: React.ReactNode }) {",
+      "  return <LiveblocksProvider client={client} authEndpoint=\"/api/liveblocks-auth\">{children}</LiveblocksProvider>;",
+      "}",
+      "export function Room() {",
+      "  const others = useOthers();",
+      "  const self = useSelf();",
+      "  const [{ cursor }, updateMyPresence] = useMyPresence();",
+      "  const broadcast = useBroadcastEvent();",
+      "  const history = useHistory();",
+      "  const { threads } = useThreads();",
+      "  const mutation = useMutation(({ storage }) => {",
+      "    storage.get(\"shapes\");",
+      "    updateMyPresence({ cursor, userInfo: { name: self?.info?.name, avatar: \"ada.png\" } });",
+      "    broadcast({ type: \"cursor\", cursor });",
+      "    history.undo();",
+      "    history.redo();",
+      "  }, [cursor]);",
+      "  const yjsProvider: LiveblocksYjsProvider = getYjsProviderForRoom({ id: roomId } as never);",
+      "  return <RoomProvider id={roomId} initialPresence={{ cursor }} initialStorage={{ shapes: [] }}>{others.length + threads.length + permissions.length + token.length}</RoomProvider>;",
+      "}"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "realtime-collaboration-readiness-report.json"), "utf8")) as {
+      collaborationSetups: Array<{ filePath: string; platform: string; docCount: number; sharedTypeCount: number; providerCount: number; presenceCount: number; syncCount: number; persistenceCount: number; conflictCount: number; historyCount: number; authCount: number; commentsCount: number }>;
+      crdtSignals: Array<{ signal: string; readiness: string }>;
+      providerSignals: Array<{ signal: string; readiness: string }>;
+      presenceSignals: Array<{ signal: string; readiness: string }>;
+      syncSignals: Array<{ signal: string; readiness: string }>;
+      persistenceSignals: Array<{ signal: string; readiness: string }>;
+      historySignals: Array<{ signal: string; readiness: string }>;
+      accessSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    expect(report.collaborationSetups.length).toBeGreaterThan(0);
+    expect(report.collaborationSetups.some((item) => item.platform === "yjs")).toBe(true);
+    expect(report.collaborationSetups.some((item) => item.platform === "automerge")).toBe(true);
+    expect(report.collaborationSetups.some((item) => item.platform === "liveblocks")).toBe(true);
+    const yjsSetup = report.collaborationSetups.find((item) => item.filePath === "src/collab/yjs.ts");
+    expect(yjsSetup?.docCount).toBeGreaterThan(0);
+    expect(yjsSetup?.sharedTypeCount).toBeGreaterThan(0);
+    expect(yjsSetup?.providerCount).toBeGreaterThan(0);
+    expect(yjsSetup?.presenceCount).toBeGreaterThan(0);
+    expect(yjsSetup?.syncCount).toBeGreaterThan(0);
+    expect(yjsSetup?.persistenceCount).toBeGreaterThan(0);
+    expect(yjsSetup?.historyCount).toBeGreaterThan(0);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.crdtSignals, ["y-doc", "shared-map", "shared-array", "shared-text", "automerge-doc", "change", "merge", "conflict", "transaction"]);
+    expectReady(report.providerSignals, ["websocket-provider", "indexeddb-provider", "liveblocks-provider", "room-provider", "yjs-provider", "broadcast-channel", "network-agnostic", "custom-provider"]);
+    expectReady(report.presenceSignals, ["awareness", "presence", "cursor", "avatars", "others", "self", "broadcast-event", "user-info"]);
+    expectReady(report.syncSignals, ["encode-state", "apply-update", "sync-state", "sync-message", "save-load", "incremental-save", "heads", "patches"]);
+    expectReady(report.persistenceSignals, ["indexeddb", "local-storage", "doc-handle", "repo", "save", "load", "storage-root", "snapshot"]);
+    expectReady(report.historySignals, ["undo-manager", "undo", "redo", "history", "version", "heads", "patch-listener"]);
+    expectReady(report.accessSignals, ["auth-endpoint", "public-api-key", "room-id", "permission", "initial-presence", "initial-storage", "user-id", "token"]);
+    expectReady(report.packageSignals, ["yjs", "y-websocket", "y-indexeddb", "@automerge/automerge", "@automerge/automerge-repo", "@liveblocks/client", "@liveblocks/react", "@liveblocks/yjs"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "realtime-collaboration-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "realtime-collaboration-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects object storage readiness patterns without contacting object storage", async () => {

@@ -5205,6 +5205,87 @@ export const ObjectStorageReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const RealtimeCollaborationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  collaborationSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["yjs", "automerge", "liveblocks", "socket-provider", "custom", "unknown"]),
+    docCount: z.number().int().nonnegative(),
+    sharedTypeCount: z.number().int().nonnegative(),
+    providerCount: z.number().int().nonnegative(),
+    presenceCount: z.number().int().nonnegative(),
+    syncCount: z.number().int().nonnegative(),
+    persistenceCount: z.number().int().nonnegative(),
+    conflictCount: z.number().int().nonnegative(),
+    historyCount: z.number().int().nonnegative(),
+    authCount: z.number().int().nonnegative(),
+    commentsCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  crdtSignals: z.array(z.object({
+    signal: z.enum(["y-doc", "shared-map", "shared-array", "shared-text", "automerge-doc", "change", "merge", "conflict", "transaction", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  providerSignals: z.array(z.object({
+    signal: z.enum(["websocket-provider", "indexeddb-provider", "liveblocks-provider", "room-provider", "yjs-provider", "broadcast-channel", "network-agnostic", "custom-provider", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  presenceSignals: z.array(z.object({
+    signal: z.enum(["awareness", "presence", "cursor", "avatars", "others", "self", "broadcast-event", "user-info", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  syncSignals: z.array(z.object({
+    signal: z.enum(["encode-state", "apply-update", "sync-state", "sync-message", "save-load", "incremental-save", "heads", "patches", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  persistenceSignals: z.array(z.object({
+    signal: z.enum(["indexeddb", "local-storage", "doc-handle", "repo", "save", "load", "storage-root", "snapshot", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  historySignals: z.array(z.object({
+    signal: z.enum(["undo-manager", "undo", "redo", "history", "version", "heads", "patch-listener", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessSignals: z.array(z.object({
+    signal: z.enum(["auth-endpoint", "public-api-key", "room-id", "permission", "initial-presence", "initial-storage", "user-id", "token", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["yjs", "y-websocket", "y-indexeddb", "@automerge/automerge", "@automerge/automerge-repo", "@liveblocks/client", "@liveblocks/react", "@liveblocks/yjs", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ServerFrameworkReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -6847,6 +6928,7 @@ export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityRea
 export type VectorDbReadinessReport = z.infer<typeof VectorDbReadinessReportSchema>;
 export type SearchServiceReadinessReport = z.infer<typeof SearchServiceReadinessReportSchema>;
 export type ObjectStorageReadinessReport = z.infer<typeof ObjectStorageReadinessReportSchema>;
+export type RealtimeCollaborationReadinessReport = z.infer<typeof RealtimeCollaborationReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;
