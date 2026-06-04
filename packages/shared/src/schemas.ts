@@ -5990,6 +5990,81 @@ export const KubernetesReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const GitOpsReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  gitopsSetups: z.array(z.object({
+    filePath: z.string(),
+    controller: z.enum(["argo-cd", "flux", "hybrid", "package-script", "workflow", "readme", "unknown"]),
+    applicationCount: z.number().int().nonnegative(),
+    sourceCount: z.number().int().nonnegative(),
+    destinationCount: z.number().int().nonnegative(),
+    syncPolicyCount: z.number().int().nonnegative(),
+    generatorCount: z.number().int().nonnegative(),
+    fluxSourceCount: z.number().int().nonnegative(),
+    fluxReconcileCount: z.number().int().nonnegative(),
+    imageAutomationCount: z.number().int().nonnegative(),
+    notificationCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  argoSignals: z.array(z.object({
+    signal: z.enum(["application", "applicationset", "app-project", "repo-url", "target-revision", "path", "destination-server", "destination-namespace", "sync-policy", "automated-sync", "prune", "self-heal", "sync-options", "helm-source", "kustomize-source", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  fluxSourceSignals: z.array(z.object({
+    signal: z.enum(["git-repository", "helm-repository", "oci-repository", "bucket", "source-ref", "interval", "secret-ref", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  fluxReconcileSignals: z.array(z.object({
+    signal: z.enum(["kustomization", "helm-release", "depends-on", "prune", "suspend", "health-checks", "timeout", "retry-interval", "target-namespace", "service-account", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  imageNotificationSignals: z.array(z.object({
+    signal: z.enum(["image-repository", "image-policy", "image-update-automation", "receiver", "alert", "provider", "webhook", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["argocd-app-sync", "argocd-app-diff", "argocd-app-wait", "argocd-app-get", "argocd-repo-add", "argocd-cluster-add", "flux-bootstrap", "flux-reconcile", "flux-get", "flux-suspend", "flux-resume", "flux-trace", "flux-tree", "flux-logs", "flux-events", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["dry-run", "namespace", "project-boundary", "sync-window", "allow-list", "deny-list", "signed-commit", "health-check", "drift-detection", "manual-approval", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["argocd", "argo-cd", "flux", "fluxcd", "source-controller", "kustomize-controller", "helm-controller", "notification-controller", "image-automation-controller", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -6297,6 +6372,7 @@ export type EdgeReadinessReport = z.infer<typeof EdgeReadinessReportSchema>;
 export type ComposeReadinessReport = z.infer<typeof ComposeReadinessReportSchema>;
 export type DevContainerReadinessReport = z.infer<typeof DevContainerReadinessReportSchema>;
 export type KubernetesReadinessReport = z.infer<typeof KubernetesReadinessReportSchema>;
+export type GitOpsReadinessReport = z.infer<typeof GitOpsReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

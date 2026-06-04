@@ -107,6 +107,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "compose-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "devcontainer-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "kubernetes-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "gitops-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -212,6 +213,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "compose-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "devcontainer-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "kubernetes-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "gitops-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -317,6 +319,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "compose-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "devcontainer-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "kubernetes-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "gitops-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -453,6 +456,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/compose-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/devcontainer-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/kubernetes-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/gitops-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -2262,6 +2266,19 @@ describe("RepoTutor core pipeline", () => {
     expect(kubernetesReadinessMarkdown).toContain("# Kubernetes Readiness");
     expect(kubernetesReadinessMarkdown).toContain("Source pattern: Kubernetes");
     expect(kubernetesReadinessMarkdown).toContain("## Kustomize Signals");
+    const gitopsReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "gitops-readiness-report.json"), "utf8");
+    expect(gitopsReadinessText).toContain("GitOps Argo CD Application ApplicationSet AppProject");
+    expect(gitopsReadinessText).toContain("\"gitopsSetups\"");
+    expect(gitopsReadinessText).toContain("\"fluxSourceSignals\"");
+    expect(gitopsReadinessText).toContain("\"workflowSignals\"");
+    const gitopsReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "gitops-readiness.html"), "utf8");
+    expect(gitopsReadinessHtml).toContain("GitOps Readiness");
+    expect(gitopsReadinessHtml).toContain("gitops-readiness-card");
+    expect(gitopsReadinessHtml).toContain("data-source-pattern=\"GitOps\"");
+    const gitopsReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "gitops-readiness.md"), "utf8");
+    expect(gitopsReadinessMarkdown).toContain("# GitOps Readiness");
+    expect(gitopsReadinessMarkdown).toContain("Source pattern: GitOps");
+    expect(gitopsReadinessMarkdown).toContain("## Flux Source Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -2427,6 +2444,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/compose-readiness.html");
     expect(exportManifestText).toContain("html/devcontainer-readiness.html");
     expect(exportManifestText).toContain("html/kubernetes-readiness.html");
+    expect(exportManifestText).toContain("html/gitops-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -4029,6 +4047,296 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "kubernetes-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "kubernetes-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects GitOps readiness patterns without contacting controllers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-gitops-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-gitops-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "gitops", "apps"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "clusters", "dev"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "GitOps workflow with Argo CD and Flux:",
+      "Argo CD reviews Application drift before sync.",
+      "argocd app diff repotutor-api",
+      "argocd app sync repotutor-api --prune",
+      "argocd app wait repotutor-api --health",
+      "argocd app get repotutor-api",
+      "argocd repo add https://github.com/example/platform.git",
+      "argocd cluster add dev",
+      "flux bootstrap github --owner=example --repository=platform --path=clusters/dev",
+      "flux reconcile kustomization repotutor-api --with-source",
+      "flux get all",
+      "flux suspend kustomization repotutor-api",
+      "flux resume kustomization repotutor-api",
+      "flux trace deployment/repotutor-api",
+      "flux tree kustomization repotutor-api",
+      "flux logs --kind=Kustomization",
+      "flux events",
+      "Flux controllers include source-controller, kustomize-controller, helm-controller, notification-controller, and image-automation-controller.",
+      "The rollout requires signed commit verification and manual approval before production promotion."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "gitops", "apps", "argocd-app.yaml"), [
+      "apiVersion: argoproj.io/v1alpha1",
+      "kind: Application",
+      "metadata:",
+      "  name: repotutor-api",
+      "  namespace: argocd",
+      "spec:",
+      "  project: platform",
+      "  source:",
+      "    repoURL: https://github.com/example/platform.git",
+      "    targetRevision: main",
+      "    path: services/repotutor",
+      "    helm:",
+      "      valueFiles:",
+      "        - values-dev.yaml",
+      "    kustomize:",
+      "      namePrefix: dev-",
+      "  destination:",
+      "    server: https://kubernetes.default.svc",
+      "    namespace: repotutor-dev",
+      "  syncPolicy:",
+      "    automated:",
+      "      prune: true",
+      "      selfHeal: true",
+      "    syncOptions:",
+      "      - CreateNamespace=true"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "gitops", "apps", "applicationset.yaml"), [
+      "apiVersion: argoproj.io/v1alpha1",
+      "kind: ApplicationSet",
+      "metadata:",
+      "  name: repotutor-fleet",
+      "spec:",
+      "  generators:",
+      "    - git:",
+      "        repoURL: https://github.com/example/platform.git",
+      "        revision: main",
+      "        directories:",
+      "          - path: clusters/*",
+      "    - matrix:",
+      "        generators:",
+      "          - clusters: {}",
+      "          - list:",
+      "              elements:",
+      "                - name: dev",
+      "  template:",
+      "    spec:",
+      "      project: platform",
+      "      source:",
+      "        repoURL: https://github.com/example/platform.git",
+      "        targetRevision: main",
+      "        path: \"{{path}}\"",
+      "      destination:",
+      "        server: https://kubernetes.default.svc",
+      "        namespace: repotutor-dev"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "gitops", "apps", "project.yaml"), [
+      "apiVersion: argoproj.io/v1alpha1",
+      "kind: AppProject",
+      "metadata:",
+      "  name: platform",
+      "spec:",
+      "  sourceRepos:",
+      "    - https://github.com/example/platform.git",
+      "  destinations:",
+      "    - namespace: repotutor-*",
+      "      server: https://kubernetes.default.svc",
+      "  clusterResourceWhitelist:",
+      "    - group: \"\"",
+      "      kind: Namespace",
+      "  namespaceResourceBlacklist:",
+      "    - group: \"\"",
+      "      kind: Secret",
+      "  syncWindows:",
+      "    - kind: allow",
+      "      schedule: \"0 2 * * *\"",
+      "      duration: 1h"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "clusters", "dev", "flux.yaml"), [
+      "apiVersion: source.toolkit.fluxcd.io/v1",
+      "kind: GitRepository",
+      "metadata:",
+      "  name: platform",
+      "  namespace: flux-system",
+      "spec:",
+      "  interval: 1m",
+      "  url: https://github.com/example/platform.git",
+      "  ref:",
+      "    branch: main",
+      "  secretRef:",
+      "    name: platform-git-reference",
+      "---",
+      "apiVersion: source.toolkit.fluxcd.io/v1",
+      "kind: HelmRepository",
+      "metadata:",
+      "  name: platform-charts",
+      "spec:",
+      "  interval: 10m",
+      "  url: https://charts.example.invalid",
+      "---",
+      "apiVersion: source.toolkit.fluxcd.io/v1beta2",
+      "kind: OCIRepository",
+      "metadata:",
+      "  name: platform-oci",
+      "spec:",
+      "  interval: 10m",
+      "  url: oci://ghcr.io/example/platform",
+      "---",
+      "apiVersion: source.toolkit.fluxcd.io/v1",
+      "kind: Bucket",
+      "metadata:",
+      "  name: platform-bucket",
+      "spec:",
+      "  interval: 10m",
+      "  bucketName: platform",
+      "  endpoint: storage.example.invalid",
+      "---",
+      "apiVersion: kustomize.toolkit.fluxcd.io/v1",
+      "kind: Kustomization",
+      "metadata:",
+      "  name: repotutor-api",
+      "  namespace: flux-system",
+      "spec:",
+      "  interval: 5m",
+      "  retryInterval: 1m",
+      "  timeout: 2m",
+      "  path: ./services/repotutor",
+      "  prune: true",
+      "  suspend: false",
+      "  targetNamespace: repotutor-dev",
+      "  serviceAccountName: flux-reconciler",
+      "  sourceRef:",
+      "    kind: GitRepository",
+      "    name: platform",
+      "  dependsOn:",
+      "    - name: platform-base",
+      "  healthChecks:",
+      "    - apiVersion: apps/v1",
+      "      kind: Deployment",
+      "      name: repotutor-api",
+      "      namespace: repotutor-dev",
+      "---",
+      "apiVersion: helm.toolkit.fluxcd.io/v2",
+      "kind: HelmRelease",
+      "metadata:",
+      "  name: repotutor-api",
+      "  namespace: flux-system",
+      "spec:",
+      "  interval: 5m",
+      "  chart:",
+      "    spec:",
+      "      chart: ./chart",
+      "      sourceRef:",
+      "        kind: GitRepository",
+      "        name: platform",
+      "---",
+      "apiVersion: image.toolkit.fluxcd.io/v1",
+      "kind: ImageRepository",
+      "metadata:",
+      "  name: repotutor-api",
+      "spec:",
+      "  image: ghcr.io/example/repotutor-api",
+      "  interval: 10m",
+      "---",
+      "apiVersion: image.toolkit.fluxcd.io/v1",
+      "kind: ImagePolicy",
+      "metadata:",
+      "  name: repotutor-api",
+      "spec:",
+      "  imageRepositoryRef:",
+      "    name: repotutor-api",
+      "  policy:",
+      "    semver:",
+      "      range: \">=1.0.0\"",
+      "---",
+      "apiVersion: image.toolkit.fluxcd.io/v1",
+      "kind: ImageUpdateAutomation",
+      "metadata:",
+      "  name: repotutor-api",
+      "spec:",
+      "  interval: 5m",
+      "  sourceRef:",
+      "    kind: GitRepository",
+      "    name: platform",
+      "---",
+      "apiVersion: notification.toolkit.fluxcd.io/v1beta3",
+      "kind: Provider",
+      "metadata:",
+      "  name: slack",
+      "spec:",
+      "  type: slack",
+      "  secretRef:",
+      "    name: slack-webhook-reference",
+      "---",
+      "apiVersion: notification.toolkit.fluxcd.io/v1beta3",
+      "kind: Alert",
+      "metadata:",
+      "  name: repotutor-alerts",
+      "spec:",
+      "  providerRef:",
+      "    name: slack",
+      "---",
+      "apiVersion: notification.toolkit.fluxcd.io/v1",
+      "kind: Receiver",
+      "metadata:",
+      "  name: github-webhook",
+      "spec:",
+      "  type: github",
+      "  events:",
+      "    - ping"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "gitops-readiness-report.json"), "utf8")) as {
+      gitopsSetups: Array<{ filePath: string; controller: string; applicationCount: number; sourceCount: number; destinationCount: number; syncPolicyCount: number; generatorCount: number; fluxSourceCount: number; fluxReconcileCount: number; imageAutomationCount: number; notificationCount: number; workflowCount: number }>;
+      argoSignals: Array<{ signal: string; readiness: string }>;
+      fluxSourceSignals: Array<{ signal: string; readiness: string }>;
+      fluxReconcileSignals: Array<{ signal: string; readiness: string }>;
+      imageNotificationSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    const argoSetup = report.gitopsSetups.find((item) => item.filePath === "gitops/apps/argocd-app.yaml");
+    const fluxSetup = report.gitopsSetups.find((item) => item.filePath === "clusters/dev/flux.yaml");
+    expect(report.gitopsSetups.length).toBeGreaterThan(0);
+    expect(argoSetup?.controller).toBe("argo-cd");
+    expect(argoSetup?.applicationCount).toBeGreaterThan(0);
+    expect(argoSetup?.sourceCount).toBeGreaterThan(0);
+    expect(argoSetup?.destinationCount).toBeGreaterThan(0);
+    expect(argoSetup?.syncPolicyCount).toBeGreaterThan(0);
+    expect(fluxSetup?.controller).toBe("flux");
+    expect(fluxSetup?.fluxSourceCount).toBeGreaterThan(0);
+    expect(fluxSetup?.fluxReconcileCount).toBeGreaterThan(0);
+    expect(fluxSetup?.imageAutomationCount).toBeGreaterThan(0);
+    expect(fluxSetup?.notificationCount).toBeGreaterThan(0);
+    for (const signal of ["application", "applicationset", "app-project", "repo-url", "target-revision", "path", "destination-server", "destination-namespace", "sync-policy", "automated-sync", "prune", "self-heal", "sync-options", "helm-source", "kustomize-source"]) {
+      expect(report.argoSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["git-repository", "helm-repository", "oci-repository", "bucket", "source-ref", "interval", "secret-ref"]) {
+      expect(report.fluxSourceSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["kustomization", "helm-release", "depends-on", "prune", "suspend", "health-checks", "timeout", "retry-interval", "target-namespace", "service-account"]) {
+      expect(report.fluxReconcileSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["image-repository", "image-policy", "image-update-automation", "receiver", "alert", "provider", "webhook"]) {
+      expect(report.imageNotificationSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["argocd-app-sync", "argocd-app-diff", "argocd-app-wait", "argocd-app-get", "argocd-repo-add", "argocd-cluster-add", "flux-bootstrap", "flux-reconcile", "flux-get", "flux-suspend", "flux-resume", "flux-trace", "flux-tree", "flux-logs", "flux-events"]) {
+      expect(report.workflowSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["dry-run", "namespace", "project-boundary", "sync-window", "allow-list", "deny-list", "signed-commit", "health-check", "drift-detection", "manual-approval"]) {
+      expect(report.safetySignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["argocd", "argo-cd", "flux", "fluxcd", "source-controller", "kustomize-controller", "helm-controller", "notification-controller", "image-automation-controller"]) {
+      expect(report.packageSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "gitops-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "gitops-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("compares a new study session against the previous source snapshot", async () => {

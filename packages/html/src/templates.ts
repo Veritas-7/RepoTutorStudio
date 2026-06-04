@@ -113,6 +113,7 @@ import type {
   ComposeReadinessReport,
   DevContainerReadinessReport,
   KubernetesReadinessReport,
+  GitOpsReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -232,6 +233,7 @@ export interface StudyHtmlInput {
   composeReadinessReport: ComposeReadinessReport;
   devContainerReadinessReport: DevContainerReadinessReport;
   kubernetesReadinessReport: KubernetesReadinessReport;
+  gitopsReadinessReport: GitOpsReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -513,6 +515,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Compose Readiness</h3><p>${escapeHtml(input.composeReadinessReport.summary)}</p><p>Docker Compose 패턴으로 compose files, services, dependencies, resources, safety, local workflow 준비도를 정리합니다.</p><a href="compose-readiness.html">Compose 열기</a></article>
           <article><h3>Dev Container Readiness</h3><p>${escapeHtml(input.devContainerReadinessReport.summary)}</p><p>Dev Containers 패턴으로 devcontainer.json, features, lifecycle hooks, mounts, ports, customizations, CLI workflow 준비도를 정리합니다.</p><a href="devcontainer-readiness.html">Dev Container 열기</a></article>
           <article><h3>Kubernetes Readiness</h3><p>${escapeHtml(input.kubernetesReadinessReport.summary)}</p><p>Kubernetes/Kustomize 패턴으로 manifests, workloads, services, RBAC, probes, kubectl workflow 준비도를 정리합니다.</p><a href="kubernetes-readiness.html">Kubernetes 열기</a></article>
+          <article><h3>GitOps Readiness</h3><p>${escapeHtml(input.gitopsReadinessReport.summary)}</p><p>Argo CD/Flux 패턴으로 applications, sources, sync policy, reconciliation, image automation, notification workflow 준비도를 정리합니다.</p><a href="gitops-readiness.html">GitOps 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -1030,6 +1033,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "kubernetes-readiness.html",
       title: "Kubernetes Readiness",
       html: pageShell("Kubernetes Readiness", "kubernetes-readiness.html", `<section class="panel" data-source-pattern="Kubernetes"><h2>Kubernetes Snapshot</h2><p>${escapeHtml(input.kubernetesReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.kubernetesReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.kubernetesReadinessReport.kubernetesSetups.length}</dd></div><div><dt>manifests</dt><dd>${input.kubernetesReadinessReport.manifestSignals.length}</dd></div><div><dt>workloads</dt><dd>${input.kubernetesReadinessReport.workloadSignals.length}</dd></div><div><dt>network</dt><dd>${input.kubernetesReadinessReport.networkSignals.length}</dd></div><div><dt>kustomize</dt><dd>${input.kubernetesReadinessReport.kustomizeSignals.length}</dd></div><div><dt>workflow</dt><dd>${input.kubernetesReadinessReport.workflowSignals.length}</dd></div></dl><p class="muted">RepoTutor records Kubernetes readiness only; it does not run kubectl, kustomize, contact Kubernetes APIs, mutate clusters, namespaces, resources, secrets, port-forwards, or stream logs.</p></section><section class="grid"><article class="kubernetes-readiness-card"><h3>Kubernetes Setups</h3>${kubernetesReadinessSetupList(input.kubernetesReadinessReport.kubernetesSetups)}</article><article class="kubernetes-readiness-card"><h3>Manifest Signals</h3>${kubernetesReadinessSignalList(input.kubernetesReadinessReport.manifestSignals, "signal")}</article><article class="kubernetes-readiness-card"><h3>Workload Signals</h3>${kubernetesReadinessSignalList(input.kubernetesReadinessReport.workloadSignals, "signal")}</article><article class="kubernetes-readiness-card"><h3>Network Signals</h3>${kubernetesReadinessSignalList(input.kubernetesReadinessReport.networkSignals, "signal")}</article></section><section class="grid"><article class="kubernetes-readiness-card"><h3>Config Signals</h3>${kubernetesReadinessSignalList(input.kubernetesReadinessReport.configSignals, "signal")}</article><article class="kubernetes-readiness-card"><h3>Storage Signals</h3>${kubernetesReadinessSignalList(input.kubernetesReadinessReport.storageSignals, "signal")}</article><article class="kubernetes-readiness-card"><h3>Security Signals</h3>${kubernetesReadinessSignalList(input.kubernetesReadinessReport.securitySignals, "signal")}</article><article class="kubernetes-readiness-card"><h3>Health Signals</h3>${kubernetesReadinessSignalList(input.kubernetesReadinessReport.healthSignals, "signal")}</article><article class="kubernetes-readiness-card"><h3>Kustomize Signals</h3>${kubernetesReadinessSignalList(input.kubernetesReadinessReport.kustomizeSignals, "signal")}</article><article class="kubernetes-readiness-card"><h3>Workflow Signals</h3>${kubernetesReadinessSignalList(input.kubernetesReadinessReport.workflowSignals, "signal")}</article><article class="kubernetes-readiness-card"><h3>Package Signals</h3>${kubernetesReadinessSignalList(input.kubernetesReadinessReport.packageSignals, "signal")}</article><article class="kubernetes-readiness-card"><h3>Recommended Commands</h3>${kubernetesReadinessCommandList(input.kubernetesReadinessReport.recommendedCommands)}</article><article class="kubernetes-readiness-card"><h3>Risk Queue</h3>${kubernetesReadinessRiskList(input.kubernetesReadinessReport.riskQueue)}</article><article class="kubernetes-readiness-card"><h3>다음 확인 단계</h3>${list(input.kubernetesReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "gitops-readiness.html",
+      title: "GitOps Readiness",
+      html: pageShell("GitOps Readiness", "gitops-readiness.html", `<section class="panel" data-source-pattern="GitOps"><h2>GitOps Snapshot</h2><p>${escapeHtml(input.gitopsReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.gitopsReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.gitopsReadinessReport.gitopsSetups.length}</dd></div><div><dt>argo</dt><dd>${input.gitopsReadinessReport.argoSignals.length}</dd></div><div><dt>flux sources</dt><dd>${input.gitopsReadinessReport.fluxSourceSignals.length}</dd></div><div><dt>flux reconcile</dt><dd>${input.gitopsReadinessReport.fluxReconcileSignals.length}</dd></div><div><dt>workflow</dt><dd>${input.gitopsReadinessReport.workflowSignals.length}</dd></div><div><dt>safety</dt><dd>${input.gitopsReadinessReport.safetySignals.length}</dd></div></dl><p class="muted">RepoTutor records GitOps readiness only; it does not run argocd, flux, kubectl, contact Kubernetes APIs, contact GitOps controllers, sync or reconcile applications, mutate clusters, repositories, namespaces, resources, secrets, webhooks, or stream logs.</p></section><section class="grid"><article class="gitops-readiness-card"><h3>GitOps Setups</h3>${gitopsReadinessSetupList(input.gitopsReadinessReport.gitopsSetups)}</article><article class="gitops-readiness-card"><h3>Argo Signals</h3>${gitopsReadinessSignalList(input.gitopsReadinessReport.argoSignals, "signal")}</article><article class="gitops-readiness-card"><h3>Flux Source Signals</h3>${gitopsReadinessSignalList(input.gitopsReadinessReport.fluxSourceSignals, "signal")}</article><article class="gitops-readiness-card"><h3>Flux Reconcile Signals</h3>${gitopsReadinessSignalList(input.gitopsReadinessReport.fluxReconcileSignals, "signal")}</article></section><section class="grid"><article class="gitops-readiness-card"><h3>Image and Notification Signals</h3>${gitopsReadinessSignalList(input.gitopsReadinessReport.imageNotificationSignals, "signal")}</article><article class="gitops-readiness-card"><h3>Workflow Signals</h3>${gitopsReadinessSignalList(input.gitopsReadinessReport.workflowSignals, "signal")}</article><article class="gitops-readiness-card"><h3>Safety Signals</h3>${gitopsReadinessSignalList(input.gitopsReadinessReport.safetySignals, "signal")}</article><article class="gitops-readiness-card"><h3>Package Signals</h3>${gitopsReadinessSignalList(input.gitopsReadinessReport.packageSignals, "signal")}</article><article class="gitops-readiness-card"><h3>Recommended Commands</h3>${gitopsReadinessCommandList(input.gitopsReadinessReport.recommendedCommands)}</article><article class="gitops-readiness-card"><h3>Risk Queue</h3>${gitopsReadinessRiskList(input.gitopsReadinessReport.riskQueue)}</article><article class="gitops-readiness-card"><h3>다음 확인 단계</h3>${list(input.gitopsReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "context-pack.html",
@@ -1940,6 +1948,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "kubernetes-readiness.html",
       goal: "Kubernetes/Kustomize식 manifests, workloads, services, RBAC, probes, kubectl workflow 흐름을 확인합니다.",
       evidence: `kubernetes setups ${input.kubernetesReadinessReport.kubernetesSetups.length}개, workflow signals ${input.kubernetesReadinessReport.workflowSignals.length}개`
+    },
+    {
+      title: "GitOps readiness 확인",
+      href: "gitops-readiness.html",
+      goal: "Argo CD/Flux식 applications, sources, sync policy, reconciliation, image automation, notification workflow 흐름을 확인합니다.",
+      evidence: `gitops setups ${input.gitopsReadinessReport.gitopsSetups.length}개, workflow signals ${input.gitopsReadinessReport.workflowSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -4607,6 +4621,31 @@ function kubernetesReadinessRiskList(items: KubernetesReadinessReport["riskQueue
 }
 
 function kubernetesReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function gitopsReadinessSetupList(items: GitOpsReadinessReport["gitopsSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">gitops setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.controller)}/${escapeHtml(item.readiness)}]<br>application/source/destination/sync/generator/flux-source/flux-reconcile/image/notification/workflow ${item.applicationCount}/${item.sourceCount}/${item.destinationCount}/${item.syncPolicyCount}/${item.generatorCount}/${item.fluxSourceCount}/${item.fluxReconcileCount}/${item.imageAutomationCount}/${item.notificationCount}/${item.workflowCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(gitopsReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function gitopsReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">gitops signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(gitopsReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function gitopsReadinessCommandList(items: GitOpsReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function gitopsReadinessRiskList(items: GitOpsReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(gitopsReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function gitopsReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

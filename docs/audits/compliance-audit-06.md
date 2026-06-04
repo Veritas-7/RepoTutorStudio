@@ -1,6 +1,6 @@
 # Compliance Audit 6
 
-Created: 2026-06-04T17:30:41.227Z
+Created: 2026-06-04T17:46:49.635Z
 
 Status: PASS
 
@@ -593,6 +593,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Kubernetes readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - GitOps readiness report
 
 - missing files: none
 - missing strings: none

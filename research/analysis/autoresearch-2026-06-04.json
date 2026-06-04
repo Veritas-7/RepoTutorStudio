@@ -1659,6 +1659,36 @@
         "ConfigMapGenerator SecretGenerator replacements namespace namePrefix and nameSuffix readiness signals",
         "Kustomize build and kubectl apply or diff -k workflow recommendations kept static inside RepoTutor"
       ]
+    },
+    {
+      "repo": "argoproj/argo-cd",
+      "url": "https://github.com/argoproj/argo-cd",
+      "localPath": "research/external-src/argo-cd",
+      "stars": 23053,
+      "forks": 7290,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T15:05:17Z",
+      "cloneHead": "2107c9c",
+      "adoptedPatterns": [
+        "Argo CD Application ApplicationSet AppProject readiness through repoURL targetRevision path destination syncPolicy automated prune selfHeal syncOptions and source options",
+        "Argo CD operational workflow signals through argocd app sync diff wait get repo add and cluster add commands",
+        "Static-only GitOps readiness guardrails that do not run argocd, contact controllers, sync applications, mutate clusters, or read secrets"
+      ]
+    },
+    {
+      "repo": "fluxcd/flux2",
+      "url": "https://github.com/fluxcd/flux2",
+      "localPath": "research/external-src/flux2",
+      "stars": 8164,
+      "forks": 760,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T17:30:02Z",
+      "cloneHead": "3c2fe83",
+      "adoptedPatterns": [
+        "Flux source readiness through GitRepository HelmRepository OCIRepository Bucket sourceRef interval and secretRef patterns",
+        "Flux reconciliation readiness through Kustomization HelmRelease dependsOn prune suspend healthChecks timeout retryInterval targetNamespace and serviceAccount patterns",
+        "Flux image automation notification and workflow signals through ImageRepository ImagePolicy ImageUpdateAutomation Receiver Alert Provider flux bootstrap reconcile get suspend resume trace tree logs and events commands"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -4967,6 +4997,25 @@
         "html/kubernetes-readiness.html"
       ],
       "commit": "caa4037"
+    },
+    {
+      "name": "gitops readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/gitops-readiness-report.json",
+        "markdown/gitops-readiness.md",
+        "html/gitops-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -5540,7 +5589,16 @@
     "buildKubernetesReadiness": "PASS",
     "testKubernetesReadiness": "PASS",
     "complianceAudit103Checks": "PASS",
-    "kubernetesReadinessImplementationPushed": "PASS"
+    "kubernetesReadinessImplementationPushed": "PASS",
+    "externalArgoCdCloneIgnored": "PASS",
+    "externalFlux2CloneIgnored": "PASS",
+    "gitopsReadinessRedSmoke": "PASS",
+    "gitopsReadinessGreenSmoke": "PASS",
+    "fixtureGitOpsReadinessReport": "PASS",
+    "gitopsReadinessOpenTarget": "PASS",
+    "buildGitOpsReadiness": "PASS",
+    "testGitOpsReadiness": "PASS",
+    "complianceAudit104Checks": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -5979,6 +6037,14 @@
     "buildKubernetesReadiness": "PASS",
     "testKubernetesReadiness": "PASS",
     "auditBriefKubernetesReadiness103": "PASS",
-    "kubernetesReadinessImplementationPushed": "PASS"
+    "kubernetesReadinessImplementationPushed": "PASS",
+    "externalArgoCdCloneIgnored": "PASS",
+    "externalFlux2CloneIgnored": "PASS",
+    "fixtureGitOpsReadinessReport": "PASS",
+    "cliGitOpsReadinessSmoke": "PASS",
+    "cliGitOpsReadinessOpenTargetSmoke": "PASS",
+    "buildGitOpsReadiness": "PASS",
+    "testGitOpsReadiness": "PASS",
+    "auditBriefGitOpsReadiness104": "PASS"
   }
 }

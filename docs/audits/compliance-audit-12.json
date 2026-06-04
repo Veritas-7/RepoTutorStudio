@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-04T17:30:56.625Z",
+  "createdAt": "2026-06-04T17:47:12.268Z",
   "checks": [
     {
       "name": "project setup",
@@ -690,6 +690,13 @@
     },
     {
       "name": "Kubernetes readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "GitOps readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
