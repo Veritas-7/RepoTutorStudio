@@ -4385,6 +4385,53 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 69/69 audit checks across 13 generated reports
 
+### Upgrade 172: Datetime Readiness Report
+
+- Cloned and inspected `moment/luxon` under
+  `research/external-src/moment-luxon` without executing external source.
+  Clone HEAD was `b6b9d03`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 16,407 stars, 775 forks, updated
+  2026-06-04T08:21:13Z. Compared with `date-fns/date-fns`,
+  `iamkun/dayjs`, and `moment/moment`; selected Luxon because it directly
+  models DateTime, Duration, Interval, Zone, locale, ISO parsing, formatting,
+  timezone, and validity concepts. No source code was copied into RepoTutor.
+- Implemented Luxon-style datetime-readiness report:
+  `DateTimeReadinessReportSchema`,
+  `analysis/datetime-readiness-report.json`,
+  `markdown/datetime-readiness.md`, `html/datetime-readiness.html`,
+  DateTime setups, construction signals, parsing signals, formatting signals,
+  zone signals, duration signals, validity signals, package signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, and `open --target datetime-readiness`.
+- Source pattern: Luxon separates construction through `DateTime.now`,
+  `DateTime.local`, `DateTime.utc`, `fromJSDate`, `fromMillis`, `fromSeconds`,
+  and `fromObject`; parsing through `fromISO`, `fromFormat`, `fromRFC2822`,
+  `fromHTTP`, `fromSQL`, and parse explanation; formatting through `toISO`,
+  `toFormat`, `toLocaleString`, HTTP/RFC output, timestamps, and relative
+  output; zones through `setZone`, `toUTC`, `toLocal`, IANA names, fixed
+  offsets, default zones, `keepLocalTime`, DST, and offset fields; and
+  duration/validity through `Duration`, `Interval`, `diff`, `plus`, `minus`,
+  `startOf`, `endOf`, `isValid`, `invalidReason`, throw-on-invalid settings,
+  and test-clock hooks. RepoTutor maps that to deterministic static datetime
+  readiness and explicitly does not evaluate current time, parse dates, change
+  process timezone, modify Luxon Settings, run timers, or run the analyzed
+  project's tests.
+- RED smoke generated
+  `/tmp/repotutor-datetime-readiness-red-studies.sv2rO3/2026-06-04/local__simple-ts-app__main__19f4a707`;
+  old behavior was missing `analysis/datetime-readiness-report.json`,
+  `markdown/datetime-readiness.md`, and `html/datetime-readiness.html`, and
+  `open --target datetime-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-datetime-readiness-green-studies.h6O8Xy/2026-06-04/local__simple-ts-app__main__19f4a707`;
+  confirmed `verificationCheckedRequiredArtifacts=216`, DateTime setups 0,
+  construction signals 6, parsing signals 6, formatting signals 6, zone
+  signals 7, duration signals 7, validity signals 6, package signals 6, risk
+  queue 2, all three new artifacts, and `open --target datetime-readiness` ->
+  `html/datetime-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 70/70 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

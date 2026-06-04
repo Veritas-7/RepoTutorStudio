@@ -1098,6 +1098,24 @@
         "error scanning for ZodError issues format flatten treeifyError prettifyError and custom error maps",
         "safe static schema-validation readiness that never executes schemas parsers async refinements transforms coercions user validation logic or analyzed project tests"
       ]
+    },
+    {
+      "repo": "moment/luxon",
+      "url": "https://github.com/moment/luxon",
+      "localPath": "research/external-src/moment-luxon",
+      "stars": 16407,
+      "forks": 775,
+      "license": "MIT",
+      "updatedAt": "2026-06-04T08:21:13Z",
+      "adoptedPatterns": [
+        "Luxon setup scanning for DateTime Duration Interval Zone Settings and package imports",
+        "construction scanning for DateTime.now local utc fromJSDate fromMillis fromSeconds fromObject native Date and Temporal",
+        "parsing scanning for fromISO fromFormat fromRFC2822 fromHTTP fromSQL fromFormatExplain and native Date.parse",
+        "formatting scanning for toISO toFormat toLocaleString toRFC2822 toHTTP timestamps and relative output",
+        "zone scanning for setZone toUTC toLocal IANA fixed offset defaultZone keepLocalTime DST and offset fields",
+        "duration and interval scanning for Duration Interval diff plus minus startOf endOf conversion and relative output",
+        "safe static datetime readiness that never evaluates current time parses dates changes process timezone modifies Luxon Settings runs timers or analyzed project tests"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3758,6 +3776,25 @@
         "markdown/schema-validation-readiness.md",
         "html/schema-validation-readiness.html"
       ]
+    },
+    {
+      "name": "Datetime readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/datetime-readiness-report.json",
+        "markdown/datetime-readiness.md",
+        "html/datetime-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4390,6 +4427,12 @@
     "cliSchemaValidationReadinessOpenTargetSmoke": "PASS",
     "buildSchemaValidationReadiness": "PASS",
     "testSchemaValidationReadiness": "PASS",
-    "auditBriefSchemaValidationReadiness69": "PASS"
+    "auditBriefSchemaValidationReadiness69": "PASS",
+    "fixtureDateTimeReadinessReport": "PASS",
+    "cliDateTimeReadinessSmoke": "PASS",
+    "cliDateTimeReadinessOpenTargetSmoke": "PASS",
+    "buildDateTimeReadiness": "PASS",
+    "testDateTimeReadiness": "PASS",
+    "auditBriefDateTimeReadiness70": "PASS"
   }
 }
