@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-04T12:07:30.734Z",
+  "createdAt": "2026-06-04T12:18:42.662Z",
   "checks": [
     {
       "name": "project setup",
@@ -543,6 +543,13 @@
     },
     {
       "name": "browser compatibility readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "env validation readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
