@@ -1509,6 +1509,32 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`: PASS, 13/13 audit reports
 - 2026-06-04: Pushed AutoResearch Upgrade 123:
   - `b321fe4` security readiness report
+- 2026-06-04: AutoResearch Upgrade 124 candidate selected:
+  `ossf/scorecard` (`https://github.com/ossf/scorecard`; public Apache-2.0;
+  5,475 stars; 656 forks; updated 2026-06-02T01:43:46Z). Cloned ignored
+  external source to `research/external-src/ossf-scorecard` and inspected
+  README, check documentation, check registration, result scoring, and selected
+  check implementations without executing external source.
+- 2026-06-04: RED scorecard smoke generated
+  `/tmp/repotutor-scorecard-red-studies.j9fKRs/2026-06-04/local__simple-ts-app__main__d1482871`;
+  old build was missing `analysis/scorecard-report.json`,
+  `markdown/scorecard.md`, and `html/scorecard.html` as expected.
+- 2026-06-04: Implemented OpenSSF Scorecard-style project scorecard report:
+  `ScorecardReportSchema`, `analysis/scorecard-report.json`,
+  `markdown/scorecard.md`, `html/scorecard.html`, checks, aggregate score,
+  category scores, policy findings, risk queue, structured results,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target scorecard`.
+- 2026-06-04: GREEN scorecard smoke generated
+  `/tmp/repotutor-scorecard-green-studies.Lj2fvZ/2026-06-04/local__simple-ts-app__main__d1482871`;
+  confirmed `verificationCheckedRequiredArtifacts=72`, aggregate score 3,
+  checks 12, risk queue 12, policy findings 5, `scorecard-card`,
+  `data-source-pattern="OpenSSF Scorecard"`, manifest/learning-path entries,
+  and `open --target scorecard` -> `html/scorecard.html`.
+- 2026-06-04: Verification for Upgrade 124:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 13/13 audit reports
 
 ## Next Actions
 
