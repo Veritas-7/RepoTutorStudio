@@ -4283,6 +4283,57 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 67/67 audit checks across 13 generated reports
 
+### Upgrade 170: HTTP Client Readiness Report
+
+- Cloned and inspected `sindresorhus/got` under
+  `research/external-src/sindresorhus-got` without executing external source.
+  Clone HEAD was `a5b76bf`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 14,910 stars, 988 forks, updated
+  2026-06-03T07:51:29Z. Compared with `axios/axios`,
+  `unjs/ofetch`, and `sindresorhus/ky`; selected Got because it directly
+  models HTTP client readiness: request methods, instances/defaults,
+  `prefixUrl`, `searchParams`, response shaping, timeout blocks, retry limits,
+  retry status and method controls, `Retry-After`, hooks, metadata errors,
+  agents, cache, HTTP/2, proxies, cookies, Unix sockets, and pagination. No
+  source code was copied into RepoTutor.
+- Implemented Got-style HTTP-client-readiness report:
+  `HttpClientReadinessReportSchema`,
+  `analysis/http-client-readiness-report.json`,
+  `markdown/http-client-readiness.md`,
+  `html/http-client-readiness.html`, HTTP client setups, request signals,
+  resilience signals, configuration signals, transport signals, error signals,
+  package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target http-client-readiness`.
+- Source pattern: Got separates setup through `got.extend`, `prefixUrl`,
+  `searchParams`, `responseType`, `resolveBodyOnly`, and package imports;
+  resilience through `timeout`, retry limits, methods, status codes,
+  `maxRetryAfter`, `Retry-After`, and abort signals; customization through
+  hooks such as `beforeRequest`, `afterResponse`, `beforeRetry`, and
+  `beforeError`; transport through agents, cache, HTTP/2, proxy, cookies, and
+  Unix socket options; and failures through `HTTPError`, `RequestError`,
+  `TimeoutError`, `throwHttpErrors`, validation, catch handling, and metadata.
+  RepoTutor maps that to deterministic static HTTP client readiness and
+  explicitly does not make outbound requests, open sockets, mutate caches or
+  cookies, follow redirects, call hooks, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-http-client-readiness-red-studies.lFCvAE/2026-06-04/local__simple-ts-app__main__b9061c6d`;
+  old behavior was missing
+  `analysis/http-client-readiness-report.json`,
+  `markdown/http-client-readiness.md`, and
+  `html/http-client-readiness.html`, and `open --target
+  http-client-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-http-client-readiness-green-studies.H96obf/2026-06-04/local__simple-ts-app__main__b9061c6d`;
+  confirmed `verificationCheckedRequiredArtifacts=210`, HTTP client setups 0,
+  request signals 7, resilience signals 7, configuration signals 7, transport
+  signals 7, error signals 7, package signals 7, risk queue 2, and
+  `open --target http-client-readiness` ->
+  `html/http-client-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 68/68 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

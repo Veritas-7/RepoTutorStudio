@@ -82,6 +82,7 @@ import {
   RateLimitReadinessReport,
   ErrorTrackingReadinessReport,
   AnalyticsReadinessReport,
+  HttpClientReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -170,6 +171,7 @@ export interface AnalysisBundle {
   rateLimitReadinessReport: RateLimitReadinessReport;
   errorTrackingReadinessReport: ErrorTrackingReadinessReport;
   analyticsReadinessReport: AnalyticsReadinessReport;
+  httpClientReadinessReport: HttpClientReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -258,8 +260,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const rateLimitReadinessReport = await buildRateLimitReadinessReport(walk);
   const errorTrackingReadinessReport = await buildErrorTrackingReadinessReport(walk);
   const analyticsReadinessReport = await buildAnalyticsReadinessReport(walk);
+  const httpClientReadinessReport = await buildHttpClientReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -15110,6 +15113,278 @@ function analyticsReadinessSignalFromSpecs<T extends Record<K, string> & { patte
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/analytics-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildHttpClientReadinessReport(walk: WalkResult): Promise<HttpClientReadinessReport> {
+  const sourceFiles = await httpClientReadinessSourceFiles(walk);
+  const httpClientSetups = httpClientReadinessSetups(sourceFiles);
+  const requestSignals = httpClientReadinessRequestSignals(sourceFiles);
+  const resilienceSignals = httpClientReadinessResilienceSignals(sourceFiles);
+  const configurationSignals = httpClientReadinessConfigurationSignals(sourceFiles);
+  const transportSignals = httpClientReadinessTransportSignals(sourceFiles);
+  const errorSignals = httpClientReadinessErrorSignals(sourceFiles);
+  const packageSignals = httpClientReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasGotPackage = packageSignals.some((item) => item.signal === "got" && item.readiness === "ready");
+  const hasSetup = httpClientSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = httpClientSetups.some((item) => item.readiness === "ready");
+  const hasRequest = requestSignals.some((item) => ["get", "post", "put-patch-delete"].includes(item.signal) && item.readiness === "ready") || httpClientSetups.some((item) => item.requestCount > 0);
+  const hasTimeout = resilienceSignals.some((item) => item.signal === "timeout" && item.readiness === "ready") || httpClientSetups.some((item) => item.timeoutCount > 0);
+  const hasRetry = resilienceSignals.some((item) => ["retry-limit", "retry-methods", "retry-status-codes", "retry-after"].includes(item.signal) && item.readiness === "ready") || httpClientSetups.some((item) => item.retryCount > 0);
+  const hasHooks = configurationSignals.some((item) => item.signal === "hooks" && item.readiness === "ready") || httpClientSetups.some((item) => item.hookCount > 0);
+  const hasErrors = errorSignals.some((item) => ["http-error", "request-error", "timeout-error", "validate-status", "catch-handling"].includes(item.signal) && item.readiness === "ready") || httpClientSetups.some((item) => item.errorCount > 0);
+  const hasTransport = transportSignals.some((item) => ["agent", "http2", "proxy", "cache", "cookie-jar"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: HttpClientReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasRequest) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the HTTP client strategy before claiming HTTP client readiness.",
+      why: "HTTP client readiness starts with an explicit client package, request call, base URL, timeout, retry policy, error handling, or transport configuration.",
+      relatedHref: "html/http-client-readiness.html"
+    });
+  }
+  if (hasGotPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair each Got package signal with got, got.extend, request options, timeout/retry, and error handling evidence.",
+      why: "Got defaults can help, but production readiness still depends on explicit request construction, bounded timeouts, retry limits, hooks, and typed response handling.",
+      relatedHref: "html/http-client-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup || hasRequest) && !hasTimeout) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add bounded timeout options for request, connect, response, or socket phases.",
+      why: "Unbounded outbound HTTP calls can hang workers, queues, routes, and UI actions under partial network failure.",
+      relatedHref: "html/http-client-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup || hasRequest) && !hasRetry) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document retry limits, retryable methods/status codes, backoff, and Retry-After handling.",
+      why: "Retry behavior should be bounded and aligned to idempotency instead of silently multiplying side effects.",
+      relatedHref: "html/http-client-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasRequest || hasHooks || hasTransport) && !hasErrors) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review HTTPError, RequestError, TimeoutError, validateStatus/throwHttpErrors, and catch handling.",
+      why: "HTTP client failures need structured metadata so callers can distinguish remote 4xx/5xx, network failure, cancellation, and timeout.",
+      relatedHref: "html/http-client-readiness.html"
+    });
+  }
+  if (hasTransport && !hasTimeout) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Pair custom agents, proxies, caches, cookies, or HTTP/2 transport with explicit timeout policy.",
+      why: "Advanced transport configuration changes connection reuse and failure behavior, so bounded timeouts become more important.",
+      relatedHref: "html/http-client-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run HTTP client integration checks only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not make outbound requests, open sockets, mutate caches/cookies, follow redirects, call hooks, or run the analyzed project's tests.",
+    relatedHref: "html/http-client-readiness.html"
+  });
+
+  return {
+    summary: `Got식 HTTP client readiness report: setup ${httpClientSetups.length}개, request signal ${requestSignals.length}개, resilience signal ${resilienceSignals.length}개, error signal ${errorSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "got timeout retry limit methods statusCodes hooks beforeRequest afterResponse beforeRetry beforeError prefixUrl searchParams responseType throwHttpErrors HTTPError RequestError agent cache http2 pagination",
+    httpClientSetups,
+    requestSignals,
+    resilienceSignals,
+    configurationSignals,
+    transportSignals,
+    errorSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"got\\(|got\\.extend|axios\\.|fetch\\(|ky\\.|ofetch\\(|superagent\" src app pages packages", purpose: "Inventory outbound HTTP client packages, instances, and request call sites." },
+      { command: "rg \"timeout|AbortController|AbortSignal|signal:|cancelToken|requestTimeout|connect|socket|response\" src app pages packages", purpose: "Review bounded timeout, abort, cancellation, and network phase controls." },
+      { command: "rg \"retry|retry\\.limit|methods|statusCodes|maxRetryAfter|Retry-After|backoff|beforeRetry\" src app pages packages", purpose: "Check retry limits, retryable methods/statuses, backoff, and Retry-After handling." },
+      { command: "rg \"hooks|beforeRequest|afterResponse|beforeError|prefixUrl|baseURL|searchParams|params|responseType|resolveBodyOnly\" src app pages packages", purpose: "Inspect client defaults, hooks, base URLs, query params, and response parsing." },
+      { command: "rg \"HTTPError|RequestError|TimeoutError|throwHttpErrors|validateStatus|catch\\(|try \\{\" src app pages packages", purpose: "Inspect structured error handling and caller behavior for HTTP, request, timeout, and validation failures." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise request options, timeout/retry policy, error handling, and mocked HTTP clients." }
+    ],
+    learnerNextSteps: [
+      "먼저 got, got.extend, axios, fetch, ky, ofetch, superagent 호출 위치를 찾아 어떤 외부 API가 있는지 확인하세요.",
+      "timeout, AbortController, signal, cancelToken 같은 bounded wait 정책이 모든 중요한 요청에 있는지 검토하세요.",
+      "retry limit, retry methods, statusCodes, maxRetryAfter, beforeRetry를 보며 idempotent 요청만 재시도되는지 확인하세요.",
+      "prefixUrl/baseURL, searchParams/params, responseType, resolveBodyOnly, hooks가 API client 기본값을 안전하게 고정하는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 outbound request, socket open, redirect, cache/cookie mutation, hook execution은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type HttpClientReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function httpClientReadinessSourceFiles(walk: WalkResult): Promise<HttpClientReadinessSourceFile[]> {
+  const files: HttpClientReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !httpClientReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!httpClientReadinessPathSignal(file.relPath) && !httpClientReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function httpClientReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return httpClientReadinessPathSignal(filePath)
+    || /^(package\.json|\.env\.example|\.env\.sample|api\.[cm]?[jt]sx?|client\.[cm]?[jt]sx?|http\.[cm]?[jt]sx?|next\.config\.[cm]?[jt]s|vite\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env|toml)$/i.test(filePath);
+}
+
+function httpClientReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(api|apis|client|clients|http|https|request|requests|fetch|axios|got|ky|ofetch|superagent|network|transport)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function httpClientReadinessContentSignal(text: string): boolean {
+  return /(got\.extend|got\s*\(|axios\.|axios\s*\(|fetch\s*\(|ky\.|ky\s*\(|ofetch\s*\(|\$fetch\s*\(|superagent|timeout\s*:|retry\s*:|beforeRequest|afterResponse|beforeRetry|beforeError|throwHttpErrors|HTTPError|RequestError|prefixUrl|baseURL|searchParams|responseType|AbortController|AbortSignal)/i.test(text);
+}
+
+function httpClientReadinessSetups(sourceFiles: HttpClientReadinessSourceFile[]): HttpClientReadinessReport["httpClientSetups"] {
+  const rows: HttpClientReadinessReport["httpClientSetups"] = [];
+  for (const source of sourceFiles) {
+    const requestCount = countMatches(source.text, /\bgot\s*\(|got\.(get|post|put|patch|delete|head)\s*\(|axios\s*\(|axios\.(get|post|put|patch|delete|head)\s*\(|\bfetch\s*\(|\bky\s*\(|ky\.(get|post|put|patch|delete|head)\s*\(|ofetch\s*\(|\$fetch\s*\(|superagent\.(get|post|put|patch|delete|head)\s*\(/gi);
+    const timeoutCount = countMatches(source.text, /\btimeout\s*:|AbortController|AbortSignal|signal\s*:|cancelToken|requestTimeout|connect\s*:|socket\s*:|response\s*:/gi);
+    const retryCount = countMatches(source.text, /\bretry\s*:|retry\.limit|statusCodes|errorCodes|maxRetryAfter|Retry-After|beforeRetry|backoff|attempts/gi);
+    const hookCount = countMatches(source.text, /\bhooks\s*:|beforeRequest|afterResponse|beforeRetry|beforeError|initHooks|interceptors\.(request|response)|onRequest|onResponse/gi);
+    const errorCount = countMatches(source.text, /HTTPError|RequestError|TimeoutError|CancelError|throwHttpErrors|validateStatus|catch\s*\(|try\s*{/gi);
+    const hasSetupSignal = requestCount + timeoutCount + retryCount + hookCount + errorCount > 0 || /\b(Got|Axios|fetch API|HTTP client|outbound request)\b/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: httpClientReadinessProvider(source),
+      requestCount,
+      timeoutCount,
+      retryCount,
+      hookCount,
+      errorCount,
+      readiness: requestCount > 0 && timeoutCount > 0 && (retryCount > 0 || errorCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains requests ${requestCount}, timeouts ${timeoutCount}, retries ${retryCount}, hooks/interceptors ${hookCount}, error handling ${errorCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function httpClientReadinessProvider(source: HttpClientReadinessSourceFile): HttpClientReadinessReport["httpClientSetups"][number]["provider"] {
+  if (/\bgot\b|got\.extend|from ['"]got['"]/i.test(source.text)) return "got";
+  if (/\baxios\b|axios\./i.test(source.text)) return "axios";
+  if (/\bky\b|ky\./i.test(source.text)) return "ky";
+  if (/\bofetch\b|\$fetch\s*\(/i.test(source.text)) return "ofetch";
+  if (/superagent/i.test(source.text)) return "superagent";
+  if (/\bfetch\s*\(|AbortController|AbortSignal/i.test(source.text)) return "fetch";
+  if (/\b(http client|outbound request|api client)\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function httpClientReadinessRequestSignals(sourceFiles: HttpClientReadinessSourceFile[]): HttpClientReadinessReport["requestSignals"] {
+  const specs: Array<{ signal: HttpClientReadinessReport["requestSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "get", pattern: /\.(get|head)\s*\(|method\s*:\s*['"](GET|HEAD)['"]|\bfetch\s*\(/i, evidence: "GET/HEAD request evidence was detected." },
+    { signal: "post", pattern: /\.post\s*\(|method\s*:\s*['"]POST['"]|got\.post|axios\.post/i, evidence: "POST request evidence was detected." },
+    { signal: "put-patch-delete", pattern: /\.(put|patch|delete)\s*\(|method\s*:\s*['"](PUT|PATCH|DELETE)['"]/i, evidence: "PUT/PATCH/DELETE request evidence was detected." },
+    { signal: "json-body", pattern: /\bjson\s*:|\.json<|\.json\s*\(|JSON\.stringify|Content-Type['"]?\s*:\s*['"]application\/json/i, evidence: "JSON request or response evidence was detected." },
+    { signal: "form-body", pattern: /\bform\s*:|formData|FormData|multipart|urlencoded|body-parser/i, evidence: "form or multipart body evidence was detected." },
+    { signal: "query-params", pattern: /searchParams|params\s*:|URLSearchParams|query\s*:/i, evidence: "query/search parameter evidence was detected." },
+    { signal: "base-url", pattern: /prefixUrl|baseURL|baseUrl|new URL\(|API_BASE|PUBLIC_API|api_host/i, evidence: "base URL evidence was detected." }
+  ];
+  return httpClientReadinessSignalFromSpecs(sourceFiles, specs, "request", "signal");
+}
+
+function httpClientReadinessResilienceSignals(sourceFiles: HttpClientReadinessSourceFile[]): HttpClientReadinessReport["resilienceSignals"] {
+  const specs: Array<{ signal: HttpClientReadinessReport["resilienceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "timeout", pattern: /\btimeout\s*:|requestTimeout|connect\s*:|socket\s*:|response\s*:|read\s*:/i, evidence: "timeout evidence was detected." },
+    { signal: "retry-limit", pattern: /\bretry\s*:|retry\.limit|limit\s*:|attempts|retries/i, evidence: "retry limit evidence was detected." },
+    { signal: "retry-methods", pattern: /methods\s*:|retryMethods|allowedMethods|idempotent/i, evidence: "retry method policy evidence was detected." },
+    { signal: "retry-status-codes", pattern: /statusCodes|statusCode|retryStatusCodes|429|500|502|503|504/i, evidence: "retry status code evidence was detected." },
+    { signal: "retry-after", pattern: /maxRetryAfter|Retry-After|retryAfter/i, evidence: "Retry-After evidence was detected." },
+    { signal: "abort-signal", pattern: /AbortController|AbortSignal|signal\s*:|cancelToken|CancelToken/i, evidence: "abort/cancel signal evidence was detected." },
+    { signal: "throw-http-errors", pattern: /throwHttpErrors|validateStatus|ok\s*=>|response\.ok/i, evidence: "HTTP status validation evidence was detected." }
+  ];
+  return httpClientReadinessSignalFromSpecs(sourceFiles, specs, "resilience", "signal");
+}
+
+function httpClientReadinessConfigurationSignals(sourceFiles: HttpClientReadinessSourceFile[]): HttpClientReadinessReport["configurationSignals"] {
+  const specs: Array<{ signal: HttpClientReadinessReport["configurationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "prefix-url", pattern: /prefixUrl|baseURL|baseUrl/i, evidence: "base/prefix URL configuration evidence was detected." },
+    { signal: "headers", pattern: /headers\s*:|Authorization|user-agent|User-Agent|Content-Type/i, evidence: "header configuration evidence was detected." },
+    { signal: "search-params", pattern: /searchParams|params\s*:|URLSearchParams/i, evidence: "search/query parameter configuration evidence was detected." },
+    { signal: "response-type", pattern: /responseType|parseJson|arrayBuffer|blob|buffer|text\(\)/i, evidence: "response type/parsing evidence was detected." },
+    { signal: "resolve-body-only", pattern: /resolveBodyOnly|\.json<|\.json\s*\(/i, evidence: "body-only response evidence was detected." },
+    { signal: "hooks", pattern: /\bhooks\s*:|beforeRequest|afterResponse|beforeRetry|beforeError|interceptors\.(request|response)|onRequest|onResponse/i, evidence: "hooks or interceptor evidence was detected." },
+    { signal: "extend-instance", pattern: /got\.extend|axios\.create|ky\.create|ofetch\.create|superagent\.agent/i, evidence: "client instance/defaults evidence was detected." }
+  ];
+  return httpClientReadinessSignalFromSpecs(sourceFiles, specs, "configuration", "signal");
+}
+
+function httpClientReadinessTransportSignals(sourceFiles: HttpClientReadinessSourceFile[]): HttpClientReadinessReport["transportSignals"] {
+  const specs: Array<{ signal: HttpClientReadinessReport["transportSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "agent", pattern: /\bagent\s*:|httpAgent|httpsAgent|keepAlive|Agent\(/i, evidence: "HTTP agent evidence was detected." },
+    { signal: "http2", pattern: /http2|HTTP\/2|h2c|http2-wrapper/i, evidence: "HTTP/2 evidence was detected." },
+    { signal: "proxy", pattern: /proxy|ProxyAgent|HTTPS?_PROXY|NO_PROXY/i, evidence: "proxy evidence was detected." },
+    { signal: "cache", pattern: /\bcache\s*:|cacheable-request|Keyv|cacheOptions/i, evidence: "HTTP cache evidence was detected." },
+    { signal: "cookie-jar", pattern: /cookieJar|tough-cookie|CookieJar|withCredentials|credentials\s*:/i, evidence: "cookie or credentials evidence was detected." },
+    { signal: "decompress", pattern: /decompress|gzip|brotli|zstd|deflate/i, evidence: "decompression evidence was detected." },
+    { signal: "unix-socket", pattern: /enableUnixSockets|unixSocket|socketPath/i, evidence: "Unix socket evidence was detected." }
+  ];
+  return httpClientReadinessSignalFromSpecs(sourceFiles, specs, "transport", "signal");
+}
+
+function httpClientReadinessErrorSignals(sourceFiles: HttpClientReadinessSourceFile[]): HttpClientReadinessReport["errorSignals"] {
+  const specs: Array<{ signal: HttpClientReadinessReport["errorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "http-error", pattern: /HTTPError|AxiosError|response\.status|statusCode|throwHttpErrors/i, evidence: "HTTP status error evidence was detected." },
+    { signal: "request-error", pattern: /RequestError|ECONNRESET|ENOTFOUND|EAI_AGAIN|network error/i, evidence: "request/network error evidence was detected." },
+    { signal: "timeout-error", pattern: /TimeoutError|ETIMEDOUT|timeout/i, evidence: "timeout error evidence was detected." },
+    { signal: "cancel-error", pattern: /CancelError|AbortError|ERR_CANCELED|cancelToken|aborted/i, evidence: "cancel/abort error evidence was detected." },
+    { signal: "metadata", pattern: /timings|requestUrl|options|retryCount|response\.headers|error\.response/i, evidence: "error metadata evidence was detected." },
+    { signal: "validate-status", pattern: /validateStatus|throwHttpErrors|response\.ok|ok\s*=>/i, evidence: "status validation evidence was detected." },
+    { signal: "catch-handling", pattern: /catch\s*\(|try\s*{|finally\s*\(/i, evidence: "caller error handling evidence was detected." }
+  ];
+  return httpClientReadinessSignalFromSpecs(sourceFiles, specs, "error", "signal");
+}
+
+function httpClientReadinessPackageSignals(sourceFiles: HttpClientReadinessSourceFile[]): HttpClientReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: HttpClientReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "got", pattern: /"got"|from ['"]got['"]|got\.extend/i, evidence: "got package/import evidence was detected." },
+    { signal: "axios", pattern: /"axios"|from ['"]axios['"]|axios\./i, evidence: "axios package/import evidence was detected." },
+    { signal: "ky", pattern: /"ky"|from ['"]ky['"]|ky\./i, evidence: "ky package/import evidence was detected." },
+    { signal: "ofetch", pattern: /"ofetch"|from ['"]ofetch['"]|\$fetch\s*\(/i, evidence: "ofetch package/import evidence was detected." },
+    { signal: "node-fetch", pattern: /"node-fetch"|from ['"]node-fetch['"]/i, evidence: "node-fetch package/import evidence was detected." },
+    { signal: "undici", pattern: /"undici"|from ['"]undici['"]|undici\./i, evidence: "undici package/import evidence was detected." },
+    { signal: "superagent", pattern: /"superagent"|from ['"]superagent['"]|superagent\./i, evidence: "superagent package/import evidence was detected." }
+  ];
+  return httpClientReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function httpClientReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: HttpClientReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/http-client-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
