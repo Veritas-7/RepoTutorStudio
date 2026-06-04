@@ -542,6 +542,22 @@
         "plugin lifecycle steps verifyConditions analyzeCommits verifyRelease generateNotes prepare publish addChannel success fail",
         "CI-only publishing with full git history scoped tokens OIDC trusted publishing npm provenance and dry-run review"
       ]
+    },
+    {
+      "repo": "gitleaks/gitleaks",
+      "url": "https://github.com/gitleaks/gitleaks",
+      "localPath": "research/external-src/gitleaks-gitleaks",
+      "stars": 27491,
+      "forks": 2094,
+      "license": "MIT",
+      "updatedAt": "2026-06-04T01:09:53Z",
+      "adoptedPatterns": [
+        "git dir and stdin scan target separation for secret scanning",
+        "baseline and fingerprint workflow for known findings",
+        "TOML config rules with regex secretGroup entropy keywords and allowlists",
+        "redacted JSON CSV JUnit SARIF and template report outputs",
+        "pre-commit staged scan and CI prevention workflow"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2553,6 +2569,28 @@
         "ReleaseReadinessReportSchema",
         "semantic-release branches tagFormat plugins verifyConditions analyzeCommits generateNotes prepare publish CI OIDC provenance"
       ]
+    },
+    {
+      "name": "Secret readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/secret-readiness-report.json",
+        "markdown/secret-readiness.md",
+        "html/secret-readiness.html",
+        "open --target secret-readiness",
+        "SecretReadinessReportSchema",
+        "Gitleaks git dir stdin baseline config rules allowlists redaction report formats pre-commit staged secret scanning"
+      ]
     }
   ],
   "verification": {
@@ -2879,6 +2917,12 @@
     "cliReleaseReadinessOpenTargetSmoke": "PASS",
     "buildReleaseReadiness": "PASS",
     "testReleaseReadiness": "PASS",
-    "auditBriefReleaseReadiness35": "PASS"
+    "auditBriefReleaseReadiness35": "PASS",
+    "fixtureSecretReadinessReport": "PASS",
+    "cliSecretReadinessSmoke": "PASS",
+    "cliSecretReadinessOpenTargetSmoke": "PASS",
+    "buildSecretReadiness": "PASS",
+    "testSecretReadiness": "PASS",
+    "auditBriefSecretReadiness36": "PASS"
   }
 }

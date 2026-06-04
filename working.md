@@ -1964,6 +1964,39 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 137:
   - `482bfd1` release readiness report
 
+- 2026-06-04: AutoResearch Upgrade 138 candidate selected:
+  `gitleaks/gitleaks` (`https://github.com/gitleaks/gitleaks`; public MIT;
+  27,491 stars; 2,094 forks; updated 2026-06-04T01:09:53Z). Compared with
+  `trufflesecurity/trufflehog`, `Yelp/detect-secrets`, and
+  `awslabs/git-secrets`; selected Gitleaks for its git, dir, stdin, baseline,
+  config, allowlist, redaction, report format, pre-commit, and staged scanning
+  model. Cloned ignored external source to
+  `research/external-src/gitleaks-gitleaks` and inspected README,
+  configuration docs in README, reporting docs in README, and
+  `.pre-commit-hooks.yaml` without executing external source.
+- 2026-06-04: RED secret readiness smoke generated
+  `/tmp/repotutor-secret-red-studies.nvmRuY/2026-06-04/local__simple-ts-app__main__9b8131fe`;
+  old build was missing `analysis/secret-readiness-report.json`,
+  `markdown/secret-readiness.md`, and `html/secret-readiness.html` as expected.
+- 2026-06-04: Implemented Gitleaks-style secret readiness report:
+  `SecretReadinessReportSchema`, `analysis/secret-readiness-report.json`,
+  `markdown/secret-readiness.md`, `html/secret-readiness.html`, scan targets,
+  secret surfaces, config signals, reporting signals, prevention signals,
+  advanced signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target secret-readiness`.
+- 2026-06-04: GREEN secret readiness smoke generated
+  `/tmp/repotutor-secret-green-studies.Fey0h5/2026-06-04/local__simple-ts-app__main__9b8131fe`;
+  confirmed `verificationCheckedRequiredArtifacts=114`, scan targets 6,
+  secret surfaces 0, config signals 0, reporting signals 9, prevention signals
+  7, advanced signals 6, recommended commands 5, risk queue 5, `secret-card`,
+  `data-source-pattern="Gitleaks"`, manifest/learning-path entries, and
+  `open --target secret-readiness` -> `html/secret-readiness.html`.
+- 2026-06-04: Verification for Upgrade 138:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 36/36 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

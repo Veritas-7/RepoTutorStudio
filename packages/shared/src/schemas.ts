@@ -1565,6 +1565,60 @@ export const ReleaseReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SecretReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  scanTargets: z.array(z.object({
+    target: z.enum(["git-history", "working-tree", "stdin", "pre-commit", "archive", "config", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  secretSurfaces: z.array(z.object({
+    filePath: z.string(),
+    surfaceType: z.enum(["env-file", "key-file", "credential-config", "token-path", "ignored-secret-candidate", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    filePath: z.string(),
+    signal: z.enum(["gitleaks-config", "extend-default", "custom-rule", "entropy", "secret-group", "keywords", "allowlist", "gitleaksignore", "allow-comment", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  reportingSignals: z.array(z.object({
+    signal: z.enum(["json", "csv", "junit", "sarif", "template", "report-path", "baseline", "fingerprint", "redaction"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  preventionSignals: z.array(z.object({
+    signal: z.enum(["pre-commit", "staged", "git-hook", "github-action", "ci", "exit-code", "protect-legacy"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  advancedSignals: z.array(z.object({
+    signal: z.enum(["decode-depth", "archive-depth", "diagnostics", "enable-rule", "log-opts", "timeout"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1804,6 +1858,7 @@ export type StorybookReport = z.infer<typeof StorybookReportSchema>;
 export type DesignTokensReport = z.infer<typeof DesignTokensReportSchema>;
 export type I18nReport = z.infer<typeof I18nReportSchema>;
 export type ReleaseReadinessReport = z.infer<typeof ReleaseReadinessReportSchema>;
+export type SecretReadinessReport = z.infer<typeof SecretReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
