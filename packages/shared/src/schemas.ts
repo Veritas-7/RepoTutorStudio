@@ -2889,6 +2889,63 @@ export const AuthReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PaymentReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  paymentSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["stripe", "paypal", "paddle", "lemonsqueezy", "custom", "unknown"]),
+    serverClientCount: z.number().int().nonnegative(),
+    checkoutSessionCount: z.number().int().nonnegative(),
+    paymentIntentCount: z.number().int().nonnegative(),
+    webhookHandlerCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  checkoutSignals: z.array(z.object({
+    signal: z.enum(["checkout-session", "payment-intent", "subscription", "customer-portal", "price-id", "product-id", "currency", "quantity", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  webhookSignals: z.array(z.object({
+    signal: z.enum(["webhook-route", "signature-verification", "raw-body", "event-switch", "checkout-completed", "invoice-paid", "payment-failed", "idempotency", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  customerSignals: z.array(z.object({
+    signal: z.enum(["customer", "subscription", "invoice", "billing-portal", "trial", "coupon", "tax", "refund", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  credentialSignals: z.array(z.object({
+    signal: z.enum(["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "STRIPE_PUBLISHABLE_KEY", "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY", "price-env", "api-version", "webhook-secret", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["stripe", "@stripe/stripe-js", "@stripe/react-stripe-js", "paypal", "paddle", "lemonsqueezy", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3151,6 +3208,7 @@ export type RoutingReadinessReport = z.infer<typeof RoutingReadinessReportSchema
 export type StateManagementReadinessReport = z.infer<typeof StateManagementReadinessReportSchema>;
 export type FormReadinessReport = z.infer<typeof FormReadinessReportSchema>;
 export type AuthReadinessReport = z.infer<typeof AuthReadinessReportSchema>;
+export type PaymentReadinessReport = z.infer<typeof PaymentReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

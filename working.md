@@ -2848,6 +2848,43 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 160:
   - `870ff07` auth readiness report
 
+- 2026-06-04: AutoResearch Upgrade 161 candidate selected:
+  `stripe/stripe-node` (`https://github.com/stripe/stripe-node`; public MIT;
+  4,430 stars; 908 forks; updated 2026-06-03T11:34:15Z). Compared with
+  `stripe/stripe-js`, `stripe/react-stripe-js`, and
+  `stripe-samples/checkout-single-subscription`; selected Stripe Node because
+  it directly models server-side payment readiness: `new Stripe`, secret-key
+  setup, `apiVersion`, Checkout Sessions, PaymentIntents, subscriptions,
+  customers, invoices, billing portal, webhooks, `constructEvent`, raw body,
+  signature verification, idempotency, price/product IDs, currency, and
+  quantity assumptions. Cloned ignored external source to
+  `research/external-src/stripe-stripe-node` and inspected README, license,
+  package metadata, webhook helpers, config surfaces, and resource files
+  without executing external source. Clone HEAD was `23f097e`; tracked-file
+  count for `research/external-src/stripe-stripe-node` returned `0`.
+- 2026-06-04: RED payment-readiness smoke generated
+  `/tmp/repotutor-payment-readiness-red-studies.D5t0yw/2026-06-04/local__simple-ts-app__main__5e1943ff`;
+  old build was missing `analysis/payment-readiness-report.json`,
+  `markdown/payment-readiness.md`, and `html/payment-readiness.html`, and
+  `open --target payment-readiness` failed as expected.
+- 2026-06-04: Implemented Stripe-style payment-readiness report:
+  `PaymentReadinessReportSchema`, `analysis/payment-readiness-report.json`,
+  `markdown/payment-readiness.md`, `html/payment-readiness.html`, payment
+  setups, checkout signals, webhook signals, customer/billing signals,
+  credential signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target payment-readiness`.
+- 2026-06-04: GREEN payment-readiness smoke generated
+  `/tmp/repotutor-payment-readiness-green-studies.esOBKP/2026-06-04/local__simple-ts-app__main__5e1943ff`;
+  confirmed `verificationCheckedRequiredArtifacts=183`, payment setups 0,
+  checkout signals 8, webhook signals 8, customer signals 8, credential
+  signals 7, package signals 6, risk queue 2, manifest/learning-path entries,
+  and `open --target payment-readiness` -> `html/payment-readiness.html`.
+- 2026-06-04: Verification for Upgrade 161:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 59/59 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
