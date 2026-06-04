@@ -5503,6 +5503,44 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 221:
   - `34bf36d` mutation testing readiness report
 
+- 2026-06-05: AutoResearch Upgrade 222 candidate selected:
+  `hmarr/codeowners` (`https://github.com/hmarr/codeowners`; MIT, public,
+  230 stars, 31 forks, updated 2026-05-25T16:05:03Z, ignored clone HEAD
+  `b0f609d`) with comparison sources `mszostok/codeowners-validator`
+  (Apache-2.0, public, 245 stars, 55 forks, updated 2026-05-21T23:31:27Z,
+  ignored clone HEAD `f3651e3`) and `github/docs` (CC-BY-4.0, public,
+  20,400 stars, 67,341 forks, updated 2026-06-04T21:16:23Z, sparse ignored
+  clone HEAD `2ff181c`). Static source inspection only; `git ls-files` for
+  all three external source paths returned `0`.
+- 2026-06-05: Implemented CODEOWNERS-style code-ownership-readiness report:
+  `CodeOwnershipReadinessReportSchema`,
+  `analysis/code-ownership-readiness-report.json`,
+  `markdown/code-ownership-readiness.md`,
+  `html/code-ownership-readiness.html`, CODEOWNERS file detection, ownership,
+  validation, review, coverage, and package signals, recommended commands,
+  risk queue, manifest/session-verification coverage, learning-path linkage,
+  nav entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target code-ownership-readiness`.
+- 2026-06-05: RED/GREEN code-ownership-readiness smoke recorded:
+  old behavior at `540f188` had no `CodeOwnershipReadinessReportSchema` and no
+  `code-ownership-readiness` CLI target (`RED missing-count=2 expected=2`).
+  GREEN focused fixture detected `.github/CODEOWNERS`, standard location,
+  pattern rules, last-match-wins evidence, team/user/email/self owners,
+  syntax/owner/file/duplicate/not-owned/GitHub Action/API validation signals,
+  auto review request, required code owner review, branch protection, rulesets,
+  stale-review dismissal, required approving review, fork/base-branch, draft PR
+  behavior, coverage signals, package signals, risk queue 0, and all three new
+  artifacts.
+- 2026-06-05: Verification for Upgrade 222:
+  - RED baseline smoke: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - focused CODEOWNERS Vitest: PASS
+  - full pipeline Vitest: PASS, 29/29 tests
+  - `pnpm test`: PASS, 29/29 tests
+  - `pnpm audit:brief`: PASS, 120/120 audit checks across 13 reports
+  - `git diff --check`: PASS
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

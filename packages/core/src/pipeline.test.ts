@@ -22,6 +22,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "search-index-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "learning-journal-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "project-activity-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-ownership-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "license-rights-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "sbom-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "security-readiness-report.json"))).resolves.toBeUndefined();
@@ -143,6 +144,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "search-index.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "learning-journal.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "project-activity.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-ownership-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "license-rights.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "sbom.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "security-readiness.md"))).resolves.toBeUndefined();
@@ -267,6 +269,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "search-index.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "learning-journal.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "project-activity.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "code-ownership-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "license-rights.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "sbom.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "security-readiness.html"))).resolves.toBeUndefined();
@@ -418,6 +421,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/search-index.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/learning-journal.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/project-activity.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/code-ownership-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/license-rights.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/sbom.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/security-readiness.html\"");
@@ -641,6 +645,26 @@ describe("RepoTutor core pipeline", () => {
     expect(projectActivityMarkdown).toContain("Source pattern: Repowise");
     expect(projectActivityMarkdown).toContain("## History Availability");
     expect(projectActivityMarkdown).toContain("## Review Queues");
+    const codeOwnershipText = await fs.readFile(path.join(result.session.outputPaths.analysis, "code-ownership-readiness-report.json"), "utf8");
+    expect(codeOwnershipText).toContain("CODEOWNERS standard locations root .github docs gitignore-style patterns owners teams users email last matching rule branch protection required code owner reviews rulesets syntax owner file duplicate not-owned validation");
+    expect(codeOwnershipText).toContain("\"codeownerFiles\"");
+    expect(codeOwnershipText).toContain("\"ownershipSignals\"");
+    expect(codeOwnershipText).toContain("\"validationSignals\"");
+    expect(codeOwnershipText).toContain("\"reviewSignals\"");
+    expect(codeOwnershipText).toContain("\"coverageSignals\"");
+    expect(codeOwnershipText).toContain("\"packageSignals\"");
+    expect(codeOwnershipText).toContain("codeowners-validator --checks files,owners,duppatterns,syntax");
+    const codeOwnershipHtml = await fs.readFile(path.join(result.session.outputPaths.html, "code-ownership-readiness.html"), "utf8");
+    expect(codeOwnershipHtml).toContain("Code Ownership Readiness");
+    expect(codeOwnershipHtml).toContain("code-ownership-readiness-card");
+    expect(codeOwnershipHtml).toContain("data-source-pattern=\"CODEOWNERS\"");
+    expect(codeOwnershipHtml).toContain("CODEOWNERS Files");
+    expect(codeOwnershipHtml).toContain("Review Signals");
+    const codeOwnershipMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "code-ownership-readiness.md"), "utf8");
+    expect(codeOwnershipMarkdown).toContain("# Code Ownership Readiness");
+    expect(codeOwnershipMarkdown).toContain("Source pattern: CODEOWNERS");
+    expect(codeOwnershipMarkdown).toContain("## CODEOWNERS Files");
+    expect(codeOwnershipMarkdown).toContain("## Review Signals");
     const licenseRightsText = await fs.readFile(path.join(result.session.outputPaths.analysis, "license-rights-report.json"), "utf8");
     expect(licenseRightsText).toContain("Licensee license file detection filename score SPDX confidence matched_files package metadata README references human compliance review");
     expect(licenseRightsText).toContain("\"detectedProjectLicense\"");
@@ -2757,6 +2781,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/search-index.html");
     expect(exportManifestText).toContain("html/learning-journal.html");
     expect(exportManifestText).toContain("html/project-activity.html");
+    expect(exportManifestText).toContain("html/code-ownership-readiness.html");
     expect(exportManifestText).toContain("html/license-rights.html");
     expect(exportManifestText).toContain("html/sbom.html");
     expect(exportManifestText).toContain("html/security-readiness.html");
@@ -2902,6 +2927,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("search-index.html");
     expect(learningPathHtml).toContain("learning-journal.html");
     expect(learningPathHtml).toContain("project-activity.html");
+    expect(learningPathHtml).toContain("code-ownership-readiness.html");
     expect(learningPathHtml).toContain("license-rights.html");
     expect(learningPathHtml).toContain("sbom.html");
     expect(learningPathHtml).toContain("security-readiness.html");
@@ -3067,6 +3093,101 @@ describe("RepoTutor core pipeline", () => {
     expect(failedSessionVerification.failures.some((failure) => failure.check === "evidence-index" && failure.path === "source/src/main.ts")).toBe(true);
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
+  });
+
+  it("detects CODEOWNERS readiness patterns without contacting GitHub", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-codeowners-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-codeowners-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "rulesets"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "tests"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "packages", "api"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, ".github", "CODEOWNERS"), [
+      "* @acme/platform",
+      "/src/ @acme/app-team @octocat app@example.com",
+      "/tests/ @acme/qa",
+      "/packages/api/ @acme/api",
+      "/.github/ @acme/security",
+      "/.github/CODEOWNERS @acme/security",
+      "/docs/ @acme/docs",
+      "/src/ @acme/override"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "codeowners.yml"), [
+      "name: codeowners",
+      "on: [pull_request]",
+      "jobs:",
+      "  validate:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: mszostok/codeowners-validator@v0.7.4",
+      "        with:",
+      "          checks: files,owners,duppatterns,syntax",
+      "          experimental_checks: notowned",
+      "          owner_checker_owners_must_be_teams: true",
+      "          owner_checker_allow_unowned_patterns: false",
+      "          not_owned_checker_skip_patterns: docs/generated/**",
+      "          github_access_token: ${{ secrets.GITHUB_TOKEN }}",
+      "          repository_path: ${{ github.workspace }}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "rulesets", "main.json"), JSON.stringify({
+      name: "main",
+      target: "branch",
+      enforcement: "active",
+      rulesets: true,
+      branchProtection: {
+        required_approving_review_count: 2,
+        requireCodeOwnerReview: "Require review from Code Owners",
+        dismissStaleReviews: "dismiss stale reviews"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# CODEOWNERS fixture",
+      "",
+      "GitHub automatically requested code owners for review on pull request review flows.",
+      "The last matching rule wins, so rule order matters for CODEOWNERS.",
+      "Fork base branch behavior and draft pull request ready for review behavior are documented before enabling required code owner review.",
+      "Use the codeowners/errors API to inspect CODEOWNERS API parsing errors.",
+      "Paths are case-sensitive and must be cased correctly.",
+      "The hmarr/codeowners parser can help inspect local ownership matches."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        owners: "codeowners --help",
+        "owners:validate": "codeowners-validator --checks files,owners,duppatterns,syntax"
+      },
+      devDependencies: {
+        "hmarr/codeowners": "^1.2.0",
+        "codeowners-validator": "^0.7.4"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "app.ts"), "export const app = true;\n");
+    await fs.writeFile(path.join(sourceRoot, "tests", "app.test.ts"), "export const covered = true;\n");
+    await fs.writeFile(path.join(sourceRoot, "packages", "api", "index.ts"), "export const api = true;\n");
+    await fs.writeFile(path.join(sourceRoot, "docs", "guide.md"), "# Guide\n");
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = result.analysis.codeOwnershipReadinessReport;
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const codeownersFile = report.codeownerFiles[0];
+
+    expect(codeownersFile?.location).toBe("github");
+    expect(codeownersFile?.ruleCount).toBeGreaterThanOrEqual(7);
+    expect(codeownersFile?.teamOwnerCount).toBeGreaterThan(0);
+    expect(codeownersFile?.userOwnerCount).toBeGreaterThan(0);
+    expect(codeownersFile?.emailOwnerCount).toBeGreaterThan(0);
+    expect(codeownersFile?.duplicatePatternCount).toBeGreaterThan(0);
+    expect(codeownersFile?.selfOwnershipCount).toBeGreaterThan(0);
+    expect(readySignals(report.ownershipSignals)).toEqual(expect.arrayContaining(["codeowners-file", "standard-location", "pattern-rules", "last-match-wins", "team-owner", "user-owner", "email-owner", "self-owned-codeowners"]));
+    expect(readySignals(report.validationSignals)).toEqual(expect.arrayContaining(["syntax-check", "owner-check", "file-exists-check", "duplicate-pattern-check", "not-owned-check", "github-action", "api-errors"]));
+    expect(readySignals(report.reviewSignals)).toEqual(expect.arrayContaining(["auto-review-request", "required-code-owner-review", "branch-protection", "rulesets", "dismiss-stale-review", "required-approving-review", "fork-base-branch", "draft-pr"]));
+    expect(readySignals(report.coverageSignals)).toEqual(expect.arrayContaining(["root-default", "docs", "src", "tests", "github-directory", "packages", "unowned-allowed", "case-sensitive-paths"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["hmarr/codeowners", "codeowners-validator", "github-codeowners-api", "custom"]));
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-ownership-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-ownership-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "code-ownership-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects mutation testing readiness patterns without executing mutation engines", async () => {

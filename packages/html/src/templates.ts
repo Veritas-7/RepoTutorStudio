@@ -28,6 +28,7 @@ import type {
   DependencyHealthReport,
   LearningJournalReport,
   ProjectActivityReport,
+  CodeOwnershipReadinessReport,
   LicenseRightsReport,
   SbomReport,
   SecurityReadinessReport,
@@ -163,6 +164,7 @@ export interface StudyHtmlInput {
   dependencyHealthReport: DependencyHealthReport;
   learningJournalReport: LearningJournalReport;
   projectActivityReport: ProjectActivityReport;
+  codeOwnershipReadinessReport: CodeOwnershipReadinessReport;
   licenseRightsReport: LicenseRightsReport;
   sbomReport: SbomReport;
   securityReadinessReport: SecurityReadinessReport;
@@ -318,6 +320,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["search-index.html", "Search Index"],
     ["learning-journal.html", "Learning Journal"],
     ["project-activity.html", "Project Activity"],
+    ["code-ownership-readiness.html", "Code Ownership"],
     ["license-rights.html", "License Rights"],
     ["sbom.html", "SBOM"],
     ["security-readiness.html", "Security Readiness"],
@@ -493,6 +496,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Search Index</h3><p>${escapeHtml(input.searchIndexReport.summary)}</p><p>Pagefind 패턴으로 generated page, file lesson, folder lesson을 검색 가능한 문서 단위로 나눕니다.</p><a href="search-index.html">Search Index 열기</a></article>
           <article><h3>Learning Journal</h3><p>${escapeHtml(input.learningJournalReport.summary)}</p><p>learn-codebase 패턴으로 예측 질문, mastery map, spaced review queue를 남깁니다.</p><a href="learning-journal.html">Learning Journal 열기</a></article>
           <article><h3>Project Activity</h3><p>${escapeHtml(input.projectActivityReport.summary)}</p><p>Repowise 패턴으로 snapshot-only activity, hotspot, dead-code, decision queue를 묶습니다.</p><a href="project-activity.html">Project Activity 열기</a></article>
+          <article><h3>Code Ownership Readiness</h3><p>${escapeHtml(input.codeOwnershipReadinessReport.summary)}</p><p>CODEOWNERS, validator, required review, branch protection 신호를 분리해 소유권 리뷰 준비도를 확인합니다.</p><a href="code-ownership-readiness.html">Code Ownership 열기</a></article>
           <article><h3>License Rights</h3><p>${escapeHtml(input.licenseRightsReport.summary)}</p><p>Licensee 패턴으로 license file, package metadata, README 참조를 분리합니다.</p><a href="license-rights.html">License Rights 열기</a></article>
           <article><h3>SBOM</h3><p>${escapeHtml(input.sbomReport.summary)}</p><p>Syft 패턴으로 source descriptor, package artifacts, file artifacts, relationships를 inventory로 묶습니다.</p><a href="sbom.html">SBOM 열기</a></article>
           <article><h3>Security Readiness</h3><p>${escapeHtml(input.securityReadinessReport.summary)}</p><p>Trivy 패턴으로 targets, scanners, security signals, action queue를 분리합니다.</p><a href="security-readiness.html">Security Readiness 열기</a></article>
@@ -666,6 +670,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "project-activity.html",
       title: "Project Activity",
       html: pageShell("Project Activity", "project-activity.html", `<section class="panel" data-source-pattern="Repowise"><h2>Project Activity Snapshot</h2><p>${escapeHtml(input.projectActivityReport.summary)}</p><p class="muted">${escapeHtml(input.projectActivityReport.sourcePattern)}</p><dl class="meta"><div><dt>history mode</dt><dd>${escapeHtml(input.projectActivityReport.historyAvailability.mode)}</dd></div><div><dt>branch</dt><dd>${escapeHtml(input.projectActivityReport.historyAvailability.branch ?? "unknown")}</dd></div><div><dt>commit</dt><dd>${escapeHtml(input.projectActivityReport.historyAvailability.commitHash?.slice(0, 12) ?? "unknown")}</dd></div><div><dt>hotspots</dt><dd>${input.projectActivityReport.hotspotCandidates.length}</dd></div></dl><p>${escapeHtml(input.projectActivityReport.historyAvailability.reason)}</p></section><section class="grid"><article class="project-activity-card"><h3>Activity Signals</h3>${projectActivitySignalList(input.projectActivityReport.activitySignals)}</article><article class="project-activity-card"><h3>Review Queues</h3>${projectActivityQueueList(input.projectActivityReport.reviewQueues)}</article><article class="project-activity-card"><h3>Decision Prompts</h3>${projectActivityDecisionPromptList(input.projectActivityReport.architectureDecisionPrompts)}</article><article class="project-activity-card"><h3>다음 확인 단계</h3>${list(input.projectActivityReport.learnerNextSteps)}</article></section><section class="cards project-activity-hotspots">${projectActivityHotspotCards(input.projectActivityReport.hotspotCandidates)}</section><section class="cards project-activity-dead-code">${projectActivityDeadCodeCards(input.projectActivityReport.deadCodeCandidates)}</section>`, input)
+    },
+    {
+      name: "code-ownership-readiness.html",
+      title: "Code Ownership Readiness",
+      html: pageShell("Code Ownership Readiness", "code-ownership-readiness.html", `<section class="panel" data-source-pattern="CODEOWNERS"><h2>Code Ownership Readiness</h2><p>${escapeHtml(input.codeOwnershipReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.codeOwnershipReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>CODEOWNERS files</dt><dd>${input.codeOwnershipReadinessReport.codeownerFiles.length}</dd></div><div><dt>ownership signals</dt><dd>${input.codeOwnershipReadinessReport.ownershipSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>validation signals</dt><dd>${input.codeOwnershipReadinessReport.validationSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>review signals</dt><dd>${input.codeOwnershipReadinessReport.reviewSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records CODEOWNERS readiness only; it does not contact GitHub, verify team visibility, inspect private branch protection remotely, or run third-party validators.</p></section><section class="grid"><article class="code-ownership-readiness-card"><h3>CODEOWNERS Files</h3>${codeOwnershipFileList(input.codeOwnershipReadinessReport.codeownerFiles)}</article><article class="code-ownership-readiness-card"><h3>Ownership Signals</h3>${codeOwnershipSignalList(input.codeOwnershipReadinessReport.ownershipSignals, "signal")}</article><article class="code-ownership-readiness-card"><h3>Validation Signals</h3>${codeOwnershipSignalList(input.codeOwnershipReadinessReport.validationSignals, "signal")}</article><article class="code-ownership-readiness-card"><h3>Review Signals</h3>${codeOwnershipSignalList(input.codeOwnershipReadinessReport.reviewSignals, "signal")}</article></section><section class="grid"><article class="code-ownership-readiness-card"><h3>Coverage Signals</h3>${codeOwnershipSignalList(input.codeOwnershipReadinessReport.coverageSignals, "signal")}</article><article class="code-ownership-readiness-card"><h3>Package Signals</h3>${codeOwnershipSignalList(input.codeOwnershipReadinessReport.packageSignals, "signal")}</article><article class="code-ownership-readiness-card"><h3>Recommended Commands</h3>${codeOwnershipCommandList(input.codeOwnershipReadinessReport.recommendedCommands)}</article><article class="code-ownership-readiness-card"><h3>Risk Queue</h3>${codeOwnershipRiskList(input.codeOwnershipReadinessReport.riskQueue)}</article><article class="code-ownership-readiness-card"><h3>다음 확인 단계</h3>${list(input.codeOwnershipReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "license-rights.html",
@@ -1301,6 +1310,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Search Index", path: "html/search-index.html", description: "Pagefind식 document, filter, metadata, term index를 확인합니다." },
       { label: "Learning Journal", path: "html/learning-journal.html", description: "learn-codebase식 active recall 질문, mastery map, spaced review queue를 확인합니다." },
       { label: "Project Activity", path: "html/project-activity.html", description: "Repowise식 activity snapshot, hotspot, dead-code, decision review queue를 확인합니다." },
+      { label: "Code Ownership Readiness", path: "html/code-ownership-readiness.html", description: "CODEOWNERS식 위치, 규칙, owner, validator, required review 준비도를 확인합니다." },
       { label: "License Rights", path: "html/license-rights.html", description: "Licensee식 license file, package metadata, README license reference 검토 상태를 확인합니다." },
       { label: "SBOM", path: "html/sbom.html", description: "Syft식 package artifact, file artifact, relationship inventory를 확인합니다." },
       { label: "Security Readiness", path: "html/security-readiness.html", description: "Trivy식 scan target, scanner coverage, security signal, action queue를 확인합니다." },
@@ -1585,6 +1595,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "project-activity.html",
       goal: "snapshot-only activity, hotspot 후보, dead-code 후보, decision prompt를 변경 전 검토 queue로 정리합니다.",
       evidence: `hotspots ${input.projectActivityReport.hotspotCandidates.length}개, dead-code candidates ${input.projectActivityReport.deadCodeCandidates.length}개`
+    },
+    {
+      title: "Code ownership 준비도 확인",
+      href: "code-ownership-readiness.html",
+      goal: "CODEOWNERS 위치, rule, owner, validator, required review 신호를 보고 리뷰 소유권 contract를 확인합니다.",
+      evidence: `CODEOWNERS files ${input.codeOwnershipReadinessReport.codeownerFiles.length}개, review signals ${input.codeOwnershipReadinessReport.reviewSignals.length}개`
     },
     {
       title: "라이선스와 소스 권리 확인",
@@ -2432,6 +2448,30 @@ function projectActivityHotspotCards(items: ProjectActivityReport["hotspotCandid
 function projectActivityDeadCodeCards(items: ProjectActivityReport["deadCodeCandidates"]): string {
   if (items.length === 0) return "<article class=\"project-activity-card\"><h3>Dead-code 후보가 없습니다.</h3><p>dependency graph에서 no-orphans 후보를 찾지 못했습니다.</p></article>";
   return items.map((item) => `<article class="project-activity-card"><h3>${escapeHtml(item.filePath)}</h3><p class="muted">dead-code confidence ${item.confidence}</p><p>${escapeHtml(item.reason)}</p><p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 수업</a> · <a class="source-link" href="../${escapeHtml(item.sourceHref)}">원본 열기</a></p></article>`).join("");
+}
+
+function codeOwnershipFileList(items: CodeOwnershipReadinessReport["codeownerFiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">CODEOWNERS file 후보가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.location)}/${escapeHtml(item.readiness)}]<br>rules/owners/team/user/email ${item.ruleCount}/${item.ownerCount}/${item.teamOwnerCount}/${item.userOwnerCount}/${item.emailOwnerCount}<br>wildcards/protected/duplicates/self-owned ${item.wildcardCount}/${item.protectedPathCount}/${item.duplicatePatternCount}/${item.selfOwnershipCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(codeOwnershipHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function codeOwnershipSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">기록된 signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(codeOwnershipHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function codeOwnershipCommandList(items: CodeOwnershipReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function codeOwnershipRiskList(items: CodeOwnershipReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">검토 risk가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br>${escapeHtml(item.why)}<br><a href="${escapeHtml(codeOwnershipHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function codeOwnershipHref(href: string): string {
+  return href.startsWith("source/") ? `../${href}` : htmlPageHref(href);
 }
 
 function licenseChecklistList(items: LicenseRightsReport["rightsChecklist"]): string {
