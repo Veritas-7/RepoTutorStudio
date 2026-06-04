@@ -3545,6 +3545,77 @@ export const SchemaValidationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DateTimeReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  dateTimeSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["luxon", "date-fns", "dayjs", "moment", "native-date", "temporal", "custom", "unknown"]),
+    dateTimeCount: z.number().int().nonnegative(),
+    parseCount: z.number().int().nonnegative(),
+    formatCount: z.number().int().nonnegative(),
+    zoneCount: z.number().int().nonnegative(),
+    mathCount: z.number().int().nonnegative(),
+    validityCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  constructionSignals: z.array(z.object({
+    signal: z.enum(["now", "local", "utc", "from-js-date", "from-millis-seconds", "from-object", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  parsingSignals: z.array(z.object({
+    signal: z.enum(["from-iso", "from-format", "from-rfc-http", "from-sql", "parse-debug", "native-parse", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  formattingSignals: z.array(z.object({
+    signal: z.enum(["to-iso", "to-format", "to-locale-string", "to-rfc-http", "unix-timestamp", "relative-output", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  zoneSignals: z.array(z.object({
+    signal: z.enum(["set-zone", "utc-local", "iana-zone", "fixed-offset", "default-zone", "keep-local-time", "dst-offset", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  durationSignals: z.array(z.object({
+    signal: z.enum(["duration", "interval", "diff", "plus-minus", "start-end-of", "relative", "conversion-accuracy", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  validitySignals: z.array(z.object({
+    signal: z.enum(["is-valid", "invalid-reason", "throw-on-invalid", "invalid-duration", "invalid-interval", "test-clock", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["luxon", "date-fns", "dayjs", "moment", "moment-timezone", "@js-temporal/polyfill", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3818,6 +3889,7 @@ export type ErrorTrackingReadinessReport = z.infer<typeof ErrorTrackingReadiness
 export type AnalyticsReadinessReport = z.infer<typeof AnalyticsReadinessReportSchema>;
 export type HttpClientReadinessReport = z.infer<typeof HttpClientReadinessReportSchema>;
 export type SchemaValidationReadinessReport = z.infer<typeof SchemaValidationReadinessReportSchema>;
+export type DateTimeReadinessReport = z.infer<typeof DateTimeReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

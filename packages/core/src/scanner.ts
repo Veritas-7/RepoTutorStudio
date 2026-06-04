@@ -84,6 +84,7 @@ import {
   AnalyticsReadinessReport,
   HttpClientReadinessReport,
   SchemaValidationReadinessReport,
+  DateTimeReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -174,6 +175,7 @@ export interface AnalysisBundle {
   analyticsReadinessReport: AnalyticsReadinessReport;
   httpClientReadinessReport: HttpClientReadinessReport;
   schemaValidationReadinessReport: SchemaValidationReadinessReport;
+  dateTimeReadinessReport: DateTimeReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -264,8 +266,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const analyticsReadinessReport = await buildAnalyticsReadinessReport(walk);
   const httpClientReadinessReport = await buildHttpClientReadinessReport(walk);
   const schemaValidationReadinessReport = await buildSchemaValidationReadinessReport(walk);
+  const dateTimeReadinessReport = await buildDateTimeReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -15689,6 +15692,283 @@ function schemaValidationReadinessSignalFromSpecs<T extends Record<K, string> & 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/schema-validation-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDateTimeReadinessReport(walk: WalkResult): Promise<DateTimeReadinessReport> {
+  const sourceFiles = await dateTimeReadinessSourceFiles(walk);
+  const dateTimeSetups = dateTimeReadinessSetups(sourceFiles);
+  const constructionSignals = dateTimeReadinessConstructionSignals(sourceFiles);
+  const parsingSignals = dateTimeReadinessParsingSignals(sourceFiles);
+  const formattingSignals = dateTimeReadinessFormattingSignals(sourceFiles);
+  const zoneSignals = dateTimeReadinessZoneSignals(sourceFiles);
+  const durationSignals = dateTimeReadinessDurationSignals(sourceFiles);
+  const validitySignals = dateTimeReadinessValiditySignals(sourceFiles);
+  const packageSignals = dateTimeReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasLuxonPackage = packageSignals.some((item) => item.signal === "luxon" && item.readiness === "ready");
+  const hasSetup = dateTimeSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = dateTimeSetups.some((item) => item.readiness === "ready");
+  const hasParser = parsingSignals.some((item) => item.readiness === "ready") || dateTimeSetups.some((item) => item.parseCount > 0);
+  const hasFormat = formattingSignals.some((item) => item.readiness === "ready") || dateTimeSetups.some((item) => item.formatCount > 0);
+  const hasZone = zoneSignals.some((item) => item.readiness === "ready") || dateTimeSetups.some((item) => item.zoneCount > 0);
+  const hasMath = durationSignals.some((item) => item.readiness === "ready") || dateTimeSetups.some((item) => item.mathCount > 0);
+  const hasValidity = validitySignals.some((item) => ["is-valid", "invalid-reason", "throw-on-invalid", "test-clock"].includes(item.signal) && item.readiness === "ready") || dateTimeSetups.some((item) => item.validityCount > 0);
+  const hasLocaleFormat = formattingSignals.some((item) => item.signal === "to-locale-string" && item.readiness === "ready");
+
+  const riskQueue: DateTimeReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the date/time handling strategy before claiming datetime readiness.",
+      why: "Datetime readiness starts with explicit construction, parsing, formatting, zone, duration, validity, or package evidence.",
+      relatedHref: "html/datetime-readiness.html"
+    });
+  }
+  if (hasLuxonPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair Luxon package evidence with concrete DateTime, Duration, Interval, zone, formatting, and validity call sites.",
+      why: "A date library in dependencies does not prove that parsing, timezone behavior, display output, and invalid values are handled consistently.",
+      relatedHref: "html/datetime-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && hasParser && !hasValidity) {
+    riskQueue.push({
+      priority: "high",
+      action: "Check parsed dates with isValid, invalidReason, invalidExplanation, or deterministic failure tests.",
+      why: "Date parsers can return invalid values for bad calendar units, unsupported zones, ambiguous formats, or environment-specific Intl behavior.",
+      relatedHref: "html/datetime-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasMath) && !hasZone) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review zone policy for local/system/default/UTC/IANA/fixed-offset behavior before doing date math.",
+      why: "Date math and start/end boundaries can change across DST and local timezone rules if zone policy is implicit.",
+      relatedHref: "html/datetime-readiness.html"
+    });
+  }
+  if (hasFormat && !hasLocaleFormat) {
+    riskQueue.push({
+      priority: "low",
+      action: "Prefer toLocaleString or explicit locale/numbering/output calendar settings for human-facing dates.",
+      why: "Token formats are useful for machine formats, but human output should usually use Intl-backed locale formatting.",
+      relatedHref: "html/datetime-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run clock, timezone, locale, DST, and invalid-date tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not evaluate current time, parse dates, change process timezone, modify Luxon Settings, run timers, or run the analyzed project's tests.",
+    relatedHref: "html/datetime-readiness.html"
+  });
+
+  return {
+    summary: `Luxon식 datetime readiness report: setup ${dateTimeSetups.length}개, construction signal ${constructionSignals.length}개, parsing signal ${parsingSignals.length}개, zone signal ${zoneSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "DateTime Duration Interval Zone setZone fromISO fromFormat fromJSDate toISO toFormat toLocaleString diff plus minus startOf endOf isValid invalidReason Settings defaultZone",
+    dateTimeSetups,
+    constructionSignals,
+    parsingSignals,
+    formattingSignals,
+    zoneSignals,
+    durationSignals,
+    validitySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"DateTime|Duration|Interval|new Date|Temporal|date-fns|dayjs|moment\" src app packages", purpose: "Inventory date/time libraries, native Date usage, and domain call sites." },
+      { command: "rg \"fromISO|fromFormat|fromJSDate|fromMillis|fromSeconds|Date\\.parse|parseISO|parse\\(\" src app packages", purpose: "Review date parser call sites and accepted input formats." },
+      { command: "rg \"setZone|zone|zoneName|toUTC|toLocal|defaultZone|timeZone|UTC|America/|Asia/|Europe/\" src app packages", purpose: "Check timezone, UTC/local, IANA, fixed-offset, and default-zone policy." },
+      { command: "rg \"toISO|toFormat|toLocaleString|toRFC2822|toHTTP|toMillis|toSeconds|toRelative\" src app packages", purpose: "Inspect machine-readable and human-readable formatting output." },
+      { command: "rg \"diff\\(|plus\\(|minus\\(|startOf\\(|endOf\\(|Duration|Interval|isValid|invalidReason|Settings\\.now\" src app packages test tests", purpose: "Review date math, intervals, validity checks, and deterministic clock tests." },
+      { command: "npx vitest run", purpose: "Run local tests that cover parsing, invalid dates, timezone/DST behavior, locale formatting, durations, and intervals." }
+    ],
+    learnerNextSteps: [
+      "먼저 DateTime, Duration, Interval, new Date, Temporal, date-fns, dayjs, moment 사용 위치를 찾아 날짜 정책의 중심을 확인하세요.",
+      "fromISO, fromFormat, Date.parse 같은 parser는 입력 형식과 timezone option, setZone 사용 여부를 함께 확인하세요.",
+      "setZone, toUTC, toLocal, Settings.defaultZone, IANA zone 문자열을 보며 서버/클라이언트의 local time 의존성을 분리하세요.",
+      "toISO는 API/저장용, toLocaleString은 사용자 표시용, toFormat은 특수 format용으로 나뉘는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 clock, timezone, locale, DST, invalid date 동작은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type DateTimeReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function dateTimeReadinessSourceFiles(walk: WalkResult): Promise<DateTimeReadinessSourceFile[]> {
+  const files: DateTimeReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !dateTimeReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!dateTimeReadinessPathSignal(file.relPath) && !dateTimeReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function dateTimeReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return dateTimeReadinessPathSignal(filePath)
+    || /^(package\.json|date\.[cm]?[jt]sx?|datetime\.[cm]?[jt]sx?|time\.[cm]?[jt]sx?|calendar\.[cm]?[jt]sx?|schedule\.[cm]?[jt]sx?|locale\.[cm]?[jt]sx?|timezone\.[cm]?[jt]sx?)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env|toml)$/i.test(filePath);
+}
+
+function dateTimeReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(date|dates|datetime|datetimes|time|times|timezone|timezones|zone|zones|duration|durations|interval|intervals|calendar|calendars|locale|locales|schedule|schedules)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function dateTimeReadinessContentSignal(text: string): boolean {
+  return /(from ['"]luxon['"]|require\(['"]luxon['"]\)|DateTime\.|Duration\.|Interval\.|setZone|fromISO|fromFormat|fromJSDate|toISO|toFormat|toLocaleString|invalidReason|Settings\.defaultZone|new Date\s*\(|Date\.parse|Temporal\.|date-fns|dayjs|moment-timezone|moment\()/i.test(text);
+}
+
+function dateTimeReadinessSetups(sourceFiles: DateTimeReadinessSourceFile[]): DateTimeReadinessReport["dateTimeSetups"] {
+  const rows: DateTimeReadinessReport["dateTimeSetups"] = [];
+  for (const source of sourceFiles) {
+    const dateTimeCount = countMatches(source.text, /DateTime\.|Duration\.|Interval\.|new Date\s*\(|Date\.now|Date\.parse|Temporal\.|dayjs\s*\(|moment\s*\(|parseISO|format\s*\(/gi);
+    const parseCount = countMatches(source.text, /fromISO|fromFormat|fromRFC2822|fromHTTP|fromSQL|fromJSDate|fromMillis|fromSeconds|Date\.parse|parseISO|parseJSON|dayjs\s*\(|moment\s*\(/gi);
+    const formatCount = countMatches(source.text, /toISO|toISODate|toISOTime|toFormat|toLocaleString|toRFC2822|toHTTP|toMillis|toSeconds|toUnixInteger|toRelative|format\s*\(/gi);
+    const zoneCount = countMatches(source.text, /setZone|zoneName|zone\s*:|toUTC|toLocal|defaultZone|timeZone|UTC|IANA|FixedOffsetZone|keepLocalTime|isInDST|offsetName/gi);
+    const mathCount = countMatches(source.text, /diff\s*\(|plus\s*\(|minus\s*\(|startOf\s*\(|endOf\s*\(|Duration\.|Interval\.|toRelative|until\s*\(|splitBy\s*\(/gi);
+    const validityCount = countMatches(source.text, /isValid|invalidReason|invalidExplanation|throwOnInvalid|Invalid Date|isNaN|Settings\.now|fakeTimers|useFakeTimers/gi);
+    const hasSetupSignal = dateTimeCount + parseCount + formatCount + zoneCount + mathCount + validityCount > 0 || /\b(date time|datetime|timezone|time zone|calendar|duration|interval)\b/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: dateTimeReadinessProvider(source),
+      dateTimeCount,
+      parseCount,
+      formatCount,
+      zoneCount,
+      mathCount,
+      validityCount,
+      readiness: dateTimeCount > 0 && (parseCount > 0 || formatCount > 0) && (zoneCount > 0 || validityCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains datetime ${dateTimeCount}, parse ${parseCount}, format ${formatCount}, zone ${zoneCount}, math ${mathCount}, validity/test-clock ${validityCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function dateTimeReadinessProvider(source: DateTimeReadinessSourceFile): DateTimeReadinessReport["dateTimeSetups"][number]["provider"] {
+  if (/from ['"]luxon['"]|require\(['"]luxon['"]\)|DateTime\.|Duration\.|Interval\./i.test(source.text)) return "luxon";
+  if (/from ['"]date-fns|require\(['"]date-fns|parseISO|formatDistance|date-fns/i.test(source.text)) return "date-fns";
+  if (/from ['"]dayjs|require\(['"]dayjs|dayjs\s*\(/i.test(source.text)) return "dayjs";
+  if (/moment-timezone/i.test(source.text)) return "moment";
+  if (/from ['"]moment|require\(['"]moment|moment\s*\(/i.test(source.text)) return "moment";
+  if (/Temporal\.|@js-temporal\/polyfill/i.test(source.text)) return "temporal";
+  if (/new Date\s*\(|Date\.parse|Date\.now/i.test(source.text)) return "native-date";
+  if (/\b(date time|datetime|timezone|time zone|calendar|duration|interval)\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function dateTimeReadinessConstructionSignals(sourceFiles: DateTimeReadinessSourceFile[]): DateTimeReadinessReport["constructionSignals"] {
+  const specs: Array<{ signal: DateTimeReadinessReport["constructionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "now", pattern: /DateTime\.now\s*\(|Date\.now\s*\(|dayjs\s*\(\s*\)|moment\s*\(\s*\)|Temporal\.Now/i, evidence: "current-time construction evidence was detected." },
+    { signal: "local", pattern: /DateTime\.local\s*\(|toLocal\s*\(|zone\s*:\s*['"]local|system/i, evidence: "local/system time construction evidence was detected." },
+    { signal: "utc", pattern: /DateTime\.utc\s*\(|toUTC\s*\(|zone\s*:\s*['"]utc['"]|UTC/i, evidence: "UTC construction/conversion evidence was detected." },
+    { signal: "from-js-date", pattern: /fromJSDate|new Date\s*\(|Date\.parse/i, evidence: "JS Date construction evidence was detected." },
+    { signal: "from-millis-seconds", pattern: /fromMillis|fromSeconds|toMillis|toSeconds|unix|timestamp/i, evidence: "timestamp construction evidence was detected." },
+    { signal: "from-object", pattern: /fromObject|DateTime\.local\s*\(\s*\d|Temporal\.(PlainDate|PlainDateTime|ZonedDateTime)\.from/i, evidence: "object/civil-time construction evidence was detected." }
+  ];
+  return dateTimeReadinessSignalFromSpecs(sourceFiles, specs, "construction", "signal");
+}
+
+function dateTimeReadinessParsingSignals(sourceFiles: DateTimeReadinessSourceFile[]): DateTimeReadinessReport["parsingSignals"] {
+  const specs: Array<{ signal: DateTimeReadinessReport["parsingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "from-iso", pattern: /fromISO|parseISO|toISO/i, evidence: "ISO parsing evidence was detected." },
+    { signal: "from-format", pattern: /fromFormat|fromFormatExplain|custom format|parseExact/i, evidence: "custom format parsing evidence was detected." },
+    { signal: "from-rfc-http", pattern: /fromRFC2822|fromHTTP|toRFC2822|toHTTP/i, evidence: "RFC/HTTP date parsing evidence was detected." },
+    { signal: "from-sql", pattern: /fromSQL|SQL date|sqlDate/i, evidence: "SQL date parsing evidence was detected." },
+    { signal: "parse-debug", pattern: /fromFormatExplain|invalidReason|invalidExplanation|parseExplain/i, evidence: "parse debugging evidence was detected." },
+    { signal: "native-parse", pattern: /Date\.parse|new Date\s*\([^)]*(string|input|value|date)|parseJSON/i, evidence: "native Date parser evidence was detected." }
+  ];
+  return dateTimeReadinessSignalFromSpecs(sourceFiles, specs, "parsing", "signal");
+}
+
+function dateTimeReadinessFormattingSignals(sourceFiles: DateTimeReadinessSourceFile[]): DateTimeReadinessReport["formattingSignals"] {
+  const specs: Array<{ signal: DateTimeReadinessReport["formattingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "to-iso", pattern: /toISO|toISODate|toISOTime|toJSON/i, evidence: "ISO output evidence was detected." },
+    { signal: "to-format", pattern: /toFormat|format\s*\(|formatISO|formatDistance/i, evidence: "token/custom format output evidence was detected." },
+    { signal: "to-locale-string", pattern: /toLocaleString|Intl\.DateTimeFormat|setLocale|locale\s*:/i, evidence: "locale-aware output evidence was detected." },
+    { signal: "to-rfc-http", pattern: /toRFC2822|toHTTP|fromRFC2822|fromHTTP/i, evidence: "RFC/HTTP output evidence was detected." },
+    { signal: "unix-timestamp", pattern: /toMillis|toSeconds|toUnixInteger|valueOf\s*\(|getTime\s*\(/i, evidence: "timestamp output evidence was detected." },
+    { signal: "relative-output", pattern: /toRelative|toRelativeCalendar|formatDistance|fromNow/i, evidence: "relative date output evidence was detected." }
+  ];
+  return dateTimeReadinessSignalFromSpecs(sourceFiles, specs, "formatting", "signal");
+}
+
+function dateTimeReadinessZoneSignals(sourceFiles: DateTimeReadinessSourceFile[]): DateTimeReadinessReport["zoneSignals"] {
+  const specs: Array<{ signal: DateTimeReadinessReport["zoneSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "set-zone", pattern: /setZone|zone\s*:|timeZone\s*:/i, evidence: "explicit zone setting evidence was detected." },
+    { signal: "utc-local", pattern: /toUTC|toLocal|DateTime\.utc|DateTime\.local|UTC|local zone|system zone/i, evidence: "UTC/local conversion evidence was detected." },
+    { signal: "iana-zone", pattern: /America\/|Asia\/|Europe\/|IANAZone|IANA|zoneName/i, evidence: "IANA zone evidence was detected." },
+    { signal: "fixed-offset", pattern: /FixedOffsetZone|UTC[+-]\\d|fixed offset|offsetName|offset\s*:/i, evidence: "fixed offset evidence was detected." },
+    { signal: "default-zone", pattern: /Settings\.defaultZone|defaultZone|zone\s*:\s*['"]default/i, evidence: "default zone evidence was detected." },
+    { signal: "keep-local-time", pattern: /keepLocalTime|keepCalendarTime/i, evidence: "keep-local-time zone conversion evidence was detected." },
+    { signal: "dst-offset", pattern: /isInDST|offsetNameShort|offsetNameLong|DST|daylight saving|startOf\s*\(|endOf\s*\(/i, evidence: "DST/offset boundary evidence was detected." }
+  ];
+  return dateTimeReadinessSignalFromSpecs(sourceFiles, specs, "zone", "signal");
+}
+
+function dateTimeReadinessDurationSignals(sourceFiles: DateTimeReadinessSourceFile[]): DateTimeReadinessReport["durationSignals"] {
+  const specs: Array<{ signal: DateTimeReadinessReport["durationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "duration", pattern: /Duration\.|fromDurationLike|toDuration|duration/i, evidence: "Duration evidence was detected." },
+    { signal: "interval", pattern: /Interval\.|fromDateTimes|fromISO|splitBy|until\s*\(/i, evidence: "Interval evidence was detected." },
+    { signal: "diff", pattern: /\.diff\s*\(|diffNow|differenceIn/i, evidence: "date difference evidence was detected." },
+    { signal: "plus-minus", pattern: /\.plus\s*\(|\.minus\s*\(|add\s*\(|sub\s*\(/i, evidence: "date arithmetic evidence was detected." },
+    { signal: "start-end-of", pattern: /\.startOf\s*\(|\.endOf\s*\(|startOfDay|endOfDay/i, evidence: "start/end boundary evidence was detected." },
+    { signal: "relative", pattern: /toRelative|toRelativeCalendar|formatDistance|fromNow/i, evidence: "relative duration output evidence was detected." },
+    { signal: "conversion-accuracy", pattern: /conversionAccuracy|shiftTo|normalize|rescale|casual|longterm/i, evidence: "duration conversion policy evidence was detected." }
+  ];
+  return dateTimeReadinessSignalFromSpecs(sourceFiles, specs, "duration", "signal");
+}
+
+function dateTimeReadinessValiditySignals(sourceFiles: DateTimeReadinessSourceFile[]): DateTimeReadinessReport["validitySignals"] {
+  const specs: Array<{ signal: DateTimeReadinessReport["validitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "is-valid", pattern: /isValid|Number\.isNaN|isNaN|Invalid Date/i, evidence: "validity check evidence was detected." },
+    { signal: "invalid-reason", pattern: /invalidReason|invalidExplanation|unsupported zone|out of range/i, evidence: "invalid reason evidence was detected." },
+    { signal: "throw-on-invalid", pattern: /throwOnInvalid|Settings\.throwOnInvalid/i, evidence: "throw-on-invalid evidence was detected." },
+    { signal: "invalid-duration", pattern: /Duration\.invalid|Invalid Duration|duration\.isValid/i, evidence: "invalid Duration evidence was detected." },
+    { signal: "invalid-interval", pattern: /Interval\.invalid|Invalid Interval|interval\.isValid/i, evidence: "invalid Interval evidence was detected." },
+    { signal: "test-clock", pattern: /Settings\.now|fakeTimers|useFakeTimers|setSystemTime|mockDate|timezone-mock|TZ=/i, evidence: "deterministic clock/timezone test evidence was detected." }
+  ];
+  return dateTimeReadinessSignalFromSpecs(sourceFiles, specs, "validity", "signal");
+}
+
+function dateTimeReadinessPackageSignals(sourceFiles: DateTimeReadinessSourceFile[]): DateTimeReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DateTimeReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "luxon", pattern: /"luxon"|from ['"]luxon['"]|DateTime\.|Duration\.|Interval\./i, evidence: "Luxon package/import evidence was detected." },
+    { signal: "date-fns", pattern: /"date-fns"|from ['"]date-fns|parseISO|formatDistance/i, evidence: "date-fns package/import evidence was detected." },
+    { signal: "dayjs", pattern: /"dayjs"|from ['"]dayjs['"]|dayjs\s*\(/i, evidence: "Day.js package/import evidence was detected." },
+    { signal: "moment", pattern: /"moment"|from ['"]moment['"]|moment\s*\(/i, evidence: "Moment package/import evidence was detected." },
+    { signal: "moment-timezone", pattern: /"moment-timezone"|moment-timezone|moment\.tz/i, evidence: "Moment timezone package/import evidence was detected." },
+    { signal: "@js-temporal/polyfill", pattern: /@js-temporal\/polyfill|Temporal\./i, evidence: "Temporal polyfill or Temporal API evidence was detected." }
+  ];
+  return dateTimeReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function dateTimeReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DateTimeReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/datetime-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
