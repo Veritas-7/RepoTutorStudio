@@ -2606,6 +2606,42 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 154:
   - `7af6246` bundle analysis report
 
+- 2026-06-04: AutoResearch Upgrade 155 candidate selected: `mswjs/msw`
+  (`https://github.com/mswjs/msw`; public MIT; 17,971 stars; 620 forks;
+  updated 2026-05-15T16:46:30Z). Compared with `nock/nock`,
+  `pact-foundation/pact-js`, and `wiremock/wiremock`; selected MSW for
+  JavaScript/TypeScript API mocking because it directly models request
+  handlers, `setupWorker`, `setupServer`, HTTP/GraphQL/WebSocket handlers,
+  `HttpResponse`, unhandled request policy, passthrough/bypass, lifecycle
+  cleanup, and shared browser/Node mock definitions. Cloned ignored external
+  source to `research/external-src/mswjs-msw` and inspected README, license,
+  package metadata, source layout, Node/browser setup files, test typings, and
+  lifecycle helpers without executing external source. Clone HEAD was
+  `8a19d54`; tracked-file count for `research/external-src/mswjs-msw`
+  returned `0`.
+- 2026-06-04: RED mocking-readiness smoke generated
+  `/tmp/repotutor-mocking-readiness-red-studies.K4N4Nd/2026-06-04/local__simple-ts-app__main__398ff3ee`;
+  old build was missing `analysis/mocking-readiness-report.json`,
+  `markdown/mocking-readiness.md`, and `html/mocking-readiness.html`, and
+  `open --target mocking-readiness` failed as expected.
+- 2026-06-04: Implemented MSW-style mocking-readiness report:
+  `MockingReadinessReportSchema`,
+  `analysis/mocking-readiness-report.json`,
+  `markdown/mocking-readiness.md`, `html/mocking-readiness.html`, handler
+  files, setup surfaces, protocol signals, lifecycle signals, package signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, nav entry, and `open --target mocking-readiness`.
+- 2026-06-04: GREEN mocking-readiness smoke generated
+  `/tmp/repotutor-mocking-readiness-green-studies.3l2NAd/2026-06-04/local__simple-ts-app__main__398ff3ee`;
+  confirmed `verificationCheckedRequiredArtifacts=165`, handler files 0,
+  server setups 0, protocol signals 9, lifecycle signals 10, package signals
+  6, recommended commands 6, risk queue 2, manifest/learning-path entries,
+  and `open --target mocking-readiness` -> `html/mocking-readiness.html`.
+- 2026-06-04: Verification for Upgrade 155:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 53/53 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

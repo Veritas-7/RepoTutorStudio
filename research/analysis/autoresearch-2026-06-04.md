@@ -3584,6 +3584,49 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 52/52 audit checks across 13 generated reports
 
+### Upgrade 155: Mocking Readiness Report
+
+- Cloned and inspected `mswjs/msw` under
+  `research/external-src/mswjs-msw` without executing external source. Clone
+  HEAD was `8a19d54`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 17,971 stars, 620 forks, updated
+  2026-05-15T16:46:30Z. Compared with `nock/nock`,
+  `pact-foundation/pact-js`, and `wiremock/wiremock`; selected MSW because it
+  directly models JavaScript/TypeScript request handlers, `setupWorker`,
+  `setupServer`, HTTP/GraphQL/WebSocket mocking, `HttpResponse`, unhandled
+  request policy, passthrough/bypass, lifecycle reset/restore/close, and
+  reusable browser/Node mock definitions. No source code was copied into
+  RepoTutor.
+- Implemented MSW-style mocking-readiness report:
+  `MockingReadinessReportSchema`,
+  `analysis/mocking-readiness-report.json`,
+  `markdown/mocking-readiness.md`, `html/mocking-readiness.html`, handler
+  files, setup surfaces, protocol signals, lifecycle signals, package signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, and `open --target mocking-readiness`.
+- Source pattern: MSW separates request handlers (`http`, `graphql`, `ws`),
+  response builders (`HttpResponse`), browser setup (`setupWorker`), Node setup
+  (`setupServer`), lifecycle controls (`listen`, `start`, `use`,
+  `resetHandlers`, `restoreHandlers`, `close`, `boundary`), strictness through
+  `onUnhandledRequest`, and passthrough/bypass controls. RepoTutor maps that to
+  deterministic static mocking readiness and explicitly does not start service
+  workers, open network servers, execute handlers, or run the analyzed
+  project's tests.
+- RED smoke generated
+  `/tmp/repotutor-mocking-readiness-red-studies.K4N4Nd/2026-06-04/local__simple-ts-app__main__398ff3ee`;
+  old behavior was missing `analysis/mocking-readiness-report.json`,
+  `markdown/mocking-readiness.md`, and `html/mocking-readiness.html`, and
+  `open --target mocking-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-mocking-readiness-green-studies.3l2NAd/2026-06-04/local__simple-ts-app__main__398ff3ee`;
+  confirmed `verificationCheckedRequiredArtifacts=165`, handler files 0,
+  server setups 0, protocol signals 9, lifecycle signals 10, package signals
+  6, recommended commands 6, risk queue 2, manifest/learning-path entries, and
+  `open --target mocking-readiness` -> `html/mocking-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 53/53 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

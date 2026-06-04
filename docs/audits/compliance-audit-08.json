@@ -1,6 +1,6 @@
 {
   "iteration": 8,
-  "createdAt": "2026-06-04T06:11:04.539Z",
+  "createdAt": "2026-06-04T06:20:23.218Z",
   "checks": [
     {
       "name": "project setup",
@@ -333,6 +333,13 @@
     },
     {
       "name": "bundle analysis report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "mocking readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
