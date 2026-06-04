@@ -104,6 +104,7 @@ import type {
   SchedulerReadinessReport,
   BuildToolReadinessReport,
   StylingReadinessReport,
+  VisualRegressionReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -214,6 +215,7 @@ export interface StudyHtmlInput {
   schedulerReadinessReport: SchedulerReadinessReport;
   buildToolReadinessReport: BuildToolReadinessReport;
   stylingReadinessReport: StylingReadinessReport;
+  visualRegressionReadinessReport: VisualRegressionReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -338,6 +340,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["scheduler-readiness.html", "Scheduler"],
     ["build-tool-readiness.html", "Build Tool"],
     ["styling-readiness.html", "Styling"],
+    ["visual-regression-readiness.html", "Visual Regression"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -483,6 +486,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Scheduler Readiness</h3><p>${escapeHtml(input.schedulerReadinessReport.summary)}</p><p>node-cron 패턴으로 schedules, tasks, lifecycle, reliability, packages 준비도를 정리합니다.</p><a href="scheduler-readiness.html">Scheduler 열기</a></article>
           <article><h3>Build Tool Readiness</h3><p>${escapeHtml(input.buildToolReadinessReport.summary)}</p><p>Vite 패턴으로 config, plugins, dev server, build, env, SSR, dependency optimization 준비도를 정리합니다.</p><a href="build-tool-readiness.html">Build Tool 열기</a></article>
           <article><h3>Styling Readiness</h3><p>${escapeHtml(input.stylingReadinessReport.summary)}</p><p>Tailwind CSS 패턴으로 config, directives, utility classes, theme, plugins, build integration 준비도를 정리합니다.</p><a href="styling-readiness.html">Styling 열기</a></article>
+          <article><h3>Visual Regression Readiness</h3><p>${escapeHtml(input.visualRegressionReadinessReport.summary)}</p><p>reg-suit 패턴으로 screenshot baselines, diff thresholds, reports, plugins, storage, notification 준비도를 정리합니다.</p><a href="visual-regression-readiness.html">Visual Regression 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -957,6 +961,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Styling Readiness", "styling-readiness.html", `<section class="panel" data-source-pattern="Tailwind CSS"><h2>Styling Snapshot</h2><p>${escapeHtml(input.stylingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.stylingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.stylingReadinessReport.stylingSetups.length}</dd></div><div><dt>config</dt><dd>${input.stylingReadinessReport.configSignals.length}</dd></div><div><dt>directives</dt><dd>${input.stylingReadinessReport.directiveSignals.length}</dd></div><div><dt>classes</dt><dd>${input.stylingReadinessReport.classSignals.length}</dd></div><div><dt>theme</dt><dd>${input.stylingReadinessReport.themeSignals.length}</dd></div><div><dt>integration</dt><dd>${input.stylingReadinessReport.integrationSignals.length}</dd></div></dl><p class="muted">RepoTutor records styling readiness only; it does not compile Tailwind, scan class candidates, run PostCSS/Vite plugins, update caches, or validate final CSS size.</p></section><section class="grid"><article class="styling-readiness-card"><h3>Styling Setups</h3>${stylingReadinessSetupList(input.stylingReadinessReport.stylingSetups)}</article><article class="styling-readiness-card"><h3>Config Signals</h3>${stylingReadinessSignalList(input.stylingReadinessReport.configSignals, "signal")}</article><article class="styling-readiness-card"><h3>Directive Signals</h3>${stylingReadinessSignalList(input.stylingReadinessReport.directiveSignals, "signal")}</article><article class="styling-readiness-card"><h3>Class Signals</h3>${stylingReadinessSignalList(input.stylingReadinessReport.classSignals, "signal")}</article></section><section class="grid"><article class="styling-readiness-card"><h3>Theme Signals</h3>${stylingReadinessSignalList(input.stylingReadinessReport.themeSignals, "signal")}</article><article class="styling-readiness-card"><h3>Integration Signals</h3>${stylingReadinessSignalList(input.stylingReadinessReport.integrationSignals, "signal")}</article><article class="styling-readiness-card"><h3>Package Signals</h3>${stylingReadinessSignalList(input.stylingReadinessReport.packageSignals, "signal")}</article><article class="styling-readiness-card"><h3>Recommended Commands</h3>${stylingReadinessCommandList(input.stylingReadinessReport.recommendedCommands)}</article><article class="styling-readiness-card"><h3>Risk Queue</h3>${stylingReadinessRiskList(input.stylingReadinessReport.riskQueue)}</article><article class="styling-readiness-card"><h3>다음 확인 단계</h3>${list(input.stylingReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "visual-regression-readiness.html",
+      title: "Visual Regression Readiness",
+      html: pageShell("Visual Regression Readiness", "visual-regression-readiness.html", `<section class="panel" data-source-pattern="reg-suit"><h2>Visual Regression Snapshot</h2><p>${escapeHtml(input.visualRegressionReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.visualRegressionReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.visualRegressionReadinessReport.visualRegressionSetups.length}</dd></div><div><dt>snapshots</dt><dd>${input.visualRegressionReadinessReport.snapshotSignals.length}</dd></div><div><dt>thresholds</dt><dd>${input.visualRegressionReadinessReport.thresholdSignals.length}</dd></div><div><dt>reports</dt><dd>${input.visualRegressionReadinessReport.reportSignals.length}</dd></div><div><dt>plugins</dt><dd>${input.visualRegressionReadinessReport.pluginSignals.length}</dd></div><div><dt>CI</dt><dd>${input.visualRegressionReadinessReport.ciSignals.length}</dd></div></dl><p class="muted">RepoTutor records visual regression readiness only; it does not capture screenshots, compare pixels, fetch baselines, upload reports, notify services, or execute browser tests.</p></section><section class="grid"><article class="visual-regression-readiness-card"><h3>Visual Regression Setups</h3>${visualRegressionReadinessSetupList(input.visualRegressionReadinessReport.visualRegressionSetups)}</article><article class="visual-regression-readiness-card"><h3>Config Signals</h3>${visualRegressionReadinessSignalList(input.visualRegressionReadinessReport.configSignals, "signal")}</article><article class="visual-regression-readiness-card"><h3>Snapshot Signals</h3>${visualRegressionReadinessSignalList(input.visualRegressionReadinessReport.snapshotSignals, "signal")}</article><article class="visual-regression-readiness-card"><h3>Threshold Signals</h3>${visualRegressionReadinessSignalList(input.visualRegressionReadinessReport.thresholdSignals, "signal")}</article></section><section class="grid"><article class="visual-regression-readiness-card"><h3>Report Signals</h3>${visualRegressionReadinessSignalList(input.visualRegressionReadinessReport.reportSignals, "signal")}</article><article class="visual-regression-readiness-card"><h3>Plugin Signals</h3>${visualRegressionReadinessSignalList(input.visualRegressionReadinessReport.pluginSignals, "signal")}</article><article class="visual-regression-readiness-card"><h3>CI Signals</h3>${visualRegressionReadinessSignalList(input.visualRegressionReadinessReport.ciSignals, "signal")}</article><article class="visual-regression-readiness-card"><h3>Package Signals</h3>${visualRegressionReadinessSignalList(input.visualRegressionReadinessReport.packageSignals, "signal")}</article><article class="visual-regression-readiness-card"><h3>Recommended Commands</h3>${visualRegressionReadinessCommandList(input.visualRegressionReadinessReport.recommendedCommands)}</article><article class="visual-regression-readiness-card"><h3>Risk Queue</h3>${visualRegressionReadinessRiskList(input.visualRegressionReadinessReport.riskQueue)}</article><article class="visual-regression-readiness-card"><h3>다음 확인 단계</h3>${list(input.visualRegressionReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -1161,6 +1170,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Scheduler Readiness", path: "html/scheduler-readiness.html", description: "node-cron식 schedule, task, lifecycle, reliability 준비도를 확인합니다." },
       { label: "Build Tool Readiness", path: "html/build-tool-readiness.html", description: "Vite식 config, plugin, dev server, build, env, SSR 준비도를 확인합니다." },
       { label: "Styling Readiness", path: "html/styling-readiness.html", description: "Tailwind CSS식 config, directive, utility, theme, plugin, build integration 준비도를 확인합니다." },
+      { label: "Visual Regression Readiness", path: "html/visual-regression-readiness.html", description: "reg-suit식 actual/expected/diff screenshots, thresholds, reports, plugins, storage, notification 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1808,6 +1818,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "styling-readiness.html",
       goal: "Tailwind CSS식 config, directive, utility class, theme, plugin, build integration 흐름을 확인합니다.",
       evidence: `styling setups ${input.stylingReadinessReport.stylingSetups.length}개, directive signals ${input.stylingReadinessReport.directiveSignals.length}개`
+    },
+    {
+      title: "Visual regression readiness 확인",
+      href: "visual-regression-readiness.html",
+      goal: "reg-suit식 actual screenshots, expected baselines, diff thresholds, reports, plugins, storage, notification 흐름을 확인합니다.",
+      evidence: `visual setups ${input.visualRegressionReadinessReport.visualRegressionSetups.length}개, threshold signals ${input.visualRegressionReadinessReport.thresholdSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -4250,6 +4266,31 @@ function stylingReadinessRiskList(items: StylingReadinessReport["riskQueue"]): s
 }
 
 function stylingReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function visualRegressionReadinessSetupList(items: VisualRegressionReadinessReport["visualRegressionSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">visual regression setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)}/${escapeHtml(item.readiness)}]<br>config/actual/expected/diff/threshold/report/plugin/storage/notification ${item.configCount}/${item.actualCount}/${item.expectedCount}/${item.diffCount}/${item.thresholdCount}/${item.reportCount}/${item.pluginCount}/${item.storageCount}/${item.notificationCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(visualRegressionReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function visualRegressionReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">visual regression signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(visualRegressionReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function visualRegressionReadinessCommandList(items: VisualRegressionReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function visualRegressionReadinessRiskList(items: VisualRegressionReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(visualRegressionReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function visualRegressionReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

@@ -109,6 +109,7 @@ import {
   SchedulerReadinessReport,
   BuildToolReadinessReport,
   StylingReadinessReport,
+  VisualRegressionReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -224,6 +225,7 @@ export interface AnalysisBundle {
   schedulerReadinessReport: SchedulerReadinessReport;
   buildToolReadinessReport: BuildToolReadinessReport;
   stylingReadinessReport: StylingReadinessReport;
+  visualRegressionReadinessReport: VisualRegressionReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -339,8 +341,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const schedulerReadinessReport = await buildSchedulerReadinessReport(walk);
   const buildToolReadinessReport = await buildBuildToolReadinessReport(walk);
   const stylingReadinessReport = await buildStylingReadinessReport(walk);
+  const visualRegressionReadinessReport = await buildVisualRegressionReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -22736,6 +22739,298 @@ function stylingSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp;
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/styling-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildVisualRegressionReadinessReport(walk: WalkResult): Promise<VisualRegressionReadinessReport> {
+  const sourceFiles = await visualRegressionSourceFiles(walk);
+  const visualRegressionSetups = visualRegressionSetupFiles(sourceFiles);
+  const configSignals = visualRegressionConfigSignals(sourceFiles);
+  const snapshotSignals = visualRegressionSnapshotSignals(sourceFiles);
+  const thresholdSignals = visualRegressionThresholdSignals(sourceFiles);
+  const reportSignals = visualRegressionReportSignals(sourceFiles);
+  const pluginSignals = visualRegressionPluginSignals(sourceFiles);
+  const ciSignals = visualRegressionCiSignals(sourceFiles);
+  const packageSignals = visualRegressionPackageSignals(sourceFiles);
+
+  const hasVisualTool = visualRegressionSetups.length > 0 || packageSignals.some((item) => item.readiness === "ready");
+  const hasSnapshots = snapshotSignals.some((item) => ["actual-images", "expected-images", "screenshots", "sync-expected", "compare-command"].includes(item.signal) && item.readiness === "ready");
+  const hasThresholds = thresholdSignals.some((item) => item.readiness === "ready") || visualRegressionSetups.some((item) => item.thresholdCount > 0);
+  const hasReports = reportSignals.some((item) => item.readiness === "ready") || visualRegressionSetups.some((item) => item.reportCount > 0);
+  const hasStorage = pluginSignals.some((item) => ["publish-s3", "publish-gcs"].includes(item.signal) && item.readiness === "ready") || visualRegressionSetups.some((item) => item.storageCount > 0);
+
+  const riskQueue: VisualRegressionReadinessReport["riskQueue"] = [];
+  if (!hasVisualTool) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the visual regression tool before claiming screenshot diff readiness.",
+      why: "Visual regression readiness needs a clear tool such as reg-suit, Argos, Chromatic, Percy, Playwright screenshots, Cypress, or WebdriverIO visual testing.",
+      relatedHref: "html/visual-regression-readiness.html"
+    });
+  }
+  if (hasVisualTool && !hasSnapshots) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace actual screenshot capture, expected baseline sync, diff image generation, and compare command ownership.",
+      why: "Visual review is incomplete if learners cannot see how screenshots are produced, fetched, and compared.",
+      relatedHref: "html/visual-regression-readiness.html"
+    });
+  }
+  if (hasVisualTool && !hasThresholds) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document thresholdRate, thresholdPixel, matchingThreshold, antialias, ximgdiff, and concurrency policy.",
+      why: "Unbounded pixel diffs create noisy failures or hide visual regressions when thresholds are implicit.",
+      relatedHref: "html/visual-regression-readiness.html"
+    });
+  }
+  if (hasVisualTool && !hasReports) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record HTML report, diff report, comparison result, report URL, or artifact upload path.",
+      why: "Reviewers need a durable visual diff artifact, not only a pass/fail exit code.",
+      relatedHref: "html/visual-regression-readiness.html"
+    });
+  }
+  if (hasVisualTool && !hasStorage) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record baseline storage and publish path such as S3, GCS, artifact upload, or hosted visual review.",
+      why: "Baseline management is the main operational risk in visual regression workflows.",
+      relatedHref: "html/visual-regression-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the original visual regression workflow only in a trusted runtime before treating this report as visual approval.",
+    why: "RepoTutor records visual regression readiness only; it does not capture screenshots, compare pixels, fetch baselines, upload reports, notify services, or execute browser tests.",
+    relatedHref: "html/visual-regression-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `reg-suit-style visual regression readiness report: setup ${visualRegressionSetups.length}개, snapshot signal ${snapshotSignals.length}개, threshold signal ${thresholdSignals.length}개, report signal ${reportSignals.length}개, plugin signal ${pluginSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "reg-suit regconfig actualDir expectedDir diffDir thresholdRate thresholdPixel matchingThreshold ximgdiff sync-expected compare publish report plugin storage notification",
+    visualRegressionSetups,
+    configSignals,
+    snapshotSignals,
+    thresholdSignals,
+    reportSignals,
+    pluginSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"regconfig|actualDir|expectedDir|diffDir|thresholdRate|thresholdPixel|matchingThreshold|ximgdiff\" .", purpose: "Find reg-suit config and pixel threshold policy." },
+      { command: "rg \"reg-suit (run|sync-expected|compare|publish)|visual regression|toHaveScreenshot|percy|argos|chromatic\" package.json .github src test", purpose: "Trace visual regression commands and screenshot capture paths." },
+      { command: "rg \"reg-keygen|reg-publish|reg-notify|S3|GCS|artifact|reportUrl|notification\" .", purpose: "Review baseline key generation, storage, report publication, and notification plugins." },
+      { command: "rg \"detached HEAD|checkout|fetch-depth|CI|GITHUB_SHA|CIRCLE|TRAVIS|GITLAB\" .github .circleci .gitlab-ci.yml package.json", purpose: "Check CI conditions that affect baseline key selection." }
+    ],
+    learnerNextSteps: [
+      "먼저 regconfig.json, package scripts, CI workflow에서 visual regression entrypoint를 찾으세요.",
+      "actualDir, expectedDir, diffDir, workingDir를 분리해 screenshot, baseline, diff artifact 위치를 확인하세요.",
+      "thresholdRate, thresholdPixel, matchingThreshold, enableAntialias, ximgdiff, concurrency 값을 확인해 noise policy를 이해하세요.",
+      "sync-expected, compare, publish, run command 흐름을 따라 baseline fetch, diff, report publish 순서를 확인하세요.",
+      "keygen, publisher, notifier plugin이 Git hash, S3/GCS storage, GitHub/GitLab/Slack notification을 어떻게 연결하는지 확인하세요.",
+      "CI detached HEAD, branch fetch depth, artifact upload, report URL 노출 정책을 확인하세요.",
+      "이 리포트는 정적 readiness입니다. screenshot capture, pixel compare, baseline fetch/publish, notification은 신뢰된 원본 런타임에서 별도 검증하세요."
+    ]
+  };
+}
+
+type VisualRegressionSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function visualRegressionSourceFiles(walk: WalkResult): Promise<VisualRegressionSourceFile[]> {
+  const files: VisualRegressionSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !visualRegressionInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!visualRegressionPathSignal(file.relPath) && !visualRegressionContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function visualRegressionInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return visualRegressionPathSignal(filePath)
+    || /^(package\.json|regconfig\.json|reg\.json|playwright\.config\.[cm]?[jt]s|cypress\.config\.[cm]?[jt]s|wdio\.conf\.[cm]?[jt]s)$/i.test(base)
+    || /\.(json|ya?ml|js|cjs|mjs|ts|tsx|jsx|md|mdx|html|png|jpg|jpeg|webp)$/i.test(filePath);
+}
+
+function visualRegressionPathSignal(filePath: string): boolean {
+  return /(^|\/)(regconfig\.json|reg\.json|package\.json|\.github\/workflows|\.circleci|\.gitlab-ci\.yml)$/i.test(filePath)
+    || /(^|\/)(screenshots?|snapshots?|visual|visual-regression|__image_snapshots__|__screenshots__|regression|baseline|diffs?|reports?)(\/|$)/i.test(filePath);
+}
+
+function visualRegressionContentSignal(text: string): boolean {
+  return /(reg-suit|regconfig|visual regression|actualDir|expectedDir|diffDir|thresholdRate|thresholdPixel|matchingThreshold|ximgdiff|sync-expected|toHaveScreenshot|page\.screenshot|percy|argos|chromatic|reg-keygen|reg-publish|reg-notify)/i.test(text);
+}
+
+function visualRegressionSetupFiles(sourceFiles: VisualRegressionSourceFile[]): VisualRegressionReadinessReport["visualRegressionSetups"] {
+  const rows: VisualRegressionReadinessReport["visualRegressionSetups"] = [];
+  for (const source of sourceFiles) {
+    const configCount = countMatches(source.text, /regconfig\.json|actualDir|workingDir|expectedDir|diffDir|plugins\s*:|thresholdRate|thresholdPixel|matchingThreshold|visual regression/gi) + (/regconfig\.json$/i.test(source.filePath) ? 1 : 0);
+    const actualCount = countMatches(source.text, /actualDir|actual images?|current snapshots?|screenshots?|page\.screenshot|toHaveScreenshot|cy\.screenshot/gi);
+    const expectedCount = countMatches(source.text, /expectedDir|expected snapshots?|baseline|sync-expected|previous images?|snapshot key/gi);
+    const diffCount = countMatches(source.text, /diffDir|diff images?|compare|comparison|ximgdiff|pixelmatch|looks-same/gi);
+    const thresholdCount = countMatches(source.text, /thresholdRate|thresholdPixel|matchingThreshold|enableAntialias|antialias|failure threshold|concurrency/gi);
+    const reportCount = countMatches(source.text, /HTML report|html report|reportUrl|comparison result|diff report|artifact|publish.*report/gi);
+    const pluginCount = countMatches(source.text, /reg-[a-z0-9-]+-plugin|keygen|publisher|notifier|plugins\s*:/gi);
+    const storageCount = countMatches(source.text, /S3|GCS|Google Cloud Storage|bucket|storage|artifact upload|publish-s3|publish-gcs|cloud storage/gi);
+    const notificationCount = countMatches(source.text, /notify|notification|GitHub status|PR comment|merge request|Slack|GitLab|Chatwork/gi);
+    const hasSignal = configCount + actualCount + expectedCount + diffCount + thresholdCount + reportCount + pluginCount + storageCount + notificationCount > 0;
+    if (!hasSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: visualRegressionTool(source),
+      configCount,
+      actualCount,
+      expectedCount,
+      diffCount,
+      thresholdCount,
+      reportCount,
+      pluginCount,
+      storageCount,
+      notificationCount,
+      readiness: (actualCount > 0 || configCount > 0) && (expectedCount > 0 || diffCount > 0 || thresholdCount > 0) ? "ready" : hasSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains config ${configCount}, actual ${actualCount}, expected ${expectedCount}, diff ${diffCount}, threshold ${thresholdCount}, report ${reportCount}, plugin ${pluginCount}, storage ${storageCount}, notification ${notificationCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function visualRegressionTool(source: VisualRegressionSourceFile): VisualRegressionReadinessReport["visualRegressionSetups"][number]["tool"] {
+  if (/reg-suit|regconfig|reg-keygen|reg-publish|reg-notify/i.test(source.filePath) || /reg-suit|regconfig|reg-keygen|reg-publish|reg-notify/i.test(source.text)) return "reg-suit";
+  if (/argos/i.test(source.filePath) || /@argos-ci|argos upload|argos/i.test(source.text)) return "argos";
+  if (/chromatic/i.test(source.filePath) || /chromatic|@chromatic-com/i.test(source.text)) return "chromatic";
+  if (/percy/i.test(source.filePath) || /@percy|percy snapshot|percy exec/i.test(source.text)) return "percy";
+  if (/playwright/i.test(source.filePath) || /toHaveScreenshot|page\.screenshot|@playwright\/test/i.test(source.text)) return "playwright";
+  if (/cypress/i.test(source.filePath) || /cy\.screenshot|cypress-image-snapshot|cypress-visual/i.test(source.text)) return "cypress";
+  if (/wdio|webdriverio/i.test(source.filePath) || /webdriverio|saveScreenshot|checkScreen|visual-testing/i.test(source.text)) return "webdriverio";
+  if (/visual|screenshot|snapshot|diff|baseline/i.test(source.filePath) || /visual regression|screenshot|snapshot|pixel diff/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function visualRegressionConfigSignals(sourceFiles: VisualRegressionSourceFile[]): VisualRegressionReadinessReport["configSignals"] {
+  const specs: Array<{ signal: VisualRegressionReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "regconfig", pattern: /regconfig\.json|reg-suit config|RegSuitConfiguration/i, evidence: "reg-suit config evidence was detected." },
+    { signal: "actual-dir", pattern: /actualDir|actual directory|actual images/i, evidence: "actualDir evidence was detected." },
+    { signal: "working-dir", pattern: /workingDir|working directory|temporary files/i, evidence: "workingDir evidence was detected." },
+    { signal: "expected-dir", pattern: /expectedDir|expected directory|expected images|baseline/i, evidence: "expectedDir/baseline evidence was detected." },
+    { signal: "diff-dir", pattern: /diffDir|diff directory|diff images/i, evidence: "diffDir evidence was detected." },
+    { signal: "config-file", pattern: /reg\.json|visual.*config|percy\.yml|argos\.config|playwright\.config|wdio\.conf|cypress\.config/i, evidence: "visual config file evidence was detected." },
+    { signal: "ci-config", pattern: /\.github\/workflows|circleci|travis|gitlab-ci|CI=|GITHUB_ACTIONS/i, evidence: "CI config evidence was detected." },
+    { signal: "package-script", pattern: /"[^"]*(visual|screenshot|regression|reg-suit|chromatic|percy|argos)[^"]*"\s*:/i, evidence: "package script evidence was detected." }
+  ];
+  return visualRegressionSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function visualRegressionSnapshotSignals(sourceFiles: VisualRegressionSourceFile[]): VisualRegressionReadinessReport["snapshotSignals"] {
+  const specs: Array<{ signal: VisualRegressionReadinessReport["snapshotSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "actual-images", pattern: /actualDir|actual images?|current snapshots?|screenshots?\//i, evidence: "actual image evidence was detected." },
+    { signal: "expected-images", pattern: /expectedDir|expected images?|baseline|previous snapshots?/i, evidence: "expected baseline evidence was detected." },
+    { signal: "diff-images", pattern: /diffDir|diff images?|ximgdiff|pixel diff/i, evidence: "diff image evidence was detected." },
+    { signal: "screenshots", pattern: /screenshot|toHaveScreenshot|page\.screenshot|cy\.screenshot|saveScreenshot/i, evidence: "screenshot capture evidence was detected." },
+    { signal: "baseline-key", pattern: /keygen|snapshot key|git hash|compare key|actual key|expected key/i, evidence: "baseline key evidence was detected." },
+    { signal: "sync-expected", pattern: /sync-expected/i, evidence: "sync-expected command evidence was detected." },
+    { signal: "compare-command", pattern: /reg-suit compare|compare actual|compare images/i, evidence: "compare command evidence was detected." },
+    { signal: "publish-command", pattern: /reg-suit publish|publish.*snapshot|publish.*report/i, evidence: "publish command evidence was detected." },
+    { signal: "run-command", pattern: /reg-suit run|npx reg-suit run|visual regression testing/i, evidence: "run command evidence was detected." }
+  ];
+  return visualRegressionSignalFromSpecs(sourceFiles, specs, "snapshot", "signal");
+}
+
+function visualRegressionThresholdSignals(sourceFiles: VisualRegressionSourceFile[]): VisualRegressionReadinessReport["thresholdSignals"] {
+  const specs: Array<{ signal: VisualRegressionReadinessReport["thresholdSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "threshold-rate", pattern: /thresholdRate|threshold rate/i, evidence: "thresholdRate evidence was detected." },
+    { signal: "threshold-pixel", pattern: /thresholdPixel|threshold pixel/i, evidence: "thresholdPixel evidence was detected." },
+    { signal: "matching-threshold", pattern: /matchingThreshold|matching threshold/i, evidence: "matchingThreshold evidence was detected." },
+    { signal: "antialias", pattern: /enableAntialias|anti-?alias/i, evidence: "anti-alias handling evidence was detected." },
+    { signal: "ximgdiff", pattern: /ximgdiff|x-img-diff/i, evidence: "ximgdiff evidence was detected." },
+    { signal: "concurrency", pattern: /concurrency|parallel.*compare/i, evidence: "concurrency evidence was detected." },
+    { signal: "failure-threshold", pattern: /failure threshold|maxDiff|diff.*threshold|pixel.*threshold/i, evidence: "failure threshold evidence was detected." }
+  ];
+  return visualRegressionSignalFromSpecs(sourceFiles, specs, "threshold", "signal");
+}
+
+function visualRegressionReportSignals(sourceFiles: VisualRegressionSourceFile[]): VisualRegressionReadinessReport["reportSignals"] {
+  const specs: Array<{ signal: VisualRegressionReadinessReport["reportSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "html-report", pattern: /HTML report|html report|report\.html|reportDir/i, evidence: "HTML report evidence was detected." },
+    { signal: "diff-report", pattern: /diff report|difference report|ximgdiff|visual diff/i, evidence: "diff report evidence was detected." },
+    { signal: "comparison-result", pattern: /comparison result|ComparisonResult|compare result/i, evidence: "comparison result evidence was detected." },
+    { signal: "json-result", pattern: /json report|report\.json|result\.json/i, evidence: "JSON result evidence was detected." },
+    { signal: "report-url", pattern: /reportUrl|report URL|published report|status target_url/i, evidence: "report URL evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|artifacts?:|artifact upload|store_artifacts/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return visualRegressionSignalFromSpecs(sourceFiles, specs, "report", "signal");
+}
+
+function visualRegressionPluginSignals(sourceFiles: VisualRegressionSourceFile[]): VisualRegressionReadinessReport["pluginSignals"] {
+  const specs: Array<{ signal: VisualRegressionReadinessReport["pluginSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "keygen-git-hash", pattern: /reg-keygen-git-hash-plugin|git hash.*keygen/i, evidence: "git hash keygen plugin evidence was detected." },
+    { signal: "simple-keygen", pattern: /reg-simple-keygen-plugin|simple keygen/i, evidence: "simple keygen plugin evidence was detected." },
+    { signal: "publish-s3", pattern: /reg-publish-s3-plugin|S3 bucket|AWS S3/i, evidence: "S3 publisher plugin evidence was detected." },
+    { signal: "publish-gcs", pattern: /reg-publish-gcs-plugin|Google Cloud Storage|GCS/i, evidence: "GCS publisher plugin evidence was detected." },
+    { signal: "notify-github", pattern: /reg-notify-github|GitHub app|PR comment|commit status/i, evidence: "GitHub notifier evidence was detected." },
+    { signal: "notify-gitlab", pattern: /reg-notify-gitlab|GitLab.*merge request/i, evidence: "GitLab notifier evidence was detected." },
+    { signal: "notify-slack", pattern: /reg-notify-slack|Slack.*webhook/i, evidence: "Slack notifier evidence was detected." },
+    { signal: "notify-chatwork", pattern: /reg-notify-chatwork|Chatwork/i, evidence: "Chatwork notifier evidence was detected." },
+    { signal: "custom-plugin", pattern: /reg-.*-plugin|PublisherPlugin|NotifierPlugin|KeyGeneratorPlugin/i, evidence: "custom plugin evidence was detected." }
+  ];
+  return visualRegressionSignalFromSpecs(sourceFiles, specs, "plugin", "signal");
+}
+
+function visualRegressionCiSignals(sourceFiles: VisualRegressionSourceFile[]): VisualRegressionReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: VisualRegressionReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /github\/workflows|GITHUB_ACTIONS|actions\/checkout|npx reg-suit run/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "circleci", pattern: /circleci|CircleCI|store_artifacts/i, evidence: "CircleCI evidence was detected." },
+    { signal: "travis", pattern: /travis|TRAVIS/i, evidence: "Travis CI evidence was detected." },
+    { signal: "gitlab-ci", pattern: /gitlab-ci|GitLab CI/i, evidence: "GitLab CI evidence was detected." },
+    { signal: "ci-command", pattern: /npx reg-suit run|reg-suit run|percy exec|argos upload|chromatic/i, evidence: "CI command evidence was detected." },
+    { signal: "detached-head", pattern: /detached HEAD|fetch-depth|git checkout|attach.*branch/i, evidence: "detached HEAD mitigation evidence was detected." },
+    { signal: "artifact-cache", pattern: /cache|artifact|upload-artifact|store_artifacts|persist_to_workspace/i, evidence: "artifact/cache evidence was detected." }
+  ];
+  return visualRegressionSignalFromSpecs(sourceFiles, specs, "ci", "signal");
+}
+
+function visualRegressionPackageSignals(sourceFiles: VisualRegressionSourceFile[]): VisualRegressionReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: VisualRegressionReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "reg-suit", pattern: /"reg-suit"|npx reg-suit|reg-suit run/i, evidence: "reg-suit package evidence was detected." },
+    { signal: "reg-suit-core", pattern: /"reg-suit-core"|from ['"]reg-suit-core/i, evidence: "reg-suit-core evidence was detected." },
+    { signal: "reg-suit-interface", pattern: /"reg-suit-interface"|from ['"]reg-suit-interface/i, evidence: "reg-suit-interface evidence was detected." },
+    { signal: "reg-keygen-git-hash-plugin", pattern: /reg-keygen-git-hash-plugin/i, evidence: "reg keygen git hash package evidence was detected." },
+    { signal: "reg-publish-s3-plugin", pattern: /reg-publish-s3-plugin/i, evidence: "reg publish S3 package evidence was detected." },
+    { signal: "reg-publish-gcs-plugin", pattern: /reg-publish-gcs-plugin/i, evidence: "reg publish GCS package evidence was detected." },
+    { signal: "reg-notify-github-plugin", pattern: /reg-notify-github-plugin|reg-notify-github-with-api-plugin/i, evidence: "reg notify GitHub package evidence was detected." },
+    { signal: "@percy/cli", pattern: /@percy\/cli|percy exec|percy snapshot/i, evidence: "Percy package evidence was detected." },
+    { signal: "@argos-ci/cli", pattern: /@argos-ci\/cli|argos upload/i, evidence: "Argos package evidence was detected." },
+    { signal: "chromatic", pattern: /"chromatic"|@chromatic-com|npx chromatic/i, evidence: "Chromatic package evidence was detected." }
+  ];
+  return visualRegressionSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function visualRegressionSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: VisualRegressionSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/visual-regression-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

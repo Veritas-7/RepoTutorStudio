@@ -4358,6 +4358,48 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 196:
   - `7468f63` styling readiness report
 
+- 2026-06-04: AutoResearch Upgrade 197 candidate selected:
+  `reg-viz/reg-suit`
+  (`https://github.com/reg-viz/reg-suit`; public; MIT; 1,274 stars; 107 forks;
+  updated 2026-06-03T23:39:15Z). Compared with `lost-pixel/lost-pixel`,
+  `argos-ci/argos`, and `webdriverio/visual-testing`; selected reg-suit because
+  existing RepoTutor reports already cover E2E and Storybook surfaces, while
+  reg-suit directly models visual regression readiness: actual screenshots,
+  expected baselines, diffs, thresholds, reports, plugins, storage,
+  notification, and CI handoff. Cloned ignored external source to
+  `research/external-src/reg-viz-reg-suit` and inspected docs/source hits
+  without executing external source. Clone HEAD was `5c09c8e`; tracked file
+  count for `research/external-src/reg-viz-reg-suit` returned `0`.
+- 2026-06-04: RED visual-regression-readiness smoke generated
+  `/tmp/repotutor-visual-red-studies.1creOu/2026-06-05/local__simple-ts-app__HEAD__bdf9bbbf`;
+  old build had `verificationCheckedRequiredArtifacts=288`, was missing
+  `analysis/visual-regression-readiness-report.json`,
+  `markdown/visual-regression-readiness.md`, and
+  `html/visual-regression-readiness.html`, and `open --target
+  visual-regression-readiness` failed as expected.
+- 2026-06-04: Implemented reg-suit-style visual-regression-readiness report:
+  `VisualRegressionReadinessReportSchema`,
+  `analysis/visual-regression-readiness-report.json`,
+  `markdown/visual-regression-readiness.md`,
+  `html/visual-regression-readiness.html`, visual regression setups, config
+  signals, snapshot signals, threshold signals, report signals, plugin signals,
+  CI signals, package signals, recommended commands, risk queue,
+  manifest/session verification coverage, learning-path linkage, nav entry, and
+  `open --target visual-regression-readiness`.
+- 2026-06-04: GREEN visual-regression-readiness smoke generated
+  `/tmp/repotutor-visual-green-studies.KP2l2p/2026-06-05/local__simple-ts-app__main__bdf9bbbf`;
+  confirmed `verificationCheckedRequiredArtifacts=291`, visual setups 0, config
+  signals 8, snapshot signals 9, threshold signals 7, report signals 6, plugin
+  signals 9, CI signals 7, package signals 10, risk queue 2, all three new
+  artifacts, and `open --target visual-regression-readiness` ->
+  `html/visual-regression-readiness.html`.
+- 2026-06-04: Verification for Upgrade 197:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 95/95 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

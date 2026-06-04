@@ -5288,6 +5288,80 @@ export const StylingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const VisualRegressionReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  visualRegressionSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["reg-suit", "argos", "chromatic", "percy", "playwright", "cypress", "webdriverio", "custom", "unknown"]),
+    configCount: z.number().int().nonnegative(),
+    actualCount: z.number().int().nonnegative(),
+    expectedCount: z.number().int().nonnegative(),
+    diffCount: z.number().int().nonnegative(),
+    thresholdCount: z.number().int().nonnegative(),
+    reportCount: z.number().int().nonnegative(),
+    pluginCount: z.number().int().nonnegative(),
+    storageCount: z.number().int().nonnegative(),
+    notificationCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["regconfig", "actual-dir", "working-dir", "expected-dir", "diff-dir", "config-file", "ci-config", "package-script", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  snapshotSignals: z.array(z.object({
+    signal: z.enum(["actual-images", "expected-images", "diff-images", "screenshots", "baseline-key", "sync-expected", "compare-command", "publish-command", "run-command", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  thresholdSignals: z.array(z.object({
+    signal: z.enum(["threshold-rate", "threshold-pixel", "matching-threshold", "antialias", "ximgdiff", "concurrency", "failure-threshold", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reportSignals: z.array(z.object({
+    signal: z.enum(["html-report", "diff-report", "comparison-result", "json-result", "report-url", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  pluginSignals: z.array(z.object({
+    signal: z.enum(["keygen-git-hash", "simple-keygen", "publish-s3", "publish-gcs", "notify-github", "notify-gitlab", "notify-slack", "notify-chatwork", "custom-plugin", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "circleci", "travis", "gitlab-ci", "ci-command", "detached-head", "artifact-cache", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["reg-suit", "reg-suit-core", "reg-suit-interface", "reg-keygen-git-hash-plugin", "reg-publish-s3-plugin", "reg-publish-gcs-plugin", "reg-notify-github-plugin", "@percy/cli", "@argos-ci/cli", "chromatic", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -5586,6 +5660,7 @@ export type ScaffoldingReadinessReport = z.infer<typeof ScaffoldingReadinessRepo
 export type SchedulerReadinessReport = z.infer<typeof SchedulerReadinessReportSchema>;
 export type BuildToolReadinessReport = z.infer<typeof BuildToolReadinessReportSchema>;
 export type StylingReadinessReport = z.infer<typeof StylingReadinessReportSchema>;
+export type VisualRegressionReadinessReport = z.infer<typeof VisualRegressionReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

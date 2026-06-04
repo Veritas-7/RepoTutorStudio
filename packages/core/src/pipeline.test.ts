@@ -98,6 +98,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "scheduler-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "build-tool-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "styling-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "visual-regression-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -194,6 +195,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "scheduler-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "build-tool-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "styling-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "visual-regression-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -290,6 +292,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "scheduler-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "build-tool-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "styling-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "visual-regression-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -417,6 +420,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/scheduler-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/build-tool-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/styling-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/visual-regression-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -2093,6 +2097,24 @@ describe("RepoTutor core pipeline", () => {
     expect(stylingReadinessMarkdown).toContain("Source pattern: Tailwind CSS");
     expect(stylingReadinessMarkdown).toContain("## Directive Signals");
     expect(stylingReadinessMarkdown).toContain("## Integration Signals");
+    const visualRegressionReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "visual-regression-readiness-report.json"), "utf8");
+    expect(visualRegressionReadinessText).toContain("reg-suit regconfig actualDir expectedDir diffDir thresholdRate thresholdPixel matchingThreshold ximgdiff sync-expected compare publish report plugin storage notification");
+    expect(visualRegressionReadinessText).toContain("\"visualRegressionSetups\"");
+    expect(visualRegressionReadinessText).toContain("\"snapshotSignals\"");
+    expect(visualRegressionReadinessText).toContain("\"thresholdSignals\"");
+    expect(visualRegressionReadinessText).toContain("\"pluginSignals\"");
+    expect(visualRegressionReadinessText).toContain("reg-suit");
+    const visualRegressionReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "visual-regression-readiness.html"), "utf8");
+    expect(visualRegressionReadinessHtml).toContain("Visual Regression Readiness");
+    expect(visualRegressionReadinessHtml).toContain("visual-regression-readiness-card");
+    expect(visualRegressionReadinessHtml).toContain("data-source-pattern=\"reg-suit\"");
+    expect(visualRegressionReadinessHtml).toContain("Threshold Signals");
+    expect(visualRegressionReadinessHtml).toContain("Plugin Signals");
+    const visualRegressionReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "visual-regression-readiness.md"), "utf8");
+    expect(visualRegressionReadinessMarkdown).toContain("# Visual Regression Readiness");
+    expect(visualRegressionReadinessMarkdown).toContain("Source pattern: reg-suit");
+    expect(visualRegressionReadinessMarkdown).toContain("## Threshold Signals");
+    expect(visualRegressionReadinessMarkdown).toContain("## Plugin Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");

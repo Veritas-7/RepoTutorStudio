@@ -1,6 +1,6 @@
 {
   "iteration": 10,
-  "createdAt": "2026-06-04T15:01:19.625Z",
+  "createdAt": "2026-06-04T15:17:25.051Z",
   "checks": [
     {
       "name": "project setup",
@@ -627,6 +627,13 @@
     },
     {
       "name": "Styling readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Visual regression readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
