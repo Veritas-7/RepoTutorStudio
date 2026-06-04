@@ -76,6 +76,7 @@ import {
   PaymentReadinessReport,
   EmailReadinessReport,
   QueueReadinessReport,
+  CacheReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -158,6 +159,7 @@ export interface AnalysisBundle {
   paymentReadinessReport: PaymentReadinessReport;
   emailReadinessReport: EmailReadinessReport;
   queueReadinessReport: QueueReadinessReport;
+  cacheReadinessReport: CacheReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -240,8 +242,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const paymentReadinessReport = await buildPaymentReadinessReport(walk);
   const emailReadinessReport = await buildEmailReadinessReport(walk);
   const queueReadinessReport = await buildQueueReadinessReport(walk);
+  const cacheReadinessReport = await buildCacheReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -13496,6 +13499,280 @@ function queueReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/queue-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildCacheReadinessReport(walk: WalkResult): Promise<CacheReadinessReport> {
+  const sourceFiles = await cacheReadinessSourceFiles(walk);
+  const cacheSetups = cacheReadinessCacheSetups(sourceFiles);
+  const operationSignals = cacheReadinessOperationSignals(sourceFiles);
+  const policySignals = cacheReadinessPolicySignals(sourceFiles);
+  const connectionSignals = cacheReadinessConnectionSignals(sourceFiles);
+  const advancedSignals = cacheReadinessAdvancedSignals(sourceFiles);
+  const packageSignals = cacheReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasRedisPackage = packageSignals.some((item) => ["redis", "@redis/client"].includes(item.signal) && item.readiness === "ready");
+  const hasSetup = cacheSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = cacheSetups.some((item) => item.readiness === "ready");
+  const hasRead = operationSignals.some((item) => ["get", "mget", "exists"].includes(item.signal) && item.readiness === "ready") || cacheSetups.some((item) => item.readCount > 0);
+  const hasWrite = operationSignals.some((item) => ["set", "mset"].includes(item.signal) && item.readiness === "ready") || cacheSetups.some((item) => item.writeCount > 0);
+  const hasConnection = connectionSignals.some((item) => ["REDIS_URL", "url", "socket", "tls"].includes(item.signal) && item.readiness === "ready");
+  const hasTtl = operationSignals.some((item) => ["expire", "ttl"].includes(item.signal) && item.readiness === "ready") || policySignals.some((item) => ["ttl", "ex", "px"].includes(item.signal) && item.readiness === "ready") || cacheSetups.some((item) => item.ttlCount > 0);
+  const hasInvalidation = operationSignals.some((item) => item.signal === "del" && item.readiness === "ready") || policySignals.some((item) => ["invalidation", "namespace"].includes(item.signal) && item.readiness === "ready");
+  const hasReconnectHandling = connectionSignals.some((item) => ["reconnect", "is-ready"].includes(item.signal) && item.readiness === "ready");
+  const hasPubSub = advancedSignals.some((item) => item.signal === "pubsub" && item.readiness === "ready");
+  const hasTelemetry = advancedSignals.some((item) => item.signal === "telemetry" && item.readiness === "ready");
+
+  const riskQueue: CacheReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasRead && !hasWrite) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the cache strategy before claiming cache readiness.",
+      why: "Cache readiness starts with an explicit cache package, client setup, read/write operation, TTL policy, or invalidation surface.",
+      relatedHref: "html/cache-readiness.html"
+    });
+  }
+  if (hasRedisPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair each Redis package signal with client setup, connection, and cache operations.",
+      why: "Node Redis usage requires explicit client construction, connection handling, and command usage before runtime cache QA.",
+      relatedHref: "html/cache-readiness.html"
+    });
+  }
+  if ((hasRedisPackage || hasSetup || hasRead || hasWrite) && !hasConnection) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document Redis connection configuration before relying on cache reads or writes.",
+      why: "Cache clients need auditable URL/socket/TLS/host configuration, especially across local, serverless, and production environments.",
+      relatedHref: "html/cache-readiness.html"
+    });
+  }
+  if (hasWrite && !hasTtl) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Attach TTL or expiration policy to cache writes.",
+      why: "Caches without expiration can drift from source-of-truth data and create hard-to-debug stale state.",
+      relatedHref: "html/cache-readiness.html"
+    });
+  }
+  if ((hasRead || hasWrite) && !hasInvalidation) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document invalidation, delete, namespace, or key-rotation behavior.",
+      why: "Cache correctness depends on knowing when keys are deleted, expired, namespaced, or recomputed.",
+      relatedHref: "html/cache-readiness.html"
+    });
+  }
+  if ((hasSetup || hasConnection) && !hasReconnectHandling) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Check connection status and reconnect/error handling for cache clients.",
+      why: "Redis clients can reconnect after network errors; cache code should distinguish ready/open states and handle errors explicitly.",
+      relatedHref: "html/cache-readiness.html"
+    });
+  }
+  if (hasPubSub && !hasTelemetry) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add observability around Pub/Sub or cache event flows.",
+      why: "Pub/Sub and cache invalidation events need logs, metrics, or telemetry so dropped messages are visible.",
+      relatedHref: "html/cache-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run cache integration tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not start Redis, open cache sockets, read or write cache keys, subscribe to channels, flush data, or run the analyzed project's tests.",
+    relatedHref: "html/cache-readiness.html"
+  });
+
+  return {
+    summary: `Node Redis식 cache readiness report: setup ${cacheSetups.length}개, operation signal ${operationSignals.length}개, policy signal ${policySignals.length}개, connection signal ${connectionSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Node Redis createClient connect get set EX NX expire ttl del mGet mSet scanIterator multi watch clientSideCache RESP socket reconnect isReady",
+    cacheSetups,
+    operationSignals,
+    policySignals,
+    connectionSignals,
+    advancedSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"createClient|createClientPool|Redis|ioredis|@upstash/redis|Keyv|memcached\" src app pages packages", purpose: "Inventory cache client setup and provider choice." },
+      { command: "rg \"client\\.get|client\\.set|cache\\.get|cache\\.set|mGet|mSet|del\\(|exists\\(|expire\\(|ttl\\(|scanIterator\" src app pages packages", purpose: "Find cache reads, writes, deletes, TTL checks, and key iteration." },
+      { command: "rg \"EX:|PX:|NX:|XX:|ttl|stale|invalidate|revalidate|namespace|serialize|JSON\\.stringify|JSON\\.parse\" src app pages packages", purpose: "Review expiration, write conditions, stale handling, key namespaces, and serialization policy." },
+      { command: "rg \"REDIS_URL|REDIS_HOST|REDIS_PORT|REDIS_PASSWORD|url:|socket:|tls|isReady|isOpen|reconnecting|error\" src app pages packages docker-compose.yml", purpose: "Check Redis connection configuration, status checks, and reconnect/error handling." },
+      { command: "rg \"multi\\(|watch\\(|subscribe\\(|publish\\(|clientSideCache|RESP|cluster|sentinel|diagnostics_channel|OpenTelemetry\" src app pages packages", purpose: "Trace advanced Redis usage such as transactions, Pub/Sub, client-side cache, cluster, sentinel, and telemetry." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise cache key construction, TTL policy, invalidation, provider mocks, and reconnect handling." }
+    ],
+    learnerNextSteps: [
+      "먼저 cache client 생성 위치에서 createClient, createClientPool, Redis, ioredis, Upstash Redis, Keyv 중 어떤 provider를 쓰는지 확인하세요.",
+      "cache get/set 흐름을 따라가며 key namespace, serialized value shape, TTL/EX/PX, NX/XX 조건을 함께 추적하세요.",
+      "쓰기 경로가 있으면 del, expire, invalidation, revalidate 같은 stale-data 제거 경로가 있는지 확인하세요.",
+      "Redis 연결은 REDIS_URL 또는 socket/TLS 설정과 isReady/isOpen/error/reconnecting 이벤트 처리가 일관되는지 비교하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 Redis 실행, cache read/write, Pub/Sub, flush, reconnect recovery는 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type CacheReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function cacheReadinessSourceFiles(walk: WalkResult): Promise<CacheReadinessSourceFile[]> {
+  const files: CacheReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !cacheReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!cacheReadinessPathSignal(file.relPath) && !cacheReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function cacheReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return cacheReadinessPathSignal(filePath)
+    || /^(package\.json|\.env\.example|\.env\.sample|docker-compose\.ya?ml|compose\.ya?ml|Dockerfile|next\.config\.[cm]?[jt]s|vite\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env|toml)$/i.test(filePath);
+}
+
+function cacheReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(caches?|redis|ioredis|upstash|keyv|memcached|stores?|sessions?|revalidate|invalidate)(\/|\.|-|_|$)|docker-compose|compose\.ya?ml/i.test(filePath);
+}
+
+function cacheReadinessContentSignal(text: string): boolean {
+  return /\b(createClient|createClientPool|Redis|ioredis|@upstash\/redis|Keyv|memcached|cache\.get|cache\.set|client\.get|client\.set|mGet|mSet|scanIterator|expire|ttl|REDIS_URL|REDIS_HOST|REDIS_PORT|REDIS_PASSWORD|clientSideCache|isReady|isOpen|reconnecting|multi\(|watch\(|subscribe\(|publish\(|diagnostics_channel|OpenTelemetry)\b/i.test(text);
+}
+
+function cacheReadinessCacheSetups(sourceFiles: CacheReadinessSourceFile[]): CacheReadinessReport["cacheSetups"] {
+  const rows: CacheReadinessReport["cacheSetups"] = [];
+  for (const source of sourceFiles) {
+    const clientSetupCount = countMatches(source.text, /\bcreateClient\s*\(|\bcreateClientPool\s*\(|\bnew\s+Redis\b|\bnew\s+IORedis\b|\bnew\s+Keyv\b|\bnew\s+Memcached\b/gi);
+    const connectCount = countMatches(source.text, /\.connect\s*\(|\.on\s*\(\s*["'](error|connect|ready|reconnecting|end)["']|\bisReady\b|\bisOpen\b/gi);
+    const readCount = countMatches(source.text, /\.get\s*\(|\.mGet\s*\(|\.hGet(All)?\s*\(|\.exists\s*\(|cache\.get\s*\(/gi);
+    const writeCount = countMatches(source.text, /\.set\s*\(|\.mSet\s*\(|\.setEx\s*\(|\.hSet\s*\(|cache\.set\s*\(/gi);
+    const ttlCount = countMatches(source.text, /\bEX\s*:|\bPX\s*:|\.expire\s*\(|\.ttl\s*\(|\.pTTL\s*\(|\.setEx\s*\(|ttl\s*:/gi);
+    const hasSetupSignal = clientSetupCount + connectCount + readCount + writeCount + ttlCount > 0 || /\b(cache|redis)\b/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: cacheReadinessProvider(source),
+      clientSetupCount,
+      connectCount,
+      readCount,
+      writeCount,
+      ttlCount,
+      readiness: clientSetupCount > 0 && connectCount > 0 && (readCount > 0 || writeCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains client setup ${clientSetupCount}, connect/status ${connectCount}, reads ${readCount}, writes ${writeCount}, TTL signals ${ttlCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function cacheReadinessProvider(source: CacheReadinessSourceFile): CacheReadinessReport["cacheSetups"][number]["provider"] {
+  if (/["']redis["']|\bcreateClient\s*\(|\bcreateClientPool\s*\(|@redis\/client/i.test(source.text)) return "redis";
+  if (/["']ioredis["']|\bnew\s+IORedis\b|\bnew\s+Redis\b/i.test(source.text)) return "ioredis";
+  if (/@upstash\/redis|Upstash/i.test(source.text)) return "upstash-redis";
+  if (/["']keyv["']|\bnew\s+Keyv\b/i.test(source.text)) return "keyv";
+  if (/memcached/i.test(source.text)) return "memcached";
+  if (/\b(cache|redis)\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function cacheReadinessOperationSignals(sourceFiles: CacheReadinessSourceFile[]): CacheReadinessReport["operationSignals"] {
+  const specs: Array<{ signal: CacheReadinessReport["operationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "get", pattern: /\.get\s*\(|cache\.get\s*\(/i, evidence: "cache get/read evidence was detected." },
+    { signal: "set", pattern: /\.set\s*\(|cache\.set\s*\(/i, evidence: "cache set/write evidence was detected." },
+    { signal: "mget", pattern: /\.mGet\s*\(|\.MGET\s*\(/i, evidence: "multi-get evidence was detected." },
+    { signal: "mset", pattern: /\.mSet\s*\(|\.MSET\s*\(|\.mSetEx\s*\(/i, evidence: "multi-set evidence was detected." },
+    { signal: "del", pattern: /\.del\s*\(|\.unlink\s*\(|cache\.delete\s*\(|cache\.del\s*\(/i, evidence: "cache delete/invalidation evidence was detected." },
+    { signal: "exists", pattern: /\.exists\s*\(|\.has\s*\(/i, evidence: "cache existence check evidence was detected." },
+    { signal: "expire", pattern: /\.expire\s*\(|\.pExpire\s*\(|\.setEx\s*\(/i, evidence: "expiration command evidence was detected." },
+    { signal: "ttl", pattern: /\.ttl\s*\(|\.pTTL\s*\(|\.expireTime\s*\(/i, evidence: "TTL read evidence was detected." },
+    { signal: "scan", pattern: /\.scanIterator\s*\(|\.scan\s*\(|\.keys\s*\(/i, evidence: "key scan/iteration evidence was detected." }
+  ];
+  return cacheReadinessSignalFromSpecs(sourceFiles, specs, "operation", "signal");
+}
+
+function cacheReadinessPolicySignals(sourceFiles: CacheReadinessSourceFile[]): CacheReadinessReport["policySignals"] {
+  const specs: Array<{ signal: CacheReadinessReport["policySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ttl", pattern: /\bttl\b|\bTTL\b|time[- ]?to[- ]?live/i, evidence: "TTL policy evidence was detected." },
+    { signal: "nx", pattern: /\bNX\s*:|\bNX\b|setNX|mSetNX/i, evidence: "write-if-absent policy evidence was detected." },
+    { signal: "xx", pattern: /\bXX\s*:|\bXX\b/i, evidence: "write-if-present policy evidence was detected." },
+    { signal: "ex", pattern: /\bEX\s*:|\bEX\b|setEx/i, evidence: "seconds expiration policy evidence was detected." },
+    { signal: "px", pattern: /\bPX\s*:|\bPX\b|pExpire/i, evidence: "milliseconds expiration policy evidence was detected." },
+    { signal: "stale-while-revalidate", pattern: /stale[-_ ]?while[-_ ]?revalidate|SWR|revalidate/i, evidence: "stale-while-revalidate evidence was detected." },
+    { signal: "invalidation", pattern: /invalidate|revalidate|purge|flush|delete cache|cache bust/i, evidence: "cache invalidation evidence was detected." },
+    { signal: "namespace", pattern: /namespace|prefix|keyPrefix|cacheKey|keyPrefix/i, evidence: "key namespace evidence was detected." },
+    { signal: "serialization", pattern: /JSON\.stringify|JSON\.parse|serialize|deserialize|Buffer\.from/i, evidence: "cache serialization evidence was detected." }
+  ];
+  return cacheReadinessSignalFromSpecs(sourceFiles, specs, "policy", "signal");
+}
+
+function cacheReadinessConnectionSignals(sourceFiles: CacheReadinessSourceFile[]): CacheReadinessReport["connectionSignals"] {
+  const specs: Array<{ signal: CacheReadinessReport["connectionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "REDIS_URL", pattern: /\bREDIS_URL\b/i, evidence: "REDIS_URL evidence was detected." },
+    { signal: "REDIS_HOST", pattern: /\bREDIS_HOST\b/i, evidence: "REDIS_HOST evidence was detected." },
+    { signal: "REDIS_PORT", pattern: /\bREDIS_PORT\b/i, evidence: "REDIS_PORT evidence was detected." },
+    { signal: "REDIS_PASSWORD", pattern: /\bREDIS_PASSWORD\b/i, evidence: "REDIS_PASSWORD evidence was detected." },
+    { signal: "url", pattern: /\burl\s*:|redis:\/\//i, evidence: "Redis URL configuration evidence was detected." },
+    { signal: "socket", pattern: /\bsocket\s*:|host\s*:|port\s*:|path\s*:/i, evidence: "socket/host/port configuration evidence was detected." },
+    { signal: "tls", pattern: /\btls\b|rediss:\/\//i, evidence: "TLS Redis connection evidence was detected." },
+    { signal: "reconnect", pattern: /reconnect|reconnecting|reconnectStrategy|retryStrategy/i, evidence: "reconnect handling evidence was detected." },
+    { signal: "is-ready", pattern: /\bisReady\b|\bisOpen\b|ready\b/i, evidence: "client readiness/status evidence was detected." }
+  ];
+  return cacheReadinessSignalFromSpecs(sourceFiles, specs, "connection", "signal");
+}
+
+function cacheReadinessAdvancedSignals(sourceFiles: CacheReadinessSourceFile[]): CacheReadinessReport["advancedSignals"] {
+  const specs: Array<{ signal: CacheReadinessReport["advancedSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "transaction", pattern: /\.multi\s*\(|\.exec\s*\(|transaction/i, evidence: "transaction/multi evidence was detected." },
+    { signal: "watch", pattern: /\.watch\s*\(|WatchError|optimistic/i, evidence: "WATCH/optimistic locking evidence was detected." },
+    { signal: "pubsub", pattern: /\.subscribe\s*\(|\.publish\s*\(|Pub\/Sub|pubsub|pSubscribe|sSubscribe/i, evidence: "Pub/Sub evidence was detected." },
+    { signal: "client-side-cache", pattern: /clientSideCache|client side caching|CLIENT TRACKING/i, evidence: "client-side caching evidence was detected." },
+    { signal: "pipeline", pattern: /pipeline|Promise\.all|auto[- ]?pipelining/i, evidence: "pipeline or batched command evidence was detected." },
+    { signal: "pool", pattern: /createClientPool|RedisClientPool|pool\s*=/i, evidence: "client pool evidence was detected." },
+    { signal: "cluster", pattern: /createCluster|RedisCluster|cluster/i, evidence: "Redis Cluster evidence was detected." },
+    { signal: "sentinel", pattern: /sentinel|RedisSentinel/i, evidence: "Redis Sentinel evidence was detected." },
+    { signal: "telemetry", pattern: /diagnostics_channel|OpenTelemetry|trace|metrics|telemetry/i, evidence: "Redis telemetry evidence was detected." }
+  ];
+  return cacheReadinessSignalFromSpecs(sourceFiles, specs, "advanced", "signal");
+}
+
+function cacheReadinessPackageSignals(sourceFiles: CacheReadinessSourceFile[]): CacheReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: CacheReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "redis", pattern: /["']redis["']|\bfrom\s+["']redis["']|\bcreateClient\s*\(/i, evidence: "redis package/import evidence was detected." },
+    { signal: "@redis/client", pattern: /@redis\/client/i, evidence: "@redis/client package/import evidence was detected." },
+    { signal: "ioredis", pattern: /["']ioredis["']|\bnew\s+IORedis\b|\bnew\s+Redis\b/i, evidence: "ioredis package/import evidence was detected." },
+    { signal: "@upstash/redis", pattern: /@upstash\/redis|Upstash/i, evidence: "@upstash/redis package/import evidence was detected." },
+    { signal: "keyv", pattern: /["']keyv["']|\bnew\s+Keyv\b/i, evidence: "keyv package/import evidence was detected." },
+    { signal: "memcached", pattern: /memcached/i, evidence: "memcached package/import evidence was detected." },
+    { signal: "lru-cache", pattern: /lru-cache|LRUCache/i, evidence: "lru-cache package/import evidence was detected." }
+  ];
+  return cacheReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function cacheReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: CacheReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/cache-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

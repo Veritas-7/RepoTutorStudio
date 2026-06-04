@@ -958,6 +958,22 @@
         "Redis connection and worker-control scans for REDIS_URL connection ioredis node-redis concurrency limiter metrics and telemetry",
         "safe static queue readiness that never starts Redis enqueues jobs runs workers processes queues retries failed jobs or runs analyzed project tests"
       ]
+    },
+    {
+      "repo": "redis/node-redis",
+      "url": "https://github.com/redis/node-redis",
+      "localPath": "research/external-src/redis-node-redis",
+      "stars": 17534,
+      "forks": 1957,
+      "license": "MIT",
+      "updatedAt": "2026-06-04T07:39:03Z",
+      "adoptedPatterns": [
+        "Node Redis client setup scanning for createClient createClientPool connect isReady isOpen error and reconnect readiness",
+        "cache operation scanning for get set mGet mSet del exists expire ttl and scanIterator evidence",
+        "cache policy scanning for EX PX NX XX TTL invalidation namespace stale revalidate and serialization evidence",
+        "Redis connection and advanced scanning for REDIS_URL socket TLS clientSideCache RESP multi watch Pub/Sub cluster sentinel and telemetry",
+        "safe static cache readiness that never starts Redis opens cache sockets reads or writes cache keys subscribes to channels flushes data or runs analyzed project tests"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3466,6 +3482,25 @@
         "markdown/queue-readiness.md",
         "html/queue-readiness.html"
       ]
+    },
+    {
+      "name": "Cache readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/cache-readiness-report.json",
+        "markdown/cache-readiness.md",
+        "html/cache-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4050,6 +4085,12 @@
     "cliQueueReadinessOpenTargetSmoke": "PASS",
     "buildQueueReadiness": "PASS",
     "testQueueReadiness": "PASS",
-    "auditBriefQueueReadiness61": "PASS"
+    "auditBriefQueueReadiness61": "PASS",
+    "fixtureCacheReadinessReport": "PASS",
+    "cliCacheReadinessSmoke": "PASS",
+    "cliCacheReadinessOpenTargetSmoke": "PASS",
+    "buildCacheReadiness": "PASS",
+    "testCacheReadiness": "PASS",
+    "auditBriefCacheReadiness62": "PASS"
   }
 }

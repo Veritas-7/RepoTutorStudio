@@ -3062,6 +3062,64 @@ export const QueueReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CacheReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  cacheSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["redis", "ioredis", "upstash-redis", "keyv", "memcached", "custom", "unknown"]),
+    clientSetupCount: z.number().int().nonnegative(),
+    connectCount: z.number().int().nonnegative(),
+    readCount: z.number().int().nonnegative(),
+    writeCount: z.number().int().nonnegative(),
+    ttlCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  operationSignals: z.array(z.object({
+    signal: z.enum(["get", "set", "mget", "mset", "del", "exists", "expire", "ttl", "scan", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  policySignals: z.array(z.object({
+    signal: z.enum(["ttl", "nx", "xx", "ex", "px", "stale-while-revalidate", "invalidation", "namespace", "serialization", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  connectionSignals: z.array(z.object({
+    signal: z.enum(["REDIS_URL", "REDIS_HOST", "REDIS_PORT", "REDIS_PASSWORD", "url", "socket", "tls", "reconnect", "is-ready", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  advancedSignals: z.array(z.object({
+    signal: z.enum(["transaction", "watch", "pubsub", "client-side-cache", "pipeline", "pool", "cluster", "sentinel", "telemetry", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["redis", "@redis/client", "ioredis", "@upstash/redis", "keyv", "memcached", "lru-cache", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3327,6 +3385,7 @@ export type AuthReadinessReport = z.infer<typeof AuthReadinessReportSchema>;
 export type PaymentReadinessReport = z.infer<typeof PaymentReadinessReportSchema>;
 export type EmailReadinessReport = z.infer<typeof EmailReadinessReportSchema>;
 export type QueueReadinessReport = z.infer<typeof QueueReadinessReportSchema>;
+export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
