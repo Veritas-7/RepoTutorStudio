@@ -3495,6 +3495,45 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 176:
   - `658177d` websocket readiness report
 
+- 2026-06-04: AutoResearch Upgrade 177 candidate selected:
+  `Hopding/pdf-lib`
+  (`https://github.com/Hopding/pdf-lib`; public; MIT; 8,488 stars; 888 forks;
+  updated 2026-06-03T11:52:27Z). Compared with `foliojs/pdfkit`,
+  `diegomura/react-pdf`, and `bpampuch/pdfmake`; selected `pdf-lib` because it
+  directly models PDF generation readiness: document creation/loading, page
+  composition, text/image drawing, font/image embedding, forms, copy pages,
+  save bytes, base64/data URI output, and browser/Node/Deno/RN usage. Cloned
+  ignored external source to `research/external-src/Hopding-pdf-lib` and
+  inspected README/source/test hits without executing external source. Clone
+  HEAD was `93dd36e`; tracked-file count for
+  `research/external-src/Hopding-pdf-lib` returned `0`.
+- 2026-06-04: RED pdf-generation-readiness smoke generated
+  `/tmp/repotutor-pdf-red-studies.mSvlDk/2026-06-04/local__simple-ts-app__HEAD__4cc1bd08`;
+  old build was missing `analysis/pdf-generation-readiness-report.json`,
+  `markdown/pdf-generation-readiness.md`, and
+  `html/pdf-generation-readiness.html`, and `open --target
+  pdf-generation-readiness` failed as expected.
+- 2026-06-04: Implemented pdf-lib-style pdf-generation-readiness report:
+  `PdfGenerationReadinessReportSchema`,
+  `analysis/pdf-generation-readiness-report.json`,
+  `markdown/pdf-generation-readiness.md`,
+  `html/pdf-generation-readiness.html`, PDF generation setups, document
+  signals, page signals, asset signals, form signals, output signals, safety
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target pdf-generation-readiness`.
+- 2026-06-04: GREEN pdf-generation-readiness smoke generated
+  `/tmp/repotutor-pdf-green-studies.gpeFIv/2026-06-04/local__simple-ts-app__main__4cc1bd08`;
+  confirmed `verificationCheckedRequiredArtifacts=231`, PDF generation setups
+  0, document signals 5, page signals 6, asset signals 6, form signals 5,
+  output signals 6, safety signals 6, package signals 5, risk queue 2, all
+  three new artifacts, and `open --target pdf-generation-readiness` ->
+  `html/pdf-generation-readiness.html`.
+- 2026-06-04: Verification for Upgrade 177:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 75/75 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

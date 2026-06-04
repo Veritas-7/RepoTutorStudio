@@ -4627,6 +4627,57 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 74/74 audit checks across 13 generated reports
 
+### Upgrade 177: PDF Generation Readiness Report
+
+- Cloned and inspected `Hopding/pdf-lib` under
+  `research/external-src/Hopding-pdf-lib` without executing external source.
+  Clone HEAD was `93dd36e`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 8,488 stars, 888 forks, updated
+  2026-06-03T11:52:27Z. Compared with `foliojs/pdfkit`,
+  `diegomura/react-pdf`, and `bpampuch/pdfmake`; selected `pdf-lib` because it
+  directly models PDF generation readiness: document create/load, page
+  composition, text/image drawing, font/image embedding, form fields, copy
+  pages, save bytes, base64/data URI output, and browser/Node/Deno/RN usage. No
+  source code was copied into RepoTutor.
+- Implemented pdf-lib-style pdf-generation-readiness report:
+  `PdfGenerationReadinessReportSchema`,
+  `analysis/pdf-generation-readiness-report.json`,
+  `markdown/pdf-generation-readiness.md`,
+  `html/pdf-generation-readiness.html`, PDF generation setups, document
+  signals, page signals, asset signals, form signals, output signals, safety
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target pdf-generation-readiness`.
+- Source pattern: pdf-lib separates document creation/loading through
+  `PDFDocument.create`, `PDFDocument.load`, and `copyPages`; page composition
+  through `addPage`, `PageSizes`, `drawText`, `drawImage`, drawing primitives,
+  and coordinates; assets through `StandardFonts`, `registerFontkit`,
+  `embedFont`, `embedPng`, `embedJpg`, and colors; forms through `getForm`,
+  text fields, checkboxes/radios, dropdowns, and `flatten`; output through
+  `save`, `saveAsBase64`, data URI, file write, download, and stream signals;
+  and safety through input bytes, encrypted PDFs, font embedding, large page
+  counts, metadata policy, and error handling. RepoTutor maps that to
+  deterministic static PDF generation readiness and explicitly does not parse
+  PDFs, render pages, embed fonts/images, modify form fields, write files,
+  trigger downloads, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-pdf-red-studies.mSvlDk/2026-06-04/local__simple-ts-app__HEAD__4cc1bd08`;
+  old behavior was missing
+  `analysis/pdf-generation-readiness-report.json`,
+  `markdown/pdf-generation-readiness.md`, and
+  `html/pdf-generation-readiness.html`, and `open --target
+  pdf-generation-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-pdf-green-studies.gpeFIv/2026-06-04/local__simple-ts-app__main__4cc1bd08`;
+  confirmed `verificationCheckedRequiredArtifacts=231`, PDF generation setups
+  0, document signals 5, page signals 6, asset signals 6, form signals 5,
+  output signals 6, safety signals 6, package signals 5, risk queue 2, all
+  three new artifacts, and `open --target pdf-generation-readiness` ->
+  `html/pdf-generation-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 75/75 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

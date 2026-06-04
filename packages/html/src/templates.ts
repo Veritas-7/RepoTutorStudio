@@ -84,6 +84,7 @@ import type {
   ImageProcessingReadinessReport,
   FileUploadReadinessReport,
   WebSocketReadinessReport,
+  PdfGenerationReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -174,6 +175,7 @@ export interface StudyHtmlInput {
   imageProcessingReadinessReport: ImageProcessingReadinessReport;
   fileUploadReadinessReport: FileUploadReadinessReport;
   webSocketReadinessReport: WebSocketReadinessReport;
+  pdfGenerationReadinessReport: PdfGenerationReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -278,6 +280,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["image-processing-readiness.html", "Images"],
     ["file-upload-readiness.html", "Uploads"],
     ["websocket-readiness.html", "WebSockets"],
+    ["pdf-generation-readiness.html", "PDF Generation"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -790,6 +793,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("WebSocket Readiness", "websocket-readiness.html", `<section class="panel" data-source-pattern="ws"><h2>WebSocket Snapshot</h2><p>${escapeHtml(input.webSocketReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.webSocketReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.webSocketReadinessReport.webSocketSetups.length}</dd></div><div><dt>connections</dt><dd>${input.webSocketReadinessReport.connectionSignals.length}</dd></div><div><dt>messages</dt><dd>${input.webSocketReadinessReport.messageSignals.length}</dd></div><div><dt>lifecycle</dt><dd>${input.webSocketReadinessReport.lifecycleSignals.length}</dd></div></dl><p class="muted">RepoTutor records WebSocket readiness only. It does not open sockets, perform HTTP upgrades, send frames, keep timers, mutate rooms, or run the analyzed project's tests.</p></section><section class="grid"><article class="websocket-readiness-card"><h3>WebSocket Setups</h3>${webSocketReadinessSetupList(input.webSocketReadinessReport.webSocketSetups)}</article><article class="websocket-readiness-card"><h3>Connection Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.connectionSignals, "signal")}</article><article class="websocket-readiness-card"><h3>Message Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.messageSignals, "signal")}</article><article class="websocket-readiness-card"><h3>Lifecycle Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.lifecycleSignals, "signal")}</article></section><section class="grid"><article class="websocket-readiness-card"><h3>Safety Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.safetySignals, "signal")}</article><article class="websocket-readiness-card"><h3>Package Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.packageSignals, "signal")}</article><article class="websocket-readiness-card"><h3>Recommended Commands</h3>${webSocketReadinessCommandList(input.webSocketReadinessReport.recommendedCommands)}</article><article class="websocket-readiness-card"><h3>Risk Queue</h3>${webSocketReadinessRiskList(input.webSocketReadinessReport.riskQueue)}</article><article class="websocket-readiness-card"><h3>다음 확인 단계</h3>${list(input.webSocketReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "pdf-generation-readiness.html",
+      title: "PDF Generation Readiness",
+      html: pageShell("PDF Generation Readiness", "pdf-generation-readiness.html", `<section class="panel" data-source-pattern="pdf-lib"><h2>PDF Generation Snapshot</h2><p>${escapeHtml(input.pdfGenerationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.pdfGenerationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.pdfGenerationReadinessReport.pdfGenerationSetups.length}</dd></div><div><dt>documents</dt><dd>${input.pdfGenerationReadinessReport.documentSignals.length}</dd></div><div><dt>pages</dt><dd>${input.pdfGenerationReadinessReport.pageSignals.length}</dd></div><div><dt>outputs</dt><dd>${input.pdfGenerationReadinessReport.outputSignals.length}</dd></div></dl><p class="muted">RepoTutor records PDF generation readiness only; it does not parse PDFs, render pages, embed fonts/images, modify form fields, write files, trigger downloads, or run the analyzed project's tests.</p></section><section class="grid"><article class="pdf-generation-readiness-card"><h3>PDF Generation Setups</h3>${pdfGenerationReadinessSetupList(input.pdfGenerationReadinessReport.pdfGenerationSetups)}</article><article class="pdf-generation-readiness-card"><h3>Document Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.documentSignals, "signal")}</article><article class="pdf-generation-readiness-card"><h3>Page Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.pageSignals, "signal")}</article><article class="pdf-generation-readiness-card"><h3>Asset Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.assetSignals, "signal")}</article></section><section class="grid"><article class="pdf-generation-readiness-card"><h3>Form Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.formSignals, "signal")}</article><article class="pdf-generation-readiness-card"><h3>Output Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.outputSignals, "signal")}</article><article class="pdf-generation-readiness-card"><h3>Safety Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.safetySignals, "signal")}</article><article class="pdf-generation-readiness-card"><h3>Package Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.packageSignals, "signal")}</article><article class="pdf-generation-readiness-card"><h3>Recommended Commands</h3>${pdfGenerationReadinessCommandList(input.pdfGenerationReadinessReport.recommendedCommands)}</article><article class="pdf-generation-readiness-card"><h3>Risk Queue</h3>${pdfGenerationReadinessRiskList(input.pdfGenerationReadinessReport.riskQueue)}</article><article class="pdf-generation-readiness-card"><h3>다음 확인 단계</h3>${list(input.pdfGenerationReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -974,6 +982,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Image Processing Readiness", path: "html/image-processing-readiness.html", description: "Sharp식 input, resize/format, metadata, output, safety, performance 준비도를 확인합니다." },
       { label: "File Upload Readiness", path: "html/file-upload-readiness.html", description: "Uppy식 input, restrictions, transport, lifecycle, safety 준비도를 확인합니다." },
       { label: "WebSocket Readiness", path: "html/websocket-readiness.html", description: "ws식 server/client, upgrade, message, lifecycle, safety 준비도를 확인합니다." },
+      { label: "PDF Generation Readiness", path: "html/pdf-generation-readiness.html", description: "pdf-lib식 document, page, asset, form, output, safety 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1501,6 +1510,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "websocket-readiness.html",
       goal: "ws식 server/client, upgrade, message, lifecycle, safety 흐름을 보고 실시간 연결 관문을 확인합니다.",
       evidence: `websocket setups ${input.webSocketReadinessReport.webSocketSetups.length}개, message signals ${input.webSocketReadinessReport.messageSignals.length}개`
+    },
+    {
+      title: "PDF generation readiness 확인",
+      href: "pdf-generation-readiness.html",
+      goal: "pdf-lib식 document, page, asset, form, output, safety 흐름을 보고 PDF 생성 관문을 확인합니다.",
+      evidence: `pdf setups ${input.pdfGenerationReadinessReport.pdfGenerationSetups.length}개, output signals ${input.pdfGenerationReadinessReport.outputSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3443,6 +3458,31 @@ function webSocketReadinessRiskList(items: WebSocketReadinessReport["riskQueue"]
 }
 
 function webSocketReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function pdfGenerationReadinessSetupList(items: PdfGenerationReadinessReport["pdfGenerationSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">pdf generation setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>document/page/asset/form/output/safety ${item.documentCount}/${item.pageCount}/${item.assetCount}/${item.formCount}/${item.outputCount}/${item.safetyCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(pdfGenerationReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function pdfGenerationReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">pdf generation signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(pdfGenerationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function pdfGenerationReadinessCommandList(items: PdfGenerationReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function pdfGenerationReadinessRiskList(items: PdfGenerationReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(pdfGenerationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function pdfGenerationReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
