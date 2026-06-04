@@ -6071,6 +6071,56 @@ Local verification:
 - `pnpm audit:brief`: PASS, 103/103 audit checks across 13 generated reports
 - Pushed implementation commit: `caa4037` kubernetes readiness report
 
+### Upgrade 206: GitOps Readiness Report
+
+- Cloned and inspected `argoproj/argo-cd` under
+  `research/external-src/argo-cd` and `fluxcd/flux2` under
+  `research/external-src/flux2` without executing external source. Clone HEADs
+  were `2107c9c` and `3c2fe83`; both clones remain ignored by RepoTutor.
+- GitHub metadata: `argoproj/argo-cd` is public, Apache-2.0 licensed, 23,053
+  stars, 7,290 forks, updated 2026-06-04T15:05:17Z. `fluxcd/flux2` is public,
+  Apache-2.0 licensed, 8,164 stars, 760 forks, updated
+  2026-06-04T17:30:02Z. Selected Argo CD plus Flux because together they model
+  Kubernetes GitOps readiness through Applications, ApplicationSets,
+  AppProjects, Git/Helm/OCI sources, Kustomization/HelmRelease reconciliation,
+  image automation, notifications, and controller CLI workflows. No source code
+  was copied into RepoTutor.
+- Implemented Argo CD/Flux-style gitops-readiness report:
+  `GitOpsReadinessReportSchema`, `analysis/gitops-readiness-report.json`,
+  `markdown/gitops-readiness.md`, `html/gitops-readiness.html`, GitOps setup
+  detection, Argo signals, Flux source signals, Flux reconcile signals, image
+  and notification signals, workflow signals, safety signals, package signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, nav entry, and `open --target gitops-readiness`.
+- Source pattern: GitOps readiness separates Argo CD `Application`,
+  `ApplicationSet`, `AppProject`, `repoURL`, `targetRevision`, `path`,
+  `destination`, `syncPolicy`, `automated`, `prune`, `selfHeal`,
+  `syncOptions`, Flux `GitRepository`, `HelmRepository`, `OCIRepository`,
+  `Bucket`, `Kustomization`, `HelmRelease`, `dependsOn`, `interval`,
+  `suspend`, `healthChecks`, `ImageRepository`, `ImagePolicy`,
+  `ImageUpdateAutomation`, `Receiver`, `Alert`, `Provider`, `argocd app sync/
+  diff/wait/get/repo add/cluster add`, and `flux bootstrap/reconcile/get/
+  suspend/resume/trace/tree/logs/events` workflows. RepoTutor maps that to
+  deterministic static GitOps readiness and explicitly does not run `argocd`,
+  `flux`, `kubectl`, contact Kubernetes APIs, contact GitOps controllers, sync
+  or reconcile applications, mutate clusters/repositories/namespaces/resources/
+  secrets, webhooks, or stream logs.
+- RED smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-gitops-red-studies.YaLqpO/2026-06-05/local__repotutor-gitops-red-repo.RLyKhs__local__71d408ad`;
+  old behavior had `verificationCheckedRequiredArtifacts=315`, was missing
+  `analysis/gitops-readiness-report.json`, `markdown/gitops-readiness.md`, and
+  `html/gitops-readiness.html`, and `open --target gitops-readiness` exited
+  with `Unsupported open target`.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-gitops-green-studies.1ODx77/2026-06-05/local__repotutor-gitops-red-repo.RLyKhs__local__82989b2d`;
+  confirmed `verificationCheckedRequiredArtifacts=318`, GitOps setups 5,
+  Argo signals 15, Flux source signals 7, Flux reconcile signals 10, workflow
+  signals 15, risk queue 0, all three new artifacts, and
+  `open --target gitops-readiness` -> `html/gitops-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 13/13 tests
+- `pnpm audit:brief`: PASS, 104/104 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

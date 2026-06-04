@@ -118,6 +118,7 @@ import {
   ComposeReadinessReport,
   DevContainerReadinessReport,
   KubernetesReadinessReport,
+  GitOpsReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -242,6 +243,7 @@ export interface AnalysisBundle {
   composeReadinessReport: ComposeReadinessReport;
   devContainerReadinessReport: DevContainerReadinessReport;
   kubernetesReadinessReport: KubernetesReadinessReport;
+  gitopsReadinessReport: GitOpsReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -366,8 +368,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const composeReadinessReport = await buildComposeReadinessReport(walk);
   const devContainerReadinessReport = await buildDevContainerReadinessReport(walk);
   const kubernetesReadinessReport = await buildKubernetesReadinessReport(walk);
+  const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -25518,6 +25521,342 @@ function kubernetesSignalFromSpecs<T extends Record<K, string> & { pattern: RegE
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/kubernetes-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildGitOpsReadinessReport(walk: WalkResult): Promise<GitOpsReadinessReport> {
+  const sourceFiles = await gitopsSourceFiles(walk);
+  const gitopsSetups = gitopsSetupFiles(sourceFiles);
+  const argoSignals = gitopsArgoSignals(sourceFiles);
+  const fluxSourceSignals = gitopsFluxSourceSignals(sourceFiles);
+  const fluxReconcileSignals = gitopsFluxReconcileSignals(sourceFiles);
+  const imageNotificationSignals = gitopsImageNotificationSignals(sourceFiles);
+  const workflowSignals = gitopsWorkflowSignals(sourceFiles);
+  const safetySignals = gitopsSafetySignals(sourceFiles);
+  const packageSignals = gitopsPackageSignals(sourceFiles);
+
+  const hasArgo = argoSignals.some((item) => item.readiness === "ready") || gitopsSetups.some((item) => item.controller === "argo-cd" || item.controller === "hybrid");
+  const hasFlux = fluxSourceSignals.some((item) => item.readiness === "ready") || fluxReconcileSignals.some((item) => item.readiness === "ready") || gitopsSetups.some((item) => item.controller === "flux" || item.controller === "hybrid");
+  const hasApplication = argoSignals.some((item) => item.signal === "application" && item.readiness === "ready") || gitopsSetups.some((item) => item.applicationCount > 0);
+  const hasSource = argoSignals.some((item) => ["repo-url", "target-revision", "path"].includes(item.signal) && item.readiness === "ready") || fluxSourceSignals.some((item) => item.readiness === "ready");
+  const hasDestination = argoSignals.some((item) => item.signal.startsWith("destination") && item.readiness === "ready") || fluxReconcileSignals.some((item) => item.signal === "target-namespace" && item.readiness === "ready");
+  const hasSyncPolicy = argoSignals.some((item) => ["sync-policy", "automated-sync", "prune", "self-heal"].includes(item.signal) && item.readiness === "ready") || fluxReconcileSignals.some((item) => ["prune", "depends-on", "health-checks"].includes(item.signal) && item.readiness === "ready");
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready") || gitopsSetups.some((item) => item.workflowCount > 0);
+  const hasSafety = safetySignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: GitOpsReadinessReport["riskQueue"] = [];
+  if (!hasArgo && !hasFlux) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add Argo CD or Flux custom resources before claiming GitOps readiness.",
+      why: "GitOps readiness needs declarative controller evidence such as Application, ApplicationSet, AppProject, GitRepository, Kustomization, or HelmRelease.",
+      relatedHref: "html/gitops-readiness.html"
+    });
+  }
+  if ((hasArgo || hasFlux) && !hasSource) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace the Git/Helm/OCI source reference, revision, and path.",
+      why: "A GitOps object without a concrete source cannot explain what repository content will be reconciled.",
+      relatedHref: "html/gitops-readiness.html"
+    });
+  }
+  if (hasArgo && !hasApplication) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document Argo CD Application/ApplicationSet coverage.",
+      why: "Argo CD readiness needs a concrete application object, not just generic controller installation evidence.",
+      relatedHref: "html/gitops-readiness.html"
+    });
+  }
+  if ((hasArgo || hasFlux) && !hasDestination) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record destination server, namespace, targetNamespace, or service account boundaries.",
+      why: "GitOps learners need the cluster and namespace boundary before they can reason about reconciliation blast radius.",
+      relatedHref: "html/gitops-readiness.html"
+    });
+  }
+  if ((hasArgo || hasFlux) && !hasSyncPolicy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document sync, prune, self-heal, dependsOn, healthChecks, timeout, and retry behavior.",
+      why: "Reconciliation safety depends on whether the controller prunes, self-heals, waits for health, and orders dependencies.",
+      relatedHref: "html/gitops-readiness.html"
+    });
+  }
+  if ((hasArgo || hasFlux) && !hasWorkflow) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add argocd or flux read-only workflow commands for diff, sync/reconcile, wait, get, trace, tree, logs, and events.",
+      why: "Operational commands explain how to inspect drift and health without RepoTutor contacting a live cluster.",
+      relatedHref: "html/gitops-readiness.html"
+    });
+  }
+  if ((hasArgo || hasFlux) && !hasSafety) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add project boundaries, allow/deny lists, sync windows, dry-run/diff, signed commits, health checks, or manual approval evidence.",
+      why: "GitOps controllers can mutate clusters continuously; static analysis should surface the guardrails before live reconciliation.",
+      relatedHref: "html/gitops-readiness.html"
+    });
+  }
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+
+  return {
+    summary: `GitOps readiness report: setup ${gitopsSetups.length}개, Argo signal ${argoSignals.length}개, Flux source signal ${fluxSourceSignals.length}개, Flux reconcile signal ${fluxReconcileSignals.length}개, workflow signal ${workflowSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "GitOps Argo CD Application ApplicationSet AppProject repoURL targetRevision path destination syncPolicy automated prune selfHeal syncOptions Flux GitRepository HelmRepository OCIRepository Bucket Kustomization HelmRelease dependsOn interval prune suspend healthChecks timeout retryInterval ImageRepository ImagePolicy ImageUpdateAutomation Receiver Alert Provider argocd app sync diff wait get repo add cluster add flux bootstrap reconcile get suspend resume trace tree logs events",
+    gitopsSetups,
+    argoSignals,
+    fluxSourceSignals,
+    fluxReconcileSignals,
+    imageNotificationSignals,
+    workflowSignals,
+    safetySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "argocd app diff <app>", purpose: "Preview Argo CD drift before syncing." },
+      { command: "argocd app sync <app> --prune", purpose: "Review the intended sync and prune workflow for one Application." },
+      { command: "argocd app wait <app> --health", purpose: "Wait for Argo CD to report healthy state after reconciliation." },
+      { command: "argocd app get <app>", purpose: "Inspect source, destination, sync status, and health for one Application." },
+      { command: "flux bootstrap github --owner <owner> --repository <repo> --path <path>", purpose: "Review the Flux bootstrap shape for a Git-backed cluster path." },
+      { command: "flux reconcile kustomization <name> --with-source", purpose: "Manually request Flux reconciliation after source changes." },
+      { command: "flux get all", purpose: "List Flux sources, kustomizations, Helm releases, and status." },
+      { command: "flux trace <kind>/<name>", purpose: "Trace object ownership through Flux reconciliation." },
+      { command: "flux tree kustomization <name>", purpose: "Inspect the resource tree managed by one Flux Kustomization." },
+      { command: "flux logs --kind Kustomization", purpose: "Inspect Flux controller logs for a reconciliation kind." }
+    ],
+    learnerNextSteps: [
+      "Open GitOps Readiness and identify whether the repo uses Argo CD, Flux, or both.",
+      "For Argo CD, map Application/ApplicationSet/AppProject, repoURL, targetRevision, path, destination, and syncPolicy.",
+      "For Flux, map GitRepository/HelmRepository/OCIRepository/Bucket sources before Kustomization or HelmRelease objects.",
+      "Trace prune, self-heal, suspend, dependsOn, healthChecks, timeout, retryInterval, targetNamespace, and serviceAccountName before live reconciliation.",
+      "Review ImageRepository, ImagePolicy, ImageUpdateAutomation, Receiver, Alert, and Provider signals for automation and notifications.",
+      "Run the recommended argocd/flux commands only in a trusted cluster; RepoTutor records GitOps readiness statically and does not contact controllers or Kubernetes APIs."
+    ]
+  };
+}
+
+type GitOpsSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function gitopsSourceFiles(walk: WalkResult): Promise<GitOpsSourceFile[]> {
+  const files: GitOpsSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !gitopsInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!gitopsPathSignal(file.relPath) && !gitopsContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function gitopsInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return gitopsPathSignal(filePath)
+    || /(^|\/)(README|docs?|gitops|argocd|argo-cd|applicationsets?|apps?|clusters?|flux|flux-system|k8s|kubernetes|manifests?|deploy|deployment|overlays?|base|infra|scripts?|ci|workflows?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|Makefile|Taskfile\.ya?ml|justfile|kustomization\.ya?ml)$/i.test(base);
+}
+
+function gitopsPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /(^|\/)(argocd|argo-cd|applicationsets?|gitops|flux|flux-system|clusters?)\/.*\.(ya?ml|json|md)$/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/.*\.(ya?ml)$/i.test(filePath)
+    || /^(application|applicationset|appproject|gitrepository|helmrepository|ocirepository|bucket|kustomization|helmrelease|imagerepository|imagepolicy|imageupdateautomation|receiver|alert|provider)[-.].*\.(ya?ml|json)$/i.test(base)
+    || /^(application|applicationset|appproject|gitrepository|helmrepository|ocirepository|bucket|kustomization|helmrelease|imagerepository|imagepolicy|imageupdateautomation|receiver|alert|provider)\.(ya?ml|json)$/i.test(base);
+}
+
+function gitopsContentSignal(text: string): boolean {
+  return /(argoproj\.io\/v1alpha1|kind\s*:\s*(Application|ApplicationSet|AppProject)\b|repoURL\s*:|targetRevision\s*:|syncPolicy\s*:|selfHeal\s*:|source\.toolkit\.fluxcd\.io|kustomize\.toolkit\.fluxcd\.io|helm\.toolkit\.fluxcd\.io|image\.toolkit\.fluxcd\.io|notification\.toolkit\.fluxcd\.io|kind\s*:\s*(GitRepository|HelmRepository|OCIRepository|Bucket|Kustomization|HelmRelease|ImageRepository|ImagePolicy|ImageUpdateAutomation|Receiver|Alert|Provider)\b|flux\s+(bootstrap|reconcile|get|suspend|resume|trace|tree|logs|events)|argocd\s+(app|repo|cluster)\s+)/i.test(text);
+}
+
+function gitopsSetupFiles(sourceFiles: GitOpsSourceFile[]): GitOpsReadinessReport["gitopsSetups"] {
+  const rows: GitOpsReadinessReport["gitopsSetups"] = [];
+  for (const source of sourceFiles) {
+    const applicationCount = countMatches(source.text, /kind\s*:\s*(Application|ApplicationSet|AppProject)\b|apiVersion\s*:\s*argoproj\.io\/v1alpha1/gi);
+    const sourceCount = countMatches(source.text, /repoURL\s*:|targetRevision\s*:|(^|\n)\s*path\s*:|(^|\n)\s*sources?\s*:/gi);
+    const destinationCount = countMatches(source.text, /(^|\n)\s*destination\s*:|(^|\n)\s*server\s*:|(^|\n)\s*namespace\s*:|targetNamespace\s*:/gi);
+    const syncPolicyCount = countMatches(source.text, /syncPolicy\s*:|automated\s*:|prune\s*:|selfHeal\s*:|syncOptions\s*:/gi);
+    const generatorCount = countMatches(source.text, /generators?\s*:|matrix\s*:|merge\s*:|clusters?\s*:|directories\s*:|scmProvider\s*:|pullRequest\s*:/gi);
+    const fluxSourceCount = countMatches(source.text, /kind\s*:\s*(GitRepository|HelmRepository|OCIRepository|Bucket)\b|source\.toolkit\.fluxcd\.io|sourceRef\s*:|secretRef\s*:|interval\s*:/gi);
+    const fluxReconcileCount = countMatches(source.text, /kind\s*:\s*(Kustomization|HelmRelease)\b|kustomize\.toolkit\.fluxcd\.io|helm\.toolkit\.fluxcd\.io|dependsOn\s*:|healthChecks\s*:|retryInterval\s*:|timeout\s*:|suspend\s*:/gi);
+    const imageAutomationCount = countMatches(source.text, /kind\s*:\s*(ImageRepository|ImagePolicy|ImageUpdateAutomation)\b|image\.toolkit\.fluxcd\.io|imageRepositoryRef\s*:|policy\s*:|ImageUpdateAutomation/gi);
+    const notificationCount = countMatches(source.text, /kind\s*:\s*(Receiver|Alert|Provider)\b|notification\.toolkit\.fluxcd\.io|providerRef\s*:|webhook|events\s*:/gi);
+    const workflowCount = countMatches(source.text, /argocd\s+(app|repo|cluster)\s+(sync|diff|wait|get|add)|flux\s+(bootstrap|reconcile|get|suspend|resume|trace|tree|logs|events)/gi);
+    const totalSignals = applicationCount + sourceCount + destinationCount + syncPolicyCount + generatorCount + fluxSourceCount + fluxReconcileCount + imageAutomationCount + notificationCount + workflowCount;
+    if (totalSignals === 0 && !gitopsPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      controller: gitopsController(source),
+      applicationCount,
+      sourceCount,
+      destinationCount,
+      syncPolicyCount,
+      generatorCount,
+      fluxSourceCount,
+      fluxReconcileCount,
+      imageAutomationCount,
+      notificationCount,
+      workflowCount,
+      readiness: totalSignals >= 7 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} GitOps/Argo CD/Flux signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.applicationCount + b.sourceCount + b.destinationCount + b.syncPolicyCount + b.fluxSourceCount + b.fluxReconcileCount + b.workflowCount;
+    const aScore = a.applicationCount + a.sourceCount + a.destinationCount + a.syncPolicyCount + a.fluxSourceCount + a.fluxReconcileCount + a.workflowCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 80);
+}
+
+function gitopsController(source: GitOpsSourceFile): GitOpsReadinessReport["gitopsSetups"][number]["controller"] {
+  const argo = /argocd|argo-cd|argoproj\.io|ApplicationSet|AppProject|kind\s*:\s*Application\b/i.test(source.filePath) || /argocd|argoproj\.io|ApplicationSet|AppProject|kind\s*:\s*Application\b/i.test(source.text);
+  const flux = /flux|fluxcd|toolkit\.fluxcd\.io|GitRepository|HelmRelease|ImageUpdateAutomation/i.test(source.filePath) || /fluxcd|flux\s+(bootstrap|reconcile|get|suspend|resume|trace|tree|logs|events)|toolkit\.fluxcd\.io|GitRepository|HelmRelease|ImageUpdateAutomation/i.test(source.text);
+  if (argo && flux) return "hybrid";
+  if (argo) return "argo-cd";
+  if (flux) return "flux";
+  if (/^(package\.json|Makefile|Taskfile\.ya?ml|justfile)$/i.test(path.basename(source.filePath))) return "package-script";
+  if (/\.github\/workflows\/.*\.ya?ml$/i.test(source.filePath)) return "workflow";
+  if (/^README\.md$/i.test(path.basename(source.filePath))) return "readme";
+  return "unknown";
+}
+
+function gitopsArgoSignals(sourceFiles: GitOpsSourceFile[]): GitOpsReadinessReport["argoSignals"] {
+  const specs: Array<{ signal: GitOpsReadinessReport["argoSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "application", pattern: /kind\s*:\s*Application\b|argocd\s+app\s+/i, evidence: "Argo CD Application evidence was detected." },
+    { signal: "applicationset", pattern: /kind\s*:\s*ApplicationSet\b|ApplicationSet/i, evidence: "ApplicationSet evidence was detected." },
+    { signal: "app-project", pattern: /kind\s*:\s*AppProject\b|AppProject|sourceRepos\s*:|destinations\s*:/i, evidence: "AppProject boundary evidence was detected." },
+    { signal: "repo-url", pattern: /repoURL\s*:/i, evidence: "repoURL evidence was detected." },
+    { signal: "target-revision", pattern: /targetRevision\s*:/i, evidence: "targetRevision evidence was detected." },
+    { signal: "path", pattern: /(^|\n)\s*path\s*:/i, evidence: "application path evidence was detected." },
+    { signal: "destination-server", pattern: /destination\s*:|server\s*:\s*https?:|server\s*:\s*https:\/\/kubernetes\.default\.svc/i, evidence: "destination server evidence was detected." },
+    { signal: "destination-namespace", pattern: /destination\s*:|namespace\s*:/i, evidence: "destination namespace evidence was detected." },
+    { signal: "sync-policy", pattern: /syncPolicy\s*:/i, evidence: "syncPolicy evidence was detected." },
+    { signal: "automated-sync", pattern: /automated\s*:/i, evidence: "automated sync evidence was detected." },
+    { signal: "prune", pattern: /prune\s*:\s*true|--prune\b/i, evidence: "prune evidence was detected." },
+    { signal: "self-heal", pattern: /selfHeal\s*:\s*true/i, evidence: "selfHeal evidence was detected." },
+    { signal: "sync-options", pattern: /syncOptions\s*:|CreateNamespace=true|ApplyOutOfSyncOnly=true/i, evidence: "syncOptions evidence was detected." },
+    { signal: "helm-source", pattern: /(^|\n)\s*helm\s*:|valueFiles\s*:/i, evidence: "Argo Helm source evidence was detected." },
+    { signal: "kustomize-source", pattern: /(^|\n)\s*kustomize\s*:|namePrefix\s*:|nameSuffix\s*:/i, evidence: "Argo Kustomize source evidence was detected." }
+  ];
+  return gitopsSignalFromSpecs(sourceFiles, specs, "argo", "signal");
+}
+
+function gitopsFluxSourceSignals(sourceFiles: GitOpsSourceFile[]): GitOpsReadinessReport["fluxSourceSignals"] {
+  const specs: Array<{ signal: GitOpsReadinessReport["fluxSourceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "git-repository", pattern: /kind\s*:\s*GitRepository\b|source\.toolkit\.fluxcd\.io/i, evidence: "GitRepository evidence was detected." },
+    { signal: "helm-repository", pattern: /kind\s*:\s*HelmRepository\b/i, evidence: "HelmRepository evidence was detected." },
+    { signal: "oci-repository", pattern: /kind\s*:\s*OCIRepository\b|oci:\/\//i, evidence: "OCIRepository evidence was detected." },
+    { signal: "bucket", pattern: /kind\s*:\s*Bucket\b/i, evidence: "Bucket source evidence was detected." },
+    { signal: "source-ref", pattern: /sourceRef\s*:/i, evidence: "sourceRef evidence was detected." },
+    { signal: "interval", pattern: /interval\s*:/i, evidence: "interval evidence was detected." },
+    { signal: "secret-ref", pattern: /secretRef\s*:/i, evidence: "secretRef evidence was detected." }
+  ];
+  return gitopsSignalFromSpecs(sourceFiles, specs, "flux source", "signal");
+}
+
+function gitopsFluxReconcileSignals(sourceFiles: GitOpsSourceFile[]): GitOpsReadinessReport["fluxReconcileSignals"] {
+  const specs: Array<{ signal: GitOpsReadinessReport["fluxReconcileSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kustomization", pattern: /kind\s*:\s*Kustomization\b|kustomize\.toolkit\.fluxcd\.io/i, evidence: "Flux Kustomization evidence was detected." },
+    { signal: "helm-release", pattern: /kind\s*:\s*HelmRelease\b|helm\.toolkit\.fluxcd\.io/i, evidence: "HelmRelease evidence was detected." },
+    { signal: "depends-on", pattern: /dependsOn\s*:/i, evidence: "dependsOn evidence was detected." },
+    { signal: "prune", pattern: /prune\s*:\s*true/i, evidence: "prune evidence was detected." },
+    { signal: "suspend", pattern: /suspend\s*:\s*(true|false)|flux\s+suspend|flux\s+resume/i, evidence: "suspend/resume evidence was detected." },
+    { signal: "health-checks", pattern: /healthChecks\s*:/i, evidence: "healthChecks evidence was detected." },
+    { signal: "timeout", pattern: /timeout\s*:/i, evidence: "timeout evidence was detected." },
+    { signal: "retry-interval", pattern: /retryInterval\s*:/i, evidence: "retryInterval evidence was detected." },
+    { signal: "target-namespace", pattern: /targetNamespace\s*:|namespace\s*:/i, evidence: "target namespace evidence was detected." },
+    { signal: "service-account", pattern: /serviceAccountName\s*:/i, evidence: "serviceAccountName evidence was detected." }
+  ];
+  return gitopsSignalFromSpecs(sourceFiles, specs, "flux reconcile", "signal");
+}
+
+function gitopsImageNotificationSignals(sourceFiles: GitOpsSourceFile[]): GitOpsReadinessReport["imageNotificationSignals"] {
+  const specs: Array<{ signal: GitOpsReadinessReport["imageNotificationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "image-repository", pattern: /kind\s*:\s*ImageRepository\b/i, evidence: "ImageRepository evidence was detected." },
+    { signal: "image-policy", pattern: /kind\s*:\s*ImagePolicy\b/i, evidence: "ImagePolicy evidence was detected." },
+    { signal: "image-update-automation", pattern: /kind\s*:\s*ImageUpdateAutomation\b/i, evidence: "ImageUpdateAutomation evidence was detected." },
+    { signal: "receiver", pattern: /kind\s*:\s*Receiver\b/i, evidence: "Receiver evidence was detected." },
+    { signal: "alert", pattern: /kind\s*:\s*Alert\b/i, evidence: "Alert evidence was detected." },
+    { signal: "provider", pattern: /kind\s*:\s*Provider\b|providerRef\s*:/i, evidence: "Provider evidence was detected." },
+    { signal: "webhook", pattern: /webhook|events\s*:/i, evidence: "webhook/event evidence was detected." }
+  ];
+  return gitopsSignalFromSpecs(sourceFiles, specs, "image/notification", "signal");
+}
+
+function gitopsWorkflowSignals(sourceFiles: GitOpsSourceFile[]): GitOpsReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: GitOpsReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "argocd-app-sync", pattern: /argocd\s+app\s+sync\b/i, evidence: "argocd app sync evidence was detected." },
+    { signal: "argocd-app-diff", pattern: /argocd\s+app\s+diff\b/i, evidence: "argocd app diff evidence was detected." },
+    { signal: "argocd-app-wait", pattern: /argocd\s+app\s+wait\b/i, evidence: "argocd app wait evidence was detected." },
+    { signal: "argocd-app-get", pattern: /argocd\s+app\s+get\b/i, evidence: "argocd app get evidence was detected." },
+    { signal: "argocd-repo-add", pattern: /argocd\s+repo\s+add\b/i, evidence: "argocd repo add evidence was detected." },
+    { signal: "argocd-cluster-add", pattern: /argocd\s+cluster\s+add\b/i, evidence: "argocd cluster add evidence was detected." },
+    { signal: "flux-bootstrap", pattern: /flux\s+bootstrap\b/i, evidence: "flux bootstrap evidence was detected." },
+    { signal: "flux-reconcile", pattern: /flux\s+reconcile\b/i, evidence: "flux reconcile evidence was detected." },
+    { signal: "flux-get", pattern: /flux\s+get\b/i, evidence: "flux get evidence was detected." },
+    { signal: "flux-suspend", pattern: /flux\s+suspend\b/i, evidence: "flux suspend evidence was detected." },
+    { signal: "flux-resume", pattern: /flux\s+resume\b/i, evidence: "flux resume evidence was detected." },
+    { signal: "flux-trace", pattern: /flux\s+trace\b/i, evidence: "flux trace evidence was detected." },
+    { signal: "flux-tree", pattern: /flux\s+tree\b/i, evidence: "flux tree evidence was detected." },
+    { signal: "flux-logs", pattern: /flux\s+logs\b/i, evidence: "flux logs evidence was detected." },
+    { signal: "flux-events", pattern: /flux\s+events\b/i, evidence: "flux events evidence was detected." }
+  ];
+  return gitopsSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function gitopsSafetySignals(sourceFiles: GitOpsSourceFile[]): GitOpsReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: GitOpsReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dry-run", pattern: /dry[- ]?run|argocd\s+app\s+diff|kubectl\s+diff/i, evidence: "dry-run/diff evidence was detected." },
+    { signal: "namespace", pattern: /namespace\s*:|targetNamespace\s*:|CreateNamespace=true/i, evidence: "namespace boundary evidence was detected." },
+    { signal: "project-boundary", pattern: /kind\s*:\s*AppProject\b|sourceRepos\s*:|destinations\s*:/i, evidence: "project boundary evidence was detected." },
+    { signal: "sync-window", pattern: /syncWindows\s*:|sync window/i, evidence: "sync window evidence was detected." },
+    { signal: "allow-list", pattern: /allow|whitelist|clusterResourceWhitelist|namespaceResourceWhitelist/i, evidence: "allow-list evidence was detected." },
+    { signal: "deny-list", pattern: /deny|blacklist|clusterResourceBlacklist|namespaceResourceBlacklist/i, evidence: "deny-list evidence was detected." },
+    { signal: "signed-commit", pattern: /signed commit|signature|verify.*commit|GnuPG|gpg/i, evidence: "signed commit evidence was detected." },
+    { signal: "health-check", pattern: /healthChecks\s*:|--health|health status/i, evidence: "health check evidence was detected." },
+    { signal: "drift-detection", pattern: /diff|drift|OutOfSync|reconcile/i, evidence: "drift detection evidence was detected." },
+    { signal: "manual-approval", pattern: /manual approval|manual sync|automated\s*:\s*false|suspend\s*:\s*true/i, evidence: "manual gate evidence was detected." }
+  ];
+  return gitopsSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function gitopsPackageSignals(sourceFiles: GitOpsSourceFile[]): GitOpsReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: GitOpsReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "argocd", pattern: /(^|\W)argocd(\W|$)|argocd\s+(app|repo|cluster)/i, evidence: "argocd CLI evidence was detected." },
+    { signal: "argo-cd", pattern: /argo-cd|Argo CD|argoproj\.io/i, evidence: "Argo CD evidence was detected." },
+    { signal: "flux", pattern: /(^|\W)flux\s+(bootstrap|reconcile|get|suspend|resume|trace|tree|logs|events)/i, evidence: "flux CLI evidence was detected." },
+    { signal: "fluxcd", pattern: /fluxcd|toolkit\.fluxcd\.io/i, evidence: "Flux controller evidence was detected." },
+    { signal: "source-controller", pattern: /source-controller|source\.toolkit\.fluxcd\.io/i, evidence: "source-controller evidence was detected." },
+    { signal: "kustomize-controller", pattern: /kustomize-controller|kustomize\.toolkit\.fluxcd\.io/i, evidence: "kustomize-controller evidence was detected." },
+    { signal: "helm-controller", pattern: /helm-controller|helm\.toolkit\.fluxcd\.io/i, evidence: "helm-controller evidence was detected." },
+    { signal: "notification-controller", pattern: /notification-controller|notification\.toolkit\.fluxcd\.io/i, evidence: "notification-controller evidence was detected." },
+    { signal: "image-automation-controller", pattern: /image-automation-controller|image\.toolkit\.fluxcd\.io/i, evidence: "image automation evidence was detected." }
+  ];
+  return gitopsSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function gitopsSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: GitOpsSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/gitops-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

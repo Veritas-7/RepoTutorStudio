@@ -4741,6 +4741,46 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 205:
   - `caa4037` kubernetes readiness report
 
+- 2026-06-05: AutoResearch Upgrade 206 candidate selected:
+  `argoproj/argo-cd` (`https://github.com/argoproj/argo-cd`; public;
+  Apache-2.0; 23,053 stars; 7,290 forks; updated 2026-06-04T15:05:17Z).
+  Compared with `fluxcd/flux2` (`https://github.com/fluxcd/flux2`; public;
+  Apache-2.0; 8,164 stars; 760 forks; updated 2026-06-04T17:30:02Z);
+  selected Argo CD plus Flux because they model Kubernetes GitOps readiness
+  through Applications, ApplicationSets, AppProjects, Git/Helm/OCI sources,
+  Kustomization/HelmRelease reconciliation, image automation, notifications,
+  and controller CLI workflows. Cloned sparse ignored external sources to
+  `research/external-src/argo-cd` and `research/external-src/flux2` and
+  inspected docs/examples/manifests/workflows without executing external
+  source. Clone HEADs were `2107c9c` and `3c2fe83`; tracked file count for
+  both ignored source paths returned `0`.
+- 2026-06-05: RED gitops-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-gitops-red-studies.YaLqpO/2026-06-05/local__repotutor-gitops-red-repo.RLyKhs__local__71d408ad`;
+  old behavior had `verificationCheckedRequiredArtifacts=315`, was missing
+  `analysis/gitops-readiness-report.json`, `markdown/gitops-readiness.md`,
+  and `html/gitops-readiness.html`, and `open --target gitops-readiness`
+  failed as expected.
+- 2026-06-05: Implemented Argo CD/Flux-style gitops-readiness report:
+  `GitOpsReadinessReportSchema`, `analysis/gitops-readiness-report.json`,
+  `markdown/gitops-readiness.md`, `html/gitops-readiness.html`, GitOps setup
+  detection, Argo signals, Flux source signals, Flux reconcile signals, image
+  and notification signals, workflow signals, safety signals, package signals,
+  recommended commands, risk queue, manifest/session verification coverage,
+  learning-path linkage, nav entry, CLI help target, and
+  `open --target gitops-readiness`.
+- 2026-06-05: GREEN gitops-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-gitops-green-studies.1ODx77/2026-06-05/local__repotutor-gitops-red-repo.RLyKhs__local__82989b2d`;
+  confirmed `verificationCheckedRequiredArtifacts=318`, GitOps setups 5,
+  Argo signals 15, Flux source signals 7, Flux reconcile signals 10,
+  workflow signals 15, risk queue 0, all three new artifacts, and
+  `open --target gitops-readiness` -> `html/gitops-readiness.html`.
+- 2026-06-05: Verification for Upgrade 206:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 13/13 tests
+  - `pnpm audit:brief`: PASS, 104/104 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
