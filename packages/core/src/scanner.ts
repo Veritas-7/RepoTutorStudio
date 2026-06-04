@@ -83,6 +83,7 @@ import {
   ErrorTrackingReadinessReport,
   AnalyticsReadinessReport,
   HttpClientReadinessReport,
+  SchemaValidationReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -172,6 +173,7 @@ export interface AnalysisBundle {
   errorTrackingReadinessReport: ErrorTrackingReadinessReport;
   analyticsReadinessReport: AnalyticsReadinessReport;
   httpClientReadinessReport: HttpClientReadinessReport;
+  schemaValidationReadinessReport: SchemaValidationReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -261,8 +263,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const errorTrackingReadinessReport = await buildErrorTrackingReadinessReport(walk);
   const analyticsReadinessReport = await buildAnalyticsReadinessReport(walk);
   const httpClientReadinessReport = await buildHttpClientReadinessReport(walk);
+  const schemaValidationReadinessReport = await buildSchemaValidationReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -15385,6 +15388,307 @@ function httpClientReadinessSignalFromSpecs<T extends Record<K, string> & { patt
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/http-client-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildSchemaValidationReadinessReport(walk: WalkResult): Promise<SchemaValidationReadinessReport> {
+  const sourceFiles = await schemaValidationReadinessSourceFiles(walk);
+  const schemaSetups = schemaValidationReadinessSetups(sourceFiles);
+  const shapeSignals = schemaValidationReadinessShapeSignals(sourceFiles);
+  const parserSignals = schemaValidationReadinessParserSignals(sourceFiles);
+  const typeSignals = schemaValidationReadinessTypeSignals(sourceFiles);
+  const refinementSignals = schemaValidationReadinessRefinementSignals(sourceFiles);
+  const errorSignals = schemaValidationReadinessErrorSignals(sourceFiles);
+  const integrationSignals = schemaValidationReadinessIntegrationSignals(sourceFiles);
+  const packageSignals = schemaValidationReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasZodPackage = packageSignals.some((item) => item.signal === "zod" && item.readiness === "ready");
+  const hasSetup = schemaSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = schemaSetups.some((item) => item.readiness === "ready");
+  const hasSchema = schemaSetups.some((item) => item.schemaCount > 0) || shapeSignals.some((item) => item.readiness === "ready");
+  const hasParser = parserSignals.some((item) => ["parse", "safe-parse", "parse-async", "safe-parse-async", "decode", "validate"].includes(item.signal) && item.readiness === "ready");
+  const hasSafeParser = parserSignals.some((item) => ["safe-parse", "safe-parse-async"].includes(item.signal) && item.readiness === "ready");
+  const hasTypes = typeSignals.some((item) => ["infer", "input-output", "standard-schema", "json-schema"].includes(item.signal) && item.readiness === "ready");
+  const hasRefinements = refinementSignals.some((item) => item.readiness === "ready");
+  const hasErrors = errorSignals.some((item) => ["zod-error", "issues", "format", "flatten", "treeify", "prettify", "custom-error-map"].includes(item.signal) && item.readiness === "ready") || schemaSetups.some((item) => item.errorCount > 0);
+  const hasIntegration = integrationSignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: SchemaValidationReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasSchema) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the runtime schema validation strategy before claiming validation readiness.",
+      why: "Schema validation readiness starts with explicit schemas, parser calls, input boundaries, error handling, or validation package evidence.",
+      relatedHref: "html/schema-validation-readiness.html"
+    });
+  }
+  if (hasZodPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair Zod package evidence with concrete schemas, parser calls, error handling, and boundary usage.",
+      why: "A schema package in dependencies does not prove that untrusted input is parsed before use or that validation failures are handled.",
+      relatedHref: "html/schema-validation-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup || hasSchema) && !hasParser) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add parse, safeParse, parseAsync, decode, validate, or assert call-site evidence at input boundaries.",
+      why: "Schemas that are only declared do not protect route params, env values, forms, API payloads, or external data unless the boundary invokes them.",
+      relatedHref: "html/schema-validation-readiness.html"
+    });
+  }
+  if (hasParser && !hasSafeParser && !hasErrors) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review thrown parse errors, safeParse branches, ZodError issues, and formatted error responses.",
+      why: "Validation failures need deterministic user/API feedback instead of uncaught exceptions or opaque 500 responses.",
+      relatedHref: "html/schema-validation-readiness.html"
+    });
+  }
+  if (hasRefinements && !hasErrors) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Pair custom refinements and transforms with explicit error messages and tests.",
+      why: "Custom validation logic is where business rules and coercion drift usually appear, so errors need names, paths, and coverage.",
+      relatedHref: "html/schema-validation-readiness.html"
+    });
+  }
+  if (hasReadySetup && !hasTypes) {
+    riskQueue.push({
+      priority: "low",
+      action: "Link runtime schemas to static types with z.infer, z.input/z.output, Standard Schema, JSON Schema, or OpenAPI exports.",
+      why: "Runtime validation is easier to maintain when inferred types and generated contracts stay close to the schema definition.",
+      relatedHref: "html/schema-validation-readiness.html"
+    });
+  }
+  if (hasSetup && !hasIntegration) {
+    riskQueue.push({
+      priority: "low",
+      action: "Check whether schemas are wired to env, API, form, tRPC, database, or JSON Schema/OpenAPI boundaries.",
+      why: "Schema libraries deliver the most value when they guard real ingress and contract surfaces instead of isolated helper files.",
+      relatedHref: "html/schema-validation-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run validator behavior tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not execute schemas, parsers, async refinements, transforms, coercions, user-supplied validation logic, or the analyzed project's tests.",
+    relatedHref: "html/schema-validation-readiness.html"
+  });
+
+  return {
+    summary: `Zod식 schema validation readiness report: setup ${schemaSetups.length}개, shape signal ${shapeSignals.length}개, parser signal ${parserSignals.length}개, error signal ${errorSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "z.object z.array z.union z.discriminatedUnion parse safeParse parseAsync safeParseAsync z.infer z.input z.output refine superRefine transform preprocess coerce ZodError flatten treeifyError toJSONSchema",
+    schemaSetups,
+    shapeSignals,
+    parserSignals,
+    typeSignals,
+    refinementSignals,
+    errorSignals,
+    integrationSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"z\\.object|z\\.array|z\\.union|z\\.discriminatedUnion|z\\.enum|z\\.literal|z\\.record\" src app packages", purpose: "Inventory schema definitions and shape composition." },
+      { command: "rg \"\\.parse\\(|\\.safeParse\\(|\\.parseAsync\\(|\\.safeParseAsync\\(|decode\\(|validate\\(\" src app packages", purpose: "Find input-boundary parser and validator call sites." },
+      { command: "rg \"z\\.infer|z\\.input|z\\.output|StandardSchema|toJSONSchema|openapi\" src app packages", purpose: "Check runtime-to-static type and contract generation links." },
+      { command: "rg \"refine|superRefine|transform|preprocess|coerce|\\.default\\(|\\.catch\\(|\\.pipe\\(|codec\" src app packages", purpose: "Review custom rules, coercion, transforms, defaults, and pipeline behavior." },
+      { command: "rg \"ZodError|issues|format\\(|flatten\\(|treeifyError|prettifyError|errorMap\" src app packages", purpose: "Inspect validation failure reporting and user/API error shaping." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise schema parsing, invalid inputs, error output, and integration boundaries." }
+    ],
+    learnerNextSteps: [
+      "먼저 z.object, z.array, z.union, z.discriminatedUnion 같은 schema shape가 어디에 모여 있는지 확인하세요.",
+      "parse와 safeParse 호출 위치를 찾아 env, API payload, route params, form input, external data 같은 ingress boundary를 실제로 막는지 확인하세요.",
+      "refine, superRefine, transform, preprocess, coerce, default, catch는 비즈니스 규칙과 타입 변환이 숨어 있으므로 오류 메시지와 테스트를 같이 확인하세요.",
+      "ZodError issues, format, flatten, treeifyError, prettifyError가 사용자/API 응답으로 어떻게 바뀌는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 validator 실행, async refinement, transform, coercion, 프로젝트 테스트는 안전한 로컬 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type SchemaValidationReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function schemaValidationReadinessSourceFiles(walk: WalkResult): Promise<SchemaValidationReadinessSourceFile[]> {
+  const files: SchemaValidationReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !schemaValidationReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!schemaValidationReadinessPathSignal(file.relPath) && !schemaValidationReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function schemaValidationReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return schemaValidationReadinessPathSignal(filePath)
+    || /^(package\.json|schema\.[cm]?[jt]sx?|schemas\.[cm]?[jt]sx?|validation\.[cm]?[jt]sx?|validator\.[cm]?[jt]sx?|env\.[cm]?[jt]sx?|api\.[cm]?[jt]sx?|form\.[cm]?[jt]sx?|route\.[cm]?[jt]sx?)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env|toml)$/i.test(filePath);
+}
+
+function schemaValidationReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(schema|schemas|validation|validations|validator|validators|zod|yup|ajv|joi|valibot|arktype|io-ts|contract|contracts|dto|dtos|env|forms?|api|routes?)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function schemaValidationReadinessContentSignal(text: string): boolean {
+  return /(from ['"]zod['"]|require\(['"]zod['"]\)|\bz\.(object|array|string|number|boolean|enum|union|discriminatedUnion|literal|record|tuple|intersection|lazy|strictObject|looseObject|coerce)|\.parse\s*\(|\.safeParse\s*\(|\.parseAsync\s*\(|\.safeParseAsync\s*\(|z\.infer|z\.input|z\.output|ZodError|treeifyError|prettifyError|toJSONSchema|superRefine|refine\s*\(|preprocess|zodResolver|drizzle-zod|zod-to-json-schema|new Ajv|ajv\.compile|yup\.)/i.test(text);
+}
+
+function schemaValidationReadinessSetups(sourceFiles: SchemaValidationReadinessSourceFile[]): SchemaValidationReadinessReport["schemaSetups"] {
+  const rows: SchemaValidationReadinessReport["schemaSetups"] = [];
+  for (const source of sourceFiles) {
+    const schemaCount = countMatches(source.text, /\bz\.(object|array|string|number|boolean|bigint|date|enum|nativeEnum|union|discriminatedUnion|literal|record|map|set|tuple|intersection|lazy|strictObject|looseObject|custom|instanceof)\s*\(|\byup\.(object|string|number|array|boolean|date)\s*\(|new Ajv\s*\(|ajv\.compile\s*\(|Joi\.(object|string|number|array|boolean)\s*\(|\bv\.(object|string|number|array|boolean)\s*\(/gi);
+    const parseCount = countMatches(source.text, /\.(parse|parseAsync)\s*\(|\bz\.parse\s*\(|\bdecode\s*\(|\bvalidate\s*\(|\bassert\s*\(/gi);
+    const safeParseCount = countMatches(source.text, /\.safeParse(Async)?\s*\(|safeParseAsync\s*\(/gi);
+    const refinementCount = countMatches(source.text, /\.refine\s*\(|\.superRefine\s*\(|\.check\s*\(|\.min\s*\(|\.max\s*\(|\.email\s*\(|\.url\s*\(|\.regex\s*\(/gi);
+    const transformCount = countMatches(source.text, /\.transform\s*\(|\.preprocess\s*\(|\bz\.coerce\.|\.pipe\s*\(|\.codec\s*\(|\.default\s*\(|\.catch\s*\(/gi);
+    const errorCount = countMatches(source.text, /ZodError|\.issues\b|\.format\s*\(|\.flatten\s*\(|treeifyError|prettifyError|errorMap|invalid_type_error|required_error|catch\s*\(/gi);
+    const hasSetupSignal = schemaCount + parseCount + safeParseCount + refinementCount + transformCount + errorCount > 0 || /\b(schema validation|runtime validation|validator|validated input)\b/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: schemaValidationReadinessProvider(source),
+      schemaCount,
+      parseCount,
+      safeParseCount,
+      refinementCount,
+      transformCount,
+      errorCount,
+      readiness: schemaCount > 0 && (parseCount > 0 || safeParseCount > 0) && errorCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains schemas ${schemaCount}, parse calls ${parseCount}, safeParse calls ${safeParseCount}, refinements ${refinementCount}, transforms/coercions ${transformCount}, error handling ${errorCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function schemaValidationReadinessProvider(source: SchemaValidationReadinessSourceFile): SchemaValidationReadinessReport["schemaSetups"][number]["provider"] {
+  if (/from ['"]zod['"]|require\(['"]zod['"]\)|\bz\.(object|array|string|number|enum|union|coerce)|ZodError/i.test(source.text)) return "zod";
+  if (/\byup\.|from ['"]yup['"]|require\(['"]yup['"]\)/i.test(source.text)) return "yup";
+  if (/new Ajv|ajv\.compile|from ['"]ajv['"]|require\(['"]ajv['"]\)/i.test(source.text)) return "ajv";
+  if (/\bJoi\.|from ['"]joi['"]|require\(['"]joi['"]\)/i.test(source.text)) return "joi";
+  if (/\bv\.(object|string|number|array)|from ['"]valibot['"]|require\(['"]valibot['"]\)/i.test(source.text)) return "valibot";
+  if (/type\s*\(|from ['"]arktype['"]|require\(['"]arktype['"]\)/i.test(source.text)) return "arktype";
+  if (/from ['"]io-ts['"]|require\(['"]io-ts['"]\)|\bt\.type\s*\(|\bt\.exact\s*\(/i.test(source.text)) return "io-ts";
+  if (/\b(schema validation|runtime validation|validator|validated input)\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function schemaValidationReadinessShapeSignals(sourceFiles: SchemaValidationReadinessSourceFile[]): SchemaValidationReadinessReport["shapeSignals"] {
+  const specs: Array<{ signal: SchemaValidationReadinessReport["shapeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "object", pattern: /\bz\.(object|strictObject|looseObject)\s*\(|\byup\.object\s*\(|Joi\.object\s*\(|\bv\.object\s*\(/i, evidence: "object schema evidence was detected." },
+    { signal: "array", pattern: /\bz\.array\s*\(|\.array\s*\(|array\(/i, evidence: "array schema evidence was detected." },
+    { signal: "union", pattern: /\bz\.union\s*\(|\.or\s*\(|\.union\s*\(/i, evidence: "union schema evidence was detected." },
+    { signal: "discriminated-union", pattern: /discriminatedUnion|discriminator|taggedUnion/i, evidence: "discriminated union evidence was detected." },
+    { signal: "enum", pattern: /\bz\.(enum|nativeEnum)\s*\(|\.oneOf\s*\(|Joi\.valid\s*\(/i, evidence: "enum/oneOf evidence was detected." },
+    { signal: "literal", pattern: /\bz\.literal\s*\(|literal\s*\(/i, evidence: "literal schema evidence was detected." },
+    { signal: "record", pattern: /\bz\.record\s*\(|\.record\s*\(|record\(/i, evidence: "record/map schema evidence was detected." },
+    { signal: "optional-nullable", pattern: /\.optional\s*\(|\.nullable\s*\(|\.nullish\s*\(|\.required\s*\(/i, evidence: "optional/nullable/required evidence was detected." },
+    { signal: "strict-passthrough", pattern: /\.strict\s*\(|\.passthrough\s*\(|\.strip\s*\(|\.catchall\s*\(|unknownKeys/i, evidence: "strict/passthrough/unknown-key policy evidence was detected." }
+  ];
+  return schemaValidationReadinessSignalFromSpecs(sourceFiles, specs, "shape", "signal");
+}
+
+function schemaValidationReadinessParserSignals(sourceFiles: SchemaValidationReadinessSourceFile[]): SchemaValidationReadinessReport["parserSignals"] {
+  const specs: Array<{ signal: SchemaValidationReadinessReport["parserSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "parse", pattern: /\.parse\s*\(|\bz\.parse\s*\(/i, evidence: "parse call evidence was detected." },
+    { signal: "safe-parse", pattern: /\.safeParse\s*\(/i, evidence: "safeParse call evidence was detected." },
+    { signal: "parse-async", pattern: /\.parseAsync\s*\(/i, evidence: "parseAsync call evidence was detected." },
+    { signal: "safe-parse-async", pattern: /\.safeParseAsync\s*\(|\.spa\s*\(/i, evidence: "safeParseAsync call evidence was detected." },
+    { signal: "decode", pattern: /\.decode\s*\(|decodeUnknown|decodeSync/i, evidence: "decode call evidence was detected." },
+    { signal: "validate", pattern: /\.validate\s*\(|validateSync|ajv\.validate|validator\.validate/i, evidence: "validate call evidence was detected." },
+    { signal: "assert", pattern: /\.assert\s*\(|asserts\s+|assertSchema|assertValid/i, evidence: "assertion validation evidence was detected." }
+  ];
+  return schemaValidationReadinessSignalFromSpecs(sourceFiles, specs, "parser", "signal");
+}
+
+function schemaValidationReadinessTypeSignals(sourceFiles: SchemaValidationReadinessSourceFile[]): SchemaValidationReadinessReport["typeSignals"] {
+  const specs: Array<{ signal: SchemaValidationReadinessReport["typeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "infer", pattern: /z\.infer\s*<|InferType|TypeOf|Static<typeof/i, evidence: "schema-to-type inference evidence was detected." },
+    { signal: "input-output", pattern: /z\.(input|output)\s*<|_input|_output|InputOf|OutputOf/i, evidence: "separate input/output type evidence was detected." },
+    { signal: "branded", pattern: /\.brand\s*<|brand\s*\(|Branded|opaque/i, evidence: "branded/opaque type evidence was detected." },
+    { signal: "standard-schema", pattern: /StandardSchema|~standard|standard-schema/i, evidence: "Standard Schema evidence was detected." },
+    { signal: "json-schema", pattern: /toJSONSchema|from-json-schema|jsonSchema|JSON Schema|zod-to-json-schema/i, evidence: "JSON Schema conversion evidence was detected." },
+    { signal: "openapi", pattern: /openapi|OpenAPI|swagger|zod-openapi|zod-to-openapi/i, evidence: "OpenAPI export evidence was detected." }
+  ];
+  return schemaValidationReadinessSignalFromSpecs(sourceFiles, specs, "type", "signal");
+}
+
+function schemaValidationReadinessRefinementSignals(sourceFiles: SchemaValidationReadinessSourceFile[]): SchemaValidationReadinessReport["refinementSignals"] {
+  const specs: Array<{ signal: SchemaValidationReadinessReport["refinementSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "refine", pattern: /\.refine\s*\(|\.check\s*\(/i, evidence: "refine/check evidence was detected." },
+    { signal: "super-refine", pattern: /\.superRefine\s*\(|ctx\.addIssue/i, evidence: "superRefine/addIssue evidence was detected." },
+    { signal: "transform", pattern: /\.transform\s*\(|\.overwrite\s*\(/i, evidence: "transform evidence was detected." },
+    { signal: "preprocess", pattern: /\.preprocess\s*\(|z\.preprocess\s*\(/i, evidence: "preprocess evidence was detected." },
+    { signal: "coerce", pattern: /z\.coerce\.|coerce\s*:/i, evidence: "coercion evidence was detected." },
+    { signal: "default-catch", pattern: /\.default\s*\(|\.catch\s*\(|\.prefault\s*\(/i, evidence: "default/catch fallback evidence was detected." },
+    { signal: "pipe-codec", pattern: /\.pipe\s*\(|\.codec\s*\(|z\.codec\s*\(/i, evidence: "pipe/codec evidence was detected." }
+  ];
+  return schemaValidationReadinessSignalFromSpecs(sourceFiles, specs, "refinement", "signal");
+}
+
+function schemaValidationReadinessErrorSignals(sourceFiles: SchemaValidationReadinessSourceFile[]): SchemaValidationReadinessReport["errorSignals"] {
+  const specs: Array<{ signal: SchemaValidationReadinessReport["errorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "zod-error", pattern: /ZodError|ValidationError|AjvError/i, evidence: "validation error class evidence was detected." },
+    { signal: "issues", pattern: /\.issues\b|issue\.path|issue\.message|ctx\.addIssue/i, evidence: "issue list evidence was detected." },
+    { signal: "format", pattern: /\.format\s*\(|formatError|formattedError/i, evidence: "formatted error evidence was detected." },
+    { signal: "flatten", pattern: /\.flatten\s*\(|flattenError|fieldErrors|formErrors/i, evidence: "flattened error evidence was detected." },
+    { signal: "treeify", pattern: /treeifyError|treeify|nestedErrors/i, evidence: "treeified error evidence was detected." },
+    { signal: "prettify", pattern: /prettifyError|prettify|prettyError/i, evidence: "pretty error evidence was detected." },
+    { signal: "custom-error-map", pattern: /errorMap|setErrorMap|invalid_type_error|required_error|message\s*:/i, evidence: "custom validation message evidence was detected." }
+  ];
+  return schemaValidationReadinessSignalFromSpecs(sourceFiles, specs, "error", "signal");
+}
+
+function schemaValidationReadinessIntegrationSignals(sourceFiles: SchemaValidationReadinessSourceFile[]): SchemaValidationReadinessReport["integrationSignals"] {
+  const specs: Array<{ signal: SchemaValidationReadinessReport["integrationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "env-validation", pattern: /process\.env|import\.meta\.env|envSchema|createEnv|envalid|dotenv|PUBLIC_/i, evidence: "environment validation evidence was detected." },
+    { signal: "api-validation", pattern: /Request|Response|req\.body|request\.json|params|searchParams|route|router|endpoint|middleware/i, evidence: "API/request boundary evidence was detected." },
+    { signal: "form-validation", pattern: /zodResolver|react-hook-form|useForm|FormData|formSchema|fieldErrors/i, evidence: "form validation evidence was detected." },
+    { signal: "trpc", pattern: /\btrpc\b|t\.procedure|publicProcedure|input\s*\(/i, evidence: "tRPC validation evidence was detected." },
+    { signal: "react-hook-form", pattern: /@hookform\/resolvers|zodResolver|yupResolver|react-hook-form/i, evidence: "React Hook Form resolver evidence was detected." },
+    { signal: "drizzle-zod", pattern: /drizzle-zod|createInsertSchema|createSelectSchema/i, evidence: "drizzle-zod schema bridge evidence was detected." },
+    { signal: "json-schema-export", pattern: /toJSONSchema|zod-to-json-schema|openapi|OpenAPI|swagger/i, evidence: "JSON Schema/OpenAPI export evidence was detected." }
+  ];
+  return schemaValidationReadinessSignalFromSpecs(sourceFiles, specs, "integration", "signal");
+}
+
+function schemaValidationReadinessPackageSignals(sourceFiles: SchemaValidationReadinessSourceFile[]): SchemaValidationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: SchemaValidationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "zod", pattern: /"zod"|from ['"]zod['"]|require\(['"]zod['"]\)|\bz\.(object|array|string|number|enum|union)/i, evidence: "zod package/import evidence was detected." },
+    { signal: "@hookform/resolvers", pattern: /@hookform\/resolvers|zodResolver|yupResolver/i, evidence: "React Hook Form resolver package/import evidence was detected." },
+    { signal: "drizzle-zod", pattern: /"drizzle-zod"|from ['"]drizzle-zod['"]|createInsertSchema|createSelectSchema/i, evidence: "drizzle-zod package/import evidence was detected." },
+    { signal: "zod-to-json-schema", pattern: /"zod-to-json-schema"|from ['"]zod-to-json-schema['"]|zodToJsonSchema/i, evidence: "zod-to-json-schema package/import evidence was detected." },
+    { signal: "ajv", pattern: /"ajv"|from ['"]ajv['"]|new Ajv|ajv\.compile/i, evidence: "Ajv package/import evidence was detected." },
+    { signal: "yup", pattern: /"yup"|from ['"]yup['"]|\byup\./i, evidence: "Yup package/import evidence was detected." },
+    { signal: "valibot", pattern: /"valibot"|from ['"]valibot['"]|\bv\.(object|string|number|array)/i, evidence: "Valibot package/import evidence was detected." },
+    { signal: "io-ts", pattern: /"io-ts"|from ['"]io-ts['"]|\bt\.(type|exact|union)/i, evidence: "io-ts package/import evidence was detected." }
+  ];
+  return schemaValidationReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function schemaValidationReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: SchemaValidationReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/schema-validation-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

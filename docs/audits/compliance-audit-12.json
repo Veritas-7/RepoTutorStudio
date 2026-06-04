@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-04T09:29:01.805Z",
+  "createdAt": "2026-06-04T09:40:10.263Z",
   "checks": [
     {
       "name": "project setup",
@@ -445,6 +445,13 @@
     },
     {
       "name": "http client readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "schema validation readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

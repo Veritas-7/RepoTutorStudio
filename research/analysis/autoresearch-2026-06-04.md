@@ -4334,6 +4334,57 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 68/68 audit checks across 13 generated reports
 
+### Upgrade 171: Schema Validation Readiness Report
+
+- Cloned and inspected `colinhacks/zod` under
+  `research/external-src/colinhacks-zod` without executing external source.
+  Clone HEAD was `bbc68f9`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 42,860 stars, 1,995 forks,
+  updated 2026-06-04T08:39:38Z. Compared with `jquense/yup`,
+  `ajv-validator/ajv`, and `gcanti/io-ts`; selected Zod because it directly
+  models TypeScript-first schema validation readiness: schema shapes,
+  parse/safeParse, async parsing, inferred input/output types, refinements,
+  transforms, coercion, defaults, error issues/formatting, Standard Schema, and
+  JSON Schema conversion. No source code was copied into RepoTutor.
+- Implemented Zod-style schema-validation-readiness report:
+  `SchemaValidationReadinessReportSchema`,
+  `analysis/schema-validation-readiness-report.json`,
+  `markdown/schema-validation-readiness.md`,
+  `html/schema-validation-readiness.html`, schema setups, shape signals,
+  parser signals, type signals, refinement signals, error signals, integration
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target schema-validation-readiness`.
+- Source pattern: Zod separates schema shape through `z.object`, `z.array`,
+  `z.union`, `z.discriminatedUnion`, enums, literals, records, optional and
+  unknown-key controls; parsing through `parse`, `safeParse`, `parseAsync`,
+  `safeParseAsync`, decode, validate, and assert call sites; type linkage
+  through `z.infer`, `z.input`, `z.output`, Standard Schema, JSON Schema, and
+  OpenAPI exports; refinement through `refine`, `superRefine`, `transform`,
+  `preprocess`, `coerce`, defaults, catches, pipes, and codecs; and failure
+  output through `ZodError`, issues, format, flatten, treeify, prettify, and
+  custom error maps. RepoTutor maps that to deterministic static schema
+  validation readiness and explicitly does not execute schemas, parsers, async
+  refinements, transforms, coercions, user-supplied validation logic, or the
+  analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-schema-validation-readiness-red-studies.oR7uY4/2026-06-04/local__simple-ts-app__main__ad85b95b`;
+  old behavior was missing
+  `analysis/schema-validation-readiness-report.json`,
+  `markdown/schema-validation-readiness.md`, and
+  `html/schema-validation-readiness.html`, and `open --target
+  schema-validation-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-schema-validation-readiness-green-studies.BirGH0/2026-06-04/local__simple-ts-app__main__ad85b95b`;
+  confirmed `verificationCheckedRequiredArtifacts=213`, schema setups 0,
+  shape signals 9, parser signals 7, type signals 6, refinement signals 7,
+  error signals 7, integration signals 7, package signals 8, risk queue 2, and
+  `open --target schema-validation-readiness` ->
+  `html/schema-validation-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 69/69 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
