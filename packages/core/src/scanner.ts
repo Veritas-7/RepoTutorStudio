@@ -38,6 +38,7 @@ import {
   SecurityReadinessReport,
   ScorecardReport,
   ProvenanceReport,
+  AdvisoryReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -82,6 +83,7 @@ export interface AnalysisBundle {
   securityReadinessReport: SecurityReadinessReport;
   scorecardReport: ScorecardReport;
   provenanceReport: ProvenanceReport;
+  advisoryReport: AdvisoryReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -124,10 +126,11 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const licenseRightsReport = await buildLicenseRightsReport(walk);
   const sbomReport = await buildSbomReport(context, walk);
   const securityReadinessReport = buildSecurityReadinessReport(walk, sbomReport, licenseRightsReport);
+  const advisoryReport = await buildAdvisoryReport(walk, sbomReport, securityReadinessReport, licenseRightsReport);
   const scorecardReport = await buildScorecardReport(walk, licenseRightsReport, sbomReport, securityReadinessReport);
   const provenanceReport = buildProvenanceReport(context, walk, sbomReport, securityReadinessReport, sourceSnapshotReport);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, scorecardReport, provenanceReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -2285,6 +2288,297 @@ function buildSecurityReadinessReport(
       "license와 SBOM report를 함께 보고 공개/배포 전 누락된 evidence를 보강하세요."
     ]
   };
+}
+
+async function buildAdvisoryReport(
+  walk: WalkResult,
+  sbomReport: SbomReport,
+  securityReadinessReport: SecurityReadinessReport,
+  licenseRightsReport: LicenseRightsReport
+): Promise<AdvisoryReport> {
+  const packageQueryTargets = sbomReport.packageArtifacts.slice(0, 80).map((pkg): AdvisoryReport["packageQueryTargets"][number] => ({
+    name: pkg.name,
+    ecosystem: advisoryEcosystemForPackage(pkg.packageType, pkg.ecosystem),
+    version: pkg.version,
+    purl: pkg.purl,
+    sourceType: "manifest",
+    readiness: pkg.version ? "queryable" : "partial",
+    evidence: pkg.version
+      ? `${pkg.foundBy} declares ${pkg.name}@${pkg.version}; OSV-style matching can query by ecosystem, name, and version.`
+      : `${pkg.foundBy} declares ${pkg.name}, but no resolved version was available for exact vulnerability matching.`,
+    relatedHref: pkg.evidenceHref
+  }));
+  const lockfileArtifacts = sbomReport.fileArtifacts.filter((artifact) => artifact.artifactKind === "lockfile");
+  const lockfileSignals: AdvisoryReport["lockfileSignals"] = lockfileArtifacts.map((artifact) => {
+    const packageCount = advisoryPackageCountForLockfile(artifact.filePath, sbomReport);
+    return {
+      filePath: artifact.filePath,
+      ecosystem: advisoryEcosystemForLockfile(artifact.filePath),
+      packageCount,
+      readiness: packageCount > 0 ? "ready" : "partial",
+      sourceHref: artifact.sourceHref
+    };
+  });
+  const configFiles = walk.files.filter((file) => isOsvScannerConfigFile(file.relPath));
+  const configTexts = await Promise.all(configFiles.map(async (file) => ({
+    filePath: file.relPath,
+    text: await readTextIfSafe(file.absPath, 120_000)
+  })));
+  const configText = configTexts.map((item) => item.text ?? "").join("\n");
+  const hasIgnoredVulns = /\[\[IgnoredVulns\]\]|IgnoredVulns/i.test(configText);
+  const hasPackageOverrides = /\[\[PackageOverrides\]\]|PackageOverrides/i.test(configText);
+  const hasLicenseEvidence = licenseRightsReport.licenseFiles.length > 0 || licenseRightsReport.packageLicenseSignals.length > 0;
+  const localDbFiles = walk.files.filter((file) => /(^|\/)(osv-scanner|osv-vulnerabilities|vulnerability-db)\/.+all\.zip$/i.test(file.relPath) || /(^|\/)all\.zip$/i.test(file.relPath) && /osv|vulnerab/i.test(file.relPath));
+  const containerArtifacts = sbomReport.fileArtifacts.filter((artifact) => artifact.artifactKind === "container");
+  const versionedTargets = packageQueryTargets.filter((target) => target.readiness === "queryable");
+  const partialTargets = packageQueryTargets.filter((target) => target.readiness === "partial");
+  const vulnerabilityScanner = securityReadinessReport.scannerCoverage.find((scanner) => scanner.scanner === "vulnerability");
+  const npmManifest = sbomReport.packageManifests.find((manifest) => advisoryEcosystemForLockfile(manifest.filePath) === "npm" || /javascript|node/i.test(manifest.ecosystem));
+  const npmLockfile = lockfileSignals.find((signal) => signal.ecosystem === "npm");
+
+  const advisorySources: AdvisoryReport["advisorySources"] = [
+    {
+      source: "OSV.dev",
+      readiness: packageQueryTargets.length > 0 ? "external" : "missing",
+      evidence: packageQueryTargets.length > 0 ? `${packageQueryTargets.length} package target(s) can be sent to OSV.dev; RepoTutor does not send package data.` : "No package targets were available for OSV.dev matching.",
+      relatedHref: "html/advisories.html"
+    },
+    {
+      source: "deps.dev",
+      readiness: packageQueryTargets.length > 0 ? "external" : "missing",
+      evidence: packageQueryTargets.length > 0 ? "Dependency resolution and transitive graph enrichment require external deps.dev/OSV-Scanner execution." : "No package manifest was found for dependency graph enrichment.",
+      relatedHref: "html/sbom.html"
+    },
+    {
+      source: "GitHub-Advisory-Database",
+      readiness: packageQueryTargets.some((target) => ["npm", "pypi", "Go", "Maven", "Packagist", "NuGet", "RubyGems"].includes(target.ecosystem)) ? "external" : "missing",
+      evidence: "GitHub advisory data can corroborate ecosystem package results, but this static report does not call the GitHub API.",
+      relatedHref: "html/advisories.html"
+    },
+    {
+      source: "RustSec",
+      readiness: packageQueryTargets.some((target) => target.ecosystem === "crates.io") ? "external" : "missing",
+      evidence: packageQueryTargets.some((target) => target.ecosystem === "crates.io") ? "Rust/Cargo package target(s) were found for RustSec-backed advisory matching." : "No Rust/Cargo package target was detected.",
+      relatedHref: "html/sbom.html"
+    },
+    {
+      source: "NVD",
+      readiness: packageQueryTargets.length > 0 || containerArtifacts.length > 0 ? "external" : "missing",
+      evidence: packageQueryTargets.length > 0 || containerArtifacts.length > 0 ? "NVD/CVE enrichment is an external scanner concern after package or OS evidence is available." : "No package or container artifact was found for CVE enrichment.",
+      relatedHref: containerArtifacts[0]?.sourceHref ?? "html/advisories.html"
+    },
+    {
+      source: "local-offline-db",
+      readiness: localDbFiles.length > 0 ? "ready" : "missing",
+      evidence: localDbFiles.length > 0 ? `Offline OSV database candidate(s): ${localDbFiles.map((file) => file.relPath).join(", ")}.` : "No local OSV offline database all.zip files were detected.",
+      relatedHref: localDbFiles[0] ? `source/${encodedPath(localDbFiles[0].relPath)}` : "html/advisories.html"
+    }
+  ];
+
+  const policyControls: AdvisoryReport["policyControls"] = [
+    {
+      control: "ignored-vulns",
+      status: hasIgnoredVulns ? "ready" : configFiles.length > 0 ? "partial" : "missing",
+      evidence: hasIgnoredVulns ? `IgnoredVulns policy found in ${configFiles.map((file) => file.relPath).join(", ")}.` : configFiles.length > 0 ? "OSV config exists, but no IgnoredVulns section was detected." : "No osv-scanner.toml policy file with IgnoredVulns was detected.",
+      relatedHref: configFiles[0] ? `source/${encodedPath(configFiles[0].relPath)}` : "html/advisories.html"
+    },
+    {
+      control: "package-overrides",
+      status: hasPackageOverrides ? "ready" : configFiles.length > 0 ? "partial" : "missing",
+      evidence: hasPackageOverrides ? `PackageOverrides policy found in ${configFiles.map((file) => file.relPath).join(", ")}.` : configFiles.length > 0 ? "OSV config exists, but no PackageOverrides section was detected." : "No PackageOverrides policy was detected.",
+      relatedHref: configFiles[0] ? `source/${encodedPath(configFiles[0].relPath)}` : "html/advisories.html"
+    },
+    {
+      control: "license-allowlist",
+      status: hasLicenseEvidence ? "partial" : "missing",
+      evidence: hasLicenseEvidence ? `${licenseRightsReport.licenseFiles.length} license file(s) and ${licenseRightsReport.packageLicenseSignals.length} package license signal(s) can seed an allowlist, but OSV-Scanner allowlist execution is external.` : "No license evidence was available for license allowlist planning.",
+      relatedHref: "html/license-rights.html"
+    },
+    {
+      control: "offline-db",
+      status: localDbFiles.length > 0 ? "ready" : "missing",
+      evidence: localDbFiles.length > 0 ? "A local OSV database artifact was detected for offline vulnerability matching." : "Offline mode needs a downloaded OSV database; none was found in the source snapshot.",
+      relatedHref: localDbFiles[0] ? `source/${encodedPath(localDbFiles[0].relPath)}` : "html/advisories.html"
+    },
+    {
+      control: "call-analysis",
+      status: versionedTargets.length > 0 ? "external" : "missing",
+      evidence: versionedTargets.length > 0 ? "OSV-Scanner may enrich some results with reachability/call analysis, but RepoTutor does not execute source analysis." : "No versioned package targets were available for call-analysis planning.",
+      relatedHref: "html/security-readiness.html"
+    },
+    {
+      control: "guided-remediation",
+      status: npmManifest && npmLockfile ? "partial" : npmManifest ? "missing" : "external",
+      evidence: npmManifest && npmLockfile ? `npm manifest ${npmManifest.filePath} and lockfile ${npmLockfile.filePath} are present; use OSV fix only in a trusted workspace.` : npmManifest ? "npm manifest exists, but guided remediation usually needs a matching lockfile." : "Guided remediation is ecosystem-specific and must be run outside RepoTutor.",
+      relatedHref: npmLockfile?.sourceHref ?? npmManifest?.sourceHref ?? "html/advisories.html"
+    }
+  ];
+
+  const resultModel: AdvisoryReport["resultModel"] = [
+    {
+      field: "results[].source.path/type",
+      purpose: "각 취약점 결과가 어떤 lockfile, SBOM, git, artifact, OS image source에서 왔는지 추적합니다.",
+      readiness: sbomReport.fileArtifacts.length > 0 ? "ready" : "partial",
+      evidence: `${sbomReport.fileArtifacts.length} SBOM file artifact(s) can become OSV result source rows.`,
+      relatedHref: "html/sbom.html"
+    },
+    {
+      field: "packages[].package",
+      purpose: "ecosystem, name, version, PURL을 advisory query key로 사용합니다.",
+      readiness: packageQueryTargets.length > 0 ? "ready" : "partial",
+      evidence: `${packageQueryTargets.length} package query target(s), ${versionedTargets.length} with exact version(s).`,
+      relatedHref: "html/advisories.html"
+    },
+    {
+      field: "packages[].vulnerabilities",
+      purpose: "OSV IDs, aliases, severity, fixed versions를 scanner 결과로 채웁니다.",
+      readiness: packageQueryTargets.length > 0 ? "external" : "partial",
+      evidence: vulnerabilityScanner?.evidence ?? "Vulnerability matching requires an external advisory database query.",
+      relatedHref: "html/security-readiness.html"
+    },
+    {
+      field: "packages[].licenseViolations",
+      purpose: "license allowlist 정책과 package license evidence를 대조합니다.",
+      readiness: hasLicenseEvidence ? "partial" : "external",
+      evidence: hasLicenseEvidence ? "License evidence exists, but allowlist policy execution is outside the static report." : "License violation fields require scanner policy execution.",
+      relatedHref: "html/license-rights.html"
+    },
+    {
+      field: "imageMetadata",
+      purpose: "container layer, base image, distro/OS package advisory context를 담습니다.",
+      readiness: containerArtifacts.length > 0 ? "partial" : "external",
+      evidence: containerArtifacts.length > 0 ? `${containerArtifacts.length} container config artifact(s) were detected; built image metadata still requires scanner execution.` : "No container image metadata exists in this source-only snapshot.",
+      relatedHref: containerArtifacts[0]?.sourceHref ?? "html/runtime-environment.html"
+    }
+  ];
+
+  const remediationQueue: AdvisoryReport["remediationQueue"] = [];
+  if (packageQueryTargets.length === 0) {
+    remediationQueue.push({
+      priority: "high",
+      action: "Add or expose supported package manifests before advisory scanning.",
+      why: "OSV-style matching needs ecosystem package coordinates.",
+      relatedHref: "html/sbom.html"
+    });
+  }
+  if (packageQueryTargets.length > 0 && lockfileSignals.length === 0) {
+    remediationQueue.push({
+      priority: "high",
+      action: "Commit package lockfiles for deployable package ecosystems.",
+      why: "Lockfiles improve exact version matching and reduce advisory ambiguity.",
+      relatedHref: "html/sbom.html"
+    });
+  }
+  if (partialTargets.length > 0) {
+    remediationQueue.push({
+      priority: "medium",
+      action: "Resolve package targets that lack versions before relying on advisory results.",
+      why: `${partialTargets.length} package target(s) only have name/ecosystem evidence.`,
+      relatedHref: "html/advisories.html"
+    });
+  }
+  if (!hasIgnoredVulns) {
+    remediationQueue.push({
+      priority: "medium",
+      action: "Create an osv-scanner.toml policy for ignored vulnerabilities with reason and expiry.",
+      why: "Accepted vulnerability risk should be explicit, time-bounded, and reviewable.",
+      relatedHref: "html/advisories.html"
+    });
+  }
+  if (localDbFiles.length === 0) {
+    remediationQueue.push({
+      priority: "low",
+      action: "Download an OSV offline database when scans must run without sending package metadata.",
+      why: "Offline mode avoids network disclosure but needs a fresh local database.",
+      relatedHref: "html/advisories.html"
+    });
+  }
+  remediationQueue.push({
+    priority: "low",
+    action: "Run real OSV-Scanner outside RepoTutor before making security release decisions.",
+    why: "This report is query readiness metadata only and does not claim actual vulnerability presence or absence.",
+    relatedHref: "html/advisories.html"
+  });
+
+  return {
+    summary: `OSV-Scanner식 advisory query readiness report: package target ${packageQueryTargets.length}개, lockfile signal ${lockfileSignals.length}개, advisory source ${advisorySources.length}개, policy control ${policyControls.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "OSV-Scanner package extraction vulnerability matching OSV.dev lockfile SBOM offline remediation ignore policy",
+    packageQueryTargets,
+    lockfileSignals,
+    advisorySources,
+    policyControls,
+    resultModel,
+    remediationQueue: remediationQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      {
+        command: "osv-scanner scan source -r <project> --format json",
+        purpose: "source directory에서 package extraction과 advisory matching을 실행합니다."
+      },
+      {
+        command: "osv-scanner scan -L <lockfile> --format json",
+        purpose: "특정 lockfile을 기준으로 정확한 package version advisory 결과를 확인합니다."
+      },
+      {
+        command: "osv-scanner --offline-vulnerabilities --download-offline-databases <project>",
+        purpose: "offline DB를 미리 내려받아 이후 offline scan 준비를 합니다."
+      },
+      {
+        command: "osv-scanner scan image <image>:<tag> --format html",
+        purpose: "container image layer와 OS package advisory context를 HTML로 확인합니다."
+      },
+      {
+        command: "osv-scanner fix -M package.json -L package-lock.json",
+        purpose: "trusted workspace에서만 guided remediation을 검토합니다. package manager scripts가 실행될 수 있습니다."
+      }
+    ],
+    learnerNextSteps: [
+      "package query target 중 version이 없는 항목부터 lockfile 또는 resolved metadata로 보강하세요.",
+      "IgnoredVulns와 PackageOverrides 정책은 reason과 expiry를 포함해 리뷰 가능하게 유지하세요.",
+      "privacy가 중요한 프로젝트는 online scan 대신 offline database 준비 상태를 먼저 확인하세요.",
+      "이 리포트는 OSV-Scanner 실행 결과가 아니라 정적 질의 준비도입니다. 실제 취약점 판단에는 OSV-Scanner를 별도 실행하세요."
+    ]
+  };
+}
+
+function advisoryEcosystemForPackage(packageType: string, fallback: string): string {
+  const normalized = packageType.toLowerCase();
+  if (normalized === "npm") return "npm";
+  if (normalized === "pypi") return "PyPI";
+  if (normalized === "cargo") return "crates.io";
+  if (normalized === "go") return "Go";
+  if (normalized === "maven") return "Maven";
+  if (normalized === "composer") return "Packagist";
+  if (normalized === "nuget") return "NuGet";
+  if (normalized === "gem") return "RubyGems";
+  return fallback;
+}
+
+function advisoryEcosystemForLockfile(filePath: string): string {
+  const base = path.basename(filePath);
+  if (["package-lock.json", "pnpm-lock.yaml", "yarn.lock", "bun.lock"].includes(base)) return "npm";
+  if (base === "Cargo.lock") return "crates.io";
+  if (["poetry.lock", "Pipfile.lock", "pdm.lock", "uv.lock", "pylock.toml"].includes(base)) return "PyPI";
+  if (base === "go.sum" || base === "go.mod") return "Go";
+  if (base === "composer.lock") return "Packagist";
+  if (base === "Gemfile.lock" || base === "gems.locked") return "RubyGems";
+  if (base === "packages.lock.json" || base === "packages.config") return "NuGet";
+  if (base === "pom.xml" || base === "gradle.lockfile") return "Maven";
+  return "unknown";
+}
+
+function advisoryPackageCountForLockfile(filePath: string, sbomReport: SbomReport): number {
+  const directory = path.posix.dirname(filePath);
+  const ecosystem = advisoryEcosystemForLockfile(filePath);
+  return sbomReport.packageArtifacts.filter((pkg) => {
+    const sameDirectory = pkg.locations.some((location) => path.posix.dirname(location) === directory);
+    const sameEcosystem = advisoryEcosystemForPackage(pkg.packageType, pkg.ecosystem) === ecosystem;
+    return sameDirectory || sameEcosystem;
+  }).length;
+}
+
+function isOsvScannerConfigFile(filePath: string): boolean {
+  const base = path.basename(filePath).toLowerCase();
+  return base === "osv-scanner.toml" || base === ".osv-scanner.toml";
 }
 
 async function buildScorecardReport(

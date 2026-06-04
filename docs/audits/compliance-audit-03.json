@@ -1,6 +1,6 @@
 {
   "iteration": 3,
-  "createdAt": "2026-06-04T00:24:08.264Z",
+  "createdAt": "2026-06-04T00:38:21.087Z",
   "checks": [
     {
       "name": "project setup",
@@ -130,6 +130,13 @@
     },
     {
       "name": "provenance readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "advisory query readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

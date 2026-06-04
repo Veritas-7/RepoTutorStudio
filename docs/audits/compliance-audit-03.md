@@ -1,6 +1,6 @@
 # Compliance Audit 3
 
-Created: 2026-06-04T00:24:08.264Z
+Created: 2026-06-04T00:38:21.087Z
 
 Status: PASS
 
@@ -113,6 +113,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - provenance readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - advisory query readiness report
 
 - missing files: none
 - missing strings: none

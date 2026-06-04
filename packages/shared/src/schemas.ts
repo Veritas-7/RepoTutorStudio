@@ -893,6 +893,58 @@ export const ProvenanceReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const AdvisoryReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  packageQueryTargets: z.array(z.object({
+    name: z.string(),
+    ecosystem: z.string(),
+    version: z.string().nullable(),
+    purl: z.string().nullable(),
+    sourceType: z.enum(["manifest", "lockfile", "sbom", "container", "source"]),
+    readiness: z.enum(["queryable", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lockfileSignals: z.array(z.object({
+    filePath: z.string(),
+    ecosystem: z.string(),
+    packageCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial"]),
+    sourceHref: z.string()
+  })),
+  advisorySources: z.array(z.object({
+    source: z.enum(["OSV.dev", "deps.dev", "GitHub-Advisory-Database", "RustSec", "NVD", "local-offline-db"]),
+    readiness: z.enum(["external", "ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  policyControls: z.array(z.object({
+    control: z.enum(["ignored-vulns", "package-overrides", "license-allowlist", "offline-db", "call-analysis", "guided-remediation"]),
+    status: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resultModel: z.array(z.object({
+    field: z.string(),
+    purpose: z.string(),
+    readiness: z.enum(["ready", "partial", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  remediationQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1120,6 +1172,7 @@ export type SbomReport = z.infer<typeof SbomReportSchema>;
 export type SecurityReadinessReport = z.infer<typeof SecurityReadinessReportSchema>;
 export type ScorecardReport = z.infer<typeof ScorecardReportSchema>;
 export type ProvenanceReport = z.infer<typeof ProvenanceReportSchema>;
+export type AdvisoryReport = z.infer<typeof AdvisoryReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
