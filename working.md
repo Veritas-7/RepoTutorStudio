@@ -3800,6 +3800,50 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 183:
   - `1c6e107` PWA readiness report
 
+- 2026-06-04: AutoResearch Upgrade 184 candidate selected:
+  `browserslist/browserslist`
+  (`https://github.com/browserslist/browserslist`; public; MIT; 13,545 stars;
+  765 forks; updated 2026-06-04T07:53:43Z). Compared with
+  `postcss/autoprefixer`, `amilajack/eslint-plugin-compat`, and
+  `mdn/browser-compat-data`; selected Browserslist because it directly models
+  shared target browser policy: package.json `browserslist`,
+  `.browserslistrc`, standalone config files, env-specific targets, shareable
+  config, `defaults`, last versions, usage thresholds, `not dead`, coverage,
+  custom stats, mobile-to-desktop, caniuse-lite freshness, update-browserslist-
+  db, and consumer tools. Cloned ignored external source to
+  `research/external-src/browserslist-browserslist` and inspected docs/source
+  hits without executing external source. Clone HEAD was `ef1895c`; tracked
+  file count for `research/external-src/browserslist-browserslist` returned `0`.
+- 2026-06-04: RED browser-compat-readiness smoke generated
+  `/tmp/repotutor-browser-compat-red-studies.q4UaN5/2026-06-04/local__simple-ts-app__HEAD__47215d1d`;
+  old build had `verificationCheckedRequiredArtifacts=249`, was missing
+  `analysis/browser-compat-readiness-report.json`,
+  `markdown/browser-compat-readiness.md`, and
+  `html/browser-compat-readiness.html`, and `open --target
+  browser-compat-readiness` failed as expected.
+- 2026-06-04: Implemented Browserslist-style browser-compat-readiness report:
+  `BrowserCompatibilityReadinessReportSchema`,
+  `analysis/browser-compat-readiness-report.json`,
+  `markdown/browser-compat-readiness.md`,
+  `html/browser-compat-readiness.html`, compatibility setups, config signals,
+  query signals, coverage signals, feature signals, update signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, nav entry, and `open --target
+  browser-compat-readiness`.
+- 2026-06-04: GREEN browser-compat-readiness smoke generated
+  `/tmp/repotutor-browser-compat-green-studies.as1ELt/2026-06-04/local__simple-ts-app__main__47215d1d`;
+  confirmed `verificationCheckedRequiredArtifacts=252`, compatibility setups 0,
+  config signals 6, query signals 6, coverage signals 5, feature signals 6,
+  update signals 5, package signals 6, risk queue 2, all three new artifacts,
+  and `open --target browser-compat-readiness` ->
+  `html/browser-compat-readiness.html`.
+- 2026-06-04: Verification for Upgrade 184:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 82/82 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

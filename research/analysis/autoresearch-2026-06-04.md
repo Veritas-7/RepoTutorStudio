@@ -5038,6 +5038,58 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 81/81 audit checks across 13 generated reports
 
+### Upgrade 184: Browser Compatibility Readiness Report
+
+- Cloned and inspected `browserslist/browserslist` under
+  `research/external-src/browserslist-browserslist` without executing external
+  source. Clone HEAD was `ef1895c`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 13,545 stars, 765 forks, updated
+  2026-06-04T07:53:43Z. Compared with `postcss/autoprefixer`,
+  `amilajack/eslint-plugin-compat`, and `mdn/browser-compat-data`; selected
+  Browserslist because it directly models shared target browser policy across
+  package.json, `.browserslistrc`, standalone config files, env-specific
+  targets, shareable config, query grammar, coverage, custom stats,
+  mobile-to-desktop, caniuse-lite updates, and consumer tools. No source code
+  was copied into RepoTutor.
+- Implemented Browserslist-style browser-compat-readiness report:
+  `BrowserCompatibilityReadinessReportSchema`,
+  `analysis/browser-compat-readiness-report.json`,
+  `markdown/browser-compat-readiness.md`,
+  `html/browser-compat-readiness.html`, compatibility setups, config signals,
+  query signals, coverage signals, feature signals, update signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, nav entry, and `open --target
+  browser-compat-readiness`.
+- Source pattern: Browserslist separates config readiness through package.json,
+  `.browserslistrc`, standalone `browserslist` files, env-specific sections,
+  shareable config, and env vars; query readiness through `defaults`, last
+  versions, usage thresholds, `not dead`, coverage, and maintained Node
+  versions; coverage readiness through global/regional coverage, custom stats,
+  stats files, and mobile-to-desktop; feature readiness through `supports`,
+  ES modules, Baseline, dead/unreleased browsers, and Electron mapping; and
+  data freshness through caniuse-lite, update-browserslist-db, old-data
+  warnings, ignore overrides, and update actions. RepoTutor maps that to
+  deterministic static browser compatibility readiness and explicitly does not
+  resolve Browserslist queries, update caniuse-lite, run Babel, run
+  Autoprefixer, execute browser tests, or contact external services.
+- RED smoke generated
+  `/tmp/repotutor-browser-compat-red-studies.q4UaN5/2026-06-04/local__simple-ts-app__HEAD__47215d1d`;
+  old behavior had `verificationCheckedRequiredArtifacts=249`, was missing
+  `analysis/browser-compat-readiness-report.json`,
+  `markdown/browser-compat-readiness.md`, and
+  `html/browser-compat-readiness.html`, and `open --target
+  browser-compat-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-browser-compat-green-studies.as1ELt/2026-06-04/local__simple-ts-app__main__47215d1d`;
+  confirmed `verificationCheckedRequiredArtifacts=252`, compatibility setups 0,
+  config signals 6, query signals 6, coverage signals 5, feature signals 6,
+  update signals 5, package signals 6, risk queue 2, all three new artifacts,
+  and `open --target browser-compat-readiness` ->
+  `html/browser-compat-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 82/82 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

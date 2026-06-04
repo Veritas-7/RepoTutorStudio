@@ -1,6 +1,6 @@
 {
   "iteration": 9,
-  "createdAt": "2026-06-04T11:58:05.063Z",
+  "createdAt": "2026-06-04T12:07:24.268Z",
   "checks": [
     {
       "name": "project setup",
@@ -536,6 +536,13 @@
     },
     {
       "name": "PWA readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "browser compatibility readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

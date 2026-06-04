@@ -4362,6 +4362,71 @@ export const PwaReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const BrowserCompatibilityReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  compatibilitySetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["browserslist", "autoprefixer", "babel-preset-env", "postcss-preset-env", "eslint-plugin-compat", "custom", "unknown"]),
+    configCount: z.number().int().nonnegative(),
+    queryCount: z.number().int().nonnegative(),
+    coverageCount: z.number().int().nonnegative(),
+    envCount: z.number().int().nonnegative(),
+    updateCount: z.number().int().nonnegative(),
+    featureCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["package-json", "browserslistrc", "browserslist-file", "env-config", "shareable-config", "env-var", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  querySignals: z.array(z.object({
+    signal: z.enum(["defaults", "last-versions", "usage-threshold", "not-dead", "coverage", "maintained-node", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  coverageSignals: z.array(z.object({
+    signal: z.enum(["global-coverage", "regional-coverage", "custom-stats", "stats-file", "mobile-to-desktop", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  featureSignals: z.array(z.object({
+    signal: z.enum(["supports-feature", "es-modules", "baseline", "dead-browsers", "unreleased", "electron", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  updateSignals: z.array(z.object({
+    signal: z.enum(["caniuse-lite", "update-browserslist-db", "old-data-warning", "ignore-old-data", "update-action", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["browserslist", "caniuse-lite", "autoprefixer", "@babel/preset-env", "postcss-preset-env", "eslint-plugin-compat", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4647,6 +4712,7 @@ export type DiagramRenderingReadinessReport = z.infer<typeof DiagramRenderingRea
 export type LinkIntegrityReadinessReport = z.infer<typeof LinkIntegrityReadinessReportSchema>;
 export type SeoMetadataReadinessReport = z.infer<typeof SeoMetadataReadinessReportSchema>;
 export type PwaReadinessReport = z.infer<typeof PwaReadinessReportSchema>;
+export type BrowserCompatibilityReadinessReport = z.infer<typeof BrowserCompatibilityReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

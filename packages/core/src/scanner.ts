@@ -96,6 +96,7 @@ import {
   LinkIntegrityReadinessReport,
   SeoMetadataReadinessReport,
   PwaReadinessReport,
+  BrowserCompatibilityReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -198,6 +199,7 @@ export interface AnalysisBundle {
   linkIntegrityReadinessReport: LinkIntegrityReadinessReport;
   seoMetadataReadinessReport: SeoMetadataReadinessReport;
   pwaReadinessReport: PwaReadinessReport;
+  browserCompatibilityReadinessReport: BrowserCompatibilityReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -300,8 +302,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const linkIntegrityReadinessReport = await buildLinkIntegrityReadinessReport(walk);
   const seoMetadataReadinessReport = await buildSeoMetadataReadinessReport(walk);
   const pwaReadinessReport = await buildPwaReadinessReport(walk);
+  const browserCompatibilityReadinessReport = await buildBrowserCompatibilityReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -18963,6 +18966,252 @@ function pwaReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: Re
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/pwa-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildBrowserCompatibilityReadinessReport(walk: WalkResult): Promise<BrowserCompatibilityReadinessReport> {
+  const sourceFiles = await browserCompatibilityReadinessSourceFiles(walk);
+  const compatibilitySetups = browserCompatibilityReadinessSetups(sourceFiles);
+  const configSignals = browserCompatibilityReadinessConfigSignals(sourceFiles);
+  const querySignals = browserCompatibilityReadinessQuerySignals(sourceFiles);
+  const coverageSignals = browserCompatibilityReadinessCoverageSignals(sourceFiles);
+  const featureSignals = browserCompatibilityReadinessFeatureSignals(sourceFiles);
+  const updateSignals = browserCompatibilityReadinessUpdateSignals(sourceFiles);
+  const packageSignals = browserCompatibilityReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasSetup = compatibilitySetups.some((item) => item.readiness !== "missing");
+  const hasConfig = configSignals.some((item) => item.readiness === "ready") || compatibilitySetups.some((item) => item.configCount > 0);
+  const hasQuery = querySignals.some((item) => item.readiness === "ready") || compatibilitySetups.some((item) => item.queryCount > 0);
+  const hasCoverage = coverageSignals.some((item) => item.readiness === "ready") || compatibilitySetups.some((item) => item.coverageCount > 0);
+  const hasUpdate = updateSignals.some((item) => item.readiness === "ready") || compatibilitySetups.some((item) => item.updateCount > 0);
+
+  const riskQueue: BrowserCompatibilityReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document browser compatibility targets before relying on transpilation, polyfill, or CSS prefix behavior.",
+      why: "Browserslist-style readiness starts with package/config/query evidence that shared frontend tools can consume.",
+      relatedHref: "html/browser-compat-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && (!hasConfig || !hasQuery)) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair browser compatibility packages with explicit Browserslist config and target queries.",
+      why: "Autoprefixer, Babel preset-env, Stylelint, and related tools need stable target queries rather than implicit defaults.",
+      relatedHref: "html/browser-compat-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasCoverage) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review coverage, regional usage, custom stats, and mobile-to-desktop assumptions for product markets.",
+      why: "A target list can be technically valid but still miss the user base if coverage and stats inputs are never checked.",
+      relatedHref: "html/browser-compat-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasUpdate) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add a caniuse-lite update path before treating browser support data as current.",
+      why: "Browserslist depends on browser usage and feature datasets that drift over time.",
+      relatedHref: "html/browser-compat-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run real build/test compatibility validation in the target toolchain before changing browser support policy.",
+    why: "RepoTutor records browser compatibility readiness only; it does not resolve Browserslist queries, update caniuse-lite, run Babel, run Autoprefixer, execute browser tests, or contact external services.",
+    relatedHref: "html/browser-compat-readiness.html"
+  });
+
+  return {
+    summary: `Browserslist-style readiness report: setup ${compatibilitySetups.length}개, config signal ${configSignals.length}개, query signal ${querySignals.length}개, coverage signal ${coverageSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Browserslist target browsers config queries coverage caniuse-lite update-browserslist-db mobile-to-desktop env stats",
+    compatibilitySetups,
+    configSignals,
+    querySignals,
+    coverageSignals,
+    featureSignals,
+    updateSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"browserslist|\\.browserslistrc|BROWSERSLIST|browserslist-config\" package.json . .github src app config", purpose: "Inventory browser target config surfaces." },
+      { command: "rg \"defaults|last [0-9]+ versions|not dead|> ?[0-9.]+%|cover [0-9.]+%|maintained node\" package.json .browserslistrc browserslist config", purpose: "Review target query policy." },
+      { command: "rg \"coverage|stats|browserslist-stats|mobile-to-desktop|BROWSERSLIST_STATS\" package.json . .github src app config", purpose: "Check coverage and custom usage assumptions." },
+      { command: "rg \"caniuse-lite|update-browserslist-db|BROWSERSLIST_IGNORE_OLD_DATA|browserslist-update-action\" package.json .github scripts", purpose: "Check browser data update workflow." },
+      { command: "rg \"autoprefixer|@babel/preset-env|postcss-preset-env|eslint-plugin-compat\" package.json babel.config.* postcss.config.* eslint.config.*", purpose: "Find tools that consume the browser target policy." },
+      { command: "npx browserslist", purpose: "Resolve actual browser targets locally after reviewing static readiness." }
+    ],
+    learnerNextSteps: [
+      "먼저 package.json browserslist, .browserslistrc, browserslist 파일, BROWSERSLIST_CONFIG 신호를 찾아 browser target의 소유 위치를 확인하세요.",
+      "defaults, last n versions, not dead, usage threshold, cover, maintained node versions 같은 query가 제품 정책과 맞는지 확인하세요.",
+      "coverage, regional usage, my stats, mobile-to-desktop 신호로 실제 사용자 기반을 반영하는지 확인하세요.",
+      "caniuse-lite와 update-browserslist-db 또는 자동 업데이트 workflow를 찾아 데이터 최신성 관리 방식을 확인하세요.",
+      "Autoprefixer, Babel preset-env, postcss-preset-env, eslint-plugin-compat 같은 소비 도구가 같은 target을 공유하는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 대상 브라우저 목록은 프로젝트 루트에서 npx browserslist와 build/test로 별도 확인하세요."
+    ]
+  };
+}
+
+type BrowserCompatibilityReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function browserCompatibilityReadinessSourceFiles(walk: WalkResult): Promise<BrowserCompatibilityReadinessSourceFile[]> {
+  const files: BrowserCompatibilityReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !browserCompatibilityReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!browserCompatibilityReadinessPathSignal(file.relPath) && !browserCompatibilityReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function browserCompatibilityReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return browserCompatibilityReadinessPathSignal(filePath)
+    || /^(package\.json|README\.md|\.browserslistrc|browserslist|browserslist-stats\.json|babel\.config\.(js|mjs|cjs|ts|json)|postcss\.config\.(js|mjs|cjs|ts)|eslint\.config\.(js|mjs|cjs|ts))$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|json|md|mdx|ya?ml|toml|rc)$/i.test(filePath);
+}
+
+function browserCompatibilityReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(browserslist|browserlist|compat|caniuse|autoprefixer|babel|postcss|eslint|baseline|config|\.github|scripts|src|app|test)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function browserCompatibilityReadinessContentSignal(text: string): boolean {
+  return /(browserslist|browserlist|\.browserslistrc|BROWSERSLIST|last\s+\d+\s+(major\s+)?versions?|not dead|defaults|cover\s+\d|caniuse-lite|update-browserslist-db|mobile-to-desktop|browserslist-stats|autoprefixer|@babel\/preset-env|postcss-preset-env|eslint-plugin-compat|baseline newly|baseline widely)/i.test(text);
+}
+
+function browserCompatibilityReadinessSetups(sourceFiles: BrowserCompatibilityReadinessSourceFile[]): BrowserCompatibilityReadinessReport["compatibilitySetups"] {
+  const rows: BrowserCompatibilityReadinessReport["compatibilitySetups"] = [];
+  for (const source of sourceFiles) {
+    const configCount = countMatches(source.text, /"browserslist"|\.browserslistrc|(^|\s)browserslist(\s|$)|BROWSERSLIST_CONFIG|browserslist-config-/gim);
+    const queryCount = countMatches(source.text, /defaults|last\s+\d+\s+(major\s+)?versions?|not dead|>\s*\d|cover\s+\d|maintained node|supports\s+[\w-]+|baseline\s+(newly|widely)/gi);
+    const coverageCount = countMatches(source.text, /coverage|--coverage|in my stats|browserslist-stats|BROWSERSLIST_STATS|mobile-to-desktop|global|regional/gi);
+    const envCount = countMatches(source.text, /BROWSERSLIST_ENV|NODE_ENV|env|production|development|BROWSERSLIST|BROWSERSLIST_CONFIG/gi);
+    const updateCount = countMatches(source.text, /caniuse-lite|update-browserslist-db|update-db|BROWSERSLIST_IGNORE_OLD_DATA|old data|browserslist-update-action/gi);
+    const featureCount = countMatches(source.text, /supports\s+[\w-]+|fully supports|partially supports|es6-module|baseline|dead|unreleased|electron-to-chromium|electron/gi);
+    const hasSetupSignal = configCount + queryCount + coverageCount + envCount + updateCount + featureCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: browserCompatibilityReadinessProvider(source),
+      configCount,
+      queryCount,
+      coverageCount,
+      envCount,
+      updateCount,
+      featureCount,
+      readiness: configCount > 0 && queryCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains config ${configCount}, query ${queryCount}, coverage ${coverageCount}, env ${envCount}, update ${updateCount}, feature ${featureCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function browserCompatibilityReadinessProvider(source: BrowserCompatibilityReadinessSourceFile): BrowserCompatibilityReadinessReport["compatibilitySetups"][number]["provider"] {
+  if (/browserslist|\.browserslistrc|BROWSERSLIST/i.test(source.text) || /browserslist/i.test(source.filePath)) return "browserslist";
+  if (/autoprefixer/i.test(source.text)) return "autoprefixer";
+  if (/@babel\/preset-env|preset-env/i.test(source.text)) return "babel-preset-env";
+  if (/postcss-preset-env/i.test(source.text)) return "postcss-preset-env";
+  if (/eslint-plugin-compat/i.test(source.text)) return "eslint-plugin-compat";
+  if (/compat|caniuse|browser/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function browserCompatibilityReadinessConfigSignals(sourceFiles: BrowserCompatibilityReadinessSourceFile[]): BrowserCompatibilityReadinessReport["configSignals"] {
+  const specs: Array<{ signal: BrowserCompatibilityReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "package-json", pattern: /"browserslist"\s*:/i, evidence: "package.json browserslist config evidence was detected." },
+    { signal: "browserslistrc", pattern: /\.browserslistrc/i, evidence: ".browserslistrc evidence was detected." },
+    { signal: "browserslist-file", pattern: /(^|\/)browserslist$|Browserslist config/i, evidence: "browserslist file evidence was detected." },
+    { signal: "env-config", pattern: /BROWSERSLIST_ENV|NODE_ENV|env\s*[:=]|production|development/i, evidence: "environment-specific config evidence was detected." },
+    { signal: "shareable-config", pattern: /extends\s+browserslist-config-|@[^/]+\/browserslist-config|BROWSERSLIST_DANGEROUS_EXTEND/i, evidence: "shareable config evidence was detected." },
+    { signal: "env-var", pattern: /BROWSERSLIST|BROWSERSLIST_CONFIG|BROWSERSLIST_ROOT_PATH|BROWSERSLIST_DISABLE_CACHE/i, evidence: "Browserslist environment variable evidence was detected." }
+  ];
+  return browserCompatibilityReadinessSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function browserCompatibilityReadinessQuerySignals(sourceFiles: BrowserCompatibilityReadinessSourceFile[]): BrowserCompatibilityReadinessReport["querySignals"] {
+  const specs: Array<{ signal: BrowserCompatibilityReadinessReport["querySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "defaults", pattern: /defaults|>\s*0\.5%.*last\s+2\s+versions.*not dead/i, evidence: "defaults query evidence was detected." },
+    { signal: "last-versions", pattern: /last\s+\d+\s+(major\s+)?versions?/i, evidence: "last versions query evidence was detected." },
+    { signal: "usage-threshold", pattern: />=?\s*\d+(\.\d+)?%|<=?\s*\d+(\.\d+)?%/i, evidence: "usage percentage query evidence was detected." },
+    { signal: "not-dead", pattern: /not dead|dead browsers/i, evidence: "not-dead/dead browser query evidence was detected." },
+    { signal: "coverage", pattern: /cover\s+\d+(\.\d+)?%|coverage/i, evidence: "coverage query evidence was detected." },
+    { signal: "maintained-node", pattern: /maintained node versions|node\s*(>=|>|<=|<)|current node/i, evidence: "Node target query evidence was detected." }
+  ];
+  return browserCompatibilityReadinessSignalFromSpecs(sourceFiles, specs, "query", "signal");
+}
+
+function browserCompatibilityReadinessCoverageSignals(sourceFiles: BrowserCompatibilityReadinessSourceFile[]): BrowserCompatibilityReadinessReport["coverageSignals"] {
+  const specs: Array<{ signal: BrowserCompatibilityReadinessReport["coverageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "global-coverage", pattern: /--coverage|coverage\(.*global|global coverage|coverage.*global/i, evidence: "global coverage evidence was detected." },
+    { signal: "regional-coverage", pattern: /--coverage=|in\s+[A-Z]{2}\b|region|caniuse-lite\/data\/regions/i, evidence: "regional coverage evidence was detected." },
+    { signal: "custom-stats", pattern: /in my stats|custom usage data|browserslist-stats/i, evidence: "custom stats query evidence was detected." },
+    { signal: "stats-file", pattern: /browserslist-stats\.json|BROWSERSLIST_STATS|--stats/i, evidence: "stats file evidence was detected." },
+    { signal: "mobile-to-desktop", pattern: /mobile-to-desktop|mobileToDesktop/i, evidence: "mobile-to-desktop evidence was detected." }
+  ];
+  return browserCompatibilityReadinessSignalFromSpecs(sourceFiles, specs, "coverage", "signal");
+}
+
+function browserCompatibilityReadinessFeatureSignals(sourceFiles: BrowserCompatibilityReadinessSourceFile[]): BrowserCompatibilityReadinessReport["featureSignals"] {
+  const specs: Array<{ signal: BrowserCompatibilityReadinessReport["featureSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "supports-feature", pattern: /supports\s+[\w-]+|fully supports|partially supports/i, evidence: "feature support query evidence was detected." },
+    { signal: "es-modules", pattern: /es6-module|es modules?|supports\s+es6-module/i, evidence: "ES modules target evidence was detected." },
+    { signal: "baseline", pattern: /baseline\s+(newly|widely|available)|baseline-browser-mapping/i, evidence: "baseline browser mapping evidence was detected." },
+    { signal: "dead-browsers", pattern: /\bdead\b|not dead|official support|security updates/i, evidence: "dead browser policy evidence was detected." },
+    { signal: "unreleased", pattern: /unreleased versions?|not unreleased/i, evidence: "unreleased version evidence was detected." },
+    { signal: "electron", pattern: /electron-to-chromium|electron\s+\d/i, evidence: "Electron target evidence was detected." }
+  ];
+  return browserCompatibilityReadinessSignalFromSpecs(sourceFiles, specs, "feature", "signal");
+}
+
+function browserCompatibilityReadinessUpdateSignals(sourceFiles: BrowserCompatibilityReadinessSourceFile[]): BrowserCompatibilityReadinessReport["updateSignals"] {
+  const specs: Array<{ signal: BrowserCompatibilityReadinessReport["updateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "caniuse-lite", pattern: /caniuse-lite/i, evidence: "caniuse-lite evidence was detected." },
+    { signal: "update-browserslist-db", pattern: /update-browserslist-db|update-db/i, evidence: "update-browserslist-db evidence was detected." },
+    { signal: "old-data-warning", pattern: /old data|Browserslist: browsers data|caniuse-lite is outdated/i, evidence: "old browser data warning evidence was detected." },
+    { signal: "ignore-old-data", pattern: /BROWSERSLIST_IGNORE_OLD_DATA/i, evidence: "ignore old data override evidence was detected." },
+    { signal: "update-action", pattern: /browserslist-update-action|update browserslist db|update caniuse/i, evidence: "browser data update automation evidence was detected." }
+  ];
+  return browserCompatibilityReadinessSignalFromSpecs(sourceFiles, specs, "update", "signal");
+}
+
+function browserCompatibilityReadinessPackageSignals(sourceFiles: BrowserCompatibilityReadinessSourceFile[]): BrowserCompatibilityReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: BrowserCompatibilityReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "browserslist", pattern: /"browserslist"|browserslist/i, evidence: "Browserslist evidence was detected." },
+    { signal: "caniuse-lite", pattern: /caniuse-lite/i, evidence: "caniuse-lite evidence was detected." },
+    { signal: "autoprefixer", pattern: /autoprefixer/i, evidence: "Autoprefixer evidence was detected." },
+    { signal: "@babel/preset-env", pattern: /@babel\/preset-env|preset-env/i, evidence: "Babel preset-env evidence was detected." },
+    { signal: "postcss-preset-env", pattern: /postcss-preset-env/i, evidence: "postcss-preset-env evidence was detected." },
+    { signal: "eslint-plugin-compat", pattern: /eslint-plugin-compat/i, evidence: "eslint-plugin-compat evidence was detected." }
+  ];
+  return browserCompatibilityReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function browserCompatibilityReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: BrowserCompatibilityReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/browser-compat-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
