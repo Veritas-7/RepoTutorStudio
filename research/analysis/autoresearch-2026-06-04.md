@@ -6798,6 +6798,65 @@ Local verification:
 - `gitleaks protect --staged --redact --no-banner`: PASS
 - Pushed implementation commit: `f8e2c74` consent readiness report
 
+### Upgrade 219: Secret Management Readiness Report
+
+- Cloned and inspected `Infisical/infisical` under
+  `research/external-src/Infisical-infisical`, `hashicorp/vault` under
+  `research/external-src/hashicorp-vault`, and `DopplerHQ/cli` under
+  `research/external-src/DopplerHQ-cli` without executing external source.
+  Clone HEADs were `0f9e9be`, `bed5d46`, and `dae580b`; all three clones
+  remain ignored by RepoTutor and tracked file count returned `0`.
+- GitHub metadata: `Infisical/infisical` is public, GitHub API license `Other`,
+  27,210 stars, 1,948 forks, updated 2026-06-04T21:04:03Z.
+  `hashicorp/vault` is public, GitHub API license `Other`, 35,726 stars, 4,692
+  forks, updated 2026-06-04T19:05:49Z. `DopplerHQ/cli` is public, Apache-2.0
+  licensed, 379 stars, 74 forks, updated 2026-06-03T06:38:50Z. Selected the
+  three-source slice because together they model centralized secret-management
+  platforms, auth methods, policy/RBAC, secret engines, runtime environment
+  injection, sync controllers, rotation/leases, audit logs, and CLI/SDK/API
+  delivery. No source code was copied into RepoTutor.
+- Implemented Vault/Infisical/Doppler/SOPS-style
+  secret-management-readiness report:
+  `SecretManagementReadinessReportSchema`,
+  `analysis/secret-management-readiness-report.json`,
+  `markdown/secret-management-readiness.md`,
+  `html/secret-management-readiness.html`, setup detection, platform signals,
+  auth signals, storage signals, delivery signals, governance signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, nav entry, and
+  `open --target secret-management-readiness`.
+- Source pattern: secret-management readiness separates platform evidence for
+  Vault, Infisical, Doppler, SOPS, Sealed Secrets, and External Secrets; auth
+  evidence for tokens, AppRole, Kubernetes, OIDC, AWS, GCP, Azure, and
+  Universal Auth; storage evidence for KV, secret engines, dynamic secrets,
+  PKI, transit, certificates, database credentials, and environment config;
+  delivery evidence for env injection, CLI run wrappers, agents, Kubernetes
+  operators, sync, GitHub Actions, CI/CD, and SDK/API access; and governance
+  evidence for policy/RBAC, audit logs, leases, rotation, versioning, access
+  requests, and break-glass flows. RepoTutor maps that to deterministic static
+  readiness and explicitly does not execute Vault, Infisical, Doppler, SOPS,
+  Kubernetes operators, CLIs, API calls, or live credential checks.
+- RED/GREEN smoke recorded
+  `/tmp/repotutor-secret-management-redgreen.env`; old behavior at `e4f6eb9`
+  had `verificationCheckedRequiredArtifacts=354`, was missing
+  `analysis/secret-management-readiness-report.json`,
+  `markdown/secret-management-readiness.md`, and
+  `html/secret-management-readiness.html`, and
+  `open --target secret-management-readiness` was unsupported. GREEN confirmed
+  `verificationCheckedRequiredArtifacts=357`, all three new artifacts, risk
+  queue 0, ready providers
+  `doppler|external-secrets|infisical|sealed-secrets|sops|vault`, all
+  platform/auth/storage/delivery/governance/package signals ready, and
+  `open --target secret-management-readiness` ->
+  `html/secret-management-readiness.html`.
+- `pnpm build`: PASS
+- focused secret-management Vitest: PASS, 1/1 selected test
+- `pnpm test`: PASS, 26/26 tests
+- `pnpm audit:brief`: PASS, 117/117 audit checks across 13 generated reports
+- `git diff --check`: PASS
+- `gitleaks protect --staged --redact --no-banner`: PASS
+- Pushed implementation commit: `b1c7fcf` secret management readiness report
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
