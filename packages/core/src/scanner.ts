@@ -37,6 +37,7 @@ import {
   SbomReport,
   SecurityReadinessReport,
   ScorecardReport,
+  ProvenanceReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -80,6 +81,7 @@ export interface AnalysisBundle {
   sbomReport: SbomReport;
   securityReadinessReport: SecurityReadinessReport;
   scorecardReport: ScorecardReport;
+  provenanceReport: ProvenanceReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -123,8 +125,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const sbomReport = await buildSbomReport(context, walk);
   const securityReadinessReport = buildSecurityReadinessReport(walk, sbomReport, licenseRightsReport);
   const scorecardReport = await buildScorecardReport(walk, licenseRightsReport, sbomReport, securityReadinessReport);
+  const provenanceReport = buildProvenanceReport(context, walk, sbomReport, securityReadinessReport, sourceSnapshotReport);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, scorecardReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, scorecardReport, provenanceReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -2548,6 +2551,299 @@ function scorecardRiskQueue(checks: ScorecardReport["checks"], securityReadiness
   }
   const priorityOrder = { high: 0, medium: 1, low: 2 };
   return queue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority] || a.checkName.localeCompare(b.checkName)).slice(0, 12);
+}
+
+function buildProvenanceReport(
+  context: AnalysisContext,
+  walk: WalkResult,
+  sbomReport: SbomReport,
+  securityReadinessReport: SecurityReadinessReport,
+  sourceSnapshotReport: SourceSnapshotReport
+): ProvenanceReport {
+  const sourceFileCount = sourceSnapshotReport.totalFiles;
+  const lockfileCount = sbomReport.fileArtifacts.filter((artifact) => artifact.artifactKind === "lockfile").length;
+  const containerFiles = sbomReport.fileArtifacts.filter((artifact) => artifact.artifactKind === "container");
+  const signatureFiles = provenanceFiles(walk, isSignatureMaterialFile);
+  const bundleFiles = provenanceFiles(walk, isSigstoreBundleFile);
+  const certificateFiles = provenanceFiles(walk, isCertificateMaterialFile);
+  const publicKeyFiles = provenanceFiles(walk, isPublicKeyMaterialFile);
+  const trustedRootFiles = provenanceFiles(walk, isTrustedRootMaterialFile);
+  const attestationFiles = provenanceFiles(walk, isAttestationMaterialFile);
+  const slsaFiles = attestationFiles.filter((filePath) => /slsa|provenance|intoto|in-toto|\.link/i.test(filePath));
+  const spdxFiles = provenanceFiles(walk, (filePath) => /spdx/i.test(filePath));
+  const cyclonedxFiles = provenanceFiles(walk, (filePath) => /cyclonedx|cdx/i.test(filePath));
+  const vulnFiles = attestationFiles.filter((filePath) => /vuln|vulnerability/i.test(filePath));
+  const hasPackageArtifacts = sbomReport.packageArtifacts.length > 0;
+  const vulnerabilityScanner = securityReadinessReport.scannerCoverage.find((scanner) => scanner.scanner === "vulnerability");
+
+  const artifactSignals: ProvenanceReport["artifactSignals"] = [
+    {
+      artifact: "source snapshot",
+      artifactType: "source-snapshot",
+      readiness: sourceFileCount > 0 ? "ready" : "missing",
+      evidence: sourceFileCount > 0 ? `${sourceFileCount} text file digest(s) are recorded in source-snapshot-report.json.` : "No source snapshot digest evidence is available.",
+      relatedHref: "analysis/source-snapshot-report.json"
+    },
+    {
+      artifact: "package inventory",
+      artifactType: "package",
+      readiness: hasPackageArtifacts && lockfileCount > 0 ? "ready" : hasPackageArtifacts ? "partial" : "missing",
+      evidence: hasPackageArtifacts ? `${sbomReport.packageArtifacts.length} package artifact(s), ${lockfileCount} lockfile artifact(s).` : "No package artifacts are recorded in the SBOM report.",
+      relatedHref: "html/sbom.html"
+    },
+    {
+      artifact: "container image",
+      artifactType: "container",
+      readiness: containerFiles.length > 0 ? "partial" : "missing",
+      evidence: containerFiles.length > 0 ? `${containerFiles.length} container build/config file(s) found; a signed image digest still requires an external registry artifact.` : "No Dockerfile or Compose evidence was detected.",
+      relatedHref: "html/runtime-environment.html"
+    },
+    {
+      artifact: "static SBOM report",
+      artifactType: "sbom",
+      readiness: hasPackageArtifacts ? "ready" : "missing",
+      evidence: hasPackageArtifacts ? "RepoTutor generated static SBOM package evidence that can be exported or signed as a blob." : "The static SBOM report has no package artifacts to sign.",
+      relatedHref: "html/sbom.html"
+    },
+    {
+      artifact: "release candidate",
+      artifactType: "release",
+      readiness: sbomReport.packageManifests.length > 0 || context.commitHash ? "partial" : "missing",
+      evidence: sbomReport.packageManifests.length > 0 || context.commitHash ? `Release evidence is partial: ${sbomReport.packageManifests.length} package manifest(s), commit ${context.commitHash?.slice(0, 12) ?? "unknown"}.` : "No package manifest or commit metadata is available for release provenance.",
+      relatedHref: "html/project-activity.html"
+    },
+    {
+      artifact: "generic source blob",
+      artifactType: "blob",
+      readiness: sourceFileCount > 0 ? "ready" : "missing",
+      evidence: sourceFileCount > 0 ? "Any generated markdown, JSON, or source digest can be treated as a cosign sign-blob candidate." : "No file digest evidence exists for blob signing.",
+      relatedHref: "html/files.html"
+    }
+  ];
+
+  const signatureSignals: ProvenanceReport["signatureSignals"] = [
+    {
+      material: "signature",
+      readiness: signatureFiles.length > 0 ? "present" : "missing",
+      evidence: signatureFiles.length > 0 ? `Detached signature file(s): ${signatureFiles.join(", ")}.` : "No detached signature file such as .sig was detected.",
+      relatedHref: signatureFiles[0] ? `source/${encodedPath(signatureFiles[0])}` : "html/provenance.html"
+    },
+    {
+      material: "bundle",
+      readiness: bundleFiles.length > 0 ? "present" : "missing",
+      evidence: bundleFiles.length > 0 ? `Sigstore bundle file(s): ${bundleFiles.join(", ")}.` : "No Sigstore bundle was detected; bundles are the preferred offline verification material.",
+      relatedHref: bundleFiles[0] ? `source/${encodedPath(bundleFiles[0])}` : "html/provenance.html"
+    },
+    {
+      material: "certificate",
+      readiness: certificateFiles.length > 0 ? "present" : "missing",
+      evidence: certificateFiles.length > 0 ? `Certificate material file(s): ${certificateFiles.join(", ")}.` : "No certificate material was detected outside a possible external bundle.",
+      relatedHref: certificateFiles[0] ? `source/${encodedPath(certificateFiles[0])}` : "html/provenance.html"
+    },
+    {
+      material: "public-key",
+      readiness: publicKeyFiles.length > 0 ? "present" : "missing",
+      evidence: publicKeyFiles.length > 0 ? `Public key file(s): ${publicKeyFiles.join(", ")}.` : "No public key material such as cosign.pub was detected.",
+      relatedHref: publicKeyFiles[0] ? `source/${encodedPath(publicKeyFiles[0])}` : "html/provenance.html"
+    },
+    {
+      material: "trusted-root",
+      readiness: trustedRootFiles.length > 0 ? "present" : "external",
+      evidence: trustedRootFiles.length > 0 ? `Trusted root file(s): ${trustedRootFiles.join(", ")}.` : "Trusted root material usually comes from Sigstore trust-root distribution or an explicit trusted_root.json.",
+      relatedHref: trustedRootFiles[0] ? `source/${encodedPath(trustedRootFiles[0])}` : "html/provenance.html"
+    },
+    {
+      material: "transparency-log",
+      readiness: bundleFiles.length > 0 ? "present" : "external",
+      evidence: bundleFiles.length > 0 ? "A Sigstore bundle can carry transparency log proof for offline verification." : "Transparency log inclusion must be checked through Rekor or a downloaded bundle.",
+      relatedHref: bundleFiles[0] ? `source/${encodedPath(bundleFiles[0])}` : "html/provenance.html"
+    }
+  ];
+
+  const attestationSignals: ProvenanceReport["attestationSignals"] = [
+    {
+      predicateType: "slsaprovenance",
+      readiness: slsaFiles.length > 0 ? "available" : "missing",
+      evidence: slsaFiles.length > 0 ? `SLSA/provenance attestation candidate(s): ${slsaFiles.join(", ")}.` : "No SLSA provenance, in-toto, or link attestation file was detected.",
+      relatedHref: slsaFiles[0] ? `source/${encodedPath(slsaFiles[0])}` : "html/provenance.html"
+    },
+    {
+      predicateType: "spdx",
+      readiness: spdxFiles.length > 0 ? "available" : hasPackageArtifacts ? "partial" : "missing",
+      evidence: spdxFiles.length > 0 ? `SPDX artifact(s): ${spdxFiles.join(", ")}.` : hasPackageArtifacts ? "Static SBOM package inventory exists, but no standalone SPDX predicate file was detected." : "No SPDX evidence was detected.",
+      relatedHref: spdxFiles[0] ? `source/${encodedPath(spdxFiles[0])}` : "html/sbom.html"
+    },
+    {
+      predicateType: "cyclonedx",
+      readiness: cyclonedxFiles.length > 0 ? "available" : hasPackageArtifacts ? "partial" : "missing",
+      evidence: cyclonedxFiles.length > 0 ? `CycloneDX artifact(s): ${cyclonedxFiles.join(", ")}.` : hasPackageArtifacts ? "Static SBOM package inventory exists, but no standalone CycloneDX predicate file was detected." : "No CycloneDX evidence was detected.",
+      relatedHref: cyclonedxFiles[0] ? `source/${encodedPath(cyclonedxFiles[0])}` : "html/sbom.html"
+    },
+    {
+      predicateType: "vuln",
+      readiness: vulnFiles.length > 0 ? "available" : vulnerabilityScanner?.readiness === "missing" ? "missing" : "partial",
+      evidence: vulnFiles.length > 0 ? `Vulnerability attestation candidate(s): ${vulnFiles.join(", ")}.` : vulnerabilityScanner ? vulnerabilityScanner.evidence : "No vulnerability scanner readiness evidence is available.",
+      relatedHref: vulnFiles[0] ? `source/${encodedPath(vulnFiles[0])}` : "html/security-readiness.html"
+    },
+    {
+      predicateType: "custom",
+      readiness: attestationFiles.length > 0 ? "available" : "missing",
+      evidence: attestationFiles.length > 0 ? `Generic attestation/predicate file(s): ${attestationFiles.join(", ")}.` : "No generic attestation, predicate, or DSSE envelope file was detected.",
+      relatedHref: attestationFiles[0] ? `source/${encodedPath(attestationFiles[0])}` : "html/provenance.html"
+    }
+  ];
+
+  const identityRequirements: ProvenanceReport["identityRequirements"] = [
+    {
+      requirement: "artifact digest pinning",
+      status: sourceFileCount > 0 || Boolean(context.commitHash) ? "known" : "missing",
+      evidence: sourceFileCount > 0 ? `${sourceFileCount} source file digest(s) are available; repository commit is ${context.commitHash?.slice(0, 12) ?? "unknown"}.` : "No digest or commit metadata is available.",
+      relatedHref: "analysis/source-snapshot-report.json"
+    },
+    {
+      requirement: "expected certificate identity",
+      status: "missing",
+      evidence: "Keyless verification requires an expected certificate identity; RepoTutor cannot infer the release identity from a safe local snapshot.",
+      relatedHref: "html/provenance.html"
+    },
+    {
+      requirement: "expected OIDC issuer",
+      status: "external",
+      evidence: "Keyless verification requires the OIDC issuer, commonly https://token.actions.githubusercontent.com for GitHub Actions or another issuer chosen by the publisher.",
+      relatedHref: "html/provenance.html"
+    },
+    {
+      requirement: "public key or certificate chain",
+      status: publicKeyFiles.length > 0 || certificateFiles.length > 0 ? "known" : "missing",
+      evidence: publicKeyFiles.length > 0 || certificateFiles.length > 0 ? `Verification material found: ${[...publicKeyFiles, ...certificateFiles].join(", ")}.` : "No public key or certificate chain material was detected.",
+      relatedHref: publicKeyFiles[0] || certificateFiles[0] ? `source/${encodedPath(publicKeyFiles[0] ?? certificateFiles[0])}` : "html/provenance.html"
+    },
+    {
+      requirement: "trusted root and transparency log proof",
+      status: trustedRootFiles.length > 0 || bundleFiles.length > 0 ? "known" : "external",
+      evidence: trustedRootFiles.length > 0 || bundleFiles.length > 0 ? `Trusted verification evidence found: ${[...trustedRootFiles, ...bundleFiles].join(", ")}.` : "Trusted root and Rekor proof must be fetched or provided outside the static source snapshot.",
+      relatedHref: trustedRootFiles[0] || bundleFiles[0] ? `source/${encodedPath(trustedRootFiles[0] ?? bundleFiles[0])}` : "html/provenance.html"
+    }
+  ];
+
+  const riskQueue: ProvenanceReport["riskQueue"] = [];
+  if (signatureFiles.length === 0 && bundleFiles.length === 0) {
+    riskQueue.push({
+      priority: "high",
+      action: "Create and store a Sigstore bundle or detached signature for release artifacts.",
+      why: "Cosign verification needs signature material; a bundle is preferred because it can carry certificate and transparency log proof.",
+      relatedHref: "html/provenance.html"
+    });
+  }
+  if (!identityRequirements.some((requirement) => requirement.requirement === "expected certificate identity" && requirement.status === "known")) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document the expected certificate identity and OIDC issuer for keyless verification.",
+      why: "Cosign keyless verification should pin identity and issuer, not just accept any valid certificate.",
+      relatedHref: "html/provenance.html"
+    });
+  }
+  if (!attestationSignals.some((signal) => signal.readiness === "available")) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add SLSA, SBOM, or vulnerability attestations for artifacts that will be distributed.",
+      why: "Cosign attestations let verifiers check provenance and subject relationship instead of only checking a signature.",
+      relatedHref: "html/provenance.html"
+    });
+  }
+  if (containerFiles.length > 0) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Sign and verify container images by digest, not tags.",
+      why: "Container config exists, but a mutable tag is not enough provenance evidence.",
+      relatedHref: "html/runtime-environment.html"
+    });
+  }
+  if (publicKeyFiles.length === 0 && certificateFiles.length === 0 && bundleFiles.length === 0) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Provide a public key, certificate chain, or Sigstore bundle alongside signed artifacts.",
+      why: "Offline verification needs trust material available to the verifier.",
+      relatedHref: "html/provenance.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run real cosign verification outside RepoTutor for release decisions.",
+    why: "This report is readiness metadata only and does not query Rekor, validate certificates, or verify signatures.",
+    relatedHref: "html/provenance.html"
+  });
+
+  return {
+    summary: `Cosign식 provenance readiness report: artifact signal ${artifactSignals.length}개, signature material ${signatureSignals.length}개, attestation ${attestationSignals.length}개, identity requirement ${identityRequirements.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Cosign signature bundle attestation transparency log trusted root certificate identity verification",
+    artifactSignals,
+    signatureSignals,
+    attestationSignals,
+    identityRequirements,
+    verificationCommands: [
+      {
+        command: "cosign verify-blob <artifact> --bundle <artifact.sigstore.json> --certificate-identity <identity> --certificate-oidc-issuer <issuer>",
+        purpose: "Generic blob을 Sigstore bundle, expected identity, OIDC issuer로 검증합니다."
+      },
+      {
+        command: "cosign verify-attestation --type slsaprovenance --certificate-identity <identity> --certificate-oidc-issuer <issuer> <image>",
+        purpose: "컨테이너 이미지의 SLSA provenance attestation과 subject 관계를 검증합니다."
+      },
+      {
+        command: "cosign tree <image>",
+        purpose: "OCI artifact에 붙은 signature, attestation, SBOM referrer를 확인합니다."
+      },
+      {
+        command: "cosign verify --key cosign.pub <image>@sha256:<digest>",
+        purpose: "공개키 기반으로 digest-pinned container image signature를 검증합니다."
+      }
+    ],
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    learnerNextSteps: [
+      "artifact readiness와 signature material을 먼저 대조해 어떤 산출물을 서명해야 하는지 정하세요.",
+      "keyless flow는 certificate identity와 OIDC issuer를 반드시 명시해서 검증하세요.",
+      "attestation subject가 실제 artifact digest와 연결되는지 원본 registry나 bundle에서 확인하세요.",
+      "이 리포트는 Cosign 실행 결과가 아니라 정적 준비도 리포트입니다. 실제 release 판단에는 cosign verify 계열 명령을 실행하세요."
+    ]
+  };
+}
+
+function provenanceFiles(walk: WalkResult, predicate: (filePath: string) => boolean): string[] {
+  return walk.files
+    .filter((file) => predicate(file.relPath))
+    .map((file) => file.relPath)
+    .sort((a, b) => a.localeCompare(b));
+}
+
+function isSignatureMaterialFile(filePath: string): boolean {
+  const base = path.basename(filePath).toLowerCase();
+  return base === "cosign.sig" || base.endsWith(".sig") || base.endsWith(".signature") || base.endsWith(".pem.sig");
+}
+
+function isSigstoreBundleFile(filePath: string): boolean {
+  const base = path.basename(filePath).toLowerCase();
+  return base === "bundle.json" || base === "artifact.sigstore.json" || base.endsWith(".sigstore") || base.endsWith(".sigstore.json") || base.endsWith(".bundle") || base.endsWith(".bundle.json");
+}
+
+function isCertificateMaterialFile(filePath: string): boolean {
+  const base = path.basename(filePath).toLowerCase();
+  return base.endsWith(".crt") || base.endsWith(".cert") || base.endsWith(".cer") || (base.endsWith(".pem") && !isPublicKeyMaterialFile(filePath));
+}
+
+function isPublicKeyMaterialFile(filePath: string): boolean {
+  const base = path.basename(filePath).toLowerCase();
+  return base === "cosign.pub" || base === "public.key" || base === "public_key.pem" || base.endsWith(".pub");
+}
+
+function isTrustedRootMaterialFile(filePath: string): boolean {
+  const base = path.basename(filePath).toLowerCase();
+  return base === "trusted_root.json" || base === "trusted-root.json" || base === "sigstore-root.json" || base === "root.json";
+}
+
+function isAttestationMaterialFile(filePath: string): boolean {
+  const base = path.basename(filePath).toLowerCase();
+  return /attestation|predicate|provenance|intoto|in-toto|dsse|slsa/.test(filePath.toLowerCase()) || base.endsWith(".intoto.jsonl") || base.endsWith(".link");
 }
 
 async function packageDependencyRangeSignals(walk: WalkResult): Promise<{ total: number; pinned: number; unpinned: number; filePaths: string[]; examples: string[] }> {

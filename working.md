@@ -1537,6 +1537,34 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`: PASS, 13/13 audit reports
 - 2026-06-04: Pushed AutoResearch Upgrade 124:
   - `450a280` project scorecard report
+- 2026-06-04: AutoResearch Upgrade 125 candidate selected:
+  `sigstore/cosign` (`https://github.com/sigstore/cosign`; public
+  Apache-2.0; 5,997 stars; 745 forks; updated 2026-06-03T21:10:07Z).
+  Cloned ignored external source to `research/external-src/sigstore-cosign`
+  and inspected README, signature/attestation/bundle specs, verify-blob docs,
+  policy attestation conversion, and verification option code without executing
+  external source.
+- 2026-06-04: RED provenance smoke generated
+  `/tmp/repotutor-provenance-red-studies.U4FSZk/2026-06-04/local__simple-ts-app__main__d11526e6`;
+  old build was missing `analysis/provenance-report.json`,
+  `markdown/provenance.md`, and `html/provenance.html` as expected.
+- 2026-06-04: Implemented Cosign-style provenance readiness report:
+  `ProvenanceReportSchema`, `analysis/provenance-report.json`,
+  `markdown/provenance.md`, `html/provenance.html`, artifact signals,
+  signature material, attestation predicates, identity requirements,
+  verification commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, and `open --target provenance`.
+- 2026-06-04: GREEN provenance smoke generated
+  `/tmp/repotutor-provenance-green-studies.kLwDTm/2026-06-04/local__simple-ts-app__main__d11526e6`;
+  confirmed `verificationCheckedRequiredArtifacts=75`, artifact signals 6,
+  signature material 6, attestations 5, identity requirements 5, risk queue 5,
+  verification commands 4, `provenance-card`, `data-source-pattern="Cosign"`,
+  manifest/learning-path entries, and `open --target provenance` ->
+  `html/provenance.html`.
+- 2026-06-04: Verification for Upgrade 125:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 13/13 audit reports
 
 ## Next Actions
 
