@@ -40,6 +40,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "i18n-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "release-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "secret-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "secret-management-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "container-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-quality-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "documentation-report.json"))).resolves.toBeUndefined();
@@ -158,6 +159,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "i18n.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "release-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "secret-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "secret-management-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "container-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-quality.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "documentation.md"))).resolves.toBeUndefined();
@@ -279,6 +281,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "i18n.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "release-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "secret-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "secret-management-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "container-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "code-quality.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "documentation.html"))).resolves.toBeUndefined();
@@ -427,6 +430,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/i18n.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/release-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/secret-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/secret-management-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/container-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/code-quality.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/documentation.html\"");
@@ -994,6 +998,25 @@ describe("RepoTutor core pipeline", () => {
     expect(secretMarkdown).toContain("Source pattern: Gitleaks");
     expect(secretMarkdown).toContain("## Prevention Signals");
     expect(secretMarkdown).toContain("## Reporting Signals");
+    const secretManagementText = await fs.readFile(path.join(result.session.outputPaths.analysis, "secret-management-readiness-report.json"), "utf8");
+    expect(secretManagementText).toContain("Secrets management readiness Vault Infisical Doppler SOPS Sealed Secrets External Secrets secret engines auth methods policies tokens leases rotation transit kv env injection sync Kubernetes operator agent CLI SDK API audit logs dynamic secrets");
+    expect(secretManagementText).toContain("\"secretManagementSetups\"");
+    expect(secretManagementText).toContain("\"platformSignals\"");
+    expect(secretManagementText).toContain("\"authSignals\"");
+    expect(secretManagementText).toContain("\"storageSignals\"");
+    expect(secretManagementText).toContain("\"deliverySignals\"");
+    expect(secretManagementText).toContain("\"governanceSignals\"");
+    expect(secretManagementText).toContain("\"packageSignals\"");
+    const secretManagementHtml = await fs.readFile(path.join(result.session.outputPaths.html, "secret-management-readiness.html"), "utf8");
+    expect(secretManagementHtml).toContain("Secret Management Readiness");
+    expect(secretManagementHtml).toContain("secret-management-readiness-card");
+    expect(secretManagementHtml).toContain("data-source-pattern=\"Secret Management\"");
+    expect(secretManagementHtml).toContain("Governance Signals");
+    const secretManagementMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "secret-management-readiness.md"), "utf8");
+    expect(secretManagementMarkdown).toContain("# Secret Management Readiness");
+    expect(secretManagementMarkdown).toContain("Source pattern: Secrets management readiness");
+    expect(secretManagementMarkdown).toContain("## Delivery Signals");
+    expect(secretManagementMarkdown).toContain("## Governance Signals");
     const containerText = await fs.readFile(path.join(result.session.outputPaths.analysis, "container-readiness-report.json"), "utf8");
     expect(containerText).toContain("Hadolint Dockerfile AST ShellCheck rules config ignored rules severity overrides trusted registries labels SARIF JUnit CI pre-commit");
     expect(containerText).toContain("\"dockerfiles\"");
@@ -2701,6 +2724,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/i18n.html");
     expect(exportManifestText).toContain("html/release-readiness.html");
     expect(exportManifestText).toContain("html/secret-readiness.html");
+    expect(exportManifestText).toContain("html/secret-management-readiness.html");
     expect(exportManifestText).toContain("html/container-readiness.html");
     expect(exportManifestText).toContain("html/code-quality.html");
     expect(exportManifestText).toContain("html/documentation.html");
@@ -2843,6 +2867,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("i18n.html");
     expect(learningPathHtml).toContain("release-readiness.html");
     expect(learningPathHtml).toContain("secret-readiness.html");
+    expect(learningPathHtml).toContain("secret-management-readiness.html");
     expect(learningPathHtml).toContain("container-readiness.html");
     expect(learningPathHtml).toContain("code-quality.html");
     expect(learningPathHtml).toContain("documentation.html");
@@ -6214,6 +6239,171 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "consent-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "consent-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects secret management readiness patterns without executing secret tools", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-smgmt-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-smgmt-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "smgmt"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "config"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "k8s"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "smgmt:scan": "rg \"Vault|Infisical|Doppler|SOPS|ExternalSecret|SealedSecret\" src docs config k8s",
+        "smgmt:run": "doppler run -- infisical run -- node src/index.js"
+      },
+      dependencies: {
+        "@infisical/sdk": "latest",
+        "infisical": "latest",
+        "vault": "latest",
+        "node-vault": "latest",
+        "doppler": "latest",
+        "sops": "latest",
+        "sealed-secrets": "latest",
+        "external-secrets": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "smgmt", "vault.ts"), [
+      "import vault from 'node-vault';",
+      "const client = vault({ endpoint: process.env.VAULT_ADDR, token: process.env.VAULT_TOKEN });",
+      "export const vaultOps = [",
+      "  'vault login token service token',",
+      "  'vault auth enable approle role_id secret_id AppRole',",
+      "  'vault auth enable kubernetes Kubernetes Auth service account',",
+      "  'vault auth enable oidc OIDC JWT auth',",
+      "  'vault auth enable aws AWS Auth IAM role',",
+      "  'vault auth enable gcp GCP Auth Google Cloud auth',",
+      "  'vault auth enable azure Azure Auth managed identity',",
+      "  'vault secrets enable kv kv-v2 versioning versioned secrets',",
+      "  'vault secrets enable transit encryption as a service encrypt decrypt',",
+      "  'vault secrets enable pki PKI certificate authority certificates TLS cert',",
+      "  'vault secrets enable database dynamic secrets database credentials leased credentials',",
+      "  'vault policy write app least privilege policy policies rbac role permission',",
+      "  'vault audit enable file audit log access log telemetry metrics',",
+      "  'lease renew revoke ttl token TTL max_ttl rotation rotate expiry expiration dynamic secret',",
+      "  'access request approval privileged access break-glass break glass emergency access',",
+      "  'vault agent sidecar template env injection secretRef envFrom secrets.inject SDK API vault client secret sync certificate sync'",
+      "];",
+      "void client;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "smgmt", "infisical.ts"), [
+      "import { InfisicalSDK } from '@infisical/sdk';",
+      "const infisical = new InfisicalSDK({ clientId: 'client id', clientSecret: 'client secret' });",
+      "export const infisicalOps = [",
+      "  'Infisical infisical run infisical login infisical secrets infisical export',",
+      "  'machine identity Universal Auth Kubernetes Auth GCP Auth Azure Auth AWS Auth OIDC Auth',",
+      "  'secret rotation rotate Kubernetes Operator Infisical Agent SDK API certificate sync KMS',",
+      "  'environment config app config env injection sync audit logs access request policy rbac'",
+      "];",
+      "void infisical;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "doppler.md"), [
+      "# Doppler secret management",
+      "Use Doppler with doppler login, doppler setup, doppler run, and doppler secrets for environment config.",
+      "Project/config selection uses a scoped token, CI/CD pipeline, GitHub Action workflow, SDK/API sync, and env injection.",
+      "Operations record audit log, activity logs, access request approvals, break glass emergency access, versioning, rotation, TTL, and revoke guidance."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "sops-policy.yaml"), [
+      "creation_rules:",
+      "  - path_regex: secrets/.*\\.yaml$",
+      "    age: age1example",
+      "    pgp: fingerprint",
+      "    encrypted_regex: '^(data|stringData)$'",
+      "    kms: arn:aws:kms:us-east-1:111122223333:key/example",
+      "# SOPS sops encrypt decrypt encryption workflow"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "sealed-sync.yaml"), [
+      "apiVersion: bitnami.com/v1alpha1",
+      "kind: SealedSecret",
+      "metadata:",
+      "  name: app-sealed-secret",
+      "spec:",
+      "  encryptedData:",
+      "    token: sealed secret value",
+      "# sealed-secrets kubeseal sync rotation audit"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "external-sync.yaml"), [
+      "apiVersion: external-secrets.io/v1",
+      "kind: ExternalSecret",
+      "metadata:",
+      "  name: app-external-secret",
+      "spec:",
+      "  secretStoreRef:",
+      "    name: app-secret-store",
+      "    kind: SecretStore",
+      "  target:",
+      "    name: synced-secret",
+      "  dataFrom:",
+      "    - extract:",
+      "        key: app/config",
+      "---",
+      "apiVersion: external-secrets.io/v1",
+      "kind: ClusterSecretStore",
+      "metadata:",
+      "  name: cluster-secret-store",
+      "# External Secrets Kubernetes Operator secret sync"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "secret-management.yml"), [
+      "name: secret-management",
+      "on: [push]",
+      "jobs:",
+      "  secret-management:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - name: Doppler GitHub Action CI/CD",
+      "        uses: dopplerhq/secrets-fetch-action@v1",
+      "      - name: Vault policy and audit check",
+      "        run: rg \"vault policy|audit log|lease|rotation|ExternalSecret|SOPS\" ."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "secret-management-readiness-report.json"), "utf8")) as {
+      secretManagementSetups: Array<{ filePath: string; provider: string; readiness: string; authCount: number; engineCount: number; policyCount: number; injectionCount: number; rotationCount: number; syncCount: number; auditCount: number; leaseCount: number; encryptionCount: number; cliCount: number }>;
+      platformSignals: Array<{ signal: string; readiness: string }>;
+      authSignals: Array<{ signal: string; readiness: string }>;
+      storageSignals: Array<{ signal: string; readiness: string }>;
+      deliverySignals: Array<{ signal: string; readiness: string }>;
+      governanceSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    expect(report.secretManagementSetups.length).toBeGreaterThan(0);
+    expect(report.secretManagementSetups.some((item) => item.provider === "vault")).toBe(true);
+    expect(report.secretManagementSetups.some((item) => item.provider === "infisical")).toBe(true);
+    expect(report.secretManagementSetups.some((item) => item.provider === "doppler")).toBe(true);
+    expect(report.secretManagementSetups.some((item) => item.provider === "sops")).toBe(true);
+    expect(report.secretManagementSetups.some((item) => item.provider === "sealed-secrets")).toBe(true);
+    expect(report.secretManagementSetups.some((item) => item.provider === "external-secrets")).toBe(true);
+    const vaultSetup = report.secretManagementSetups.find((item) => item.filePath === "src/smgmt/vault.ts");
+    expect(vaultSetup?.authCount).toBeGreaterThan(0);
+    expect(vaultSetup?.engineCount).toBeGreaterThan(0);
+    expect(vaultSetup?.policyCount).toBeGreaterThan(0);
+    expect(vaultSetup?.injectionCount).toBeGreaterThan(0);
+    expect(vaultSetup?.rotationCount).toBeGreaterThan(0);
+    expect(vaultSetup?.syncCount).toBeGreaterThan(0);
+    expect(vaultSetup?.auditCount).toBeGreaterThan(0);
+    expect(vaultSetup?.leaseCount).toBeGreaterThan(0);
+    expect(vaultSetup?.encryptionCount).toBeGreaterThan(0);
+    expect(vaultSetup?.cliCount).toBeGreaterThan(0);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.platformSignals, ["vault", "infisical", "doppler", "sops", "sealed-secrets", "external-secrets"]);
+    expectReady(report.authSignals, ["token", "approle", "kubernetes-auth", "oidc", "aws-auth", "gcp-auth", "azure-auth", "universal-auth"]);
+    expectReady(report.storageSignals, ["kv", "secret-engine", "dynamic-secrets", "pki", "transit", "certificate", "database-credentials", "environment-config"]);
+    expectReady(report.deliverySignals, ["env-injection", "cli-run", "agent", "kubernetes-operator", "sync", "github-action", "ci-cd", "sdk-api"]);
+    expectReady(report.governanceSignals, ["policy", "rbac", "audit-log", "lease", "rotation", "versioning", "access-request", "break-glass"]);
+    expectReady(report.packageSignals, ["@infisical/sdk", "infisical", "vault", "node-vault", "doppler", "sops", "sealed-secrets", "external-secrets"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "secret-management-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "secret-management-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects object storage readiness patterns without contacting object storage", async () => {
