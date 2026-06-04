@@ -57,6 +57,7 @@ import type {
   GitHooksReport,
   TaskRunnerReport,
   DependencyUpdateReport,
+  LintReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -120,6 +121,7 @@ export interface StudyHtmlInput {
   gitHooksReport: GitHooksReport;
   taskRunnerReport: TaskRunnerReport;
   dependencyUpdateReport: DependencyUpdateReport;
+  lintReadinessReport: LintReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -203,6 +205,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["git-hooks.html", "Git Hooks"],
     ["task-runner.html", "Task Runner"],
     ["dependency-updates.html", "Dependency Updates"],
+    ["lint-readiness.html", "Lint"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -321,6 +324,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Git Hooks Readiness</h3><p>${escapeHtml(input.gitHooksReport.summary)}</p><p>Husky 패턴으로 .husky hook files, install scripts, pre-commit/pre-push policy, lint-staged, bypass signals를 정리합니다.</p><a href="git-hooks.html">Git Hooks 열기</a></article>
           <article><h3>Task Runner Readiness</h3><p>${escapeHtml(input.taskRunnerReport.summary)}</p><p>Turborepo 패턴으로 turbo.json, task graph, cache, dependsOn, env, package scripts를 정리합니다.</p><a href="task-runner.html">Task Runner 열기</a></article>
           <article><h3>Dependency Updates Readiness</h3><p>${escapeHtml(input.dependencyUpdateReport.summary)}</p><p>Renovate 패턴으로 update config, packageRules, automerge, dashboard, registry, package files를 정리합니다.</p><a href="dependency-updates.html">Dependency Updates 열기</a></article>
+          <article><h3>Lint Readiness</h3><p>${escapeHtml(input.lintReadinessReport.summary)}</p><p>ESLint 패턴으로 flat config, rules, plugins, parser, ignores, fix/cache/report options를 정리합니다.</p><a href="lint-readiness.html">Lint 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -567,6 +571,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Dependency Updates Readiness", "dependency-updates.html", `<section class="panel" data-source-pattern="Renovate"><h2>Dependency Updates Snapshot</h2><p>${escapeHtml(input.dependencyUpdateReport.summary)}</p><p class="muted">${escapeHtml(input.dependencyUpdateReport.sourcePattern)}</p><dl class="meta"><div><dt>configs</dt><dd>${input.dependencyUpdateReport.configFiles.length}</dd></div><div><dt>managers</dt><dd>${input.dependencyUpdateReport.managerSignals.length}</dd></div><div><dt>policies</dt><dd>${input.dependencyUpdateReport.policySignals.length}</dd></div><div><dt>package files</dt><dd>${input.dependencyUpdateReport.packageFileSignals.length}</dd></div></dl><p class="muted">RepoTutor records dependency-update readiness only. It does not query registries, create branches, open pull requests, or validate private credentials.</p></section><section class="grid"><article class="dependency-update-card"><h3>Config Files</h3>${dependencyUpdateConfigList(input.dependencyUpdateReport.configFiles)}</article><article class="dependency-update-card"><h3>Manager Signals</h3>${dependencyUpdateSignalList(input.dependencyUpdateReport.managerSignals, "signal")}</article><article class="dependency-update-card"><h3>Policy Signals</h3>${dependencyUpdateSignalList(input.dependencyUpdateReport.policySignals, "signal")}</article><article class="dependency-update-card"><h3>Workflow Signals</h3>${dependencyUpdateSignalList(input.dependencyUpdateReport.workflowSignals, "signal")}</article></section><section class="grid"><article class="dependency-update-card"><h3>Registry Signals</h3>${dependencyUpdateSignalList(input.dependencyUpdateReport.registrySignals, "signal")}</article><article class="dependency-update-card"><h3>Package File Signals</h3>${dependencyUpdateSignalList(input.dependencyUpdateReport.packageFileSignals, "signal")}</article><article class="dependency-update-card"><h3>Recommended Commands</h3>${dependencyUpdateCommandList(input.dependencyUpdateReport.recommendedCommands)}</article><article class="dependency-update-card"><h3>Risk Queue</h3>${dependencyUpdateRiskList(input.dependencyUpdateReport.riskQueue)}</article><article class="dependency-update-card"><h3>다음 확인 단계</h3>${list(input.dependencyUpdateReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "lint-readiness.html",
+      title: "Lint Readiness",
+      html: pageShell("Lint Readiness", "lint-readiness.html", `<section class="panel" data-source-pattern="ESLint"><h2>Lint Snapshot</h2><p>${escapeHtml(input.lintReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.lintReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>configs</dt><dd>${input.lintReadinessReport.configFiles.length}</dd></div><div><dt>rules</dt><dd>${input.lintReadinessReport.ruleSignals.length}</dd></div><div><dt>scripts</dt><dd>${input.lintReadinessReport.scriptSignals.length}</dd></div><div><dt>packages</dt><dd>${input.lintReadinessReport.packageSignals.length}</dd></div></dl><p class="muted">RepoTutor records lint readiness only. It does not execute ESLint, apply fixes, resolve parser/plugin packages, or write cache files.</p></section><section class="grid"><article class="lint-readiness-card"><h3>Config Files</h3>${lintReadinessConfigList(input.lintReadinessReport.configFiles)}</article><article class="lint-readiness-card"><h3>Rule Signals</h3>${lintReadinessSignalList(input.lintReadinessReport.ruleSignals, "signal")}</article><article class="lint-readiness-card"><h3>Script Signals</h3>${lintReadinessSignalList(input.lintReadinessReport.scriptSignals, "signal")}</article><article class="lint-readiness-card"><h3>Scope Signals</h3>${lintReadinessSignalList(input.lintReadinessReport.scopeSignals, "signal")}</article></section><section class="grid"><article class="lint-readiness-card"><h3>Output Signals</h3>${lintReadinessSignalList(input.lintReadinessReport.outputSignals, "signal")}</article><article class="lint-readiness-card"><h3>Package Signals</h3>${lintReadinessSignalList(input.lintReadinessReport.packageSignals, "signal")}</article><article class="lint-readiness-card"><h3>Recommended Commands</h3>${lintReadinessCommandList(input.lintReadinessReport.recommendedCommands)}</article><article class="lint-readiness-card"><h3>Risk Queue</h3>${lintReadinessRiskList(input.lintReadinessReport.riskQueue)}</article><article class="lint-readiness-card"><h3>다음 확인 단계</h3>${list(input.lintReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -724,6 +733,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Git Hooks Readiness", path: "html/git-hooks.html", description: "Husky식 hook file, install script, pre-commit/pre-push, bypass policy 준비도를 확인합니다." },
       { label: "Task Runner Readiness", path: "html/task-runner.html", description: "Turborepo식 config, task graph, cache, dependsOn/env, package script 준비도를 확인합니다." },
       { label: "Dependency Updates Readiness", path: "html/dependency-updates.html", description: "Renovate식 config, packageRules, automerge, dashboard, registry, package file 준비도를 확인합니다." },
+      { label: "Lint Readiness", path: "html/lint-readiness.html", description: "ESLint식 flat config, rules, plugins, parser, ignores, fix/cache/report 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1089,6 +1099,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "dependency-updates.html",
       goal: "Renovate식 config, packageRules, automerge, dashboard, registry, package file을 보고 자동 업데이트 정책을 확인합니다.",
       evidence: `config files ${input.dependencyUpdateReport.configFiles.length}개, package file signals ${input.dependencyUpdateReport.packageFileSignals.length}개`
+    },
+    {
+      title: "Lint 준비도 확인",
+      href: "lint-readiness.html",
+      goal: "ESLint식 flat config, rules, plugins, parser, ignores, fix/cache/report 옵션을 보고 코드 품질 관문을 확인합니다.",
+      evidence: `config files ${input.lintReadinessReport.configFiles.length}개, script signals ${input.lintReadinessReport.scriptSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -2311,6 +2327,31 @@ function dependencyUpdateRiskList(items: DependencyUpdateReport["riskQueue"]): s
 }
 
 function dependencyUpdateHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function lintReadinessConfigList(items: LintReadinessReport["configFiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">lint config file이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.configType)}/${escapeHtml(item.readiness)}]<br>flat ${item.flatConfig ? "yes" : "no"} · rules ${item.ruleCount} · plugins ${item.pluginCount} · ignores ${item.ignoreCount} · parser ${escapeHtml(item.parserSignal)}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(lintReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function lintReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">lint signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(lintReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function lintReadinessCommandList(items: LintReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function lintReadinessRiskList(items: LintReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(lintReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function lintReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

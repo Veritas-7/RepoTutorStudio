@@ -2409,6 +2409,42 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 149:
   - `4646abb` dependency updates readiness report
 
+- 2026-06-04: AutoResearch Upgrade 150 candidate selected:
+  `eslint/eslint` (`https://github.com/eslint/eslint`; public; MIT from
+  cloned license/package metadata; 27,265 stars; 5,017 forks; updated
+  2026-06-04T01:32:13Z). Compared with `biomejs/biome`,
+  `oxc-project/oxc`, and `standard/standard`; selected ESLint for flat config,
+  rules/plugins/parser boundaries, ignores, inline disables, formatter/output
+  controls, fix/cache/max-warnings workflows, config inspection, and package
+  script handoff. Cloned ignored external source to
+  `research/external-src/eslint-eslint` and inspected README, license,
+  package metadata, flat config, CLI options, docs, and tests without
+  executing external source. Tracked-file count for
+  `research/external-src/eslint-eslint` returned `0`.
+- 2026-06-04: RED lint-readiness smoke generated
+  `/tmp/repotutor-lint-readiness-red-studies.zVyVO1/2026-06-04/local__simple-ts-app__main__a0316049`;
+  old build was missing `analysis/lint-readiness-report.json`,
+  `markdown/lint-readiness.md`, and `html/lint-readiness.html`, and
+  `open --target lint-readiness` failed as expected.
+- 2026-06-04: Implemented ESLint-style lint readiness report:
+  `LintReadinessReportSchema`, `analysis/lint-readiness-report.json`,
+  `markdown/lint-readiness.md`, `html/lint-readiness.html`, config files,
+  rule signals, script signals, scope signals, output signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, nav entry, and
+  `open --target lint-readiness`.
+- 2026-06-04: GREEN lint-readiness smoke generated
+  `/tmp/repotutor-lint-readiness-green-studies.mTm9Eq/2026-06-04/local__simple-ts-app__main__a0316049`;
+  confirmed `verificationCheckedRequiredArtifacts=150`, config files 0,
+  rule signals 11, script signals 9, scope signals 7, output signals 7,
+  package signals 7, recommended commands 6, risk queue 3,
+  `formatter=ready`, `typescript=ready`, manifest/learning-path entries, and
+  `open --target lint-readiness` -> `html/lint-readiness.html`.
+- 2026-06-04: Verification for Upgrade 150:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 48/48 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

@@ -2230,6 +2230,64 @@ export const DependencyUpdateReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const LintReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  configFiles: z.array(z.object({
+    filePath: z.string(),
+    configType: z.enum(["eslint", "biome", "oxlint", "standard", "package-json", "unknown"]),
+    flatConfig: z.boolean(),
+    ruleCount: z.number().int().nonnegative(),
+    pluginCount: z.number().int().nonnegative(),
+    ignoreCount: z.number().int().nonnegative(),
+    parserSignal: z.enum(["default", "typescript", "babel", "custom", "missing"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  ruleSignals: z.array(z.object({
+    signal: z.enum(["rules", "extends", "recommended", "severity", "files-overrides", "globals", "parser", "plugins", "ignores", "inline-disable", "unused-disable", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scriptSignals: z.array(z.object({
+    signal: z.enum(["lint", "lint-fix", "cache", "max-warnings", "format", "type-aware", "ci", "stdin", "report", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scopeSignals: z.array(z.object({
+    signal: z.enum(["javascript", "typescript", "jsx", "tests", "docs", "config-files", "generated", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["formatter", "output-file", "stats", "quiet", "debug", "report-unused-disable", "suppressions", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["eslint", "typescript-eslint", "eslint-plugin", "eslint-config", "parser", "prettier-integration", "globals", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2481,6 +2539,7 @@ export type PackageManagerReport = z.infer<typeof PackageManagerReportSchema>;
 export type GitHooksReport = z.infer<typeof GitHooksReportSchema>;
 export type TaskRunnerReport = z.infer<typeof TaskRunnerReportSchema>;
 export type DependencyUpdateReport = z.infer<typeof DependencyUpdateReportSchema>;
+export type LintReadinessReport = z.infer<typeof LintReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

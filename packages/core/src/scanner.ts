@@ -62,6 +62,7 @@ import {
   GitHooksReport,
   TaskRunnerReport,
   DependencyUpdateReport,
+  LintReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -130,6 +131,7 @@ export interface AnalysisBundle {
   gitHooksReport: GitHooksReport;
   taskRunnerReport: TaskRunnerReport;
   dependencyUpdateReport: DependencyUpdateReport;
+  lintReadinessReport: LintReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -198,8 +200,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitHooksReport = await buildGitHooksReport(walk);
   const taskRunnerReport = await buildTaskRunnerReport(walk);
   const dependencyUpdateReport = await buildDependencyUpdateReport(walk);
+  const lintReadinessReport = await buildLintReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -9601,6 +9604,291 @@ function dependencyUpdateSignalFromSpecs<T extends Record<K, string> & { pattern
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/dependency-updates.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildLintReadinessReport(walk: WalkResult): Promise<LintReadinessReport> {
+  const sourceFiles = await lintReadinessSourceFiles(walk);
+  const configFiles = lintReadinessConfigFiles(sourceFiles);
+  const ruleSignals = lintReadinessRuleSignals(sourceFiles);
+  const scriptSignals = lintReadinessScriptSignals(sourceFiles);
+  const scopeSignals = lintReadinessScopeSignals(sourceFiles);
+  const outputSignals = lintReadinessOutputSignals(sourceFiles);
+  const packageSignals = lintReadinessPackageSignals(sourceFiles);
+
+  const hasConfig = configFiles.length > 0;
+  const hasLintScript = scriptSignals.some((item) => item.signal === "lint" && item.readiness === "ready");
+  const hasRules = ruleSignals.some((item) => item.signal === "rules" && item.readiness === "ready");
+  const hasIgnores = ruleSignals.some((item) => item.signal === "ignores" && item.readiness === "ready");
+  const hasTypeScript = scopeSignals.some((item) => item.signal === "typescript" && item.readiness === "ready")
+    || packageSignals.some((item) => item.signal === "typescript-eslint" && item.readiness === "ready");
+  const hasParser = ruleSignals.some((item) => item.signal === "parser" && item.readiness === "ready");
+  const hasMaxWarnings = scriptSignals.some((item) => item.signal === "max-warnings" && item.readiness === "ready");
+  const hasUnusedDisable = outputSignals.some((item) => item.signal === "report-unused-disable" && item.readiness === "ready");
+
+  const riskQueue: LintReadinessReport["riskQueue"] = [];
+  if (!hasConfig && !hasLintScript) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add a lint config or package script so learners can find the lint boundary.",
+      why: "ESLint-style readiness starts from eslint.config.*, package scripts, and ignore rules that define what is checked.",
+      relatedHref: "html/lint-readiness.html"
+    });
+  }
+  if (hasLintScript && !hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add the lint configuration referenced by the lint script.",
+      why: "A lint script without an inspectable config hides rule severity, parser, plugin, globals, and ignore policy.",
+      relatedHref: "html/lint-readiness.html"
+    });
+  }
+  if (hasConfig && !hasRules) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document explicit rules or an extends/recommended preset.",
+      why: "ESLint rule severity is the learner-facing contract for which patterns fail CI.",
+      relatedHref: "html/lint-readiness.html"
+    });
+  }
+  if (hasConfig && !hasIgnores) {
+    riskQueue.push({
+      priority: "low",
+      action: "Review ignore patterns for generated files, build output, and vendored code.",
+      why: "Flat config and ignore files decide whether lint output is meaningful or noisy.",
+      relatedHref: "html/lint-readiness.html"
+    });
+  }
+  if (hasTypeScript && !hasParser) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Confirm TypeScript parser and typed linting boundaries.",
+      why: "TypeScript linting often needs parser/plugin configuration and may need separate type-aware commands.",
+      relatedHref: "html/lint-readiness.html"
+    });
+  }
+  if (hasLintScript && !hasMaxWarnings) {
+    riskQueue.push({
+      priority: "low",
+      action: "Consider --max-warnings=0 for CI lint scripts.",
+      why: "Warnings otherwise may hide policy drift while still passing automation.",
+      relatedHref: "html/lint-readiness.html"
+    });
+  }
+  if (hasConfig && !hasUnusedDisable) {
+    riskQueue.push({
+      priority: "low",
+      action: "Consider reporting unused eslint-disable directives.",
+      why: "Unused suppression comments can keep stale exceptions alive after code changes.",
+      relatedHref: "html/lint-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run lint commands in a trusted workspace before treating this static report as approval.",
+    why: "RepoTutor records lint readiness statically; it does not execute ESLint, autofix files, or resolve parser/plugin packages.",
+    relatedHref: "html/lint-readiness.html"
+  });
+
+  return {
+    summary: `ESLint식 lint readiness report: config file ${configFiles.length}개, rule signal ${ruleSignals.length}개, script signal ${scriptSignals.length}개, package signal ${packageSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "ESLint flat config rules plugins parser ignores fix cache max-warnings report-unused-disable-directives print-config inspect-config",
+    configFiles,
+    ruleSignals,
+    scriptSignals,
+    scopeSignals,
+    outputSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx eslint .", purpose: "Run the configured lint check in a trusted workspace." },
+      { command: "npx eslint . --fix-dry-run", purpose: "Preview autofixable problems without writing files." },
+      { command: "npx eslint . --max-warnings=0", purpose: "Make warning drift fail CI during readiness checks." },
+      { command: "npx eslint --print-config <file>", purpose: "Inspect the resolved config for one representative file." },
+      { command: "npx eslint --inspect-config", purpose: "Open ESLint's config inspector when flat config resolution is unclear." },
+      { command: "npx eslint . --cache --cache-location .eslintcache", purpose: "Validate cache behavior while keeping cache files explicit." }
+    ],
+    learnerNextSteps: [
+      "Start with eslint.config.* or package.json scripts to learn which files are checked and which command CI should run.",
+      "Then inspect rules, extends, plugins, parser, globals, and ignores to understand the actual lint contract.",
+      "Check TypeScript and JSX scopes separately because parser/plugin setup can differ from plain JavaScript linting.",
+      "RepoTutor does not run ESLint or apply fixes; use this page as a static map before executing lint commands yourself."
+    ]
+  };
+}
+
+type LintReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function lintReadinessSourceFiles(walk: WalkResult): Promise<LintReadinessSourceFile[]> {
+  const files: LintReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !lintReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 200_000);
+    if (!text) continue;
+    if (!lintReadinessPathSignal(file.relPath) && !lintReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 240) break;
+  }
+  return files;
+}
+
+function lintReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return lintReadinessPathSignal(filePath)
+    || /^(package\.json|tsconfig\.json|jsconfig\.json|\.eslintignore|\.gitignore)$/i.test(base)
+    || filePath.startsWith(".github/workflows/")
+    || /\.(js|cjs|mjs|ts|tsx|jsx|json|ya?ml|toml|md)$/i.test(filePath);
+}
+
+function lintReadinessPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(eslint\.config\.[cm]?[jt]s|\.eslintrc|\.eslintrc\.(json|ya?ml|js|cjs)|biome\.json|biome\.jsonc|\.oxlintrc\.json|standard\.json|package\.json)$/i.test(base)
+    || /eslint|lint|biome|oxlint|standard/i.test(filePath);
+}
+
+function lintReadinessContentSignal(text: string): boolean {
+  return /eslint|biome|oxlint|standard|defineConfig|rules\s*:|plugins\s*:|parser\s*:|languageOptions|globalIgnores|includeIgnoreFile|max-warnings|fix-dry-run|report-unused-disable/i.test(text);
+}
+
+function lintReadinessConfigFiles(sourceFiles: LintReadinessSourceFile[]): LintReadinessReport["configFiles"] {
+  return sourceFiles
+    .filter((source) => lintReadinessConfigPathSignal(source.filePath, source.text))
+    .slice(0, 80)
+    .map((source) => {
+      const configType = lintReadinessConfigType(source.filePath, source.text);
+      const flatConfig = /eslint\.config\.[cm]?[jt]s$/i.test(source.filePath) || /defineConfig|globalIgnores|languageOptions/i.test(source.text);
+      const ruleCount = countMatches(source.text, /rules\s*:|["'][A-Za-z0-9@/_-]+\/?[A-Za-z0-9_-]+["']\s*:/g);
+      const pluginCount = countMatches(source.text, /plugins\s*:|eslint-plugin|@typescript-eslint|plugin:/g);
+      const ignoreCount = countMatches(source.text, /ignores\s*:|ignorePatterns|globalIgnores|includeIgnoreFile|\.eslintignore|ignore-pattern/g);
+      const parserSignal = lintReadinessParserSignal(source.text);
+      return {
+        filePath: source.filePath,
+        configType,
+        flatConfig,
+        ruleCount,
+        pluginCount,
+        ignoreCount,
+        parserSignal,
+        readiness: ruleCount > 0 || pluginCount > 0 || ignoreCount > 0 || parserSignal !== "missing" ? "ready" : "partial",
+        evidence: `${source.filePath} contains ${configType} lint config with ${ruleCount} rule signal(s), ${pluginCount} plugin signal(s), and ${ignoreCount} ignore signal(s).`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function lintReadinessConfigPathSignal(filePath: string, text: string): boolean {
+  const base = path.basename(filePath);
+  return /^(eslint\.config\.[cm]?[jt]s|\.eslintrc|\.eslintrc\.(json|ya?ml|js|cjs)|biome\.json|biome\.jsonc|\.oxlintrc\.json|standard\.json)$/i.test(base)
+    || (base === "package.json" && /"eslintConfig"\s*:|"standard"\s*:|"scripts"\s*:[\s\S]*"lint"/i.test(text));
+}
+
+function lintReadinessConfigType(filePath: string, text: string): LintReadinessReport["configFiles"][number]["configType"] {
+  const base = path.basename(filePath).toLowerCase();
+  if (/eslint|\.eslintrc/.test(base) || /eslintConfig|eslint-plugin|defineConfig/i.test(text)) return "eslint";
+  if (/biome/.test(base) || /biome\s+check/i.test(text)) return "biome";
+  if (/oxlint|\.oxlintrc/.test(base) || /oxlint/i.test(text)) return "oxlint";
+  if (/standard/.test(base) || /standard/i.test(text)) return "standard";
+  if (base === "package.json") return "package-json";
+  return "unknown";
+}
+
+function lintReadinessParserSignal(text: string): LintReadinessReport["configFiles"][number]["parserSignal"] {
+  if (/@typescript-eslint\/parser|typescript-eslint|tsParser/i.test(text)) return "typescript";
+  if (/@babel\/eslint-parser|babel-eslint/i.test(text)) return "babel";
+  if (/parser\s*:|languageOptions\s*:[\s\S]*parser/i.test(text)) return "custom";
+  if (/eslint|defineConfig|rules\s*:/i.test(text)) return "default";
+  return "missing";
+}
+
+function lintReadinessRuleSignals(sourceFiles: LintReadinessSourceFile[]): LintReadinessReport["ruleSignals"] {
+  const specs: Array<{ signal: LintReadinessReport["ruleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "rules", pattern: /rules\s*:/i, evidence: "rule map evidence was detected." },
+    { signal: "extends", pattern: /extends\s*:|eslint:recommended|plugin:|recommended/i, evidence: "extends or recommended preset evidence was detected." },
+    { signal: "recommended", pattern: /recommended|eslint:recommended|configs\.recommended/i, evidence: "recommended preset evidence was detected." },
+    { signal: "severity", pattern: /"error"|"warn"|"off"|:\s*[012]\b/i, evidence: "rule severity evidence was detected." },
+    { signal: "files-overrides", pattern: /files\s*:|overrides\s*:/i, evidence: "file scope or overrides evidence was detected." },
+    { signal: "globals", pattern: /globals\s*:|languageOptions|env\s*:/i, evidence: "global variable or language options evidence was detected." },
+    { signal: "parser", pattern: /parser\s*:|@typescript-eslint\/parser|@babel\/eslint-parser|languageOptions[\s\S]*parser/i, evidence: "parser evidence was detected." },
+    { signal: "plugins", pattern: /plugins\s*:|eslint-plugin|@typescript-eslint/i, evidence: "plugin evidence was detected." },
+    { signal: "ignores", pattern: /ignores\s*:|ignorePatterns|globalIgnores|includeIgnoreFile|\.eslintignore/i, evidence: "ignore policy evidence was detected." },
+    { signal: "inline-disable", pattern: /eslint-disable|noInlineConfig|inlineConfig/i, evidence: "inline disable policy evidence was detected." },
+    { signal: "unused-disable", pattern: /reportUnusedDisableDirectives|unused eslint-disable|report-unused-disable/i, evidence: "unused-disable reporting evidence was detected." }
+  ];
+  return lintReadinessSignalFromSpecs(sourceFiles, specs, "rule", "signal");
+}
+
+function lintReadinessScriptSignals(sourceFiles: LintReadinessSourceFile[]): LintReadinessReport["scriptSignals"] {
+  const specs: Array<{ signal: LintReadinessReport["scriptSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "lint", pattern: /"lint[^"]*"\s*:|\beslint\b|\bbiome\s+check\b|\boxlint\b|\bstandard\b/i, evidence: "lint script evidence was detected." },
+    { signal: "lint-fix", pattern: /lint:fix|--fix\b|fix-dry-run|biome.*--write|oxlint.*--fix/i, evidence: "lint fix script evidence was detected." },
+    { signal: "cache", pattern: /--cache\b|cache-location|cache-strategy/i, evidence: "lint cache evidence was detected." },
+    { signal: "max-warnings", pattern: /max-warnings|--max-warnings/i, evidence: "max warnings gate evidence was detected." },
+    { signal: "format", pattern: /prettier|fmt:|format|biome.*format/i, evidence: "format integration evidence was detected." },
+    { signal: "type-aware", pattern: /typescript-eslint|parserOptions|projectService|tsconfig/i, evidence: "type-aware lint evidence was detected." },
+    { signal: "ci", pattern: /\.github\/workflows|CI\b|--format|junit|github/i, evidence: "CI lint evidence was detected." },
+    { signal: "stdin", pattern: /--stdin|stdin-filename|Lint code provided on <STDIN>/i, evidence: "stdin lint evidence was detected." },
+    { signal: "report", pattern: /--format|--output-file|formatter|json|sarif/i, evidence: "lint report output evidence was detected." }
+  ];
+  return lintReadinessSignalFromSpecs(sourceFiles, specs, "script", "signal");
+}
+
+function lintReadinessScopeSignals(sourceFiles: LintReadinessSourceFile[]): LintReadinessReport["scopeSignals"] {
+  const specs: Array<{ signal: LintReadinessReport["scopeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "javascript", pattern: /\.m?js\b|\.cjs\b|\*\*\/\*\.js|ECMAScript|JavaScript/i, evidence: "JavaScript lint scope evidence was detected." },
+    { signal: "typescript", pattern: /\.tsx?\b|typescript-eslint|tsconfig|TypeScript/i, evidence: "TypeScript lint scope evidence was detected." },
+    { signal: "jsx", pattern: /\.jsx\b|\.tsx\b|JSX|react/i, evidence: "JSX lint scope evidence was detected." },
+    { signal: "tests", pattern: /tests?\/|\.spec\.|\.test\.|mocha|vitest|jest/i, evidence: "test file lint scope evidence was detected." },
+    { signal: "docs", pattern: /docs\/|markdown|lintDocs|mdx/i, evidence: "docs lint scope evidence was detected." },
+    { signal: "config-files", pattern: /config|\.ya?ml|\.json|toml/i, evidence: "config-file lint scope evidence was detected." },
+    { signal: "generated", pattern: /generated|dist\/|build\/|coverage\/|templates\/|fixtures\//i, evidence: "generated or ignored file scope evidence was detected." }
+  ];
+  return lintReadinessSignalFromSpecs(sourceFiles, specs, "scope", "signal");
+}
+
+function lintReadinessOutputSignals(sourceFiles: LintReadinessSourceFile[]): LintReadinessReport["outputSignals"] {
+  const specs: Array<{ signal: LintReadinessReport["outputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "formatter", pattern: /--format|formatter|stylish|json|sarif|junit/i, evidence: "formatter evidence was detected." },
+    { signal: "output-file", pattern: /--output-file|outputFile/i, evidence: "output file evidence was detected." },
+    { signal: "stats", pattern: /--stats|stats/i, evidence: "stats evidence was detected." },
+    { signal: "quiet", pattern: /--quiet|quiet/i, evidence: "quiet mode evidence was detected." },
+    { signal: "debug", pattern: /--debug|debug/i, evidence: "debug output evidence was detected." },
+    { signal: "report-unused-disable", pattern: /reportUnusedDisableDirectives|report-unused-disable/i, evidence: "unused-disable output evidence was detected." },
+    { signal: "suppressions", pattern: /suppressions|suppressAll|suppressRule|pruneSuppressions/i, evidence: "suppression output evidence was detected." }
+  ];
+  return lintReadinessSignalFromSpecs(sourceFiles, specs, "output", "signal");
+}
+
+function lintReadinessPackageSignals(sourceFiles: LintReadinessSourceFile[]): LintReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: LintReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "eslint", pattern: /"eslint"\s*:|eslint\b/i, evidence: "ESLint package evidence was detected." },
+    { signal: "typescript-eslint", pattern: /@typescript-eslint|typescript-eslint/i, evidence: "typescript-eslint package evidence was detected." },
+    { signal: "eslint-plugin", pattern: /eslint-plugin|plugins\s*:/i, evidence: "ESLint plugin evidence was detected." },
+    { signal: "eslint-config", pattern: /eslint-config|extends\s*:/i, evidence: "ESLint shareable config evidence was detected." },
+    { signal: "parser", pattern: /eslint-parser|parser\s*:/i, evidence: "parser package evidence was detected." },
+    { signal: "prettier-integration", pattern: /prettier|eslint-config-prettier|eslint-plugin-prettier/i, evidence: "Prettier integration evidence was detected." },
+    { signal: "globals", pattern: /"globals"\s*:|globals\b/i, evidence: "globals package or config evidence was detected." }
+  ];
+  return lintReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function lintReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: LintReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/lint-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
