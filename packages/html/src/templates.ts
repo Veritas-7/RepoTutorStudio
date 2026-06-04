@@ -74,6 +74,7 @@ import type {
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
+  RateLimitReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -154,6 +155,7 @@ export interface StudyHtmlInput {
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
+  rateLimitReadinessReport: RateLimitReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -712,6 +714,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Feature Flag Readiness", "feature-flag-readiness.html", `<section class="panel" data-source-pattern="OpenFeature"><h2>Feature Flag Snapshot</h2><p>${escapeHtml(input.featureFlagReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.featureFlagReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.featureFlagReadinessReport.featureFlagSetups.length}</dd></div><div><dt>evaluations</dt><dd>${input.featureFlagReadinessReport.evaluationSignals.length}</dd></div><div><dt>context</dt><dd>${input.featureFlagReadinessReport.contextSignals.length}</dd></div><div><dt>lifecycle</dt><dd>${input.featureFlagReadinessReport.lifecycleSignals.length}</dd></div></dl><p class="muted">RepoTutor records feature-flag readiness only. It does not initialize providers, fetch remote flags, evaluate live targeting rules, emit tracking events, close providers, or run the analyzed project's tests.</p></section><section class="grid"><article class="feature-flag-readiness-card"><h3>Feature Flag Setups</h3>${featureFlagReadinessSetupList(input.featureFlagReadinessReport.featureFlagSetups)}</article><article class="feature-flag-readiness-card"><h3>Evaluation Signals</h3>${featureFlagReadinessSignalList(input.featureFlagReadinessReport.evaluationSignals, "signal")}</article><article class="feature-flag-readiness-card"><h3>Context Signals</h3>${featureFlagReadinessSignalList(input.featureFlagReadinessReport.contextSignals, "signal")}</article><article class="feature-flag-readiness-card"><h3>Lifecycle Signals</h3>${featureFlagReadinessSignalList(input.featureFlagReadinessReport.lifecycleSignals, "signal")}</article></section><section class="grid"><article class="feature-flag-readiness-card"><h3>Package Signals</h3>${featureFlagReadinessSignalList(input.featureFlagReadinessReport.packageSignals, "signal")}</article><article class="feature-flag-readiness-card"><h3>Recommended Commands</h3>${featureFlagReadinessCommandList(input.featureFlagReadinessReport.recommendedCommands)}</article><article class="feature-flag-readiness-card"><h3>Risk Queue</h3>${featureFlagReadinessRiskList(input.featureFlagReadinessReport.riskQueue)}</article><article class="feature-flag-readiness-card"><h3>다음 확인 단계</h3>${list(input.featureFlagReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "rate-limit-readiness.html",
+      title: "Rate Limit Readiness",
+      html: pageShell("Rate Limit Readiness", "rate-limit-readiness.html", `<section class="panel" data-source-pattern="rate-limiter-flexible"><h2>Rate Limit Snapshot</h2><p>${escapeHtml(input.rateLimitReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.rateLimitReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.rateLimitReadinessReport.rateLimitSetups.length}</dd></div><div><dt>quota</dt><dd>${input.rateLimitReadinessReport.quotaSignals.length}</dd></div><div><dt>identity</dt><dd>${input.rateLimitReadinessReport.identitySignals.length}</dd></div><div><dt>stores</dt><dd>${input.rateLimitReadinessReport.storeSignals.length}</dd></div></dl><p class="muted">RepoTutor records rate-limit readiness only. It does not initialize limiters, consume points, mutate Redis or other stores, sleep for windows, emit responses, or run the analyzed project's tests.</p></section><section class="grid"><article class="rate-limit-readiness-card"><h3>Rate Limit Setups</h3>${rateLimitReadinessSetupList(input.rateLimitReadinessReport.rateLimitSetups)}</article><article class="rate-limit-readiness-card"><h3>Quota Signals</h3>${rateLimitReadinessSignalList(input.rateLimitReadinessReport.quotaSignals, "signal")}</article><article class="rate-limit-readiness-card"><h3>Identity Signals</h3>${rateLimitReadinessSignalList(input.rateLimitReadinessReport.identitySignals, "signal")}</article><article class="rate-limit-readiness-card"><h3>Store Signals</h3>${rateLimitReadinessSignalList(input.rateLimitReadinessReport.storeSignals, "signal")}</article></section><section class="grid"><article class="rate-limit-readiness-card"><h3>Response Signals</h3>${rateLimitReadinessSignalList(input.rateLimitReadinessReport.responseSignals, "signal")}</article><article class="rate-limit-readiness-card"><h3>Resilience Signals</h3>${rateLimitReadinessSignalList(input.rateLimitReadinessReport.resilienceSignals, "signal")}</article><article class="rate-limit-readiness-card"><h3>Package Signals</h3>${rateLimitReadinessSignalList(input.rateLimitReadinessReport.packageSignals, "signal")}</article><article class="rate-limit-readiness-card"><h3>Recommended Commands</h3>${rateLimitReadinessCommandList(input.rateLimitReadinessReport.recommendedCommands)}</article><article class="rate-limit-readiness-card"><h3>Risk Queue</h3>${rateLimitReadinessRiskList(input.rateLimitReadinessReport.riskQueue)}</article><article class="rate-limit-readiness-card"><h3>다음 확인 단계</h3>${list(input.rateLimitReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -886,6 +893,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Cache Readiness", path: "html/cache-readiness.html", description: "Node Redis식 client setup, get/set, TTL, invalidation, connection, advanced Redis 준비도를 확인합니다." },
       { label: "Logging Readiness", path: "html/logging-readiness.html", description: "Pino식 logger setup, level, context binding, redaction, transport 준비도를 확인합니다." },
       { label: "Feature Flag Readiness", path: "html/feature-flag-readiness.html", description: "OpenFeature식 provider, evaluation, targeting context, hooks, tracking 준비도를 확인합니다." },
+      { label: "Rate Limit Readiness", path: "html/rate-limit-readiness.html", description: "rate-limiter-flexible식 limiter setup, quota, identity key, store, response header 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1353,6 +1361,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "feature-flag-readiness.html",
       goal: "OpenFeature식 provider setup, flag evaluation, targeting context, hooks, tracking, shutdown 흐름을 보고 rollout 관문을 확인합니다.",
       evidence: `feature flag setups ${input.featureFlagReadinessReport.featureFlagSetups.length}개, evaluation signals ${input.featureFlagReadinessReport.evaluationSignals.length}개`
+    },
+    {
+      title: "Rate limit readiness 확인",
+      href: "rate-limit-readiness.html",
+      goal: "rate-limiter-flexible식 limiter setup, quota/window, identity key, backing store, 429/Retry-After 응답 흐름을 보고 abuse 방어 관문을 확인합니다.",
+      evidence: `rate limit setups ${input.rateLimitReadinessReport.rateLimitSetups.length}개, quota signals ${input.rateLimitReadinessReport.quotaSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3045,6 +3059,31 @@ function featureFlagReadinessRiskList(items: FeatureFlagReadinessReport["riskQue
 }
 
 function featureFlagReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function rateLimitReadinessSetupList(items: RateLimitReadinessReport["rateLimitSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">rate limit setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>limiter/window/store/consume/headers ${item.limiterSetupCount}/${item.windowCount}/${item.storeCount}/${item.consumeCount}/${item.headerCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(rateLimitReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function rateLimitReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">rate limit signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(rateLimitReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function rateLimitReadinessCommandList(items: RateLimitReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function rateLimitReadinessRiskList(items: RateLimitReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(rateLimitReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function rateLimitReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

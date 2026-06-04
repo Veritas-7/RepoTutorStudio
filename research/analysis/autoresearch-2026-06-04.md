@@ -4127,6 +4127,58 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 64/64 audit checks across 13 generated reports
 
+### Upgrade 167: Rate Limit Readiness Report
+
+- Cloned and inspected `animir/node-rate-limiter-flexible` under
+  `research/external-src/animir-node-rate-limiter-flexible` without executing
+  external source. Clone HEAD was `3c9c826`; the clone remains ignored by
+  RepoTutor.
+- GitHub metadata: public repo, ISC license, 3,552 stars, 189 forks, updated
+  2026-06-03T21:18:56Z. Compared with
+  `express-rate-limit/express-rate-limit`, `fastify/fastify-rate-limit`, and
+  `upstash/ratelimit-js`; selected `rate-limiter-flexible` because it models
+  generic and store-backed limiter readiness: `RateLimiterMemory`,
+  `RateLimiterRedis`, `points`, `duration`, `blockDuration`, `keyPrefix`,
+  `storeClient`, `consume`, `penalty`, `reward`, `insuranceLimiter`,
+  `msBeforeNext`, `remainingPoints`, `Retry-After`, `X-RateLimit-*`, in-memory
+  block, queue wrappers, and Redis/Valkey/Mongo/Postgres/MySQL/SQLite/Prisma/
+  Memcached/DynamoDB stores. No source code was copied into RepoTutor.
+- Implemented rate-limiter-flexible-style rate-limit-readiness report:
+  `RateLimitReadinessReportSchema`,
+  `analysis/rate-limit-readiness-report.json`,
+  `markdown/rate-limit-readiness.md`,
+  `html/rate-limit-readiness.html`, rate-limit setups, quota signals, identity
+  signals, store signals, response signals, resilience signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, and `open --target rate-limit-readiness`.
+- Source pattern: rate-limiter-flexible separates limiter construction through
+  memory, Redis, cluster, union, bursty, and queue limiters; quota through
+  `points`, `duration`, `blockDuration`, `execEvenly`, in-memory blocks, and
+  queueing; identity through IP, user, token, route, `keyPrefix`, and `getKey`;
+  response behavior through `msBeforeNext`, `remainingPoints`,
+  `consumedPoints`, `Retry-After`, `X-RateLimit-*`, and 429 responses; and
+  resilience through store clients, not-ready rejection, atomic increments,
+  `insuranceLimiter`, `penalty`, `reward`, `delete`, and `block`. RepoTutor
+  maps that to deterministic static rate-limit readiness and explicitly does
+  not initialize limiters, consume points, mutate stores, sleep for windows,
+  emit responses, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-rate-limit-readiness-red-studies.eBKq0F/2026-06-04/local__simple-ts-app__main__9732f9ec`;
+  old behavior was missing `analysis/rate-limit-readiness-report.json`,
+  `markdown/rate-limit-readiness.md`, and
+  `html/rate-limit-readiness.html`, and `open --target
+  rate-limit-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-rate-limit-readiness-green-studies.ShKmIf/2026-06-04/local__simple-ts-app__main__9732f9ec`;
+  confirmed `verificationCheckedRequiredArtifacts=201`, rate-limit setups 0,
+  quota signals 8, identity signals 8, store signals 10, response signals 8,
+  resilience signals 8, package signals 6, risk queue 2,
+  manifest/learning-path entries, and `open --target rate-limit-readiness` ->
+  `html/rate-limit-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 65/65 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

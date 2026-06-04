@@ -1,6 +1,6 @@
 {
   "iteration": 6,
-  "createdAt": "2026-06-04T08:42:13.005Z",
+  "createdAt": "2026-06-04T08:57:28.690Z",
   "checks": [
     {
       "name": "project setup",
@@ -417,6 +417,13 @@
     },
     {
       "name": "feature flag readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "rate limit readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

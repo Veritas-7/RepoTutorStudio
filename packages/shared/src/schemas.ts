@@ -3230,6 +3230,70 @@ export const FeatureFlagReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const RateLimitReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  rateLimitSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["rate-limiter-flexible", "express-rate-limit", "fastify-rate-limit", "upstash-ratelimit", "custom", "unknown"]),
+    limiterSetupCount: z.number().int().nonnegative(),
+    windowCount: z.number().int().nonnegative(),
+    storeCount: z.number().int().nonnegative(),
+    consumeCount: z.number().int().nonnegative(),
+    headerCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  quotaSignals: z.array(z.object({
+    signal: z.enum(["points", "duration", "limit", "window", "block-duration", "exec-evenly", "in-memory-block", "queue", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  identitySignals: z.array(z.object({
+    signal: z.enum(["ip", "user-id", "authorization-token", "api-route", "key-prefix", "get-key", "black-white-list", "skip", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  storeSignals: z.array(z.object({
+    signal: z.enum(["memory", "redis", "valkey", "mongo", "postgres", "mysql", "sqlite", "dynamodb", "memcached", "prisma", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  responseSignals: z.array(z.object({
+    signal: z.enum(["ms-before-next", "remaining-points", "consumed-points", "retry-after", "x-ratelimit-limit", "x-ratelimit-remaining", "x-ratelimit-reset", "too-many-requests", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resilienceSignals: z.array(z.object({
+    signal: z.enum(["insurance-limiter", "store-client", "reject-if-not-ready", "atomic-increment", "penalty", "reward", "delete", "block", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["rate-limiter-flexible", "express-rate-limit", "@fastify/rate-limit", "@upstash/ratelimit", "bottleneck", "limiter", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3498,6 +3562,7 @@ export type QueueReadinessReport = z.infer<typeof QueueReadinessReportSchema>;
 export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
 export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;
+export type RateLimitReadinessReport = z.infer<typeof RateLimitReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
