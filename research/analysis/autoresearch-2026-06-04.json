@@ -2189,6 +2189,51 @@
         "TCF consent-state evidence that distinguishes CMP API presence from vendor/purpose model completeness",
         "Static-only TCF guardrails that do not call live TCF APIs, load vendor lists from the network, mutate consent strings, or claim legal compliance"
       ]
+    },
+    {
+      "repo": "Infisical/infisical",
+      "url": "https://github.com/Infisical/infisical",
+      "localPath": "research/external-src/Infisical-infisical",
+      "stars": 27210,
+      "forks": 1948,
+      "license": "GitHub API: Other",
+      "updatedAt": "2026-06-04T21:04:03Z",
+      "adoptedPatterns": [
+        "centralized secret and app configuration management",
+        "machine identity auth methods",
+        "secret rotation and Kubernetes operator delivery",
+        "agent, SDK, CLI, API, PKI, certificate sync, and KMS readiness signals"
+      ]
+    },
+    {
+      "repo": "hashicorp/vault",
+      "url": "https://github.com/hashicorp/vault",
+      "localPath": "research/external-src/hashicorp-vault",
+      "stars": 35726,
+      "forks": 4692,
+      "license": "GitHub API: Other",
+      "updatedAt": "2026-06-04T19:05:49Z",
+      "adoptedPatterns": [
+        "auth methods, policies, tokens, and leases",
+        "secret engines including KV, transit, PKI, and database credentials",
+        "dynamic secrets and rotation lifecycle",
+        "audit log and telemetry readiness signals"
+      ]
+    },
+    {
+      "repo": "DopplerHQ/cli",
+      "url": "https://github.com/DopplerHQ/cli",
+      "localPath": "research/external-src/DopplerHQ-cli",
+      "stars": 379,
+      "forks": 74,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-03T06:38:50Z",
+      "adoptedPatterns": [
+        "CLI login, setup, project/config selection, and scoped token workflow",
+        "doppler run runtime environment injection",
+        "secrets/configuration command surface",
+        "CI/CD and GitHub Action delivery readiness signals"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -5757,6 +5802,26 @@
         "html/consent-readiness.html"
       ],
       "commit": "f8e2c74"
+    },
+    {
+      "name": "secret management readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/secret-management-readiness-report.json",
+        "markdown/secret-management-readiness.md",
+        "html/secret-management-readiness.html"
+      ],
+      "commit": "b1c7fcf"
     }
   ],
   "verification": {
@@ -6398,7 +6463,18 @@
     "buildNotificationReadiness": "PASS",
     "testNotificationReadiness": "PASS",
     "auditBriefNotificationReadiness115": "PASS",
-    "notificationReadinessImplementationPushed": "PASS"
+    "notificationReadinessImplementationPushed": "PASS",
+    "externalInfisicalCloneIgnored": "PASS",
+    "externalVaultCloneIgnored": "PASS",
+    "externalDopplerCliCloneIgnored": "PASS",
+    "secretManagementReadinessRedSmoke": "PASS",
+    "secretManagementReadinessGreenSmoke": "PASS",
+    "fixtureSecretManagementReadinessReport": "PASS",
+    "cliSecretManagementReadinessOpenTargetSmoke": "PASS",
+    "buildSecretManagementReadiness": "PASS",
+    "testSecretManagementReadiness": "PASS",
+    "auditBriefSecretManagementReadiness117": "PASS",
+    "secretManagementReadinessImplementationPushed": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -6980,6 +7056,17 @@
     "buildConsentReadiness": "PASS",
     "testConsentReadiness": "PASS",
     "auditBriefConsentReadiness116": "PASS",
-    "consentReadinessImplementationPushed": "PASS"
+    "consentReadinessImplementationPushed": "PASS",
+    "externalInfisicalCloneIgnored": "PASS",
+    "externalVaultCloneIgnored": "PASS",
+    "externalDopplerCliCloneIgnored": "PASS",
+    "secretManagementReadinessRedSmoke": "PASS",
+    "secretManagementReadinessGreenSmoke": "PASS",
+    "fixtureSecretManagementReadinessReport": "PASS",
+    "cliSecretManagementReadinessOpenTargetSmoke": "PASS",
+    "buildSecretManagementReadiness": "PASS",
+    "testSecretManagementReadiness": "PASS",
+    "auditBriefSecretManagementReadiness117": "PASS",
+    "secretManagementReadinessImplementationPushed": "PASS"
   }
 }
