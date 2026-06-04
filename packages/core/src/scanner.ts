@@ -85,6 +85,7 @@ import {
   HttpClientReadinessReport,
   SchemaValidationReadinessReport,
   DateTimeReadinessReport,
+  IdGenerationReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -176,6 +177,7 @@ export interface AnalysisBundle {
   httpClientReadinessReport: HttpClientReadinessReport;
   schemaValidationReadinessReport: SchemaValidationReadinessReport;
   dateTimeReadinessReport: DateTimeReadinessReport;
+  idGenerationReadinessReport: IdGenerationReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -267,8 +269,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const httpClientReadinessReport = await buildHttpClientReadinessReport(walk);
   const schemaValidationReadinessReport = await buildSchemaValidationReadinessReport(walk);
   const dateTimeReadinessReport = await buildDateTimeReadinessReport(walk);
+  const idGenerationReadinessReport = await buildIdGenerationReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -15969,6 +15972,289 @@ function dateTimeReadinessSignalFromSpecs<T extends Record<K, string> & { patter
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/datetime-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildIdGenerationReadinessReport(walk: WalkResult): Promise<IdGenerationReadinessReport> {
+  const sourceFiles = await idGenerationReadinessSourceFiles(walk);
+  const idGeneratorSetups = idGenerationReadinessSetups(sourceFiles);
+  const generationSignals = idGenerationReadinessGenerationSignals(sourceFiles);
+  const entropySignals = idGenerationReadinessEntropySignals(sourceFiles);
+  const alphabetSignals = idGenerationReadinessAlphabetSignals(sourceFiles);
+  const runtimeSignals = idGenerationReadinessRuntimeSignals(sourceFiles);
+  const usageSignals = idGenerationReadinessUsageSignals(sourceFiles);
+  const validationSignals = idGenerationReadinessValidationSignals(sourceFiles);
+  const packageSignals = idGenerationReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasNanoidPackage = packageSignals.some((item) => item.signal === "nanoid" && item.readiness === "ready");
+  const hasSetup = idGeneratorSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = idGeneratorSetups.some((item) => item.readiness === "ready");
+  const hasSecureEntropy = entropySignals.some((item) => ["crypto-random-values", "node-crypto", "web-crypto"].includes(item.signal) && item.readiness === "ready") || idGeneratorSetups.some((item) => item.secureRandomCount > 0);
+  const hasUnsafeEntropy = entropySignals.some((item) => ["math-random", "non-secure-import"].includes(item.signal) && item.readiness === "ready");
+  const hasCustomAlphabet = alphabetSignals.some((item) => item.signal === "custom-alphabet" && item.readiness === "ready") || idGeneratorSetups.some((item) => item.customAlphabetCount > 0);
+  const hasLengthOverride = alphabetSignals.some((item) => item.signal === "length-override" && item.readiness === "ready") || generationSignals.some((item) => item.signal === "sized-nanoid" && item.readiness === "ready");
+  const hasReactKeyRisk = usageSignals.some((item) => item.signal === "react-key" && item.readiness === "ready") || idGeneratorSetups.some((item) => item.usageRiskCount > 0);
+  const hasValidation = validationSignals.some((item) => ["positive-size", "collision-tests", "uniqueness-tests", "distribution-tests"].includes(item.signal) && item.readiness === "ready") || idGeneratorSetups.some((item) => item.validationCount > 0);
+
+  const riskQueue: IdGenerationReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the ID generation strategy before claiming ID readiness.",
+      why: "ID readiness starts with explicit generator, entropy source, alphabet/size, usage, or package evidence.",
+      relatedHref: "html/id-generation-readiness.html"
+    });
+  }
+  if (hasNanoidPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair Nano ID package evidence with concrete nanoid, customAlphabet, customRandom, size, and usage call sites.",
+      why: "A dependency alone does not prove IDs are generated consistently or safely in the application paths that need them.",
+      relatedHref: "html/id-generation-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && hasUnsafeEntropy && !hasSecureEntropy) {
+    riskQueue.push({
+      priority: "high",
+      action: "Review Math.random or nanoid/non-secure usage before using generated IDs for security-sensitive or collision-sensitive data.",
+      why: "Nano ID distinguishes secure hardware random bytes from non-secure predictable random generation.",
+      relatedHref: "html/id-generation-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasCustomAlphabet) && !hasLengthOverride) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record the intended ID size and collision budget for each custom alphabet.",
+      why: "Changing alphabet or size changes collision probability and brute-force characteristics.",
+      relatedHref: "html/id-generation-readiness.html"
+    });
+  }
+  if (hasReactKeyRisk) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Avoid generating React keys during render unless the value is stable across renders.",
+      why: "Nano ID documentation calls out React key usage as a stability risk when generated inline.",
+      relatedHref: "html/id-generation-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasValidation) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add tests for positive size handling, uniqueness/collision assumptions, and custom alphabet boundaries.",
+      why: "ID generation bugs often come from size parsing, alphabet changes, non-secure fallbacks, and missing uniqueness checks.",
+      relatedHref: "html/id-generation-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run collision, distribution, size, and integration tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not generate IDs, call crypto or Math.random, run CLI generators, mutate stores, or run the analyzed project's tests.",
+    relatedHref: "html/id-generation-readiness.html"
+  });
+
+  return {
+    summary: `Nano ID-style ID generation readiness report: setup ${idGeneratorSetups.length}개, generation signal ${generationSignals.length}개, entropy signal ${entropySignals.length}개, usage signal ${usageSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "nanoid customAlphabet customRandom urlAlphabet random nanoid/non-secure crypto.getRandomValues Math.random --size --alphabet react-native-get-random-values",
+    idGeneratorSetups,
+    generationSignals,
+    entropySignals,
+    alphabetSignals,
+    runtimeSignals,
+    usageSignals,
+    validationSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"nanoid|customAlphabet|customRandom|randomUUID|uuidv4|createId|ulid\" src app packages", purpose: "Inventory ID generation libraries and call sites." },
+      { command: "rg \"nanoid/non-secure|Math\\.random|crypto\\.getRandomValues|randomBytes|randomUUID\" src app packages", purpose: "Review entropy sources and non-secure fallbacks." },
+      { command: "rg \"customAlphabet|urlAlphabet|--alphabet|--size|nanoid\\([0-9]|nanoid\\(.*size\" src app packages", purpose: "Check custom alphabet and ID length decisions." },
+      { command: "rg \"key=\\{nanoid|key=\\{.*random|model\\.id|user\\.id|_id|slug|publicUrl\" src app packages", purpose: "Find generated ID usage sites and React key stability risks." },
+      { command: "rg \"collision|unique|duplicate|distribution|positive integer|Size must be|alphabet.*size\" test tests src app packages", purpose: "Find tests and guards for ID size, uniqueness, and alphabet behavior." },
+      { command: "npx vitest run", purpose: "Run local tests that cover ID generation, collision assumptions, size parsing, custom alphabets, and render stability." }
+    ],
+    learnerNextSteps: [
+      "먼저 nanoid, customAlphabet, customRandom, randomUUID, uuid, cuid2, ulid 사용 위치를 찾아 ID 생성의 중심을 확인하세요.",
+      "nanoid/non-secure와 Math.random은 보안/충돌 민감 경로에 쓰였는지 별도로 확인하세요.",
+      "customAlphabet이나 size override가 있으면 collision probability 계산 근거와 길이 정책을 함께 기록하세요.",
+      "React key에 inline generator가 쓰였으면 렌더마다 값이 바뀌는지 확인하고 안정적인 데이터 ID로 바꾸는 방안을 검토하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 collision, distribution, uniqueness, size parsing 동작은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type IdGenerationReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function idGenerationReadinessSourceFiles(walk: WalkResult): Promise<IdGenerationReadinessSourceFile[]> {
+  const files: IdGenerationReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !idGenerationReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!idGenerationReadinessPathSignal(file.relPath) && !idGenerationReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function idGenerationReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return idGenerationReadinessPathSignal(filePath)
+    || /^(package\.json|id\.[cm]?[jt]sx?|ids\.[cm]?[jt]sx?|identifier\.[cm]?[jt]sx?|slug\.[cm]?[jt]sx?|random\.[cm]?[jt]sx?)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env|toml)$/i.test(filePath);
+}
+
+function idGenerationReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(id|ids|identifier|identifiers|nanoid|uuid|cuid|ulid|slug|slugs|random|randomness|entropy)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function idGenerationReadinessContentSignal(text: string): boolean {
+  return /(from ['"]nanoid|require\(['"]nanoid|nanoid\s*\(|customAlphabet|customRandom|urlAlphabet|nanoid\/non-secure|randomUUID|uuidv4|crypto\.getRandomValues|randomBytes|Math\.random|react-native-get-random-values|@paralleldrive\/cuid2|createId\s*\(|ulid\s*\()/i.test(text);
+}
+
+function idGenerationReadinessSetups(sourceFiles: IdGenerationReadinessSourceFile[]): IdGenerationReadinessReport["idGeneratorSetups"] {
+  const rows: IdGenerationReadinessReport["idGeneratorSetups"] = [];
+  for (const source of sourceFiles) {
+    const generatorCount = countMatches(source.text, /nanoid\s*\(|customAlphabet\s*\(|customRandom\s*\(|randomUUID\s*\(|uuidv4\s*\(|v4\s*\(|createId\s*\(|ulid\s*\(/gi);
+    const secureRandomCount = countMatches(source.text, /crypto\.getRandomValues|randomBytes|randomUUID|random\s*\(|node:crypto|from ['"]crypto['"]/gi);
+    const customAlphabetCount = countMatches(source.text, /customAlphabet|urlAlphabet|--alphabet|alphabet\s*[:=]/gi);
+    const customRandomCount = countMatches(source.text, /customRandom|seedrandom|random\s*=>|randomBytes|Math\.random/gi);
+    const validationCount = countMatches(source.text, /collision|unique|duplicate|distribution|positive integer|Size must be|alphabet.*size|toHaveLength|length\s*===|\.length\)/gi);
+    const usageRiskCount = countMatches(source.text, /key=\{[^}\n]*(nanoid|random|uuid|createId)|<li key=\{nanoid|React\.|useId|mock.*nanoid/gi);
+    const hasSetupSignal = generatorCount + secureRandomCount + customAlphabetCount + customRandomCount + validationCount + usageRiskCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: idGenerationReadinessProvider(source),
+      generatorCount,
+      secureRandomCount,
+      customAlphabetCount,
+      customRandomCount,
+      validationCount,
+      usageRiskCount,
+      readiness: generatorCount > 0 && (secureRandomCount > 0 || customAlphabetCount > 0 || validationCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains generator ${generatorCount}, secure-random ${secureRandomCount}, custom alphabet ${customAlphabetCount}, custom random ${customRandomCount}, validation/test ${validationCount}, usage-risk ${usageRiskCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function idGenerationReadinessProvider(source: IdGenerationReadinessSourceFile): IdGenerationReadinessReport["idGeneratorSetups"][number]["provider"] {
+  if (/from ['"]nanoid|require\(['"]nanoid|nanoid\s*\(|customAlphabet|customRandom|urlAlphabet/i.test(source.text)) return "nanoid";
+  if (/@paralleldrive\/cuid2|createId\s*\(/i.test(source.text)) return "cuid2";
+  if (/from ['"]ulid|require\(['"]ulid|ulid\s*\(/i.test(source.text)) return "ulid";
+  if (/from ['"]uuid|require\(['"]uuid|uuidv4|v4\s*\(/i.test(source.text)) return "uuid";
+  if (/randomUUID|crypto\.randomUUID/i.test(source.text)) return "crypto-randomuuid";
+  if (/Math\.random|randomBytes|crypto\.getRandomValues|random id|generated id/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function idGenerationReadinessGenerationSignals(sourceFiles: IdGenerationReadinessSourceFile[]): IdGenerationReadinessReport["generationSignals"] {
+  const specs: Array<{ signal: IdGenerationReadinessReport["generationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "default-nanoid", pattern: /nanoid\s*\(\s*\)|import\s*\{\s*nanoid\s*\}\s*from ['"]nanoid['"]/i, evidence: "default Nano ID generation evidence was detected." },
+    { signal: "sized-nanoid", pattern: /nanoid\s*\(\s*\d+|nanoid\s*\([^)]*size|--size|-s\s+\d/i, evidence: "sized ID generation evidence was detected." },
+    { signal: "custom-alphabet", pattern: /customAlphabet|--alphabet|-a\s+|alphabet\s*[:=]/i, evidence: "custom alphabet generation evidence was detected." },
+    { signal: "custom-random", pattern: /customRandom|seedrandom|random\s*=>|randomByte/i, evidence: "custom random generator evidence was detected." },
+    { signal: "url-alphabet", pattern: /urlAlphabet|URL-friendly|url safe|A-Za-z0-9_-/i, evidence: "URL-safe alphabet evidence was detected." },
+    { signal: "random-bytes", pattern: /random\s*\(|crypto\.getRandomValues|randomBytes|Uint8Array/i, evidence: "random bytes generation evidence was detected." },
+    { signal: "cli-generation", pattern: /npx nanoid|bin\/nanoid|--size|--alphabet|\$ nanoid/i, evidence: "CLI ID generation evidence was detected." }
+  ];
+  return idGenerationReadinessSignalFromSpecs(sourceFiles, specs, "generation", "signal");
+}
+
+function idGenerationReadinessEntropySignals(sourceFiles: IdGenerationReadinessSourceFile[]): IdGenerationReadinessReport["entropySignals"] {
+  const specs: Array<{ signal: IdGenerationReadinessReport["entropySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "crypto-random-values", pattern: /crypto\.getRandomValues|getRandomValues/i, evidence: "crypto.getRandomValues evidence was detected." },
+    { signal: "node-crypto", pattern: /node:crypto|from ['"]crypto['"]|randomBytes|randomUUID/i, evidence: "Node crypto evidence was detected." },
+    { signal: "web-crypto", pattern: /Web Crypto|globalThis\.crypto|window\.crypto|crypto\.getRandomValues/i, evidence: "Web Crypto evidence was detected." },
+    { signal: "math-random", pattern: /Math\.random/i, evidence: "Math.random evidence was detected." },
+    { signal: "non-secure-import", pattern: /nanoid\/non-secure|non-secure/i, evidence: "Nano ID non-secure import evidence was detected." },
+    { signal: "collision-calculator", pattern: /collision probability|nanoid.*calculator|zelark\.github\.io\/nano-id-cc|collision/i, evidence: "collision probability evidence was detected." },
+    { signal: "uniformity", pattern: /uniformity|distribution|random % alphabet|brute-forc/i, evidence: "uniformity or distribution evidence was detected." }
+  ];
+  return idGenerationReadinessSignalFromSpecs(sourceFiles, specs, "entropy", "signal");
+}
+
+function idGenerationReadinessAlphabetSignals(sourceFiles: IdGenerationReadinessSourceFile[]): IdGenerationReadinessReport["alphabetSignals"] {
+  const specs: Array<{ signal: IdGenerationReadinessReport["alphabetSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "url-safe", pattern: /urlAlphabet|URL-friendly|url safe|A-Za-z0-9_-/i, evidence: "URL-safe alphabet evidence was detected." },
+    { signal: "custom-alphabet", pattern: /customAlphabet|--alphabet|-a\s+|alphabet\s*[:=]/i, evidence: "custom alphabet evidence was detected." },
+    { signal: "alphabet-size-limit", pattern: /256 symbols|alphabet.*256|Alphabet must contain/i, evidence: "alphabet size limit evidence was detected." },
+    { signal: "dictionary", pattern: /nanoid-dictionary|dictionary|alphabet options/i, evidence: "alphabet dictionary evidence was detected." },
+    { signal: "prefix-suffix", pattern: /prefix|suffix|slug|_id\s*:\s*['"][^'"]*\s*\+|['"][^'"]*\s*\+\s*nanoid/i, evidence: "ID prefix, suffix, or slug evidence was detected." },
+    { signal: "length-override", pattern: /nanoid\s*\(\s*\d+|customAlphabet\s*\([^)]*,\s*\d+|--size|-s\s+\d/i, evidence: "ID length override evidence was detected." }
+  ];
+  return idGenerationReadinessSignalFromSpecs(sourceFiles, specs, "alphabet", "signal");
+}
+
+function idGenerationReadinessRuntimeSignals(sourceFiles: IdGenerationReadinessSourceFile[]): IdGenerationReadinessReport["runtimeSignals"] {
+  const specs: Array<{ signal: IdGenerationReadinessReport["runtimeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "esm-import", pattern: /import\s+\{[^}]*nanoid|from ['"]nanoid['"]|type\s*:\s*['"]module['"]/i, evidence: "ESM Nano ID import evidence was detected." },
+    { signal: "dynamic-import", pattern: /import\(['"]nanoid['"]\)|await import\(['"]nanoid['"]\)/i, evidence: "dynamic import evidence was detected." },
+    { signal: "commonjs-require", pattern: /require\(['"]nanoid['"]\)|module\.exports|CommonJS/i, evidence: "CommonJS usage evidence was detected." },
+    { signal: "browser", pattern: /index\.browser|window\.crypto|globalThis\.crypto|browser/i, evidence: "browser runtime evidence was detected." },
+    { signal: "react-native-random-values", pattern: /react-native-get-random-values|getRandomValues/i, evidence: "React Native random values evidence was detected." },
+    { signal: "deno-jsr", pattern: /@sitnik\/nanoid|jsr:@sitnik\/nanoid|deno add|Deno|JSR/i, evidence: "Deno/JSR runtime evidence was detected." },
+    { signal: "cli", pattern: /npx nanoid|\$ nanoid|bin\/nanoid|--help|--version/i, evidence: "CLI runtime evidence was detected." }
+  ];
+  return idGenerationReadinessSignalFromSpecs(sourceFiles, specs, "runtime", "signal");
+}
+
+function idGenerationReadinessUsageSignals(sourceFiles: IdGenerationReadinessSourceFile[]): IdGenerationReadinessReport["usageSignals"] {
+  const specs: Array<{ signal: IdGenerationReadinessReport["usageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "model-id", pattern: /model\.id|entity\.id|item\.id|id\s*=\s*nanoid|id:\s*nanoid/i, evidence: "model/entity ID usage evidence was detected." },
+    { signal: "database-id", pattern: /_id|primary key|database|db\.|insert|create.*id|id\s+string/i, evidence: "database ID usage evidence was detected." },
+    { signal: "react-key", pattern: /key=\{[^}\n]*(nanoid|random|uuid|createId)|<li key=\{nanoid/i, evidence: "React key generation evidence was detected." },
+    { signal: "mock-id", pattern: /mock.*nanoid|factory.*id|faker|test.*id|fixture.*id/i, evidence: "mock/test ID usage evidence was detected." },
+    { signal: "branded-type", pattern: /nanoid<|Type extends string|opaque|brand|Branded|UserId|OrderId/i, evidence: "typed/branded ID evidence was detected." },
+    { signal: "public-url", pattern: /slug|publicUrl|share.*id|invite.*id|url.*id|route.*id/i, evidence: "public URL or slug ID evidence was detected." }
+  ];
+  return idGenerationReadinessSignalFromSpecs(sourceFiles, specs, "usage", "signal");
+}
+
+function idGenerationReadinessValidationSignals(sourceFiles: IdGenerationReadinessSourceFile[]): IdGenerationReadinessReport["validationSignals"] {
+  const specs: Array<{ signal: IdGenerationReadinessReport["validationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "positive-size", pattern: /Size must be positive integer|size\s*<=\s*0|Number\.isNaN\(size\)|positive integer/i, evidence: "positive size guard evidence was detected." },
+    { signal: "alphabet-required-with-size", pattern: /alphabet.*size|--alphabet.*--size|size.*alphabet|customAlphabet\([^)]*,\s*\d+/i, evidence: "alphabet and size coupling evidence was detected." },
+    { signal: "collision-tests", pattern: /collision|duplicate|no collisions|Set\(|unique/i, evidence: "collision/duplicate test evidence was detected." },
+    { signal: "uniqueness-tests", pattern: /unique ID|unique.*id|toBeUnique|not\.toEqual|notEqual|notStrictEqual/i, evidence: "uniqueness test evidence was detected." },
+    { signal: "distribution-tests", pattern: /distribution|uniformity|random % alphabet|chars\.length|urlAlphabet\.length/i, evidence: "distribution/uniformity test evidence was detected." },
+    { signal: "type-tests", pattern: /nanoid<|Type extends string|expectType|tsd|branded|opaque/i, evidence: "typed ID evidence was detected." }
+  ];
+  return idGenerationReadinessSignalFromSpecs(sourceFiles, specs, "validation", "signal");
+}
+
+function idGenerationReadinessPackageSignals(sourceFiles: IdGenerationReadinessSourceFile[]): IdGenerationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: IdGenerationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "nanoid", pattern: /"nanoid"|from ['"]nanoid|require\(['"]nanoid|nanoid\s*\(/i, evidence: "Nano ID package/import evidence was detected." },
+    { signal: "uuid", pattern: /"uuid"|from ['"]uuid|require\(['"]uuid|uuidv4|randomUUID/i, evidence: "uuid package/import evidence was detected." },
+    { signal: "@paralleldrive/cuid2", pattern: /@paralleldrive\/cuid2|createId\s*\(/i, evidence: "cuid2 package/import evidence was detected." },
+    { signal: "ulid", pattern: /"ulid"|from ['"]ulid|require\(['"]ulid|ulid\s*\(/i, evidence: "ULID package/import evidence was detected." },
+    { signal: "react-native-get-random-values", pattern: /react-native-get-random-values/i, evidence: "React Native random values package/import evidence was detected." }
+  ];
+  return idGenerationReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function idGenerationReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: IdGenerationReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/id-generation-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

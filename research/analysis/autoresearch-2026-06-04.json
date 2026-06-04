@@ -1116,6 +1116,24 @@
         "duration and interval scanning for Duration Interval diff plus minus startOf endOf conversion and relative output",
         "safe static datetime readiness that never evaluates current time parses dates changes process timezone modifies Luxon Settings runs timers or analyzed project tests"
       ]
+    },
+    {
+      "repo": "ai/nanoid",
+      "url": "https://github.com/ai/nanoid",
+      "localPath": "research/external-src/ai-nanoid",
+      "stars": 26808,
+      "forks": 849,
+      "license": "MIT",
+      "updatedAt": "2026-06-04T09:39:14Z",
+      "adoptedPatterns": [
+        "Nano ID setup scanning for nanoid customAlphabet customRandom urlAlphabet package imports and ID files",
+        "generation scanning for default nanoid sized nanoid custom alphabet custom random urlAlphabet random bytes and CLI generation",
+        "entropy scanning for crypto.getRandomValues node crypto Web Crypto Math.random nanoid/non-secure collision calculator and uniformity signals",
+        "alphabet scanning for URL-safe alphabet custom alphabet 256-symbol limit dictionary prefix/suffix and length override evidence",
+        "runtime scanning for ESM dynamic import CommonJS browser React Native random values Deno/JSR and CLI usage",
+        "usage and validation scanning for model IDs database IDs React key risks mock IDs branded types public URLs positive size guards collision uniqueness distribution and type tests",
+        "safe static ID generation readiness that never generates IDs calls crypto or Math.random runs CLI generators mutates stores or runs analyzed project tests"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3795,6 +3813,25 @@
         "markdown/datetime-readiness.md",
         "html/datetime-readiness.html"
       ]
+    },
+    {
+      "name": "ID generation readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/id-generation-readiness-report.json",
+        "markdown/id-generation-readiness.md",
+        "html/id-generation-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4433,6 +4470,12 @@
     "cliDateTimeReadinessOpenTargetSmoke": "PASS",
     "buildDateTimeReadiness": "PASS",
     "testDateTimeReadiness": "PASS",
-    "auditBriefDateTimeReadiness70": "PASS"
+    "auditBriefDateTimeReadiness70": "PASS",
+    "fixtureIdGenerationReadinessReport": "PASS",
+    "cliIdGenerationReadinessSmoke": "PASS",
+    "cliIdGenerationReadinessOpenTargetSmoke": "PASS",
+    "buildIdGenerationReadiness": "PASS",
+    "testIdGenerationReadiness": "PASS",
+    "auditBriefIdGenerationReadiness71": "PASS"
   }
 }

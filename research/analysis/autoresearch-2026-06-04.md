@@ -4432,6 +4432,56 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 70/70 audit checks across 13 generated reports
 
+### Upgrade 173: ID Generation Readiness Report
+
+- Cloned and inspected `ai/nanoid` under
+  `research/external-src/ai-nanoid` without executing external source. Clone
+  HEAD was `78f4a02`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 26,808 stars, 849 forks, updated
+  2026-06-04T09:39:14Z. Compared with `uuidjs/uuid`,
+  `paralleldrive/cuid2`, and `ulid/javascript`; selected Nano ID because it
+  directly models ID generation readiness: secure URL-friendly IDs,
+  `customAlphabet`, `customRandom`, `urlAlphabet`, random bytes, non-secure
+  fallback, size/alphabet CLI flags, collision probability, uniformity, runtime
+  imports, and React key cautions. No source code was copied into RepoTutor.
+- Implemented Nano ID-style id-generation-readiness report:
+  `IdGenerationReadinessReportSchema`,
+  `analysis/id-generation-readiness-report.json`,
+  `markdown/id-generation-readiness.md`,
+  `html/id-generation-readiness.html`, ID generator setups, generation signals,
+  entropy signals, alphabet signals, runtime signals, usage signals,
+  validation signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target id-generation-readiness`.
+- Source pattern: Nano ID separates generation through `nanoid`,
+  `customAlphabet`, `customRandom`, `urlAlphabet`, `random`, CLI `--size`, and
+  CLI `--alphabet`; entropy through `crypto.getRandomValues`, Node crypto, Web
+  Crypto, `Math.random`, `nanoid/non-secure`, collision probability, and
+  uniformity; runtime through ESM, dynamic import, CommonJS, browser, React
+  Native random values, Deno/JSR, and CLI usage; and correctness through model
+  IDs, database IDs, React key risks, mock IDs, branded types, public URLs,
+  positive-size guards, collision tests, uniqueness tests, distribution tests,
+  and type tests. RepoTutor maps that to deterministic static ID generation
+  readiness and explicitly does not generate IDs, call crypto or Math.random,
+  run CLI generators, mutate stores, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-id-generation-readiness-red-studies.wP6s6n/2026-06-04/local__simple-ts-app__main__d3a4452c`;
+  old behavior was missing
+  `analysis/id-generation-readiness-report.json`,
+  `markdown/id-generation-readiness.md`, and
+  `html/id-generation-readiness.html`, and `open --target
+  id-generation-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-id-generation-readiness-green-studies.Rs5B6i/2026-06-04/local__simple-ts-app__main__d3a4452c`;
+  confirmed `verificationCheckedRequiredArtifacts=219`, ID generator setups 0,
+  generation signals 7, entropy signals 7, alphabet signals 6, runtime signals
+  7, usage signals 6, validation signals 6, package signals 5, risk queue 2,
+  all three new artifacts, and `open --target id-generation-readiness` ->
+  `html/id-generation-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 71/71 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
