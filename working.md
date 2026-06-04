@@ -1822,6 +1822,37 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 133:
   - `fc4c240` accessibility readiness report
 
+- 2026-06-04: AutoResearch Upgrade 134 candidate selected:
+  `storybookjs/storybook` (`https://github.com/storybookjs/storybook`; public
+  MIT; 90,173 stars; 10,113 forks; updated 2026-06-03T21:40:35Z). Compared
+  with `tajo/ladle`, `histoire-dev/histoire`, and `mui/toolpad`; selected
+  Storybook for its broad CSF, docs, addon, test, and publish model. Cloned
+  ignored external source to `research/external-src/storybookjs-storybook` and
+  inspected README, CSF docs, story writing docs, play function docs,
+  configure docs, autodocs docs, decorators docs, and test-runner/testing docs
+  without executing external source.
+- 2026-06-04: RED storybook smoke generated
+  `/tmp/repotutor-storybook-red-studies.bLw8c4/2026-06-04/local__simple-ts-app__main__028712bd`;
+  old build was missing `analysis/storybook-report.json`,
+  `markdown/storybook.md`, and `html/storybook.html` as expected.
+- 2026-06-04: Implemented Storybook-style component workshop readiness report:
+  `StorybookReportSchema`, `analysis/storybook-report.json`,
+  `markdown/storybook.md`, `html/storybook.html`, story files, config files,
+  story annotations, addon signals, test signals, publish signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, and `open --target storybook`.
+- 2026-06-04: GREEN storybook smoke generated
+  `/tmp/repotutor-storybook-green-studies.Czhy2F/2026-06-04/local__simple-ts-app__main__028712bd`;
+  confirmed `verificationCheckedRequiredArtifacts=102`, story files 0,
+  config files 0, annotations 12, addon signals 13, test signals 9,
+  publish signals 7, recommended commands 5, risk queue 2, `storybook-card`,
+  `data-source-pattern="Storybook"`, manifest/learning-path entries, and
+  `open --target storybook` -> `html/storybook.html`.
+- 2026-06-04: Verification for Upgrade 134:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 32/32 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
