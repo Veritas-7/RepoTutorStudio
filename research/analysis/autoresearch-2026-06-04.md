@@ -6686,6 +6686,63 @@ Local verification:
 - `pnpm audit:brief`: PASS, 114/114 audit checks across 13 generated reports
 - Pushed implementation commit: `fc7869b` webhook readiness report
 
+### Upgrade 217: Notification Readiness Report
+
+- Cloned and inspected `novuhq/novu` under
+  `research/external-src/novuhq-novu` without executing external source. Clone
+  HEAD was `82bb6c7`; the clone remains ignored by RepoTutor and tracked file
+  count returned `0`.
+- GitHub metadata: `novuhq/novu` is public, GitHub API license `Other` with
+  README noting open core/MIT core plus commercial enterprise code, 39,074
+  stars, 4,308 forks, updated 2026-06-04T18:21:59Z, default branch `next`.
+  Selected the one-source slice because Novu models a full notification
+  workflow surface: product/agent communication infrastructure, workflows,
+  digests, Inbox, preferences, subscribers, topics, and multi-channel delivery
+  across email, SMS, push, chat, Slack, Teams, Telegram, and WhatsApp. No source
+  code was copied into RepoTutor.
+- Implemented Novu-style notification-readiness report:
+  `NotificationReadinessReportSchema`,
+  `analysis/notification-readiness-report.json`,
+  `markdown/notification-readiness.md`,
+  `html/notification-readiness.html`, notification setup detection, workflow
+  signals, audience signals, channel signals, template signals, operations
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target notification-readiness`.
+- Source pattern: notification readiness separates workflow/trigger/step/
+  digest/delay/condition/payload/tenant/conversation evidence; subscriber,
+  subscriberId, topic, subscription, preference, segment, user profile, and
+  tenant audience evidence; Inbox, email, SMS, push, chat, Slack, Teams,
+  Telegram, and WhatsApp channel evidence; template subject/body/editor/
+  variables/localization/branding/preview evidence; and API key/environment/
+  webhook/delivery log/activity feed/rate limit/retry/analytics/dashboard
+  operations evidence. RepoTutor maps that to deterministic static readiness
+  and explicitly does not send notifications, call provider APIs, mutate
+  subscribers/topics/preferences, inspect live dashboards, or verify real
+  delivery.
+- RED smoke generated
+  `/tmp/repotutor-notification-red-studies.kqMQUv/2026-06-05/local__repotutor-notification-redgreen-source__local__e75ad987`;
+  old behavior at `5eb1d13` had `verificationCheckedRequiredArtifacts=348`,
+  was missing `analysis/notification-readiness-report.json`,
+  `markdown/notification-readiness.md`, and
+  `html/notification-readiness.html`, and
+  `open --target notification-readiness` exited with
+  `Unsupported open target: notification-readiness`.
+- GREEN smoke generated
+  `/tmp/repotutor-notification-green-studies.c3BPOq/2026-06-05/local__repotutor-notification-redgreen-source__local__b424da52`;
+  confirmed `verificationCheckedRequiredArtifacts=351`, all three new
+  artifacts, setup count 3, risk queue 0, ready channels
+  `inbox|email|sms|push|chat|slack|teams|telegram|whatsapp`, and
+  `open --target notification-readiness` ->
+  `html/notification-readiness.html`.
+- `pnpm build`: PASS
+- focused notification Vitest: PASS, 1/1 selected test
+- `pnpm test`: PASS, 24/24 tests
+- `pnpm audit:brief`: PASS, 115/115 audit checks across 13 generated reports
+- `git diff --check`: PASS
+- `gitleaks protect --staged --redact --no-banner`: PASS
+- Pushed implementation commit: `093caab` notification readiness report
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
