@@ -1,6 +1,6 @@
 {
   "iteration": 1,
-  "createdAt": "2026-06-04T02:22:08.097Z",
+  "createdAt": "2026-06-04T02:37:08.339Z",
   "checks": [
     {
       "name": "project setup",
@@ -200,6 +200,13 @@
     },
     {
       "name": "design tokens readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "i18n readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

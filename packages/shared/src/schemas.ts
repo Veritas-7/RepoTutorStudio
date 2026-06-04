@@ -1451,6 +1451,61 @@ export const DesignTokensReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const I18nReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  messageSources: z.array(z.object({
+    filePath: z.string(),
+    mechanism: z.enum(["defineMessages", "defineMessage", "FormattedMessage", "formatMessage", "IntlProvider", "locale-json", "message-catalog", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  localeAssets: z.array(z.object({
+    filePath: z.string(),
+    locale: z.string().nullable(),
+    assetType: z.enum(["source-locale", "target-locale", "compiled-messages", "extracted-messages", "runtime-locale-data", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  runtimeSignals: z.array(z.object({
+    signal: z.enum(["IntlProvider", "locale-prop", "messages-prop", "navigator-language", "fallback-locale", "polyfill", "locale-data", "resolved-options", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  extractionSignals: z.array(z.object({
+    signal: z.enum(["formatjs-extract", "formatjs-compile", "formatjs-verify", "compile-folder", "id-interpolation", "extract-source-location", "additional-names", "ignore-globs", "flatten", "pseudo-locale"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  icuSignals: z.array(z.object({
+    signal: z.enum(["plural", "select", "selectordinal", "number", "date", "time", "rich-text", "description", "placeholder", "ast"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  qaSignals: z.array(z.object({
+    signal: z.enum(["eslint-plugin-formatjs", "enforce-description", "enforce-id", "no-invalid-icu", "missing-keys", "structural-equality", "extra-keys", "tms-format", "ci-workflow", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1688,6 +1743,7 @@ export type E2eReport = z.infer<typeof E2eReportSchema>;
 export type AccessibilityReport = z.infer<typeof AccessibilityReportSchema>;
 export type StorybookReport = z.infer<typeof StorybookReportSchema>;
 export type DesignTokensReport = z.infer<typeof DesignTokensReportSchema>;
+export type I18nReport = z.infer<typeof I18nReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

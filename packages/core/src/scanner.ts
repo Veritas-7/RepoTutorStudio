@@ -48,6 +48,7 @@ import {
   AccessibilityReport,
   StorybookReport,
   DesignTokensReport,
+  I18nReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -102,6 +103,7 @@ export interface AnalysisBundle {
   accessibilityReport: AccessibilityReport;
   storybookReport: StorybookReport;
   designTokensReport: DesignTokensReport;
+  i18nReport: I18nReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -156,8 +158,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const accessibilityReport = await buildAccessibilityReport(walk, e2eReport);
   const storybookReport = await buildStorybookReport(walk);
   const designTokensReport = await buildDesignTokensReport(walk, storybookReport);
+  const i18nReport = await buildI18nReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -5506,6 +5509,331 @@ function designTokenGovernanceSignals(sourceFiles: DesignTokenSourceFile[]): Des
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} governance evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/design-tokens.html"
+    };
+  });
+}
+
+async function buildI18nReport(walk: WalkResult): Promise<I18nReport> {
+  const sourceFiles = await i18nSourceFiles(walk);
+  const messageSources = i18nMessageSources(sourceFiles);
+  const localeAssets = i18nLocaleAssets(sourceFiles);
+  const runtimeSignals = i18nRuntimeSignals(sourceFiles);
+  const extractionSignals = i18nExtractionSignals(sourceFiles);
+  const icuSignals = i18nIcuSignals(sourceFiles);
+  const qaSignals = i18nQaSignals(sourceFiles);
+  const hasMessageSource = messageSources.some((item) => item.readiness === "ready");
+  const hasLocaleAsset = localeAssets.some((item) => item.readiness === "ready");
+  const hasRuntime = runtimeSignals.some((item) => ["IntlProvider", "locale-prop", "messages-prop"].includes(item.signal) && item.readiness === "ready");
+  const hasExtraction = extractionSignals.some((item) => ["formatjs-extract", "formatjs-compile"].includes(item.signal) && item.readiness === "ready");
+  const hasVerification = extractionSignals.some((item) => item.signal === "formatjs-verify" && item.readiness === "ready")
+    || qaSignals.some((item) => ["missing-keys", "structural-equality", "no-invalid-icu"].includes(item.signal) && item.readiness === "ready");
+  const hasTranslatorContext = icuSignals.some((item) => item.signal === "description" && item.readiness === "ready")
+    || qaSignals.some((item) => item.signal === "enforce-description" && item.readiness === "ready");
+
+  const riskQueue: I18nReport["riskQueue"] = [];
+  if (!hasMessageSource) {
+    riskQueue.push({
+      priority: "high",
+      action: "Declare translatable strings with defineMessages, FormattedMessage, or intl.formatMessage before claiming i18n coverage.",
+      why: "FormatJS extraction can only find messages that are declared through supported message descriptor patterns.",
+      relatedHref: "html/i18n.html"
+    });
+  }
+  if (hasMessageSource && !hasLocaleAsset) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add source and target locale catalogs such as lang/en.json and lang/fr.json.",
+      why: "Runtime locale switching and translation review need committed message catalogs.",
+      relatedHref: "html/i18n.html"
+    });
+  }
+  if (hasMessageSource && !hasRuntime) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Wire locale and messages into IntlProvider or an equivalent runtime boundary.",
+      why: "Extracted messages do not affect the UI until the app passes locale and messages into runtime formatting.",
+      relatedHref: "html/i18n.html"
+    });
+  }
+  if (hasMessageSource && !hasExtraction) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add formatjs extract and compile scripts for repeatable catalog generation.",
+      why: "Manual catalogs drift quickly without a deterministic extraction and compilation step.",
+      relatedHref: "html/i18n.html"
+    });
+  }
+  if (hasLocaleAsset && !hasVerification) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add formatjs verify or eslint-plugin-formatjs checks for missing keys, structural equality, and invalid ICU.",
+      why: "Locale files can compile but still miss placeholders, plural arms, or obsolete keys.",
+      relatedHref: "html/i18n.html"
+    });
+  }
+  if (hasMessageSource && !hasTranslatorContext) {
+    riskQueue.push({
+      priority: "low",
+      action: "Require message descriptions for translator context.",
+      why: "FormatJS descriptions and linter rules reduce ambiguity before strings enter a TMS.",
+      relatedHref: "html/i18n.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run FormatJS extract, compile, and verify in the original repository before treating this report as localization readiness.",
+    why: "RepoTutor only performs static readiness analysis and does not parse or validate ICU catalogs.",
+    relatedHref: "html/i18n.html"
+  });
+
+  return {
+    summary: `FormatJS식 i18n readiness report: message source ${messageSources.length}개, locale asset ${localeAssets.length}개, runtime signal ${runtimeSignals.length}개, extraction signal ${extractionSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "FormatJS React Intl ICU messages extract compile verify IntlProvider polyfills locale data ESLint TMS",
+    messageSources,
+    localeAssets,
+    runtimeSignals,
+    extractionSignals,
+    icuSignals,
+    qaSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npm install react-intl @formatjs/cli", purpose: "Install the React runtime and FormatJS extraction/compilation CLI." },
+      { command: "formatjs extract \"src/**/*.{ts,tsx}\" --out-file lang/en.json --extract-source-location", purpose: "Extract default messages and source locations into a source-locale catalog." },
+      { command: "formatjs compile \"lang/*.json\" --out-file compiled/en.json --ast", purpose: "Compile ICU messages into a React Intl-consumable catalog." },
+      { command: "formatjs verify \"lang/*.json\" --source-locale en --missing-keys --structural-equality --extra-keys", purpose: "Check target locale catalogs against the source locale." },
+      { command: "npx eslint . --rule 'formatjs/no-invalid-icu:error'", purpose: "Run message-level ICU linting where eslint-plugin-formatjs is configured." }
+    ],
+    learnerNextSteps: [
+      "먼저 translatable message declaration과 runtime IntlProvider 경계를 구분해서 확인하세요.",
+      "source locale catalog와 target locale catalog가 같은 key/placeholder 구조를 유지하는지 확인하세요.",
+      "plural, select, selectordinal, rich text placeholder는 번역자가 깨뜨리기 쉬운 부분입니다.",
+      "이 리포트는 FormatJS 실행 결과가 아닙니다. 실제 locale readiness는 원본 repo에서 extract/compile/verify로 확인하세요."
+    ]
+  };
+}
+
+type I18nSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function i18nSourceFiles(walk: WalkResult): Promise<I18nSourceFile[]> {
+  const files: I18nSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !i18nInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!i18nPathSignal(file.relPath) && !i18nContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 180) break;
+  }
+  return files;
+}
+
+function i18nInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|tsconfig\.json|vite\.config\.[cm]?[jt]s|next\.config\.[cm]?[jt]s|eslint\.config\.[cm]?[jt]s|\.eslintrc(\.json|\.js|\.cjs|\.yml|\.yaml)?)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(i18n|intl|locale|locales|lang|messages|translations|formatjs)\//i.test(filePath)
+    || /\.(ts|tsx|js|jsx|mjs|cjs|json|ya?ml|md|mdx|vue|svelte)$/i.test(filePath);
+}
+
+function i18nPathSignal(filePath: string): boolean {
+  return /(i18n|intl|locale|locales|lang|messages|translations|formatjs|react-intl|polyfill|\.messages\.|\.locale\.)/i.test(filePath);
+}
+
+function i18nContentSignal(text: string): boolean {
+  return /(react-intl|@formatjs|formatjs\s+(extract|compile|verify)|IntlProvider|FormattedMessage|defineMessages|defineMessage|intl\.formatMessage|formatMessage\s*\(\s*\{|IntlMessageFormat|eslint-plugin-formatjs|formatjs\/|defaultMessage|source-locale|missing-keys|structural-equality|Intl\.PluralRules|Intl\.DateTimeFormat|Intl\.NumberFormat|navigator\.language|locale\s*:|messages\s*:)/i.test(text);
+}
+
+function i18nMessageSources(sourceFiles: I18nSourceFile[]): I18nReport["messageSources"] {
+  const rows: I18nReport["messageSources"] = [];
+  for (const source of sourceFiles) {
+    const mechanisms = i18nMessageMechanisms(source.filePath, source.text);
+    for (const mechanism of mechanisms) {
+      rows.push({
+        filePath: source.filePath,
+        mechanism,
+        readiness: mechanism === "unknown" ? "partial" : "ready",
+        evidence: i18nMessageEvidence(source.filePath, mechanism),
+        sourceHref: source.sourceHref
+      });
+    }
+  }
+  return rows.slice(0, 120);
+}
+
+function i18nMessageMechanisms(filePath: string, text: string): I18nReport["messageSources"][number]["mechanism"][] {
+  const mechanisms: I18nReport["messageSources"][number]["mechanism"][] = [];
+  if (/defineMessages\s*\(/.test(text)) mechanisms.push("defineMessages");
+  if (/defineMessage\s*\(/.test(text)) mechanisms.push("defineMessage");
+  if (/<FormattedMessage\b/.test(text)) mechanisms.push("FormattedMessage");
+  if (/\bintl\.formatMessage\s*\(|\bformatMessage\s*\(\s*\{/.test(text)) mechanisms.push("formatMessage");
+  if (/<IntlProvider\b|IntlProvider\s*\(/.test(text)) mechanisms.push("IntlProvider");
+  if (i18nLooksLikeLocaleAsset(filePath, text)) mechanisms.push(i18nLocaleAssetLooksExtracted(text) ? "message-catalog" : "locale-json");
+  return [...new Set(mechanisms)];
+}
+
+function i18nMessageEvidence(filePath: string, mechanism: I18nReport["messageSources"][number]["mechanism"]): string {
+  if (mechanism === "defineMessages") return `${filePath} declares grouped React Intl message descriptors.`;
+  if (mechanism === "defineMessage") return `${filePath} declares a single React Intl message descriptor.`;
+  if (mechanism === "FormattedMessage") return `${filePath} renders a FormattedMessage component.`;
+  if (mechanism === "formatMessage") return `${filePath} calls an imperative formatMessage API.`;
+  if (mechanism === "IntlProvider") return `${filePath} contains a runtime IntlProvider boundary.`;
+  if (mechanism === "message-catalog") return `${filePath} contains extracted message descriptors.`;
+  if (mechanism === "locale-json") return `${filePath} contains locale JSON message values.`;
+  return `${filePath} contains i18n-shaped message evidence.`;
+}
+
+function i18nLocaleAssets(sourceFiles: I18nSourceFile[]): I18nReport["localeAssets"] {
+  const rows: I18nReport["localeAssets"] = [];
+  for (const source of sourceFiles) {
+    if (!i18nLooksLikeLocaleAsset(source.filePath, source.text)) continue;
+    const locale = i18nLocaleFromPath(source.filePath) ?? i18nLocaleFromContent(source.text);
+    const assetType = i18nLocaleAssetType(source.filePath, source.text, locale);
+    rows.push({
+      filePath: source.filePath,
+      locale,
+      assetType,
+      readiness: assetType === "unknown" ? "partial" : "ready",
+      evidence: i18nLocaleAssetEvidence(source.filePath, assetType, locale),
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 120);
+}
+
+function i18nLooksLikeLocaleAsset(filePath: string, text: string): boolean {
+  return /\.(json|ya?ml|ts|js|mjs|cjs)$/i.test(filePath)
+    && (/(^|\/)(lang|locales?|i18n|messages|translations)\//i.test(filePath)
+      || /\b(defaultMessage|description|messages\s*:|locale\s*:|translations|compiled|IntlMessageFormat|react-intl)\b/i.test(text)
+      || /["'][a-z]{2}(?:[-_][A-Z]{2})?["']\s*:/i.test(text));
+}
+
+function i18nLocaleAssetLooksExtracted(text: string): boolean {
+  return /\bdefaultMessage\b|\bdescription\b|\bmessageDescriptors?\b/i.test(text);
+}
+
+function i18nLocaleFromPath(filePath: string): string | null {
+  const match = filePath.match(/(?:^|\/)([a-z]{2,3}(?:[-_][A-Z0-9]{2,4})?)\.(?:json|ya?ml|ts|js|mjs|cjs)$/)
+    ?? filePath.match(/(?:^|\/)(?:lang|locales?|i18n|messages|translations)\/([a-z]{2,3}(?:[-_][A-Z0-9]{2,4})?)(?:\/|\.|$)/i);
+  return match ? match[1].replace("_", "-") : null;
+}
+
+function i18nLocaleFromContent(text: string): string | null {
+  const match = text.match(/\blocale\s*[:=]\s*["']([a-z]{2,3}(?:[-_][A-Z0-9]{2,4})?)["']/i);
+  return match ? match[1].replace("_", "-") : null;
+}
+
+function i18nLocaleAssetType(filePath: string, text: string, locale: string | null): I18nReport["localeAssets"][number]["assetType"] {
+  if (/compiled|dist|build|\.compiled\./i.test(filePath) || /"ast"\s*:|\[\s*\{\s*"type"/i.test(text)) return "compiled-messages";
+  if (i18nLocaleAssetLooksExtracted(text)) return "extracted-messages";
+  if (/locale-data|polyfill|@formatjs\/intl-|Intl\.(PluralRules|NumberFormat|DateTimeFormat)/i.test(text)) return "runtime-locale-data";
+  if (locale && /^en(?:-|$)/i.test(locale)) return "source-locale";
+  if (locale) return "target-locale";
+  return "unknown";
+}
+
+function i18nLocaleAssetEvidence(filePath: string, assetType: I18nReport["localeAssets"][number]["assetType"], locale: string | null): string {
+  const suffix = locale ? ` for ${locale}` : "";
+  if (assetType === "source-locale") return `${filePath} looks like a source locale catalog${suffix}.`;
+  if (assetType === "target-locale") return `${filePath} looks like a target locale catalog${suffix}.`;
+  if (assetType === "compiled-messages") return `${filePath} contains compiled or build-output message evidence${suffix}.`;
+  if (assetType === "extracted-messages") return `${filePath} contains extracted defaultMessage/description descriptors${suffix}.`;
+  if (assetType === "runtime-locale-data") return `${filePath} contains runtime locale data or polyfill evidence${suffix}.`;
+  return `${filePath} is an i18n locale asset candidate${suffix}.`;
+}
+
+function i18nRuntimeSignals(sourceFiles: I18nSourceFile[]): I18nReport["runtimeSignals"] {
+  const specs: Array<{ signal: I18nReport["runtimeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "IntlProvider", pattern: /<IntlProvider\b|IntlProvider\s*\(/i, evidence: "React Intl provider boundary is configured." },
+    { signal: "locale-prop", pattern: /\blocale\s*=\s*\{|locale\s*:|currentLocale|activeLocale/i, evidence: "runtime locale value is passed or configured." },
+    { signal: "messages-prop", pattern: /\bmessages\s*=\s*\{|messages\s*:|translationsFor|loadMessages/i, evidence: "runtime message catalog is passed or loaded." },
+    { signal: "navigator-language", pattern: /navigator\.language|navigator\.languages|Accept-Language/i, evidence: "browser or request language negotiation is referenced." },
+    { signal: "fallback-locale", pattern: /defaultLocale|fallbackLocale|fallbackLng|source-locale|en-US|en_/i, evidence: "fallback/source locale evidence was detected." },
+    { signal: "polyfill", pattern: /@formatjs\/intl-|polyfill|polyfill-fastly|Intl\.(PluralRules|NumberFormat|DateTimeFormat|RelativeTimeFormat|DisplayNames|ListFormat)/i, evidence: "Intl polyfill evidence was detected." },
+    { signal: "locale-data", pattern: /locale-data|addLocaleData|__addLocaleData|CLDR|full-icu/i, evidence: "locale data loading evidence was detected." },
+    { signal: "resolved-options", pattern: /resolvedOptions\s*\(/i, evidence: "Intl resolvedOptions locale check evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} runtime evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/i18n.html"
+    };
+  });
+}
+
+function i18nExtractionSignals(sourceFiles: I18nSourceFile[]): I18nReport["extractionSignals"] {
+  const specs: Array<{ signal: I18nReport["extractionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "formatjs-extract", pattern: /formatjs\s+extract|@formatjs\/cli|extract\s+["'][^"']*formatjs/i, evidence: "FormatJS extract command or package is configured." },
+    { signal: "formatjs-compile", pattern: /formatjs\s+compile\b|formatjs\s+compile-folder|compile\s+["'][^"']*formatjs/i, evidence: "FormatJS compile command is configured." },
+    { signal: "formatjs-verify", pattern: /formatjs\s+verify|--missing-keys|--structural-equality|--extra-keys/i, evidence: "FormatJS verify command or flags are configured." },
+    { signal: "compile-folder", pattern: /compile-folder/i, evidence: "Folder compilation is referenced." },
+    { signal: "id-interpolation", pattern: /id-interpolation-pattern|contenthash|sha512/i, evidence: "automatic message ID interpolation is configured." },
+    { signal: "extract-source-location", pattern: /extract-source-location/i, evidence: "source location metadata extraction is configured." },
+    { signal: "additional-names", pattern: /additional-(component|function)-names|additionalComponentNames|additionalFunctionNames/i, evidence: "wrapper component/function extraction is configured." },
+    { signal: "ignore-globs", pattern: /--ignore|ignore\s*:/i, evidence: "extraction ignore globs are configured." },
+    { signal: "flatten", pattern: /--flatten|\bflatten\s*:/i, evidence: "selector flattening is configured for translator-friendly sentences." },
+    { signal: "pseudo-locale", pattern: /pseudo-locale|en-XA|en-XB|xx-LS|xx-AC|xx-HA/i, evidence: "pseudo-locale compilation evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} extraction evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/i18n.html"
+    };
+  });
+}
+
+function i18nIcuSignals(sourceFiles: I18nSourceFile[]): I18nReport["icuSignals"] {
+  const specs: Array<{ signal: I18nReport["icuSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "plural", pattern: /\{\s*[A-Za-z0-9_]+\s*,\s*plural\b/i, evidence: "ICU plural message evidence was detected." },
+    { signal: "select", pattern: /\{\s*[A-Za-z0-9_]+\s*,\s*select\b/i, evidence: "ICU select message evidence was detected." },
+    { signal: "selectordinal", pattern: /selectordinal/i, evidence: "ICU selectordinal message evidence was detected." },
+    { signal: "number", pattern: /\{\s*[A-Za-z0-9_]+\s*,\s*number\b|Intl\.NumberFormat/i, evidence: "number formatting evidence was detected." },
+    { signal: "date", pattern: /\{\s*[A-Za-z0-9_]+\s*,\s*date\b|Intl\.DateTimeFormat/i, evidence: "date formatting evidence was detected." },
+    { signal: "time", pattern: /\{\s*[A-Za-z0-9_]+\s*,\s*time\b|FormattedTime/i, evidence: "time formatting evidence was detected." },
+    { signal: "rich-text", pattern: /<FormattedMessage[\s\S]{0,500}values\s*=|<\w+>[^<{}]*\{|\brich text\b|ignoreTag/i, evidence: "rich text placeholder evidence was detected." },
+    { signal: "description", pattern: /\bdescription\s*:/i, evidence: "translator description evidence was detected." },
+    { signal: "placeholder", pattern: /\{[A-Za-z0-9_]+\}/i, evidence: "ICU placeholder evidence was detected." },
+    { signal: "ast", pattern: /--ast|\bAST\b|pre-parsed|parse\(/i, evidence: "compiled AST or parser evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} ICU evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/i18n.html"
+    };
+  });
+}
+
+function i18nQaSignals(sourceFiles: I18nSourceFile[]): I18nReport["qaSignals"] {
+  const specs: Array<{ signal: I18nReport["qaSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "eslint-plugin-formatjs", pattern: /eslint-plugin-formatjs|formatjs\/[a-z-]+|formatjs\.configs\.(recommended|strict)/i, evidence: "eslint-plugin-formatjs is configured or referenced." },
+    { signal: "enforce-description", pattern: /formatjs\/enforce-description|enforce-description/i, evidence: "description enforcement is configured." },
+    { signal: "enforce-id", pattern: /formatjs\/enforce-id|enforce-id/i, evidence: "message ID enforcement is configured." },
+    { signal: "no-invalid-icu", pattern: /formatjs\/no-invalid-icu|no-invalid-icu/i, evidence: "invalid ICU linting is configured." },
+    { signal: "missing-keys", pattern: /--missing-keys|missing keys/i, evidence: "missing translation key verification is configured." },
+    { signal: "structural-equality", pattern: /--structural-equality|structural equality/i, evidence: "source/target structural equality verification is configured." },
+    { signal: "extra-keys", pattern: /--extra-keys|extra keys/i, evidence: "obsolete/extra translation key verification is configured." },
+    { signal: "tms-format", pattern: /transifex|smartling|lokalise|crowdin|TMS|translation vendor/i, evidence: "translation management system formatter evidence was detected." },
+    { signal: "ci-workflow", pattern: /^\.github\/workflows\//i, evidence: "CI workflow can host i18n extraction or verification." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} QA evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/i18n.html"
     };
   });
 }
