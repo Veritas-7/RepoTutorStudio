@@ -3118,6 +3118,47 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 41/41 audit checks across 13 generated reports
 
+### Upgrade 144: Unit Test Readiness Report
+
+- Cloned and inspected `vitest-dev/vitest` under
+  `research/external-src/vitest-dev-vitest` without executing external source.
+- GitHub metadata: public repo, MIT license, 16,625 stars, 1,799 forks,
+  updated 2026-06-04T00:58:09Z. Compared with `jestjs/jest`,
+  `mochajs/mocha`, and `avajs/ava`; selected Vitest because it directly
+  models Vite-backed test files/config, expect/assert assertions, snapshots,
+  `vi` mocks/spies/fake timers, v8/istanbul coverage, jsdom/happy-dom/browser
+  environments, projects/workspaces, typecheck, UI, reporters, watch/run, and
+  sharding. No source code was copied into RepoTutor.
+- Added `UnitTestReportSchema` and `analysis/unit-test-report.json` with test
+  files, config files, assertion signals, mock signals, coverage signals,
+  environment signals, reporting signals, risk queue, recommended commands,
+  and learner next steps.
+- Added `markdown/unit-tests.md`, `html/unit-tests.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target unit-tests`.
+- Source pattern: Vitest separates test discovery, config, assertions, mocks,
+  snapshots, coverage providers, DOM/browser environments, projects,
+  workspaces, type checks, watch/run modes, UI, reporters, and sharding.
+  RepoTutor maps that to deterministic static unit-test readiness and
+  explicitly does not execute tests, measure coverage, update snapshots, or
+  validate jsdom/browser behavior.
+- RED smoke generated
+  `/tmp/repotutor-unit-tests-red-studies.Kjl4iU/2026-06-04/local__simple-ts-app__main__78437cc2`;
+  old behavior was missing `analysis/unit-test-report.json`,
+  `markdown/unit-tests.md`, and `html/unit-tests.html`, and
+  `open --target unit-tests` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-unit-tests-green-studies.SERqqs/2026-06-04/local__simple-ts-app__main__78437cc2`;
+  confirmed `verificationCheckedRequiredArtifacts=132`, test files 0,
+  config files 1, assertion signals 9, mock signals 8, coverage signals 8,
+  environment signals 11, reporting signals 11, recommended commands 6, risk
+  queue 4, `unit-test-card`, `data-source-pattern="Vitest"`,
+  manifest/learning-path entries, and `open --target unit-tests` ->
+  `html/unit-tests.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 42/42 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

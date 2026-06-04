@@ -56,6 +56,7 @@ import {
   DocumentationReport,
   DatabaseReadinessReport,
   CiCdReport,
+  UnitTestReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -118,6 +119,7 @@ export interface AnalysisBundle {
   documentationReport: DocumentationReport;
   databaseReadinessReport: DatabaseReadinessReport;
   ciCdReport: CiCdReport;
+  unitTestReport: UnitTestReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -180,8 +182,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const documentationReport = await buildDocumentationReport(walk);
   const databaseReadinessReport = await buildDatabaseReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
+  const unitTestReport = await buildUnitTestReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -7857,6 +7860,319 @@ function ciCdSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; ev
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/ci-cd.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildUnitTestReport(walk: WalkResult): Promise<UnitTestReport> {
+  const sourceFiles = await unitTestSourceFiles(walk);
+  const testFiles = unitTestFiles(sourceFiles);
+  const configFiles = unitTestConfigFiles(sourceFiles);
+  const assertionSignals = unitTestAssertionSignals(sourceFiles);
+  const mockSignals = unitTestMockSignals(sourceFiles);
+  const coverageSignals = unitTestCoverageSignals(sourceFiles);
+  const environmentSignals = unitTestEnvironmentSignals(sourceFiles);
+  const reportingSignals = unitTestReportingSignals(sourceFiles);
+  const hasTestFiles = testFiles.length > 0;
+  const hasConfig = configFiles.some((item) => item.readiness === "ready" || item.readiness === "partial");
+  const hasAssertions = assertionSignals.some((item) => item.readiness === "ready");
+  const hasMocks = mockSignals.some((item) => ["vi-fn", "vi-mock", "vi-spyOn", "module-mock", "request-mock", "fake-timers"].includes(item.signal) && item.readiness === "ready");
+  const hasMockReset = mockSignals.some((item) => item.signal === "mock-reset" && item.readiness === "ready");
+  const hasCoverage = coverageSignals.some((item) => item.readiness === "ready");
+  const hasDomEnvironment = environmentSignals.some((item) => ["jsdom", "happy-dom", "browser-mode"].includes(item.signal) && item.readiness === "ready");
+  const hasDomLookingTests = sourceFiles.some((source) => unitTestPathSignal(source.filePath) && /\b(document|window|HTMLElement|@testing-library|render\s*\()/i.test(source.text));
+  const hasReporter = reportingSignals.some((item) => ["reporter", "junit", "json", "html", "ui"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: UnitTestReport["riskQueue"] = [];
+  if (!hasTestFiles) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add focused unit or component test files before claiming test readiness.",
+      why: "Vitest discovers files such as *.test.ts, *.spec.ts, tests/, and __tests__/; this scan did not find test files.",
+      relatedHref: "html/unit-tests.html"
+    });
+  }
+  if (!hasConfig) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add a test script or Vitest/Vite test configuration.",
+      why: "A package test script, vitest.config file, or Vite test block makes the expected runner and environment explicit.",
+      relatedHref: "html/unit-tests.html"
+    });
+  }
+  if (hasTestFiles && !hasAssertions) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add explicit assertions to test files.",
+      why: "Vitest can run test bodies without meaningful checks; expect/assert and matcher usage proves behavior is verified.",
+      relatedHref: "html/unit-tests.html"
+    });
+  }
+  if (hasMocks && !hasMockReset) {
+    riskQueue.push({
+      priority: "low",
+      action: "Reset or restore mocks between tests.",
+      why: "Vitest mocking guidance warns that shared mocks, spies, and fake timers can leak state across tests.",
+      relatedHref: "html/unit-tests.html"
+    });
+  }
+  if (!hasCoverage) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add coverage reporting for unit tests.",
+      why: "Vitest supports v8 and istanbul coverage providers, but this repository has no static coverage signal.",
+      relatedHref: "html/unit-tests.html"
+    });
+  }
+  if (hasDomLookingTests && !hasDomEnvironment) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Configure jsdom, happy-dom, or browser mode for DOM-oriented tests.",
+      why: "Vitest's default environment is Node; DOM APIs need an explicit compatible environment.",
+      relatedHref: "html/unit-tests.html"
+    });
+  }
+  if (hasTestFiles && !hasReporter) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add machine-readable reporters when CI or dashboards need test results.",
+      why: "Vitest can emit JUnit, JSON, HTML, and UI outputs, but no static reporting signal was found.",
+      relatedHref: "html/unit-tests.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: hasTestFiles ? "Run the unit test suite before treating this static report as approval." : "If this repository later adds Vitest tests, rerun RepoTutor to populate unit test readiness.",
+    why: "RepoTutor records static unit-test readiness only; it does not execute tests, measure coverage, update snapshots, or validate jsdom/browser behavior.",
+    relatedHref: "html/unit-tests.html"
+  });
+
+  return {
+    summary: `Vitest-style unit test readiness report: test files ${testFiles.length}개, config files ${configFiles.length}개, assertion signals ${assertionSignals.length}개, coverage signals ${coverageSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Vitest test files config coverage v8 istanbul snapshots mocks jsdom happy-dom browser mode projects reporters",
+    testFiles,
+    configFiles,
+    assertionSignals,
+    mockSignals,
+    coverageSignals,
+    environmentSignals,
+    reportingSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx vitest run", purpose: "Run unit tests once in CI-style run mode." },
+      { command: "npx vitest --watch", purpose: "Use watch mode while developing tests locally." },
+      { command: "npx vitest run --coverage", purpose: "Generate coverage with the configured v8 or istanbul provider." },
+      { command: "npx vitest --ui", purpose: "Open Vitest UI for interactive test inspection." },
+      { command: "npx vitest --reporter=junit", purpose: "Emit CI-friendly test results for dashboards or annotations." },
+      { command: "npx vitest --update", purpose: "Update snapshots intentionally after reviewing behavior changes." }
+    ],
+    learnerNextSteps: [
+      "Start with package.json and vitest.config: identify the test command, environment, coverage provider, setup files, and reporter outputs.",
+      "Open each test file and separate arrange/act/assert lines, mock setup, fixture data, and snapshot assertions.",
+      "Check whether DOM or browser tests declare jsdom, happy-dom, or browser mode instead of relying on Node defaults.",
+      "RepoTutor does not execute tests or measure real coverage; run Vitest before treating this as test approval."
+    ]
+  };
+}
+
+type UnitTestSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function unitTestSourceFiles(walk: WalkResult): Promise<UnitTestSourceFile[]> {
+  const files: UnitTestSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !unitTestInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!unitTestPathSignal(file.relPath) && !unitTestContentSignal(text) && path.basename(file.relPath) !== "package.json") continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function unitTestInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /(^|\/)(__tests__|tests?|spec|fixtures?|mocks?|__mocks__|snapshots?)\//i.test(filePath)
+    || /\.(test|spec)\.[cm]?[jt]sx?$/i.test(base)
+    || /\.snap$/i.test(base)
+    || /^vitest\.config\.[cm]?[jt]s$/i.test(base)
+    || /^vitest\.workspace\.[cm]?[jt]s(on)?$/i.test(base)
+    || /^vite\.config\.[cm]?[jt]s$/i.test(base)
+    || /^(package\.json|pnpm-workspace\.yaml|README\.md)$/i.test(base)
+    || /(test|spec|vitest|jest|mocha|ava|coverage|snapshot|setupTests|setup-tests)/i.test(filePath)
+    || /\.(json|md|ya?ml|[cm]?[jt]sx?)$/i.test(filePath);
+}
+
+function unitTestPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /(^|\/)(__tests__|tests?|spec|fixtures?|mocks?|__mocks__|snapshots?)\//i.test(filePath)
+    || /\.(test|spec)\.[cm]?[jt]sx?$/i.test(base)
+    || /\.snap$/i.test(base)
+    || /^vitest\.(config|workspace)\./i.test(base)
+    || /^vite\.config\./i.test(base)
+    || /(vitest|jest|mocha|ava|coverage|snapshot|setupTests|setup-tests)/i.test(filePath);
+}
+
+function unitTestContentSignal(text: string): boolean {
+  return /\b(vitest|jest|mocha|ava|node:test|describe\s*\(|it\s*\(|test\s*\(|expect\s*\(|assert\.|vi\.|toMatchSnapshot|jsdom|happy-dom|coverage|@testing-library)\b/i.test(text);
+}
+
+function unitTestFiles(sourceFiles: UnitTestSourceFile[]): UnitTestReport["testFiles"] {
+  return sourceFiles
+    .filter((source) => unitTestPathSignal(source.filePath) && (/\.(test|spec)\.[cm]?[jt]sx?$/i.test(path.basename(source.filePath)) || /(^|\/)(__tests__|tests?|spec)\//i.test(source.filePath)))
+    .slice(0, 160)
+    .map((source) => {
+      const testCount = countMatches(source.text, /\b(describe|it|test)\s*\(/g);
+      const assertionCount = unitTestAssertionCount(source.text);
+      return {
+        filePath: source.filePath,
+        framework: inferUnitTestFramework(source),
+        testCount,
+        assertionCount,
+        readiness: testCount > 0 && assertionCount > 0 ? "ready" : testCount > 0 || assertionCount > 0 ? "partial" : "missing",
+        evidence: `${source.filePath} has ${testCount} test block candidate(s) and ${assertionCount} assertion candidate(s).`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function unitTestConfigFiles(sourceFiles: UnitTestSourceFile[]): UnitTestReport["configFiles"] {
+  return sourceFiles
+    .filter((source) => unitTestConfigType(source.filePath, source.text) !== "unknown" || path.basename(source.filePath) === "package.json")
+    .slice(0, 120)
+    .map((source) => {
+      const configType = unitTestConfigType(source.filePath, source.text);
+      const hasTestScript = path.basename(source.filePath) === "package.json" && /"scripts"\s*:\s*\{[\s\S]*"test"\s*:\s*"[^"]+"/i.test(source.text);
+      const readiness = configType === "package-script" ? (hasTestScript ? "ready" : "missing") : configType === "unknown" ? "missing" : "ready";
+      return {
+        filePath: source.filePath,
+        configType: configType === "unknown" && path.basename(source.filePath) === "package.json" ? "package-script" : configType,
+        readiness,
+        evidence: configType === "package-script" || path.basename(source.filePath) === "package.json"
+          ? (hasTestScript ? `${source.filePath} declares a package test script.` : `${source.filePath} does not declare a package test script.`)
+          : `${source.filePath} matches ${configType} static configuration.`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function unitTestConfigType(filePath: string, text: string): UnitTestReport["configFiles"][number]["configType"] {
+  const base = path.basename(filePath);
+  if (/^vitest\.config\.[cm]?[jt]s$/i.test(base)) return "vitest-config";
+  if (/^vite\.config\.[cm]?[jt]s$/i.test(base) && /\btest\s*:/i.test(text)) return "vite-config-test";
+  if (base === "package.json") return "package-script";
+  if (/^vitest\.workspace\./i.test(base) || path.basename(filePath) === "pnpm-workspace.yaml") return "workspace";
+  if (/(setupTests|setup-tests|test-setup|setup\.[cm]?[jt]s)/i.test(filePath)) return "setup-file";
+  return "unknown";
+}
+
+function inferUnitTestFramework(source: UnitTestSourceFile): UnitTestReport["testFiles"][number]["framework"] {
+  if (/vitest|from\s+["']vitest["']|vi\./i.test(source.text)) return "vitest";
+  if (/jest|from\s+["']@jest\/globals["']/i.test(source.text)) return "jest";
+  if (/mocha|from\s+["']mocha["']/i.test(source.text)) return "mocha";
+  if (/from\s+["']ava["']|\bava\b/i.test(source.text)) return "ava";
+  if (/node:test|from\s+["']node:test["']/i.test(source.text)) return "node-test";
+  return "unknown";
+}
+
+function unitTestAssertionCount(text: string): number {
+  return countMatches(text, /\bexpect\s*\(|\bassert\.|\.to(Equal|Be|StrictEqual|MatchSnapshot|Throw|Have)|\bthrows\s*\(|\.resolves\b|\.rejects\b/g);
+}
+
+function unitTestAssertionSignals(sourceFiles: UnitTestSourceFile[]): UnitTestReport["assertionSignals"] {
+  const specs: Array<{ assertion: UnitTestReport["assertionSignals"][number]["assertion"]; pattern: RegExp; evidence: string }> = [
+    { assertion: "expect", pattern: /\bexpect\s*\(/i, evidence: "expect assertion evidence was detected." },
+    { assertion: "assert", pattern: /\bassert\./i, evidence: "assert API evidence was detected." },
+    { assertion: "toEqual", pattern: /\.to(Equal|StrictEqual)\s*\(/i, evidence: "deep equality matcher evidence was detected." },
+    { assertion: "toBe", pattern: /\.to(Be|BeTruthy|BeFalsy|BeDefined|BeNull|BeUndefined)\s*\(/i, evidence: "identity/truthiness matcher evidence was detected." },
+    { assertion: "toMatchSnapshot", pattern: /toMatch(Inline)?Snapshot\s*\(/i, evidence: "snapshot assertion evidence was detected." },
+    { assertion: "throws", pattern: /toThrow\s*\(|\bthrows\s*\(/i, evidence: "throw assertion evidence was detected." },
+    { assertion: "resolves", pattern: /\.resolves\b/i, evidence: "async resolves assertion evidence was detected." },
+    { assertion: "rejects", pattern: /\.rejects\b/i, evidence: "async rejects assertion evidence was detected." },
+    { assertion: "custom-matcher", pattern: /expect\.extend|toHave[A-Z][A-Za-z]+\s*\(/i, evidence: "custom matcher-style evidence was detected." }
+  ];
+  return unitTestSignalFromSpecs(sourceFiles, specs, "assertion", "assertion");
+}
+
+function unitTestMockSignals(sourceFiles: UnitTestSourceFile[]): UnitTestReport["mockSignals"] {
+  const specs: Array<{ signal: UnitTestReport["mockSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vi-fn", pattern: /\bvi\.fn\s*\(/i, evidence: "vi.fn mock evidence was detected." },
+    { signal: "vi-mock", pattern: /\bvi\.mock\s*\(/i, evidence: "vi.mock module mock evidence was detected." },
+    { signal: "vi-spyOn", pattern: /\bvi\.spyOn\s*\(/i, evidence: "vi.spyOn spy evidence was detected." },
+    { signal: "fake-timers", pattern: /useFakeTimers|setSystemTime|advanceTimers/i, evidence: "fake timer evidence was detected." },
+    { signal: "mock-reset", pattern: /clearAllMocks|resetAllMocks|restoreAllMocks|mockReset|mockRestore|afterEach/i, evidence: "mock reset or cleanup evidence was detected." },
+    { signal: "fixture-data", pattern: /(^|\/)(fixtures?|__fixtures__)\//i, evidence: "fixture path evidence was detected." },
+    { signal: "module-mock", pattern: /__mocks__|mockImplementation|mockResolvedValue|mockRejectedValue/i, evidence: "module mock behavior evidence was detected." },
+    { signal: "request-mock", pattern: /msw|Mock Service Worker|fetchMock|nock|mock.*request|request.*mock/i, evidence: "request mocking evidence was detected." }
+  ];
+  return unitTestSignalFromSpecs(sourceFiles, specs, "mock", "signal");
+}
+
+function unitTestCoverageSignals(sourceFiles: UnitTestSourceFile[]): UnitTestReport["coverageSignals"] {
+  const specs: Array<{ signal: UnitTestReport["coverageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "coverage-enabled", pattern: /--coverage|coverage\s*:\s*\{[\s\S]{0,300}enabled\s*:\s*true/i, evidence: "coverage enablement evidence was detected." },
+    { signal: "coverage-provider-v8", pattern: /@vitest\/coverage-v8|provider\s*:\s*["']v8["']/i, evidence: "v8 coverage provider evidence was detected." },
+    { signal: "coverage-provider-istanbul", pattern: /@vitest\/coverage-istanbul|provider\s*:\s*["']istanbul["']/i, evidence: "istanbul coverage provider evidence was detected." },
+    { signal: "coverage-include", pattern: /coverage\s*:\s*\{[\s\S]{0,600}include\s*:/i, evidence: "coverage include pattern evidence was detected." },
+    { signal: "coverage-exclude", pattern: /coverage\s*:\s*\{[\s\S]{0,600}exclude\s*:/i, evidence: "coverage exclude pattern evidence was detected." },
+    { signal: "coverage-thresholds", pattern: /thresholds\s*:\s*\{|lines\s*:\s*\d+|branches\s*:\s*\d+|functions\s*:\s*\d+/i, evidence: "coverage threshold evidence was detected." },
+    { signal: "coverage-reporters", pattern: /reporter(s)?\s*:\s*\[?[^\n\]]*(text|json|html|lcov|cobertura)/i, evidence: "coverage reporter evidence was detected." },
+    { signal: "coverage-script", pattern: /"[^"]*coverage[^"]*"\s*:\s*"[^"]*vitest[^"]*--coverage/i, evidence: "package coverage script evidence was detected." }
+  ];
+  return unitTestSignalFromSpecs(sourceFiles, specs, "coverage", "signal");
+}
+
+function unitTestEnvironmentSignals(sourceFiles: UnitTestSourceFile[]): UnitTestReport["environmentSignals"] {
+  const specs: Array<{ signal: UnitTestReport["environmentSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "node", pattern: /environment\s*:\s*["']node["']|node:test|process\.env/i, evidence: "Node environment evidence was detected." },
+    { signal: "jsdom", pattern: /environment\s*:\s*["']jsdom["']|@vitest-environment\s+jsdom|jsdom/i, evidence: "jsdom environment evidence was detected." },
+    { signal: "happy-dom", pattern: /environment\s*:\s*["']happy-dom["']|@vitest-environment\s+happy-dom|happy-dom/i, evidence: "happy-dom environment evidence was detected." },
+    { signal: "browser-mode", pattern: /browser\s*:\s*\{|browser\.enabled|@vitest\/browser|playwright/i, evidence: "browser mode evidence was detected." },
+    { signal: "globals", pattern: /globals\s*:\s*true/i, evidence: "globals option evidence was detected." },
+    { signal: "setup-files", pattern: /setupFiles\s*:/i, evidence: "setupFiles evidence was detected." },
+    { signal: "pool", pattern: /pool\s*:\s*["'](threads|forks|vmThreads|vmForks)["']/i, evidence: "pool selection evidence was detected." },
+    { signal: "isolate", pattern: /isolate\s*:\s*(true|false)/i, evidence: "isolate option evidence was detected." },
+    { signal: "projects", pattern: /projects\s*:\s*\[|test\.projects|defineProject/i, evidence: "project configuration evidence was detected." },
+    { signal: "workspace", pattern: /vitest\.workspace|workspace\s*:/i, evidence: "workspace evidence was detected." },
+    { signal: "typecheck", pattern: /typecheck\s*:\s*\{|--typecheck|expectTypeOf|assertType/i, evidence: "typecheck test evidence was detected." }
+  ];
+  return unitTestSignalFromSpecs(sourceFiles, specs, "environment", "signal");
+}
+
+function unitTestReportingSignals(sourceFiles: UnitTestSourceFile[]): UnitTestReport["reportingSignals"] {
+  const specs: Array<{ signal: UnitTestReport["reportingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "watch", pattern: /vitest\s+(--watch|watch)|watch\s*:\s*true/i, evidence: "watch mode evidence was detected." },
+    { signal: "run", pattern: /vitest\s+run|CI\s*=\s*true/i, evidence: "run mode evidence was detected." },
+    { signal: "ui", pattern: /@vitest\/ui|vitest\s+--ui|\bui\s*:\s*true/i, evidence: "Vitest UI evidence was detected." },
+    { signal: "reporter", pattern: /reporter(s)?\s*:/i, evidence: "reporter config evidence was detected." },
+    { signal: "junit", pattern: /junit/i, evidence: "JUnit reporter evidence was detected." },
+    { signal: "json", pattern: /json\s*(?:reporter|output|summary)|reporter(s)?\s*:\s*\[?[^\n\]]*json/i, evidence: "JSON reporter evidence was detected." },
+    { signal: "html", pattern: /html\s*(?:reporter|output)|reporter(s)?\s*:\s*\[?[^\n\]]*html/i, evidence: "HTML reporter evidence was detected." },
+    { signal: "snapshot-update", pattern: /--update|\b-u\b|toMatch(Inline)?Snapshot/i, evidence: "snapshot update or assertion evidence was detected." },
+    { signal: "filtering", pattern: /--grep|--testNamePattern|\.only\s*\(|\.skip\s*\(/i, evidence: "test filtering evidence was detected." },
+    { signal: "sharding", pattern: /--shard|shard\s*:/i, evidence: "test sharding evidence was detected." },
+    { signal: "benchmark", pattern: /bench\s*\(|\.bench\.|vitest\s+bench|@vitest\/bench/i, evidence: "benchmark evidence was detected." }
+  ];
+  return unitTestSignalFromSpecs(sourceFiles, specs, "reporting", "signal");
+}
+
+function unitTestSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: UnitTestSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/unit-tests.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
