@@ -5015,7 +5015,8 @@
         "analysis/gitops-readiness-report.json",
         "markdown/gitops-readiness.md",
         "html/gitops-readiness.html"
-      ]
+      ],
+      "commit": "63a8c87"
     }
   ],
   "verification": {
@@ -5598,7 +5599,8 @@
     "gitopsReadinessOpenTarget": "PASS",
     "buildGitOpsReadiness": "PASS",
     "testGitOpsReadiness": "PASS",
-    "complianceAudit104Checks": "PASS"
+    "complianceAudit104Checks": "PASS",
+    "gitopsReadinessImplementationPushed": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -6045,6 +6047,7 @@
     "cliGitOpsReadinessOpenTargetSmoke": "PASS",
     "buildGitOpsReadiness": "PASS",
     "testGitOpsReadiness": "PASS",
-    "auditBriefGitOpsReadiness104": "PASS"
+    "auditBriefGitOpsReadiness104": "PASS",
+    "gitopsReadinessImplementationPushed": "PASS"
   }
 }
