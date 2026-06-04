@@ -1821,6 +1821,51 @@
         "cost latency cache retry rate-limit and fallback signals",
         "provider routing and prompt version linkage"
       ]
+    },
+    {
+      "repo": "qdrant/qdrant",
+      "url": "https://github.com/qdrant/qdrant",
+      "localPath": "research/external-src/qdrant",
+      "stars": 31799,
+      "forks": 2320,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T18:40:11Z",
+      "cloneHead": "44ad62f",
+      "adoptedPatterns": [
+        "Qdrant vector database readiness through collections, points, vectors, payload, filters, HNSW, quantization, sharding, replication, and snapshots",
+        "Dense, sparse, multivector, hybrid search, payload index, query planning, and operations signals for static vector DB learning",
+        "Static-only Qdrant guardrails that do not start servers, run clients, generate embeddings, upsert/query/delete data, or restore snapshots"
+      ]
+    },
+    {
+      "repo": "weaviate/weaviate",
+      "url": "https://github.com/weaviate/weaviate",
+      "localPath": "research/external-src/weaviate",
+      "stars": 16272,
+      "forks": 1305,
+      "license": "BSD-3-Clause",
+      "updatedAt": "2026-06-04T10:10:46Z",
+      "cloneHead": "8269596",
+      "adoptedPatterns": [
+        "Weaviate readiness through collection creation, schema properties, vector_config/vectorizer, hybrid/BM25 search, filters, and generative RAG",
+        "Operations readiness through multi-tenancy, replication, RBAC, TTL, backups/restores, schema, shard, query, and vector-index metrics",
+        "Static-only Weaviate guardrails that do not connect to clusters, vectorize documents, query collections, or inspect live dashboards"
+      ]
+    },
+    {
+      "repo": "chroma-core/chroma",
+      "url": "https://github.com/chroma-core/chroma",
+      "localPath": "research/external-src/chroma",
+      "stars": 28213,
+      "forks": 2286,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T18:42:14Z",
+      "cloneHead": "43171c5",
+      "adoptedPatterns": [
+        "Chroma readiness through Client, PersistentClient, HttpClient, create/get collection, add/upsert/query/delete, ids, documents, metadatas, filters, and distances",
+        "Embedding function, tenant/database, persistence path, where/where_document, include, and client-server mode signals",
+        "Static-only Chroma guardrails that do not start client-server mode, run embedding functions, persist vectors, or query collections"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -5209,6 +5254,26 @@
         "html/llm-observability-readiness.html"
       ],
       "commit": "9d66764"
+    },
+    {
+      "name": "vector-db readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/vector-db-readiness-report.json",
+        "markdown/vector-db-readiness.md",
+        "html/vector-db-readiness.html"
+      ],
+      "commit": "pending"
     }
   ],
   "verification": {
@@ -6287,6 +6352,15 @@
     "buildLlmObservabilityReadiness": "PASS",
     "testLlmObservabilityReadiness": "PASS",
     "auditBriefLlmObservabilityReadiness107": "PASS",
-    "llmObservabilityReadinessImplementationPushed": "PASS"
+    "llmObservabilityReadinessImplementationPushed": "PASS",
+    "externalQdrantCloneIgnored": "PASS",
+    "externalWeaviateCloneIgnored": "PASS",
+    "externalChromaCloneIgnored": "PASS",
+    "fixtureVectorDbReadinessReport": "PASS",
+    "cliVectorDbReadinessSmoke": "PASS",
+    "cliVectorDbReadinessOpenTargetSmoke": "PASS",
+    "buildVectorDbReadiness": "PASS",
+    "testVectorDbReadiness": "PASS",
+    "auditBriefVectorDbReadiness108": "PASS"
   }
 }

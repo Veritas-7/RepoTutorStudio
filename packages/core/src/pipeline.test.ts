@@ -93,6 +93,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "llm-eval-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "llm-observability-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workspace-graph-readiness-report.json"))).resolves.toBeUndefined();
@@ -202,6 +203,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-eval-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-observability-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "vector-db-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rpc-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workspace-graph-readiness.md"))).resolves.toBeUndefined();
@@ -311,6 +313,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-eval-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-observability-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "vector-db-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "server-framework-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rpc-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workspace-graph-readiness.html"))).resolves.toBeUndefined();
@@ -451,6 +454,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/llm-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/llm-eval-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/llm-observability-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/vector-db-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/server-framework-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rpc-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workspace-graph-readiness.html\"");
@@ -2053,6 +2057,28 @@ describe("RepoTutor core pipeline", () => {
     expect(llmObservabilityReadinessMarkdown).toContain("Source pattern: LLM observability readiness");
     expect(llmObservabilityReadinessMarkdown).toContain("## Trace Signals");
     expect(llmObservabilityReadinessMarkdown).toContain("## Gateway Signals");
+    const vectorDbReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"), "utf8");
+    expect(vectorDbReadinessText).toContain("Vector DB readiness Qdrant Weaviate Chroma collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence");
+    expect(vectorDbReadinessText).toContain("\"vectorSetups\"");
+    expect(vectorDbReadinessText).toContain("\"collectionSignals\"");
+    expect(vectorDbReadinessText).toContain("\"clientSignals\"");
+    expect(vectorDbReadinessText).toContain("\"ingestionSignals\"");
+    expect(vectorDbReadinessText).toContain("\"querySignals\"");
+    expect(vectorDbReadinessText).toContain("\"embeddingSignals\"");
+    expect(vectorDbReadinessText).toContain("\"indexSignals\"");
+    expect(vectorDbReadinessText).toContain("\"opsSignals\"");
+    expect(vectorDbReadinessText).toContain("\"packageSignals\"");
+    const vectorDbReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "vector-db-readiness.html"), "utf8");
+    expect(vectorDbReadinessHtml).toContain("Vector DB Readiness");
+    expect(vectorDbReadinessHtml).toContain("vector-db-readiness-card");
+    expect(vectorDbReadinessHtml).toContain("data-source-pattern=\"Vector DB\"");
+    expect(vectorDbReadinessHtml).toContain("Vector Setups");
+    expect(vectorDbReadinessHtml).toContain("Query Signals");
+    const vectorDbReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "vector-db-readiness.md"), "utf8");
+    expect(vectorDbReadinessMarkdown).toContain("# Vector DB Readiness");
+    expect(vectorDbReadinessMarkdown).toContain("Source pattern: Vector DB readiness");
+    expect(vectorDbReadinessMarkdown).toContain("## Collection Signals");
+    expect(vectorDbReadinessMarkdown).toContain("## Ops Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
     expect(serverFrameworkReadinessText).toContain("Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
@@ -2520,6 +2546,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/backup-readiness.html");
     expect(exportManifestText).toContain("html/llm-eval-readiness.html");
     expect(exportManifestText).toContain("html/llm-observability-readiness.html");
+    expect(exportManifestText).toContain("html/vector-db-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -2647,6 +2674,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("error-tracking-readiness.html");
     expect(learningPathHtml).toContain("llm-eval-readiness.html");
     expect(learningPathHtml).toContain("llm-observability-readiness.html");
+    expect(learningPathHtml).toContain("vector-db-readiness.html");
     expect(learningPathHtml).toContain("backup-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
@@ -4794,6 +4822,169 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-observability-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-observability-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects vector DB readiness patterns without running vector databases", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-vector-db-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-vector-db-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "config"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "vector"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "vector:index": "tsx src/vector/qdrant.ts",
+        "vector:query": "python src/vector/chroma.py",
+        "vector:ops": "echo vector backup restore migration metrics"
+      },
+      dependencies: {
+        "@pinecone-database/pinecone": "latest",
+        "@qdrant/js-client-rest": "latest",
+        chromadb: "latest",
+        "weaviate-client": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "requirements.txt"), [
+      "qdrant-client",
+      "weaviate-client",
+      "chromadb",
+      "sentence-transformers",
+      "faiss-cpu",
+      "pgvector",
+      "pymilvus"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "vector", "qdrant.ts"), [
+      "import { QdrantClient } from \"@qdrant/js-client-rest\";",
+      "",
+      "const client = new QdrantClient({ url: process.env.QDRANT_URL, apiKey: process.env.QDRANT_API_KEY });",
+      "await client.createCollection(\"docs\", {",
+      "  vectors: { size: 1536, distance: \"Cosine\" },",
+      "  hnsw_config: { m: 16, ef_construct: 100 },",
+      "  quantization_config: { scalar: { type: \"int8\" } },",
+      "  shard_number: 3,",
+      "  replication_factor: 3,",
+      "  write_consistency_factor: 2",
+      "});",
+      "await client.createPayloadIndex(\"docs\", { field_name: \"tenant\", field_schema: \"keyword\" });",
+      "await client.upsert(\"docs\", {",
+      "  wait: true,",
+      "  points: [{ id: \"doc-1\", vector: [0.1, 0.2, 0.3], payload: { tenant: \"acme\", source: \"manual\", metadata: { filename: \"manual.md\" }, sparse_vectors: { bm25: [1, 3] } } }]",
+      "});",
+      "await client.search(\"docs\", {",
+      "  vector: [0.1, 0.2, 0.3],",
+      "  filter: { must: [{ key: \"tenant\", match: { value: \"acme\" } }] },",
+      "  limit: 5,",
+      "  with_payload: true,",
+      "  score_threshold: 0.8,",
+      "  consistency: \"quorum\"",
+      "});",
+      "await client.delete(\"docs\", { points: [\"doc-old\"] });",
+      "await client.createSnapshot(\"docs\");",
+      "export const searchNotes = \"vector similarity nearest neighbor ann score sparse vector BM25 multimodal CLIP image chunks RecursiveCharacterTextSplitter\";"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "vector", "weaviate.py"), [
+      "import weaviate",
+      "from weaviate.classes.config import Configure, DataType, Property",
+      "",
+      "client = weaviate.connect_to_local(headers={\"X-OpenAI-Api-Key\": \"env\"})",
+      "articles = client.collections.create(",
+      "    name=\"Article\",",
+      "    vector_config=Configure.Vectors.text2vec_openai(model=\"text-embedding-3-small\"),",
+      "    properties=[Property(name=\"title\", data_type=DataType.TEXT), Property(name=\"tenant\", data_type=DataType.TEXT)],",
+      "    multi_tenancy_config=Configure.multi_tenancy(enabled=True),",
+      "    replication_config=Configure.replication(factor=3)",
+      ")",
+      "batch_size = 100",
+      "articles.data.insert(properties={\"title\": \"Vector DB\", \"tenant\": \"acme\", \"documents\": \"chunks\"}, vector=[0.1, 0.2, 0.3])",
+      "results = articles.query.hybrid(query=\"policy\", where={\"path\": [\"tenant\"], \"operator\": \"Equal\", \"valueText\": \"acme\"}, limit=5)",
+      "generated = articles.generate.near_text(query=\"database\", grouped_task=\"summarize with RAG\")",
+      "rerank = \"rerank by cross-encoder after hybrid BM25 sparse vector search\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "vector", "chroma.py"), [
+      "import chromadb",
+      "from chromadb.utils import embedding_functions",
+      "",
+      "client = chromadb.PersistentClient(path=\"./chroma\")",
+      "http_client = chromadb.HttpClient(host=\"localhost\", port=8000)",
+      "embedding_function = embedding_functions.OpenAIEmbeddingFunction(model_name=\"text-embedding-3-small\", api_key=\"env\")",
+      "collection = client.get_or_create_collection(name=\"docs\", metadata={\"hnsw:space\": \"cosine\"}, embedding_function=embedding_function)",
+      "collection.add(ids=[\"1\"], documents=[\"policy chunk\"], metadatas=[{\"tenant\": \"acme\", \"source\": \"guide\"}])",
+      "collection.upsert(ids=[\"2\"], documents=[\"second chunk\"], metadatas=[{\"tenant\": \"acme\"}], embeddings=[[0.1, 0.2, 0.3]])",
+      "results = collection.query(query_texts=[\"policy\"], n_results=5, where={\"tenant\": \"acme\"}, where_document={\"$contains\": \"keyword\"}, include=[\"documents\", \"metadatas\", \"distances\"])",
+      "collection.delete(ids=[\"stale\"])",
+      "notes = \"full-text keyword sparse vector multimodal audio visual search text splitter chunks\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "vector", "ops.sql"), [
+      "CREATE EXTENSION vector;",
+      "CREATE TABLE documents (id text primary key, embedding vector(1536), metadata jsonb);",
+      "CREATE INDEX documents_embedding_hnsw ON documents USING hnsw (embedding vector_cosine_ops);",
+      "-- vector index migration backup restore health metrics ttl multi-tenancy replication sharding consistency pgvector"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "vector-db.yaml"), [
+      "qdrant:",
+      "  endpoint: ${QDRANT_URL}",
+      "  health: /healthz",
+      "  metrics: prometheus",
+      "  backup: s3://vector-backups",
+      "  restore: true",
+      "  migration: reindex",
+      "  ttl: 30d",
+      "  tenant_key: tenant",
+      "  replication_factor: 3",
+      "  read_consistency: quorum",
+      "  api_key_env: QDRANT_API_KEY"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "vector-db.yml"), [
+      "name: vector-db",
+      "on:",
+      "  pull_request:",
+      "  workflow_dispatch:",
+      "jobs:",
+      "  static-check:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - run: echo \"Qdrant Weaviate Chroma Pinecone Milvus pgvector FAISS vector index backup restore metrics health migration ttl static only\""
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"), "utf8")) as {
+      vectorSetups: Array<{ filePath: string; platform: string; collectionCount: number; embeddingCount: number; upsertCount: number; queryCount: number }>;
+      collectionSignals: Array<{ signal: string; readiness: string }>;
+      clientSignals: Array<{ signal: string; readiness: string }>;
+      ingestionSignals: Array<{ signal: string; readiness: string }>;
+      querySignals: Array<{ signal: string; readiness: string }>;
+      embeddingSignals: Array<{ signal: string; readiness: string }>;
+      indexSignals: Array<{ signal: string; readiness: string }>;
+      opsSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    expect(report.vectorSetups.length).toBeGreaterThan(0);
+    expect(report.vectorSetups.some((item) => item.platform === "qdrant")).toBe(true);
+    expect(report.vectorSetups.some((item) => item.platform === "weaviate")).toBe(true);
+    expect(report.vectorSetups.some((item) => item.platform === "chroma")).toBe(true);
+    const qdrantSetup = report.vectorSetups.find((item) => item.filePath === "src/vector/qdrant.ts");
+    expect(qdrantSetup?.collectionCount).toBeGreaterThan(0);
+    expect(qdrantSetup?.embeddingCount).toBeGreaterThan(0);
+    expect(qdrantSetup?.upsertCount).toBeGreaterThan(0);
+    expect(qdrantSetup?.queryCount).toBeGreaterThan(0);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.collectionSignals, ["collection", "class", "schema", "vector-config", "distance", "dimensions", "hnsw"]);
+    expectReady(report.clientSignals, ["qdrant-client", "weaviate-client", "chromadb-client", "http-client", "persistent-client", "api-key", "endpoint"]);
+    expectReady(report.ingestionSignals, ["add", "upsert", "batch", "ids", "documents", "metadata", "payload", "delete"]);
+    expectReady(report.querySignals, ["search", "query", "nearest-neighbor", "similarity", "hybrid", "full-text", "filter", "limit", "score"]);
+    expectReady(report.embeddingSignals, ["embedding-function", "vectorizer", "model-provider", "precomputed-vector", "sparse-vector", "multimodal", "text-splitter"]);
+    expectReady(report.indexSignals, ["hnsw", "quantization", "payload-index", "vector-index", "distance-metric", "shard", "replication", "consistency"]);
+    expectReady(report.opsSignals, ["snapshot", "backup", "restore", "health", "metrics", "migration", "multi-tenancy", "ttl"]);
+    expectReady(report.packageSignals, ["qdrant-client", "weaviate-client", "chromadb", "pinecone", "pymilvus", "pgvector", "faiss"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "vector-db-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "vector-db-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects backup readiness patterns without running backup tools", async () => {

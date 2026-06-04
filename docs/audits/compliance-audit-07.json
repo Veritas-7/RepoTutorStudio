@@ -1,6 +1,6 @@
 {
   "iteration": 7,
-  "createdAt": "2026-06-04T18:46:00.331Z",
+  "createdAt": "2026-06-04T19:00:41.555Z",
   "checks": [
     {
       "name": "project setup",
@@ -718,6 +718,13 @@
     },
     {
       "name": "LLM observability readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Vector DB readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

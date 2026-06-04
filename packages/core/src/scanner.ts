@@ -104,6 +104,7 @@ import {
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
+  VectorDbReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -232,6 +233,7 @@ export interface AnalysisBundle {
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
+  vectorDbReadinessReport: VectorDbReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -360,6 +362,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const llmReadinessReport = await buildLlmReadinessReport(walk);
   const llmEvalReadinessReport = await buildLlmEvalReadinessReport(walk);
   const llmObservabilityReadinessReport = await buildLlmObservabilityReadinessReport(walk);
+  const vectorDbReadinessReport = await buildVectorDbReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
@@ -379,7 +382,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -21357,6 +21360,289 @@ function llmObservabilitySignalFromSpecs<T extends Record<K, string> & { pattern
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/llm-observability-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildVectorDbReadinessReport(walk: WalkResult): Promise<VectorDbReadinessReport> {
+  const sourceFiles = await vectorDbSourceFiles(walk);
+  const vectorSetups = vectorDbSetups(sourceFiles);
+  const collectionSignals = vectorDbCollectionSignals(sourceFiles);
+  const clientSignals = vectorDbClientSignals(sourceFiles);
+  const ingestionSignals = vectorDbIngestionSignals(sourceFiles);
+  const querySignals = vectorDbQuerySignals(sourceFiles);
+  const embeddingSignals = vectorDbEmbeddingSignals(sourceFiles);
+  const indexSignals = vectorDbIndexSignals(sourceFiles);
+  const opsSignals = vectorDbOpsSignals(sourceFiles);
+  const packageSignals = vectorDbPackageSignals(sourceFiles);
+
+  const hasClient = clientSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasCollection = collectionSignals.some((item) => item.readiness === "ready") || vectorSetups.some((item) => item.collectionCount > 0 || item.vectorConfigCount > 0);
+  const hasIngestion = ingestionSignals.some((item) => item.readiness === "ready") || vectorSetups.some((item) => item.upsertCount > 0);
+  const hasQuery = querySignals.some((item) => item.readiness === "ready") || vectorSetups.some((item) => item.queryCount > 0);
+  const hasEmbedding = embeddingSignals.some((item) => item.readiness === "ready") || vectorSetups.some((item) => item.embeddingCount > 0);
+  const hasIndex = indexSignals.some((item) => item.readiness === "ready") || vectorSetups.some((item) => item.filterCount > 0 || item.replicationCount > 0);
+  const hasOps = opsSignals.some((item) => item.readiness === "ready") || vectorSetups.some((item) => item.snapshotCount > 0 || item.tenantCount > 0);
+
+  const riskQueue: VectorDbReadinessReport["riskQueue"] = [];
+  if (!hasClient) {
+    riskQueue.push({ priority: "high", action: "Add a visible Qdrant, Weaviate, Chroma, Pinecone, Milvus, pgvector, or FAISS client boundary.", why: "Vector DB readiness starts with a concrete datastore/client boundary, not just generic embeddings.", relatedHref: "html/vector-db-readiness.html" });
+  }
+  if (hasClient && !hasCollection) {
+    riskQueue.push({ priority: "high", action: "Record collection/class/schema/vector config, distance, dimensions, or HNSW setup.", why: "Vector search is not reproducible unless the collection shape and vector dimensions are visible.", relatedHref: "html/vector-db-readiness.html" });
+  }
+  if (hasCollection && !hasEmbedding) {
+    riskQueue.push({ priority: "medium", action: "Trace embedding functions, vectorizers, model providers, sparse vectors, multimodal vectors, or precomputed vectors.", why: "The database schema alone does not explain how searchable vectors are produced.", relatedHref: "html/vector-db-readiness.html" });
+  }
+  if (hasCollection && !hasIngestion) {
+    riskQueue.push({ priority: "medium", action: "Add add/upsert/batch/ids/documents/metadata/payload ingestion evidence.", why: "Learners need to see how documents become points, objects, rows, or records in the vector store.", relatedHref: "html/vector-db-readiness.html" });
+  }
+  if (hasIngestion && !hasQuery) {
+    riskQueue.push({ priority: "medium", action: "Add search/query/nearest-neighbor/similarity/filter/limit/score query evidence.", why: "Ingestion without query code does not prove the app can retrieve the vectors it stores.", relatedHref: "html/vector-db-readiness.html" });
+  }
+  if (hasQuery && !hasIndex) {
+    riskQueue.push({ priority: "low", action: "Add index, payload-index, distance, HNSW, quantization, sharding, replication, or consistency evidence.", why: "Production vector retrieval usually needs index and scaling choices beyond happy-path queries.", relatedHref: "html/vector-db-readiness.html" });
+  }
+  if (hasQuery && !hasOps) {
+    riskQueue.push({ priority: "low", action: "Document snapshot, backup, restore, health, metrics, migration, multi-tenancy, or TTL operations.", why: "Vector data can become production state; operations evidence helps avoid losing or misrouting indexes and embeddings.", relatedHref: "html/vector-db-readiness.html" });
+  }
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Vector DB readiness report: setup ${vectorSetups.length}개, collection signal ${collectionSignals.length}개, ingestion signal ${ingestionSignals.length}개, query signal ${querySignals.length}개, ops signal ${opsSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Vector DB readiness Qdrant Weaviate Chroma collections classes schema vector config embeddings vectorizer distance dimensions HNSW payload metadata filters hybrid search BM25 sparse vectors upsert add query search nearest neighbors score limit snapshots backup restore sharding replication tenancy ttl clients endpoints API keys persistence",
+    vectorSetups,
+    collectionSignals,
+    clientSignals,
+    ingestionSignals,
+    querySignals,
+    embeddingSignals,
+    indexSignals,
+    opsSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"QdrantClient|qdrant-client|WeaviateClient|weaviate|chromadb|PersistentClient|HttpClient\" .", purpose: "Find vector database clients and connection boundaries." },
+      { command: "rg \"createCollection|create_collection|collections\\.create|get_or_create_collection|schema|vector_config|vectors\" .", purpose: "Map collection, class, schema, vector size, distance, and HNSW setup." },
+      { command: "rg \"add\\(|upsert|insert|batch|documents|metadatas|payload|ids\" .", purpose: "Review vector ingestion paths without sending data to the database." },
+      { command: "rg \"search|query|nearText|nearVector|hybrid|where|filter|limit|score|distance\" .", purpose: "Trace retrieval query shape, filtering, limits, and scoring." },
+      { command: "rg \"snapshot|backup|restore|replication|shard|tenant|TTL|health|metrics|migration\" .", purpose: "Check vector database operations and production-readiness controls." }
+    ],
+    learnerNextSteps: [
+      "먼저 Qdrant, Weaviate, Chroma, Pinecone, Milvus, pgvector, FAISS 중 어떤 저장소가 client boundary인지 찾으세요.",
+      "collection/class/schema/vector_config, dimension, distance, HNSW 설정은 검색 결과 재현성의 핵심입니다.",
+      "embedding_function, vectorizer, model provider, sparse vector, precomputed vector 경로를 ingestion 코드와 연결하세요.",
+      "add/upsert/batch/ids/documents/metadatas/payload는 데이터가 vector store에 들어가는 방식을 보여줍니다.",
+      "search/query/nearText/nearVector/hybrid/where/filter/limit/score는 검색 품질과 결과 shape를 설명합니다.",
+      "이 리포트는 정적 readiness입니다. RepoTutor는 vector DB 서버를 시작하거나, client를 실행하거나, embeddings를 생성하거나, 데이터를 upsert/query/delete/backup/restore하지 않습니다."
+    ]
+  };
+}
+
+type VectorDbSourceFile = { filePath: string; text: string; sourceHref: string };
+
+async function vectorDbSourceFiles(walk: WalkResult): Promise<VectorDbSourceFile[]> {
+  const files: VectorDbSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !vectorDbInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!vectorDbPathSignal(file.relPath) && !vectorDbContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 220) break;
+  }
+  return files;
+}
+
+function vectorDbInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return vectorDbPathSignal(filePath)
+    || /(^|\/)(README|docs?|vector|vectors|embedding|embeddings|retrieval|retriever|rag|search|index|indexes|db|database|stores?|collections?|schemas?|workflows?|scripts?|config)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|pyproject\.toml|requirements\.txt|setup\.py|docker-compose\.ya?ml|compose\.ya?ml)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|py|json|jsonl|csv|md|mdx|ya?ml|toml|txt|sql)$/i.test(filePath);
+}
+
+function vectorDbPathSignal(filePath: string): boolean {
+  return /(^|\/)(qdrant|weaviate|chroma|chromadb|pinecone|milvus|pgvector|faiss|vector|vectors|embeddings?|retrieval|rag)(\/|\.|-|_|$)/i.test(filePath)
+    || /\.github\/workflows\/.*(vector|embedding|retrieval|rag|qdrant|weaviate|chroma).*\.(ya?ml)$/i.test(filePath);
+}
+
+function vectorDbContentSignal(text: string): boolean {
+  return /(QdrantClient|qdrant-client|WeaviateClient|weaviate|chromadb|PersistentClient|HttpClient|createCollection|create_collection|collections\.create|get_or_create_collection|vector_config|vectors\s*:|embeddings?|upsert|nearText|nearVector|hybrid|payload|metadatas?|HNSW|hnsw|quantization|snapshot|replication|multi[_-]?tenancy|pgvector|FAISS|Milvus|Pinecone)/i.test(text);
+}
+
+function vectorDbSetups(sourceFiles: VectorDbSourceFile[]): VectorDbReadinessReport["vectorSetups"] {
+  const rows: VectorDbReadinessReport["vectorSetups"] = [];
+  for (const source of sourceFiles) {
+    const collectionCount = countMatches(source.text, /createCollection|create_collection|collections\.create|get_or_create_collection|get_collection|collection_name|class_name|collections\.get|create table|CREATE TABLE/gi);
+    const vectorConfigCount = countMatches(source.text, /vector_config|vectors\s*:|VectorParams|size\s*:|dimension|dimensions|distance|hnsw|Configure\.Vectors|metadata=\{\"hnsw/gi);
+    const embeddingCount = countMatches(source.text, /embedding|embeddings|embedding_function|vectorizer|text2vec|model provider|sentence-transformers|OpenAIEmbeddingFunction|sparse vector/gi);
+    const upsertCount = countMatches(source.text, /upsert|add\(|insert|batch|points|objects|documents\s*=|ids\s*=|metadatas\s*=/gi);
+    const queryCount = countMatches(source.text, /search|query|nearText|nearVector|hybrid|nearest|similarity|n_results|limit|score|distance/gi);
+    const filterCount = countMatches(source.text, /filter|where|payload|metadata|metadatas|must|should|operator|valueText|field_name|payload index/gi);
+    const hybridCount = countMatches(source.text, /hybrid|BM25|sparse vector|sparse_vectors|full-text|keyword|RRF|rerank|reranker/gi);
+    const rerankCount = countMatches(source.text, /rerank|reranker|cross-encoder|mmr|Maximal Marginal Relevance|relevance feedback/gi);
+    const tenantCount = countMatches(source.text, /tenant|tenancy|multi_tenancy|multi-tenancy|tenant_id|tenantId/gi);
+    const replicationCount = countMatches(source.text, /replication|replication_factor|shard|sharding|consistency|read_consistency|write_consistency/gi);
+    const snapshotCount = countMatches(source.text, /snapshot|backup|restore|health|metrics|ttl|time-to-live|migration|persist|PersistentClient/gi);
+    const totalSignals = collectionCount + vectorConfigCount + embeddingCount + upsertCount + queryCount + filterCount + hybridCount + rerankCount + tenantCount + replicationCount + snapshotCount;
+    if (totalSignals === 0 && !vectorDbPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: vectorDbPlatform(source),
+      collectionCount,
+      vectorConfigCount,
+      embeddingCount,
+      upsertCount,
+      queryCount,
+      filterCount,
+      hybridCount,
+      rerankCount,
+      tenantCount,
+      replicationCount,
+      snapshotCount,
+      readiness: collectionCount > 0 && embeddingCount > 0 && upsertCount > 0 && queryCount > 0 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} vector DB signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => (b.collectionCount + b.embeddingCount + b.upsertCount + b.queryCount + b.filterCount + b.snapshotCount) - (a.collectionCount + a.embeddingCount + a.upsertCount + a.queryCount + a.filterCount + a.snapshotCount) || a.filePath.localeCompare(b.filePath)).slice(0, 90);
+}
+
+function vectorDbPlatform(source: VectorDbSourceFile): VectorDbReadinessReport["vectorSetups"][number]["platform"] {
+  if (/qdrant|QdrantClient/i.test(source.filePath) || /qdrant|QdrantClient/i.test(source.text)) return "qdrant";
+  if (/weaviate|Weaviate/i.test(source.filePath) || /weaviate|Weaviate/i.test(source.text)) return "weaviate";
+  if (/chroma|chromadb|PersistentClient|HttpClient/i.test(source.filePath) || /chroma|chromadb|PersistentClient|HttpClient/i.test(source.text)) return "chroma";
+  if (/pinecone/i.test(source.text)) return "pinecone";
+  if (/milvus|pymilvus/i.test(source.text)) return "milvus";
+  if (/pgvector|vector\(/i.test(source.text)) return "pgvector";
+  if (/faiss|FAISS/i.test(source.text)) return "faiss";
+  if (/vector|embedding|retrieval/i.test(source.filePath) || /vector|embedding|retrieval/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function vectorDbCollectionSignals(sourceFiles: VectorDbSourceFile[]): VectorDbReadinessReport["collectionSignals"] {
+  const specs: Array<{ signal: VectorDbReadinessReport["collectionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "collection", pattern: /createCollection|create_collection|get_or_create_collection|collection_name|collections\.create/i, evidence: "collection evidence was detected." },
+    { signal: "class", pattern: /class_name|DataType|Property\(|client\.collections\.create|schema class/i, evidence: "class/object schema evidence was detected." },
+    { signal: "schema", pattern: /schema|properties|Property\(|DataType|payload_schema|CREATE TABLE/i, evidence: "schema evidence was detected." },
+    { signal: "vector-config", pattern: /vector_config|vectors\s*:|VectorParams|Configure\.Vectors|embedding_function/i, evidence: "vector config evidence was detected." },
+    { signal: "distance", pattern: /distance|Distance\.Cosine|Cosine|dot|euclidean|l2|hnsw:space/i, evidence: "distance metric evidence was detected." },
+    { signal: "dimensions", pattern: /dimension|dimensions|size\s*:|vector_size|1536|768|384/i, evidence: "vector dimensions evidence was detected." },
+    { signal: "hnsw", pattern: /HNSW|hnsw|hnsw_config|hnsw:space/i, evidence: "HNSW evidence was detected." }
+  ];
+  return vectorDbSignalFromSpecs(sourceFiles, specs, "collection", "signal");
+}
+
+function vectorDbClientSignals(sourceFiles: VectorDbSourceFile[]): VectorDbReadinessReport["clientSignals"] {
+  const specs: Array<{ signal: VectorDbReadinessReport["clientSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "qdrant-client", pattern: /QdrantClient|qdrant-client|@qdrant\/js-client-rest|qdrant_client/i, evidence: "Qdrant client evidence was detected." },
+    { signal: "weaviate-client", pattern: /weaviate-client|import weaviate|connect_to_local|WeaviateClient/i, evidence: "Weaviate client evidence was detected." },
+    { signal: "chromadb-client", pattern: /chromadb|Chroma|chromadb\.Client|PersistentClient|HttpClient/i, evidence: "Chroma client evidence was detected." },
+    { signal: "http-client", pattern: /HttpClient|url\s*:|baseURL|endpoint|host|port/i, evidence: "HTTP/client endpoint evidence was detected." },
+    { signal: "persistent-client", pattern: /PersistentClient|persist_directory|persist|path\s*=|storage_path/i, evidence: "persistent client evidence was detected." },
+    { signal: "api-key", pattern: /apiKey|api_key|API_KEY|X-OpenAI-Api-Key|QDRANT_API_KEY|WEAVIATE_API_KEY|PINECONE_API_KEY/i, evidence: "API key environment evidence was detected." },
+    { signal: "endpoint", pattern: /QDRANT_URL|WEAVIATE_URL|CHROMA|endpoint|url\s*:|connect_to|host/i, evidence: "endpoint evidence was detected." }
+  ];
+  return vectorDbSignalFromSpecs(sourceFiles, specs, "client", "signal");
+}
+
+function vectorDbIngestionSignals(sourceFiles: VectorDbSourceFile[]): VectorDbReadinessReport["ingestionSignals"] {
+  const specs: Array<{ signal: VectorDbReadinessReport["ingestionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "add", pattern: /\.add\(|collection\.add|add_documents|add_texts/i, evidence: "add ingestion evidence was detected." },
+    { signal: "upsert", pattern: /upsert|upsert_points|client\.upsert/i, evidence: "upsert evidence was detected." },
+    { signal: "batch", pattern: /batch|batches|batch_size|objects\.batch|range\(0/i, evidence: "batch ingestion evidence was detected." },
+    { signal: "ids", pattern: /\bids\b|id\s*:|Point\(id|uuid/i, evidence: "record ID evidence was detected." },
+    { signal: "documents", pattern: /documents|document|page_content|texts|chunks/i, evidence: "document ingestion evidence was detected." },
+    { signal: "metadata", pattern: /metadata|metadatas|properties|source|filename/i, evidence: "metadata evidence was detected." },
+    { signal: "payload", pattern: /payload|SetPayload|payload index|field_name/i, evidence: "payload evidence was detected." },
+    { signal: "delete", pattern: /delete|remove|delete_collection|delete_vectors|delete_payload/i, evidence: "delete evidence was detected." }
+  ];
+  return vectorDbSignalFromSpecs(sourceFiles, specs, "ingestion", "signal");
+}
+
+function vectorDbQuerySignals(sourceFiles: VectorDbSourceFile[]): VectorDbReadinessReport["querySignals"] {
+  const specs: Array<{ signal: VectorDbReadinessReport["querySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "search", pattern: /\.search\(|search\(|client\.search|semantic search/i, evidence: "search evidence was detected." },
+    { signal: "query", pattern: /\.query\(|query_texts|query\(|collections\.query/i, evidence: "query evidence was detected." },
+    { signal: "nearest-neighbor", pattern: /nearest|neighbor|knn|ann|vector similarity/i, evidence: "nearest-neighbor evidence was detected." },
+    { signal: "similarity", pattern: /similarity|cosine|distance|score|distances/i, evidence: "similarity scoring evidence was detected." },
+    { signal: "hybrid", pattern: /hybrid|BM25|sparse vector|RRF|keyword/i, evidence: "hybrid search evidence was detected." },
+    { signal: "full-text", pattern: /full-text|full text|where_document|\$contains|keyword/i, evidence: "full-text evidence was detected." },
+    { signal: "filter", pattern: /filter|where|must|should|operator|Equal|valueText/i, evidence: "filter evidence was detected." },
+    { signal: "limit", pattern: /limit|n_results|top_k|topK|k\s*=/i, evidence: "limit/top-k evidence was detected." },
+    { signal: "score", pattern: /score|distance|distances|certainty|similarity/i, evidence: "score/distance evidence was detected." }
+  ];
+  return vectorDbSignalFromSpecs(sourceFiles, specs, "query", "signal");
+}
+
+function vectorDbEmbeddingSignals(sourceFiles: VectorDbSourceFile[]): VectorDbReadinessReport["embeddingSignals"] {
+  const specs: Array<{ signal: VectorDbReadinessReport["embeddingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "embedding-function", pattern: /embedding_function|EmbeddingFunction|OpenAIEmbeddingFunction|embedding_functions/i, evidence: "embedding function evidence was detected." },
+    { signal: "vectorizer", pattern: /vectorizer|text2vec|Configure\.Vectors|model2vec/i, evidence: "vectorizer evidence was detected." },
+    { signal: "model-provider", pattern: /OpenAI|Cohere|HuggingFace|sentence-transformers|text-embedding|model_name|model provider/i, evidence: "embedding model provider evidence was detected." },
+    { signal: "precomputed-vector", pattern: /embeddings\s*=|vector\s*:|vectors\s*:|precomputed|own embeddings/i, evidence: "precomputed vector evidence was detected." },
+    { signal: "sparse-vector", pattern: /sparse vector|sparse_vectors|BM25|SPLADE|sparse/i, evidence: "sparse vector evidence was detected." },
+    { signal: "multimodal", pattern: /image|multimodal|CLIP|audio|visual search/i, evidence: "multimodal vector evidence was detected." },
+    { signal: "text-splitter", pattern: /TextSplitter|split_documents|chunk|chunks|RecursiveCharacterTextSplitter/i, evidence: "text splitting/chunking evidence was detected." }
+  ];
+  return vectorDbSignalFromSpecs(sourceFiles, specs, "embedding", "signal");
+}
+
+function vectorDbIndexSignals(sourceFiles: VectorDbSourceFile[]): VectorDbReadinessReport["indexSignals"] {
+  const specs: Array<{ signal: VectorDbReadinessReport["indexSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "hnsw", pattern: /HNSW|hnsw|hnsw_config|hnsw:space/i, evidence: "HNSW evidence was detected." },
+    { signal: "quantization", pattern: /quantization|scalar quantization|product quantization|int8/i, evidence: "quantization evidence was detected." },
+    { signal: "payload-index", pattern: /payload index|createPayloadIndex|field_schema|index property|filterable/i, evidence: "payload index evidence was detected." },
+    { signal: "vector-index", pattern: /vector_index|vector index|indexing|index config/i, evidence: "vector index evidence was detected." },
+    { signal: "distance-metric", pattern: /distance|Cosine|Dot|Euclid|L2|hnsw:space/i, evidence: "distance metric evidence was detected." },
+    { signal: "shard", pattern: /shard|sharding|shard_number|shard_name/i, evidence: "sharding evidence was detected." },
+    { signal: "replication", pattern: /replication|replication_factor|replicas|factor\s*:\s*3/i, evidence: "replication evidence was detected." },
+    { signal: "consistency", pattern: /consistency|read_consistency|write_consistency|quorum/i, evidence: "consistency evidence was detected." }
+  ];
+  return vectorDbSignalFromSpecs(sourceFiles, specs, "index", "signal");
+}
+
+function vectorDbOpsSignals(sourceFiles: VectorDbSourceFile[]): VectorDbReadinessReport["opsSignals"] {
+  const specs: Array<{ signal: VectorDbReadinessReport["opsSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "snapshot", pattern: /snapshot|createSnapshot|snapshot recovery/i, evidence: "snapshot evidence was detected." },
+    { signal: "backup", pattern: /backup|backup store|backup_restore/i, evidence: "backup evidence was detected." },
+    { signal: "restore", pattern: /restore|recover|recovery/i, evidence: "restore evidence was detected." },
+    { signal: "health", pattern: /health|healthz|readyz|liveness/i, evidence: "health check evidence was detected." },
+    { signal: "metrics", pattern: /metrics|Prometheus|duration|latency|query_dimensions/i, evidence: "metrics evidence was detected." },
+    { signal: "migration", pattern: /migration|migrate|reindex|schema migration/i, evidence: "migration evidence was detected." },
+    { signal: "multi-tenancy", pattern: /multi-tenancy|multi_tenancy|tenant|tenants/i, evidence: "multi-tenancy evidence was detected." },
+    { signal: "ttl", pattern: /\bTTL\b|ttl|time-to-live|expire|retention/i, evidence: "TTL/retention evidence was detected." }
+  ];
+  return vectorDbSignalFromSpecs(sourceFiles, specs, "ops", "signal");
+}
+
+function vectorDbPackageSignals(sourceFiles: VectorDbSourceFile[]): VectorDbReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: VectorDbReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "qdrant-client", pattern: /@qdrant\/js-client-rest|qdrant-client|qdrant_client/i, evidence: "Qdrant client package evidence was detected." },
+    { signal: "weaviate-client", pattern: /weaviate-client|import weaviate/i, evidence: "Weaviate client package evidence was detected." },
+    { signal: "chromadb", pattern: /"chromadb"|chromadb|Chroma/i, evidence: "Chroma package evidence was detected." },
+    { signal: "pinecone", pattern: /pinecone|@pinecone-database\/pinecone/i, evidence: "Pinecone package evidence was detected." },
+    { signal: "pymilvus", pattern: /pymilvus|MilvusClient|milvus/i, evidence: "Milvus package evidence was detected." },
+    { signal: "pgvector", pattern: /pgvector|vector\(|CREATE EXTENSION vector/i, evidence: "pgvector package/config evidence was detected." },
+    { signal: "faiss", pattern: /faiss|FAISS/i, evidence: "FAISS package evidence was detected." }
+  ];
+  return vectorDbSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function vectorDbSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: VectorDbSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/vector-db-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

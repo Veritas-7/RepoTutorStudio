@@ -6290,6 +6290,59 @@ Local verification:
 - `pnpm audit:brief`: PASS, 107/107 audit checks across 13 generated reports
 - Pushed implementation commit: `9d66764` llm-observability readiness report
 
+### Upgrade 210: Vector DB Readiness Report
+
+- Cloned and inspected `qdrant/qdrant` under
+  `research/external-src/qdrant`, `weaviate/weaviate` under
+  `research/external-src/weaviate`, and `chroma-core/chroma` under
+  `research/external-src/chroma` without executing external source. Clone HEADs
+  were `44ad62f`, `8269596`, and `43171c5`; all three clones remain ignored by
+  RepoTutor.
+- GitHub metadata: `qdrant/qdrant` is public, Apache-2.0 licensed, 31,799
+  stars, 2,320 forks, updated 2026-06-04T18:40:11Z. `weaviate/weaviate` is
+  public, BSD-3-Clause licensed, 16,272 stars, 1,305 forks, updated
+  2026-06-04T10:10:46Z. `chroma-core/chroma` is public, Apache-2.0 licensed,
+  28,213 stars, 2,286 forks, updated 2026-06-04T18:42:14Z. Selected the
+  three-source slice because together they model collection/class/schema
+  setup, vector config, embedding/vectorizer boundaries, add/upsert/query
+  flows, filters, hybrid search, HNSW/index controls, persistence, snapshots,
+  backups, replication, tenancy, TTL, and metrics. No source code was copied
+  into RepoTutor.
+- Implemented Qdrant/Weaviate/Chroma-style vector-db-readiness report:
+  `VectorDbReadinessReportSchema`,
+  `analysis/vector-db-readiness-report.json`,
+  `markdown/vector-db-readiness.md`, `html/vector-db-readiness.html`, vector
+  setup detection, collection signals, client signals, ingestion signals,
+  query signals, embedding signals, index signals, ops signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, nav entry, and
+  `open --target vector-db-readiness`.
+- Source pattern: vector DB readiness separates Qdrant, Weaviate, Chroma,
+  collections/classes/schema, vector config, embeddings/vectorizers, distance
+  and dimensions, HNSW, payload/metadata filters, hybrid search, BM25/sparse
+  vectors, add/upsert/query/search/nearest-neighbor/score/limit flows,
+  snapshots, backups, restore, sharding, replication, tenancy, TTL, clients,
+  endpoints, API keys, and persistence. RepoTutor maps that to deterministic
+  static vector DB readiness and explicitly does not start vector DB servers,
+  run clients, generate embeddings, upsert/query/delete/backup/restore data, or
+  inspect live dashboards.
+- RED smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-vector-db-red-studies.MwvcMl/2026-06-05/local__repotutor-vector-db-red-repo.MhcsBh__local__31f779a6`;
+  old behavior had `verificationCheckedRequiredArtifacts=327`, was missing
+  `analysis/vector-db-readiness-report.json`,
+  `markdown/vector-db-readiness.md`, and `html/vector-db-readiness.html`, and
+  `open --target vector-db-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-vector-db-green-studies.ESYoQx/2026-06-05/local__repotutor-vector-db-green-repo.JgYSDu__local__51e9f978`;
+  confirmed `verificationCheckedRequiredArtifacts=330`, vector setups 8,
+  collection signals 7, query signals 9, embedding signals 7, index signals 8,
+  ops signals 8, package signals 7, risk queue 0, all three new artifacts, and
+  `open --target vector-db-readiness` -> `html/vector-db-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 17/17 tests
+- `pnpm audit:brief`: PASS, 108/108 audit checks across 13 generated reports
+- Implementation commit: pending
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

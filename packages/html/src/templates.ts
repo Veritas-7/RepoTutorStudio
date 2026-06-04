@@ -99,6 +99,7 @@ import type {
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
+  VectorDbReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -222,6 +223,7 @@ export interface StudyHtmlInput {
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
+  vectorDbReadinessReport: VectorDbReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -359,6 +361,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
+    ["vector-db-readiness.html", "Vector DB"],
     ["server-framework-readiness.html", "Server Framework"],
     ["rpc-readiness.html", "RPC"],
     ["workspace-graph-readiness.html", "Workspace Graph"],
@@ -509,6 +512,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Dependency Health</h3><p>${escapeHtml(input.dependencyHealthReport.summary)}</p><p>dependency-cruiser 패턴으로 no-circular, no-orphans, fan-in/fan-out을 확인합니다.</p><a href="dependency-health.html">Dependency Health 열기</a></article>
           <article><h3>LLM Eval Readiness</h3><p>${escapeHtml(input.llmEvalReadinessReport.summary)}</p><p>promptfoo/OpenAI eval/OpenEvals 패턴으로 prompt, provider, dataset, judge, red-team 준비도를 정리합니다.</p><a href="llm-eval-readiness.html">LLM Eval 열기</a></article>
           <article><h3>LLM Observability Readiness</h3><p>${escapeHtml(input.llmObservabilityReadinessReport.summary)}</p><p>Langfuse/Phoenix/Helicone 패턴으로 trace, session, token/cost, feedback, gateway 준비도를 정리합니다.</p><a href="llm-observability-readiness.html">LLM Observability 열기</a></article>
+          <article><h3>Vector DB Readiness</h3><p>${escapeHtml(input.vectorDbReadinessReport.summary)}</p><p>Qdrant/Weaviate/Chroma 패턴으로 collection, embedding, ingestion, query, index, ops 준비도를 정리합니다.</p><a href="vector-db-readiness.html">Vector DB 열기</a></article>
           <article><h3>Server Framework Readiness</h3><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p>Fastify 패턴으로 routes, schemas, plugins, hooks, decorators, errors, runtime, tests 준비도를 정리합니다.</p><a href="server-framework-readiness.html">Server Framework 열기</a></article>
           <article><h3>RPC Readiness</h3><p>${escapeHtml(input.rpcReadinessReport.summary)}</p><p>tRPC 패턴으로 routers, procedures, validation, context, clients, adapters, errors 준비도를 정리합니다.</p><a href="rpc-readiness.html">RPC 열기</a></article>
           <article><h3>Workspace Graph Readiness</h3><p>${escapeHtml(input.workspaceGraphReadinessReport.summary)}</p><p>Nx 패턴으로 project graph, targets, affected, boundaries, plugins 준비도를 정리합니다.</p><a href="workspace-graph-readiness.html">Workspace Graph 열기</a></article>
@@ -976,6 +980,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("LLM Observability Readiness", "llm-observability-readiness.html", `<section class="panel" data-source-pattern="LLM Observability"><h2>LLM Observability Snapshot</h2><p>${escapeHtml(input.llmObservabilityReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmObservabilityReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmObservabilityReadinessReport.observabilitySetups.length}</dd></div><div><dt>traces</dt><dd>${input.llmObservabilityReadinessReport.traceSignals.length}</dd></div><div><dt>identity</dt><dd>${input.llmObservabilityReadinessReport.identitySignals.length}</dd></div><div><dt>metrics</dt><dd>${input.llmObservabilityReadinessReport.llmMetricSignals.length}</dd></div><div><dt>feedback</dt><dd>${input.llmObservabilityReadinessReport.feedbackSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM observability readiness only; it does not call providers, send traces, export spans, contact Langfuse/Phoenix/Helicone/OpenTelemetry collectors, upload prompts/datasets/scores, replay sessions, route gateway requests, or inspect live dashboards.</p></section><section class="grid"><article class="llm-observability-readiness-card"><h3>Observability Setups</h3>${llmObservabilityReadinessSetupList(input.llmObservabilityReadinessReport.observabilitySetups)}</article><article class="llm-observability-readiness-card"><h3>Trace Signals</h3>${llmObservabilityReadinessSignalList(input.llmObservabilityReadinessReport.traceSignals, "signal")}</article><article class="llm-observability-readiness-card"><h3>Instrumentation Signals</h3>${llmObservabilityReadinessSignalList(input.llmObservabilityReadinessReport.instrumentationSignals, "signal")}</article><article class="llm-observability-readiness-card"><h3>Identity Signals</h3>${llmObservabilityReadinessSignalList(input.llmObservabilityReadinessReport.identitySignals, "signal")}</article></section><section class="grid"><article class="llm-observability-readiness-card"><h3>LLM Metric Signals</h3>${llmObservabilityReadinessSignalList(input.llmObservabilityReadinessReport.llmMetricSignals, "signal")}</article><article class="llm-observability-readiness-card"><h3>Feedback Signals</h3>${llmObservabilityReadinessSignalList(input.llmObservabilityReadinessReport.feedbackSignals, "signal")}</article><article class="llm-observability-readiness-card"><h3>Dataset and Experiment Signals</h3>${llmObservabilityReadinessSignalList(input.llmObservabilityReadinessReport.datasetExperimentSignals, "signal")}</article><article class="llm-observability-readiness-card"><h3>Gateway Signals</h3>${llmObservabilityReadinessSignalList(input.llmObservabilityReadinessReport.gatewaySignals, "signal")}</article><article class="llm-observability-readiness-card"><h3>Privacy Signals</h3>${llmObservabilityReadinessSignalList(input.llmObservabilityReadinessReport.privacySignals, "signal")}</article><article class="llm-observability-readiness-card"><h3>Workflow Signals</h3>${llmObservabilityReadinessSignalList(input.llmObservabilityReadinessReport.workflowSignals, "signal")}</article><article class="llm-observability-readiness-card"><h3>Package Signals</h3>${llmObservabilityReadinessSignalList(input.llmObservabilityReadinessReport.packageSignals, "signal")}</article><article class="llm-observability-readiness-card"><h3>Recommended Commands</h3>${llmObservabilityReadinessCommandList(input.llmObservabilityReadinessReport.recommendedCommands)}</article><article class="llm-observability-readiness-card"><h3>Risk Queue</h3>${llmObservabilityReadinessRiskList(input.llmObservabilityReadinessReport.riskQueue)}</article><article class="llm-observability-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmObservabilityReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "vector-db-readiness.html",
+      title: "Vector DB Readiness",
+      html: pageShell("Vector DB Readiness", "vector-db-readiness.html", `<section class="panel" data-source-pattern="Vector DB"><h2>Vector DB Snapshot</h2><p>${escapeHtml(input.vectorDbReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.vectorDbReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.vectorDbReadinessReport.vectorSetups.length}</dd></div><div><dt>collections</dt><dd>${input.vectorDbReadinessReport.collectionSignals.length}</dd></div><div><dt>queries</dt><dd>${input.vectorDbReadinessReport.querySignals.length}</dd></div><div><dt>indexes</dt><dd>${input.vectorDbReadinessReport.indexSignals.length}</dd></div><div><dt>ops</dt><dd>${input.vectorDbReadinessReport.opsSignals.length}</dd></div></dl><p class="muted">RepoTutor records vector DB readiness only; it does not start vector DB servers, run clients, generate embeddings, upsert/query/delete/backup/restore data, or inspect live dashboards.</p></section><section class="grid"><article class="vector-db-readiness-card"><h3>Vector Setups</h3>${vectorDbReadinessSetupList(input.vectorDbReadinessReport.vectorSetups)}</article><article class="vector-db-readiness-card"><h3>Collection Signals</h3>${vectorDbReadinessSignalList(input.vectorDbReadinessReport.collectionSignals, "signal")}</article><article class="vector-db-readiness-card"><h3>Client Signals</h3>${vectorDbReadinessSignalList(input.vectorDbReadinessReport.clientSignals, "signal")}</article><article class="vector-db-readiness-card"><h3>Ingestion Signals</h3>${vectorDbReadinessSignalList(input.vectorDbReadinessReport.ingestionSignals, "signal")}</article></section><section class="grid"><article class="vector-db-readiness-card"><h3>Query Signals</h3>${vectorDbReadinessSignalList(input.vectorDbReadinessReport.querySignals, "signal")}</article><article class="vector-db-readiness-card"><h3>Embedding Signals</h3>${vectorDbReadinessSignalList(input.vectorDbReadinessReport.embeddingSignals, "signal")}</article><article class="vector-db-readiness-card"><h3>Index Signals</h3>${vectorDbReadinessSignalList(input.vectorDbReadinessReport.indexSignals, "signal")}</article><article class="vector-db-readiness-card"><h3>Ops Signals</h3>${vectorDbReadinessSignalList(input.vectorDbReadinessReport.opsSignals, "signal")}</article><article class="vector-db-readiness-card"><h3>Package Signals</h3>${vectorDbReadinessSignalList(input.vectorDbReadinessReport.packageSignals, "signal")}</article><article class="vector-db-readiness-card"><h3>Recommended Commands</h3>${vectorDbReadinessCommandList(input.vectorDbReadinessReport.recommendedCommands)}</article><article class="vector-db-readiness-card"><h3>Risk Queue</h3>${vectorDbReadinessRiskList(input.vectorDbReadinessReport.riskQueue)}</article><article class="vector-db-readiness-card"><h3>다음 확인 단계</h3>${list(input.vectorDbReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "server-framework-readiness.html",
       title: "Server Framework Readiness",
       html: pageShell("Server Framework Readiness", "server-framework-readiness.html", `<section class="panel" data-source-pattern="Fastify"><h2>Server Framework Snapshot</h2><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.serverFrameworkReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.serverFrameworkReadinessReport.serverSetups.length}</dd></div><div><dt>routes</dt><dd>${input.serverFrameworkReadinessReport.routeSignals.length}</dd></div><div><dt>schemas</dt><dd>${input.serverFrameworkReadinessReport.schemaSignals.length}</dd></div><div><dt>plugins</dt><dd>${input.serverFrameworkReadinessReport.pluginSignals.length}</dd></div></dl><p class="muted">RepoTutor records server framework readiness only; it does not start listeners, execute handlers, send HTTP requests, run plugins, compile schemas, or mutate runtime state.</p></section><section class="grid"><article class="server-framework-readiness-card"><h3>Server Setups</h3>${serverFrameworkReadinessSetupList(input.serverFrameworkReadinessReport.serverSetups)}</article><article class="server-framework-readiness-card"><h3>Route Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.routeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Schema Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.schemaSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Plugin Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.pluginSignals, "signal")}</article></section><section class="grid"><article class="server-framework-readiness-card"><h3>Lifecycle Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.lifecycleSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Runtime Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.runtimeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Error Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.errorSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Test Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.testSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Package Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.packageSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Recommended Commands</h3>${serverFrameworkReadinessCommandList(input.serverFrameworkReadinessReport.recommendedCommands)}</article><article class="server-framework-readiness-card"><h3>Risk Queue</h3>${serverFrameworkReadinessRiskList(input.serverFrameworkReadinessReport.riskQueue)}</article><article class="server-framework-readiness-card"><h3>다음 확인 단계</h3>${list(input.serverFrameworkReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1265,6 +1274,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "LLM Readiness", path: "html/llm-readiness.html", description: "LangChain.js식 model, prompt, tool, RAG, structured output, streaming 준비도를 확인합니다." },
       { label: "LLM Eval Readiness", path: "html/llm-eval-readiness.html", description: "promptfoo/OpenAI eval/OpenEvals식 prompt, provider, dataset, judge, red-team 준비도를 확인합니다." },
       { label: "LLM Observability Readiness", path: "html/llm-observability-readiness.html", description: "Langfuse/Phoenix/Helicone식 trace, session, token/cost, feedback, gateway 준비도를 확인합니다." },
+      { label: "Vector DB Readiness", path: "html/vector-db-readiness.html", description: "Qdrant/Weaviate/Chroma식 collection, embedding, ingestion, query, index, ops 준비도를 확인합니다." },
       { label: "Server Framework Readiness", path: "html/server-framework-readiness.html", description: "Fastify식 route, schema, plugin, hook, runtime, test 준비도를 확인합니다." },
       { label: "RPC Readiness", path: "html/rpc-readiness.html", description: "tRPC식 router, procedure, validation, context, client, adapter 준비도를 확인합니다." },
       { label: "Workspace Graph Readiness", path: "html/workspace-graph-readiness.html", description: "Nx식 project graph, target, affected, boundary, plugin 준비도를 확인합니다." },
@@ -1892,6 +1902,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "llm-observability-readiness.html",
       goal: "Langfuse/Phoenix/Helicone식 trace, session, token/cost, feedback, gateway 흐름을 보고 LLM observability contract를 확인합니다.",
       evidence: `LLM observability setups ${input.llmObservabilityReadinessReport.observabilitySetups.length}개, trace signals ${input.llmObservabilityReadinessReport.traceSignals.length}개`
+    },
+    {
+      title: "Vector DB readiness 확인",
+      href: "vector-db-readiness.html",
+      goal: "Qdrant/Weaviate/Chroma식 collection, embedding, ingestion, query, index, ops 흐름을 보고 vector database contract를 확인합니다.",
+      evidence: `vector DB setups ${input.vectorDbReadinessReport.vectorSetups.length}개, query signals ${input.vectorDbReadinessReport.querySignals.length}개`
     },
     {
       title: "Server framework readiness 확인",
@@ -4317,6 +4333,31 @@ function llmObservabilityReadinessRiskList(items: LlmObservabilityReadinessRepor
 }
 
 function llmObservabilityReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function vectorDbReadinessSetupList(items: VectorDbReadinessReport["vectorSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">vector DB setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)}/${escapeHtml(item.readiness)}]<br>collection/vector-config/embedding/upsert/query/filter/hybrid/rerank/tenant/replication/snapshot ${item.collectionCount}/${item.vectorConfigCount}/${item.embeddingCount}/${item.upsertCount}/${item.queryCount}/${item.filterCount}/${item.hybridCount}/${item.rerankCount}/${item.tenantCount}/${item.replicationCount}/${item.snapshotCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(vectorDbReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function vectorDbReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">vector DB signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(vectorDbReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function vectorDbReadinessCommandList(items: VectorDbReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function vectorDbReadinessRiskList(items: VectorDbReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(vectorDbReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function vectorDbReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
