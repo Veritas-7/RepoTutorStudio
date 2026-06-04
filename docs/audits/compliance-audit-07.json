@@ -1,6 +1,6 @@
 {
   "iteration": 7,
-  "createdAt": "2026-06-04T22:12:51.506Z",
+  "createdAt": "2026-06-04T22:27:33.549Z",
   "checks": [
     {
       "name": "project setup",
@@ -95,6 +95,13 @@
     },
     {
       "name": "project activity risk report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "code ownership readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

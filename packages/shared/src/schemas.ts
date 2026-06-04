@@ -673,6 +673,68 @@ export const ProjectActivityReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CodeOwnershipReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  codeownerFiles: z.array(z.object({
+    filePath: z.string(),
+    location: z.enum(["root", "github", "docs", "gitlab", "unknown"]),
+    ruleCount: z.number().int().nonnegative(),
+    ownerCount: z.number().int().nonnegative(),
+    teamOwnerCount: z.number().int().nonnegative(),
+    userOwnerCount: z.number().int().nonnegative(),
+    emailOwnerCount: z.number().int().nonnegative(),
+    wildcardCount: z.number().int().nonnegative(),
+    protectedPathCount: z.number().int().nonnegative(),
+    duplicatePatternCount: z.number().int().nonnegative(),
+    selfOwnershipCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  ownershipSignals: z.array(z.object({
+    signal: z.enum(["codeowners-file", "standard-location", "pattern-rules", "last-match-wins", "team-owner", "user-owner", "email-owner", "self-owned-codeowners", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  validationSignals: z.array(z.object({
+    signal: z.enum(["syntax-check", "owner-check", "file-exists-check", "duplicate-pattern-check", "not-owned-check", "github-action", "api-errors", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reviewSignals: z.array(z.object({
+    signal: z.enum(["auto-review-request", "required-code-owner-review", "branch-protection", "rulesets", "dismiss-stale-review", "required-approving-review", "fork-base-branch", "draft-pr", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  coverageSignals: z.array(z.object({
+    signal: z.enum(["root-default", "docs", "src", "tests", "github-directory", "packages", "unowned-allowed", "case-sensitive-paths", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["hmarr/codeowners", "codeowners-validator", "github-codeowners-api", "custom", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LicenseRightsReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7414,6 +7476,7 @@ export type DependencyHealthReport = z.infer<typeof DependencyHealthReportSchema
 export type SearchIndexReport = z.infer<typeof SearchIndexReportSchema>;
 export type LearningJournalReport = z.infer<typeof LearningJournalReportSchema>;
 export type ProjectActivityReport = z.infer<typeof ProjectActivityReportSchema>;
+export type CodeOwnershipReadinessReport = z.infer<typeof CodeOwnershipReadinessReportSchema>;
 export type LicenseRightsReport = z.infer<typeof LicenseRightsReportSchema>;
 export type SbomReport = z.infer<typeof SbomReportSchema>;
 export type SecurityReadinessReport = z.infer<typeof SecurityReadinessReportSchema>;
