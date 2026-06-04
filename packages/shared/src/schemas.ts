@@ -4493,6 +4493,72 @@ export const EnvValidationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SecurityHeadersReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  headerSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["helmet", "express", "next-headers", "nginx", "cloudflare", "custom", "unknown"]),
+    cspCount: z.number().int().nonnegative(),
+    hstsCount: z.number().int().nonnegative(),
+    crossOriginCount: z.number().int().nonnegative(),
+    frameCount: z.number().int().nonnegative(),
+    referrerCount: z.number().int().nonnegative(),
+    hardeningCount: z.number().int().nonnegative(),
+    disableCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  cspSignals: z.array(z.object({
+    signal: z.enum(["content-security-policy", "default-src", "script-src", "style-src", "frame-ancestors", "object-src", "nonce", "report-only", "upgrade-insecure-requests", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  transportSignals: z.array(z.object({
+    signal: z.enum(["strict-transport-security", "max-age", "include-subdomains", "preload", "https-redirect", "development-exception", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  crossOriginSignals: z.array(z.object({
+    signal: z.enum(["cross-origin-embedder-policy", "cross-origin-opener-policy", "cross-origin-resource-policy", "origin-agent-cluster", "cors-boundary", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  legacyHeaderSignals: z.array(z.object({
+    signal: z.enum(["x-frame-options", "x-content-type-options", "referrer-policy", "x-dns-prefetch-control", "x-download-options", "x-permitted-cross-domain-policies", "x-powered-by", "x-xss-protection", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  middlewareSignals: z.array(z.object({
+    signal: z.enum(["helmet", "app-use", "disable-header", "standalone-middleware", "next-headers", "reverse-proxy-headers", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["helmet", "express", "fastify-helmet", "koa-helmet", "next", "csp-evaluator", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4780,6 +4846,7 @@ export type SeoMetadataReadinessReport = z.infer<typeof SeoMetadataReadinessRepo
 export type PwaReadinessReport = z.infer<typeof PwaReadinessReportSchema>;
 export type BrowserCompatibilityReadinessReport = z.infer<typeof BrowserCompatibilityReadinessReportSchema>;
 export type EnvValidationReadinessReport = z.infer<typeof EnvValidationReadinessReportSchema>;
+export type SecurityHeadersReadinessReport = z.infer<typeof SecurityHeadersReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

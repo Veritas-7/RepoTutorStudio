@@ -93,6 +93,7 @@ import type {
   PwaReadinessReport,
   BrowserCompatibilityReadinessReport,
   EnvValidationReadinessReport,
+  SecurityHeadersReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -192,6 +193,7 @@ export interface StudyHtmlInput {
   pwaReadinessReport: PwaReadinessReport;
   browserCompatibilityReadinessReport: BrowserCompatibilityReadinessReport;
   envValidationReadinessReport: EnvValidationReadinessReport;
+  securityHeadersReadinessReport: SecurityHeadersReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -305,6 +307,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["pwa-readiness.html", "PWA"],
     ["browser-compat-readiness.html", "Browser Compat"],
     ["env-validation-readiness.html", "Env Validation"],
+    ["security-headers-readiness.html", "Security Headers"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -862,6 +865,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Env Validation Readiness", "env-validation-readiness.html", `<section class="panel" data-source-pattern="t3-env"><h2>Env Validation Snapshot</h2><p>${escapeHtml(input.envValidationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.envValidationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.envValidationReadinessReport.envSetups.length}</dd></div><div><dt>schema</dt><dd>${input.envValidationReadinessReport.schemaSignals.length}</dd></div><div><dt>runtime</dt><dd>${input.envValidationReadinessReport.runtimeSignals.length}</dd></div><div><dt>boundary</dt><dd>${input.envValidationReadinessReport.boundarySignals.length}</dd></div></dl><p class="muted">RepoTutor records env validation readiness only; it does not load .env files, execute validators, evaluate transforms, contact secret stores, or run the analyzed project's tests.</p></section><section class="grid"><article class="env-validation-readiness-card"><h3>Env Setups</h3>${envValidationReadinessSetupList(input.envValidationReadinessReport.envSetups)}</article><article class="env-validation-readiness-card"><h3>Schema Signals</h3>${envValidationReadinessSignalList(input.envValidationReadinessReport.schemaSignals, "signal")}</article><article class="env-validation-readiness-card"><h3>Runtime Signals</h3>${envValidationReadinessSignalList(input.envValidationReadinessReport.runtimeSignals, "signal")}</article><article class="env-validation-readiness-card"><h3>Boundary Signals</h3>${envValidationReadinessSignalList(input.envValidationReadinessReport.boundarySignals, "signal")}</article></section><section class="grid"><article class="env-validation-readiness-card"><h3>Validation Signals</h3>${envValidationReadinessSignalList(input.envValidationReadinessReport.validationSignals, "signal")}</article><article class="env-validation-readiness-card"><h3>Documentation Signals</h3>${envValidationReadinessSignalList(input.envValidationReadinessReport.documentationSignals, "signal")}</article><article class="env-validation-readiness-card"><h3>Package Signals</h3>${envValidationReadinessSignalList(input.envValidationReadinessReport.packageSignals, "signal")}</article><article class="env-validation-readiness-card"><h3>Recommended Commands</h3>${envValidationReadinessCommandList(input.envValidationReadinessReport.recommendedCommands)}</article><article class="env-validation-readiness-card"><h3>Risk Queue</h3>${envValidationReadinessRiskList(input.envValidationReadinessReport.riskQueue)}</article><article class="env-validation-readiness-card"><h3>다음 확인 단계</h3>${list(input.envValidationReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "security-headers-readiness.html",
+      title: "Security Headers Readiness",
+      html: pageShell("Security Headers Readiness", "security-headers-readiness.html", `<section class="panel" data-source-pattern="Helmet"><h2>Security Headers Snapshot</h2><p>${escapeHtml(input.securityHeadersReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.securityHeadersReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.securityHeadersReadinessReport.headerSetups.length}</dd></div><div><dt>CSP</dt><dd>${input.securityHeadersReadinessReport.cspSignals.length}</dd></div><div><dt>transport</dt><dd>${input.securityHeadersReadinessReport.transportSignals.length}</dd></div><div><dt>cross-origin</dt><dd>${input.securityHeadersReadinessReport.crossOriginSignals.length}</dd></div></dl><p class="muted">RepoTutor records security header readiness only; it does not start servers, send HTTP requests, evaluate CSP, follow redirects, or inspect CDN/proxy behavior.</p></section><section class="grid"><article class="security-headers-readiness-card"><h3>Header Setups</h3>${securityHeadersReadinessSetupList(input.securityHeadersReadinessReport.headerSetups)}</article><article class="security-headers-readiness-card"><h3>CSP Signals</h3>${securityHeadersReadinessSignalList(input.securityHeadersReadinessReport.cspSignals, "signal")}</article><article class="security-headers-readiness-card"><h3>Transport Signals</h3>${securityHeadersReadinessSignalList(input.securityHeadersReadinessReport.transportSignals, "signal")}</article><article class="security-headers-readiness-card"><h3>Cross-Origin Signals</h3>${securityHeadersReadinessSignalList(input.securityHeadersReadinessReport.crossOriginSignals, "signal")}</article></section><section class="grid"><article class="security-headers-readiness-card"><h3>Legacy Header Signals</h3>${securityHeadersReadinessSignalList(input.securityHeadersReadinessReport.legacyHeaderSignals, "signal")}</article><article class="security-headers-readiness-card"><h3>Middleware Signals</h3>${securityHeadersReadinessSignalList(input.securityHeadersReadinessReport.middlewareSignals, "signal")}</article><article class="security-headers-readiness-card"><h3>Package Signals</h3>${securityHeadersReadinessSignalList(input.securityHeadersReadinessReport.packageSignals, "signal")}</article><article class="security-headers-readiness-card"><h3>Recommended Commands</h3>${securityHeadersReadinessCommandList(input.securityHeadersReadinessReport.recommendedCommands)}</article><article class="security-headers-readiness-card"><h3>Risk Queue</h3>${securityHeadersReadinessRiskList(input.securityHeadersReadinessReport.riskQueue)}</article><article class="security-headers-readiness-card"><h3>다음 확인 단계</h3>${list(input.securityHeadersReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -1055,6 +1063,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "PWA Readiness", path: "html/pwa-readiness.html", description: "Vite PWA식 manifest, service worker, Workbox cache, update/install 준비도를 확인합니다." },
       { label: "Browser Compatibility Readiness", path: "html/browser-compat-readiness.html", description: "Browserslist식 target browser config, query, coverage, update 준비도를 확인합니다." },
       { label: "Env Validation Readiness", path: "html/env-validation-readiness.html", description: "t3-env식 server/client schema, runtimeEnv, client prefix, validation hook 준비도를 확인합니다." },
+      { label: "Security Headers Readiness", path: "html/security-headers-readiness.html", description: "Helmet식 CSP, HSTS, cross-origin, legacy hardening header 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1636,6 +1645,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "env-validation-readiness.html",
       goal: "t3-env식 server/client schema, runtimeEnv, client prefix, validation 실패 흐름을 보고 환경 변수 contract를 확인합니다.",
       evidence: `env setups ${input.envValidationReadinessReport.envSetups.length}개, runtime signals ${input.envValidationReadinessReport.runtimeSignals.length}개`
+    },
+    {
+      title: "Security headers readiness 확인",
+      href: "security-headers-readiness.html",
+      goal: "Helmet식 CSP, HSTS, cross-origin, legacy hardening header 흐름을 보고 HTTP 보안 header contract를 확인합니다.",
+      evidence: `header setups ${input.securityHeadersReadinessReport.headerSetups.length}개, CSP signals ${input.securityHeadersReadinessReport.cspSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3803,6 +3818,31 @@ function envValidationReadinessRiskList(items: EnvValidationReadinessReport["ris
 }
 
 function envValidationReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function securityHeadersReadinessSetupList(items: SecurityHeadersReadinessReport["headerSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">security headers setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>CSP/HSTS/cross-origin/frame/referrer/hardening/disable ${item.cspCount}/${item.hstsCount}/${item.crossOriginCount}/${item.frameCount}/${item.referrerCount}/${item.hardeningCount}/${item.disableCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(securityHeadersReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function securityHeadersReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">security headers signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(securityHeadersReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function securityHeadersReadinessCommandList(items: SecurityHeadersReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function securityHeadersReadinessRiskList(items: SecurityHeadersReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(securityHeadersReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function securityHeadersReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
