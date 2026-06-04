@@ -63,6 +63,7 @@ import {
   TaskRunnerReport,
   DependencyUpdateReport,
   LintReadinessReport,
+  FormatReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -132,6 +133,7 @@ export interface AnalysisBundle {
   taskRunnerReport: TaskRunnerReport;
   dependencyUpdateReport: DependencyUpdateReport;
   lintReadinessReport: LintReadinessReport;
+  formatReadinessReport: FormatReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -201,8 +203,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const taskRunnerReport = await buildTaskRunnerReport(walk);
   const dependencyUpdateReport = await buildDependencyUpdateReport(walk);
   const lintReadinessReport = await buildLintReadinessReport(walk);
+  const formatReadinessReport = await buildFormatReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -9889,6 +9892,275 @@ function lintReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: R
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/lint-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildFormatReadinessReport(walk: WalkResult): Promise<FormatReadinessReport> {
+  const sourceFiles = await formatReadinessSourceFiles(walk);
+  const configFiles = formatReadinessConfigFiles(sourceFiles);
+  const ignoreFiles = formatReadinessIgnoreFiles(sourceFiles);
+  const optionSignals = formatReadinessOptionSignals(sourceFiles);
+  const scriptSignals = formatReadinessScriptSignals(sourceFiles);
+  const scopeSignals = formatReadinessScopeSignals(sourceFiles);
+  const packageSignals = formatReadinessPackageSignals(sourceFiles);
+
+  const hasConfig = configFiles.length > 0;
+  const hasIgnore = ignoreFiles.length > 0;
+  const hasFormatScript = scriptSignals.some((item) => item.signal === "format" && item.readiness === "ready");
+  const hasCheck = scriptSignals.some((item) => item.signal === "format-check" && item.readiness === "ready");
+  const hasWrite = scriptSignals.some((item) => item.signal === "format-write" && item.readiness === "ready");
+  const hasPackage = packageSignals.some((item) => item.signal === "prettier" && item.readiness === "ready");
+  const hasPlugin = packageSignals.some((item) => item.signal === "prettier-plugin" && item.readiness === "ready")
+    || configFiles.some((item) => item.pluginCount > 0);
+
+  const riskQueue: FormatReadinessReport["riskQueue"] = [];
+  if (!hasConfig && !hasFormatScript) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add a Prettier config or package script so learners can find the formatting boundary.",
+      why: "Prettier-style readiness starts from .prettierrc, prettier.config.*, package scripts, and ignore rules that define what can be rewritten.",
+      relatedHref: "html/format-readiness.html"
+    });
+  }
+  if (hasWrite && !hasIgnore) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or review .prettierignore before using write-mode formatting.",
+      why: "Prettier --write rewrites files in place; ignore files protect generated output, build artifacts, and vendored code.",
+      relatedHref: "html/format-readiness.html"
+    });
+  }
+  if ((hasConfig || hasFormatScript) && !hasCheck) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add a non-writing format check command for CI and learner verification.",
+      why: "Prettier --check or --list-different provides a safe readiness gate before any --write workflow.",
+      relatedHref: "html/format-readiness.html"
+    });
+  }
+  if ((hasConfig || hasFormatScript) && !hasPackage) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Confirm the formatter package is installed where the script runs.",
+      why: "A script or config without package metadata can depend on global tooling or editor-only behavior that RepoTutor cannot verify statically.",
+      relatedHref: "html/format-readiness.html"
+    });
+  }
+  if (hasPlugin) {
+    riskQueue.push({
+      priority: "low",
+      action: "Clear or scope the Prettier cache when formatter plugins change.",
+      why: "Prettier warns that plugin versions and implementations are not cache keys.",
+      relatedHref: "html/format-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run format commands in a trusted workspace before treating this static report as approval.",
+    why: "RepoTutor records formatter readiness statically; it does not execute Prettier, rewrite files, load plugins, or create cache files.",
+    relatedHref: "html/format-readiness.html"
+  });
+
+  return {
+    summary: `Prettier식 format readiness report: config file ${configFiles.length}개, ignore file ${ignoreFiles.length}개, option signal ${optionSignals.length}개, script signal ${scriptSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Prettier config ignore options plugins parser check write list-different cache editorconfig file-info find-config-path",
+    configFiles,
+    ignoreFiles,
+    optionSignals,
+    scriptSignals,
+    scopeSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx prettier . --check", purpose: "Check formatting in a trusted workspace without writing files." },
+      { command: "npx prettier . --list-different", purpose: "Print only files that differ from Prettier output for CI handoff." },
+      { command: "npx prettier . --write", purpose: "Rewrite supported files only after reviewing config and ignore boundaries." },
+      { command: "npx prettier --find-config-path <file>", purpose: "Find the config Prettier would resolve for one representative file." },
+      { command: "npx prettier --file-info <file> --ignore-path .prettierignore", purpose: "Check parser inference and ignore handling for one file." },
+      { command: "npx prettier . --check --cache --cache-strategy content", purpose: "Validate cached checking while making cache behavior explicit." }
+    ],
+    learnerNextSteps: [
+      "Start with .prettierrc, prettier.config.*, package.json, and .editorconfig to learn which options are shared across CLI and editors.",
+      "Then inspect .prettierignore and .gitignore before any write-mode command so generated files are not reformatted.",
+      "Use --check or --list-different as the safe CI gate, and keep --write as a deliberate trusted-workspace action.",
+      "RepoTutor does not run Prettier or load plugins; use this page as a static map before executing formatter commands yourself."
+    ]
+  };
+}
+
+type FormatReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function formatReadinessSourceFiles(walk: WalkResult): Promise<FormatReadinessSourceFile[]> {
+  const files: FormatReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !formatReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 200_000);
+    if (!text) continue;
+    if (!formatReadinessPathSignal(file.relPath) && !formatReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 240) break;
+  }
+  return files;
+}
+
+function formatReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return formatReadinessPathSignal(filePath)
+    || /^(package\.json|\.gitignore|\.editorconfig)$/i.test(base)
+    || filePath.startsWith(".github/workflows/")
+    || /\.(js|cjs|mjs|ts|tsx|jsx|json|json5|ya?ml|toml|md|css|scss|html|graphql)$/i.test(filePath);
+}
+
+function formatReadinessPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(\.prettierrc|\.prettierrc\.(json|json5|ya?ml|toml|js|cjs|mjs|ts|cts|mts)|prettier\.config\.[cm]?[jt]s|\.prettierignore|\.editorconfig|dprint\.json|biome\.json|biome\.jsonc|package\.json)$/i.test(base)
+    || /prettier|format|dprint|biome/i.test(filePath);
+}
+
+function formatReadinessContentSignal(text: string): boolean {
+  return /prettier|\.prettierignore|printWidth|tabWidth|singleQuote|trailingComma|bracketSpacing|endOfLine|list-different|find-config-path|ignore-path|cache-strategy|editorconfig/i.test(text);
+}
+
+function formatReadinessConfigFiles(sourceFiles: FormatReadinessSourceFile[]): FormatReadinessReport["configFiles"] {
+  return sourceFiles
+    .filter((source) => formatReadinessConfigPathSignal(source.filePath, source.text))
+    .slice(0, 80)
+    .map((source) => {
+      const configType = formatReadinessConfigType(source.filePath, source.text);
+      const optionCount = countMatches(source.text, /printWidth|tabWidth|useTabs|singleQuote|jsxSingleQuote|trailingComma|semi|bracketSpacing|bracketSameLine|arrowParens|endOfLine|quoteProps|htmlWhitespaceSensitivity/g);
+      const overrideCount = countMatches(source.text, /overrides\s*:|files\s*:|excludeFiles/g);
+      const pluginCount = countMatches(source.text, /plugins\s*:|prettier-plugin|@prettier\/plugin/g);
+      const parserSignal = formatReadinessParserSignal(source.text);
+      return {
+        filePath: source.filePath,
+        configType,
+        optionCount,
+        overrideCount,
+        pluginCount,
+        parserSignal,
+        readiness: optionCount > 0 || overrideCount > 0 || pluginCount > 0 || parserSignal !== "missing" ? "ready" : "partial",
+        evidence: `${source.filePath} contains ${configType} formatter config with ${optionCount} option signal(s), ${overrideCount} override signal(s), and ${pluginCount} plugin signal(s).`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function formatReadinessIgnoreFiles(sourceFiles: FormatReadinessSourceFile[]): FormatReadinessReport["ignoreFiles"] {
+  return sourceFiles
+    .filter((source) => /^(\.prettierignore|\.gitignore)$/i.test(path.basename(source.filePath)) || /--ignore-path|ignorePath/i.test(source.text))
+    .slice(0, 80)
+    .map((source) => {
+      const patternCount = source.text.split(/\r?\n/).filter((line) => line.trim() && !line.trim().startsWith("#")).length;
+      const generatedSignal = /dist|build|coverage|generated|node_modules|vendor|\.cache/i.test(source.text);
+      return {
+        filePath: source.filePath,
+        patternCount,
+        generatedSignal,
+        readiness: patternCount > 0 ? "ready" : "partial",
+        evidence: `${source.filePath} contains ${patternCount} ignore pattern(s)${generatedSignal ? " including generated/build output signals" : ""}.`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function formatReadinessConfigPathSignal(filePath: string, text: string): boolean {
+  const base = path.basename(filePath);
+  return /^(\.prettierrc|\.prettierrc\.(json|json5|ya?ml|toml|js|cjs|mjs|ts|cts|mts)|prettier\.config\.[cm]?[jt]s|\.editorconfig|dprint\.json|biome\.json|biome\.jsonc)$/i.test(base)
+    || (base === "package.json" && /"prettier"\s*:|"scripts"\s*:[\s\S]*("format"|"fmt"|prettier)/i.test(text));
+}
+
+function formatReadinessConfigType(filePath: string, text: string): FormatReadinessReport["configFiles"][number]["configType"] {
+  const base = path.basename(filePath).toLowerCase();
+  if (/prettier|\.prettierrc/.test(base) || /"prettier"\s*:|prettier-plugin|printWidth|tabWidth/i.test(text)) return "prettier";
+  if (base === ".editorconfig") return "editorconfig";
+  if (/biome/.test(base) || /biome\s+format/i.test(text)) return "biome";
+  if (/dprint/.test(base) || /dprint/i.test(text)) return "dprint";
+  if (base === "package.json") return "package-json";
+  return "unknown";
+}
+
+function formatReadinessParserSignal(text: string): FormatReadinessReport["configFiles"][number]["parserSignal"] {
+  if (/plugins\s*:|prettier-plugin|@prettier\/plugin/i.test(text)) return "plugin";
+  if (/parser\s*:|overrides\s*:[\s\S]*parser/i.test(text)) return "override";
+  if (/prettier|printWidth|tabWidth|trailingComma|editorconfig/i.test(text)) return "inferred";
+  return "missing";
+}
+
+function formatReadinessOptionSignals(sourceFiles: FormatReadinessSourceFile[]): FormatReadinessReport["optionSignals"] {
+  const specs: Array<{ signal: FormatReadinessReport["optionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "print-width", pattern: /printWidth|print-width|max_line_length/i, evidence: "print width evidence was detected." },
+    { signal: "tab-width", pattern: /tabWidth|tab-width|tab_width|indent_size/i, evidence: "tab width evidence was detected." },
+    { signal: "single-quote", pattern: /singleQuote|single-quote|jsxSingleQuote/i, evidence: "quote style evidence was detected." },
+    { signal: "trailing-comma", pattern: /trailingComma|trailing-comma/i, evidence: "trailing comma evidence was detected." },
+    { signal: "semi", pattern: /\bsemi\b|--no-semi/i, evidence: "semicolon option evidence was detected." },
+    { signal: "bracket-spacing", pattern: /bracketSpacing|bracket-spacing|bracketSameLine/i, evidence: "bracket spacing evidence was detected." },
+    { signal: "end-of-line", pattern: /endOfLine|end-of-line|end_of_line/i, evidence: "end-of-line evidence was detected." },
+    { signal: "parser", pattern: /parser\s*:|--parser|stdin-filepath|file-info/i, evidence: "parser inference or override evidence was detected." },
+    { signal: "overrides", pattern: /overrides\s*:|excludeFiles|files\s*:/i, evidence: "override evidence was detected." },
+    { signal: "editorconfig", pattern: /\.editorconfig|editorconfig|no-editorconfig/i, evidence: "EditorConfig evidence was detected." }
+  ];
+  return formatReadinessSignalFromSpecs(sourceFiles, specs, "option", "signal");
+}
+
+function formatReadinessScriptSignals(sourceFiles: FormatReadinessSourceFile[]): FormatReadinessReport["scriptSignals"] {
+  const specs: Array<{ signal: FormatReadinessReport["scriptSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "format", pattern: /"format[^"]*"\s*:|"fmt"\s*:|\bprettier\b|\bdprint\b|\bbiome\s+format\b/i, evidence: "format script evidence was detected." },
+    { signal: "format-check", pattern: /--check\b|list-different|biome\s+format[^\n"]*--write\s+false|dprint\s+check/i, evidence: "non-writing format check evidence was detected." },
+    { signal: "format-write", pattern: /--write\b|\b-w\b|dprint\s+fmt|biome\s+format[^\n"]*--write/i, evidence: "write-mode format evidence was detected." },
+    { signal: "list-different", pattern: /list-different|-l\b/i, evidence: "list-different evidence was detected." },
+    { signal: "cache", pattern: /--cache\b|cache-location|cache-strategy|\.prettier-cache/i, evidence: "formatter cache evidence was detected." },
+    { signal: "config-path", pattern: /find-config-path|--config\b|--no-config|config-precedence/i, evidence: "config path evidence was detected." },
+    { signal: "ignore-path", pattern: /ignore-path|\.prettierignore|ignorePath/i, evidence: "ignore path evidence was detected." },
+    { signal: "stdin", pattern: /stdin-filepath|--stdin|file-info/i, evidence: "stdin/file-info evidence was detected." },
+    { signal: "ci", pattern: /\.github\/workflows|CI\b|--check|list-different/i, evidence: "CI formatter evidence was detected." }
+  ];
+  return formatReadinessSignalFromSpecs(sourceFiles, specs, "script", "signal");
+}
+
+function formatReadinessScopeSignals(sourceFiles: FormatReadinessSourceFile[]): FormatReadinessReport["scopeSignals"] {
+  const specs: Array<{ signal: FormatReadinessReport["scopeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "javascript", pattern: /\.m?js\b|\.cjs\b|JavaScript|babel|estree/i, evidence: "JavaScript format scope evidence was detected." },
+    { signal: "typescript", pattern: /\.tsx?\b|TypeScript|typescript-estree|tsconfig/i, evidence: "TypeScript format scope evidence was detected." },
+    { signal: "json", pattern: /\.json\b|json5|package\.json/i, evidence: "JSON format scope evidence was detected." },
+    { signal: "css", pattern: /\.s?css\b|postcss|css/i, evidence: "CSS format scope evidence was detected." },
+    { signal: "html", pattern: /\.html\b|html|angular|vue/i, evidence: "HTML format scope evidence was detected." },
+    { signal: "markdown", pattern: /\.md\b|markdown|mdx|remark/i, evidence: "Markdown format scope evidence was detected." },
+    { signal: "yaml", pattern: /\.ya?ml\b|yaml/i, evidence: "YAML format scope evidence was detected." },
+    { signal: "graphql", pattern: /\.graphql\b|graphql/i, evidence: "GraphQL format scope evidence was detected." }
+  ];
+  return formatReadinessSignalFromSpecs(sourceFiles, specs, "scope", "signal");
+}
+
+function formatReadinessPackageSignals(sourceFiles: FormatReadinessSourceFile[]): FormatReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: FormatReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "prettier", pattern: /"prettier"\s*:|prettier\b/i, evidence: "Prettier package evidence was detected." },
+    { signal: "prettier-plugin", pattern: /prettier-plugin|@prettier\/plugin|plugins\s*:/i, evidence: "Prettier plugin evidence was detected." },
+    { signal: "eslint-config-prettier", pattern: /eslint-config-prettier/i, evidence: "ESLint/Prettier conflict-prevention package evidence was detected." },
+    { signal: "dprint", pattern: /"dprint"\s*:|dprint\b/i, evidence: "dprint package evidence was detected." },
+    { signal: "biome", pattern: /"@biomejs\/biome"\s*:|biome\b/i, evidence: "Biome package evidence was detected." },
+    { signal: "editorconfig", pattern: /editorconfig|\.editorconfig/i, evidence: "EditorConfig package or config evidence was detected." }
+  ];
+  return formatReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function formatReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: FormatReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/format-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

@@ -58,6 +58,7 @@ import type {
   TaskRunnerReport,
   DependencyUpdateReport,
   LintReadinessReport,
+  FormatReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -122,6 +123,7 @@ export interface StudyHtmlInput {
   taskRunnerReport: TaskRunnerReport;
   dependencyUpdateReport: DependencyUpdateReport;
   lintReadinessReport: LintReadinessReport;
+  formatReadinessReport: FormatReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -206,6 +208,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["task-runner.html", "Task Runner"],
     ["dependency-updates.html", "Dependency Updates"],
     ["lint-readiness.html", "Lint"],
+    ["format-readiness.html", "Format"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -325,6 +328,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Task Runner Readiness</h3><p>${escapeHtml(input.taskRunnerReport.summary)}</p><p>Turborepo 패턴으로 turbo.json, task graph, cache, dependsOn, env, package scripts를 정리합니다.</p><a href="task-runner.html">Task Runner 열기</a></article>
           <article><h3>Dependency Updates Readiness</h3><p>${escapeHtml(input.dependencyUpdateReport.summary)}</p><p>Renovate 패턴으로 update config, packageRules, automerge, dashboard, registry, package files를 정리합니다.</p><a href="dependency-updates.html">Dependency Updates 열기</a></article>
           <article><h3>Lint Readiness</h3><p>${escapeHtml(input.lintReadinessReport.summary)}</p><p>ESLint 패턴으로 flat config, rules, plugins, parser, ignores, fix/cache/report options를 정리합니다.</p><a href="lint-readiness.html">Lint 열기</a></article>
+          <article><h3>Format Readiness</h3><p>${escapeHtml(input.formatReadinessReport.summary)}</p><p>Prettier 패턴으로 config, ignore, options, plugins, check/write/cache workflows를 정리합니다.</p><a href="format-readiness.html">Format 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -576,6 +580,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Lint Readiness", "lint-readiness.html", `<section class="panel" data-source-pattern="ESLint"><h2>Lint Snapshot</h2><p>${escapeHtml(input.lintReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.lintReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>configs</dt><dd>${input.lintReadinessReport.configFiles.length}</dd></div><div><dt>rules</dt><dd>${input.lintReadinessReport.ruleSignals.length}</dd></div><div><dt>scripts</dt><dd>${input.lintReadinessReport.scriptSignals.length}</dd></div><div><dt>packages</dt><dd>${input.lintReadinessReport.packageSignals.length}</dd></div></dl><p class="muted">RepoTutor records lint readiness only. It does not execute ESLint, apply fixes, resolve parser/plugin packages, or write cache files.</p></section><section class="grid"><article class="lint-readiness-card"><h3>Config Files</h3>${lintReadinessConfigList(input.lintReadinessReport.configFiles)}</article><article class="lint-readiness-card"><h3>Rule Signals</h3>${lintReadinessSignalList(input.lintReadinessReport.ruleSignals, "signal")}</article><article class="lint-readiness-card"><h3>Script Signals</h3>${lintReadinessSignalList(input.lintReadinessReport.scriptSignals, "signal")}</article><article class="lint-readiness-card"><h3>Scope Signals</h3>${lintReadinessSignalList(input.lintReadinessReport.scopeSignals, "signal")}</article></section><section class="grid"><article class="lint-readiness-card"><h3>Output Signals</h3>${lintReadinessSignalList(input.lintReadinessReport.outputSignals, "signal")}</article><article class="lint-readiness-card"><h3>Package Signals</h3>${lintReadinessSignalList(input.lintReadinessReport.packageSignals, "signal")}</article><article class="lint-readiness-card"><h3>Recommended Commands</h3>${lintReadinessCommandList(input.lintReadinessReport.recommendedCommands)}</article><article class="lint-readiness-card"><h3>Risk Queue</h3>${lintReadinessRiskList(input.lintReadinessReport.riskQueue)}</article><article class="lint-readiness-card"><h3>다음 확인 단계</h3>${list(input.lintReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "format-readiness.html",
+      title: "Format Readiness",
+      html: pageShell("Format Readiness", "format-readiness.html", `<section class="panel" data-source-pattern="Prettier"><h2>Format Snapshot</h2><p>${escapeHtml(input.formatReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.formatReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>configs</dt><dd>${input.formatReadinessReport.configFiles.length}</dd></div><div><dt>ignores</dt><dd>${input.formatReadinessReport.ignoreFiles.length}</dd></div><div><dt>scripts</dt><dd>${input.formatReadinessReport.scriptSignals.length}</dd></div><div><dt>packages</dt><dd>${input.formatReadinessReport.packageSignals.length}</dd></div></dl><p class="muted">RepoTutor records format readiness only. It does not execute Prettier, rewrite files, load plugins, or create cache files.</p></section><section class="grid"><article class="format-readiness-card"><h3>Config Files</h3>${formatReadinessConfigList(input.formatReadinessReport.configFiles)}</article><article class="format-readiness-card"><h3>Ignore Files</h3>${formatReadinessIgnoreList(input.formatReadinessReport.ignoreFiles)}</article><article class="format-readiness-card"><h3>Option Signals</h3>${formatReadinessSignalList(input.formatReadinessReport.optionSignals, "signal")}</article><article class="format-readiness-card"><h3>Script Signals</h3>${formatReadinessSignalList(input.formatReadinessReport.scriptSignals, "signal")}</article></section><section class="grid"><article class="format-readiness-card"><h3>Scope Signals</h3>${formatReadinessSignalList(input.formatReadinessReport.scopeSignals, "signal")}</article><article class="format-readiness-card"><h3>Package Signals</h3>${formatReadinessSignalList(input.formatReadinessReport.packageSignals, "signal")}</article><article class="format-readiness-card"><h3>Recommended Commands</h3>${formatReadinessCommandList(input.formatReadinessReport.recommendedCommands)}</article><article class="format-readiness-card"><h3>Risk Queue</h3>${formatReadinessRiskList(input.formatReadinessReport.riskQueue)}</article><article class="format-readiness-card"><h3>다음 확인 단계</h3>${list(input.formatReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -734,6 +743,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Task Runner Readiness", path: "html/task-runner.html", description: "Turborepo식 config, task graph, cache, dependsOn/env, package script 준비도를 확인합니다." },
       { label: "Dependency Updates Readiness", path: "html/dependency-updates.html", description: "Renovate식 config, packageRules, automerge, dashboard, registry, package file 준비도를 확인합니다." },
       { label: "Lint Readiness", path: "html/lint-readiness.html", description: "ESLint식 flat config, rules, plugins, parser, ignores, fix/cache/report 준비도를 확인합니다." },
+      { label: "Format Readiness", path: "html/format-readiness.html", description: "Prettier식 config, ignore, options, plugins, check/write/cache 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1105,6 +1115,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "lint-readiness.html",
       goal: "ESLint식 flat config, rules, plugins, parser, ignores, fix/cache/report 옵션을 보고 코드 품질 관문을 확인합니다.",
       evidence: `config files ${input.lintReadinessReport.configFiles.length}개, script signals ${input.lintReadinessReport.scriptSignals.length}개`
+    },
+    {
+      title: "Format 준비도 확인",
+      href: "format-readiness.html",
+      goal: "Prettier식 config, ignore, options, plugins, check/write/cache 흐름을 보고 포맷팅 관문을 확인합니다.",
+      evidence: `config files ${input.formatReadinessReport.configFiles.length}개, ignore files ${input.formatReadinessReport.ignoreFiles.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -2352,6 +2368,36 @@ function lintReadinessRiskList(items: LintReadinessReport["riskQueue"]): string 
 }
 
 function lintReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function formatReadinessConfigList(items: FormatReadinessReport["configFiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">format config file이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.configType)}/${escapeHtml(item.readiness)}]<br>options ${item.optionCount} · overrides ${item.overrideCount} · plugins ${item.pluginCount} · parser ${escapeHtml(item.parserSignal)}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(formatReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function formatReadinessIgnoreList(items: FormatReadinessReport["ignoreFiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">format ignore file이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.readiness)}]<br>patterns ${item.patternCount} · generated/build ${item.generatedSignal ? "yes" : "no"}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(formatReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function formatReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">format signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(formatReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function formatReadinessCommandList(items: FormatReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function formatReadinessRiskList(items: FormatReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(formatReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function formatReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
