@@ -5364,6 +5364,75 @@ export const WorkflowOrchestrationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const OpenApiClientReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  clientSetups: z.array(z.object({
+    filePath: z.string(),
+    generator: z.enum(["openapi-typescript", "orval", "openapi-generator", "swagger-codegen", "custom", "unknown"]),
+    specCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    clientCount: z.number().int().nonnegative(),
+    typeCount: z.number().int().nonnegative(),
+    hookCount: z.number().int().nonnegative(),
+    mockCount: z.number().int().nonnegative(),
+    validationCount: z.number().int().nonnegative(),
+    configCount: z.number().int().nonnegative(),
+    scriptCount: z.number().int().nonnegative(),
+    packageCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  specSignals: z.array(z.object({
+    signal: z.enum(["openapi", "swagger", "input-spec", "remote-schema", "multi-spec", "redocly-config", "schema-validation", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  generatorSignals: z.array(z.object({
+    signal: z.enum(["openapi-typescript", "openapi-fetch", "orval", "openapi-generator", "swagger-codegen", "generator-name", "config-file", "cli-command", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["types", "client-sdk", "hooks", "schemas", "mocks", "zod", "msw", "server-stub", "docs", "split-output", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runtimeSignals: z.array(z.object({
+    signal: z.enum(["fetch", "axios", "react-query", "swr", "angular", "vue", "svelte", "hono", "mcp", "custom-mutator", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  qualitySignals: z.array(z.object({
+    signal: z.enum(["validate-spec", "lint", "snapshots", "generated-diff", "typecheck", "ci", "ignore-file", "templates", "security-review", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["openapi-typescript", "openapi-fetch", "orval", "@openapitools/openapi-generator-cli", "openapi-generator-cli", "swagger-codegen", "@hey-api/openapi-ts", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ServerFrameworkReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7008,6 +7077,7 @@ export type SearchServiceReadinessReport = z.infer<typeof SearchServiceReadiness
 export type ObjectStorageReadinessReport = z.infer<typeof ObjectStorageReadinessReportSchema>;
 export type RealtimeCollaborationReadinessReport = z.infer<typeof RealtimeCollaborationReadinessReportSchema>;
 export type WorkflowOrchestrationReadinessReport = z.infer<typeof WorkflowOrchestrationReadinessReportSchema>;
+export type OpenApiClientReadinessReport = z.infer<typeof OpenApiClientReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;

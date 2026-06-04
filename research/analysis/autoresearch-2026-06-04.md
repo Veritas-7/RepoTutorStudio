@@ -6574,6 +6574,64 @@ Local verification:
 - Pushed implementation commit: `c46460a` workflow-orchestration readiness
   report
 
+### Upgrade 215: OpenAPI Client Readiness Report
+
+- Cloned and inspected `openapi-ts/openapi-typescript` under
+  `research/external-src/openapi-ts-openapi-typescript`,
+  `orval-labs/orval` under `research/external-src/orval-labs-orval`, and
+  `OpenAPITools/openapi-generator` under
+  `research/external-src/OpenAPITools-openapi-generator` without executing
+  external source. Clone HEADs were `0cc7ee7`, `665f592`, and `2b76ca1`; all
+  three clones remain ignored by RepoTutor and tracked file count returned `0`.
+- GitHub metadata: `openapi-ts/openapi-typescript` is public, MIT licensed,
+  8,156 stars, 646 forks, updated 2026-06-04T18:10:17Z. `orval-labs/orval` is
+  public, MIT licensed, 6,059 stars, 623 forks, updated
+  2026-06-04T19:47:55Z. `OpenAPITools/openapi-generator` is public,
+  Apache-2.0 licensed, 26,326 stars, 7,546 forks, updated
+  2026-06-04T18:13:42Z. Selected the three-source slice because together they
+  model generated TypeScript types, generated clients/hooks/mocks/zod output,
+  and broader OpenAPI Generator client/server/doc/template/validation controls.
+  No source code was copied into RepoTutor.
+- Implemented openapi-typescript/Orval/OpenAPI Generator-style
+  openapi-client-readiness report:
+  `OpenApiClientReadinessReportSchema`,
+  `analysis/openapi-client-readiness-report.json`,
+  `markdown/openapi-client-readiness.md`,
+  `html/openapi-client-readiness.html`, client setup detection, spec signals,
+  generator signals, output signals, runtime signals, quality signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, nav entry, and
+  `open --target openapi-client-readiness`.
+- Source pattern: OpenAPI client readiness separates OpenAPI/Swagger local and
+  remote input specs, generator configs and CLI commands, generated types,
+  client SDKs, hooks, schemas, mocks, zod/MSW output, fetch/Axios/query runtime
+  wrappers, package evidence, and quality gates such as validate/lint,
+  snapshots, generated diffs, typecheck, CI, ignore files, custom templates,
+  and input/template security review. RepoTutor maps that to deterministic
+  static readiness and explicitly does not run generators, download remote
+  schemas, execute generated clients, render templates, mutate generated files,
+  or run analyzed project tests.
+- RED smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-openapi-client-red-studies.ja4CkT/2026-06-05/local__repotutor-openapi-client-red-source.QwNFK2__local__0f6467f7`;
+  old behavior had `verificationCheckedRequiredArtifacts=342`, was missing
+  `analysis/openapi-client-readiness-report.json`,
+  `markdown/openapi-client-readiness.md`, and
+  `html/openapi-client-readiness.html`, and
+  `open --target openapi-client-readiness` exited with
+  `Unsupported open target`.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-openapi-client-green-studies.26rVWY/2026-06-05/local__repotutor-openapi-client-red-source.QwNFK2__local__f4611a85`;
+  confirmed `verificationCheckedRequiredArtifacts=345`, all three new
+  artifacts, setup count 9, risk queue 0, ready generator signals
+  `openapi-typescript`, `openapi-fetch`, `orval`, `openapi-generator`,
+  `swagger-codegen`, `generator-name`, `config-file`, and `cli-command`, and
+  `open --target openapi-client-readiness` ->
+  `html/openapi-client-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 22/22 tests
+- `pnpm audit:brief`: PASS, 113/113 audit checks across 13 generated reports
+- Pushed implementation commit: `PENDING` openapi-client readiness report
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

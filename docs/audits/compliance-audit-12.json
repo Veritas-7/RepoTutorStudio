@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-04T20:11:06.203Z",
+  "createdAt": "2026-06-04T20:27:57.457Z",
   "checks": [
     {
       "name": "project setup",
@@ -753,6 +753,13 @@
     },
     {
       "name": "Workflow orchestration readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "OpenAPI client readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

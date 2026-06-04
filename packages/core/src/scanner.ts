@@ -109,6 +109,7 @@ import {
   ObjectStorageReadinessReport,
   RealtimeCollaborationReadinessReport,
   WorkflowOrchestrationReadinessReport,
+  OpenApiClientReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -242,6 +243,7 @@ export interface AnalysisBundle {
   objectStorageReadinessReport: ObjectStorageReadinessReport;
   realtimeCollaborationReadinessReport: RealtimeCollaborationReadinessReport;
   workflowOrchestrationReadinessReport: WorkflowOrchestrationReadinessReport;
+  openApiClientReadinessReport: OpenApiClientReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -375,6 +377,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const objectStorageReadinessReport = await buildObjectStorageReadinessReport(walk);
   const realtimeCollaborationReadinessReport = await buildRealtimeCollaborationReadinessReport(walk);
   const workflowOrchestrationReadinessReport = await buildWorkflowOrchestrationReadinessReport(walk);
+  const openApiClientReadinessReport = await buildOpenApiClientReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
@@ -394,7 +397,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -22698,6 +22701,275 @@ function workflowOrchestrationSignalFromSpecs<T extends Record<K, string> & { pa
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/workflow-orchestration-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildOpenApiClientReadinessReport(walk: WalkResult): Promise<OpenApiClientReadinessReport> {
+  const sourceFiles = await openApiClientReadinessSourceFiles(walk);
+  const clientSetups = openApiClientReadinessSetups(sourceFiles);
+  const specSignals = openApiClientReadinessSpecSignals(sourceFiles);
+  const generatorSignals = openApiClientReadinessGeneratorSignals(sourceFiles);
+  const outputSignals = openApiClientReadinessOutputSignals(sourceFiles);
+  const runtimeSignals = openApiClientReadinessRuntimeSignals(sourceFiles);
+  const qualitySignals = openApiClientReadinessQualitySignals(sourceFiles);
+  const packageSignals = openApiClientReadinessPackageSignals(sourceFiles);
+
+  const hasGenerator = generatorSignals.some((item) => item.readiness === "ready") || clientSetups.some((item) => item.generator !== "unknown");
+  const hasSpec = specSignals.some((item) => ["openapi", "swagger", "input-spec", "remote-schema"].includes(item.signal) && item.readiness === "ready") || clientSetups.some((item) => item.specCount > 0);
+  const hasOutput = outputSignals.some((item) => item.readiness === "ready") || clientSetups.some((item) => item.outputCount + item.clientCount + item.typeCount > 0);
+  const hasRuntime = runtimeSignals.some((item) => item.readiness === "ready") || clientSetups.some((item) => item.clientCount + item.hookCount > 0);
+  const hasQuality = qualitySignals.some((item) => ["validate-spec", "snapshots", "generated-diff", "typecheck", "ci"].includes(item.signal) && item.readiness === "ready") || clientSetups.some((item) => item.validationCount > 0);
+
+  const riskQueue: OpenApiClientReadinessReport["riskQueue"] = [];
+  if (!hasGenerator) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the OpenAPI client generator before claiming generated client readiness.",
+      why: "OpenAPI client readiness starts from a generator such as openapi-typescript, Orval, or OpenAPI Generator that learners can trace.",
+      relatedHref: "html/openapi-client-readiness.html"
+    });
+  }
+  if (hasGenerator && !hasSpec) {
+    riskQueue.push({
+      priority: "high",
+      action: "Point the generator to a local or reviewed OpenAPI/Swagger input spec.",
+      why: "A generator command without an input spec cannot explain which API shape produced the generated client.",
+      relatedHref: "html/openapi-client-readiness.html"
+    });
+  }
+  if (hasGenerator && !hasOutput) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document generated output paths for types, client SDKs, hooks, schemas, mocks, or docs.",
+      why: "Learners need to know which files are generated and where hand-written application code begins.",
+      relatedHref: "html/openapi-client-readiness.html"
+    });
+  }
+  if (hasOutput && !hasRuntime) {
+    riskQueue.push({
+      priority: "low",
+      action: "Trace generated clients to a runtime fetcher, Axios instance, query hook, or custom mutator.",
+      why: "Generated types alone do not show request execution, auth/header injection, retry policy, or framework integration.",
+      relatedHref: "html/openapi-client-readiness.html"
+    });
+  }
+  if (hasGenerator && !hasQuality) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add validate/lint, snapshot, generated-diff, typecheck, or CI checks around generated output.",
+      why: "Generated clients drift when specs change unless regeneration and diff review are visible.",
+      relatedHref: "html/openapi-client-readiness.html"
+    });
+  }
+
+  return {
+    summary: `OpenAPI client readiness report: setup ${clientSetups.length}개, spec signal ${specSignals.length}개, generator signal ${generatorSignals.length}개, output signal ${outputSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "OpenAPI client readiness openapi-typescript openapi-fetch Orval OpenAPI Generator input spec output schemas client hooks mocks MSW zod mutator axios fetch react-query SWR Angular Vue Svelte Hono MCP generatorName config validate lint snapshots generated diff typecheck templates",
+    clientSetups,
+    specSignals,
+    generatorSignals,
+    outputSignals,
+    runtimeSignals,
+    qualitySignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"openapi-typescript|openapi-fetch|orval|openapi-generator|swagger-codegen|@hey-api/openapi-ts\" package.json .", purpose: "Find OpenAPI client generation packages, scripts, and config references." },
+      { command: "rg \"inputSpec|generatorName|orval.config|output|target|schemas|client|mock|msw|mutator\" .", purpose: "Trace generator inputs, outputs, clients, schemas, mocks, and custom mutators." },
+      { command: "rg \"redocly lint|validate|snapshot|generated|do not edit|typecheck|tsc --noEmit\" .", purpose: "Check spec validation and generated-output drift controls." }
+    ],
+    learnerNextSteps: [
+      "먼저 generator config와 input spec을 연결해서 어떤 OpenAPI 문서가 타입/클라이언트를 만들었는지 확인하세요.",
+      "generated output 폴더와 hand-written runtime wrapper를 분리해서 실제 요청 경계와 auth/header 주입 위치를 찾으세요.",
+      "mock, schema, hook output이 있으면 테스트와 문서가 같은 spec에서 재생성되는지 확인하세요.",
+      "이 리포트는 generator를 실행하지 않습니다. 실제 drift 판정은 원본 저장소에서 validate/generate/typecheck를 별도 실행하세요."
+    ]
+  };
+}
+
+type OpenApiClientSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function openApiClientReadinessSourceFiles(walk: WalkResult): Promise<OpenApiClientSourceFile[]> {
+  const rows: OpenApiClientSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!openApiClientInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!openApiClientPathSignal(file.relPath) && !openApiClientContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 140);
+}
+
+function openApiClientInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|orval\.config\.[cm]?[jt]s|orval\.config\.json|openapi-generator-config\.(json|ya?ml)|redocly\.(ya?ml|json)|\.openapi-generator-ignore)$/i.test(base)
+    || /(^|\/)(openapi|swagger|schemas?|specs?|contracts?|api|apis|clients?|generated|sdk|orval|openapi-generator)(\/|\.|-|_|$)/i.test(filePath)
+    || /\.(json|ya?ml|ts|tsx|js|jsx|mjs|cjs|md)$/i.test(filePath);
+}
+
+function openApiClientPathSignal(filePath: string): boolean {
+  return /(^|\/)(openapi|swagger|orval|openapi-generator|generated|clients?|sdk|schemas?|specs?|contracts?)(\/|\.|-|_|$)|\.openapi-generator-ignore$/i.test(filePath)
+    || /^(package\.json|redocly\.(ya?ml|json))$/i.test(path.basename(filePath));
+}
+
+function openApiClientContentSignal(text: string): boolean {
+  return /(openapi-typescript|openapi-fetch|orval|openapi-generator|swagger-codegen|@hey-api\/openapi-ts|inputSpec|generatorName|outputDir|openapi\s*[:=]|swagger\s*[:=]|\.openapi-generator-ignore|redocly lint)/i.test(text);
+}
+
+function openApiClientReadinessSetups(sourceFiles: OpenApiClientSourceFile[]): OpenApiClientReadinessReport["clientSetups"] {
+  const rows: OpenApiClientReadinessReport["clientSetups"] = [];
+  for (const source of sourceFiles) {
+    const specCount = countMatches(source.text, /\b(openapi|swagger|inputSpec|input\s*:|schema\s*:|schemas\s*:|target\s*:|url\s*:)\b|https?:\/\/[^\s'"]+(?:openapi|swagger|api-docs)/gi);
+    const outputCount = countMatches(source.text, /\b(output|outputDir|target|client|schemas|models|apiPackage|modelPackage|docs|documentation)\b\s*[:=]|generated|__generated__/gi);
+    const clientCount = countMatches(source.text, /\b(openapi-fetch|createClient|client\s*:|fetcher|axios|fetch\s*\(|mutator|api-client|SDK|typescript-fetch|typescript-axios)\b/gi);
+    const typeCount = countMatches(source.text, /\b(types?|interface|paths|components|operations|schemas|models|enum|typegen|d\.ts)\b/gi);
+    const hookCount = countMatches(source.text, /\b(useQuery|useMutation|react-query|tanstack|swr|useSWR|vue-query|svelte-query|angular-query)\b/gi);
+    const mockCount = countMatches(source.text, /\b(msw|mock|mocks|Mock Service Worker|handlers|faker|fixture)\b/gi);
+    const validationCount = countMatches(source.text, /\b(validate|validateSpec|skipValidateSpec|redocly lint|lint|snapshot|typecheck|tsc --noEmit|generated diff|do not edit)\b/gi);
+    const configCount = countMatches(source.text, /\b(orval\.config|defineConfig|inputSpec|generatorName|additionalProperties|globalProperties|templateDir|override|mode|split|tags)\b/gi);
+    const scriptCount = countMatches(source.text, /\b(openapi-typescript|openapi-generator(?:-cli)?|orval|swagger-codegen|redocly lint|generate\b|gen:|codegen)\b/gi);
+    const packageCount = countMatches(source.text, /"?(openapi-typescript|openapi-fetch|orval|@openapitools\/openapi-generator-cli|openapi-generator-cli|swagger-codegen|@hey-api\/openapi-ts)"?/gi);
+    const totalSignals = specCount + outputCount + clientCount + typeCount + hookCount + mockCount + validationCount + configCount + scriptCount + packageCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      generator: openApiClientGenerator(source),
+      specCount,
+      outputCount,
+      clientCount,
+      typeCount,
+      hookCount,
+      mockCount,
+      validationCount,
+      configCount,
+      scriptCount,
+      packageCount,
+      readiness: (specCount > 0 && (clientCount + typeCount + outputCount > 0) && (scriptCount + packageCount + configCount > 0)) ? "ready" : "partial",
+      evidence: `${totalSignals} OpenAPI client generation signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.specCount + b.clientCount + b.typeCount + b.outputCount + b.configCount) - (a.specCount + a.clientCount + a.typeCount + a.outputCount + a.configCount))
+    .slice(0, 40);
+}
+
+function openApiClientGenerator(source: OpenApiClientSourceFile): OpenApiClientReadinessReport["clientSetups"][number]["generator"] {
+  if (/openapi-typescript|openapi-fetch/i.test(source.filePath) || /openapi-typescript|openapi-fetch/i.test(source.text)) return "openapi-typescript";
+  if (/orval/i.test(source.filePath) || /orval|defineConfig\(\s*\{|client\s*:\s*['"](react-query|swr|axios|fetch|angular|vue-query|svelte-query|hono)/i.test(source.text)) return "orval";
+  if (/openapi-generator/i.test(source.filePath) || /openapi-generator|generatorName|inputSpec|outputDir|additionalProperties/i.test(source.text)) return "openapi-generator";
+  if (/swagger-codegen/i.test(source.filePath) || /swagger-codegen/i.test(source.text)) return "swagger-codegen";
+  if (/generated|api-client|sdk|openapi|swagger/i.test(source.filePath) || /generate|codegen|client|sdk/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function openApiClientReadinessSpecSignals(sourceFiles: OpenApiClientSourceFile[]): OpenApiClientReadinessReport["specSignals"] {
+  const specs: Array<{ signal: OpenApiClientReadinessReport["specSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "openapi", pattern: /\bopenapi\b\s*[:=]|"openapi"\s*:|openapi\.(json|ya?ml)/i, evidence: "OpenAPI document evidence was detected." },
+    { signal: "swagger", pattern: /\bswagger\b\s*[:=]|"swagger"\s*:|swagger\.(json|ya?ml)/i, evidence: "Swagger document evidence was detected." },
+    { signal: "input-spec", pattern: /inputSpec|input\s*:|schema\s*:|schemas\s*:|target\s*:|-i\s+\S+|--input-spec/i, evidence: "generator input spec evidence was detected." },
+    { signal: "remote-schema", pattern: /https?:\/\/[^\s'"]+(?:openapi|swagger|api-docs|schema)/i, evidence: "remote schema URL evidence was detected." },
+    { signal: "multi-spec", pattern: /input\s*:\s*\{[\s\S]{0,800}(?:petstore|admin|public|internal|v1|v2)|projects\s*:|specs\s*:/i, evidence: "multi-spec generation evidence was detected." },
+    { signal: "redocly-config", pattern: /redocly\.(ya?ml|json)|redocly lint|extends:\s*\[|apis\s*:/i, evidence: "Redocly config or lint evidence was detected." },
+    { signal: "schema-validation", pattern: /validate(?:Spec)?|skipValidateSpec\s*:\s*false|openapi-generator validate|redocly lint|swagger-parser/i, evidence: "schema validation evidence was detected." }
+  ];
+  return openApiClientSignalFromSpecs(sourceFiles, specs, "spec", "signal");
+}
+
+function openApiClientReadinessGeneratorSignals(sourceFiles: OpenApiClientSourceFile[]): OpenApiClientReadinessReport["generatorSignals"] {
+  const specs: Array<{ signal: OpenApiClientReadinessReport["generatorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "openapi-typescript", pattern: /openapi-typescript/i, evidence: "openapi-typescript evidence was detected." },
+    { signal: "openapi-fetch", pattern: /openapi-fetch|createClient<|createClient\(/i, evidence: "openapi-fetch evidence was detected." },
+    { signal: "orval", pattern: /orval|orval\.config|defineConfig\(/i, evidence: "Orval evidence was detected." },
+    { signal: "openapi-generator", pattern: /openapi-generator|@openapitools\/openapi-generator-cli/i, evidence: "OpenAPI Generator evidence was detected." },
+    { signal: "swagger-codegen", pattern: /swagger-codegen/i, evidence: "Swagger Codegen evidence was detected." },
+    { signal: "generator-name", pattern: /generatorName|-g\s+(typescript|java|python|ruby|go|kotlin|swift)|generator-name/i, evidence: "generator name evidence was detected." },
+    { signal: "config-file", pattern: /orval\.config|openapi-generator-config|defineConfig|additionalProperties|globalProperties/i, evidence: "generator config evidence was detected." },
+    { signal: "cli-command", pattern: /\b(openapi-typescript|orval|openapi-generator(?:-cli)?|swagger-codegen)\b.+(?:generate|gen|-i|--input|--output)/i, evidence: "generator CLI command evidence was detected." }
+  ];
+  return openApiClientSignalFromSpecs(sourceFiles, specs, "generator", "signal");
+}
+
+function openApiClientReadinessOutputSignals(sourceFiles: OpenApiClientSourceFile[]): OpenApiClientReadinessReport["outputSignals"] {
+  const specs: Array<{ signal: OpenApiClientReadinessReport["outputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "types", pattern: /\b(types?|d\.ts|interface|paths|components|operations)\b/i, evidence: "generated type evidence was detected." },
+    { signal: "client-sdk", pattern: /client\s*:|api-client|SDK|typescript-fetch|typescript-axios|createClient|fetcher/i, evidence: "client SDK output evidence was detected." },
+    { signal: "hooks", pattern: /react-query|tanstack|useQuery|useMutation|swr|useSWR|vue-query|svelte-query|angular-query/i, evidence: "generated hook evidence was detected." },
+    { signal: "schemas", pattern: /schemas?\s*:|models?\s*:|modelPackage|schema output|schemaMode/i, evidence: "schema/model output evidence was detected." },
+    { signal: "mocks", pattern: /mock|mocks|faker|fixture|handlers/i, evidence: "mock output evidence was detected." },
+    { signal: "zod", pattern: /\bzod\b|zodios|zod schemas/i, evidence: "Zod output evidence was detected." },
+    { signal: "msw", pattern: /\bmsw\b|Mock Service Worker|mock handlers/i, evidence: "MSW mock output evidence was detected." },
+    { signal: "server-stub", pattern: /server stub|server\s*:|generatorName\s*:\s*['"][^'"]*server|typescript-nestjs|spring|fastapi/i, evidence: "server stub output evidence was detected." },
+    { signal: "docs", pattern: /documentation|docs?|markdown|html2|asciidoc/i, evidence: "documentation output evidence was detected." },
+    { signal: "split-output", pattern: /mode\s*:\s*['"](split|tags|tags-split)|split\s*:|tags\s*:/i, evidence: "split output evidence was detected." }
+  ];
+  return openApiClientSignalFromSpecs(sourceFiles, specs, "output", "signal");
+}
+
+function openApiClientReadinessRuntimeSignals(sourceFiles: OpenApiClientSourceFile[]): OpenApiClientReadinessReport["runtimeSignals"] {
+  const specs: Array<{ signal: OpenApiClientReadinessReport["runtimeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "fetch", pattern: /native fetch|fetch\s*\(|openapi-fetch|typescript-fetch/i, evidence: "fetch runtime evidence was detected." },
+    { signal: "axios", pattern: /axios|typescript-axios/i, evidence: "Axios runtime evidence was detected." },
+    { signal: "react-query", pattern: /react-query|@tanstack\/react-query|useQuery|useMutation/i, evidence: "React Query evidence was detected." },
+    { signal: "swr", pattern: /\bswr\b|useSWR/i, evidence: "SWR evidence was detected." },
+    { signal: "angular", pattern: /angular|HttpClient|typescript-angular/i, evidence: "Angular client evidence was detected." },
+    { signal: "vue", pattern: /vue-query|@tanstack\/vue-query|Vue/i, evidence: "Vue Query evidence was detected." },
+    { signal: "svelte", pattern: /svelte-query|Svelte/i, evidence: "Svelte Query evidence was detected." },
+    { signal: "hono", pattern: /\bhono\b|Hono/i, evidence: "Hono evidence was detected." },
+    { signal: "mcp", pattern: /\bmcp\b|Model Context Protocol/i, evidence: "MCP output evidence was detected." },
+    { signal: "custom-mutator", pattern: /mutator|custom client|customClient|interceptor|headers|auth/i, evidence: "custom mutator/client evidence was detected." }
+  ];
+  return openApiClientSignalFromSpecs(sourceFiles, specs, "runtime", "signal");
+}
+
+function openApiClientReadinessQualitySignals(sourceFiles: OpenApiClientSourceFile[]): OpenApiClientReadinessReport["qualitySignals"] {
+  const specs: Array<{ signal: OpenApiClientReadinessReport["qualitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "validate-spec", pattern: /openapi-generator validate|validate(?:Spec)?|redocly lint|swagger-parser/i, evidence: "spec validation evidence was detected." },
+    { signal: "lint", pattern: /redocly lint|openapi.*lint|vacuum|speccy/i, evidence: "OpenAPI lint evidence was detected." },
+    { signal: "snapshots", pattern: /snapshot|test:snapshots|snapshots:update/i, evidence: "generated snapshot evidence was detected." },
+    { signal: "generated-diff", pattern: /generated diff|git diff.*generated|do not edit|update-samples|regenerate/i, evidence: "generated output drift evidence was detected." },
+    { signal: "typecheck", pattern: /tsc --noEmit|typecheck|test:cli|valid TypeScript/i, evidence: "generated TypeScript validation evidence was detected." },
+    { signal: "ci", pattern: /\.github\/workflows|CI|pull_request|workflow_dispatch/i, evidence: "CI evidence was detected." },
+    { signal: "ignore-file", pattern: /\.openapi-generator-ignore|openapi-generator-ignore/i, evidence: "OpenAPI generator ignore evidence was detected." },
+    { signal: "templates", pattern: /templateDir|custom template|mustache|handlebars/i, evidence: "custom template evidence was detected." },
+    { signal: "security-review", pattern: /untrusted source|code injection|review.*input|security issue|template.*review/i, evidence: "generator input/template security review evidence was detected." }
+  ];
+  return openApiClientSignalFromSpecs(sourceFiles, specs, "quality", "signal");
+}
+
+function openApiClientReadinessPackageSignals(sourceFiles: OpenApiClientSourceFile[]): OpenApiClientReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: OpenApiClientReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "openapi-typescript", pattern: /"openapi-typescript"|openapi-typescript/i, evidence: "openapi-typescript package evidence was detected." },
+    { signal: "openapi-fetch", pattern: /"openapi-fetch"|openapi-fetch/i, evidence: "openapi-fetch package evidence was detected." },
+    { signal: "orval", pattern: /"orval"|orval/i, evidence: "Orval package evidence was detected." },
+    { signal: "@openapitools/openapi-generator-cli", pattern: /"@openapitools\/openapi-generator-cli"|@openapitools\/openapi-generator-cli/i, evidence: "OpenAPI Generator npm package evidence was detected." },
+    { signal: "openapi-generator-cli", pattern: /"openapi-generator-cli"|openapi-generator-cli/i, evidence: "OpenAPI Generator CLI package evidence was detected." },
+    { signal: "swagger-codegen", pattern: /"swagger-codegen"|swagger-codegen/i, evidence: "Swagger Codegen package evidence was detected." },
+    { signal: "@hey-api/openapi-ts", pattern: /"@hey-api\/openapi-ts"|@hey-api\/openapi-ts/i, evidence: "Hey API OpenAPI TS package evidence was detected." }
+  ];
+  return openApiClientSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function openApiClientSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: OpenApiClientSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/openapi-client-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }
 
