@@ -1,6 +1,6 @@
 {
   "iteration": 10,
-  "createdAt": "2026-06-04T02:11:27.105Z",
+  "createdAt": "2026-06-04T02:22:10.406Z",
   "checks": [
     {
       "name": "project setup",
@@ -193,6 +193,13 @@
     },
     {
       "name": "storybook readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "design tokens readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

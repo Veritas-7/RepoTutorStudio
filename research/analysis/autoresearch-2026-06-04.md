@@ -2749,6 +2749,47 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 32/32 audit checks across 13 generated reports
 
+### Upgrade 135: Design Tokens Readiness Report
+
+- Cloned and inspected `style-dictionary/style-dictionary` under
+  `research/external-src/style-dictionary-style-dictionary` without executing
+  external source.
+- GitHub metadata: public repo, Apache-2.0 license, 4,674 stars, 621 forks,
+  updated 2026-06-02T15:14:43Z. Compared with
+  `tokens-studio/sd-transforms`, `tailwindlabs/tailwindcss`, and
+  `primer/primitives`; selected Style Dictionary because it directly models
+  canonical design token inputs, transforms, and multi-platform outputs.
+  No source code was copied into RepoTutor.
+- Added `DesignTokensReportSchema` and
+  `analysis/design-tokens-report.json` with token source files, token
+  categories, platform targets, transform signals, usage signals, governance
+  signals, risk queue, recommended commands, and learner next steps.
+- Added `markdown/design-tokens.md`, `html/design-tokens.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target design-tokens`.
+- Source pattern: Style Dictionary centralizes design token `source` and
+  `include` inputs, `platforms`, `transformGroup`, `transforms`, `buildPath`,
+  `files`, `destination`, `format`, CTI category/type/item structure, aliases,
+  comments, custom transforms/formats/parsers, output references, and
+  multi-platform CSS, Android, Compose, iOS, and iOS Swift outputs. RepoTutor
+  maps that to deterministic static design-token readiness and explicitly does
+  not run token builds or claim generated platform assets are fresh.
+- RED smoke generated
+  `/tmp/repotutor-design-tokens-red-studies.Oeb524/2026-06-04/local__simple-ts-app__main__557a2318`;
+  old behavior was missing `analysis/design-tokens-report.json`,
+  `markdown/design-tokens.md`, and `html/design-tokens.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-design-tokens-green-studies.WSnXYL/2026-06-04/local__simple-ts-app__main__557a2318`;
+  confirmed `verificationCheckedRequiredArtifacts=105`, token sources 0,
+  token categories 14, platform targets 11, transform signals 12, usage
+  signals 8, governance signals 9, recommended commands 5, risk queue 2,
+  `design-token-card`, `data-source-pattern="Style Dictionary"`,
+  manifest/learning-path entries, and `open --target design-tokens` ->
+  `html/design-tokens.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 33/33 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

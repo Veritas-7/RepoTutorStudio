@@ -42,6 +42,7 @@ import type {
   E2eReport,
   AccessibilityReport,
   StorybookReport,
+  DesignTokensReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -90,6 +91,7 @@ export interface StudyHtmlInput {
   e2eReport: E2eReport;
   accessibilityReport: AccessibilityReport;
   storybookReport: StorybookReport;
+  designTokensReport: DesignTokensReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -158,6 +160,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["e2e.html", "E2E"],
     ["accessibility.html", "Accessibility"],
     ["storybook.html", "Storybook"],
+    ["design-tokens.html", "Design Tokens"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -261,6 +264,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>E2E Readiness</h3><p>${escapeHtml(input.e2eReport.summary)}</p><p>Playwright 패턴으로 browser projects, locators, assertions, traces/reporters, webServer/baseURL 준비도를 정리합니다.</p><a href="e2e.html">E2E 열기</a></article>
           <article><h3>Accessibility Readiness</h3><p>${escapeHtml(input.accessibilityReport.summary)}</p><p>axe-core 패턴으로 scan targets, WCAG/category tags, result buckets, impact, context controls를 정리합니다.</p><a href="accessibility.html">Accessibility 열기</a></article>
           <article><h3>Storybook Readiness</h3><p>${escapeHtml(input.storybookReport.summary)}</p><p>Storybook 패턴으로 CSF stories, args, decorators, play functions, addons, publish/test signals를 정리합니다.</p><a href="storybook.html">Storybook 열기</a></article>
+          <article><h3>Design Tokens Readiness</h3><p>${escapeHtml(input.designTokensReport.summary)}</p><p>Style Dictionary 패턴으로 token source, platform target, transform, usage, governance signals를 정리합니다.</p><a href="design-tokens.html">Design Tokens 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -432,6 +436,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Storybook Readiness", "storybook.html", `<section class="panel" data-source-pattern="Storybook"><h2>Storybook Snapshot</h2><p>${escapeHtml(input.storybookReport.summary)}</p><p class="muted">${escapeHtml(input.storybookReport.sourcePattern)}</p><dl class="meta"><div><dt>stories</dt><dd>${input.storybookReport.storyFiles.length}</dd></div><div><dt>configs</dt><dd>${input.storybookReport.configFiles.length}</dd></div><div><dt>annotations</dt><dd>${input.storybookReport.storyAnnotations.length}</dd></div><div><dt>addons</dt><dd>${input.storybookReport.addonSignals.length}</dd></div></dl><p class="muted">RepoTutor records Storybook readiness only. It does not start Storybook or claim component-test pass/fail results.</p></section><section class="grid"><article class="storybook-card"><h3>Story Files</h3>${storybookStoryFileList(input.storybookReport.storyFiles)}</article><article class="storybook-card"><h3>Config Files</h3>${storybookConfigList(input.storybookReport.configFiles)}</article><article class="storybook-card"><h3>Story Annotations</h3>${storybookAnnotationList(input.storybookReport.storyAnnotations)}</article><article class="storybook-card"><h3>Addon Signals</h3>${storybookAddonList(input.storybookReport.addonSignals)}</article></section><section class="grid"><article class="storybook-card"><h3>Test Signals</h3>${storybookTestList(input.storybookReport.testSignals)}</article><article class="storybook-card"><h3>Publish Signals</h3>${storybookPublishList(input.storybookReport.publishSignals)}</article><article class="storybook-card"><h3>Recommended Commands</h3>${storybookCommandList(input.storybookReport.recommendedCommands)}</article><article class="storybook-card"><h3>Risk Queue</h3>${storybookRiskList(input.storybookReport.riskQueue)}</article><article class="storybook-card"><h3>다음 확인 단계</h3>${list(input.storybookReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "design-tokens.html",
+      title: "Design Tokens Readiness",
+      html: pageShell("Design Tokens Readiness", "design-tokens.html", `<section class="panel" data-source-pattern="Style Dictionary"><h2>Design Tokens Snapshot</h2><p>${escapeHtml(input.designTokensReport.summary)}</p><p class="muted">${escapeHtml(input.designTokensReport.sourcePattern)}</p><dl class="meta"><div><dt>sources</dt><dd>${input.designTokensReport.tokenSources.length}</dd></div><div><dt>platforms</dt><dd>${input.designTokensReport.platformTargets.length}</dd></div><div><dt>transforms</dt><dd>${input.designTokensReport.transformSignals.length}</dd></div><div><dt>usage</dt><dd>${input.designTokensReport.usageSignals.length}</dd></div></dl><p class="muted">RepoTutor records Style Dictionary readiness only. It does not build token outputs or claim design-system parity.</p></section><section class="grid"><article class="design-token-card"><h3>Token Sources</h3>${designTokenSourceList(input.designTokensReport.tokenSources)}</article><article class="design-token-card"><h3>Token Categories</h3>${designTokenCategoryList(input.designTokensReport.tokenCategories)}</article><article class="design-token-card"><h3>Platform Targets</h3>${designTokenPlatformList(input.designTokensReport.platformTargets)}</article><article class="design-token-card"><h3>Transform Signals</h3>${designTokenTransformList(input.designTokensReport.transformSignals)}</article></section><section class="grid"><article class="design-token-card"><h3>Usage Signals</h3>${designTokenUsageList(input.designTokensReport.usageSignals)}</article><article class="design-token-card"><h3>Governance Signals</h3>${designTokenGovernanceList(input.designTokensReport.governanceSignals)}</article><article class="design-token-card"><h3>Recommended Commands</h3>${designTokenCommandList(input.designTokensReport.recommendedCommands)}</article><article class="design-token-card"><h3>Risk Queue</h3>${designTokenRiskList(input.designTokensReport.riskQueue)}</article><article class="design-token-card"><h3>다음 확인 단계</h3>${list(input.designTokensReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -574,6 +583,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "E2E Readiness", path: "html/e2e.html", description: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다." },
       { label: "Accessibility Readiness", path: "html/accessibility.html", description: "axe-core식 scan target, WCAG/category tag, result bucket, impact 준비도를 확인합니다." },
       { label: "Storybook Readiness", path: "html/storybook.html", description: "Storybook식 CSF story, args, addon, test/publish signal 준비도를 확인합니다." },
+      { label: "Design Tokens Readiness", path: "html/design-tokens.html", description: "Style Dictionary식 token source, platform, transform, usage 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -849,6 +859,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "storybook.html",
       goal: "Storybook식 CSF story, args, decorators, play function, addon/test/publish 준비도를 확인합니다.",
       evidence: `story files ${input.storybookReport.storyFiles.length}개, addons ${input.storybookReport.addonSignals.length}개`
+    },
+    {
+      title: "Design Tokens 준비도 확인",
+      href: "design-tokens.html",
+      goal: "Style Dictionary식 token source, platform target, transform, usage, governance 준비도를 확인합니다.",
+      evidence: `token sources ${input.designTokensReport.tokenSources.length}개, platforms ${input.designTokensReport.platformTargets.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -1626,6 +1642,51 @@ function storybookRiskList(items: StorybookReport["riskQueue"]): string {
 }
 
 function storybookHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function designTokenSourceList(items: DesignTokensReport["tokenSources"]): string {
+  if (items.length === 0) return "<p class=\"muted\">token source가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.format)} / ${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(designTokenHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function designTokenCategoryList(items: DesignTokensReport["tokenCategories"]): string {
+  if (items.length === 0) return "<p class=\"muted\">token category readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.category)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(designTokenHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function designTokenPlatformList(items: DesignTokensReport["platformTargets"]): string {
+  if (items.length === 0) return "<p class=\"muted\">platform target readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.target)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(designTokenHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function designTokenTransformList(items: DesignTokensReport["transformSignals"]): string {
+  if (items.length === 0) return "<p class=\"muted\">transform signal readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.signal)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(designTokenHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function designTokenUsageList(items: DesignTokensReport["usageSignals"]): string {
+  if (items.length === 0) return "<p class=\"muted\">usage signal readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.signal)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(designTokenHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function designTokenGovernanceList(items: DesignTokensReport["governanceSignals"]): string {
+  if (items.length === 0) return "<p class=\"muted\">governance signal readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.signal)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(designTokenHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function designTokenCommandList(items: DesignTokensReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function designTokenRiskList(items: DesignTokensReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(designTokenHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function designTokenHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
