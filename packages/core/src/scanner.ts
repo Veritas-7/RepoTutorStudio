@@ -93,6 +93,7 @@ import {
   SpreadsheetReadinessReport,
   ChartVisualizationReadinessReport,
   DiagramRenderingReadinessReport,
+  LinkIntegrityReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -192,6 +193,7 @@ export interface AnalysisBundle {
   spreadsheetReadinessReport: SpreadsheetReadinessReport;
   chartVisualizationReadinessReport: ChartVisualizationReadinessReport;
   diagramRenderingReadinessReport: DiagramRenderingReadinessReport;
+  linkIntegrityReadinessReport: LinkIntegrityReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -291,8 +293,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const spreadsheetReadinessReport = await buildSpreadsheetReadinessReport(walk);
   const chartVisualizationReadinessReport = await buildChartVisualizationReadinessReport(walk);
   const diagramRenderingReadinessReport = await buildDiagramRenderingReadinessReport(walk);
+  const linkIntegrityReadinessReport = await buildLinkIntegrityReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -18184,6 +18187,272 @@ function diagramRenderingReadinessSignalFromSpecs<T extends Record<K, string> & 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/diagram-rendering-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildLinkIntegrityReadinessReport(walk: WalkResult): Promise<LinkIntegrityReadinessReport> {
+  const sourceFiles = await linkIntegrityReadinessSourceFiles(walk);
+  const linkSetups = linkIntegrityReadinessSetups(sourceFiles);
+  const targetSignals = linkIntegrityReadinessTargetSignals(sourceFiles);
+  const policySignals = linkIntegrityReadinessPolicySignals(sourceFiles);
+  const networkSignals = linkIntegrityReadinessNetworkSignals(sourceFiles);
+  const outputSignals = linkIntegrityReadinessOutputSignals(sourceFiles);
+  const ciSignals = linkIntegrityReadinessCiSignals(sourceFiles);
+  const packageSignals = linkIntegrityReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasLycheePackage = packageSignals.some((item) => item.signal === "lychee" && item.readiness === "ready");
+  const hasSetup = linkSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = linkSetups.some((item) => item.readiness === "ready");
+  const hasTargets = targetSignals.some((item) => item.readiness === "ready") || linkSetups.some((item) => item.targetCount > 0);
+  const hasPolicy = policySignals.some((item) => item.readiness === "ready") || linkSetups.some((item) => item.policyCount > 0);
+  const hasNetwork = networkSignals.some((item) => item.readiness === "ready") || linkSetups.some((item) => item.networkCount > 0);
+  const hasOutput = outputSignals.some((item) => item.readiness === "ready") || linkSetups.some((item) => item.outputCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || linkSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: LinkIntegrityReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document a link integrity checker before claiming documentation/site link readiness.",
+      why: "Link integrity readiness starts with explicit checker config, target file types, policy, network, output, or CI evidence.",
+      relatedHref: "html/link-integrity-readiness.html"
+    });
+  }
+  if (hasLycheePackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair lychee package/action evidence with concrete targets, accepted statuses, excludes, network limits, and report output.",
+      why: "A link checker package alone does not prove broken-link checks run on the right files with stable policy.",
+      relatedHref: "html/link-integrity-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasTargets) {
+    riskQueue.push({
+      priority: "high",
+      action: "Declare Markdown, HTML, website, sitemap, mail, or reStructuredText link-check targets.",
+      why: "Link checks must name the content surfaces they cover before their results can be trusted.",
+      relatedHref: "html/link-integrity-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasPolicy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add accept status, include/exclude, scheme, private-network, and fragment policy.",
+      why: "Without policy, link checking tends to oscillate on redirects, rate limits, private URLs, and generated anchors.",
+      relatedHref: "html/link-integrity-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && !hasNetwork) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review timeout, retry, user-agent, headers, GitHub token, and offline mode settings.",
+      why: "External link checks need bounded network behavior and authentication/rate-limit controls.",
+      relatedHref: "html/link-integrity-readiness.html"
+    });
+  }
+  if ((hasReadySetup || hasPackage) && (!hasOutput || !hasCi)) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add machine-readable output and CI wiring for repeatable broken-link review.",
+      why: "Learners and maintainers need durable JSON/Markdown/JUnit output, cache behavior, and CI scripts/actions.",
+      relatedHref: "html/link-integrity-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run real link checks only in a trusted workspace with explicit network policy.",
+    why: "RepoTutor records link integrity readiness only; it does not crawl websites, open URLs, send mail checks, use credentials, contact external hosts, mutate reports, or run the analyzed project's tests.",
+    relatedHref: "html/link-integrity-readiness.html"
+  });
+
+  return {
+    summary: `Lychee-style link integrity readiness report: setup ${linkSetups.length}개, target signal ${targetSignals.length}개, policy signal ${policySignals.length}개, network signal ${networkSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Lychee link checker markdown html reStructuredText website mail sitemap accept status exclude include scheme timeout retry headers github-token offline output cache",
+    linkSetups,
+    targetSignals,
+    policySignals,
+    networkSignals,
+    outputSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"lychee|markdown-link-check|broken-link-checker|linkinator|html-proofer\" .github package.json pnpm-lock.yaml docs", purpose: "Inventory link checker providers and scripts." },
+      { command: "rg \"markdown|html|reStructuredText|sitemap|include_mail|wikilinks|README|docs\" .github docs . lychee*.toml", purpose: "Review link-check target surfaces." },
+      { command: "rg \"accept|exclude|include|scheme|include_fragments|exclude_private|exclude_loopback|exclude_all_private\" .github docs . lychee*.toml", purpose: "Check status, include/exclude, scheme, private network, and fragment policy." },
+      { command: "rg \"timeout|retry|user-agent|headers|github-token|offline|accept_timeouts\" .github docs . lychee*.toml", purpose: "Check network limits, auth, headers, and offline behavior." },
+      { command: "rg \"output|format|json|markdown|junit|cache|dump|summary\" .github docs . lychee*.toml", purpose: "Confirm durable output, cache, and reporting behavior." },
+      { command: "npx vitest run", purpose: "Run local tests that cover generated link lists, HTML anchors, and docs navigation." }
+    ],
+    learnerNextSteps: [
+      "먼저 lychee, markdown-link-check, broken-link-checker, linkinator, html-proofer 설정과 package/CI script를 찾으세요.",
+      "Markdown, HTML, website, sitemap, mail, reStructuredText target 신호로 어떤 문서 표면이 검사되는지 확인하세요.",
+      "accept, exclude, include, scheme, private-network, fragments 신호로 false positive와 private URL 정책을 확인하세요.",
+      "timeout, retry, user-agent, headers, github-token, offline 신호로 외부 네트워크 경계를 확인하세요.",
+      "JSON, Markdown report, JUnit, summary, dump, cache 신호로 결과가 사람이 읽고 자동화가 재사용할 수 있는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 웹 크롤링, URL 접속, mail check, credential 사용, 네트워크 테스트는 안전한 환경에서 별도로 실행하세요."
+    ]
+  };
+}
+
+type LinkIntegrityReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function linkIntegrityReadinessSourceFiles(walk: WalkResult): Promise<LinkIntegrityReadinessSourceFile[]> {
+  const files: LinkIntegrityReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !linkIntegrityReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!linkIntegrityReadinessPathSignal(file.relPath) && !linkIntegrityReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function linkIntegrityReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return linkIntegrityReadinessPathSignal(filePath)
+    || /^(lychee\.(toml|json|ya?ml)|\.lycheeignore|markdown-link-check\.(json|js)|linkinator\.(json|js)|package\.json|README\.md)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|json|md|mdx|html?|rst|ya?ml|toml)$/i.test(filePath);
+}
+
+function linkIntegrityReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(lychee|link-check|linkcheck|links|markdown-link-check|broken-link|linkinator|html-proofer|docs|website|site)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function linkIntegrityReadinessContentSignal(text: string): boolean {
+  return /(lychee|markdown-link-check|broken-link-checker|linkinator|html-proofer|accept\s*=|exclude\s*=|include_fragments|include_mail|github-token|user-agent|timeout|retry|offline|sitemap|href=|https?:\/\/|mailto:)/i.test(text);
+}
+
+function linkIntegrityReadinessSetups(sourceFiles: LinkIntegrityReadinessSourceFile[]): LinkIntegrityReadinessReport["linkSetups"] {
+  const rows: LinkIntegrityReadinessReport["linkSetups"] = [];
+  for (const source of sourceFiles) {
+    const targetCount = countMatches(source.text, /markdown|\.md\b|html|\.html?\b|reStructuredText|\.rst\b|website|sitemap|mailto|include_mail|wikilinks|README|docs/gi);
+    const extractionCount = countMatches(source.text, /href=|https?:\/\/|mailto:|extract|fragment|anchor|include_fragments|fallback_extensions|index_files/gi);
+    const policyCount = countMatches(source.text, /accept|exclude|include|scheme|exclude_private|exclude_link_local|exclude_loopback|exclude_all_private|include_fragments/gi);
+    const networkCount = countMatches(source.text, /timeout|retry|retry_wait_time|user-agent|headers?|github-token|offline|accept_timeouts|method|basic-auth/gi);
+    const outputCount = countMatches(source.text, /output|format|json|markdown|junit|summary|cache|dump|report/gi);
+    const ciCount = countMatches(source.text, /github action|lychee-action|\.github\/workflows|docker|nix|pre-commit|package script|npm run|pnpm/gi);
+    const hasSetupSignal = targetCount + extractionCount + policyCount + networkCount + outputCount + ciCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: linkIntegrityReadinessProvider(source),
+      targetCount,
+      extractionCount,
+      policyCount,
+      networkCount,
+      outputCount,
+      ciCount,
+      readiness: targetCount > 0 && policyCount > 0 && networkCount > 0 && outputCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains target ${targetCount}, extraction ${extractionCount}, policy ${policyCount}, network ${networkCount}, output ${outputCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function linkIntegrityReadinessProvider(source: LinkIntegrityReadinessSourceFile): LinkIntegrityReadinessReport["linkSetups"][number]["provider"] {
+  if (/lychee|lychee-action/i.test(source.text)) return "lychee";
+  if (/markdown-link-check/i.test(source.text)) return "markdown-link-check";
+  if (/broken-link-checker|blc\b/i.test(source.text)) return "broken-link-checker";
+  if (/linkinator/i.test(source.text)) return "linkinator";
+  if (/html-proofer/i.test(source.text)) return "html-proofer";
+  if (/link|href|url/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function linkIntegrityReadinessTargetSignals(sourceFiles: LinkIntegrityReadinessSourceFile[]): LinkIntegrityReadinessReport["targetSignals"] {
+  const specs: Array<{ signal: LinkIntegrityReadinessReport["targetSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "markdown", pattern: /markdown|\.md\b|README\.md/i, evidence: "Markdown target evidence was detected." },
+    { signal: "html", pattern: /html|\.html?\b|href=/i, evidence: "HTML target evidence was detected." },
+    { signal: "restructuredtext", pattern: /reStructuredText|\.rst\b/i, evidence: "reStructuredText target evidence was detected." },
+    { signal: "website", pattern: /website|https?:\/\/|crawl|site\b/i, evidence: "website target evidence was detected." },
+    { signal: "mail", pattern: /mailto:|include_mail|mail address|email/i, evidence: "mail link evidence was detected." },
+    { signal: "sitemap", pattern: /sitemap|sitemap\.xml/i, evidence: "sitemap target evidence was detected." }
+  ];
+  return linkIntegrityReadinessSignalFromSpecs(sourceFiles, specs, "target", "signal");
+}
+
+function linkIntegrityReadinessPolicySignals(sourceFiles: LinkIntegrityReadinessSourceFile[]): LinkIntegrityReadinessReport["policySignals"] {
+  const specs: Array<{ signal: LinkIntegrityReadinessReport["policySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "accept-status", pattern: /accept\s*=|--accept|accepted status|status code/i, evidence: "accepted status policy evidence was detected." },
+    { signal: "exclude", pattern: /exclude\s*=|exclude_path|--exclude|\.lycheeignore/i, evidence: "exclude policy evidence was detected." },
+    { signal: "include", pattern: /include\s*=|--include|include_verbatim|include_mail|include_wikilinks/i, evidence: "include policy evidence was detected." },
+    { signal: "scheme", pattern: /scheme\s*=|--scheme|http, https, file, and mailto|mailto/i, evidence: "scheme policy evidence was detected." },
+    { signal: "private-network", pattern: /exclude_private|exclude_link_local|exclude_loopback|exclude_all_private|private/i, evidence: "private network policy evidence was detected." },
+    { signal: "fragments", pattern: /include_fragments|fragments?|anchor/i, evidence: "fragment policy evidence was detected." }
+  ];
+  return linkIntegrityReadinessSignalFromSpecs(sourceFiles, specs, "policy", "signal");
+}
+
+function linkIntegrityReadinessNetworkSignals(sourceFiles: LinkIntegrityReadinessSourceFile[]): LinkIntegrityReadinessReport["networkSignals"] {
+  const specs: Array<{ signal: LinkIntegrityReadinessReport["networkSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "timeout", pattern: /timeout|--timeout/i, evidence: "timeout evidence was detected." },
+    { signal: "retry", pattern: /retry|retry_wait_time|--max-retries/i, evidence: "retry evidence was detected." },
+    { signal: "user-agent", pattern: /user-agent|user_agent|--user-agent/i, evidence: "user-agent evidence was detected." },
+    { signal: "headers", pattern: /headers?\s*=|--header|custom headers/i, evidence: "headers evidence was detected." },
+    { signal: "github-token", pattern: /github-token|GITHUB_TOKEN|github_token/i, evidence: "GitHub token evidence was detected." },
+    { signal: "offline", pattern: /offline|accept_timeouts|--offline/i, evidence: "offline/timeout acceptance evidence was detected." }
+  ];
+  return linkIntegrityReadinessSignalFromSpecs(sourceFiles, specs, "network", "signal");
+}
+
+function linkIntegrityReadinessOutputSignals(sourceFiles: LinkIntegrityReadinessSourceFile[]): LinkIntegrityReadinessReport["outputSignals"] {
+  const specs: Array<{ signal: LinkIntegrityReadinessReport["outputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "json", pattern: /json output|--format json|format\s*=\s*['"]?json|\.json/i, evidence: "JSON output evidence was detected." },
+    { signal: "markdown-report", pattern: /markdown report|\.md\b|report\.md|summary output/i, evidence: "Markdown report evidence was detected." },
+    { signal: "junit", pattern: /junit|junit\.xml/i, evidence: "JUnit output evidence was detected." },
+    { signal: "summary", pattern: /summary|summar(y|ies)/i, evidence: "summary evidence was detected." },
+    { signal: "dump", pattern: /dump|dump_inputs|--dump/i, evidence: "dump output evidence was detected." },
+    { signal: "cache", pattern: /cache|cache_exclude_status|--cache/i, evidence: "cache evidence was detected." }
+  ];
+  return linkIntegrityReadinessSignalFromSpecs(sourceFiles, specs, "output", "signal");
+}
+
+function linkIntegrityReadinessCiSignals(sourceFiles: LinkIntegrityReadinessSourceFile[]): LinkIntegrityReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: LinkIntegrityReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-action", pattern: /lychee-action|github action|\.github\/workflows|Check Links/i, evidence: "GitHub Action evidence was detected." },
+    { signal: "docker", pattern: /docker|lycheeverse\/lychee/i, evidence: "Docker execution evidence was detected." },
+    { signal: "nix", pattern: /nix|testers\.lycheeLinkCheck/i, evidence: "Nix link check evidence was detected." },
+    { signal: "precommit", pattern: /pre-commit|precommit|pre-commit-config/i, evidence: "pre-commit evidence was detected." },
+    { signal: "script", pattern: /package\.json|npm run|pnpm|yarn|cargo run|script/i, evidence: "script evidence was detected." }
+  ];
+  return linkIntegrityReadinessSignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function linkIntegrityReadinessPackageSignals(sourceFiles: LinkIntegrityReadinessSourceFile[]): LinkIntegrityReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: LinkIntegrityReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "lychee", pattern: /"lychee"|lycheeverse\/lychee|lychee-action|\blychee\b/i, evidence: "lychee package/action evidence was detected." },
+    { signal: "markdown-link-check", pattern: /"markdown-link-check"|markdown-link-check/i, evidence: "markdown-link-check evidence was detected." },
+    { signal: "broken-link-checker", pattern: /"broken-link-checker"|broken-link-checker|\bblc\b/i, evidence: "broken-link-checker evidence was detected." },
+    { signal: "linkinator", pattern: /"linkinator"|linkinator/i, evidence: "linkinator evidence was detected." },
+    { signal: "html-proofer", pattern: /"html-proofer"|html-proofer/i, evidence: "html-proofer evidence was detected." },
+    { signal: "custom", pattern: /link check|linkcheck|broken link|href=|https?:\/\//i, evidence: "custom link checking evidence was detected." }
+  ];
+  return linkIntegrityReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function linkIntegrityReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: LinkIntegrityReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/link-integrity-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

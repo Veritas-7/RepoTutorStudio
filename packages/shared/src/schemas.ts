@@ -4167,6 +4167,71 @@ export const DiagramRenderingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const LinkIntegrityReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  linkSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["lychee", "markdown-link-check", "broken-link-checker", "linkinator", "html-proofer", "custom", "unknown"]),
+    targetCount: z.number().int().nonnegative(),
+    extractionCount: z.number().int().nonnegative(),
+    policyCount: z.number().int().nonnegative(),
+    networkCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  targetSignals: z.array(z.object({
+    signal: z.enum(["markdown", "html", "restructuredtext", "website", "mail", "sitemap", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  policySignals: z.array(z.object({
+    signal: z.enum(["accept-status", "exclude", "include", "scheme", "private-network", "fragments", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  networkSignals: z.array(z.object({
+    signal: z.enum(["timeout", "retry", "user-agent", "headers", "github-token", "offline", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["json", "markdown-report", "junit", "summary", "dump", "cache", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-action", "docker", "nix", "precommit", "script", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["lychee", "markdown-link-check", "broken-link-checker", "linkinator", "html-proofer", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4449,6 +4514,7 @@ export type PdfGenerationReadinessReport = z.infer<typeof PdfGenerationReadiness
 export type SpreadsheetReadinessReport = z.infer<typeof SpreadsheetReadinessReportSchema>;
 export type ChartVisualizationReadinessReport = z.infer<typeof ChartVisualizationReadinessReportSchema>;
 export type DiagramRenderingReadinessReport = z.infer<typeof DiagramRenderingReadinessReportSchema>;
+export type LinkIntegrityReadinessReport = z.infer<typeof LinkIntegrityReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

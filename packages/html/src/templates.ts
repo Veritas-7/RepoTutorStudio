@@ -88,6 +88,7 @@ import type {
   SpreadsheetReadinessReport,
   ChartVisualizationReadinessReport,
   DiagramRenderingReadinessReport,
+  LinkIntegrityReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -182,6 +183,7 @@ export interface StudyHtmlInput {
   spreadsheetReadinessReport: SpreadsheetReadinessReport;
   chartVisualizationReadinessReport: ChartVisualizationReadinessReport;
   diagramRenderingReadinessReport: DiagramRenderingReadinessReport;
+  linkIntegrityReadinessReport: LinkIntegrityReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -290,6 +292,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["spreadsheet-readiness.html", "Spreadsheets"],
     ["chart-visualization-readiness.html", "Charts"],
     ["diagram-rendering-readiness.html", "Diagrams"],
+    ["link-integrity-readiness.html", "Link Integrity"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -822,6 +825,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Diagram Rendering Readiness", "diagram-rendering-readiness.html", `<section class="panel" data-source-pattern="Mermaid"><h2>Diagram Rendering Snapshot</h2><p>${escapeHtml(input.diagramRenderingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.diagramRenderingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.diagramRenderingReadinessReport.diagramSetups.length}</dd></div><div><dt>types</dt><dd>${input.diagramRenderingReadinessReport.diagramTypeSignals.length}</dd></div><div><dt>render</dt><dd>${input.diagramRenderingReadinessReport.renderSignals.length}</dd></div><div><dt>security</dt><dd>${input.diagramRenderingReadinessReport.securitySignals.length}</dd></div></dl><p class="muted">RepoTutor records diagram rendering readiness only; it does not render Mermaid diagrams, execute diagram callbacks, open sandboxed iframes, sanitize user text, mutate SVG, export images, or run the analyzed project's tests.</p></section><section class="grid"><article class="diagram-rendering-readiness-card"><h3>Diagram Setups</h3>${diagramRenderingReadinessSetupList(input.diagramRenderingReadinessReport.diagramSetups)}</article><article class="diagram-rendering-readiness-card"><h3>Diagram Type Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.diagramTypeSignals, "signal")}</article><article class="diagram-rendering-readiness-card"><h3>Render Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.renderSignals, "signal")}</article><article class="diagram-rendering-readiness-card"><h3>Theme Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.themeSignals, "signal")}</article></section><section class="grid"><article class="diagram-rendering-readiness-card"><h3>Security Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.securitySignals, "signal")}</article><article class="diagram-rendering-readiness-card"><h3>Layout Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.layoutSignals, "signal")}</article><article class="diagram-rendering-readiness-card"><h3>Output Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.outputSignals, "signal")}</article><article class="diagram-rendering-readiness-card"><h3>Package Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.packageSignals, "signal")}</article><article class="diagram-rendering-readiness-card"><h3>Recommended Commands</h3>${diagramRenderingReadinessCommandList(input.diagramRenderingReadinessReport.recommendedCommands)}</article><article class="diagram-rendering-readiness-card"><h3>Risk Queue</h3>${diagramRenderingReadinessRiskList(input.diagramRenderingReadinessReport.riskQueue)}</article><article class="diagram-rendering-readiness-card"><h3>다음 확인 단계</h3>${list(input.diagramRenderingReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "link-integrity-readiness.html",
+      title: "Link Integrity Readiness",
+      html: pageShell("Link Integrity Readiness", "link-integrity-readiness.html", `<section class="panel" data-source-pattern="Lychee"><h2>Link Integrity Snapshot</h2><p>${escapeHtml(input.linkIntegrityReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.linkIntegrityReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.linkIntegrityReadinessReport.linkSetups.length}</dd></div><div><dt>targets</dt><dd>${input.linkIntegrityReadinessReport.targetSignals.length}</dd></div><div><dt>policy</dt><dd>${input.linkIntegrityReadinessReport.policySignals.length}</dd></div><div><dt>network</dt><dd>${input.linkIntegrityReadinessReport.networkSignals.length}</dd></div></dl><p class="muted">RepoTutor records link integrity readiness only; it does not crawl websites, open URLs, send mail checks, use credentials, contact external hosts, mutate reports, or run the analyzed project's tests.</p></section><section class="grid"><article class="link-integrity-readiness-card"><h3>Link Setups</h3>${linkIntegrityReadinessSetupList(input.linkIntegrityReadinessReport.linkSetups)}</article><article class="link-integrity-readiness-card"><h3>Target Signals</h3>${linkIntegrityReadinessSignalList(input.linkIntegrityReadinessReport.targetSignals, "signal")}</article><article class="link-integrity-readiness-card"><h3>Policy Signals</h3>${linkIntegrityReadinessSignalList(input.linkIntegrityReadinessReport.policySignals, "signal")}</article><article class="link-integrity-readiness-card"><h3>Network Signals</h3>${linkIntegrityReadinessSignalList(input.linkIntegrityReadinessReport.networkSignals, "signal")}</article></section><section class="grid"><article class="link-integrity-readiness-card"><h3>Output Signals</h3>${linkIntegrityReadinessSignalList(input.linkIntegrityReadinessReport.outputSignals, "signal")}</article><article class="link-integrity-readiness-card"><h3>CI Signals</h3>${linkIntegrityReadinessSignalList(input.linkIntegrityReadinessReport.ciSignals, "signal")}</article><article class="link-integrity-readiness-card"><h3>Package Signals</h3>${linkIntegrityReadinessSignalList(input.linkIntegrityReadinessReport.packageSignals, "signal")}</article><article class="link-integrity-readiness-card"><h3>Recommended Commands</h3>${linkIntegrityReadinessCommandList(input.linkIntegrityReadinessReport.recommendedCommands)}</article><article class="link-integrity-readiness-card"><h3>Risk Queue</h3>${linkIntegrityReadinessRiskList(input.linkIntegrityReadinessReport.riskQueue)}</article><article class="link-integrity-readiness-card"><h3>다음 확인 단계</h3>${list(input.linkIntegrityReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -1010,6 +1018,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Spreadsheet Readiness", path: "html/spreadsheet-readiness.html", description: "SheetJS식 workbook, sheet, format, input, output, safety 준비도를 확인합니다." },
       { label: "Chart Visualization Readiness", path: "html/chart-visualization-readiness.html", description: "Chart.js식 chart type, data, scale, interaction, render, lifecycle 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
+      { label: "Link Integrity Readiness", path: "html/link-integrity-readiness.html", description: "Lychee식 link target, policy, network, output, CI 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1561,6 +1570,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "diagram-rendering-readiness.html",
       goal: "Mermaid식 diagram syntax, render, theme, security, layout, output 흐름을 보고 문서/시각화 관문을 확인합니다.",
       evidence: `diagram setups ${input.diagramRenderingReadinessReport.diagramSetups.length}개, render signals ${input.diagramRenderingReadinessReport.renderSignals.length}개`
+    },
+    {
+      title: "Link integrity readiness 확인",
+      href: "link-integrity-readiness.html",
+      goal: "Lychee식 link target, policy, network, output, CI 흐름을 보고 문서/사이트 링크 검증 관문을 확인합니다.",
+      evidence: `link setups ${input.linkIntegrityReadinessReport.linkSetups.length}개, target signals ${input.linkIntegrityReadinessReport.targetSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3603,6 +3618,31 @@ function diagramRenderingReadinessRiskList(items: DiagramRenderingReadinessRepor
 }
 
 function diagramRenderingReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function linkIntegrityReadinessSetupList(items: LinkIntegrityReadinessReport["linkSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">link setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>target/extraction/policy/network/output/CI ${item.targetCount}/${item.extractionCount}/${item.policyCount}/${item.networkCount}/${item.outputCount}/${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(linkIntegrityReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function linkIntegrityReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">link integrity signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(linkIntegrityReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function linkIntegrityReadinessCommandList(items: LinkIntegrityReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function linkIntegrityReadinessRiskList(items: LinkIntegrityReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(linkIntegrityReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function linkIntegrityReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

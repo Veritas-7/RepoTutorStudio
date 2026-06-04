@@ -4893,6 +4893,55 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 78/78 audit checks across 13 generated reports
 
+### Upgrade 181: Link Integrity Readiness Report
+
+- Cloned and inspected `lycheeverse/lychee` under
+  `research/external-src/lycheeverse-lychee` without executing external
+  source. Clone HEAD was `ed088a7`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, Apache-2.0 license, 3,659 stars, 212 forks,
+  updated 2026-06-04T09:17:33Z. Compared with
+  `tcort/markdown-link-check`, `stevenvachon/broken-link-checker`, and
+  `filiph/linkcheck`; selected Lychee because it directly models link
+  integrity readiness across Markdown, HTML, reStructuredText, websites, mail
+  addresses, status policy, exclusion policy, network controls, output formats,
+  cache, and CI integrations. No source code was copied into RepoTutor.
+- Implemented Lychee-style link-integrity-readiness report:
+  `LinkIntegrityReadinessReportSchema`,
+  `analysis/link-integrity-readiness-report.json`,
+  `markdown/link-integrity-readiness.md`,
+  `html/link-integrity-readiness.html`, link setups, target signals, policy
+  signals, network signals, output signals, CI signals, package signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, nav entry, and `open --target
+  link-integrity-readiness`.
+- Source pattern: Lychee separates link target coverage through Markdown, HTML,
+  reStructuredText, websites, mail, and sitemap signals; policy through accept
+  status codes, exclude/include patterns, schemes, private-network controls,
+  and fragments; network behavior through timeout, retry, user-agent, headers,
+  GitHub token, and offline mode; output through JSON, Markdown reports, JUnit,
+  summary, dump, and cache; and CI through GitHub Action, Docker, Nix,
+  pre-commit, and script usage. RepoTutor maps that to deterministic static
+  link integrity readiness and explicitly does not crawl websites, open URLs,
+  send mail checks, use credentials, contact external hosts, mutate reports, or
+  run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-link-red-studies.dGImur/2026-06-04/local__simple-ts-app__HEAD__f8b6305b`;
+  old behavior had `verificationCheckedRequiredArtifacts=240`, was missing
+  `analysis/link-integrity-readiness-report.json`,
+  `markdown/link-integrity-readiness.md`, and
+  `html/link-integrity-readiness.html`, and `open --target
+  link-integrity-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-link-green-studies.plPPCN/2026-06-04/local__simple-ts-app__main__f8b6305b`;
+  confirmed `verificationCheckedRequiredArtifacts=243`, link setups 0, target
+  signals 6, policy signals 6, network signals 6, output signals 6, CI signals
+  5, package signals 6, risk queue 2, all three new artifacts, and
+  `open --target link-integrity-readiness` ->
+  `html/link-integrity-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 79/79 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
