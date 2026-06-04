@@ -4559,6 +4559,78 @@ export const SecurityHeadersReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const GraphqlReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  graphqlSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["graphql-js", "apollo", "graphql-yoga", "urql", "relay", "graphql-codegen", "graphql-request", "custom", "unknown"]),
+    schemaCount: z.number().int().nonnegative(),
+    operationCount: z.number().int().nonnegative(),
+    resolverCount: z.number().int().nonnegative(),
+    validationCount: z.number().int().nonnegative(),
+    executionCount: z.number().int().nonnegative(),
+    clientCount: z.number().int().nonnegative(),
+    codegenCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  schemaSignals: z.array(z.object({
+    signal: z.enum(["graphql-schema", "build-schema", "sdl", "object-type", "input-type", "scalar-type", "enum-type", "directive", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  operationSignals: z.array(z.object({
+    signal: z.enum(["query", "mutation", "subscription", "operation-name", "variables", "fragments", "typed-document-node", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resolverSignals: z.array(z.object({
+    signal: z.enum(["resolve", "field-resolver", "type-resolver", "root-value", "context-value", "dataloader", "error-handling", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  validationSignals: z.array(z.object({
+    signal: z.enum(["parse", "validate", "specified-rules", "custom-rules", "max-errors", "introspection-limit", "schema-validation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  executionSignals: z.array(z.object({
+    signal: z.enum(["graphql", "graphql-sync", "execute", "subscribe", "defer-stream", "operation-ast", "variable-values", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  clientSignals: z.array(z.object({
+    signal: z.enum(["graphql-client", "urql", "apollo-client", "relay", "graphql-request", "cache", "fetch-exchange", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  codegenSignals: z.array(z.object({
+    signal: z.enum(["graphql-codegen", "typed-query-document-node", "generated-types", "schema-introspection", "print-schema", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4847,6 +4919,7 @@ export type PwaReadinessReport = z.infer<typeof PwaReadinessReportSchema>;
 export type BrowserCompatibilityReadinessReport = z.infer<typeof BrowserCompatibilityReadinessReportSchema>;
 export type EnvValidationReadinessReport = z.infer<typeof EnvValidationReadinessReportSchema>;
 export type SecurityHeadersReadinessReport = z.infer<typeof SecurityHeadersReadinessReportSchema>;
+export type GraphqlReadinessReport = z.infer<typeof GraphqlReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

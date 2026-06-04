@@ -99,6 +99,7 @@ import {
   BrowserCompatibilityReadinessReport,
   EnvValidationReadinessReport,
   SecurityHeadersReadinessReport,
+  GraphqlReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -204,6 +205,7 @@ export interface AnalysisBundle {
   browserCompatibilityReadinessReport: BrowserCompatibilityReadinessReport;
   envValidationReadinessReport: EnvValidationReadinessReport;
   securityHeadersReadinessReport: SecurityHeadersReadinessReport;
+  graphqlReadinessReport: GraphqlReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -309,8 +311,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const browserCompatibilityReadinessReport = await buildBrowserCompatibilityReadinessReport(walk);
   const envValidationReadinessReport = await buildEnvValidationReadinessReport(walk);
   const securityHeadersReadinessReport = await buildSecurityHeadersReadinessReport(walk);
+  const graphqlReadinessReport = await buildGraphqlReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -19749,6 +19752,295 @@ function securityHeadersReadinessSignalFromSpecs<T extends Record<K, string> & {
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/security-headers-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildGraphqlReadinessReport(walk: WalkResult): Promise<GraphqlReadinessReport> {
+  const sourceFiles = await graphqlReadinessSourceFiles(walk);
+  const graphqlSetups = graphqlReadinessSetups(sourceFiles);
+  const schemaSignals = graphqlReadinessSchemaSignals(sourceFiles);
+  const operationSignals = graphqlReadinessOperationSignals(sourceFiles);
+  const resolverSignals = graphqlReadinessResolverSignals(sourceFiles);
+  const validationSignals = graphqlReadinessValidationSignals(sourceFiles);
+  const executionSignals = graphqlReadinessExecutionSignals(sourceFiles);
+  const clientSignals = graphqlReadinessClientSignals(sourceFiles);
+  const codegenSignals = graphqlReadinessCodegenSignals(sourceFiles);
+
+  const hasSchema = schemaSignals.some((item) => item.readiness === "ready") || graphqlSetups.some((item) => item.schemaCount > 0);
+  const hasOperation = operationSignals.some((item) => item.readiness === "ready") || graphqlSetups.some((item) => item.operationCount > 0);
+  const hasResolver = resolverSignals.some((item) => item.readiness === "ready") || graphqlSetups.some((item) => item.resolverCount > 0);
+  const hasValidation = validationSignals.some((item) => item.readiness === "ready") || graphqlSetups.some((item) => item.validationCount > 0);
+  const hasExecution = executionSignals.some((item) => item.readiness === "ready") || graphqlSetups.some((item) => item.executionCount > 0);
+  const hasClient = clientSignals.some((item) => item.readiness === "ready") || graphqlSetups.some((item) => item.clientCount > 0);
+  const hasCodegen = codegenSignals.some((item) => item.readiness === "ready") || graphqlSetups.some((item) => item.codegenCount > 0);
+
+  const riskQueue: GraphqlReadinessReport["riskQueue"] = [];
+  if (!hasSchema && !hasOperation && !hasClient) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the GraphQL schema, operations, or client boundary before claiming GraphQL readiness.",
+      why: "GraphQL.js-style readiness starts with a type schema, SDL, operation documents, or a client/codegen surface learners can trace.",
+      relatedHref: "html/graphql-readiness.html"
+    });
+  }
+  if ((hasOperation || hasClient || hasResolver) && !hasSchema) {
+    riskQueue.push({
+      priority: "high",
+      action: "Expose the GraphQLSchema, SDL, schema.graphql, or generated introspection artifact used by operations.",
+      why: "GraphQL operations and resolvers need a schema contract for parsing, validation, execution, and learner rebuild guidance.",
+      relatedHref: "html/graphql-readiness.html"
+    });
+  }
+  if (hasSchema && !hasValidation) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document parse/validate rules, custom rules, maxErrors, and introspection-depth policy.",
+      why: "GraphQL.js validates syntactic and semantic correctness before execution; missing validation evidence hides request-safety assumptions.",
+      relatedHref: "html/graphql-readiness.html"
+    });
+  }
+  if (hasSchema && !hasResolver && !hasClient) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Trace resolver, rootValue/contextValue, or client operation ownership next to the schema.",
+      why: "A schema alone does not show where data is resolved, authorized, cached, or requested by the UI.",
+      relatedHref: "html/graphql-readiness.html"
+    });
+  }
+  if ((hasSchema || hasOperation) && !hasExecution && !hasClient) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record the execution or transport layer that runs queries, mutations, and subscriptions.",
+      why: "Learners need to connect GraphQL documents to graphql(), execute(), subscribe(), HTTP handlers, or client transports.",
+      relatedHref: "html/graphql-readiness.html"
+    });
+  }
+  if ((hasSchema || hasOperation || hasClient) && !hasCodegen) {
+    riskQueue.push({
+      priority: "low",
+      action: "Consider generated types or TypedDocumentNode evidence for TypeScript projects.",
+      why: "Codegen and schema introspection artifacts make operation variables/results easier to rebuild safely.",
+      relatedHref: "html/graphql-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify GraphQL behavior with trusted local tests or a reviewed endpoint outside RepoTutor.",
+    why: "RepoTutor records GraphQL readiness only; it does not execute operations, start servers, introspect remote schemas, validate authorization, or benchmark resolver performance.",
+    relatedHref: "html/graphql-readiness.html"
+  });
+
+  return {
+    summary: `GraphQL.js-style GraphQL readiness report: setup ${graphqlSetups.length}개, schema signal ${schemaSignals.length}개, operation signal ${operationSignals.length}개, validation signal ${validationSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "GraphQL.js GraphQLSchema GraphQLObjectType buildSchema parse validate execute subscribe introspection typed documents resolvers",
+    graphqlSetups,
+    schemaSignals,
+    operationSignals,
+    resolverSignals,
+    validationSignals,
+    executionSignals,
+    clientSignals,
+    codegenSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"GraphQLSchema|buildSchema|typeDefs|schema.graphql|\\\\.graphql\" package.json src app server packages", purpose: "Inventory schema construction, SDL files, and GraphQL package ownership." },
+      { command: "rg \"query |mutation |subscription |gql`|graphql\\\\(|execute\\\\(|subscribe\\\\(\" src app server packages", purpose: "Find GraphQL operation documents and execution entry points." },
+      { command: "rg \"resolve\\\\(|fieldResolver|typeResolver|rootValue|contextValue|DataLoader|GraphQLError\" src app server packages", purpose: "Trace resolver ownership, context boundaries, batching, and error handling." },
+      { command: "rg \"validate\\\\(|specifiedRules|NoSchemaIntrospection|MaxIntrospectionDepth|maxErrors|depthLimit|cost\" src app server packages", purpose: "Review operation validation and introspection/depth safety policy." },
+      { command: "rg \"graphql-codegen|TypedDocumentNode|introspectionFromSchema|buildClientSchema|printSchema\" package.json codegen.* src app packages", purpose: "Check generated types, client schema, and schema artifact workflows." },
+      { command: "pnpm test", purpose: "Run trusted local tests that cover schema, resolver, client, and operation behavior." }
+    ],
+    learnerNextSteps: [
+      "먼저 GraphQLSchema, buildSchema, typeDefs, schema.graphql 중 schema contract가 어디 있는지 찾으세요.",
+      "query, mutation, subscription 문서와 operationName, variables, fragments를 함께 읽어 API 사용 흐름을 파악하세요.",
+      "resolve, fieldResolver, typeResolver, rootValue, contextValue, DataLoader, GraphQLError 신호로 데이터 해결과 에러 경계를 확인하세요.",
+      "parse/validate/specifiedRules/custom rules/maxErrors/introspection depth 정책이 실행 전에 연결되는지 확인하세요.",
+      "Apollo, urql, Relay, graphql-request, graphql-codegen, TypedDocumentNode가 있으면 client cache와 generated type 흐름을 같이 보세요.",
+      "이 리포트는 정적 readiness입니다. 실제 GraphQL operation, auth, resolver 성능은 원본 프로젝트 테스트나 리뷰된 endpoint에서 별도 확인하세요."
+    ]
+  };
+}
+
+type GraphqlReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function graphqlReadinessSourceFiles(walk: WalkResult): Promise<GraphqlReadinessSourceFile[]> {
+  const files: GraphqlReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !graphqlReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!graphqlReadinessPathSignal(file.relPath) && !graphqlReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function graphqlReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return graphqlReadinessPathSignal(filePath)
+    || /^(package\.json|codegen\.(json|ya?ml|js|mjs|cjs|ts)|graphql\.config\.(json|ya?ml|js|mjs|cjs|ts)|apollo\.config\.(js|mjs|cjs|ts)|schema\.graphql|schema\.gql)$/i.test(base)
+    || /\.(graphql|gql|js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml)$/i.test(filePath);
+}
+
+function graphqlReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(graphql|gql|schema|schemas|resolver|resolvers|operations?|queries|mutations|subscriptions|apollo|urql|relay|codegen|generated|api|server|client)(\/|\.|-|_|$)|\.graphql$|\.gql$/i.test(filePath);
+}
+
+function graphqlReadinessContentSignal(text: string): boolean {
+  return /\b(GraphQLSchema|GraphQLObjectType|GraphQLInputObjectType|GraphQLScalarType|GraphQLEnumType|GraphQLUnionType|GraphQLInterfaceType|buildSchema|buildASTSchema|buildClientSchema|introspectionFromSchema|printSchema|parse\s*\(|validate\s*\(|specifiedRules|MaxIntrospectionDepth|NoSchemaIntrospection|graphql\s*\(|graphqlSync\s*\(|execute\s*\(|subscribe\s*\(|fieldResolver|typeResolver|rootValue|contextValue|DataLoader|GraphQLError|TypedDocumentNode|graphql-codegen|GraphQLClient|ApolloClient|urql|RelayEnvironment)\b|(^|\s)(query|mutation|subscription)\s+[A-Za-z_{]/im.test(text);
+}
+
+function graphqlReadinessSetups(sourceFiles: GraphqlReadinessSourceFile[]): GraphqlReadinessReport["graphqlSetups"] {
+  const rows: GraphqlReadinessReport["graphqlSetups"] = [];
+  for (const source of sourceFiles) {
+    const schemaCount = countMatches(source.text, /GraphQLSchema|GraphQLObjectType|GraphQLInputObjectType|GraphQLScalarType|GraphQLEnumType|GraphQLUnionType|GraphQLInterfaceType|buildSchema|buildASTSchema|typeDefs|schema\.graphql|type\s+Query|type\s+Mutation|type\s+Subscription/gi);
+    const operationCount = countMatches(source.text, /(^|\s)(query|mutation|subscription)\s+[A-Za-z_{]|\bgql\s*`|\bgraphql\s*\(/gim);
+    const resolverCount = countMatches(source.text, /\b(resolve\s*\(|resolve\s*:|fieldResolver|typeResolver|rootValue|contextValue|DataLoader|GraphQLError)\b/gi);
+    const validationCount = countMatches(source.text, /\b(parse\s*\(|validate\s*\(|specifiedRules|recommendedRules|customRules|ValidationRule|maxErrors|MaxIntrospectionDepth|NoSchemaIntrospection|assertValidSchema|validateSchema)\b/gi);
+    const executionCount = countMatches(source.text, /\b(graphql\s*\(|graphqlSync\s*\(|execute\s*\(|subscribe\s*\(|experimentalExecuteIncrementally|getOperationAST|variableValues)\b/gi);
+    const clientCount = countMatches(source.text, /\b(ApolloClient|InMemoryCache|urql|createClient|RelayEnvironment|graphql-request|GraphQLClient|fetchExchange|cacheExchange|useQuery|useMutation|useSubscription)\b/gi);
+    const codegenCount = countMatches(source.text, /\b(graphql-codegen|TypedDocumentNode|CodegenConfig|generated-types|introspectionFromSchema|buildClientSchema|printSchema)\b/gi);
+    const hasSetupSignal = schemaCount + operationCount + resolverCount + validationCount + executionCount + clientCount + codegenCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: graphqlReadinessProvider(source),
+      schemaCount,
+      operationCount,
+      resolverCount,
+      validationCount,
+      executionCount,
+      clientCount,
+      codegenCount,
+      readiness: schemaCount > 0 && (operationCount > 0 || resolverCount > 0 || executionCount > 0 || clientCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains schema ${schemaCount}, operations ${operationCount}, resolvers ${resolverCount}, validation ${validationCount}, execution ${executionCount}, client ${clientCount}, codegen ${codegenCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function graphqlReadinessProvider(source: GraphqlReadinessSourceFile): GraphqlReadinessReport["graphqlSetups"][number]["provider"] {
+  if (/\b(graphql-js|GraphQLSchema|GraphQLObjectType|buildSchema|buildASTSchema|graphql\s*\(|execute\s*\(|subscribe\s*\()\b/i.test(source.text)) return "graphql-js";
+  if (/apollo-server|@apollo\/server|ApolloClient|InMemoryCache|gql\s*`/i.test(source.text)) return "apollo";
+  if (/graphql-yoga|createYoga/i.test(source.text)) return "graphql-yoga";
+  if (/\burql\b|createClient|fetchExchange|cacheExchange/i.test(source.text)) return "urql";
+  if (/relay-runtime|RelayEnvironment|graphql\s*`/i.test(source.text)) return "relay";
+  if (/graphql-codegen|CodegenConfig|TypedDocumentNode/i.test(source.text) || /codegen\./i.test(source.filePath)) return "graphql-codegen";
+  if (/graphql-request|GraphQLClient/i.test(source.text)) return "graphql-request";
+  if (/type\s+Query|schema\.graphql|\.graphql$/i.test(source.text) || /\.graphql$|\.gql$/i.test(source.filePath)) return "custom";
+  return "unknown";
+}
+
+function graphqlReadinessSchemaSignals(sourceFiles: GraphqlReadinessSourceFile[]): GraphqlReadinessReport["schemaSignals"] {
+  const specs: Array<{ signal: GraphqlReadinessReport["schemaSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "graphql-schema", pattern: /GraphQLSchema|new\s+GraphQLSchema|schema\.graphql/i, evidence: "GraphQLSchema evidence was detected." },
+    { signal: "build-schema", pattern: /\bbuildSchema\s*\(|\bbuildASTSchema\s*\(/i, evidence: "buildSchema/buildASTSchema evidence was detected." },
+    { signal: "sdl", pattern: /(^|\n)\s*(type|interface|union|enum|input|scalar|directive)\s+[A-Za-z_][\w]*/i, evidence: "GraphQL SDL evidence was detected." },
+    { signal: "object-type", pattern: /GraphQLObjectType|type\s+Query|type\s+Mutation|type\s+Subscription/i, evidence: "object/root type evidence was detected." },
+    { signal: "input-type", pattern: /GraphQLInputObjectType|input\s+[A-Za-z_][\w]*/i, evidence: "input type evidence was detected." },
+    { signal: "scalar-type", pattern: /GraphQLScalarType|scalar\s+[A-Za-z_][\w]*/i, evidence: "custom scalar evidence was detected." },
+    { signal: "enum-type", pattern: /GraphQLEnumType|enum\s+[A-Za-z_][\w]*/i, evidence: "enum type evidence was detected." },
+    { signal: "directive", pattern: /GraphQLDirective|directive\s+@[A-Za-z_][\w]*|@[A-Za-z_][\w]*/i, evidence: "directive evidence was detected." }
+  ];
+  return graphqlReadinessSignalFromSpecs(sourceFiles, specs, "schema", "signal");
+}
+
+function graphqlReadinessOperationSignals(sourceFiles: GraphqlReadinessSourceFile[]): GraphqlReadinessReport["operationSignals"] {
+  const specs: Array<{ signal: GraphqlReadinessReport["operationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "query", pattern: /(^|\s)query\s+[A-Za-z_{]/im, evidence: "query operation evidence was detected." },
+    { signal: "mutation", pattern: /(^|\s)mutation\s+[A-Za-z_{]/im, evidence: "mutation operation evidence was detected." },
+    { signal: "subscription", pattern: /(^|\s)subscription\s+[A-Za-z_{]|type\s+Subscription|subscribe\s*\(/im, evidence: "subscription evidence was detected." },
+    { signal: "operation-name", pattern: /(query|mutation|subscription)\s+[A-Za-z_][\w]*|\boperationName\b/i, evidence: "operation name evidence was detected." },
+    { signal: "variables", pattern: /\$[A-Za-z_][\w]*\s*:|\bvariableValues\b|\bvariables\s*:/i, evidence: "operation variables evidence was detected." },
+    { signal: "fragments", pattern: /\bfragment\s+[A-Za-z_][\w]*\s+on\b|\.\.\.[A-Za-z_][\w]*/i, evidence: "fragment evidence was detected." },
+    { signal: "typed-document-node", pattern: /TypedDocumentNode|DocumentNode<|TypedQueryDocumentNode/i, evidence: "typed document node evidence was detected." }
+  ];
+  return graphqlReadinessSignalFromSpecs(sourceFiles, specs, "operation", "signal");
+}
+
+function graphqlReadinessResolverSignals(sourceFiles: GraphqlReadinessSourceFile[]): GraphqlReadinessReport["resolverSignals"] {
+  const specs: Array<{ signal: GraphqlReadinessReport["resolverSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "resolve", pattern: /\bresolve\s*[:(]/i, evidence: "resolver function evidence was detected." },
+    { signal: "field-resolver", pattern: /\bfieldResolver\b|defaultFieldResolver/i, evidence: "field resolver evidence was detected." },
+    { signal: "type-resolver", pattern: /\btypeResolver\b|resolveType|isTypeOf/i, evidence: "type resolver evidence was detected." },
+    { signal: "root-value", pattern: /\brootValue\b|\broot\s*:/i, evidence: "rootValue evidence was detected." },
+    { signal: "context-value", pattern: /\bcontextValue\b|\bcontext\s*:/i, evidence: "contextValue evidence was detected." },
+    { signal: "dataloader", pattern: /DataLoader|\bloadMany\s*\(|\bload\s*\(/i, evidence: "DataLoader/batching evidence was detected." },
+    { signal: "error-handling", pattern: /GraphQLError|locatedError|formatError|extensions\s*:/i, evidence: "GraphQL error handling evidence was detected." }
+  ];
+  return graphqlReadinessSignalFromSpecs(sourceFiles, specs, "resolver", "signal");
+}
+
+function graphqlReadinessValidationSignals(sourceFiles: GraphqlReadinessSourceFile[]): GraphqlReadinessReport["validationSignals"] {
+  const specs: Array<{ signal: GraphqlReadinessReport["validationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "parse", pattern: /\bparse\s*\(|Source\(/i, evidence: "parse evidence was detected." },
+    { signal: "validate", pattern: /\bvalidate\s*\(/i, evidence: "validate evidence was detected." },
+    { signal: "specified-rules", pattern: /specifiedRules|recommendedRules|ValidationRule/i, evidence: "specified/recommended validation rules evidence was detected." },
+    { signal: "custom-rules", pattern: /customRules|NoSchemaIntrospectionCustomRule|depthLimit|costAnalysis|validationRules\s*:/i, evidence: "custom validation rule evidence was detected." },
+    { signal: "max-errors", pattern: /maxErrors|too many validation errors/i, evidence: "maxErrors validation guard evidence was detected." },
+    { signal: "introspection-limit", pattern: /MaxIntrospectionDepth|NoSchemaIntrospection|__schema|__type/i, evidence: "introspection policy evidence was detected." },
+    { signal: "schema-validation", pattern: /assertValidSchema|validateSchema|assertValidSDL|assumeValid/i, evidence: "schema validation evidence was detected." }
+  ];
+  return graphqlReadinessSignalFromSpecs(sourceFiles, specs, "validation", "signal");
+}
+
+function graphqlReadinessExecutionSignals(sourceFiles: GraphqlReadinessSourceFile[]): GraphqlReadinessReport["executionSignals"] {
+  const specs: Array<{ signal: GraphqlReadinessReport["executionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "graphql", pattern: /\bgraphql\s*\(/i, evidence: "graphql() execution evidence was detected." },
+    { signal: "graphql-sync", pattern: /\bgraphqlSync\s*\(/i, evidence: "graphqlSync evidence was detected." },
+    { signal: "execute", pattern: /\bexecute\s*\(|executeImpl|executeSync/i, evidence: "execute evidence was detected." },
+    { signal: "subscribe", pattern: /\bsubscribe\s*\(|createSourceEventStream|AsyncIterable/i, evidence: "subscription execution evidence was detected." },
+    { signal: "defer-stream", pattern: /experimentalExecuteIncrementally|@defer|@stream|defer-stream/i, evidence: "incremental defer/stream evidence was detected." },
+    { signal: "operation-ast", pattern: /getOperationAST|OperationDefinitionNode|operationName/i, evidence: "operation AST selection evidence was detected." },
+    { signal: "variable-values", pattern: /variableValues|getVariableValues|rawVariableValues/i, evidence: "variable coercion evidence was detected." }
+  ];
+  return graphqlReadinessSignalFromSpecs(sourceFiles, specs, "execution", "signal");
+}
+
+function graphqlReadinessClientSignals(sourceFiles: GraphqlReadinessSourceFile[]): GraphqlReadinessReport["clientSignals"] {
+  const specs: Array<{ signal: GraphqlReadinessReport["clientSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "graphql-client", pattern: /GraphQLClient|graphql-request|\bfetch\s*\([^)]*graphql/i, evidence: "generic GraphQL client evidence was detected." },
+    { signal: "urql", pattern: /\burql\b|createClient|Provider.*urql/i, evidence: "urql client evidence was detected." },
+    { signal: "apollo-client", pattern: /ApolloClient|InMemoryCache|useQuery|useMutation|useSubscription/i, evidence: "Apollo Client evidence was detected." },
+    { signal: "relay", pattern: /RelayEnvironment|relay-runtime|useFragment|useLazyLoadQuery/i, evidence: "Relay evidence was detected." },
+    { signal: "graphql-request", pattern: /graphql-request|GraphQLClient/i, evidence: "graphql-request evidence was detected." },
+    { signal: "cache", pattern: /InMemoryCache|cacheExchange|normalizedCache|cachePolicy/i, evidence: "client cache evidence was detected." },
+    { signal: "fetch-exchange", pattern: /fetchExchange|httpLink|createHttpLink|GraphQLWsLink/i, evidence: "client transport/link evidence was detected." }
+  ];
+  return graphqlReadinessSignalFromSpecs(sourceFiles, specs, "client", "signal");
+}
+
+function graphqlReadinessCodegenSignals(sourceFiles: GraphqlReadinessSourceFile[]): GraphqlReadinessReport["codegenSignals"] {
+  const specs: Array<{ signal: GraphqlReadinessReport["codegenSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "graphql-codegen", pattern: /graphql-codegen|@graphql-codegen|CodegenConfig/i, evidence: "GraphQL Code Generator evidence was detected." },
+    { signal: "typed-query-document-node", pattern: /TypedDocumentNode|TypedQueryDocumentNode|typed-document-node/i, evidence: "TypedDocumentNode evidence was detected." },
+    { signal: "generated-types", pattern: /generated\/graphql|__generated__|\.generated\.|generated-types|ResolversTypes|Scalars\[/i, evidence: "generated GraphQL type evidence was detected." },
+    { signal: "schema-introspection", pattern: /introspectionFromSchema|buildClientSchema|getIntrospectionQuery|introspection\.json/i, evidence: "schema introspection artifact evidence was detected." },
+    { signal: "print-schema", pattern: /printSchema|printIntrospectionSchema|schema\.graphql/i, evidence: "printSchema/schema artifact evidence was detected." }
+  ];
+  return graphqlReadinessSignalFromSpecs(sourceFiles, specs, "codegen", "signal");
+}
+
+function graphqlReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: GraphqlReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/graphql-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
