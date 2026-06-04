@@ -2688,6 +2688,79 @@ export const RoutingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const StateManagementReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  storeSetups: z.array(z.object({
+    filePath: z.string(),
+    storeType: z.enum(["redux-toolkit", "redux", "zustand", "jotai", "mobx", "unknown"]),
+    hasConfigureStore: z.boolean(),
+    hasProvider: z.boolean(),
+    hasTypedHooks: z.boolean(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  sliceDefinitions: z.array(z.object({
+    filePath: z.string(),
+    sliceCount: z.number().int().nonnegative(),
+    reducerCount: z.number().int().nonnegative(),
+    actionCount: z.number().int().nonnegative(),
+    selectorCount: z.number().int().nonnegative(),
+    usesImmerStyle: z.boolean(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  selectorSignals: z.array(z.object({
+    signal: z.enum(["useSelector", "useAppSelector", "createSelector", "slice-selectors", "RootState", "selectFromResult", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sideEffectSignals: z.array(z.object({
+    signal: z.enum(["createAsyncThunk", "createListenerMiddleware", "listenerMiddleware", "thunkMiddleware", "extraReducers", "builder-callback", "rejectWithValue", "abort-signal", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  entitySignals: z.array(z.object({
+    signal: z.enum(["createEntityAdapter", "selectId", "sortComparer", "getSelectors", "upsertMany", "normalized-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  middlewareSignals: z.array(z.object({
+    signal: z.enum(["getDefaultMiddleware", "serializableCheck", "immutableCheck", "devTools", "autoBatchEnhancer", "dynamicMiddleware", "logger", "redux-thunk", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  rtkQuerySignals: z.array(z.object({
+    signal: z.enum(["createApi", "fetchBaseQuery", "reducerPath", "api-middleware", "tagTypes", "providesTags", "invalidatesTags", "generated-hooks", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["redux-toolkit", "react-redux", "redux", "zustand", "jotai", "mobx", "valtio", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2947,6 +3020,7 @@ export type BundleAnalysisReport = z.infer<typeof BundleAnalysisReportSchema>;
 export type MockingReadinessReport = z.infer<typeof MockingReadinessReportSchema>;
 export type DataFetchingReadinessReport = z.infer<typeof DataFetchingReadinessReportSchema>;
 export type RoutingReadinessReport = z.infer<typeof RoutingReadinessReportSchema>;
+export type StateManagementReadinessReport = z.infer<typeof StateManagementReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

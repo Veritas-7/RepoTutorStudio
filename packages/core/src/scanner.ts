@@ -70,6 +70,7 @@ import {
   MockingReadinessReport,
   DataFetchingReadinessReport,
   RoutingReadinessReport,
+  StateManagementReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -146,6 +147,7 @@ export interface AnalysisBundle {
   mockingReadinessReport: MockingReadinessReport;
   dataFetchingReadinessReport: DataFetchingReadinessReport;
   routingReadinessReport: RoutingReadinessReport;
+  stateManagementReadinessReport: StateManagementReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -222,8 +224,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const mockingReadinessReport = await buildMockingReadinessReport(walk);
   const dataFetchingReadinessReport = await buildDataFetchingReadinessReport(walk);
   const routingReadinessReport = await buildRoutingReadinessReport(walk);
+  const stateManagementReadinessReport = await buildStateManagementReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -11780,6 +11783,309 @@ function routingSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp;
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/routing-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildStateManagementReadinessReport(walk: WalkResult): Promise<StateManagementReadinessReport> {
+  const sourceFiles = await stateManagementSourceFiles(walk);
+  const storeSetups = stateManagementStoreSetups(sourceFiles);
+  const sliceDefinitions = stateManagementSliceDefinitions(sourceFiles);
+  const selectorSignals = stateManagementSelectorSignals(sourceFiles);
+  const sideEffectSignals = stateManagementSideEffectSignals(sourceFiles);
+  const entitySignals = stateManagementEntitySignals(sourceFiles);
+  const middlewareSignals = stateManagementMiddlewareSignals(sourceFiles);
+  const rtkQuerySignals = stateManagementRtkQuerySignals(sourceFiles);
+  const packageSignals = stateManagementPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasReduxToolkit = packageSignals.some((item) => item.signal === "redux-toolkit" && item.readiness === "ready");
+  const hasStore = storeSetups.some((item) => item.hasConfigureStore || item.storeType !== "unknown");
+  const hasProvider = storeSetups.some((item) => item.hasProvider);
+  const hasTypedHooks = storeSetups.some((item) => item.hasTypedHooks) || selectorSignals.some((item) => ["useAppSelector", "RootState"].includes(item.signal) && item.readiness === "ready");
+  const hasSlices = sliceDefinitions.some((item) => item.sliceCount > 0);
+  const hasSelectors = sliceDefinitions.some((item) => item.selectorCount > 0) || selectorSignals.some((item) => item.readiness === "ready");
+  const hasAsyncThunk = sideEffectSignals.some((item) => item.signal === "createAsyncThunk" && item.readiness === "ready");
+  const hasExtraReducers = sideEffectSignals.some((item) => ["extraReducers", "builder-callback"].includes(item.signal) && item.readiness === "ready");
+  const hasRtkQuery = rtkQuerySignals.some((item) => item.signal === "createApi" && item.readiness === "ready");
+  const hasRtkQueryStoreWiring = rtkQuerySignals.some((item) => ["reducerPath", "api-middleware"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: StateManagementReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasStore && !hasSlices) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the client-state strategy before claiming state-management readiness.",
+      why: "Redux Toolkit-style readiness starts with an explicit store, slice, selector, or alternative state package surface.",
+      relatedHref: "html/state-management-readiness.html"
+    });
+  }
+  if (hasReduxToolkit && !storeSetups.some((item) => item.hasConfigureStore)) {
+    riskQueue.push({
+      priority: "high",
+      action: "Create or expose a configureStore setup that combines reducers and middleware.",
+      why: "Redux Toolkit recommends configureStore as the standard store setup with middleware, DevTools, and reducer composition defaults.",
+      relatedHref: "html/state-management-readiness.html"
+    });
+  }
+  if (hasStore && !hasProvider) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect the store to the UI root with a Provider or document why the store is framework-agnostic.",
+      why: "Learners need to trace where global state becomes available to components.",
+      relatedHref: "html/state-management-readiness.html"
+    });
+  }
+  if ((hasStore || hasSlices) && !hasTypedHooks) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add typed useAppDispatch/useAppSelector hooks or document the RootState/AppDispatch access pattern.",
+      why: "Typed hooks make Redux state reads and dispatches easier to follow in TypeScript projects.",
+      relatedHref: "html/state-management-readiness.html"
+    });
+  }
+  if (hasSlices && !hasSelectors) {
+    riskQueue.push({
+      priority: "low",
+      action: "Expose selectors near slices or a selector module for important state reads.",
+      why: "Selectors explain which state shape belongs to public UI or business logic reads.",
+      relatedHref: "html/state-management-readiness.html"
+    });
+  }
+  if (hasAsyncThunk && !hasExtraReducers) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Pair async thunks with extraReducers or builder.addCase lifecycle handling.",
+      why: "createAsyncThunk emits pending, fulfilled, and rejected actions, but reducer logic must record loading/error/data state.",
+      relatedHref: "html/state-management-readiness.html"
+    });
+  }
+  if (hasRtkQuery && !hasRtkQueryStoreWiring) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Wire RTK Query reducerPath and api.middleware into the store before trusting cache behavior.",
+      why: "RTK Query API slices need both reducer and middleware registration for subscriptions, invalidation, polling, and cache lifecycle behavior.",
+      relatedHref: "html/state-management-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run state-management tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not instantiate stores, dispatch actions, mount providers, or run the analyzed project's tests.",
+    relatedHref: "html/state-management-readiness.html"
+  });
+
+  return {
+    summary: `Redux Toolkit식 state management readiness report: store setup ${storeSetups.length}개, slice definition ${sliceDefinitions.length}개, selector signal ${selectorSignals.length}개, side-effect signal ${sideEffectSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Redux Toolkit configureStore createSlice reducers actions selectors Provider useSelector useDispatch createAsyncThunk createListenerMiddleware createEntityAdapter middleware devTools RTK Query",
+    storeSetups,
+    sliceDefinitions,
+    selectorSignals,
+    sideEffectSignals,
+    entitySignals,
+    middlewareSignals,
+    rtkQuerySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"configureStore|Provider|useSelector|useDispatch|useAppSelector|useAppDispatch\" src app packages", purpose: "Inventory store setup, UI provider boundaries, and typed hook usage." },
+      { command: "rg \"createSlice|reducers:|extraReducers|createAction|createReducer\" src app packages", purpose: "Find slices, reducers, generated actions, and extra reducer lifecycle handling." },
+      { command: "rg \"createAsyncThunk|createListenerMiddleware|listenerMiddleware|rejectWithValue\" src app packages", purpose: "Review async thunk and listener side-effect surfaces." },
+      { command: "rg \"createEntityAdapter|selectId|sortComparer|getSelectors\" src app packages", purpose: "Check normalized entity adapter setup and selector generation." },
+      { command: "rg \"createApi|fetchBaseQuery|reducerPath|tagTypes|providesTags|invalidatesTags\" src app packages", purpose: "Trace optional RTK Query API slice and cache invalidation wiring." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise reducers, selectors, store setup, and async state transitions." }
+    ],
+    learnerNextSteps: [
+      "먼저 configureStore나 대체 store 생성 함수가 어디 있는지 찾고 reducer/middleware 구성을 확인하세요.",
+      "createSlice 파일에서는 initialState, reducers, actions export, selectors를 함께 읽어 상태 모양과 변경 규칙을 연결하세요.",
+      "createAsyncThunk나 listener middleware가 있다면 pending/fulfilled/rejected 또는 effect 흐름이 어디서 처리되는지 확인하세요.",
+      "RTK Query가 있으면 createApi 파일과 store의 reducerPath/middleware 연결을 함께 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 dispatch와 UI 반응은 원본 프로젝트 테스트나 브라우저에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type StateManagementSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function stateManagementSourceFiles(walk: WalkResult): Promise<StateManagementSourceFile[]> {
+  const files: StateManagementSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !stateManagementInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!stateManagementPathSignal(file.relPath) && !stateManagementContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function stateManagementInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return stateManagementPathSignal(filePath)
+    || /^(package\.json|tsconfig\.json|vite\.config\.[cm]?[jt]s|next\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|ya?ml)$/i.test(filePath);
+}
+
+function stateManagementPathSignal(filePath: string): boolean {
+  return /(^|\/)(store|stores|state|redux|slices?|reducers?|selectors?|hooks?|features?|entities?|services?|api)(\/|\.|-|_|$)|redux-toolkit|rtk-query|zustand|jotai|mobx|valtio/i.test(filePath);
+}
+
+function stateManagementContentSignal(text: string): boolean {
+  return /\b(configureStore|createStore|createSlice|createReducer|createAction|combineSlices|Provider|useSelector|useDispatch|useAppSelector|useAppDispatch|RootState|AppDispatch|createSelector|createAsyncThunk|createListenerMiddleware|listenerMiddleware|extraReducers|builder\.addCase|rejectWithValue|createEntityAdapter|createApi|fetchBaseQuery|reducerPath|tagTypes|providesTags|invalidatesTags|serializableCheck|immutableCheck|devTools|autoBatchEnhancer|dynamicMiddleware|zustand|jotai|makeAutoObservable|observable|valtio)\b/i.test(text);
+}
+
+function stateManagementStoreSetups(sourceFiles: StateManagementSourceFile[]): StateManagementReadinessReport["storeSetups"] {
+  const rows: StateManagementReadinessReport["storeSetups"] = [];
+  for (const source of sourceFiles) {
+    const hasConfigureStore = /\bconfigureStore\s*\(/i.test(source.text);
+    const hasProvider = /\bProvider\b|<Provider\b|ApiProvider|ReduxProvider/i.test(source.text);
+    const hasTypedHooks = /\b(useAppDispatch|useAppSelector|AppDispatch|RootState|TypedUseSelectorHook|\.withTypes\s*<)/i.test(source.text);
+    const hasStoreSignal = hasConfigureStore || /\b(createStore|create\s*<|create\s*\(|atom\s*\(|makeAutoObservable|observable\s*\(|proxy\s*\()\b/i.test(source.text);
+    if (!hasStoreSignal && !hasProvider && !hasTypedHooks) continue;
+    rows.push({
+      filePath: source.filePath,
+      storeType: stateManagementStoreType(source),
+      hasConfigureStore,
+      hasProvider,
+      hasTypedHooks,
+      readiness: hasConfigureStore && (hasProvider || hasTypedHooks) ? "ready" : hasStoreSignal || hasProvider || hasTypedHooks ? "partial" : "missing",
+      evidence: `${source.filePath} contains configureStore ${hasConfigureStore ? "yes" : "no"}, provider ${hasProvider ? "yes" : "no"}, typed hooks ${hasTypedHooks ? "yes" : "no"}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function stateManagementStoreType(source: StateManagementSourceFile): StateManagementReadinessReport["storeSetups"][number]["storeType"] {
+  if (/@reduxjs\/toolkit|\bconfigureStore\b|\bcreateSlice\b/i.test(source.text)) return "redux-toolkit";
+  if (/["']redux["']|react-redux|\bcreateStore\b|\bcombineReducers\b/i.test(source.text)) return "redux";
+  if (/["']zustand["']|\bcreate\s*<|\bcreateStore\s*\(/i.test(source.text)) return "zustand";
+  if (/["']jotai["']|\batom\s*\(|\buseAtom\b/i.test(source.text)) return "jotai";
+  if (/["']mobx["']|mobx-react|\bmakeAutoObservable\b|\bobservable\s*\(/i.test(source.text)) return "mobx";
+  if (/["']valtio["']|\bproxy\s*\(/i.test(source.text)) return "unknown";
+  return "unknown";
+}
+
+function stateManagementSliceDefinitions(sourceFiles: StateManagementSourceFile[]): StateManagementReadinessReport["sliceDefinitions"] {
+  const rows: StateManagementReadinessReport["sliceDefinitions"] = [];
+  for (const source of sourceFiles) {
+    const sliceCount = countMatches(source.text, /\bcreateSlice\s*\(/gi);
+    const reducerCount = countMatches(source.text, /\breducers\s*:|\bcreateReducer\s*\(|\baddCase\s*\(|\bcaseReducers\b/gi);
+    const actionCount = countMatches(source.text, /\bcreateAction\s*\(|\.actions\b|create\.reducer\b|create\.preparedReducer\b|create\.asyncThunk\b/gi);
+    const selectorCount = countMatches(source.text, /\bselectors\s*:|\bcreateSelector\s*\(|\.getSelectors\s*\(|\bselect[A-Z][A-Za-z0-9_$]*\b|\bselectFromResult\b/gi);
+    const usesImmerStyle = sliceCount > 0 && /\bstate\.[A-Za-z_$][\w$]*(\s*(=|\+=|-=|\+\+|--)|\.push\s*\(|\.splice\s*\(|\.sort\s*\()/i.test(source.text);
+    if (sliceCount + reducerCount + actionCount + selectorCount === 0 && !usesImmerStyle) continue;
+    rows.push({
+      filePath: source.filePath,
+      sliceCount,
+      reducerCount,
+      actionCount,
+      selectorCount,
+      usesImmerStyle,
+      readiness: sliceCount > 0 && reducerCount > 0 ? "ready" : reducerCount + actionCount + selectorCount > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains slices ${sliceCount}, reducer signals ${reducerCount}, action signals ${actionCount}, selector signals ${selectorCount}, Immer-style updates ${usesImmerStyle ? "yes" : "no"}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 120);
+}
+
+function stateManagementSelectorSignals(sourceFiles: StateManagementSourceFile[]): StateManagementReadinessReport["selectorSignals"] {
+  const specs: Array<{ signal: StateManagementReadinessReport["selectorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "useSelector", pattern: /\buseSelector\b/i, evidence: "React-Redux useSelector evidence was detected." },
+    { signal: "useAppSelector", pattern: /\buseAppSelector\b|useSelector\.withTypes/i, evidence: "typed app selector hook evidence was detected." },
+    { signal: "createSelector", pattern: /\bcreateSelector\s*\(/i, evidence: "memoized selector evidence was detected." },
+    { signal: "slice-selectors", pattern: /\bselectors\s*:|\.selectors\b/i, evidence: "createSlice selector evidence was detected." },
+    { signal: "RootState", pattern: /\bRootState\b|getState\s*:\s*\(\)\s*=>/i, evidence: "RootState type evidence was detected." },
+    { signal: "selectFromResult", pattern: /\bselectFromResult\b/i, evidence: "RTK Query selectFromResult evidence was detected." }
+  ];
+  return stateManagementSignalFromSpecs(sourceFiles, specs, "selector", "signal");
+}
+
+function stateManagementSideEffectSignals(sourceFiles: StateManagementSourceFile[]): StateManagementReadinessReport["sideEffectSignals"] {
+  const specs: Array<{ signal: StateManagementReadinessReport["sideEffectSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "createAsyncThunk", pattern: /\bcreateAsyncThunk\s*\(/i, evidence: "createAsyncThunk evidence was detected." },
+    { signal: "createListenerMiddleware", pattern: /\bcreateListenerMiddleware\s*\(/i, evidence: "listener middleware factory evidence was detected." },
+    { signal: "listenerMiddleware", pattern: /\blistenerMiddleware\b|startListening\s*\(/i, evidence: "listener middleware registration evidence was detected." },
+    { signal: "thunkMiddleware", pattern: /\bthunk\b|redux-thunk|extraArgument|getDefaultMiddleware\s*\(/i, evidence: "thunk middleware evidence was detected." },
+    { signal: "extraReducers", pattern: /\bextraReducers\s*:/i, evidence: "extraReducers lifecycle handling evidence was detected." },
+    { signal: "builder-callback", pattern: /\bbuilder\s*=>|\bbuilder\.add(Case|Matcher|DefaultCase)\b/i, evidence: "builder callback reducer evidence was detected." },
+    { signal: "rejectWithValue", pattern: /\brejectWithValue\b/i, evidence: "typed rejected payload evidence was detected." },
+    { signal: "abort-signal", pattern: /\bAbortSignal\b|\bsignal\b.*abort|thunkAPI\.signal/i, evidence: "async cancellation evidence was detected." }
+  ];
+  return stateManagementSignalFromSpecs(sourceFiles, specs, "side-effect", "signal");
+}
+
+function stateManagementEntitySignals(sourceFiles: StateManagementSourceFile[]): StateManagementReadinessReport["entitySignals"] {
+  const specs: Array<{ signal: StateManagementReadinessReport["entitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "createEntityAdapter", pattern: /\bcreateEntityAdapter\s*\(/i, evidence: "entity adapter evidence was detected." },
+    { signal: "selectId", pattern: /\bselectId\s*:/i, evidence: "custom selectId evidence was detected." },
+    { signal: "sortComparer", pattern: /\bsortComparer\s*:/i, evidence: "entity sort comparer evidence was detected." },
+    { signal: "getSelectors", pattern: /\bgetSelectors\s*\(/i, evidence: "adapter selector generation evidence was detected." },
+    { signal: "upsertMany", pattern: /\b(upsertMany|addMany|setAll|updateMany)\b/i, evidence: "adapter collection reducer evidence was detected." },
+    { signal: "normalized-state", pattern: /\b(ids|entities)\s*:|EntityState\b/i, evidence: "normalized entity state evidence was detected." }
+  ];
+  return stateManagementSignalFromSpecs(sourceFiles, specs, "entity", "signal");
+}
+
+function stateManagementMiddlewareSignals(sourceFiles: StateManagementSourceFile[]): StateManagementReadinessReport["middlewareSignals"] {
+  const specs: Array<{ signal: StateManagementReadinessReport["middlewareSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "getDefaultMiddleware", pattern: /\bgetDefaultMiddleware\s*\(/i, evidence: "default middleware customization evidence was detected." },
+    { signal: "serializableCheck", pattern: /\bserializableCheck\b/i, evidence: "serializable check configuration evidence was detected." },
+    { signal: "immutableCheck", pattern: /\bimmutableCheck\b/i, evidence: "immutable check configuration evidence was detected." },
+    { signal: "devTools", pattern: /\bdevTools\s*:|\bDevTools\b|redux-devtools/i, evidence: "Redux DevTools evidence was detected." },
+    { signal: "autoBatchEnhancer", pattern: /\bautoBatchEnhancer\b/i, evidence: "auto batch enhancer evidence was detected." },
+    { signal: "dynamicMiddleware", pattern: /\bcreateDynamicMiddleware\b|\bdynamicMiddleware\b/i, evidence: "dynamic middleware evidence was detected." },
+    { signal: "logger", pattern: /\bredux-logger\b|\blogger\b/i, evidence: "logger middleware evidence was detected." },
+    { signal: "redux-thunk", pattern: /\bredux-thunk\b|\bthunk\b/i, evidence: "redux-thunk evidence was detected." }
+  ];
+  return stateManagementSignalFromSpecs(sourceFiles, specs, "middleware", "signal");
+}
+
+function stateManagementRtkQuerySignals(sourceFiles: StateManagementSourceFile[]): StateManagementReadinessReport["rtkQuerySignals"] {
+  const specs: Array<{ signal: StateManagementReadinessReport["rtkQuerySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "createApi", pattern: /\bcreateApi\s*\(/i, evidence: "RTK Query createApi evidence was detected." },
+    { signal: "fetchBaseQuery", pattern: /\bfetchBaseQuery\s*\(/i, evidence: "fetchBaseQuery evidence was detected." },
+    { signal: "reducerPath", pattern: /\breducerPath\s*:|\[.*\.reducerPath\]\s*:/i, evidence: "RTK Query reducerPath evidence was detected." },
+    { signal: "api-middleware", pattern: /\.middleware\b|getDefaultMiddleware\(\)\.concat\([^)]*\.middleware/i, evidence: "RTK Query middleware evidence was detected." },
+    { signal: "tagTypes", pattern: /\btagTypes\s*:/i, evidence: "RTK Query tagTypes evidence was detected." },
+    { signal: "providesTags", pattern: /\bprovidesTags\s*:/i, evidence: "RTK Query providesTags evidence was detected." },
+    { signal: "invalidatesTags", pattern: /\binvalidatesTags\s*:/i, evidence: "RTK Query invalidatesTags evidence was detected." },
+    { signal: "generated-hooks", pattern: /\buse[A-Z][A-Za-z0-9]+(Query|Mutation|InfiniteQuery)\b/i, evidence: "generated RTK Query hook evidence was detected." }
+  ];
+  return stateManagementSignalFromSpecs(sourceFiles, specs, "rtk-query", "signal");
+}
+
+function stateManagementPackageSignals(sourceFiles: StateManagementSourceFile[]): StateManagementReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: StateManagementReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "redux-toolkit", pattern: /@reduxjs\/toolkit|\bconfigureStore\b|\bcreateSlice\b/i, evidence: "Redux Toolkit package/import evidence was detected." },
+    { signal: "react-redux", pattern: /["']react-redux["']|from\s+["']react-redux["']|\buseSelector\b|\bProvider\b/i, evidence: "React-Redux package/import evidence was detected." },
+    { signal: "redux", pattern: /["']redux["']|\bcreateStore\b|\bcombineReducers\b/i, evidence: "Redux core package/import evidence was detected." },
+    { signal: "zustand", pattern: /["']zustand["']|\bzustand\b/i, evidence: "Zustand package/import evidence was detected." },
+    { signal: "jotai", pattern: /["']jotai["']|\batom\s*\(|\buseAtom\b/i, evidence: "Jotai package/import evidence was detected." },
+    { signal: "mobx", pattern: /["']mobx["']|mobx-react|\bmakeAutoObservable\b|\bobservable\s*\(/i, evidence: "MobX package/import evidence was detected." },
+    { signal: "valtio", pattern: /["']valtio["']|\bproxy\s*\(/i, evidence: "Valtio package/import evidence was detected." }
+  ];
+  return stateManagementSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function stateManagementSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: StateManagementSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/state-management-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

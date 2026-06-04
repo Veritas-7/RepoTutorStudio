@@ -59,6 +59,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mocking-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-fetching-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "routing-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "state-management-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -116,6 +117,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mocking-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-fetching-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "routing-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "state-management-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -176,6 +178,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "mocking-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-fetching-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "routing-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "state-management-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -266,6 +269,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/mocking-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-fetching-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/routing-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/state-management-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -1129,6 +1133,28 @@ describe("RepoTutor core pipeline", () => {
     expect(routingMarkdown).toContain("Source pattern: React Router");
     expect(routingMarkdown).toContain("## Route Definitions");
     expect(routingMarkdown).toContain("## Navigation Signals");
+    const stateManagementText = await fs.readFile(path.join(result.session.outputPaths.analysis, "state-management-readiness-report.json"), "utf8");
+    expect(stateManagementText).toContain("Redux Toolkit configureStore createSlice reducers actions selectors Provider useSelector useDispatch createAsyncThunk createListenerMiddleware createEntityAdapter middleware devTools RTK Query");
+    expect(stateManagementText).toContain("\"storeSetups\"");
+    expect(stateManagementText).toContain("\"sliceDefinitions\"");
+    expect(stateManagementText).toContain("\"selectorSignals\"");
+    expect(stateManagementText).toContain("\"sideEffectSignals\"");
+    expect(stateManagementText).toContain("\"entitySignals\"");
+    expect(stateManagementText).toContain("\"middlewareSignals\"");
+    expect(stateManagementText).toContain("\"rtkQuerySignals\"");
+    expect(stateManagementText).toContain("\"packageSignals\"");
+    expect(stateManagementText).toContain("npx vitest run");
+    const stateManagementHtml = await fs.readFile(path.join(result.session.outputPaths.html, "state-management-readiness.html"), "utf8");
+    expect(stateManagementHtml).toContain("State Management Readiness");
+    expect(stateManagementHtml).toContain("state-management-card");
+    expect(stateManagementHtml).toContain("data-source-pattern=\"Redux Toolkit\"");
+    expect(stateManagementHtml).toContain("Store Setups");
+    expect(stateManagementHtml).toContain("RTK Query Signals");
+    const stateManagementMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "state-management-readiness.md"), "utf8");
+    expect(stateManagementMarkdown).toContain("# State Management Readiness");
+    expect(stateManagementMarkdown).toContain("Source pattern: Redux Toolkit");
+    expect(stateManagementMarkdown).toContain("## Slice Definitions");
+    expect(stateManagementMarkdown).toContain("## Middleware Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -1279,6 +1305,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/mocking-readiness.html");
     expect(exportManifestText).toContain("html/data-fetching-readiness.html");
     expect(exportManifestText).toContain("html/routing-readiness.html");
+    expect(exportManifestText).toContain("html/state-management-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -1393,6 +1420,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("mocking-readiness.html");
     expect(learningPathHtml).toContain("data-fetching-readiness.html");
     expect(learningPathHtml).toContain("routing-readiness.html");
+    expect(learningPathHtml).toContain("state-management-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");

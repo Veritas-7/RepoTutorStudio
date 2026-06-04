@@ -2725,6 +2725,48 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 157:
   - `833ea28` routing readiness report
 
+- 2026-06-04: AutoResearch Upgrade 158 candidate selected:
+  `reduxjs/redux-toolkit` (`https://github.com/reduxjs/redux-toolkit`;
+  public MIT; 11,216 stars; 1,266 forks; updated
+  2026-06-02T21:26:33Z). Compared with `pmndrs/zustand`,
+  `pmndrs/jotai`, and `mobxjs/mobx`; selected Redux Toolkit because it
+  directly models client state-management readiness: `configureStore`,
+  `createSlice`, reducers, actions, selectors, `Provider`, `useSelector`,
+  `useDispatch`, `createAsyncThunk`, `createListenerMiddleware`,
+  `createEntityAdapter`, middleware/devTools, and optional RTK Query. Cloned
+  ignored external source to `research/external-src/reduxjs-redux-toolkit` and
+  inspected README, license, package metadata, docs, usage guides, API docs,
+  and RTK Query overview without executing external source. Clone HEAD was
+  `7c49510`; tracked-file count for
+  `research/external-src/reduxjs-redux-toolkit` returned `0`.
+- 2026-06-04: RED state-management-readiness smoke generated
+  `/tmp/repotutor-state-management-red-studies.4nPyHI/2026-06-04/local__simple-ts-app__main__e6abe9b6`;
+  old build was missing `analysis/state-management-readiness-report.json`,
+  `markdown/state-management-readiness.md`, and
+  `html/state-management-readiness.html`, and
+  `open --target state-management-readiness` failed as expected.
+- 2026-06-04: Implemented Redux Toolkit-style state-management-readiness
+  report: `StateManagementReadinessReportSchema`,
+  `analysis/state-management-readiness-report.json`,
+  `markdown/state-management-readiness.md`,
+  `html/state-management-readiness.html`, store setups, slice definitions,
+  selector signals, side-effect signals, entity signals, middleware signals,
+  RTK Query signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target state-management-readiness`.
+- 2026-06-04: GREEN state-management-readiness smoke generated
+  `/tmp/repotutor-state-management-green-studies.Kt67k1/2026-06-04/local__simple-ts-app__main__e6abe9b6`;
+  confirmed `verificationCheckedRequiredArtifacts=174`, store setups 0,
+  slice definitions 0, selector signals 6, side-effect signals 8, entity
+  signals 6, middleware signals 8, RTK Query signals 8, package signals 7,
+  recommended commands 6, risk queue 2, manifest/learning-path entries, and
+  `open --target state-management-readiness` ->
+  `html/state-management-readiness.html`.
+- 2026-06-04: Verification for Upgrade 158:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 56/56 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
