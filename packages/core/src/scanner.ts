@@ -60,6 +60,7 @@ import {
   TypecheckReadinessReport,
   PackageManagerReport,
   GitHooksReport,
+  TaskRunnerReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -126,6 +127,7 @@ export interface AnalysisBundle {
   typecheckReadinessReport: TypecheckReadinessReport;
   packageManagerReport: PackageManagerReport;
   gitHooksReport: GitHooksReport;
+  taskRunnerReport: TaskRunnerReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -192,8 +194,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const typecheckReadinessReport = await buildTypecheckReadinessReport(walk);
   const packageManagerReport = await buildPackageManagerReport(walk);
   const gitHooksReport = await buildGitHooksReport(walk);
+  const taskRunnerReport = await buildTaskRunnerReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -9029,6 +9032,277 @@ function gitHooksSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp
       relatedHref: match?.sourceHref ?? "html/git-hooks.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
+}
+
+async function buildTaskRunnerReport(walk: WalkResult): Promise<TaskRunnerReport> {
+  const sourceFiles = await taskRunnerSourceFiles(walk);
+  const configFiles = taskRunnerConfigFiles(sourceFiles);
+  const taskSignals = taskRunnerTaskSignals(sourceFiles);
+  const cacheSignals = taskRunnerCacheSignals(sourceFiles);
+  const dependencySignals = taskRunnerDependencySignals(sourceFiles);
+  const environmentSignals = taskRunnerEnvironmentSignals(sourceFiles);
+  const packageScriptSignals = taskRunnerPackageScriptSignals(sourceFiles);
+
+  const hasConfig = configFiles.length > 0;
+  const hasTurboScript = packageScriptSignals.some((item) => item.signal === "turbo-run" && item.readiness === "ready");
+  const hasTaskDependencies = dependencySignals.some((item) => ["depends-on", "caret-dependency"].includes(item.signal) && item.readiness === "ready");
+  const hasOutputs = cacheSignals.some((item) => item.signal === "outputs" && item.readiness === "ready");
+  const hasInputs = cacheSignals.some((item) => item.signal === "inputs" && item.readiness === "ready");
+  const hasEnv = environmentSignals.some((item) => ["globalEnv", "globalPassThroughEnv", "passThroughEnv", "env"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: TaskRunnerReport["riskQueue"] = [];
+  if (!hasConfig && !hasTurboScript) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Decide whether workspace task orchestration should be documented for learners.",
+      why: "Turbo-style monorepos make build/test/lint ordering and cache boundaries explicit through task-runner config and package scripts.",
+      relatedHref: "html/task-runner.html"
+    });
+  }
+  if (hasTurboScript && !hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add the task-runner config that explains the turbo script behavior.",
+      why: "A package script that calls turbo without turbo.json makes task dependencies, inputs, outputs, and cache policy hard to inspect.",
+      relatedHref: "html/task-runner.html"
+    });
+  }
+  if (hasConfig && !hasTaskDependencies) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document task ordering with dependsOn where build/test tasks depend on upstream packages.",
+      why: "Turborepo uses dependsOn such as ^build to express workspace task graph order.",
+      relatedHref: "html/task-runner.html"
+    });
+  }
+  if (hasConfig && !hasOutputs) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Declare cacheable task outputs for build-like tasks.",
+      why: "Task runner caching needs output paths so learners can understand what is restored or invalidated.",
+      relatedHref: "html/task-runner.html"
+    });
+  }
+  if (hasConfig && !hasInputs) {
+    riskQueue.push({
+      priority: "low",
+      action: "Review task inputs for expensive tasks or generated artifacts.",
+      why: "Turbo-style inputs let teams narrow cache invalidation and avoid costly glob walking.",
+      relatedHref: "html/task-runner.html"
+    });
+  }
+  if (hasConfig && !hasEnv) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document environment variables that affect cached task results.",
+      why: "Turbo separates env, globalEnv, and pass-through env so cache keys and runtime-only variables are explicit.",
+      relatedHref: "html/task-runner.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run task-runner commands in a trusted workspace before treating this static report as approval.",
+    why: "RepoTutor records task-runner readiness statically; it does not run builds, restore cache, or contact remote cache services.",
+    relatedHref: "html/task-runner.html"
+  });
+
+  return {
+    summary: `Turborepo식 task-runner readiness report: config file ${configFiles.length}개, task signal ${taskSignals.length}개, cache signal ${cacheSignals.length}개, dependency signal ${dependencySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Turborepo turbo.json tasks dependsOn outputs inputs cache env globalEnv passThroughEnv persistent turbo run filter remote cache",
+    configFiles,
+    taskSignals,
+    cacheSignals,
+    dependencySignals,
+    environmentSignals,
+    packageScriptSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "pnpm turbo run build --dry=json", purpose: "Inspect the task graph and package selection without running build work." },
+      { command: "pnpm turbo run test --filter <package>", purpose: "Run a scoped task for one package when the workspace is trusted." },
+      { command: "pnpm turbo run build --summarize", purpose: "Review cache inputs, outputs, and task summaries after a real run." },
+      { command: "pnpm turbo daemon status", purpose: "Check local Turbo daemon state when task discovery feels stale." },
+      { command: "pnpm turbo prune <package>", purpose: "Understand which files a package needs for isolated builds." },
+      { command: "pnpm turbo run lint --cache=local:rw", purpose: "Keep cache behavior local while validating a lint task." }
+    ],
+    learnerNextSteps: [
+      "Start with turbo.json: task names explain what can be orchestrated, dependsOn explains ordering, and outputs explain cache artifacts.",
+      "Then read package.json scripts to see which commands call the task runner and which remain direct package-manager scripts.",
+      "Separate cache-key inputs from runtime-only pass-through environment variables before trusting task results.",
+      "RepoTutor does not run task-runner commands; use this page as a static map before executing workspace tasks yourself."
+    ]
+  };
+}
+
+type TaskRunnerSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function taskRunnerSourceFiles(walk: WalkResult): Promise<TaskRunnerSourceFile[]> {
+  const files: TaskRunnerSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !taskRunnerInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 200_000);
+    if (!text) continue;
+    if (!taskRunnerPathSignal(file.relPath) && !taskRunnerContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 220) break;
+  }
+  return files;
+}
+
+function taskRunnerInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(turbo\.json|nx\.json|workspace\.json|project\.json|Taskfile\.ya?ml|moon\.ya?ml|package\.json|README\.md)$/i.test(base)
+    || filePath.startsWith(".moon/")
+    || /(turbo|turborepo|task-runner|taskfile|moonrepo|nx|monorepo|workspace)/i.test(filePath)
+    || /\.(json|md|ya?ml|toml)$/i.test(filePath);
+}
+
+function taskRunnerPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(turbo\.json|nx\.json|workspace\.json|project\.json|Taskfile\.ya?ml|moon\.ya?ml|package\.json)$/i.test(base)
+    || filePath.startsWith(".moon/")
+    || /(turbo|turborepo|task-runner|taskfile|moonrepo|nx)/i.test(filePath);
+}
+
+function taskRunnerContentSignal(text: string): boolean {
+  return /\bturbo\b|turborepo|\"tasks\"\s*:|\"pipeline\"\s*:|dependsOn|outputs|inputs|globalEnv|globalPassThroughEnv|passThroughEnv|remoteCache|cache\s*:\s*false|persistent|nx\s+run|moon\s+run|Taskfile/i.test(text);
+}
+
+function taskRunnerConfigFiles(sourceFiles: TaskRunnerSourceFile[]): TaskRunnerReport["configFiles"] {
+  return sourceFiles
+    .filter((source) => taskRunnerConfigPathSignal(source.filePath) && taskRunnerToolForPath(source.filePath, source.text) !== null)
+    .slice(0, 80)
+    .map((source) => {
+      const tool = taskRunnerToolForPath(source.filePath, source.text) ?? "unknown";
+      const taskCount = taskRunnerTaskCount(source.text);
+      const dependsOnCount = countMatches(source.text, /dependsOn/g);
+      const outputsCount = countMatches(source.text, /outputs/g);
+      return {
+        filePath: source.filePath,
+        tool,
+        taskCount,
+        dependsOnCount,
+        outputsCount,
+        readiness: taskCount > 0 || dependsOnCount > 0 || outputsCount > 0 ? "ready" : "partial",
+        evidence: `${source.filePath} contains ${tool} task-runner config with ${taskCount} task signal(s), ${dependsOnCount} dependency signal(s), and ${outputsCount} output signal(s).`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function taskRunnerConfigPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(turbo\.json|nx\.json|workspace\.json|project\.json|Taskfile\.ya?ml|moon\.ya?ml|package\.json)$/i.test(base)
+    || filePath.startsWith(".moon/")
+    || /(turbo|task-runner|taskfile|moonrepo|nx|lage).*\.(json|ya?ml|toml)$/i.test(filePath);
+}
+
+function taskRunnerToolForPath(filePath: string, text: string): TaskRunnerReport["configFiles"][number]["tool"] | null {
+  const base = path.basename(filePath).toLowerCase();
+  if (base === "turbo.json" || /\bturbo\b|turborepo/i.test(text)) return "turbo";
+  if (base === "nx.json" || base === "project.json" || /\bnx\s+run|\bnx\b/i.test(text)) return "nx";
+  if (/^taskfile\.ya?ml$/i.test(base)) return "taskfile";
+  if (base === "moon.yml" || base === "moon.yaml" || filePath.startsWith(".moon/") || /\bmoon\s+run\b/i.test(text)) return "moon";
+  if (/\blage\b/i.test(text)) return "lage";
+  return null;
+}
+
+function taskRunnerTaskCount(text: string): number {
+  try {
+    const cleaned = stripJsonComments(text);
+    const json = JSON.parse(cleaned) as { tasks?: Record<string, unknown>; pipeline?: Record<string, unknown> };
+    return Object.keys(json.tasks ?? json.pipeline ?? {}).length;
+  } catch {
+    const section = text.match(/"?(tasks|pipeline)"?\s*:\s*\{([\s\S]*?)\n\s*\}/)?.[2] ?? "";
+    return Math.max(countMatches(section, /"[^"]+"\s*:/g), 0);
+  }
+}
+
+function taskRunnerTaskSignals(sourceFiles: TaskRunnerSourceFile[]): TaskRunnerReport["taskSignals"] {
+  const specs: Array<{ signal: TaskRunnerReport["taskSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "build", pattern: /"build[^"]*"\s*:|\bturbo\s+run\s+build\b|\bnx\s+run\s+\S+:build\b/i, evidence: "build task evidence was detected." },
+    { signal: "test", pattern: /"test[^"]*"\s*:|\bturbo\s+run\s+test\b|\bnx\s+run\s+\S+:test\b/i, evidence: "test task evidence was detected." },
+    { signal: "lint", pattern: /"lint[^"]*"\s*:|\bturbo\s+run\s+lint\b|\bnx\s+run\s+\S+:lint\b/i, evidence: "lint task evidence was detected." },
+    { signal: "dev", pattern: /"dev[^"]*"\s*:|\bturbo\s+run\s+dev\b/i, evidence: "dev task evidence was detected." },
+    { signal: "typecheck", pattern: /typecheck|check-types|tsc\s+-b/i, evidence: "typecheck task evidence was detected." },
+    { signal: "format", pattern: /"format[^"]*"\s*:|\bturbo\s+run\s+format\b|prettier|oxfmt/i, evidence: "format task evidence was detected." },
+    { signal: "quality", pattern: /quality|check|verify/i, evidence: "quality or check task evidence was detected." },
+    { signal: "release", pattern: /release|publish|deploy/i, evidence: "release or deploy task evidence was detected." }
+  ];
+  return taskRunnerSignalFromSpecs(sourceFiles, specs, "task", "signal");
+}
+
+function taskRunnerCacheSignals(sourceFiles: TaskRunnerSourceFile[]): TaskRunnerReport["cacheSignals"] {
+  const specs: Array<{ signal: TaskRunnerReport["cacheSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "outputs", pattern: /"outputs"\s*:|outputs:/i, evidence: "cache output declaration evidence was detected." },
+    { signal: "inputs", pattern: /"inputs"\s*:|inputs:/i, evidence: "cache input declaration evidence was detected." },
+    { signal: "cache-false", pattern: /"cache"\s*:\s*false|cache:\s*false/i, evidence: "cache disabled task evidence was detected." },
+    { signal: "remote-cache", pattern: /remoteCache|remote cache|TURBO_TOKEN|TURBO_TEAM/i, evidence: "remote cache evidence was detected." },
+    { signal: "global-env", pattern: /globalEnv|globalDependencies/i, evidence: "global cache environment evidence was detected." },
+    { signal: "pass-through-env", pattern: /globalPassThroughEnv|passThroughEnv/i, evidence: "pass-through environment evidence was detected." },
+    { signal: "persistent", pattern: /"persistent"\s*:\s*true|persistent:\s*true/i, evidence: "persistent task evidence was detected." }
+  ];
+  return taskRunnerSignalFromSpecs(sourceFiles, specs, "cache", "signal");
+}
+
+function taskRunnerDependencySignals(sourceFiles: TaskRunnerSourceFile[]): TaskRunnerReport["dependencySignals"] {
+  const specs: Array<{ signal: TaskRunnerReport["dependencySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "depends-on", pattern: /dependsOn/i, evidence: "task dependsOn evidence was detected." },
+    { signal: "caret-dependency", pattern: /"\^[^"]+"|\^build|\^topo/i, evidence: "upstream workspace dependency task evidence was detected." },
+    { signal: "root-task", pattern: /"\/\/#|\/\/#/i, evidence: "root task evidence was detected." },
+    { signal: "package-task", pattern: /[A-Za-z0-9_-]+#[A-Za-z0-9:_-]+/i, evidence: "package-scoped task evidence was detected." },
+    { signal: "filter", pattern: /--filter|-F\s+|--affected|affected:/i, evidence: "task filter evidence was detected." },
+    { signal: "workspace-script", pattern: /workspace|workspaces|pnpm\s+-r|pnpm\s+--filter|turbo\s+run/i, evidence: "workspace script orchestration evidence was detected." }
+  ];
+  return taskRunnerSignalFromSpecs(sourceFiles, specs, "dependency", "signal");
+}
+
+function taskRunnerEnvironmentSignals(sourceFiles: TaskRunnerSourceFile[]): TaskRunnerReport["environmentSignals"] {
+  const specs: Array<{ signal: TaskRunnerReport["environmentSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "globalEnv", pattern: /globalEnv/i, evidence: "globalEnv evidence was detected." },
+    { signal: "globalPassThroughEnv", pattern: /globalPassThroughEnv/i, evidence: "globalPassThroughEnv evidence was detected." },
+    { signal: "passThroughEnv", pattern: /passThroughEnv/i, evidence: "passThroughEnv evidence was detected." },
+    { signal: "env", pattern: /"env"\s*:|env:/i, evidence: "task env evidence was detected." },
+    { signal: "dot-env", pattern: /\.env|dotenv/i, evidence: "dot-env file evidence was detected." },
+    { signal: "ci", pattern: /RUNNER_OS|GITHUB_ACTIONS|CI\b|ACTIONS_/i, evidence: "CI environment evidence was detected." }
+  ];
+  return taskRunnerSignalFromSpecs(sourceFiles, specs, "environment", "signal");
+}
+
+function taskRunnerPackageScriptSignals(sourceFiles: TaskRunnerSourceFile[]): TaskRunnerReport["packageScriptSignals"] {
+  const specs: Array<{ signal: TaskRunnerReport["packageScriptSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "turbo-run", pattern: /\bturbo\s+run\b|\bpnpm\s+--\s+turbo\b|\bnpx\s+turbo\b/i, evidence: "turbo run package script evidence was detected." },
+    { signal: "nx-run", pattern: /\bnx\s+run\b|\bnx\s+affected\b/i, evidence: "Nx run package script evidence was detected." },
+    { signal: "task-run", pattern: /\btask\s+[A-Za-z0-9:_-]+|Taskfile\.ya?ml/i, evidence: "Taskfile task script evidence was detected." },
+    { signal: "moon-run", pattern: /\bmoon\s+run\b/i, evidence: "Moon task script evidence was detected." },
+    { signal: "recursive-run", pattern: /\bpnpm\s+-r\b|\bnpm\s+.*--workspaces\b|yarn\s+workspaces/i, evidence: "recursive workspace package script evidence was detected." },
+    { signal: "filter-run", pattern: /--filter|-F\s+|--affected/i, evidence: "filtered task run evidence was detected." }
+  ];
+  return taskRunnerSignalFromSpecs(sourceFiles, specs, "package script", "signal");
+}
+
+function taskRunnerSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: TaskRunnerSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/task-runner.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+function stripJsonComments(text: string): string {
+  return text.replace(/\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "");
 }
 
 function packageManagerLockfileEcosystem(filePath: string): PackageManagerReport["lockfileSignals"][number]["ecosystem"] | null {

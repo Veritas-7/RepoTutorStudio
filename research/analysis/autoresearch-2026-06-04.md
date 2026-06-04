@@ -3283,6 +3283,49 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 45/45 audit checks across 13 generated reports
 
+### Upgrade 148: Task Runner Readiness Report
+
+- Cloned and inspected `vercel/turborepo` under
+  `research/external-src/vercel-turborepo` without executing external source.
+- GitHub metadata: public repo, MIT license, 30,491 stars, 2,356 forks,
+  updated 2026-06-03T21:05:38Z. Compared with `nrwl/nx`,
+  `moonrepo/moon`, and `go-task/task`; selected Turborepo because it directly
+  models `turbo.json` tasks, `dependsOn`, cache `outputs`/`inputs`, disabled
+  cache tasks, persistent dev tasks, workspace filters, global/pass-through
+  environment variables, package scripts, dry-run graph inspection, summaries,
+  daemon status, and prune handoff. No source code was copied into RepoTutor.
+- Implemented Turborepo-style task-runner readiness report:
+  `TaskRunnerReportSchema`, `analysis/task-runner-report.json`,
+  `markdown/task-runner.md`, `html/task-runner.html`, config files, task
+  signals, cache signals, dependency signals, environment signals, package
+  script signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target task-runner`.
+- Source pattern: Turborepo separates `turbo.json` task definitions,
+  `dependsOn` graph ordering, cache `outputs`/`inputs`, remote/local cache
+  controls, persistent tasks, package selection filters, global/cache-key env,
+  pass-through runtime env, package scripts, dry-run task graph inspection,
+  summaries, daemon status, and prune workflows. RepoTutor maps that to
+  deterministic static task-runner readiness and explicitly does not run
+  task commands, restore cache, contact remote cache, or execute package
+  scripts.
+- RED smoke generated
+  `/tmp/repotutor-task-runner-red-studies.mmx6dc/2026-06-04/local__simple-ts-app__main__3a9e7dbd`;
+  old behavior was missing `analysis/task-runner-report.json`,
+  `markdown/task-runner.md`, and `html/task-runner.html`, and
+  `open --target task-runner` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-task-runner-green-studies.IXhmGC/2026-06-04/local__simple-ts-app__main__3a9e7dbd`;
+  confirmed `verificationCheckedRequiredArtifacts=144`, config files 0,
+  task signals 8, cache signals 7, dependency signals 6, environment signals
+  6, package script signals 6, recommended commands 6, risk queue 2,
+  `task-runner-card`, `data-source-pattern="Turborepo"`,
+  manifest/learning-path entries, and `open --target task-runner` ->
+  `html/task-runner.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 46/46 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
