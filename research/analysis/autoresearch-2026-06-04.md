@@ -5645,6 +5645,53 @@ Local verification:
   audit and hit Vitest's 5s timeout on the fixture test.
 - `pnpm audit:brief`: PASS, 94/94 audit checks across 13 generated reports
 
+### Upgrade 197: Visual Regression Readiness Report
+
+- Cloned and inspected `reg-viz/reg-suit` under
+  `research/external-src/reg-viz-reg-suit` without executing external source.
+  Clone HEAD was `5c09c8e`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 1,274 stars, 107 forks, updated
+  2026-06-03T23:39:15Z. Compared with `lost-pixel/lost-pixel`,
+  `argos-ci/argos`, and `webdriverio/visual-testing`; selected reg-suit because
+  existing RepoTutor reports already cover E2E and Storybook surfaces, while
+  reg-suit directly models visual regression CLI readiness: actual screenshots,
+  expected baselines, diffs, thresholds, reports, plugins, storage, notification,
+  and CI handoff. No source code was copied into RepoTutor.
+- Implemented reg-suit-style visual-regression-readiness report:
+  `VisualRegressionReadinessReportSchema`,
+  `analysis/visual-regression-readiness-report.json`,
+  `markdown/visual-regression-readiness.md`,
+  `html/visual-regression-readiness.html`, visual regression setups, config
+  signals, snapshot signals, threshold signals, report signals, plugin signals,
+  CI signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target visual-regression-readiness`.
+- Source pattern: reg-suit separates `regconfig.json`, `actualDir`,
+  `expectedDir`, `diffDir`, `workingDir`, `thresholdRate`, `thresholdPixel`,
+  `matchingThreshold`, `enableAntialias`, `ximgdiff`, `concurrency`,
+  `sync-expected`, `compare`, `publish`, HTML diff reports, keygen plugins,
+  S3/GCS publishers, GitHub/GitLab/Slack/Chatwork notifiers, and CI workflows.
+  RepoTutor maps that to deterministic static visual regression readiness and
+  explicitly does not capture screenshots, compare pixels, fetch baselines,
+  upload reports, notify services, or execute browser tests.
+- RED smoke generated
+  `/tmp/repotutor-visual-red-studies.1creOu/2026-06-05/local__simple-ts-app__HEAD__bdf9bbbf`;
+  old behavior had `verificationCheckedRequiredArtifacts=288`, was missing
+  `analysis/visual-regression-readiness-report.json`,
+  `markdown/visual-regression-readiness.md`, and
+  `html/visual-regression-readiness.html`, and `open --target
+  visual-regression-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-visual-green-studies.KP2l2p/2026-06-05/local__simple-ts-app__main__bdf9bbbf`;
+  confirmed `verificationCheckedRequiredArtifacts=291`, visual setups 0, config
+  signals 8, snapshot signals 9, threshold signals 7, report signals 6, plugin
+  signals 9, CI signals 7, package signals 10, risk queue 2, all three new
+  artifacts, and `open --target visual-regression-readiness` ->
+  `html/visual-regression-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 95/95 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
