@@ -3673,6 +3673,49 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 54/54 audit checks across 13 generated reports
 
+### Upgrade 157: Routing Readiness Report
+
+- Cloned and inspected `remix-run/react-router` under
+  `research/external-src/remix-run-react-router` without executing external
+  source. Clone HEAD was `2c22bcb`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 56,440 stars, 10,860 forks,
+  updated 2026-06-03T21:31:33Z. Compared with `TanStack/router`,
+  `vercel/next.js`, and `vuejs/router`; selected React Router because it
+  directly models route/navigation readiness: declarative, data, and framework
+  modes; `BrowserRouter`, `createBrowserRouter`, `RouterProvider`, `routes.ts`,
+  `route`, `index`, `Link`, `NavLink`, `Outlet`, `loader`, `action`,
+  `ErrorBoundary`, `useNavigate`, `useParams`, and `useSearchParams`. No
+  source code was copied into RepoTutor.
+- Implemented React Router-style routing-readiness report:
+  `RoutingReadinessReportSchema`,
+  `analysis/routing-readiness-report.json`,
+  `markdown/routing-readiness.md`, `html/routing-readiness.html`, routing
+  setups, route definitions, navigation signals, data-route signals, file-route
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target routing-readiness`.
+- Source pattern: React Router separates router mode setup, route definitions,
+  nested `Outlet` layout, dynamic params, visible navigation, data loaders and
+  actions, client loaders/actions, route error boundaries, redirects, and
+  file-route conventions. RepoTutor maps that to deterministic static routing
+  readiness and explicitly does not execute loaders, actions, navigation
+  transitions, dev servers, or browser route flows.
+- RED smoke generated
+  `/tmp/repotutor-routing-readiness-red-studies.DvaPVY/2026-06-04/local__simple-ts-app__main__55dd6154`;
+  old behavior was missing `analysis/routing-readiness-report.json`,
+  `markdown/routing-readiness.md`, and `html/routing-readiness.html`, and
+  `open --target routing-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-routing-readiness-green-studies.g5BKxB/2026-06-04/local__simple-ts-app__main__55dd6154`;
+  confirmed `verificationCheckedRequiredArtifacts=171`, routing setups 0,
+  route definitions 0, navigation signals 10, data-route signals 11,
+  file-route signals 9, package signals 7, recommended commands 6, risk queue
+  2, manifest/learning-path entries, and `open --target routing-readiness` ->
+  `html/routing-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 55/55 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

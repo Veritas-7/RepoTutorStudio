@@ -2684,6 +2684,45 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 156:
   - `a1884b8` data fetching readiness report
 
+- 2026-06-04: AutoResearch Upgrade 157 candidate selected:
+  `remix-run/react-router` (`https://github.com/remix-run/react-router`;
+  public MIT; 56,440 stars; 10,860 forks; updated
+  2026-06-03T21:31:33Z). Compared with `TanStack/router`, `vercel/next.js`,
+  and `vuejs/router`; selected React Router because it directly models
+  route/navigation readiness across declarative, data, and framework modes:
+  `BrowserRouter`, `createBrowserRouter`, `RouterProvider`, `routes.ts`,
+  `route`, `index`, `Link`, `NavLink`, `Outlet`, `loader`, `action`,
+  `ErrorBoundary`, `useNavigate`, `useParams`, and `useSearchParams`. Cloned
+  ignored external source to `research/external-src/remix-run-react-router` and
+  inspected README, license, package metadata, docs, route conventions, data
+  loading, navigation blocking, and source/tests without executing external
+  source. Clone HEAD was `2c22bcb`; tracked-file count for
+  `research/external-src/remix-run-react-router` returned `0`.
+- 2026-06-04: RED routing-readiness smoke generated
+  `/tmp/repotutor-routing-readiness-red-studies.DvaPVY/2026-06-04/local__simple-ts-app__main__55dd6154`;
+  old build was missing `analysis/routing-readiness-report.json`,
+  `markdown/routing-readiness.md`, and `html/routing-readiness.html`, and
+  `open --target routing-readiness` failed as expected.
+- 2026-06-04: Implemented React Router-style routing-readiness report:
+  `RoutingReadinessReportSchema`,
+  `analysis/routing-readiness-report.json`,
+  `markdown/routing-readiness.md`, `html/routing-readiness.html`, routing
+  setups, route definitions, navigation signals, data-route signals, file-route
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target routing-readiness`.
+- 2026-06-04: GREEN routing-readiness smoke generated
+  `/tmp/repotutor-routing-readiness-green-studies.g5BKxB/2026-06-04/local__simple-ts-app__main__55dd6154`;
+  confirmed `verificationCheckedRequiredArtifacts=171`, routing setups 0,
+  route definitions 0, navigation signals 10, data-route signals 11,
+  file-route signals 9, package signals 7, recommended commands 6, risk queue
+  2, manifest/learning-path entries, and `open --target routing-readiness` ->
+  `html/routing-readiness.html`.
+- 2026-06-04: Verification for Upgrade 157:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 55/55 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
