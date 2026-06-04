@@ -4828,6 +4828,49 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 207:
   - `5588c88` backup readiness report
 
+- 2026-06-05: AutoResearch Upgrade 208 candidate selected:
+  `promptfoo/promptfoo` (`https://github.com/promptfoo/promptfoo`; public;
+  MIT; 21,885 stars; 1,938 forks; updated 2026-06-04T18:05:29Z). Compared
+  with `openai/evals` (`https://github.com/openai/evals`; public; license key
+  `other`; 18,605 stars; 2,976 forks; updated 2026-06-04T15:39:56Z) and
+  `langchain-ai/openevals` (`https://github.com/langchain-ai/openevals`;
+  public; MIT; 1,068 stars; 97 forks; updated 2026-06-03T23:49:59Z);
+  selected the three-source LLM eval slice because RepoTutor had generic LLM
+  readiness but no dedicated prompt/provider/dataset/judge/red-team readiness
+  target. Cloned sparse ignored external sources to
+  `research/external-src/promptfoo`, `research/external-src/openai-evals`, and
+  `research/external-src/openevals` and inspected configs/docs/examples without
+  executing external source. Clone HEADs were `465d610`, `8eac7a7`, and
+  `6ecf9b5`; tracked file count for all three ignored source paths returned
+  `0`.
+- 2026-06-05: RED llm-eval-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-llm-eval-red-studies.K7o234/2026-06-05/local__repotutor-llm-eval-red-repo.nmKD5L__local__7dbc2984`;
+  old behavior had `verificationCheckedRequiredArtifacts=321`, was missing
+  `analysis/llm-eval-readiness-report.json`,
+  `markdown/llm-eval-readiness.md`, and `html/llm-eval-readiness.html`, and
+  `open --target llm-eval-readiness` failed as expected.
+- 2026-06-05: Implemented promptfoo/OpenAI evals/OpenEvals-style
+  llm-eval-readiness report: `LlmEvalReadinessReportSchema`,
+  `analysis/llm-eval-readiness-report.json`,
+  `markdown/llm-eval-readiness.md`, `html/llm-eval-readiness.html`, eval setup
+  detection, config signals, prompt signals, provider signals, test-case
+  signals, judge signals, dataset signals, red-team signals, workflow signals,
+  package signals, recommended commands, risk queue, manifest/session
+  verification coverage, learning-path linkage, nav entry, CLI help target, and
+  `open --target llm-eval-readiness`.
+- 2026-06-05: GREEN llm-eval-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-llm-eval-green-studies.elfEKv/2026-06-05/local__repotutor-llm-eval-green-repo.08wtn5__local__1e369e02`;
+  confirmed `verificationCheckedRequiredArtifacts=324`, eval setups 9, judge
+  ready signals 7, red-team ready signals 7, risk queue 0, all three new
+  artifacts, and `open --target llm-eval-readiness` ->
+  `html/llm-eval-readiness.html`.
+- 2026-06-05: Verification for Upgrade 208:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 15/15 tests
+  - `pnpm audit:brief`: PASS, 106/106 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

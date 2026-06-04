@@ -4784,6 +4784,91 @@ export const LlmReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const LlmEvalReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  evalSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["promptfoo", "openai-evals", "openevals", "langsmith", "custom", "unknown"]),
+    promptCount: z.number().int().nonnegative(),
+    providerCount: z.number().int().nonnegative(),
+    testCaseCount: z.number().int().nonnegative(),
+    assertionCount: z.number().int().nonnegative(),
+    datasetCount: z.number().int().nonnegative(),
+    judgeCount: z.number().int().nonnegative(),
+    redteamCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["promptfoo-config", "eval-registry", "eval-class", "samples-jsonl", "pyproject", "package-script", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  promptSignals: z.array(z.object({
+    signal: z.enum(["prompt", "prompt-file", "prompt-template", "vars", "messages", "few-shot", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  providerSignals: z.array(z.object({
+    signal: z.enum(["provider", "model-name", "grader-model", "completion-fn", "api-key-env", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testCaseSignals: z.array(z.object({
+    signal: z.enum(["tests", "vars", "assert", "expected", "rubric", "threshold", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  judgeSignals: z.array(z.object({
+    signal: z.enum(["llm-rubric", "modelgraded-spec", "llm-as-judge", "correctness", "hallucination", "feedback-key", "score", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  datasetSignals: z.array(z.object({
+    signal: z.enum(["samples-jsonl", "dataset", "csv", "jsonl", "reference-output", "ideal", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  redteamSignals: z.array(z.object({
+    signal: z.enum(["redteam", "plugins", "strategies", "jailbreak", "prompt-injection", "pii", "owasp", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["promptfoo-eval", "promptfoo-redteam", "oaieval", "evaluate", "ci", "report-output", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["promptfoo", "openevals", "openai-evals", "langsmith", "deepeval", "ragas", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ServerFrameworkReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -6421,6 +6506,7 @@ export type SecurityHeadersReadinessReport = z.infer<typeof SecurityHeadersReadi
 export type GraphqlReadinessReport = z.infer<typeof GraphqlReadinessReportSchema>;
 export type CliReadinessReport = z.infer<typeof CliReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
+export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;

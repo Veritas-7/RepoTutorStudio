@@ -102,6 +102,7 @@ import {
   GraphqlReadinessReport,
   CliReadinessReport,
   LlmReadinessReport,
+  LlmEvalReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -228,6 +229,7 @@ export interface AnalysisBundle {
   graphqlReadinessReport: GraphqlReadinessReport;
   cliReadinessReport: CliReadinessReport;
   llmReadinessReport: LlmReadinessReport;
+  llmEvalReadinessReport: LlmEvalReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -354,6 +356,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const graphqlReadinessReport = await buildGraphqlReadinessReport(walk);
   const cliReadinessReport = await buildCliReadinessReport(walk);
   const llmReadinessReport = await buildLlmReadinessReport(walk);
+  const llmEvalReadinessReport = await buildLlmEvalReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
@@ -373,7 +376,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -20683,6 +20686,330 @@ function llmReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: Re
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/llm-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildLlmEvalReadinessReport(walk: WalkResult): Promise<LlmEvalReadinessReport> {
+  const sourceFiles = await llmEvalSourceFiles(walk);
+  const evalSetups = llmEvalSetups(sourceFiles);
+  const configSignals = llmEvalConfigSignals(sourceFiles);
+  const promptSignals = llmEvalPromptSignals(sourceFiles);
+  const providerSignals = llmEvalProviderSignals(sourceFiles);
+  const testCaseSignals = llmEvalTestCaseSignals(sourceFiles);
+  const judgeSignals = llmEvalJudgeSignals(sourceFiles);
+  const datasetSignals = llmEvalDatasetSignals(sourceFiles);
+  const redteamSignals = llmEvalRedteamSignals(sourceFiles);
+  const workflowSignals = llmEvalWorkflowSignals(sourceFiles);
+  const packageSignals = llmEvalPackageSignals(sourceFiles);
+
+  const hasConfig = configSignals.some((item) => item.readiness === "ready") || evalSetups.length > 0;
+  const hasPrompt = promptSignals.some((item) => item.readiness === "ready") || evalSetups.some((item) => item.promptCount > 0);
+  const hasProvider = providerSignals.some((item) => item.readiness === "ready") || evalSetups.some((item) => item.providerCount > 0);
+  const hasTests = testCaseSignals.some((item) => item.readiness === "ready") || evalSetups.some((item) => item.testCaseCount > 0 || item.assertionCount > 0);
+  const hasJudge = judgeSignals.some((item) => item.readiness === "ready") || evalSetups.some((item) => item.judgeCount > 0);
+  const hasDataset = datasetSignals.some((item) => item.readiness === "ready") || evalSetups.some((item) => item.datasetCount > 0);
+  const hasRedteam = redteamSignals.some((item) => item.readiness === "ready") || evalSetups.some((item) => item.redteamCount > 0);
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready") || evalSetups.some((item) => item.outputCount > 0);
+
+  const riskQueue: LlmEvalReadinessReport["riskQueue"] = [];
+  if (!hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add an explicit LLM eval config, registry entry, or evaluator source before claiming eval readiness.",
+      why: "Prompt and model code alone do not prove that quality checks, datasets, scoring, or reporting can be repeated.",
+      relatedHref: "html/llm-eval-readiness.html"
+    });
+  }
+  if (hasConfig && !hasProvider) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record provider, model, completion function, or judge-model configuration for the eval.",
+      why: "Eval results are not reproducible unless the model boundary and provider configuration are visible.",
+      relatedHref: "html/llm-eval-readiness.html"
+    });
+  }
+  if (hasConfig && !hasTests) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add test cases, vars, assertions, expected outputs, rubrics, or thresholds.",
+      why: "Eval configs need concrete cases and pass/fail criteria; provider-only configs are demos, not readiness evidence.",
+      relatedHref: "html/llm-eval-readiness.html"
+    });
+  }
+  if ((hasTests || hasJudge) && !hasDataset) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Trace dataset, samples_jsonl, reference output, ideal answer, CSV, or JSONL sources.",
+      why: "Datasets and reference outputs make eval changes reviewable across model or prompt changes.",
+      relatedHref: "html/llm-eval-readiness.html"
+    });
+  }
+  if (hasProvider && hasTests && !hasJudge) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add or document the LLM-as-judge, rubric, modelgraded spec, or scoring function.",
+      why: "Semantic answer quality usually needs a visible judge/rubric path in addition to exact assertions.",
+      relatedHref: "html/llm-eval-readiness.html"
+    });
+  }
+  if (hasConfig && !hasWorkflow) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add eval CLI, CI, report output, or dashboard/view workflow commands.",
+      why: "Eval readiness improves when learners can see how results are produced and persisted outside RepoTutor.",
+      relatedHref: "html/llm-eval-readiness.html"
+    });
+  }
+  if (hasProvider && hasTests && !hasRedteam) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add or document red-team, jailbreak, prompt-injection, PII, or OWASP-style adversarial probes.",
+      why: "Quality evals and safety probes answer different questions for production LLM apps.",
+      relatedHref: "html/llm-eval-readiness.html"
+    });
+  }
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `LLM eval readiness report: setup ${evalSetups.length}개, config signal ${configSignals.length}개, test signal ${testCaseSignals.length}개, judge signal ${judgeSignals.length}개, red-team signal ${redteamSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "LLM eval readiness promptfoo promptfooconfig providers prompts tests assert llm-rubric redteam plugins strategies OpenAI evals evals registry samples_jsonl modelgraded_spec completion_fns oaieval OpenEvals create_llm_as_judge createLLMAsJudge correctness hallucination feedbackKey score reference_outputs datasets reports",
+    evalSetups,
+    configSignals,
+    promptSignals,
+    providerSignals,
+    testCaseSignals,
+    judgeSignals,
+    datasetSignals,
+    redteamSignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"promptfooconfig|promptfoo|providers:|prompts:|tests:|assert:\" .", purpose: "Find promptfoo configs, providers, prompts, cases, assertions, and report options." },
+      { command: "rg \"redteam:|plugins:|strategies:|jailbreak|prompt-injection|pii|OWASP\" .", purpose: "Review adversarial eval coverage without running probes." },
+      { command: "rg \"samples_jsonl|modelgraded_spec|completion_fns|oaieval|evals/registry\" .", purpose: "Map OpenAI eval registry specs, sample datasets, and completion functions." },
+      { command: "rg \"create_llm_as_judge|createLLMAsJudge|CORRECTNESS_PROMPT|HALLUCINATION_PROMPT|feedbackKey|score\" .", purpose: "Trace OpenEvals judge prompts, scoring keys, and output score shapes." },
+      { command: "promptfoo eval -c <config> --no-cache -o results.json", purpose: "Run promptfoo only in a trusted project environment when provider credentials and cost limits are ready." },
+      { command: "oaieval <completion-fn> <eval-name>", purpose: "Run OpenAI eval registry entries only after reviewing model/provider and dataset boundaries." }
+    ],
+    learnerNextSteps: [
+      "먼저 promptfooconfig.yaml, evals/registry, openevals evaluator source, package scripts 중 어디서 eval이 시작되는지 찾으세요.",
+      "prompts, providers, tests, assert, vars, expected, rubric을 분리해서 prompt 품질 기준과 모델 경계를 확인하세요.",
+      "samples_jsonl, dataset, CSV, JSONL, reference_outputs, ideal 답변이 있으면 재현 가능한 평가 데이터 경로를 추적하세요.",
+      "llm-rubric, modelgraded_spec, create_llm_as_judge, createLLMAsJudge, feedbackKey, score는 judge 모델과 채점 기준을 설명합니다.",
+      "redteam, plugins, strategies, jailbreak, prompt-injection, PII, OWASP 신호는 품질 eval과 별도로 안전성 경계를 보여줍니다.",
+      "이 리포트는 정적 readiness입니다. RepoTutor는 provider 호출, judge 모델 실행, red-team probe 생성, 데이터셋 실행, 점수 계산, 리포트 업로드를 하지 않습니다."
+    ]
+  };
+}
+
+type LlmEvalSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function llmEvalSourceFiles(walk: WalkResult): Promise<LlmEvalSourceFile[]> {
+  const files: LlmEvalSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !llmEvalInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!llmEvalPathSignal(file.relPath) && !llmEvalContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 220) break;
+  }
+  return files;
+}
+
+function llmEvalInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return llmEvalPathSignal(filePath)
+    || /(^|\/)(README|docs?|evals?|evaluation|evaluators?|prompts?|promptfoo|redteam|red-team|benchmarks?|datasets?|fixtures?|tests?|ci|workflows?|scripts?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|pyproject\.toml|setup\.py|promptfooconfig\..*|evals\.ya?ml|evals\.json)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|py|json|jsonl|csv|md|mdx|ya?ml|toml|txt)$/i.test(filePath);
+}
+
+function llmEvalPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /(^|\/)(evals?|evaluators?|evaluation|promptfoo|redteam|red-team|benchmarks?|datasets?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^promptfooconfig(\..*)?\.ya?ml$/i.test(base)
+    || /(^|\/)evals\/registry\/(evals|data)\/.*\.(ya?ml|jsonl|json|csv)$/i.test(filePath)
+    || /\.github\/workflows\/.*(eval|promptfoo|redteam|benchmark).*\.(ya?ml)$/i.test(filePath);
+}
+
+function llmEvalContentSignal(text: string): boolean {
+  return /(promptfoo|promptfooconfig|providers\s*:|prompts\s*:|tests\s*:|assert\s*:|llm-rubric|redteam\s*:|plugins\s*:|strategies\s*:|jailbreak|prompt-injection|samples_jsonl|modelgraded_spec|completion_fns|oaieval|create_llm_as_judge|createLLMAsJudge|CORRECTNESS_PROMPT|HALLUCINATION_PROMPT|feedbackKey|reference_outputs|ideal\s*:)/i.test(text);
+}
+
+function llmEvalSetups(sourceFiles: LlmEvalSourceFile[]): LlmEvalReadinessReport["evalSetups"] {
+  const rows: LlmEvalReadinessReport["evalSetups"] = [];
+  for (const source of sourceFiles) {
+    const promptCount = countMatches(source.text, /(^|\n)\s*prompts?\s*:|file:\/\/.*prompt|PromptTemplate|prompt\s*:|few_shot_examples|messages\s*:/gi);
+    const providerCount = countMatches(source.text, /(^|\n)\s*providers?\s*:|openai:|anthropic:|gemini|gpt-|claude-|model\s*:|completion_fns|api[_-]?key|OPENAI_API_KEY/gi);
+    const testCaseCount = countMatches(source.text, /(^|\n)\s*tests?\s*:|(^|\n)\s*vars\s*:|samples_jsonl|evals\/registry|input\s*:|outputs?\s*:/gi);
+    const assertionCount = countMatches(source.text, /(^|\n)\s*assert\s*:|type\s*:\s*(contains|equals|javascript|llm-rubric|model-graded)|expected|threshold|rubric/gi);
+    const datasetCount = countMatches(source.text, /samples_jsonl|dataset|datasets|\.jsonl|\.csv|reference_outputs?|ideal\s*:|expected_output|golden/gi);
+    const judgeCount = countMatches(source.text, /llm-rubric|modelgraded_spec|create_llm_as_judge|createLLMAsJudge|CORRECTNESS_PROMPT|HALLUCINATION_PROMPT|feedbackKey|score|grader|judge/gi);
+    const redteamCount = countMatches(source.text, /redteam\s*:|plugins\s*:|strategies\s*:|jailbreak|prompt-injection|pii|OWASP|MITRE|NIST|excessive-agency/gi);
+    const outputCount = countMatches(source.text, /promptfoo\s+(eval|redteam)|oaieval|evaluate\s*\(|-o\s+\S+|output|report|results?\.(json|jsonl|html)|view\b|share\b/gi);
+    const totalSignals = promptCount + providerCount + testCaseCount + assertionCount + datasetCount + judgeCount + redteamCount + outputCount;
+    if (totalSignals === 0 && !llmEvalPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework: llmEvalFramework(source),
+      promptCount,
+      providerCount,
+      testCaseCount,
+      assertionCount,
+      datasetCount,
+      judgeCount,
+      redteamCount,
+      outputCount,
+      readiness: providerCount > 0 && testCaseCount > 0 && (assertionCount > 0 || judgeCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} LLM eval signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.providerCount + b.testCaseCount + b.assertionCount + b.judgeCount + b.datasetCount + b.redteamCount;
+    const aScore = a.providerCount + a.testCaseCount + a.assertionCount + a.judgeCount + a.datasetCount + a.redteamCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 90);
+}
+
+function llmEvalFramework(source: LlmEvalSourceFile): LlmEvalReadinessReport["evalSetups"][number]["framework"] {
+  if (/promptfoo|promptfooconfig|llm-rubric|redteam\s*:|providers\s*:|tests\s*:/i.test(source.filePath) || /promptfoo|promptfooconfig|llm-rubric|redteam\s*:|providers\s*:|tests\s*:/i.test(source.text)) return "promptfoo";
+  if (/evals\/registry|oaieval|modelgraded_spec|samples_jsonl|completion_fns/i.test(source.filePath) || /evals\/registry|oaieval|modelgraded_spec|samples_jsonl|completion_fns/i.test(source.text)) return "openai-evals";
+  if (/openevals|create_llm_as_judge|createLLMAsJudge|CORRECTNESS_PROMPT|HALLUCINATION_PROMPT/i.test(source.filePath) || /openevals|create_llm_as_judge|createLLMAsJudge|CORRECTNESS_PROMPT|HALLUCINATION_PROMPT/i.test(source.text)) return "openevals";
+  if (/langsmith|evaluate\s*\(|Client\s*\(|feedbackKey/i.test(source.text)) return "langsmith";
+  if (/eval|judge|rubric|benchmark/i.test(source.filePath) || /eval|judge|rubric|benchmark/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function llmEvalConfigSignals(sourceFiles: LlmEvalSourceFile[]): LlmEvalReadinessReport["configSignals"] {
+  const specs: Array<{ signal: LlmEvalReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "promptfoo-config", pattern: /promptfooconfig(\..*)?\.ya?ml|promptfoo|providers\s*:|prompts\s*:|tests\s*:/i, evidence: "promptfoo config evidence was detected." },
+    { signal: "eval-registry", pattern: /evals\/registry|(^|\n)\s*id\s*:.*eval|evals:\s*/i, evidence: "OpenAI eval registry evidence was detected." },
+    { signal: "eval-class", pattern: /class\s*:\s*evals\.|ModelBasedClassify|eval_type\s*:/i, evidence: "eval class evidence was detected." },
+    { signal: "samples-jsonl", pattern: /samples_jsonl|samples\.jsonl|\.jsonl/i, evidence: "samples_jsonl evidence was detected." },
+    { signal: "pyproject", pattern: /pyproject\.toml|project\s*=|dependencies\s*=/i, evidence: "Python project metadata evidence was detected." },
+    { signal: "package-script", pattern: /"eval"\s*:|"redteam"\s*:|promptfoo\s+(eval|redteam)|oaieval/i, evidence: "package/script eval command evidence was detected." }
+  ];
+  return llmEvalSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function llmEvalPromptSignals(sourceFiles: LlmEvalSourceFile[]): LlmEvalReadinessReport["promptSignals"] {
+  const specs: Array<{ signal: LlmEvalReadinessReport["promptSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "prompt", pattern: /(^|\n)\s*prompts?\s*:|prompt\s*:/i, evidence: "prompt evidence was detected." },
+    { signal: "prompt-file", pattern: /file:\/\/.*prompt|prompts\/|\.prompt\./i, evidence: "prompt file evidence was detected." },
+    { signal: "prompt-template", pattern: /PromptTemplate|ChatPromptTemplate|\{\{[^}]+\}\}|template\s*:/i, evidence: "prompt template evidence was detected." },
+    { signal: "vars", pattern: /(^|\n)\s*vars\s*:|context\s*:|question\s*:|input\s*:/i, evidence: "test variables evidence was detected." },
+    { signal: "messages", pattern: /messages\s*:|role\s*:\s*(system|user|assistant)|SystemMessage|HumanMessage/i, evidence: "message-style prompt evidence was detected." },
+    { signal: "few-shot", pattern: /few_shot_examples|few-shot|examples\s*:|exampleSelector/i, evidence: "few-shot evidence was detected." }
+  ];
+  return llmEvalSignalFromSpecs(sourceFiles, specs, "prompt", "signal");
+}
+
+function llmEvalProviderSignals(sourceFiles: LlmEvalSourceFile[]): LlmEvalReadinessReport["providerSignals"] {
+  const specs: Array<{ signal: LlmEvalReadinessReport["providerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "provider", pattern: /(^|\n)\s*providers?\s*:|openai:|anthropic:|azureopenai|vertex|ollama/i, evidence: "provider evidence was detected." },
+    { signal: "model-name", pattern: /gpt-|claude-|gemini-|llama|model\s*:|modelName|model_name/i, evidence: "model name evidence was detected." },
+    { signal: "grader-model", pattern: /grader|judge|llm-rubric|modelgraded|createLLMAsJudge|create_llm_as_judge/i, evidence: "grader/judge model evidence was detected." },
+    { signal: "completion-fn", pattern: /completion_fns|completion_fn|oaieval|CompletionFn/i, evidence: "completion function evidence was detected." },
+    { signal: "api-key-env", pattern: /OPENAI_API_KEY|ANTHROPIC_API_KEY|LANGSMITH_API_KEY|api[_-]?key/i, evidence: "provider API key environment evidence was detected." }
+  ];
+  return llmEvalSignalFromSpecs(sourceFiles, specs, "provider", "signal");
+}
+
+function llmEvalTestCaseSignals(sourceFiles: LlmEvalSourceFile[]): LlmEvalReadinessReport["testCaseSignals"] {
+  const specs: Array<{ signal: LlmEvalReadinessReport["testCaseSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tests", pattern: /(^|\n)\s*tests?\s*:|testCases|eval cases/i, evidence: "test cases evidence was detected." },
+    { signal: "vars", pattern: /(^|\n)\s*-?\s*vars\s*:|variables\s*:/i, evidence: "vars evidence was detected." },
+    { signal: "assert", pattern: /(^|\n)\s*assert\s*:|assertions?\s*:/i, evidence: "assertion evidence was detected." },
+    { signal: "expected", pattern: /expected|expected_output|ideal\s*:|reference_outputs?/i, evidence: "expected/reference output evidence was detected." },
+    { signal: "rubric", pattern: /rubric|criteria|criterion|scoring/i, evidence: "rubric evidence was detected." },
+    { signal: "threshold", pattern: /threshold|passThreshold|minScore|scoreThreshold/i, evidence: "threshold evidence was detected." }
+  ];
+  return llmEvalSignalFromSpecs(sourceFiles, specs, "test case", "signal");
+}
+
+function llmEvalJudgeSignals(sourceFiles: LlmEvalSourceFile[]): LlmEvalReadinessReport["judgeSignals"] {
+  const specs: Array<{ signal: LlmEvalReadinessReport["judgeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "llm-rubric", pattern: /llm-rubric|rubricPrompt/i, evidence: "llm-rubric evidence was detected." },
+    { signal: "modelgraded-spec", pattern: /modelgraded_spec|ModelBasedClassify|cot_classify/i, evidence: "modelgraded spec evidence was detected." },
+    { signal: "llm-as-judge", pattern: /create_llm_as_judge|createLLMAsJudge|LLM-as-judge|judge\s*:/i, evidence: "LLM-as-judge evidence was detected." },
+    { signal: "correctness", pattern: /CORRECTNESS_PROMPT|correctness|accuracy/i, evidence: "correctness judge evidence was detected." },
+    { signal: "hallucination", pattern: /HALLUCINATION_PROMPT|hallucination|groundedness|faithfulness/i, evidence: "hallucination/groundedness judge evidence was detected." },
+    { signal: "feedback-key", pattern: /feedbackKey|feedback_key|key\s*:\s*['\"]score/i, evidence: "feedback key evidence was detected." },
+    { signal: "score", pattern: /score|continuous|choices\s*:|pass\s*:/i, evidence: "score output evidence was detected." }
+  ];
+  return llmEvalSignalFromSpecs(sourceFiles, specs, "judge", "signal");
+}
+
+function llmEvalDatasetSignals(sourceFiles: LlmEvalSourceFile[]): LlmEvalReadinessReport["datasetSignals"] {
+  const specs: Array<{ signal: LlmEvalReadinessReport["datasetSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "samples-jsonl", pattern: /samples_jsonl|samples\.jsonl/i, evidence: "samples_jsonl evidence was detected." },
+    { signal: "dataset", pattern: /dataset|datasets|examples\s*:/i, evidence: "dataset evidence was detected." },
+    { signal: "csv", pattern: /\.csv|text\/csv|fromCSV/i, evidence: "CSV dataset evidence was detected." },
+    { signal: "jsonl", pattern: /\.jsonl|JSONL|json lines/i, evidence: "JSONL dataset evidence was detected." },
+    { signal: "reference-output", pattern: /reference_outputs?|referenceOutputs|expected_output/i, evidence: "reference output evidence was detected." },
+    { signal: "ideal", pattern: /ideal\s*:|\"ideal\"/i, evidence: "ideal answer evidence was detected." }
+  ];
+  return llmEvalSignalFromSpecs(sourceFiles, specs, "dataset", "signal");
+}
+
+function llmEvalRedteamSignals(sourceFiles: LlmEvalSourceFile[]): LlmEvalReadinessReport["redteamSignals"] {
+  const specs: Array<{ signal: LlmEvalReadinessReport["redteamSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "redteam", pattern: /redteam\s*:|promptfoo\s+redteam|red-team/i, evidence: "red-team evidence was detected." },
+    { signal: "plugins", pattern: /(^|\n)\s*plugins\s*:|pluginId|plugins\//i, evidence: "red-team plugin evidence was detected." },
+    { signal: "strategies", pattern: /(^|\n)\s*strategies\s*:|strategyId/i, evidence: "red-team strategy evidence was detected." },
+    { signal: "jailbreak", pattern: /jailbreak|hydra|meta/i, evidence: "jailbreak strategy evidence was detected." },
+    { signal: "prompt-injection", pattern: /prompt-injection|prompt injection|indirect prompt/i, evidence: "prompt-injection evidence was detected." },
+    { signal: "pii", pattern: /\bPII\b|pii:|privacy|data exfiltration/i, evidence: "PII/privacy evidence was detected." },
+    { signal: "owasp", pattern: /OWASP|MITRE|ATLAS|NIST AI RMF/i, evidence: "AI risk mapping evidence was detected." }
+  ];
+  return llmEvalSignalFromSpecs(sourceFiles, specs, "redteam", "signal");
+}
+
+function llmEvalWorkflowSignals(sourceFiles: LlmEvalSourceFile[]): LlmEvalReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: LlmEvalReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "promptfoo-eval", pattern: /promptfoo\s+eval|npx\s+promptfoo.*eval/i, evidence: "promptfoo eval command evidence was detected." },
+    { signal: "promptfoo-redteam", pattern: /promptfoo\s+redteam|redteam\s+generate|redteam\s+eval/i, evidence: "promptfoo redteam command evidence was detected." },
+    { signal: "oaieval", pattern: /oaieval|openai eval/i, evidence: "oaieval command evidence was detected." },
+    { signal: "evaluate", pattern: /\bevaluate\s*\(|langsmith.*evaluate|client\.evaluate/i, evidence: "evaluate API evidence was detected." },
+    { signal: "ci", pattern: /\.github\/workflows|CI=true|pull_request|workflow_dispatch/i, evidence: "CI workflow evidence was detected." },
+    { signal: "report-output", pattern: /-o\s+\S+|output\s*:|report|results?\.(json|jsonl|html)|promptfoo\s+view/i, evidence: "report/output evidence was detected." }
+  ];
+  return llmEvalSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function llmEvalPackageSignals(sourceFiles: LlmEvalSourceFile[]): LlmEvalReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: LlmEvalReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "promptfoo", pattern: /"promptfoo"|promptfoo/i, evidence: "promptfoo package evidence was detected." },
+    { signal: "openevals", pattern: /"openevals"|from ["']openevals|import openevals/i, evidence: "OpenEvals package evidence was detected." },
+    { signal: "openai-evals", pattern: /openai[\/-]evals|oaieval|evals\.elsuite/i, evidence: "OpenAI evals evidence was detected." },
+    { signal: "langsmith", pattern: /"langsmith"|from ["']langsmith|LANGSMITH/i, evidence: "LangSmith evidence was detected." },
+    { signal: "deepeval", pattern: /"deepeval"|from ["']deepeval|deepeval/i, evidence: "DeepEval evidence was detected." },
+    { signal: "ragas", pattern: /"ragas"|from ["']ragas|ragas/i, evidence: "Ragas evidence was detected." }
+  ];
+  return llmEvalSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function llmEvalSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: LlmEvalSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/llm-eval-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

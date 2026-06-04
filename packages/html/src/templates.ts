@@ -97,6 +97,7 @@ import type {
   GraphqlReadinessReport,
   CliReadinessReport,
   LlmReadinessReport,
+  LlmEvalReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -218,6 +219,7 @@ export interface StudyHtmlInput {
   graphqlReadinessReport: GraphqlReadinessReport;
   cliReadinessReport: CliReadinessReport;
   llmReadinessReport: LlmReadinessReport;
+  llmEvalReadinessReport: LlmEvalReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -353,6 +355,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["graphql-readiness.html", "GraphQL"],
     ["cli-readiness.html", "CLI"],
     ["llm-readiness.html", "LLM"],
+    ["llm-eval-readiness.html", "LLM Eval"],
     ["server-framework-readiness.html", "Server Framework"],
     ["rpc-readiness.html", "RPC"],
     ["workspace-graph-readiness.html", "Workspace Graph"],
@@ -501,6 +504,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Tutorial Abstractions</h3><p>${escapeHtml(input.tutorialAbstractionReport.summary)}</p><p>PocketFlow 패턴으로 핵심 추상화, 관계, 장 순서를 정리합니다.</p><a href="tutorial-abstractions.html">Tutorial Abstractions 열기</a></article>
           <article><h3>Decision Records</h3><p>${escapeHtml(input.decisionRecordReport.summary)}</p><p>Log4brains 패턴으로 Context, Decision, Status, Consequences를 정리합니다.</p><a href="decision-records.html">Decision Records 열기</a></article>
           <article><h3>Dependency Health</h3><p>${escapeHtml(input.dependencyHealthReport.summary)}</p><p>dependency-cruiser 패턴으로 no-circular, no-orphans, fan-in/fan-out을 확인합니다.</p><a href="dependency-health.html">Dependency Health 열기</a></article>
+          <article><h3>LLM Eval Readiness</h3><p>${escapeHtml(input.llmEvalReadinessReport.summary)}</p><p>promptfoo/OpenAI eval/OpenEvals 패턴으로 prompt, provider, dataset, judge, red-team 준비도를 정리합니다.</p><a href="llm-eval-readiness.html">LLM Eval 열기</a></article>
           <article><h3>Server Framework Readiness</h3><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p>Fastify 패턴으로 routes, schemas, plugins, hooks, decorators, errors, runtime, tests 준비도를 정리합니다.</p><a href="server-framework-readiness.html">Server Framework 열기</a></article>
           <article><h3>RPC Readiness</h3><p>${escapeHtml(input.rpcReadinessReport.summary)}</p><p>tRPC 패턴으로 routers, procedures, validation, context, clients, adapters, errors 준비도를 정리합니다.</p><a href="rpc-readiness.html">RPC 열기</a></article>
           <article><h3>Workspace Graph Readiness</h3><p>${escapeHtml(input.workspaceGraphReadinessReport.summary)}</p><p>Nx 패턴으로 project graph, targets, affected, boundaries, plugins 준비도를 정리합니다.</p><a href="workspace-graph-readiness.html">Workspace Graph 열기</a></article>
@@ -958,6 +962,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "llm-eval-readiness.html",
+      title: "LLM Eval Readiness",
+      html: pageShell("LLM Eval Readiness", "llm-eval-readiness.html", `<section class="panel" data-source-pattern="LLM Eval"><h2>LLM Eval Snapshot</h2><p>${escapeHtml(input.llmEvalReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmEvalReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmEvalReadinessReport.evalSetups.length}</dd></div><div><dt>tests</dt><dd>${input.llmEvalReadinessReport.testCaseSignals.length}</dd></div><div><dt>judges</dt><dd>${input.llmEvalReadinessReport.judgeSignals.length}</dd></div><div><dt>red-team</dt><dd>${input.llmEvalReadinessReport.redteamSignals.length}</dd></div><div><dt>datasets</dt><dd>${input.llmEvalReadinessReport.datasetSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM eval readiness only; it does not call providers, run judge models, generate red-team probes, execute datasets, calculate scores, upload reports, or run the analyzed project's tests.</p></section><section class="grid"><article class="llm-eval-readiness-card"><h3>Eval Setups</h3>${llmEvalReadinessSetupList(input.llmEvalReadinessReport.evalSetups)}</article><article class="llm-eval-readiness-card"><h3>Config Signals</h3>${llmEvalReadinessSignalList(input.llmEvalReadinessReport.configSignals, "signal")}</article><article class="llm-eval-readiness-card"><h3>Prompt Signals</h3>${llmEvalReadinessSignalList(input.llmEvalReadinessReport.promptSignals, "signal")}</article><article class="llm-eval-readiness-card"><h3>Provider Signals</h3>${llmEvalReadinessSignalList(input.llmEvalReadinessReport.providerSignals, "signal")}</article></section><section class="grid"><article class="llm-eval-readiness-card"><h3>Test Case Signals</h3>${llmEvalReadinessSignalList(input.llmEvalReadinessReport.testCaseSignals, "signal")}</article><article class="llm-eval-readiness-card"><h3>Judge Signals</h3>${llmEvalReadinessSignalList(input.llmEvalReadinessReport.judgeSignals, "signal")}</article><article class="llm-eval-readiness-card"><h3>Dataset Signals</h3>${llmEvalReadinessSignalList(input.llmEvalReadinessReport.datasetSignals, "signal")}</article><article class="llm-eval-readiness-card"><h3>Red-Team Signals</h3>${llmEvalReadinessSignalList(input.llmEvalReadinessReport.redteamSignals, "signal")}</article><article class="llm-eval-readiness-card"><h3>Workflow Signals</h3>${llmEvalReadinessSignalList(input.llmEvalReadinessReport.workflowSignals, "signal")}</article><article class="llm-eval-readiness-card"><h3>Package Signals</h3>${llmEvalReadinessSignalList(input.llmEvalReadinessReport.packageSignals, "signal")}</article><article class="llm-eval-readiness-card"><h3>Recommended Commands</h3>${llmEvalReadinessCommandList(input.llmEvalReadinessReport.recommendedCommands)}</article><article class="llm-eval-readiness-card"><h3>Risk Queue</h3>${llmEvalReadinessRiskList(input.llmEvalReadinessReport.riskQueue)}</article><article class="llm-eval-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmEvalReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "server-framework-readiness.html",
       title: "Server Framework Readiness",
       html: pageShell("Server Framework Readiness", "server-framework-readiness.html", `<section class="panel" data-source-pattern="Fastify"><h2>Server Framework Snapshot</h2><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.serverFrameworkReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.serverFrameworkReadinessReport.serverSetups.length}</dd></div><div><dt>routes</dt><dd>${input.serverFrameworkReadinessReport.routeSignals.length}</dd></div><div><dt>schemas</dt><dd>${input.serverFrameworkReadinessReport.schemaSignals.length}</dd></div><div><dt>plugins</dt><dd>${input.serverFrameworkReadinessReport.pluginSignals.length}</dd></div></dl><p class="muted">RepoTutor records server framework readiness only; it does not start listeners, execute handlers, send HTTP requests, run plugins, compile schemas, or mutate runtime state.</p></section><section class="grid"><article class="server-framework-readiness-card"><h3>Server Setups</h3>${serverFrameworkReadinessSetupList(input.serverFrameworkReadinessReport.serverSetups)}</article><article class="server-framework-readiness-card"><h3>Route Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.routeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Schema Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.schemaSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Plugin Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.pluginSignals, "signal")}</article></section><section class="grid"><article class="server-framework-readiness-card"><h3>Lifecycle Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.lifecycleSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Runtime Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.runtimeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Error Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.errorSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Test Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.testSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Package Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.packageSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Recommended Commands</h3>${serverFrameworkReadinessCommandList(input.serverFrameworkReadinessReport.recommendedCommands)}</article><article class="server-framework-readiness-card"><h3>Risk Queue</h3>${serverFrameworkReadinessRiskList(input.serverFrameworkReadinessReport.riskQueue)}</article><article class="server-framework-readiness-card"><h3>다음 확인 단계</h3>${list(input.serverFrameworkReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1245,6 +1254,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "GraphQL Readiness", path: "html/graphql-readiness.html", description: "GraphQL.js식 schema, operation, resolver, validation, execution 준비도를 확인합니다." },
       { label: "CLI Readiness", path: "html/cli-readiness.html", description: "Commander.js식 command, option, argument, action, help, error 준비도를 확인합니다." },
       { label: "LLM Readiness", path: "html/llm-readiness.html", description: "LangChain.js식 model, prompt, tool, RAG, structured output, streaming 준비도를 확인합니다." },
+      { label: "LLM Eval Readiness", path: "html/llm-eval-readiness.html", description: "promptfoo/OpenAI eval/OpenEvals식 prompt, provider, dataset, judge, red-team 준비도를 확인합니다." },
       { label: "Server Framework Readiness", path: "html/server-framework-readiness.html", description: "Fastify식 route, schema, plugin, hook, runtime, test 준비도를 확인합니다." },
       { label: "RPC Readiness", path: "html/rpc-readiness.html", description: "tRPC식 router, procedure, validation, context, client, adapter 준비도를 확인합니다." },
       { label: "Workspace Graph Readiness", path: "html/workspace-graph-readiness.html", description: "Nx식 project graph, target, affected, boundary, plugin 준비도를 확인합니다." },
@@ -1860,6 +1870,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "llm-readiness.html",
       goal: "LangChain.js식 model, prompt, tool, RAG, structured output, streaming 흐름을 보고 LLM integration contract를 확인합니다.",
       evidence: `LLM setups ${input.llmReadinessReport.llmSetups.length}개, model signals ${input.llmReadinessReport.modelSignals.length}개`
+    },
+    {
+      title: "LLM eval readiness 확인",
+      href: "llm-eval-readiness.html",
+      goal: "promptfoo/OpenAI eval/OpenEvals식 prompt, provider, dataset, judge, red-team 흐름을 보고 LLM eval contract를 확인합니다.",
+      evidence: `LLM eval setups ${input.llmEvalReadinessReport.evalSetups.length}개, judge signals ${input.llmEvalReadinessReport.judgeSignals.length}개`
     },
     {
       title: "Server framework readiness 확인",
@@ -4235,6 +4251,31 @@ function llmReadinessRiskList(items: LlmReadinessReport["riskQueue"]): string {
 }
 
 function llmReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function llmEvalReadinessSetupList(items: LlmEvalReadinessReport["evalSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">LLM eval setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>prompt/provider/test/assertion/dataset/judge/redteam/output ${item.promptCount}/${item.providerCount}/${item.testCaseCount}/${item.assertionCount}/${item.datasetCount}/${item.judgeCount}/${item.redteamCount}/${item.outputCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(llmEvalReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function llmEvalReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">LLM eval signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(llmEvalReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function llmEvalReadinessCommandList(items: LlmEvalReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function llmEvalReadinessRiskList(items: LlmEvalReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(llmEvalReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function llmEvalReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
