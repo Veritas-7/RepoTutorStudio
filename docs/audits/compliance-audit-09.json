@@ -1,6 +1,6 @@
 {
   "iteration": 9,
-  "createdAt": "2026-06-04T11:45:35.130Z",
+  "createdAt": "2026-06-04T11:58:05.063Z",
   "checks": [
     {
       "name": "project setup",
@@ -529,6 +529,13 @@
     },
     {
       "name": "SEO metadata readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "PWA readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

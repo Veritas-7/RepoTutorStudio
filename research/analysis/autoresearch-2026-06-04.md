@@ -4991,6 +4991,53 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 80/80 audit checks across 13 generated reports
 
+### Upgrade 183: PWA Readiness Report
+
+- Cloned and inspected `vite-pwa/vite-plugin-pwa` under
+  `research/external-src/vite-pwa-vite-plugin-pwa` without executing external
+  source. Clone HEAD was `05670fc`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 4,181 stars, 256 forks, updated
+  2026-06-04T08:29:09Z. Compared with `GoogleChrome/workbox`,
+  `pwa-builder/PWABuilder`, and `nuxt-modules/pwa` (repo not found); selected
+  Vite PWA because it directly models PWA readiness across web manifests,
+  service worker registration, Workbox generateSW/injectManifest, precache,
+  runtime caching, update prompts, offline-ready state, install signals, and
+  Vite package integration. No source code was copied into RepoTutor.
+- Implemented Vite PWA-style pwa-readiness report:
+  `PwaReadinessReportSchema`, `analysis/pwa-readiness-report.json`,
+  `markdown/pwa-readiness.md`, `html/pwa-readiness.html`, PWA setups, manifest
+  signals, service worker signals, caching signals, update signals, install
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target pwa-readiness`.
+- Source pattern: Vite PWA separates manifest readiness through
+  `manifest.webmanifest`, icons, `theme_color`, `start_url`, display, and scope;
+  service worker readiness through `registerSW`, `virtual:pwa-register`,
+  generateSW, injectManifest, custom service workers, and scope controls;
+  caching readiness through Workbox precache, runtimeCaching, glob patterns,
+  size limits, CacheFirst, NetworkFirst, and StaleWhileRevalidate; and update/
+  install readiness through auto/prompt updates, `skipWaiting`, `clientsClaim`,
+  `offlineReady`, `needRefresh`, `beforeinstallprompt`, credentials, shortcuts,
+  and package signals. RepoTutor maps that to deterministic static PWA
+  readiness and explicitly does not register service workers, open browsers,
+  populate Cache Storage, fetch manifests, test offline mode, trigger install
+  prompts, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-pwa-red-studies.oJcQHU/2026-06-04/local__simple-ts-app__HEAD__aa1377b8`;
+  old behavior had `verificationCheckedRequiredArtifacts=246`, was missing
+  `analysis/pwa-readiness-report.json`, `markdown/pwa-readiness.md`, and
+  `html/pwa-readiness.html`, and `open --target pwa-readiness` exited with
+  `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-pwa-green-studies.EK2MKg/2026-06-04/local__simple-ts-app__main__aa1377b8`;
+  confirmed `verificationCheckedRequiredArtifacts=249`, PWA setups 0, manifest
+  signals 6, service worker signals 6, caching signals 6, update signals 5,
+  install signals 5, package signals 6, risk queue 2, all three new artifacts,
+  and `open --target pwa-readiness` -> `html/pwa-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 81/81 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

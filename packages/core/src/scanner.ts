@@ -95,6 +95,7 @@ import {
   DiagramRenderingReadinessReport,
   LinkIntegrityReadinessReport,
   SeoMetadataReadinessReport,
+  PwaReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -196,6 +197,7 @@ export interface AnalysisBundle {
   diagramRenderingReadinessReport: DiagramRenderingReadinessReport;
   linkIntegrityReadinessReport: LinkIntegrityReadinessReport;
   seoMetadataReadinessReport: SeoMetadataReadinessReport;
+  pwaReadinessReport: PwaReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -297,8 +299,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const diagramRenderingReadinessReport = await buildDiagramRenderingReadinessReport(walk);
   const linkIntegrityReadinessReport = await buildLinkIntegrityReadinessReport(walk);
   const seoMetadataReadinessReport = await buildSeoMetadataReadinessReport(walk);
+  const pwaReadinessReport = await buildPwaReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -18713,6 +18716,253 @@ function seoMetadataReadinessSignalFromSpecs<T extends Record<K, string> & { pat
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/seo-metadata-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildPwaReadinessReport(walk: WalkResult): Promise<PwaReadinessReport> {
+  const sourceFiles = await pwaReadinessSourceFiles(walk);
+  const pwaSetups = pwaReadinessSetups(sourceFiles);
+  const manifestSignals = pwaReadinessManifestSignals(sourceFiles);
+  const serviceWorkerSignals = pwaReadinessServiceWorkerSignals(sourceFiles);
+  const cachingSignals = pwaReadinessCachingSignals(sourceFiles);
+  const updateSignals = pwaReadinessUpdateSignals(sourceFiles);
+  const installSignals = pwaReadinessInstallSignals(sourceFiles);
+  const packageSignals = pwaReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasSetup = pwaSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = pwaSetups.some((item) => item.readiness === "ready");
+  const hasManifest = manifestSignals.some((item) => item.readiness === "ready") || pwaSetups.some((item) => item.manifestCount > 0);
+  const hasServiceWorker = serviceWorkerSignals.some((item) => item.readiness === "ready") || pwaSetups.some((item) => item.serviceWorkerCount > 0);
+  const hasCaching = cachingSignals.some((item) => item.readiness === "ready") || pwaSetups.some((item) => item.cachingCount > 0);
+  const hasUpdate = updateSignals.some((item) => item.readiness === "ready") || pwaSetups.some((item) => item.updateCount > 0);
+  const hasInstall = installSignals.some((item) => item.readiness === "ready") || pwaSetups.some((item) => item.installCount > 0);
+
+  const riskQueue: PwaReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document PWA readiness before claiming offline/installable app support.",
+      why: "PWA readiness starts with manifest, service worker, caching, update, install, or package evidence.",
+      relatedHref: "html/pwa-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && (!hasManifest || !hasServiceWorker)) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair the PWA package/config with both web manifest and service worker registration evidence.",
+      why: "Installability and offline behavior require a valid manifest plus a registered/generated service worker.",
+      relatedHref: "html/pwa-readiness.html"
+    });
+  }
+  if ((hasPackage || hasReadySetup) && !hasCaching) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add precache and runtime caching policy before promising offline support.",
+      why: "A service worker without clear precache/runtime strategy can still fail key routes when offline.",
+      relatedHref: "html/pwa-readiness.html"
+    });
+  }
+  if ((hasPackage || hasReadySetup) && (!hasUpdate || !hasInstall)) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review update prompts, offline-ready prompts, install prompts, and credential handling.",
+      why: "Users need understandable update/offline/install behavior and protected-manifest credential policy.",
+      relatedHref: "html/pwa-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run real PWA validation only in a trusted browser against a built preview.",
+    why: "RepoTutor records PWA readiness only; it does not register service workers, open browsers, populate Cache Storage, fetch manifests, test offline mode, trigger install prompts, or run the analyzed project's tests.",
+    relatedHref: "html/pwa-readiness.html"
+  });
+
+  return {
+    summary: `Vite PWA-style readiness report: setup ${pwaSetups.length}개, manifest signal ${manifestSignals.length}개, service worker signal ${serviceWorkerSignals.length}개, caching signal ${cachingSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Vite PWA manifest webmanifest service worker registerSW Workbox generateSW injectManifest precache runtimeCaching offline icons theme_color start_url display",
+    pwaSetups,
+    manifestSignals,
+    serviceWorkerSignals,
+    cachingSignals,
+    updateSignals,
+    installSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"vite-plugin-pwa|VitePWA|workbox|next-pwa|nuxt-pwa\" package.json vite.config.* src app public", purpose: "Inventory PWA providers and config." },
+      { command: "rg \"manifest.webmanifest|webmanifest|icons|theme_color|start_url|display|scope\" public src app vite.config.*", purpose: "Review web app manifest readiness." },
+      { command: "rg \"registerSW|virtual:pwa-register|serviceWorker|sw.js|generateSW|injectManifest|selfDestroying\" src app public vite.config.*", purpose: "Check service worker registration and strategy." },
+      { command: "rg \"precache|runtimeCaching|globPatterns|maximumFileSizeToCacheInBytes|CacheFirst|NetworkFirst|StaleWhileRevalidate\" src app public vite.config.*", purpose: "Check offline caching policy." },
+      { command: "rg \"autoUpdate|prompt|needRefresh|offlineReady|beforeinstallprompt|useCredentials|shortcuts\" src app public vite.config.*", purpose: "Check update, offline ready, install prompt, and manifest credential behavior." },
+      { command: "npx vitest run", purpose: "Run local tests for generated manifest, service worker assets, and offline UI state." }
+    ],
+    learnerNextSteps: [
+      "먼저 vite-plugin-pwa, Workbox, next-pwa, nuxt-pwa 패키지와 config를 찾으세요.",
+      "manifest.webmanifest, icons, theme_color, start_url, display, scope 신호로 installability 기본값을 확인하세요.",
+      "registerSW, serviceWorker, generateSW, injectManifest, custom sw, selfDestroying 신호로 service worker lifecycle을 확인하세요.",
+      "precache, runtimeCaching, globPatterns, maximumFileSizeToCacheInBytes, CacheFirst/NetworkFirst 신호로 offline cache policy를 확인하세요.",
+      "autoUpdate, prompt update, skipWaiting, clientsClaim, offlineReady, beforeinstallprompt 신호로 사용자가 체감할 update/install 흐름을 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 offline/PWA install 검증은 build preview와 브라우저 DevTools/Lighthouse에서 별도로 실행하세요."
+    ]
+  };
+}
+
+type PwaReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function pwaReadinessSourceFiles(walk: WalkResult): Promise<PwaReadinessSourceFile[]> {
+  const files: PwaReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !pwaReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!pwaReadinessPathSignal(file.relPath) && !pwaReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function pwaReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return pwaReadinessPathSignal(filePath)
+    || /^(package\.json|README\.md|vite\.config\.(ts|js|mjs)|next\.config\.(js|mjs|ts)|nuxt\.config\.(ts|js|mjs)|manifest\.webmanifest|manifest\.json|sw\.(js|ts)|service-worker\.(js|ts))$/i.test(base)
+    || /\.(vue|js|cjs|mjs|ts|tsx|jsx|json|md|mdx|html?|ya?ml|toml)$/i.test(filePath);
+}
+
+function pwaReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(pwa|service-worker|sw|workbox|manifest|offline|install|public|src|app|examples)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function pwaReadinessContentSignal(text: string): boolean {
+  return /(vite-plugin-pwa|VitePWA|workbox|manifest\.webmanifest|webmanifest|serviceWorker|registerSW|virtual:pwa-register|generateSW|injectManifest|precache|runtimeCaching|offlineReady|needRefresh|beforeinstallprompt|theme_color|start_url|display|selfDestroying)/i.test(text);
+}
+
+function pwaReadinessSetups(sourceFiles: PwaReadinessSourceFile[]): PwaReadinessReport["pwaSetups"] {
+  const rows: PwaReadinessReport["pwaSetups"] = [];
+  for (const source of sourceFiles) {
+    const manifestCount = countMatches(source.text, /manifest\.webmanifest|webmanifest|manifest:|icons|theme_color|start_url|display|scope|shortcuts/gi);
+    const serviceWorkerCount = countMatches(source.text, /serviceWorker|service worker|registerSW|virtual:pwa-register|sw\.js|sw\.ts|generateSW|injectManifest|selfDestroying/gi);
+    const cachingCount = countMatches(source.text, /workbox|precache|runtimeCaching|globPatterns|maximumFileSizeToCacheInBytes|CacheFirst|NetworkFirst|StaleWhileRevalidate|ExpirationPlugin/gi);
+    const updateCount = countMatches(source.text, /autoUpdate|prompt|needRefresh|skipWaiting|clientsClaim|onNeedRefresh|onRegisteredSW/gi);
+    const installCount = countMatches(source.text, /offlineReady|beforeinstallprompt|installPrompt|useCredentials|ready to work offline|shortcuts/gi);
+    const runtimeCount = countMatches(source.text, /runtime|navigateFallback|manifestTransforms|periodicSync|push|notifications?|CacheStorage/gi);
+    const hasSetupSignal = manifestCount + serviceWorkerCount + cachingCount + updateCount + installCount + runtimeCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: pwaReadinessProvider(source),
+      manifestCount,
+      serviceWorkerCount,
+      cachingCount,
+      updateCount,
+      installCount,
+      runtimeCount,
+      readiness: manifestCount > 0 && serviceWorkerCount > 0 && cachingCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains manifest ${manifestCount}, service worker ${serviceWorkerCount}, caching ${cachingCount}, update ${updateCount}, install ${installCount}, runtime ${runtimeCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function pwaReadinessProvider(source: PwaReadinessSourceFile): PwaReadinessReport["pwaSetups"][number]["provider"] {
+  if (/vite-plugin-pwa|VitePWA/i.test(source.text)) return "vite-plugin-pwa";
+  if (/workbox/i.test(source.text)) return "workbox";
+  if (/next-pwa/i.test(source.text)) return "next-pwa";
+  if (/nuxt-pwa|@vite-pwa\/nuxt/i.test(source.text)) return "nuxt-pwa";
+  if (/pwa|serviceWorker|manifest\.webmanifest/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function pwaReadinessManifestSignals(sourceFiles: PwaReadinessSourceFile[]): PwaReadinessReport["manifestSignals"] {
+  const specs: Array<{ signal: PwaReadinessReport["manifestSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "webmanifest", pattern: /manifest\.webmanifest|webmanifest|rel=["']manifest/i, evidence: "web manifest evidence was detected." },
+    { signal: "icons", pattern: /icons|apple-touch-icon|maskable|purpose/i, evidence: "manifest icons evidence was detected." },
+    { signal: "theme-color", pattern: /theme_color|theme-color|background_color/i, evidence: "theme/background color evidence was detected." },
+    { signal: "start-url", pattern: /start_url|startUrl/i, evidence: "start_url evidence was detected." },
+    { signal: "display", pattern: /display:\s*['\"]?(standalone|fullscreen|minimal-ui)|display_override/i, evidence: "display mode evidence was detected." },
+    { signal: "scope", pattern: /scope|scope_extensions/i, evidence: "manifest scope evidence was detected." }
+  ];
+  return pwaReadinessSignalFromSpecs(sourceFiles, specs, "manifest", "signal");
+}
+
+function pwaReadinessServiceWorkerSignals(sourceFiles: PwaReadinessSourceFile[]): PwaReadinessReport["serviceWorkerSignals"] {
+  const specs: Array<{ signal: PwaReadinessReport["serviceWorkerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "register", pattern: /registerSW|virtual:pwa-register|navigator\.serviceWorker\.register|serviceWorker/i, evidence: "service worker registration evidence was detected." },
+    { signal: "generate-sw", pattern: /generateSW|strategies:\s*['\"]generateSW|GenerateSWOptions/i, evidence: "generateSW strategy evidence was detected." },
+    { signal: "inject-manifest", pattern: /injectManifest|strategies:\s*['\"]injectManifest|InjectManifestOptions|__WB_MANIFEST/i, evidence: "injectManifest strategy evidence was detected." },
+    { signal: "custom-sw", pattern: /sw\.js|sw\.ts|custom-sw|ServiceWorkerGlobalScope/i, evidence: "custom service worker evidence was detected." },
+    { signal: "sw-scope", pattern: /scope|swScope|basePath|srcDir|filename/i, evidence: "service worker scope/path evidence was detected." },
+    { signal: "self-destroying", pattern: /selfDestroying|unregister service worker|unregister\(\)/i, evidence: "self-destroying/unregister evidence was detected." }
+  ];
+  return pwaReadinessSignalFromSpecs(sourceFiles, specs, "service worker", "signal");
+}
+
+function pwaReadinessCachingSignals(sourceFiles: PwaReadinessSourceFile[]): PwaReadinessReport["cachingSignals"] {
+  const specs: Array<{ signal: PwaReadinessReport["cachingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "precache", pattern: /precache|precacheAndRoute|__WB_MANIFEST|workbox-precaching/i, evidence: "precache evidence was detected." },
+    { signal: "runtime-caching", pattern: /runtimeCaching|registerRoute|runtime cache/i, evidence: "runtime caching evidence was detected." },
+    { signal: "glob-patterns", pattern: /globPatterns|includeAssets|globIgnores|manifestTransforms/i, evidence: "glob/asset selection evidence was detected." },
+    { signal: "maximum-file-size", pattern: /maximumFileSizeToCacheInBytes|2 MiB|max file size/i, evidence: "maximum cache file size evidence was detected." },
+    { signal: "cache-first", pattern: /CacheFirst|cache first/i, evidence: "CacheFirst strategy evidence was detected." },
+    { signal: "network-first", pattern: /NetworkFirst|StaleWhileRevalidate|network first/i, evidence: "network-first/stale-while-revalidate evidence was detected." }
+  ];
+  return pwaReadinessSignalFromSpecs(sourceFiles, specs, "caching", "signal");
+}
+
+function pwaReadinessUpdateSignals(sourceFiles: PwaReadinessSourceFile[]): PwaReadinessReport["updateSignals"] {
+  const specs: Array<{ signal: PwaReadinessReport["updateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "auto-update", pattern: /autoUpdate|registerType:\s*['\"]autoUpdate/i, evidence: "auto update evidence was detected." },
+    { signal: "prompt-update", pattern: /prompt|prompt for update|onNeedRefresh/i, evidence: "prompt update evidence was detected." },
+    { signal: "skip-waiting", pattern: /skipWaiting|self\.skipWaiting/i, evidence: "skipWaiting evidence was detected." },
+    { signal: "clients-claim", pattern: /clientsClaim|clients\.claim/i, evidence: "clientsClaim evidence was detected." },
+    { signal: "need-refresh", pattern: /needRefresh|onNeedRefresh|need reload/i, evidence: "needRefresh evidence was detected." }
+  ];
+  return pwaReadinessSignalFromSpecs(sourceFiles, specs, "update", "signal");
+}
+
+function pwaReadinessInstallSignals(sourceFiles: PwaReadinessSourceFile[]): PwaReadinessReport["installSignals"] {
+  const specs: Array<{ signal: PwaReadinessReport["installSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "offline-ready", pattern: /offlineReady|onOfflineReady|ready to work offline|offline support/i, evidence: "offline ready evidence was detected." },
+    { signal: "install-prompt", pattern: /installPrompt|install prompt|PWA install/i, evidence: "install prompt evidence was detected." },
+    { signal: "beforeinstallprompt", pattern: /beforeinstallprompt/i, evidence: "beforeinstallprompt evidence was detected." },
+    { signal: "use-credentials", pattern: /useCredentials|crossorigin=["']use-credentials|401.*manifest/i, evidence: "manifest credential evidence was detected." },
+    { signal: "shortcuts", pattern: /shortcuts|screenshots|categories|share_target/i, evidence: "manifest shortcut/advanced install evidence was detected." }
+  ];
+  return pwaReadinessSignalFromSpecs(sourceFiles, specs, "install", "signal");
+}
+
+function pwaReadinessPackageSignals(sourceFiles: PwaReadinessSourceFile[]): PwaReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: PwaReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vite-plugin-pwa", pattern: /vite-plugin-pwa|VitePWA/i, evidence: "vite-plugin-pwa evidence was detected." },
+    { signal: "workbox", pattern: /workbox-build|workbox-core|workbox-routing|workbox-strategies|workbox-precaching/i, evidence: "Workbox evidence was detected." },
+    { signal: "workbox-window", pattern: /workbox-window/i, evidence: "workbox-window evidence was detected." },
+    { signal: "next-pwa", pattern: /next-pwa/i, evidence: "next-pwa evidence was detected." },
+    { signal: "nuxt-pwa", pattern: /nuxt-pwa|@vite-pwa\/nuxt/i, evidence: "Nuxt PWA evidence was detected." },
+    { signal: "custom", pattern: /serviceWorker|manifest\.webmanifest|registerSW|pwa/i, evidence: "custom PWA evidence was detected." }
+  ];
+  return pwaReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function pwaReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: PwaReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/pwa-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

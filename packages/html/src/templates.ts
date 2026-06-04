@@ -90,6 +90,7 @@ import type {
   DiagramRenderingReadinessReport,
   LinkIntegrityReadinessReport,
   SeoMetadataReadinessReport,
+  PwaReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -186,6 +187,7 @@ export interface StudyHtmlInput {
   diagramRenderingReadinessReport: DiagramRenderingReadinessReport;
   linkIntegrityReadinessReport: LinkIntegrityReadinessReport;
   seoMetadataReadinessReport: SeoMetadataReadinessReport;
+  pwaReadinessReport: PwaReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -296,6 +298,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["diagram-rendering-readiness.html", "Diagrams"],
     ["link-integrity-readiness.html", "Link Integrity"],
     ["seo-metadata-readiness.html", "SEO Metadata"],
+    ["pwa-readiness.html", "PWA"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -838,6 +841,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("SEO Metadata Readiness", "seo-metadata-readiness.html", `<section class="panel" data-source-pattern="Nuxt SEO"><h2>SEO Metadata Snapshot</h2><p>${escapeHtml(input.seoMetadataReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.seoMetadataReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.seoMetadataReadinessReport.seoSetups.length}</dd></div><div><dt>crawl</dt><dd>${input.seoMetadataReadinessReport.crawlSignals.length}</dd></div><div><dt>sitemap</dt><dd>${input.seoMetadataReadinessReport.sitemapSignals.length}</dd></div><div><dt>metadata</dt><dd>${input.seoMetadataReadinessReport.metadataSignals.length}</dd></div></dl><p class="muted">RepoTutor records SEO metadata readiness only; it does not crawl websites, render pages, fetch robots.txt, validate sitemap XML, query search engines, execute Nuxt modules, or run the analyzed project's tests.</p></section><section class="grid"><article class="seo-metadata-readiness-card"><h3>SEO Setups</h3>${seoMetadataReadinessSetupList(input.seoMetadataReadinessReport.seoSetups)}</article><article class="seo-metadata-readiness-card"><h3>Crawl Signals</h3>${seoMetadataReadinessSignalList(input.seoMetadataReadinessReport.crawlSignals, "signal")}</article><article class="seo-metadata-readiness-card"><h3>Sitemap Signals</h3>${seoMetadataReadinessSignalList(input.seoMetadataReadinessReport.sitemapSignals, "signal")}</article><article class="seo-metadata-readiness-card"><h3>Metadata Signals</h3>${seoMetadataReadinessSignalList(input.seoMetadataReadinessReport.metadataSignals, "signal")}</article></section><section class="grid"><article class="seo-metadata-readiness-card"><h3>Structured Data Signals</h3>${seoMetadataReadinessSignalList(input.seoMetadataReadinessReport.structuredDataSignals, "signal")}</article><article class="seo-metadata-readiness-card"><h3>AI Readiness Signals</h3>${seoMetadataReadinessSignalList(input.seoMetadataReadinessReport.aiReadinessSignals, "signal")}</article><article class="seo-metadata-readiness-card"><h3>Package Signals</h3>${seoMetadataReadinessSignalList(input.seoMetadataReadinessReport.packageSignals, "signal")}</article><article class="seo-metadata-readiness-card"><h3>Recommended Commands</h3>${seoMetadataReadinessCommandList(input.seoMetadataReadinessReport.recommendedCommands)}</article><article class="seo-metadata-readiness-card"><h3>Risk Queue</h3>${seoMetadataReadinessRiskList(input.seoMetadataReadinessReport.riskQueue)}</article><article class="seo-metadata-readiness-card"><h3>다음 확인 단계</h3>${list(input.seoMetadataReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "pwa-readiness.html",
+      title: "PWA Readiness",
+      html: pageShell("PWA Readiness", "pwa-readiness.html", `<section class="panel" data-source-pattern="Vite PWA"><h2>PWA Snapshot</h2><p>${escapeHtml(input.pwaReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.pwaReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.pwaReadinessReport.pwaSetups.length}</dd></div><div><dt>manifest</dt><dd>${input.pwaReadinessReport.manifestSignals.length}</dd></div><div><dt>service worker</dt><dd>${input.pwaReadinessReport.serviceWorkerSignals.length}</dd></div><div><dt>caching</dt><dd>${input.pwaReadinessReport.cachingSignals.length}</dd></div></dl><p class="muted">RepoTutor records PWA readiness only; it does not register service workers, open browsers, populate Cache Storage, fetch manifests, test offline mode, trigger install prompts, or run the analyzed project's tests.</p></section><section class="grid"><article class="pwa-readiness-card"><h3>PWA Setups</h3>${pwaReadinessSetupList(input.pwaReadinessReport.pwaSetups)}</article><article class="pwa-readiness-card"><h3>Manifest Signals</h3>${pwaReadinessSignalList(input.pwaReadinessReport.manifestSignals, "signal")}</article><article class="pwa-readiness-card"><h3>Service Worker Signals</h3>${pwaReadinessSignalList(input.pwaReadinessReport.serviceWorkerSignals, "signal")}</article><article class="pwa-readiness-card"><h3>Caching Signals</h3>${pwaReadinessSignalList(input.pwaReadinessReport.cachingSignals, "signal")}</article></section><section class="grid"><article class="pwa-readiness-card"><h3>Update Signals</h3>${pwaReadinessSignalList(input.pwaReadinessReport.updateSignals, "signal")}</article><article class="pwa-readiness-card"><h3>Install Signals</h3>${pwaReadinessSignalList(input.pwaReadinessReport.installSignals, "signal")}</article><article class="pwa-readiness-card"><h3>Package Signals</h3>${pwaReadinessSignalList(input.pwaReadinessReport.packageSignals, "signal")}</article><article class="pwa-readiness-card"><h3>Recommended Commands</h3>${pwaReadinessCommandList(input.pwaReadinessReport.recommendedCommands)}</article><article class="pwa-readiness-card"><h3>Risk Queue</h3>${pwaReadinessRiskList(input.pwaReadinessReport.riskQueue)}</article><article class="pwa-readiness-card"><h3>다음 확인 단계</h3>${list(input.pwaReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -1028,6 +1036,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
       { label: "Link Integrity Readiness", path: "html/link-integrity-readiness.html", description: "Lychee식 link target, policy, network, output, CI 준비도를 확인합니다." },
       { label: "SEO Metadata Readiness", path: "html/seo-metadata-readiness.html", description: "Nuxt SEO식 robots, sitemap, metadata, structured data, AEO 준비도를 확인합니다." },
+      { label: "PWA Readiness", path: "html/pwa-readiness.html", description: "Vite PWA식 manifest, service worker, Workbox cache, update/install 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1591,6 +1600,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "seo-metadata-readiness.html",
       goal: "Nuxt SEO식 robots, sitemap, metadata, structured data, AEO 흐름을 보고 검색/답변엔진 노출 준비도를 확인합니다.",
       evidence: `SEO setups ${input.seoMetadataReadinessReport.seoSetups.length}개, metadata signals ${input.seoMetadataReadinessReport.metadataSignals.length}개`
+    },
+    {
+      title: "PWA readiness 확인",
+      href: "pwa-readiness.html",
+      goal: "Vite PWA식 manifest, service worker, Workbox cache, update/install 흐름을 보고 오프라인 앱 준비도를 확인합니다.",
+      evidence: `PWA setups ${input.pwaReadinessReport.pwaSetups.length}개, service worker signals ${input.pwaReadinessReport.serviceWorkerSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3683,6 +3698,31 @@ function seoMetadataReadinessRiskList(items: SeoMetadataReadinessReport["riskQue
 }
 
 function seoMetadataReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function pwaReadinessSetupList(items: PwaReadinessReport["pwaSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">PWA setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>manifest/service worker/caching/update/install/runtime ${item.manifestCount}/${item.serviceWorkerCount}/${item.cachingCount}/${item.updateCount}/${item.installCount}/${item.runtimeCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(pwaReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function pwaReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">PWA signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(pwaReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function pwaReadinessCommandList(items: PwaReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function pwaReadinessRiskList(items: PwaReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(pwaReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function pwaReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

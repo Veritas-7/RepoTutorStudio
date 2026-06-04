@@ -4297,6 +4297,71 @@ export const SeoMetadataReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PwaReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  pwaSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["vite-plugin-pwa", "workbox", "next-pwa", "nuxt-pwa", "custom", "unknown"]),
+    manifestCount: z.number().int().nonnegative(),
+    serviceWorkerCount: z.number().int().nonnegative(),
+    cachingCount: z.number().int().nonnegative(),
+    updateCount: z.number().int().nonnegative(),
+    installCount: z.number().int().nonnegative(),
+    runtimeCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  manifestSignals: z.array(z.object({
+    signal: z.enum(["webmanifest", "icons", "theme-color", "start-url", "display", "scope", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  serviceWorkerSignals: z.array(z.object({
+    signal: z.enum(["register", "generate-sw", "inject-manifest", "custom-sw", "sw-scope", "self-destroying", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  cachingSignals: z.array(z.object({
+    signal: z.enum(["precache", "runtime-caching", "glob-patterns", "maximum-file-size", "cache-first", "network-first", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  updateSignals: z.array(z.object({
+    signal: z.enum(["auto-update", "prompt-update", "skip-waiting", "clients-claim", "need-refresh", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  installSignals: z.array(z.object({
+    signal: z.enum(["offline-ready", "install-prompt", "beforeinstallprompt", "use-credentials", "shortcuts", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["vite-plugin-pwa", "workbox", "workbox-window", "next-pwa", "nuxt-pwa", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4581,6 +4646,7 @@ export type ChartVisualizationReadinessReport = z.infer<typeof ChartVisualizatio
 export type DiagramRenderingReadinessReport = z.infer<typeof DiagramRenderingReadinessReportSchema>;
 export type LinkIntegrityReadinessReport = z.infer<typeof LinkIntegrityReadinessReportSchema>;
 export type SeoMetadataReadinessReport = z.infer<typeof SeoMetadataReadinessReportSchema>;
+export type PwaReadinessReport = z.infer<typeof PwaReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
