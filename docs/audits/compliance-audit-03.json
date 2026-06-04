@@ -1,6 +1,6 @@
 {
   "iteration": 3,
-  "createdAt": "2026-06-04T11:23:22.250Z",
+  "createdAt": "2026-06-04T11:34:56.984Z",
   "checks": [
     {
       "name": "project setup",
@@ -515,6 +515,13 @@
     },
     {
       "name": "diagram rendering readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "link integrity readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

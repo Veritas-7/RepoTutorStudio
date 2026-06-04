@@ -3666,6 +3666,50 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 180:
   - `d2079e4` diagram rendering readiness report
 
+- 2026-06-04: AutoResearch Upgrade 181 candidate selected:
+  `lycheeverse/lychee`
+  (`https://github.com/lycheeverse/lychee`; public; Apache-2.0; 3,659 stars;
+  212 forks; updated 2026-06-04T09:17:33Z). Compared with
+  `tcort/markdown-link-check`, `stevenvachon/broken-link-checker`, and
+  `filiph/linkcheck`; selected Lychee because it directly models link
+  integrity readiness: Markdown/HTML/reStructuredText/website/mail targets,
+  accept-status and exclude/include policy, schemes and fragments, timeout,
+  retry, user-agent, headers, GitHub token, offline mode, JSON/Markdown/JUnit
+  output, cache, GitHub Action, Docker, Nix, pre-commit, and script usage.
+  Cloned ignored external source to `research/external-src/lycheeverse-lychee`
+  and inspected docs/source hits without executing external source. Clone HEAD
+  was `ed088a7`; tracked-file count for
+  `research/external-src/lycheeverse-lychee` returned `0`.
+- 2026-06-04: RED link-integrity-readiness smoke generated
+  `/tmp/repotutor-link-red-studies.dGImur/2026-06-04/local__simple-ts-app__HEAD__f8b6305b`;
+  old build had `verificationCheckedRequiredArtifacts=240`, was missing
+  `analysis/link-integrity-readiness-report.json`,
+  `markdown/link-integrity-readiness.md`, and
+  `html/link-integrity-readiness.html`, and `open --target
+  link-integrity-readiness` failed as expected.
+- 2026-06-04: Implemented Lychee-style link-integrity-readiness report:
+  `LinkIntegrityReadinessReportSchema`,
+  `analysis/link-integrity-readiness-report.json`,
+  `markdown/link-integrity-readiness.md`,
+  `html/link-integrity-readiness.html`, link setups, target signals, policy
+  signals, network signals, output signals, CI signals, package signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, nav entry, and `open --target
+  link-integrity-readiness`.
+- 2026-06-04: GREEN link-integrity-readiness smoke generated
+  `/tmp/repotutor-link-green-studies.plPPCN/2026-06-04/local__simple-ts-app__main__f8b6305b`;
+  confirmed `verificationCheckedRequiredArtifacts=243`, link setups 0, target
+  signals 6, policy signals 6, network signals 6, output signals 6, CI signals
+  5, package signals 6, risk queue 2, all three new artifacts, and
+  `open --target link-integrity-readiness` ->
+  `html/link-integrity-readiness.html`.
+- 2026-06-04: Verification for Upgrade 181:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 79/79 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

@@ -1242,6 +1242,21 @@
         "themeVariables themeCSS darkMode fontFamily htmlLabels useMaxWidth viewBox and layout readiness",
         "securityLevel strict sandbox sanitization DOMPurify external link and callback safety checks"
       ]
+    },
+    {
+      "repo": "lycheeverse/lychee",
+      "url": "https://github.com/lycheeverse/lychee",
+      "localPath": "research/external-src/lycheeverse-lychee",
+      "stars": 3659,
+      "forks": 212,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T09:17:33Z",
+      "adoptedPatterns": [
+        "Lychee Markdown HTML reStructuredText website and mail target readiness",
+        "accept status exclude include scheme private network and fragment policy mapping",
+        "timeout retry headers GitHub token user-agent and offline network readiness",
+        "JSON markdown JUnit summary dump cache GitHub Action Docker Nix and pre-commit output and CI checks"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -4073,6 +4088,25 @@
         "markdown/diagram-rendering-readiness.md",
         "html/diagram-rendering-readiness.html"
       ]
+    },
+    {
+      "name": "Link integrity readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/link-integrity-readiness-report.json",
+        "markdown/link-integrity-readiness.md",
+        "html/link-integrity-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4484,7 +4518,13 @@
     "diagramRenderingReadinessGreenSmoke": "PASS",
     "fixtureDiagramRenderingReadinessReport": "PASS",
     "cliDiagramRenderingReadinessOpenTarget": "PASS",
-    "complianceAudit78Checks": "PASS"
+    "complianceAudit78Checks": "PASS",
+    "externalLycheeCloneIgnored": "PASS",
+    "linkIntegrityReadinessRedSmoke": "PASS",
+    "linkIntegrityReadinessGreenSmoke": "PASS",
+    "fixtureLinkIntegrityReadinessReport": "PASS",
+    "cliLinkIntegrityReadinessOpenTarget": "PASS",
+    "complianceAudit79Checks": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -4771,6 +4811,12 @@
     "cliWebSocketReadinessOpenTargetSmoke": "PASS",
     "buildWebSocketReadiness": "PASS",
     "testWebSocketReadiness": "PASS",
-    "auditBriefWebSocketReadiness74": "PASS"
+    "auditBriefWebSocketReadiness74": "PASS",
+    "fixtureLinkIntegrityReadinessReport": "PASS",
+    "cliLinkIntegrityReadinessSmoke": "PASS",
+    "cliLinkIntegrityReadinessOpenTargetSmoke": "PASS",
+    "buildLinkIntegrityReadiness": "PASS",
+    "testLinkIntegrityReadiness": "PASS",
+    "auditBriefLinkIntegrityReadiness79": "PASS"
   }
 }
