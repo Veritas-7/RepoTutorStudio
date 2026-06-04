@@ -64,6 +64,7 @@ import type {
   BundleAnalysisReport,
   MockingReadinessReport,
   DataFetchingReadinessReport,
+  RoutingReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -134,6 +135,7 @@ export interface StudyHtmlInput {
   bundleAnalysisReport: BundleAnalysisReport;
   mockingReadinessReport: MockingReadinessReport;
   dataFetchingReadinessReport: DataFetchingReadinessReport;
+  routingReadinessReport: RoutingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -224,6 +226,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["bundle-analysis.html", "Bundles"],
     ["mocking-readiness.html", "Mocks"],
     ["data-fetching-readiness.html", "Data Fetching"],
+    ["routing-readiness.html", "Routing"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -349,6 +352,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Bundle Analysis</h3><p>${escapeHtml(input.bundleAnalysisReport.summary)}</p><p>Webpack Bundle Analyzer 패턴으로 analyzer config, stats JSON, chunks, source maps, gzip/Brotli/Zstd size signals를 정리합니다.</p><a href="bundle-analysis.html">Bundles 열기</a></article>
           <article><h3>Mocking Readiness</h3><p>${escapeHtml(input.mockingReadinessReport.summary)}</p><p>MSW 패턴으로 handlers, setupWorker/setupServer, lifecycle, unhandled request policy, package signals를 정리합니다.</p><a href="mocking-readiness.html">Mocks 열기</a></article>
           <article><h3>Data Fetching Readiness</h3><p>${escapeHtml(input.dataFetchingReadinessReport.summary)}</p><p>TanStack Query 패턴으로 QueryClient, providers, query hooks, cache policy, invalidation, hydration, devtools를 정리합니다.</p><a href="data-fetching-readiness.html">Data Fetching 열기</a></article>
+          <article><h3>Routing Readiness</h3><p>${escapeHtml(input.routingReadinessReport.summary)}</p><p>React Router 패턴으로 router mode, route definitions, navigation APIs, data routes, file routes를 정리합니다.</p><a href="routing-readiness.html">Routing 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -630,6 +634,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Data Fetching Readiness", "data-fetching-readiness.html", `<section class="panel" data-source-pattern="TanStack Query"><h2>Data Fetching Snapshot</h2><p>${escapeHtml(input.dataFetchingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dataFetchingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>clients</dt><dd>${input.dataFetchingReadinessReport.clientSetups.length}</dd></div><div><dt>usages</dt><dd>${input.dataFetchingReadinessReport.queryUsages.length}</dd></div><div><dt>cache</dt><dd>${input.dataFetchingReadinessReport.cacheSignals.length}</dd></div><div><dt>packages</dt><dd>${input.dataFetchingReadinessReport.packageSignals.length}</dd></div></dl><p class="muted">RepoTutor records data-fetching readiness only. It does not fetch remote APIs, instantiate providers, hydrate caches, or run the analyzed project's tests.</p></section><section class="grid"><article class="data-fetching-card"><h3>Client Setups</h3>${dataFetchingClientList(input.dataFetchingReadinessReport.clientSetups)}</article><article class="data-fetching-card"><h3>Query Usages</h3>${dataFetchingUsageList(input.dataFetchingReadinessReport.queryUsages)}</article><article class="data-fetching-card"><h3>Cache Signals</h3>${dataFetchingSignalList(input.dataFetchingReadinessReport.cacheSignals, "signal")}</article><article class="data-fetching-card"><h3>Data Flow Signals</h3>${dataFetchingSignalList(input.dataFetchingReadinessReport.dataFlowSignals, "signal")}</article></section><section class="grid"><article class="data-fetching-card"><h3>Package Signals</h3>${dataFetchingSignalList(input.dataFetchingReadinessReport.packageSignals, "signal")}</article><article class="data-fetching-card"><h3>Recommended Commands</h3>${dataFetchingCommandList(input.dataFetchingReadinessReport.recommendedCommands)}</article><article class="data-fetching-card"><h3>Risk Queue</h3>${dataFetchingRiskList(input.dataFetchingReadinessReport.riskQueue)}</article><article class="data-fetching-card"><h3>다음 확인 단계</h3>${list(input.dataFetchingReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "routing-readiness.html",
+      title: "Routing Readiness",
+      html: pageShell("Routing Readiness", "routing-readiness.html", `<section class="panel" data-source-pattern="React Router"><h2>Routing Snapshot</h2><p>${escapeHtml(input.routingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.routingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.routingReadinessReport.routingSetups.length}</dd></div><div><dt>routes</dt><dd>${input.routingReadinessReport.routeDefinitions.length}</dd></div><div><dt>navigation</dt><dd>${input.routingReadinessReport.navigationSignals.length}</dd></div><div><dt>data routes</dt><dd>${input.routingReadinessReport.dataRouteSignals.length}</dd></div></dl><p class="muted">RepoTutor records routing readiness only. It does not execute loaders, actions, navigation transitions, dev servers, or browser route flows.</p></section><section class="grid"><article class="routing-readiness-card"><h3>Routing Setups</h3>${routingSetupList(input.routingReadinessReport.routingSetups)}</article><article class="routing-readiness-card"><h3>Route Definitions</h3>${routingDefinitionList(input.routingReadinessReport.routeDefinitions)}</article><article class="routing-readiness-card"><h3>Navigation Signals</h3>${routingSignalList(input.routingReadinessReport.navigationSignals, "signal")}</article><article class="routing-readiness-card"><h3>Data Route Signals</h3>${routingSignalList(input.routingReadinessReport.dataRouteSignals, "signal")}</article></section><section class="grid"><article class="routing-readiness-card"><h3>File Route Signals</h3>${routingSignalList(input.routingReadinessReport.fileRouteSignals, "signal")}</article><article class="routing-readiness-card"><h3>Package Signals</h3>${routingSignalList(input.routingReadinessReport.packageSignals, "signal")}</article><article class="routing-readiness-card"><h3>Recommended Commands</h3>${routingCommandList(input.routingReadinessReport.recommendedCommands)}</article><article class="routing-readiness-card"><h3>Risk Queue</h3>${routingRiskList(input.routingReadinessReport.riskQueue)}</article><article class="routing-readiness-card"><h3>다음 확인 단계</h3>${list(input.routingReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -794,6 +803,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Bundle Analysis", path: "html/bundle-analysis.html", description: "Webpack Bundle Analyzer식 stats JSON, chunks, source maps, compression size 준비도를 확인합니다." },
       { label: "Mocking Readiness", path: "html/mocking-readiness.html", description: "MSW식 handlers, setupWorker/setupServer, lifecycle, unhandled request policy 준비도를 확인합니다." },
       { label: "Data Fetching Readiness", path: "html/data-fetching-readiness.html", description: "TanStack Query식 QueryClient, hooks, cache, invalidation, hydration 준비도를 확인합니다." },
+      { label: "Routing Readiness", path: "html/routing-readiness.html", description: "React Router식 router mode, route definitions, navigation API, data route, file route 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1201,6 +1211,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "data-fetching-readiness.html",
       goal: "TanStack Query식 QueryClient, query hooks, cache timing, invalidation, hydration을 보고 서버 상태 관리 관문을 확인합니다.",
       evidence: `client setups ${input.dataFetchingReadinessReport.clientSetups.length}개, query usages ${input.dataFetchingReadinessReport.queryUsages.length}개`
+    },
+    {
+      title: "Routing readiness 확인",
+      href: "routing-readiness.html",
+      goal: "React Router식 router mode, route definitions, navigation API, data route, file-route convention을 보고 화면 이동 관문을 확인합니다.",
+      evidence: `setups ${input.routingReadinessReport.routingSetups.length}개, route definitions ${input.routingReadinessReport.routeDefinitions.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -2623,6 +2639,36 @@ function dataFetchingRiskList(items: DataFetchingReadinessReport["riskQueue"]): 
 }
 
 function dataFetchingHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function routingSetupList(items: RoutingReadinessReport["routingSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">routing setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.mode)}/${escapeHtml(item.readiness)}]<br>router/provider/config ${item.hasRouter ? "yes" : "no"}/${item.hasProvider ? "yes" : "no"}/${item.hasConfig ? "yes" : "no"}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(routingHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function routingDefinitionList(items: RoutingReadinessReport["routeDefinitions"]): string {
+  if (items.length === 0) return "<p class=\"muted\">route definition이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.readiness)}]<br>routes/dynamic ${item.routeCount}/${item.dynamicSegmentCount} · nested/index/layout ${item.nestedSignal ? "yes" : "no"}/${item.indexSignal ? "yes" : "no"}/${item.layoutSignal ? "yes" : "no"}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(routingHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function routingSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">routing signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(routingHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function routingCommandList(items: RoutingReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function routingRiskList(items: RoutingReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(routingHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function routingHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

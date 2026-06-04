@@ -2627,6 +2627,67 @@ export const DataFetchingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const RoutingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  routingSetups: z.array(z.object({
+    filePath: z.string(),
+    mode: z.enum(["framework", "data", "declarative", "file-routes", "next", "vue", "tanstack", "unknown"]),
+    hasRouter: z.boolean(),
+    hasProvider: z.boolean(),
+    hasConfig: z.boolean(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  routeDefinitions: z.array(z.object({
+    filePath: z.string(),
+    routeCount: z.number().int().nonnegative(),
+    dynamicSegmentCount: z.number().int().nonnegative(),
+    nestedSignal: z.boolean(),
+    indexSignal: z.boolean(),
+    layoutSignal: z.boolean(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  navigationSignals: z.array(z.object({
+    signal: z.enum(["Link", "NavLink", "Navigate", "useNavigate", "useLocation", "useParams", "useSearchParams", "useMatches", "useBlocker", "useFetcher", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dataRouteSignals: z.array(z.object({
+    signal: z.enum(["loader", "action", "clientLoader", "clientAction", "useLoaderData", "useActionData", "useRouteError", "ErrorBoundary", "HydrateFallback", "redirect", "defer", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  fileRouteSignals: z.array(z.object({
+    signal: z.enum(["routes-ts", "app-routes-directory", "flatRoutes", "index-route", "dynamic-segment", "nested-route", "pathless-route", "ignoredRouteFiles", "root-route", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["react-router", "react-router-dom", "@react-router/dev", "@react-router/fs-routes", "tanstack-router", "next", "vue-router", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2885,6 +2946,7 @@ export type ChangelogReadinessReport = z.infer<typeof ChangelogReadinessReportSc
 export type BundleAnalysisReport = z.infer<typeof BundleAnalysisReportSchema>;
 export type MockingReadinessReport = z.infer<typeof MockingReadinessReportSchema>;
 export type DataFetchingReadinessReport = z.infer<typeof DataFetchingReadinessReportSchema>;
+export type RoutingReadinessReport = z.infer<typeof RoutingReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

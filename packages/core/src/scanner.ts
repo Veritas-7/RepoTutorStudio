@@ -69,6 +69,7 @@ import {
   BundleAnalysisReport,
   MockingReadinessReport,
   DataFetchingReadinessReport,
+  RoutingReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -144,6 +145,7 @@ export interface AnalysisBundle {
   bundleAnalysisReport: BundleAnalysisReport;
   mockingReadinessReport: MockingReadinessReport;
   dataFetchingReadinessReport: DataFetchingReadinessReport;
+  routingReadinessReport: RoutingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -219,8 +221,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const bundleAnalysisReport = await buildBundleAnalysisReport(walk);
   const mockingReadinessReport = await buildMockingReadinessReport(walk);
   const dataFetchingReadinessReport = await buildDataFetchingReadinessReport(walk);
+  const routingReadinessReport = await buildRoutingReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -11514,6 +11517,269 @@ function dataFetchingSignalFromSpecs<T extends Record<K, string> & { pattern: Re
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/data-fetching-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildRoutingReadinessReport(walk: WalkResult): Promise<RoutingReadinessReport> {
+  const sourceFiles = await routingSourceFiles(walk);
+  const routingSetups = routingSetupsFromSources(sourceFiles);
+  const routeDefinitions = routingRouteDefinitions(sourceFiles);
+  const navigationSignals = routingNavigationSignals(sourceFiles);
+  const dataRouteSignals = routingDataRouteSignals(sourceFiles);
+  const fileRouteSignals = routingFileRouteSignals(sourceFiles);
+  const packageSignals = routingPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasSetup = routingSetups.some((item) => item.hasRouter || item.hasProvider || item.hasConfig);
+  const hasRoutes = routeDefinitions.some((item) => item.routeCount > 0 || item.indexSignal || item.layoutSignal);
+  const hasNavigation = navigationSignals.some((item) => ["Link", "NavLink", "Navigate", "useNavigate"].includes(item.signal) && item.readiness === "ready");
+  const hasDynamicRoutes = routeDefinitions.some((item) => item.dynamicSegmentCount > 0);
+  const hasParamsRead = navigationSignals.some((item) => item.signal === "useParams" && item.readiness === "ready");
+  const hasDataRoutes = dataRouteSignals.some((item) => ["loader", "action", "clientLoader", "clientAction", "useLoaderData", "useActionData"].includes(item.signal) && item.readiness === "ready");
+  const hasErrorBoundary = dataRouteSignals.some((item) => ["ErrorBoundary", "useRouteError"].includes(item.signal) && item.readiness === "ready");
+  const hasFileRoutes = fileRouteSignals.some((item) => ["routes-ts", "app-routes-directory", "flatRoutes"].includes(item.signal) && item.readiness === "ready");
+  const hasRootRoute = fileRouteSignals.some((item) => item.signal === "root-route" && item.readiness === "ready");
+
+  const riskQueue: RoutingReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasRoutes) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document the routing surface before claiming navigation readiness.",
+      why: "React Router-style readiness starts with an explicit router mode, route definitions, or file-route convention.",
+      relatedHref: "html/routing-readiness.html"
+    });
+  }
+  if (hasRoutes && !hasNavigation) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect route definitions to visible navigation with Link, NavLink, Navigate, or useNavigate.",
+      why: "Learners need to trace not only which URLs exist, but how users move between them.",
+      relatedHref: "html/routing-readiness.html"
+    });
+  }
+  if (hasDataRoutes && !hasErrorBoundary) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add route-level ErrorBoundary or useRouteError handling around data routes.",
+      why: "React Router data routes can throw from loaders/actions, so the nearest route boundary explains failure UI.",
+      relatedHref: "html/routing-readiness.html"
+    });
+  }
+  if (hasDynamicRoutes && !hasParamsRead) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document where dynamic route params are read with useParams or loader/action params.",
+      why: "Dynamic segments are easier to learn when the URL token is tied to the component or data loader that consumes it.",
+      relatedHref: "html/routing-readiness.html"
+    });
+  }
+  if (hasFileRoutes && !hasRootRoute) {
+    riskQueue.push({
+      priority: "low",
+      action: "Make the root route or app shell easy to find from the file-route map.",
+      why: "Framework/file-route mode usually renders child routes through a root route and Outlet boundary.",
+      relatedHref: "html/routing-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run routing tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not execute loaders, actions, navigation transitions, dev servers, or browser route flows.",
+    relatedHref: "html/routing-readiness.html"
+  });
+
+  return {
+    summary: `React Router식 routing readiness report: setup ${routingSetups.length}개, route definition ${routeDefinitions.length}개, navigation signal ${navigationSignals.length}개, data-route signal ${dataRouteSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "React Router BrowserRouter createBrowserRouter RouterProvider routes.ts route index Link NavLink Outlet loader action ErrorBoundary useNavigate useParams useSearchParams",
+    routingSetups,
+    routeDefinitions,
+    navigationSignals,
+    dataRouteSignals,
+    fileRouteSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"BrowserRouter|createBrowserRouter|RouterProvider|routes.ts|flatRoutes\" src app pages", purpose: "Inventory top-level router mode and provider/config setup." },
+      { command: "rg \"<Route|route\\\\(|index\\\\(|children:|Outlet\" src app pages", purpose: "Find explicit route definitions, nested routes, index routes, and outlet boundaries." },
+      { command: "rg \"Link|NavLink|useNavigate|useParams|useSearchParams|useBlocker\" src app pages test", purpose: "Review visible navigation, dynamic params, search params, and blocking flows." },
+      { command: "rg \"loader|action|clientLoader|ErrorBoundary|useRouteError|redirect\" src app pages", purpose: "Check data-route loading, mutation, redirect, and error-boundary surfaces." },
+      { command: "npx react-router typegen", purpose: "Generate React Router framework-mode route types when the dev package is installed." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise route rendering, navigation, loaders, and error boundaries." }
+    ],
+    learnerNextSteps: [
+      "먼저 BrowserRouter, RouterProvider, routes.ts 중 어떤 라우팅 모드를 쓰는지 확인하세요.",
+      "route/index/children/Outlet을 함께 읽으면 URL 구조와 화면 중첩 구조를 연결할 수 있습니다.",
+      "동적 경로가 있다면 params를 어디서 읽는지 component와 loader/action 양쪽에서 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 navigation과 loader/action 동작은 원본 프로젝트 테스트나 브라우저에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type RoutingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function routingSourceFiles(walk: WalkResult): Promise<RoutingSourceFile[]> {
+  const files: RoutingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !routingInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 200_000);
+    if (!text) continue;
+    if (!routingPathSignal(file.relPath) && !routingContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 240) break;
+  }
+  return files;
+}
+
+function routingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return routingPathSignal(filePath)
+    || /^(package\.json|react-router\.config\.[cm]?[jt]s|vite\.config\.[cm]?[jt]s|next\.config\.[cm]?[jt]s|routes\.[cm]?[jt]sx?)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|astro|json|md|ya?ml)$/i.test(filePath);
+}
+
+function routingPathSignal(filePath: string): boolean {
+  return /(^|\/)(routes?|router|navigation|nav|pages?|app)(\/|\.|-|_|$)|react-router|tanstack-router|vue-router|next\.config|route\.[jt]sx?$|\[[^\]]+\]/i.test(filePath);
+}
+
+function routingContentSignal(text: string): boolean {
+  return /\b(BrowserRouter|HashRouter|MemoryRouter|RouterProvider|createBrowserRouter|createHashRouter|createMemoryRouter|createRoutesFromElements|useRoutes|Routes|RouteObject|Link|NavLink|Navigate|Outlet|useNavigate|useLocation|useParams|useSearchParams|useMatches|useBlocker|useFetcher|loader|clientLoader|action|clientAction|useLoaderData|useActionData|useRouteError|ErrorBoundary|HydrateFallback|redirect|flatRoutes|@react-router\/dev|@react-router\/fs-routes|react-router-dom|@tanstack\/react-router|vue-router)\b/i.test(text);
+}
+
+function routingSetupsFromSources(sourceFiles: RoutingSourceFile[]): RoutingReadinessReport["routingSetups"] {
+  const rows: RoutingReadinessReport["routingSetups"] = [];
+  for (const source of sourceFiles) {
+    const hasRouter = /\b(BrowserRouter|HashRouter|MemoryRouter|createBrowserRouter|createHashRouter|createMemoryRouter|createRoutesFromElements|createRouter|createFileRoute|createRootRoute)\b/i.test(source.text);
+    const hasProvider = /\b(RouterProvider|BrowserRouter|HashRouter|MemoryRouter|RouterView|<Router\b)\b/i.test(source.text);
+    const hasConfig = /routes\.[cm]?[jt]sx?$|react-router\.config|@react-router\/dev\/routes|flatRoutes|defineConfig|createFileRoute|createRootRoute/i.test(source.filePath) || /@react-router\/dev\/routes|flatRoutes|route\s*\(|index\s*\(|createFileRoute|createRootRoute/i.test(source.text);
+    if (!hasRouter && !hasProvider && !hasConfig) continue;
+    rows.push({
+      filePath: source.filePath,
+      mode: routingMode(source),
+      hasRouter,
+      hasProvider,
+      hasConfig,
+      readiness: (hasRouter || hasConfig) && (hasProvider || /routes\.[cm]?[jt]sx?$|app\/routes\//i.test(source.filePath)) ? "ready" : "partial",
+      evidence: `${source.filePath} contains router ${hasRouter ? "yes" : "no"}, provider ${hasProvider ? "yes" : "no"}, config ${hasConfig ? "yes" : "no"}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 80);
+}
+
+function routingMode(source: RoutingSourceFile): RoutingReadinessReport["routingSetups"][number]["mode"] {
+  if (/flatRoutes|@react-router\/fs-routes|app\/routes\//i.test(source.text) || /app\/routes\//i.test(source.filePath)) return "file-routes";
+  if (/@react-router\/dev|react-router\.config|routes\.[cm]?[jt]sx?$/i.test(source.text) || /react-router\.config|routes\.[cm]?[jt]sx?$/i.test(source.filePath)) return "framework";
+  if (/createBrowserRouter|RouterProvider|loader|action|useFetcher/i.test(source.text)) return "data";
+  if (/BrowserRouter|HashRouter|MemoryRouter|<Routes|<Route|useRoutes/i.test(source.text)) return "declarative";
+  if (/@tanstack\/react-router|createFileRoute|createRootRoute/i.test(source.text)) return "tanstack";
+  if (/vue-router|createRouter|RouterView/i.test(source.text)) return "vue";
+  if (/next\/link|next\/navigation|app\/.*page\.[jt]sx?$|pages\/.*\.[jt]sx?$/i.test(source.text) || /(^|\/)(app|pages)\/.*\.[jt]sx?$/i.test(source.filePath)) return "next";
+  return "unknown";
+}
+
+function routingRouteDefinitions(sourceFiles: RoutingSourceFile[]): RoutingReadinessReport["routeDefinitions"] {
+  const rows: RoutingReadinessReport["routeDefinitions"] = [];
+  for (const source of sourceFiles) {
+    const routeCount = countMatches(source.text, /(<Route\b|\broute\s*\(|\bindex\s*\(|\bpath\s*:|\bcreateFileRoute\s*\(|\bcreateRoutesFromElements\s*\()/gi);
+    const dynamicSegmentCount = countMatches(source.text, /(:[A-Za-z_$][\w$-]*|\$[A-Za-z_$][\w$-]*|\[[A-Za-z_$][\w$.-]*\])/g) + countMatches(source.filePath, /(\$[A-Za-z_$][\w$-]*|\[[A-Za-z_$][\w$.-]*\])/g);
+    const nestedSignal = /\bchildren\s*:|<Outlet\b|\bOutlet\b|route\s*\([^)]*,\s*[^)]*,\s*\[/i.test(source.text) || /\w+\.\w+\.[jt]sx?$/i.test(source.filePath);
+    const indexSignal = /\bindex\s*\(|\bindex\s*:\s*true|_index\.[jt]sx?$|\/index\.[jt]sx?$/i.test(source.text) || /(^|\/)_?index\.[jt]sx?$/i.test(source.filePath);
+    const layoutSignal = /\b(Outlet|Layout|root\.tsx|_layout|ErrorBoundary)\b/i.test(source.text) || /(^|\/)(root|layout|_layout)\.[jt]sx?$/i.test(source.filePath);
+    if (routeCount + dynamicSegmentCount === 0 && !nestedSignal && !indexSignal && !layoutSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      routeCount,
+      dynamicSegmentCount,
+      nestedSignal,
+      indexSignal,
+      layoutSignal,
+      readiness: routeCount > 0 || indexSignal || layoutSignal ? "ready" : "partial",
+      evidence: `${source.filePath} contains routes ${routeCount}, dynamic segments ${dynamicSegmentCount}, nested ${nestedSignal ? "yes" : "no"}, index ${indexSignal ? "yes" : "no"}, layout ${layoutSignal ? "yes" : "no"}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function routingNavigationSignals(sourceFiles: RoutingSourceFile[]): RoutingReadinessReport["navigationSignals"] {
+  const specs: Array<{ signal: RoutingReadinessReport["navigationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "Link", pattern: /\bLink\b|<Link\b/i, evidence: "visible route link evidence was detected." },
+    { signal: "NavLink", pattern: /\bNavLink\b|<NavLink\b/i, evidence: "active navigation link evidence was detected." },
+    { signal: "Navigate", pattern: /\bNavigate\b|<Navigate\b/i, evidence: "declarative redirect/navigation evidence was detected." },
+    { signal: "useNavigate", pattern: /\buseNavigate\b/i, evidence: "imperative navigation hook evidence was detected." },
+    { signal: "useLocation", pattern: /\buseLocation\b/i, evidence: "current location hook evidence was detected." },
+    { signal: "useParams", pattern: /\buseParams\b|\bparams\./i, evidence: "route params reading evidence was detected." },
+    { signal: "useSearchParams", pattern: /\buseSearchParams\b|URLSearchParams|searchParams/i, evidence: "query-string/search params evidence was detected." },
+    { signal: "useMatches", pattern: /\buseMatches\b|\bmatchRoutes\b|\buseMatch\b/i, evidence: "route matching hook/helper evidence was detected." },
+    { signal: "useBlocker", pattern: /\buseBlocker\b|\buseBeforeUnload\b|navigation blocking/i, evidence: "navigation blocking evidence was detected." },
+    { signal: "useFetcher", pattern: /\buseFetcher\b|fetcher\.Form/i, evidence: "fetcher/form navigation state evidence was detected." }
+  ];
+  return routingSignalFromSpecs(sourceFiles, specs, "navigation", "signal");
+}
+
+function routingDataRouteSignals(sourceFiles: RoutingSourceFile[]): RoutingReadinessReport["dataRouteSignals"] {
+  const specs: Array<{ signal: RoutingReadinessReport["dataRouteSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "loader", pattern: /\b(loader\s*:|export\s+(async\s+)?function\s+loader|Route\.LoaderArgs)\b/i, evidence: "route loader evidence was detected." },
+    { signal: "action", pattern: /\b(action\s*:|export\s+(async\s+)?function\s+action|Route\.ActionArgs)\b/i, evidence: "route action evidence was detected." },
+    { signal: "clientLoader", pattern: /\bclientLoader\b|Route\.ClientLoaderArgs/i, evidence: "clientLoader evidence was detected." },
+    { signal: "clientAction", pattern: /\bclientAction\b|Route\.ClientActionArgs/i, evidence: "clientAction evidence was detected." },
+    { signal: "useLoaderData", pattern: /\buseLoaderData\b|\bloaderData\b/i, evidence: "loader data consumption evidence was detected." },
+    { signal: "useActionData", pattern: /\buseActionData\b|\bactionData\b/i, evidence: "action data consumption evidence was detected." },
+    { signal: "useRouteError", pattern: /\buseRouteError\b|\bisRouteErrorResponse\b/i, evidence: "route error hook/response evidence was detected." },
+    { signal: "ErrorBoundary", pattern: /\bErrorBoundary\b|\berrorElement\b/i, evidence: "route error boundary evidence was detected." },
+    { signal: "HydrateFallback", pattern: /\bHydrateFallback\b|clientLoader\.hydrate/i, evidence: "hydration fallback evidence was detected." },
+    { signal: "redirect", pattern: /\bredirect(Document)?\s*\(|\breplace\s*\(/i, evidence: "route redirect evidence was detected." },
+    { signal: "defer", pattern: /\bdefer\s*\(|\bAwait\b/i, evidence: "deferred data or Await evidence was detected." }
+  ];
+  return routingSignalFromSpecs(sourceFiles, specs, "data-route", "signal");
+}
+
+function routingFileRouteSignals(sourceFiles: RoutingSourceFile[]): RoutingReadinessReport["fileRouteSignals"] {
+  const specs: Array<{ signal: RoutingReadinessReport["fileRouteSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "routes-ts", pattern: /(^|\/)routes\.[cm]?[jt]sx?$|@react-router\/dev\/routes/i, evidence: "React Router framework routes.ts config evidence was detected." },
+    { signal: "app-routes-directory", pattern: /(^|\/)app\/routes\/|rootDirectory\s*:/i, evidence: "app/routes file-route directory evidence was detected." },
+    { signal: "flatRoutes", pattern: /\bflatRoutes\b|@react-router\/fs-routes/i, evidence: "fs-routes flatRoutes evidence was detected." },
+    { signal: "index-route", pattern: /_index\.[jt]sx?$|index\s*\(|index\s*:\s*true/i, evidence: "index route evidence was detected." },
+    { signal: "dynamic-segment", pattern: /\$[A-Za-z_$][\w$-]*|\[[A-Za-z_$][\w$.-]*\]|:[A-Za-z_$][\w$-]*/i, evidence: "dynamic segment evidence was detected." },
+    { signal: "nested-route", pattern: /\w+\.\w+\.[jt]sx?$|children\s*:|<Outlet\b|\bOutlet\b/i, evidence: "nested route or outlet evidence was detected." },
+    { signal: "pathless-route", pattern: /(^|\/)_[A-Za-z][\w.-]*\.[jt]sx?$|pathless/i, evidence: "pathless layout route evidence was detected." },
+    { signal: "ignoredRouteFiles", pattern: /\bignoredRouteFiles\b/i, evidence: "ignoredRouteFiles configuration evidence was detected." },
+    { signal: "root-route", pattern: /(^|\/)(root|layout)\.[jt]sx?$|\broot\.tsx\b|<Outlet\b/i, evidence: "root route or app shell evidence was detected." }
+  ];
+  return routingSignalFromSpecs(sourceFiles, specs, "file-route", "signal");
+}
+
+function routingPackageSignals(sourceFiles: RoutingSourceFile[]): RoutingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: RoutingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "react-router", pattern: /["']react-router["']|from\s+["']react-router["']/i, evidence: "react-router package/import evidence was detected." },
+    { signal: "react-router-dom", pattern: /["']react-router-dom["']|from\s+["']react-router-dom["']/i, evidence: "react-router-dom package/import evidence was detected." },
+    { signal: "@react-router/dev", pattern: /@react-router\/dev/i, evidence: "@react-router/dev package/config evidence was detected." },
+    { signal: "@react-router/fs-routes", pattern: /@react-router\/fs-routes|flatRoutes/i, evidence: "@react-router/fs-routes package evidence was detected." },
+    { signal: "tanstack-router", pattern: /@tanstack\/react-router|createFileRoute|createRootRoute/i, evidence: "TanStack Router package/import evidence was detected." },
+    { signal: "next", pattern: /["']next["']|next\/link|next\/navigation|app\/.*page\.[jt]sx?$|pages\/.*\.[jt]sx?$/i, evidence: "Next.js route package or file-route evidence was detected." },
+    { signal: "vue-router", pattern: /["']vue-router["']|createRouter|RouterView/i, evidence: "Vue Router package/import evidence was detected." }
+  ];
+  return routingSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function routingSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: RoutingSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/routing-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
