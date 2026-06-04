@@ -2887,6 +2887,43 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 161:
   - `1950bf9` payment readiness report
 
+- 2026-06-04: AutoResearch Upgrade 162 candidate selected:
+  `resend/resend-node` (`https://github.com/resend/resend-node`; public MIT;
+  913 stars; 81 forks; updated 2026-06-03T05:02:14Z). Compared with
+  `nodemailer/nodemailer`, `sendgrid/sendgrid-nodejs`, and
+  `mailgun/mailgun.js`; selected Resend Node because it directly models
+  transactional email readiness: `new Resend`, `RESEND_API_KEY`, `emails.send`,
+  `batch.send`, `domains.verify`, `webhooks.verify`, `standardwebhooks`,
+  `from`, `to`, `replyTo`, `subject`, `text`, `html`, `react`, attachments,
+  template rendering, idempotency, contacts, broadcasts, and delivery events.
+  Cloned ignored external source to `research/external-src/resend-resend-node`
+  and inspected README, license, package metadata, client setup, email, batch,
+  domains, and webhook source without executing external source. Clone HEAD
+  was `965ed8e`; tracked-file count for
+  `research/external-src/resend-resend-node` returned `0`.
+- 2026-06-04: RED email-readiness smoke generated
+  `/tmp/repotutor-email-readiness-red-studies.zZn54X/2026-06-04/local__simple-ts-app__main__5680bc48`;
+  old build was missing `analysis/email-readiness-report.json`,
+  `markdown/email-readiness.md`, and `html/email-readiness.html`, and
+  `open --target email-readiness` failed as expected.
+- 2026-06-04: Implemented Resend-style email-readiness report:
+  `EmailReadinessReportSchema`, `analysis/email-readiness-report.json`,
+  `markdown/email-readiness.md`, `html/email-readiness.html`, email setups,
+  recipient/content signals, delivery signals, template signals, credential
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target email-readiness`.
+- 2026-06-04: GREEN email-readiness smoke generated
+  `/tmp/repotutor-email-readiness-green-studies.y0zWlS/2026-06-04/local__simple-ts-app__main__5680bc48`;
+  confirmed `verificationCheckedRequiredArtifacts=186`, email setups 0,
+  recipient signals 12, delivery signals 11, template signals 6, credential
+  signals 10, package signals 7, risk queue 2, manifest/learning-path entries,
+  and `open --target email-readiness` -> `html/email-readiness.html`.
+- 2026-06-04: Verification for Upgrade 162:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 60/60 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

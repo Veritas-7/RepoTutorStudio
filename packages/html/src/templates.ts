@@ -69,6 +69,7 @@ import type {
   FormReadinessReport,
   AuthReadinessReport,
   PaymentReadinessReport,
+  EmailReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -144,6 +145,7 @@ export interface StudyHtmlInput {
   formReadinessReport: FormReadinessReport;
   authReadinessReport: AuthReadinessReport;
   paymentReadinessReport: PaymentReadinessReport;
+  emailReadinessReport: EmailReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -239,6 +241,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["form-readiness.html", "Forms"],
     ["auth-readiness.html", "Auth"],
     ["payment-readiness.html", "Payments"],
+    ["email-readiness.html", "Email"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -369,6 +372,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Form Readiness</h3><p>${escapeHtml(input.formReadinessReport.summary)}</p><p>React Hook Form 패턴으로 useForm, register, submit, validation, errors, field array 준비도를 정리합니다.</p><a href="form-readiness.html">Forms 열기</a></article>
           <article><h3>Auth Readiness</h3><p>${escapeHtml(input.authReadinessReport.summary)}</p><p>Auth.js 패턴으로 handlers, providers, callbacks, sessions, middleware, env secret 준비도를 정리합니다.</p><a href="auth-readiness.html">Auth 열기</a></article>
           <article><h3>Payment Readiness</h3><p>${escapeHtml(input.paymentReadinessReport.summary)}</p><p>Stripe 패턴으로 server client, checkout, PaymentIntent, webhooks, billing lifecycle, env secret 준비도를 정리합니다.</p><a href="payment-readiness.html">Payments 열기</a></article>
+          <article><h3>Email Readiness</h3><p>${escapeHtml(input.emailReadinessReport.summary)}</p><p>Resend 패턴으로 provider client, send payload, templates, domains, webhooks, env secret 준비도를 정리합니다.</p><a href="email-readiness.html">Email 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -675,6 +679,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Payment Readiness", "payment-readiness.html", `<section class="panel" data-source-pattern="Stripe"><h2>Payment Snapshot</h2><p>${escapeHtml(input.paymentReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.paymentReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.paymentReadinessReport.paymentSetups.length}</dd></div><div><dt>checkout</dt><dd>${input.paymentReadinessReport.checkoutSignals.length}</dd></div><div><dt>webhooks</dt><dd>${input.paymentReadinessReport.webhookSignals.length}</dd></div><div><dt>credentials</dt><dd>${input.paymentReadinessReport.credentialSignals.length}</dd></div></dl><p class="muted">RepoTutor records payment readiness only. It does not call payment APIs, create checkout sessions, charge cards, verify live webhooks, or run the analyzed project's tests.</p></section><section class="grid"><article class="payment-readiness-card"><h3>Payment Setups</h3>${paymentReadinessSetupList(input.paymentReadinessReport.paymentSetups)}</article><article class="payment-readiness-card"><h3>Checkout Signals</h3>${paymentReadinessSignalList(input.paymentReadinessReport.checkoutSignals, "signal")}</article><article class="payment-readiness-card"><h3>Webhook Signals</h3>${paymentReadinessSignalList(input.paymentReadinessReport.webhookSignals, "signal")}</article><article class="payment-readiness-card"><h3>Customer Signals</h3>${paymentReadinessSignalList(input.paymentReadinessReport.customerSignals, "signal")}</article></section><section class="grid"><article class="payment-readiness-card"><h3>Credential Signals</h3>${paymentReadinessSignalList(input.paymentReadinessReport.credentialSignals, "signal")}</article><article class="payment-readiness-card"><h3>Package Signals</h3>${paymentReadinessSignalList(input.paymentReadinessReport.packageSignals, "signal")}</article><article class="payment-readiness-card"><h3>Recommended Commands</h3>${paymentReadinessCommandList(input.paymentReadinessReport.recommendedCommands)}</article><article class="payment-readiness-card"><h3>Risk Queue</h3>${paymentReadinessRiskList(input.paymentReadinessReport.riskQueue)}</article><article class="payment-readiness-card"><h3>다음 확인 단계</h3>${list(input.paymentReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "email-readiness.html",
+      title: "Email Readiness",
+      html: pageShell("Email Readiness", "email-readiness.html", `<section class="panel" data-source-pattern="Resend"><h2>Email Snapshot</h2><p>${escapeHtml(input.emailReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.emailReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.emailReadinessReport.emailSetups.length}</dd></div><div><dt>recipients</dt><dd>${input.emailReadinessReport.recipientSignals.length}</dd></div><div><dt>delivery</dt><dd>${input.emailReadinessReport.deliverySignals.length}</dd></div><div><dt>templates</dt><dd>${input.emailReadinessReport.templateSignals.length}</dd></div></dl><p class="muted">RepoTutor records email readiness only. It does not send email, call provider APIs, verify live DNS, process live callbacks, or run the analyzed project's tests.</p></section><section class="grid"><article class="email-readiness-card"><h3>Email Setups</h3>${emailReadinessSetupList(input.emailReadinessReport.emailSetups)}</article><article class="email-readiness-card"><h3>Recipient Signals</h3>${emailReadinessSignalList(input.emailReadinessReport.recipientSignals, "signal")}</article><article class="email-readiness-card"><h3>Delivery Signals</h3>${emailReadinessSignalList(input.emailReadinessReport.deliverySignals, "signal")}</article><article class="email-readiness-card"><h3>Template Signals</h3>${emailReadinessSignalList(input.emailReadinessReport.templateSignals, "signal")}</article></section><section class="grid"><article class="email-readiness-card"><h3>Credential Signals</h3>${emailReadinessSignalList(input.emailReadinessReport.credentialSignals, "signal")}</article><article class="email-readiness-card"><h3>Package Signals</h3>${emailReadinessSignalList(input.emailReadinessReport.packageSignals, "signal")}</article><article class="email-readiness-card"><h3>Recommended Commands</h3>${emailReadinessCommandList(input.emailReadinessReport.recommendedCommands)}</article><article class="email-readiness-card"><h3>Risk Queue</h3>${emailReadinessRiskList(input.emailReadinessReport.riskQueue)}</article><article class="email-readiness-card"><h3>다음 확인 단계</h3>${list(input.emailReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -844,6 +853,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Form Readiness", path: "html/form-readiness.html", description: "React Hook Form식 useForm, register, submit, validation, errors, field array 준비도를 확인합니다." },
       { label: "Auth Readiness", path: "html/auth-readiness.html", description: "Auth.js식 handlers, providers, callbacks, sessions, middleware, env secret 준비도를 확인합니다." },
       { label: "Payment Readiness", path: "html/payment-readiness.html", description: "Stripe식 server client, checkout, PaymentIntent, webhooks, billing lifecycle, env secret 준비도를 확인합니다." },
+      { label: "Email Readiness", path: "html/email-readiness.html", description: "Resend식 provider client, send payload, templates, domains, webhooks, env secret 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1281,6 +1291,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "payment-readiness.html",
       goal: "Stripe식 server client, checkout, PaymentIntent, webhooks, billing lifecycle, env secret을 보고 결제 관문을 확인합니다.",
       evidence: `payment setups ${input.paymentReadinessReport.paymentSetups.length}개, checkout signals ${input.paymentReadinessReport.checkoutSignals.length}개`
+    },
+    {
+      title: "Email readiness 확인",
+      href: "email-readiness.html",
+      goal: "Resend식 provider client, send payload, templates, domains, webhooks, env secret을 보고 transactional email 관문을 확인합니다.",
+      evidence: `email setups ${input.emailReadinessReport.emailSetups.length}개, recipient signals ${input.emailReadinessReport.recipientSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -2848,6 +2864,31 @@ function paymentReadinessRiskList(items: PaymentReadinessReport["riskQueue"]): s
 }
 
 function paymentReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function emailReadinessSetupList(items: EmailReadinessReport["emailSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">email setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>client/send/template/domain/webhook ${item.clientSetupCount}/${item.sendCallCount}/${item.templateSignalCount}/${item.domainSignalCount}/${item.webhookSignalCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(emailReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function emailReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">email signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(emailReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function emailReadinessCommandList(items: EmailReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function emailReadinessRiskList(items: EmailReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(emailReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function emailReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

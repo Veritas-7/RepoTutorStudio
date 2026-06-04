@@ -3900,6 +3900,50 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 59/59 audit checks across 13 generated reports
 
+### Upgrade 162: Email Readiness Report
+
+- Cloned and inspected `resend/resend-node` under
+  `research/external-src/resend-resend-node` without executing external
+  source. Clone HEAD was `965ed8e`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 913 stars, 81 forks, updated
+  2026-06-03T05:02:14Z. Compared with `nodemailer/nodemailer`,
+  `sendgrid/sendgrid-nodejs`, and `mailgun/mailgun.js`; selected Resend Node
+  because it directly models transactional email readiness: `new Resend`,
+  `RESEND_API_KEY`, `emails.send`, `batch.send`, `domains.verify`,
+  `webhooks.verify`, `standardwebhooks`, sender/recipient payload fields,
+  HTML/React templates, attachments, idempotency, contacts, broadcasts, and
+  delivery events. No source code was copied into RepoTutor.
+- Implemented Resend-style email-readiness report:
+  `EmailReadinessReportSchema`, `analysis/email-readiness-report.json`,
+  `markdown/email-readiness.md`, `html/email-readiness.html`, email setups,
+  recipient/content signals, delivery signals, template signals, credential
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target email-readiness`.
+- Source pattern: Resend separates provider client setup through `new Resend`
+  and `RESEND_API_KEY`, email payloads through `from`, `to`, `replyTo`,
+  `subject`, `text`, `html`, `react`, and attachments, batch sends with
+  validation headers, sender-domain verification through domain APIs,
+  webhook signature verification through `standardwebhooks`, and delivery
+  event handling for bounces, complaints, delivery, opens, clicks, and
+  unsubscribe/preferences. RepoTutor maps that to deterministic static email
+  readiness and explicitly does not send email, call provider APIs, verify
+  live DNS, process live callbacks, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-email-readiness-red-studies.zZn54X/2026-06-04/local__simple-ts-app__main__5680bc48`;
+  old behavior was missing `analysis/email-readiness-report.json`,
+  `markdown/email-readiness.md`, and `html/email-readiness.html`, and
+  `open --target email-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-email-readiness-green-studies.y0zWlS/2026-06-04/local__simple-ts-app__main__5680bc48`;
+  confirmed `verificationCheckedRequiredArtifacts=186`, email setups 0,
+  recipient signals 12, delivery signals 11, template signals 6, credential
+  signals 10, package signals 7, risk queue 2, manifest/learning-path entries,
+  and `open --target email-readiness` -> `html/email-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 60/60 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
