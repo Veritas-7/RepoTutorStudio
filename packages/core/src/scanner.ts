@@ -104,6 +104,7 @@ import {
   LlmReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
+  WorkspaceGraphReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -214,6 +215,7 @@ export interface AnalysisBundle {
   llmReadinessReport: LlmReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
+  workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -324,8 +326,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const llmReadinessReport = await buildLlmReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
+  const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -21293,6 +21296,324 @@ function rpcReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: Re
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/rpc-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildWorkspaceGraphReadinessReport(walk: WalkResult): Promise<WorkspaceGraphReadinessReport> {
+  const sourceFiles = await workspaceGraphSourceFiles(walk);
+  const workspaceFiles = workspaceGraphFiles(sourceFiles);
+  const projectSignals = workspaceGraphProjectSignals(sourceFiles);
+  const graphSignals = workspaceGraphGraphSignals(sourceFiles);
+  const boundarySignals = workspaceGraphBoundarySignals(sourceFiles);
+  const affectedSignals = workspaceGraphAffectedSignals(sourceFiles);
+  const targetSignals = workspaceGraphTargetSignals(sourceFiles);
+  const pluginSignals = workspaceGraphPluginSignals(sourceFiles);
+  const packageSignals = workspaceGraphPackageSignals(sourceFiles);
+
+  const hasWorkspace = workspaceFiles.length > 0 || packageSignals.some((item) => item.readiness === "ready");
+  const hasProjects = projectSignals.some((item) => item.readiness === "ready") || workspaceFiles.some((item) => item.projectCount > 0);
+  const hasTargets = targetSignals.some((item) => item.readiness === "ready") || workspaceFiles.some((item) => item.targetCount > 0);
+  const hasGraph = graphSignals.some((item) => item.readiness === "ready");
+  const hasBoundaries = boundarySignals.some((item) => item.readiness === "ready");
+  const hasAffected = affectedSignals.some((item) => item.readiness === "ready");
+  const hasPlugins = pluginSignals.some((item) => item.readiness === "ready") || workspaceFiles.some((item) => item.pluginCount > 0);
+
+  const riskQueue: WorkspaceGraphReadinessReport["riskQueue"] = [];
+  if (!hasWorkspace) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document workspace graph configuration before claiming monorepo readiness.",
+      why: "Nx-style readiness starts with a workspace manifest, project files, target defaults, package workspaces, or graph tooling evidence learners can trace.",
+      relatedHref: "html/workspace-graph-readiness.html"
+    });
+  }
+  if (hasWorkspace && !hasProjects) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace project ownership through project.json, package workspaces, sourceRoot, tags, or app/lib folders.",
+      why: "A workspace graph is only useful when learners can see the project nodes and ownership boundaries it will reason over.",
+      relatedHref: "html/workspace-graph-readiness.html"
+    });
+  }
+  if (hasProjects && !hasTargets) {
+    riskQueue.push({
+      priority: "high",
+      action: "Map targets, targetDefaults, namedInputs, dependsOn, inputs, outputs, executors, and cache policy.",
+      why: "Nx project graph analysis becomes operational when project nodes expose repeatable build/test/lint targets and inputs.",
+      relatedHref: "html/workspace-graph-readiness.html"
+    });
+  }
+  if (hasProjects && !hasGraph) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add a graph inspection path such as nx graph, createProjectGraphAsync, readCachedProjectGraph, or graph output.",
+      why: "Graph inspection lets learners verify dependency edges instead of inferring them from folders alone.",
+      relatedHref: "html/workspace-graph-readiness.html"
+    });
+  }
+  if (hasProjects && !hasBoundaries) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document module-boundary rules, tag scopes, depConstraints, tsconfig paths, and implicit dependencies.",
+      why: "Large workspaces need explicit boundary policy so feature, scope, platform, and shared-library dependencies do not drift.",
+      relatedHref: "html/workspace-graph-readiness.html"
+    });
+  }
+  if (hasTargets && !hasAffected) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record affected-only commands and base/head CI inputs.",
+      why: "Nx-style CI depends on running only impacted projects, so learners need a base/head and affected target strategy.",
+      relatedHref: "html/workspace-graph-readiness.html"
+    });
+  }
+  if (hasWorkspace && !hasPlugins) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document plugin discovery, createNodes, generators, executors, migrations, or inferred task ownership.",
+      why: "Nx plugins explain how project nodes and targets are inferred beyond handwritten project.json files.",
+      relatedHref: "html/workspace-graph-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify project graph and affected output on the original source tree before treating this report as CI approval.",
+    why: "RepoTutor records workspace graph readiness only; it does not execute Nx, compute affected projects, run generators, enforce lint boundaries, or contact remote cache services.",
+    relatedHref: "html/workspace-graph-readiness.html"
+  });
+
+  return {
+    summary: `Nx-style workspace graph readiness report: workspace file ${workspaceFiles.length}개, project signal ${projectSignals.length}개, graph signal ${graphSignals.length}개, target signal ${targetSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Nx project graph nx.json project.json targets targetDefaults namedInputs plugins createNodes affected tags implicitDependencies enforce-module-boundaries depConstraints",
+    workspaceFiles,
+    projectSignals,
+    graphSignals,
+    boundarySignals,
+    affectedSignals,
+    targetSignals,
+    pluginSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"nx.json|project.json|targetDefaults|namedInputs|plugins|implicitDependencies|tags\" .", purpose: "Find workspace graph configuration, project metadata, target defaults, and boundary tags." },
+      { command: "npx nx graph --file=project-graph.html", purpose: "Export the Nx project graph for manual dependency-edge inspection." },
+      { command: "npx nx show projects --affected --base=main --head=HEAD", purpose: "List projects affected by the current diff using explicit base/head inputs." },
+      { command: "npx nx affected -t build,test,lint --dry-run", purpose: "Preview affected build/test/lint target selection before running work." },
+      { command: "rg \"enforce-module-boundaries|depConstraints|@nx/enforce-module-boundaries|sourceTag|onlyDependOnLibsWithTags\" .", purpose: "Review module boundary rules and tag-based dependency constraints." },
+      { command: "rg \"createNodes|createProjectGraphAsync|readCachedProjectGraph|generators|executors|migrations\" .", purpose: "Trace plugins, graph API usage, generators, executors, migrations, and inferred task ownership." }
+    ],
+    learnerNextSteps: [
+      "먼저 nx.json, project.json, package workspaces, apps/libs/packages 폴더를 찾아 project node ownership을 확인하세요.",
+      "targetDefaults, namedInputs, targets, dependsOn, inputs, outputs, executor, cache 설정으로 반복 실행과 캐시 경계를 분리하세요.",
+      "nx graph, createProjectGraphAsync, readCachedProjectGraph, graph output 신호로 dependency edge를 검증할 수 있는 경로를 찾으세요.",
+      "tags, implicitDependencies, enforce-module-boundaries, depConstraints, tsconfig paths로 workspace boundary policy를 확인하세요.",
+      "nx affected, base/head, affected target, CI affected-only 명령이 있으면 변경 영향 분석 전략을 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 graph 계산, affected 프로젝트 산출, lint boundary enforcement, generator/executor 실행은 원본 프로젝트에서 별도 확인하세요."
+    ]
+  };
+}
+
+type WorkspaceGraphSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function workspaceGraphSourceFiles(walk: WalkResult): Promise<WorkspaceGraphSourceFile[]> {
+  const files: WorkspaceGraphSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !workspaceGraphInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!workspaceGraphPathSignal(file.relPath) && !workspaceGraphContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function workspaceGraphInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return workspaceGraphPathSignal(filePath)
+    || /^(nx\.json|project\.json|workspace\.json|package\.json|pnpm-workspace\.yaml|lerna\.json|rush\.json|turbo\.json|moon\.ya?ml|tsconfig\.json|eslint\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(json|ya?ml|toml|md|mdx|js|cjs|mjs|ts|tsx|jsx)$/i.test(filePath);
+}
+
+function workspaceGraphPathSignal(filePath: string): boolean {
+  return /(^|\/)(nx\.json|project\.json|workspace\.json|pnpm-workspace\.ya?ml|lerna\.json|rush\.json|turbo\.json|moon\.ya?ml|package\.json|apps?|libs?|packages?|tools?|plugins?|generators?|executors?|migrations?|graph|workspace)(\/|$)|eslint\.config\.[cm]?[jt]s$/i.test(filePath);
+}
+
+function workspaceGraphContentSignal(text: string): boolean {
+  return /(nx\.json|project\.json|ProjectGraph|createProjectGraphAsync|readCachedProjectGraph|nx\s+graph|nx\s+affected|targetDefaults|namedInputs|implicitDependencies|enforce-module-boundaries|depConstraints|createNodes|generators|executors|@nx\/|@nrwl\/|pnpm-workspace|workspaces|turbo\.json|moonrepo|rush\.json)/i.test(text);
+}
+
+function workspaceGraphFiles(sourceFiles: WorkspaceGraphSourceFile[]): WorkspaceGraphReadinessReport["workspaceFiles"] {
+  const rows: WorkspaceGraphReadinessReport["workspaceFiles"] = [];
+  for (const source of sourceFiles) {
+    const configType = workspaceGraphConfigType(source);
+    const projectCount = workspaceGraphProjectCount(source);
+    const targetCount = packageManagerJsonObjectCount(source.text, "targets") + packageManagerJsonObjectCount(source.text, "scripts") + countMatches(source.text, /"targetDefaults"\s*:|executor\s*:|"executor"\s*:|dependsOn\s*:/gi);
+    const tagCount = countMatches(source.text, /"tags"\s*:|\btags\s*:|scope:|type:/gi);
+    const implicitDependencyCount = countMatches(source.text, /implicitDependencies|dependsOn|dependencies\s*:/gi);
+    const namedInputCount = packageManagerJsonObjectCount(source.text, "namedInputs") + countMatches(source.text, /namedInputs|"{projectRoot}|\{workspaceRoot\}/gi);
+    const pluginCount = countMatches(source.text, /"plugins"\s*:|@nx\/|@nrwl\/|createNodes|generators|executors|migrations/gi);
+    const hasSignal = configType !== "unknown" || projectCount + targetCount + tagCount + implicitDependencyCount + namedInputCount + pluginCount > 0;
+    if (!hasSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      configType,
+      projectCount,
+      targetCount,
+      tagCount,
+      implicitDependencyCount,
+      namedInputCount,
+      pluginCount,
+      readiness: projectCount > 0 && targetCount > 0 ? "ready" : hasSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains projects ${projectCount}, targets ${targetCount}, tags ${tagCount}, implicit dependencies ${implicitDependencyCount}, named inputs ${namedInputCount}, plugins ${pluginCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function workspaceGraphConfigType(source: WorkspaceGraphSourceFile): WorkspaceGraphReadinessReport["workspaceFiles"][number]["configType"] {
+  const base = path.basename(source.filePath).toLowerCase();
+  if (base === "nx.json") return "nx-json";
+  if (base === "project.json") return "project-json";
+  if (base === "package.json") return "package-json";
+  if (base === "pnpm-workspace.yaml" || base === "pnpm-workspace.yml") return "pnpm-workspace";
+  if (base === "lerna.json") return "lerna";
+  if (base === "rush.json") return "rush";
+  if (base === "turbo.json") return "turbo";
+  if (base === "moon.yml" || base === "moon.yaml") return "moon";
+  if (/workspace|project graph|monorepo/i.test(source.text)) return "workspace";
+  return "unknown";
+}
+
+function workspaceGraphProjectCount(source: WorkspaceGraphSourceFile): number {
+  const base = path.basename(source.filePath).toLowerCase();
+  if (base === "project.json") return 1;
+  if (base === "package.json") {
+    try {
+      const json = JSON.parse(source.text) as Record<string, unknown>;
+      return typeof json.name === "string" ? 1 : packageManagerJsonObjectCount(source.text, "workspaces");
+    } catch {
+      return 0;
+    }
+  }
+  return packageManagerJsonObjectCount(source.text, "projects")
+    + countMatches(source.text, /"projectType"\s*:|"sourceRoot"\s*:|projectRoot|packages:\s*\n\s*-/gi);
+}
+
+function workspaceGraphProjectSignals(sourceFiles: WorkspaceGraphSourceFile[]): WorkspaceGraphReadinessReport["projectSignals"] {
+  const specs: Array<{ signal: WorkspaceGraphReadinessReport["projectSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "project-json", pattern: /(^|\/)project\.json$|"projectType"\s*:|"sourceRoot"\s*:/i, evidence: "project.json or project metadata evidence was detected." },
+    { signal: "package-workspace", pattern: /"workspaces"\s*:|pnpm-workspace\.ya?ml|packages:\s*\n\s*-/i, evidence: "package workspace evidence was detected." },
+    { signal: "apps-dir", pattern: /(^|\/)apps?\//i, evidence: "apps directory evidence was detected." },
+    { signal: "libs-dir", pattern: /(^|\/)libs?\//i, evidence: "libs directory evidence was detected." },
+    { signal: "packages-dir", pattern: /(^|\/)packages\//i, evidence: "packages directory evidence was detected." },
+    { signal: "project-name", pattern: /"name"\s*:|\bname\s*:/i, evidence: "project name evidence was detected." },
+    { signal: "source-root", pattern: /"sourceRoot"\s*:|sourceRoot\s*:/i, evidence: "sourceRoot evidence was detected." },
+    { signal: "project-type", pattern: /"projectType"\s*:|projectType\s*:/i, evidence: "projectType evidence was detected." },
+    { signal: "tags", pattern: /"tags"\s*:|\btags\s*:/i, evidence: "project tags evidence was detected." },
+    { signal: "implicit-dependencies", pattern: /implicitDependencies/i, evidence: "implicit dependency evidence was detected." }
+  ];
+  return workspaceGraphSignalFromSpecs(sourceFiles, specs, "project", "signal");
+}
+
+function workspaceGraphGraphSignals(sourceFiles: WorkspaceGraphSourceFile[]): WorkspaceGraphReadinessReport["graphSignals"] {
+  const specs: Array<{ signal: WorkspaceGraphReadinessReport["graphSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "project-graph", pattern: /ProjectGraph|project graph/i, evidence: "ProjectGraph evidence was detected." },
+    { signal: "create-project-graph", pattern: /createProjectGraphAsync|createProjectGraph/i, evidence: "createProjectGraph evidence was detected." },
+    { signal: "read-project-graph", pattern: /readCachedProjectGraph|readProjectsConfigurationFromProjectGraph/i, evidence: "read project graph evidence was detected." },
+    { signal: "nx-graph", pattern: /\bnx\s+graph\b|graph --file|nx graph/i, evidence: "nx graph command evidence was detected." },
+    { signal: "graph-file", pattern: /project-graph\.(json|html)|graph\.json|graph\/client/i, evidence: "graph output file evidence was detected." },
+    { signal: "dependency-edge", pattern: /dependencies|dependency edge|sourceRoot|implicitDependencies/i, evidence: "dependency edge evidence was detected." },
+    { signal: "affected-graph", pattern: /affected graph|affectedProjects|calculateFileChanges|TouchedProjectLocator/i, evidence: "affected graph evidence was detected." }
+  ];
+  return workspaceGraphSignalFromSpecs(sourceFiles, specs, "graph", "signal");
+}
+
+function workspaceGraphBoundarySignals(sourceFiles: WorkspaceGraphSourceFile[]): WorkspaceGraphReadinessReport["boundarySignals"] {
+  const specs: Array<{ signal: WorkspaceGraphReadinessReport["boundarySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "enforce-module-boundaries", pattern: /enforce-module-boundaries|@nx\/enforce-module-boundaries|@nrwl\/nx\/enforce-module-boundaries/i, evidence: "module boundary lint rule evidence was detected." },
+    { signal: "dep-constraints", pattern: /depConstraints|onlyDependOnLibsWithTags|notDependOnLibsWithTags|sourceTag|allSourceTags/i, evidence: "dependency constraints evidence was detected." },
+    { signal: "tags", pattern: /"tags"\s*:|\btags\s*:|scope:|type:/i, evidence: "tag boundary evidence was detected." },
+    { signal: "scopes", pattern: /scope:|domain:|layer:|platform:/i, evidence: "scope tag evidence was detected." },
+    { signal: "lint-rule", pattern: /eslint|lint|rules/i, evidence: "lint boundary policy evidence was detected." },
+    { signal: "tsconfig-paths", pattern: /"paths"\s*:|tsconfig\.base\.json|tsconfig\.json/i, evidence: "TypeScript path alias evidence was detected." },
+    { signal: "implicit-dependencies", pattern: /implicitDependencies/i, evidence: "implicit boundary dependency evidence was detected." },
+    { signal: "circular", pattern: /circular|no-circular|cycle/i, evidence: "circular dependency policy evidence was detected." }
+  ];
+  return workspaceGraphSignalFromSpecs(sourceFiles, specs, "boundary", "signal");
+}
+
+function workspaceGraphAffectedSignals(sourceFiles: WorkspaceGraphSourceFile[]): WorkspaceGraphReadinessReport["affectedSignals"] {
+  const specs: Array<{ signal: WorkspaceGraphReadinessReport["affectedSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "nx-affected", pattern: /\bnx\s+affected\b|nx affected/i, evidence: "nx affected command evidence was detected." },
+    { signal: "base-head", pattern: /--base|--head|NX_BASE|NX_HEAD|baseSha|headSha/i, evidence: "base/head input evidence was detected." },
+    { signal: "affected-projects", pattern: /affectedProjects|show projects --affected|printAffected|affected projects/i, evidence: "affected projects evidence was detected." },
+    { signal: "affected-target", pattern: /affected\s+-t|affected --target|affected:|affected-target/i, evidence: "affected target evidence was detected." },
+    { signal: "print-affected", pattern: /print-affected|printAffected/i, evidence: "print affected evidence was detected." },
+    { signal: "ci-affected", pattern: /CI|GitHub Actions|gitlab|azure|affected-only|nx-cloud/i, evidence: "CI affected-run evidence was detected." }
+  ];
+  return workspaceGraphSignalFromSpecs(sourceFiles, specs, "affected", "signal");
+}
+
+function workspaceGraphTargetSignals(sourceFiles: WorkspaceGraphSourceFile[]): WorkspaceGraphReadinessReport["targetSignals"] {
+  const specs: Array<{ signal: WorkspaceGraphReadinessReport["targetSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "targets", pattern: /"targets"\s*:|\btargets\s*:|architect\s*:/i, evidence: "project targets evidence was detected." },
+    { signal: "target-defaults", pattern: /targetDefaults/i, evidence: "targetDefaults evidence was detected." },
+    { signal: "named-inputs", pattern: /namedInputs/i, evidence: "namedInputs evidence was detected." },
+    { signal: "depends-on", pattern: /dependsOn|\^build|\^test/i, evidence: "target dependency evidence was detected." },
+    { signal: "inputs", pattern: /"inputs"\s*:|\binputs\s*:/i, evidence: "target inputs evidence was detected." },
+    { signal: "outputs", pattern: /"outputs"\s*:|\boutputs\s*:/i, evidence: "target outputs evidence was detected." },
+    { signal: "executor", pattern: /"executor"\s*:|\bexecutor\s*:|command\s*:/i, evidence: "executor or command evidence was detected." },
+    { signal: "cache", pattern: /"cache"\s*:|cacheableOperations|remoteCache|nx-cloud/i, evidence: "cache policy evidence was detected." },
+    { signal: "continuous", pattern: /continuous|persistent|dependsOn.*serve/i, evidence: "continuous/persistent target evidence was detected." }
+  ];
+  return workspaceGraphSignalFromSpecs(sourceFiles, specs, "target", "signal");
+}
+
+function workspaceGraphPluginSignals(sourceFiles: WorkspaceGraphSourceFile[]): WorkspaceGraphReadinessReport["pluginSignals"] {
+  const specs: Array<{ signal: WorkspaceGraphReadinessReport["pluginSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "nx-plugin", pattern: /@nx\/plugin|nx-plugin|NxPlugin/i, evidence: "Nx plugin evidence was detected." },
+    { signal: "plugins", pattern: /"plugins"\s*:|\bplugins\s*:/i, evidence: "plugins array evidence was detected." },
+    { signal: "create-nodes", pattern: /createNodes|createNodesV2|createNodesFromFiles/i, evidence: "createNodes plugin evidence was detected." },
+    { signal: "generators", pattern: /generators\.json|\/generators\/|GeneratorCallback|Tree\b/i, evidence: "generator evidence was detected." },
+    { signal: "executors", pattern: /executors\.json|\/executors\/|ExecutorContext|runExecutor/i, evidence: "executor evidence was detected." },
+    { signal: "migrations", pattern: /migrations\.json|\/migrations\/|Migration/i, evidence: "migration evidence was detected." },
+    { signal: "inferred-tasks", pattern: /inferred|createNodes|targetDefaults|plugin options/i, evidence: "inferred task evidence was detected." }
+  ];
+  return workspaceGraphSignalFromSpecs(sourceFiles, specs, "plugin", "signal");
+}
+
+function workspaceGraphPackageSignals(sourceFiles: WorkspaceGraphSourceFile[]): WorkspaceGraphReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: WorkspaceGraphReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "nx", pattern: /"nx"\s*:|from ['"]nx|require\(['"]nx|npx nx|\bnx\s+(graph|affected|run|show)/i, evidence: "nx package or command evidence was detected." },
+    { signal: "@nx/workspace", pattern: /"@nx\/workspace"|@nx\/workspace/i, evidence: "@nx/workspace evidence was detected." },
+    { signal: "@nx/js", pattern: /"@nx\/js"|@nx\/js/i, evidence: "@nx/js evidence was detected." },
+    { signal: "@nx/eslint-plugin", pattern: /"@nx\/eslint-plugin"|@nx\/eslint-plugin|enforce-module-boundaries/i, evidence: "@nx/eslint-plugin evidence was detected." },
+    { signal: "turbo", pattern: /"turbo"|turbo\.json|turborepo/i, evidence: "Turborepo package/config evidence was detected." },
+    { signal: "pnpm-workspace", pattern: /pnpm-workspace\.ya?ml|packages:\s*\n\s*-/i, evidence: "pnpm workspace evidence was detected." }
+  ];
+  return workspaceGraphSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function workspaceGraphSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: WorkspaceGraphSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/workspace-graph-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

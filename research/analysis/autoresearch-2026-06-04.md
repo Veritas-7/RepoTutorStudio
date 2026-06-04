@@ -5413,6 +5413,57 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 89/89 audit checks across 13 generated reports
 
+### Upgrade 192: Workspace Graph Readiness Report
+
+- Cloned and inspected `nrwl/nx` under `research/external-src/nrwl-nx`
+  without executing external source. Clone HEAD was `82c1825`; the clone
+  remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 28,809 stars, 2,739 forks, updated
+  2026-06-04T13:46:10Z. Compared with `vercel/turborepo`,
+  `moonrepo/moon`, `pnpm/pnpm`, and `microsoft/rushstack`; selected Nx because
+  Turborepo was already represented by task-runner readiness, while Nx directly
+  models project graph ownership, affected-only runs, boundary enforcement,
+  target defaults, named inputs, plugin inference, generators, and executors.
+  No source code was copied into RepoTutor.
+- Implemented Nx-style workspace-graph-readiness report:
+  `WorkspaceGraphReadinessReportSchema`,
+  `analysis/workspace-graph-readiness-report.json`,
+  `markdown/workspace-graph-readiness.md`,
+  `html/workspace-graph-readiness.html`, workspace files, project signals,
+  graph signals, boundary signals, affected signals, target signals, plugin
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target workspace-graph-readiness`.
+- Source pattern: Nx separates `nx.json`, `project.json`, package workspaces,
+  app/lib/package project nodes, `targetDefaults`, `namedInputs`, project
+  `targets`, `dependsOn`, `inputs`, `outputs`, executors, cache/continuous
+  target policy, `ProjectGraph`, `createProjectGraphAsync`,
+  `readCachedProjectGraph`, `nx graph`, dependency edges, `nx affected`,
+  base/head inputs, project tags, `implicitDependencies`,
+  `enforce-module-boundaries`, `depConstraints`, plugins, `createNodes`,
+  generators, executors, and migrations. RepoTutor maps that to deterministic
+  static workspace graph readiness and explicitly does not execute Nx, compute
+  affected projects, run generators, enforce lint boundaries, or contact remote
+  cache services.
+- RED smoke generated
+  `/tmp/repotutor-workspace-graph-red-studies.fUo4FX/2026-06-04/local__simple-ts-app__main__185ae7eb`;
+  old behavior had `verificationCheckedRequiredArtifacts=273`, was missing
+  `analysis/workspace-graph-readiness-report.json`,
+  `markdown/workspace-graph-readiness.md`, and
+  `html/workspace-graph-readiness.html`, and
+  `open --target workspace-graph-readiness` exited with `Unsupported open
+  target`.
+- GREEN smoke generated
+  `/tmp/repotutor-workspace-graph-green-studies.cpUQIw/2026-06-04/local__simple-ts-app__main__185ae7eb`;
+  confirmed `verificationCheckedRequiredArtifacts=276`, workspace files 1,
+  project signals 10, graph signals 7, boundary signals 8, affected signals 6,
+  target signals 9, plugin signals 7, package signals 6, risk queue 3, all
+  three new artifacts, and `open --target workspace-graph-readiness` ->
+  `html/workspace-graph-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 90/90 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

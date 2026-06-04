@@ -1,6 +1,6 @@
 {
   "iteration": 6,
-  "createdAt": "2026-06-04T13:43:39.696Z",
+  "createdAt": "2026-06-04T14:00:05.692Z",
   "checks": [
     {
       "name": "project setup",
@@ -592,6 +592,13 @@
     },
     {
       "name": "RPC readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Workspace graph readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

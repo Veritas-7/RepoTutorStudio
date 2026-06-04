@@ -4142,6 +4142,48 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 191:
   - `6b0e2f8` RPC readiness report
 
+- 2026-06-04: AutoResearch Upgrade 192 candidate selected:
+  `nrwl/nx`
+  (`https://github.com/nrwl/nx`; public; MIT; 28,809 stars; 2,739 forks;
+  updated 2026-06-04T13:46:10Z). Compared with `vercel/turborepo`,
+  `moonrepo/moon`, `pnpm/pnpm`, and `microsoft/rushstack`; selected Nx because
+  Turborepo was already represented by task-runner readiness, while Nx directly
+  models project graph ownership, affected-only runs, boundary enforcement,
+  target defaults, named inputs, plugin inference, generators, and executors.
+  Cloned ignored external source to `research/external-src/nrwl-nx` and
+  inspected docs/source/example/test hits without executing external source.
+  Clone HEAD was `82c1825`; tracked file count for
+  `research/external-src/nrwl-nx` returned `0`.
+- 2026-06-04: RED workspace-graph-readiness smoke generated
+  `/tmp/repotutor-workspace-graph-red-studies.fUo4FX/2026-06-04/local__simple-ts-app__main__185ae7eb`;
+  old build had `verificationCheckedRequiredArtifacts=273`, was missing
+  `analysis/workspace-graph-readiness-report.json`,
+  `markdown/workspace-graph-readiness.md`, and
+  `html/workspace-graph-readiness.html`, and `open --target
+  workspace-graph-readiness` failed as expected.
+- 2026-06-04: Implemented Nx-style workspace-graph-readiness report:
+  `WorkspaceGraphReadinessReportSchema`,
+  `analysis/workspace-graph-readiness-report.json`,
+  `markdown/workspace-graph-readiness.md`,
+  `html/workspace-graph-readiness.html`, workspace files, project signals,
+  graph signals, boundary signals, affected signals, target signals, plugin
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target workspace-graph-readiness`.
+- 2026-06-04: GREEN workspace-graph-readiness smoke generated
+  `/tmp/repotutor-workspace-graph-green-studies.cpUQIw/2026-06-04/local__simple-ts-app__main__185ae7eb`;
+  confirmed `verificationCheckedRequiredArtifacts=276`, workspace files 1,
+  project signals 10, graph signals 7, boundary signals 8, affected signals 6,
+  target signals 9, plugin signals 7, package signals 6, risk queue 3, all
+  three new artifacts, and `open --target workspace-graph-readiness` ->
+  `html/workspace-graph-readiness.html`.
+- 2026-06-04: Verification for Upgrade 192:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 90/90 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
