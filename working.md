@@ -3254,6 +3254,46 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 170:
   - `76a490f` HTTP client readiness report
 
+- 2026-06-04: AutoResearch Upgrade 171 candidate selected:
+  `colinhacks/zod`
+  (`https://github.com/colinhacks/zod`; public; MIT; 42,860 stars; 1,995
+  forks; updated 2026-06-04T08:39:38Z). Compared with `jquense/yup`,
+  `ajv-validator/ajv`, and `gcanti/io-ts`; selected Zod because it directly
+  models TypeScript-first schema validation readiness: schema shapes,
+  parse/safeParse, async parsing, inferred input/output types, refinements,
+  transforms, coercion, defaults, error issues/formatting, Standard Schema, and
+  JSON Schema conversion. Cloned ignored external source to
+  `research/external-src/colinhacks-zod` and inspected README, package
+  metadata, source files, tests, and docs without executing external source.
+  Clone HEAD was `bbc68f9`; tracked-file count for
+  `research/external-src/colinhacks-zod` returned `0`.
+- 2026-06-04: RED schema-validation-readiness smoke generated
+  `/tmp/repotutor-schema-validation-readiness-red-studies.oR7uY4/2026-06-04/local__simple-ts-app__main__ad85b95b`;
+  old build was missing `analysis/schema-validation-readiness-report.json`,
+  `markdown/schema-validation-readiness.md`, and
+  `html/schema-validation-readiness.html`, and `open --target
+  schema-validation-readiness` failed as expected.
+- 2026-06-04: Implemented Zod-style schema-validation-readiness report:
+  `SchemaValidationReadinessReportSchema`,
+  `analysis/schema-validation-readiness-report.json`,
+  `markdown/schema-validation-readiness.md`,
+  `html/schema-validation-readiness.html`, schema setups, shape signals, parser
+  signals, type signals, refinement signals, error signals, integration
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target schema-validation-readiness`.
+- 2026-06-04: GREEN schema-validation-readiness smoke generated
+  `/tmp/repotutor-schema-validation-readiness-green-studies.BirGH0/2026-06-04/local__simple-ts-app__main__ad85b95b`;
+  confirmed `verificationCheckedRequiredArtifacts=213`, schema setups 0, shape
+  signals 9, parser signals 7, type signals 6, refinement signals 7, error
+  signals 7, integration signals 7, package signals 8, risk queue 2, all three
+  new artifacts, and `open --target schema-validation-readiness` ->
+  `html/schema-validation-readiness.html`.
+- 2026-06-04: Verification for Upgrade 171:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 69/69 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

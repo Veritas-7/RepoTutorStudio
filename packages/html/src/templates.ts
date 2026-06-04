@@ -78,6 +78,7 @@ import type {
   ErrorTrackingReadinessReport,
   AnalyticsReadinessReport,
   HttpClientReadinessReport,
+  SchemaValidationReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -162,6 +163,7 @@ export interface StudyHtmlInput {
   errorTrackingReadinessReport: ErrorTrackingReadinessReport;
   analyticsReadinessReport: AnalyticsReadinessReport;
   httpClientReadinessReport: HttpClientReadinessReport;
+  schemaValidationReadinessReport: SchemaValidationReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -260,6 +262,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["email-readiness.html", "Email"],
     ["analytics-readiness.html", "Analytics"],
     ["http-client-readiness.html", "HTTP Client"],
+    ["schema-validation-readiness.html", "Validation"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -742,6 +745,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("HTTP Client Readiness", "http-client-readiness.html", `<section class="panel" data-source-pattern="Got"><h2>HTTP Client Snapshot</h2><p>${escapeHtml(input.httpClientReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.httpClientReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.httpClientReadinessReport.httpClientSetups.length}</dd></div><div><dt>requests</dt><dd>${input.httpClientReadinessReport.requestSignals.length}</dd></div><div><dt>resilience</dt><dd>${input.httpClientReadinessReport.resilienceSignals.length}</dd></div><div><dt>errors</dt><dd>${input.httpClientReadinessReport.errorSignals.length}</dd></div></dl><p class="muted">RepoTutor records HTTP client readiness only. It does not make outbound requests, open sockets, mutate caches or cookies, follow redirects, call hooks, or run the analyzed project's tests.</p></section><section class="grid"><article class="http-client-readiness-card"><h3>HTTP Client Setups</h3>${httpClientReadinessSetupList(input.httpClientReadinessReport.httpClientSetups)}</article><article class="http-client-readiness-card"><h3>Request Signals</h3>${httpClientReadinessSignalList(input.httpClientReadinessReport.requestSignals, "signal")}</article><article class="http-client-readiness-card"><h3>Resilience Signals</h3>${httpClientReadinessSignalList(input.httpClientReadinessReport.resilienceSignals, "signal")}</article><article class="http-client-readiness-card"><h3>Configuration Signals</h3>${httpClientReadinessSignalList(input.httpClientReadinessReport.configurationSignals, "signal")}</article></section><section class="grid"><article class="http-client-readiness-card"><h3>Transport Signals</h3>${httpClientReadinessSignalList(input.httpClientReadinessReport.transportSignals, "signal")}</article><article class="http-client-readiness-card"><h3>Error Signals</h3>${httpClientReadinessSignalList(input.httpClientReadinessReport.errorSignals, "signal")}</article><article class="http-client-readiness-card"><h3>Package Signals</h3>${httpClientReadinessSignalList(input.httpClientReadinessReport.packageSignals, "signal")}</article><article class="http-client-readiness-card"><h3>Recommended Commands</h3>${httpClientReadinessCommandList(input.httpClientReadinessReport.recommendedCommands)}</article><article class="http-client-readiness-card"><h3>Risk Queue</h3>${httpClientReadinessRiskList(input.httpClientReadinessReport.riskQueue)}</article><article class="http-client-readiness-card"><h3>다음 확인 단계</h3>${list(input.httpClientReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "schema-validation-readiness.html",
+      title: "Schema Validation Readiness",
+      html: pageShell("Schema Validation Readiness", "schema-validation-readiness.html", `<section class="panel" data-source-pattern="Zod"><h2>Schema Validation Snapshot</h2><p>${escapeHtml(input.schemaValidationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.schemaValidationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.schemaValidationReadinessReport.schemaSetups.length}</dd></div><div><dt>shapes</dt><dd>${input.schemaValidationReadinessReport.shapeSignals.length}</dd></div><div><dt>parsers</dt><dd>${input.schemaValidationReadinessReport.parserSignals.length}</dd></div><div><dt>errors</dt><dd>${input.schemaValidationReadinessReport.errorSignals.length}</dd></div></dl><p class="muted">RepoTutor records schema validation readiness only. It does not execute schemas, parsers, async refinements, transforms, coercions, user-supplied validation logic, or the analyzed project's tests.</p></section><section class="grid"><article class="schema-validation-readiness-card"><h3>Schema Setups</h3>${schemaValidationReadinessSetupList(input.schemaValidationReadinessReport.schemaSetups)}</article><article class="schema-validation-readiness-card"><h3>Shape Signals</h3>${schemaValidationReadinessSignalList(input.schemaValidationReadinessReport.shapeSignals, "signal")}</article><article class="schema-validation-readiness-card"><h3>Parser Signals</h3>${schemaValidationReadinessSignalList(input.schemaValidationReadinessReport.parserSignals, "signal")}</article><article class="schema-validation-readiness-card"><h3>Type Signals</h3>${schemaValidationReadinessSignalList(input.schemaValidationReadinessReport.typeSignals, "signal")}</article></section><section class="grid"><article class="schema-validation-readiness-card"><h3>Refinement Signals</h3>${schemaValidationReadinessSignalList(input.schemaValidationReadinessReport.refinementSignals, "signal")}</article><article class="schema-validation-readiness-card"><h3>Error Signals</h3>${schemaValidationReadinessSignalList(input.schemaValidationReadinessReport.errorSignals, "signal")}</article><article class="schema-validation-readiness-card"><h3>Integration Signals</h3>${schemaValidationReadinessSignalList(input.schemaValidationReadinessReport.integrationSignals, "signal")}</article><article class="schema-validation-readiness-card"><h3>Package Signals</h3>${schemaValidationReadinessSignalList(input.schemaValidationReadinessReport.packageSignals, "signal")}</article><article class="schema-validation-readiness-card"><h3>Recommended Commands</h3>${schemaValidationReadinessCommandList(input.schemaValidationReadinessReport.recommendedCommands)}</article><article class="schema-validation-readiness-card"><h3>Risk Queue</h3>${schemaValidationReadinessRiskList(input.schemaValidationReadinessReport.riskQueue)}</article><article class="schema-validation-readiness-card"><h3>다음 확인 단계</h3>${list(input.schemaValidationReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -920,6 +928,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Error Tracking Readiness", path: "html/error-tracking-readiness.html", description: "Sentry식 init, capture, context, filtering, tracing, replay 준비도를 확인합니다." },
       { label: "Analytics Readiness", path: "html/analytics-readiness.html", description: "PostHog식 init, capture, identity, pageview, consent, feature flag, replay 준비도를 확인합니다." },
       { label: "HTTP Client Readiness", path: "html/http-client-readiness.html", description: "Got식 request, timeout, retry, hooks, transport, error metadata 준비도를 확인합니다." },
+      { label: "Schema Validation Readiness", path: "html/schema-validation-readiness.html", description: "Zod식 schema shape, parse/safeParse, refinement, error output, integration 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1411,6 +1420,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "http-client-readiness.html",
       goal: "Got식 outbound request, timeout, retry, hooks, transport, cache/proxy/agent, structured error metadata 흐름을 보고 외부 API 호출 관문을 확인합니다.",
       evidence: `http client setups ${input.httpClientReadinessReport.httpClientSetups.length}개, resilience signals ${input.httpClientReadinessReport.resilienceSignals.length}개`
+    },
+    {
+      title: "Schema validation readiness 확인",
+      href: "schema-validation-readiness.html",
+      goal: "Zod식 schema shape, parser 호출, type inference, refinement/transform, error formatting, integration 흐름을 보고 runtime input validation 관문을 확인합니다.",
+      evidence: `schema setups ${input.schemaValidationReadinessReport.schemaSetups.length}개, parser signals ${input.schemaValidationReadinessReport.parserSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3203,6 +3218,31 @@ function httpClientReadinessRiskList(items: HttpClientReadinessReport["riskQueue
 }
 
 function httpClientReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function schemaValidationReadinessSetupList(items: SchemaValidationReadinessReport["schemaSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">schema validation setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>schemas/parse/safeParse/refinements/transforms/errors ${item.schemaCount}/${item.parseCount}/${item.safeParseCount}/${item.refinementCount}/${item.transformCount}/${item.errorCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(schemaValidationReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function schemaValidationReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">schema validation signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(schemaValidationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function schemaValidationReadinessCommandList(items: SchemaValidationReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function schemaValidationReadinessRiskList(items: SchemaValidationReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(schemaValidationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function schemaValidationReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

@@ -1080,6 +1080,24 @@
         "error scanning for HTTPError RequestError TimeoutError CancelError throwHttpErrors validateStatus catch handling and metadata",
         "safe static HTTP client readiness that never makes outbound requests opens sockets mutates caches or cookies follows redirects calls hooks or runs analyzed project tests"
       ]
+    },
+    {
+      "repo": "colinhacks/zod",
+      "url": "https://github.com/colinhacks/zod",
+      "localPath": "research/external-src/colinhacks-zod",
+      "stars": 42860,
+      "forks": 1995,
+      "license": "MIT",
+      "updatedAt": "2026-06-04T08:39:38Z",
+      "adoptedPatterns": [
+        "Zod setup scanning for z.object z.array z.union z.discriminatedUnion parser calls package imports and validation files",
+        "shape scanning for object array union discriminated union enum literal record optional nullable strict passthrough and catchall schemas",
+        "parser scanning for parse safeParse parseAsync safeParseAsync decode validate and assert call sites",
+        "type scanning for z.infer z.input z.output branded types Standard Schema JSON Schema and OpenAPI exports",
+        "refinement scanning for refine superRefine transform preprocess coerce default catch pipe and codec rules",
+        "error scanning for ZodError issues format flatten treeifyError prettifyError and custom error maps",
+        "safe static schema-validation readiness that never executes schemas parsers async refinements transforms coercions user validation logic or analyzed project tests"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3721,6 +3739,25 @@
         "markdown/http-client-readiness.md",
         "html/http-client-readiness.html"
       ]
+    },
+    {
+      "name": "Schema validation readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/schema-validation-readiness-report.json",
+        "markdown/schema-validation-readiness.md",
+        "html/schema-validation-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4347,6 +4384,12 @@
     "cliHttpClientReadinessOpenTargetSmoke": "PASS",
     "buildHttpClientReadiness": "PASS",
     "testHttpClientReadiness": "PASS",
-    "auditBriefHttpClientReadiness68": "PASS"
+    "auditBriefHttpClientReadiness68": "PASS",
+    "fixtureSchemaValidationReadinessReport": "PASS",
+    "cliSchemaValidationReadinessSmoke": "PASS",
+    "cliSchemaValidationReadinessOpenTargetSmoke": "PASS",
+    "buildSchemaValidationReadiness": "PASS",
+    "testSchemaValidationReadiness": "PASS",
+    "auditBriefSchemaValidationReadiness69": "PASS"
   }
 }

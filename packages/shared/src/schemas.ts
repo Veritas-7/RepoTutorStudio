@@ -3474,6 +3474,77 @@ export const HttpClientReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SchemaValidationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  schemaSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["zod", "yup", "ajv", "joi", "valibot", "arktype", "io-ts", "custom", "unknown"]),
+    schemaCount: z.number().int().nonnegative(),
+    parseCount: z.number().int().nonnegative(),
+    safeParseCount: z.number().int().nonnegative(),
+    refinementCount: z.number().int().nonnegative(),
+    transformCount: z.number().int().nonnegative(),
+    errorCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  shapeSignals: z.array(z.object({
+    signal: z.enum(["object", "array", "union", "discriminated-union", "enum", "literal", "record", "optional-nullable", "strict-passthrough", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  parserSignals: z.array(z.object({
+    signal: z.enum(["parse", "safe-parse", "parse-async", "safe-parse-async", "decode", "validate", "assert", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  typeSignals: z.array(z.object({
+    signal: z.enum(["infer", "input-output", "branded", "standard-schema", "json-schema", "openapi", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  refinementSignals: z.array(z.object({
+    signal: z.enum(["refine", "super-refine", "transform", "preprocess", "coerce", "default-catch", "pipe-codec", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  errorSignals: z.array(z.object({
+    signal: z.enum(["zod-error", "issues", "format", "flatten", "treeify", "prettify", "custom-error-map", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  integrationSignals: z.array(z.object({
+    signal: z.enum(["env-validation", "api-validation", "form-validation", "trpc", "react-hook-form", "drizzle-zod", "json-schema-export", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["zod", "@hookform/resolvers", "drizzle-zod", "zod-to-json-schema", "ajv", "yup", "valibot", "io-ts", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3746,6 +3817,7 @@ export type RateLimitReadinessReport = z.infer<typeof RateLimitReadinessReportSc
 export type ErrorTrackingReadinessReport = z.infer<typeof ErrorTrackingReadinessReportSchema>;
 export type AnalyticsReadinessReport = z.infer<typeof AnalyticsReadinessReportSchema>;
 export type HttpClientReadinessReport = z.infer<typeof HttpClientReadinessReportSchema>;
+export type SchemaValidationReadinessReport = z.infer<typeof SchemaValidationReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
