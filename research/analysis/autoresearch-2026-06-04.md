@@ -5510,6 +5510,48 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 91/91 audit checks across 13 generated reports
 
+### Upgrade 194: Scheduler Readiness Report
+
+- Cloned and inspected `node-cron/node-cron` under
+  `research/external-src/node-cron-node-cron` without executing external
+  source. Clone HEAD was `c76f95e`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, ISC license, 3,261 stars, 281 forks, updated
+  2026-06-03T19:59:29Z. Compared with `kelektiv/node-cron`,
+  `agenda/agenda`, and `breejs/bree`; selected `node-cron/node-cron` because
+  it directly models cron expression scheduling, task creation, timezone
+  handling, no-overlap execution, max execution count, task lifecycle, and
+  validation. No source code was copied into RepoTutor.
+- Implemented node-cron-style scheduler-readiness report:
+  `SchedulerReadinessReportSchema`,
+  `analysis/scheduler-readiness-report.json`,
+  `markdown/scheduler-readiness.md`,
+  `html/scheduler-readiness.html`, scheduler setups, schedule signals, task
+  signals, lifecycle signals, reliability signals, package signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, nav entry, and `open --target scheduler-readiness`.
+- Source pattern: node-cron separates `schedule`, `createTask`, `validate`,
+  cron expressions including optional seconds, timezone options, `ScheduledTask`
+  lifecycle, `TaskContext`, inline tasks, background task paths, `start`,
+  `stop`, `destroy`, `execute`, event hooks, `noOverlap`, and
+  `maxExecutions`. RepoTutor maps that to deterministic static scheduler
+  readiness and explicitly does not start timers, wait for cron ticks, execute
+  jobs, acquire locks, retry failures, or validate platform cron delivery.
+- RED smoke generated
+  `/tmp/repotutor-scheduler-red-studies.JH3h5Y/2026-06-04/local__simple-ts-app__HEAD__50370079`;
+  old behavior had `verificationCheckedRequiredArtifacts=279`, was missing
+  `analysis/scheduler-readiness-report.json`,
+  `markdown/scheduler-readiness.md`, and `html/scheduler-readiness.html`, and
+  `open --target scheduler-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-scheduler-green-studies.nbYr6k/2026-06-04/local__simple-ts-app__main__50370079`;
+  confirmed `verificationCheckedRequiredArtifacts=282`, scheduler setups 0,
+  schedule signals 6, task signals 6, lifecycle signals 8, reliability signals
+  8, package signals 8, risk queue 2, all three new artifacts, and
+  `open --target scheduler-readiness` -> `html/scheduler-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 92/92 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
