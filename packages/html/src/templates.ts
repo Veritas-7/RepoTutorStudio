@@ -31,6 +31,7 @@ import type {
   LicenseRightsReport,
   SbomReport,
   SecurityReadinessReport,
+  ScorecardReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -68,6 +69,7 @@ export interface StudyHtmlInput {
   licenseRightsReport: LicenseRightsReport;
   sbomReport: SbomReport;
   securityReadinessReport: SecurityReadinessReport;
+  scorecardReport: ScorecardReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -125,6 +127,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["license-rights.html", "License Rights"],
     ["sbom.html", "SBOM"],
     ["security-readiness.html", "Security Readiness"],
+    ["scorecard.html", "Project Scorecard"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -217,6 +220,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>License Rights</h3><p>${escapeHtml(input.licenseRightsReport.summary)}</p><p>Licensee 패턴으로 license file, package metadata, README 참조를 분리합니다.</p><a href="license-rights.html">License Rights 열기</a></article>
           <article><h3>SBOM</h3><p>${escapeHtml(input.sbomReport.summary)}</p><p>Syft 패턴으로 source descriptor, package artifacts, file artifacts, relationships를 inventory로 묶습니다.</p><a href="sbom.html">SBOM 열기</a></article>
           <article><h3>Security Readiness</h3><p>${escapeHtml(input.securityReadinessReport.summary)}</p><p>Trivy 패턴으로 targets, scanners, security signals, action queue를 분리합니다.</p><a href="security-readiness.html">Security Readiness 열기</a></article>
+          <article><h3>Project Scorecard</h3><p>${escapeHtml(input.scorecardReport.summary)}</p><p>OpenSSF Scorecard 패턴으로 checks, risk, policy findings, remediation queue를 정리합니다.</p><a href="scorecard.html">Project Scorecard 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -331,6 +335,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "security-readiness.html",
       title: "Security Readiness",
       html: pageShell("Security Readiness", "security-readiness.html", `<section class="panel" data-source-pattern="Trivy"><h2>Security Readiness Snapshot</h2><p>${escapeHtml(input.securityReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.securityReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>targets</dt><dd>${input.securityReadinessReport.scannerTargets.length}</dd></div><div><dt>scanners</dt><dd>${input.securityReadinessReport.scannerCoverage.length}</dd></div><div><dt>signals</dt><dd>${input.securityReadinessReport.securitySignals.length}</dd></div><div><dt>actions</dt><dd>${input.securityReadinessReport.actionQueue.length}</dd></div></dl></section><section class="grid"><article class="security-readiness-card"><h3>Scanner Targets</h3>${securityTargetList(input.securityReadinessReport.scannerTargets)}</article><article class="security-readiness-card"><h3>Scanner Coverage</h3>${securityCoverageList(input.securityReadinessReport.scannerCoverage)}</article><article class="security-readiness-card"><h3>Action Queue</h3>${securityActionList(input.securityReadinessReport.actionQueue)}</article><article class="security-readiness-card"><h3>Recommended Commands</h3>${securityCommandList(input.securityReadinessReport.recommendedCommands)}</article></section><section class="cards security-signal-cards">${securitySignalCards(input.securityReadinessReport.securitySignals)}</section><section class="panel"><h2>다음 확인 단계</h2>${list(input.securityReadinessReport.learnerNextSteps)}</section>`, input)
+    },
+    {
+      name: "scorecard.html",
+      title: "Project Scorecard",
+      html: pageShell("Project Scorecard", "scorecard.html", `<section class="panel" data-source-pattern="OpenSSF Scorecard"><h2>Scorecard Snapshot</h2><p>${escapeHtml(input.scorecardReport.summary)}</p><p class="muted">${escapeHtml(input.scorecardReport.sourcePattern)}</p><dl class="meta"><div><dt>aggregate</dt><dd>${input.scorecardReport.aggregateScore}/10</dd></div><div><dt>checks</dt><dd>${input.scorecardReport.checks.length}</dd></div><div><dt>policies</dt><dd>${input.scorecardReport.policyFindings.length}</dd></div><div><dt>risk queue</dt><dd>${input.scorecardReport.riskQueue.length}</dd></div></dl></section><section class="grid"><article class="scorecard-card"><h3>Category Scores</h3>${scorecardCategoryList(input.scorecardReport.categoryScores)}</article><article class="scorecard-card"><h3>Policy Findings</h3>${scorecardPolicyList(input.scorecardReport.policyFindings)}</article><article class="scorecard-card"><h3>Risk Queue</h3>${scorecardRiskList(input.scorecardReport.riskQueue)}</article><article class="scorecard-card"><h3>Structured Results</h3>${scorecardStructuredList(input.scorecardReport.structuredResults)}</article></section><section class="cards scorecard-check-cards">${scorecardCheckCards(input.scorecardReport.checks)}</section><section class="panel"><h2>다음 확인 단계</h2>${list(input.scorecardReport.learnerNextSteps)}</section>`, input)
     },
     {
       name: "context-pack.html",
@@ -464,6 +473,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "License Rights", path: "html/license-rights.html", description: "Licensee식 license file, package metadata, README license reference 검토 상태를 확인합니다." },
       { label: "SBOM", path: "html/sbom.html", description: "Syft식 package artifact, file artifact, relationship inventory를 확인합니다." },
       { label: "Security Readiness", path: "html/security-readiness.html", description: "Trivy식 scan target, scanner coverage, security signal, action queue를 확인합니다." },
+      { label: "Project Scorecard", path: "html/scorecard.html", description: "OpenSSF Scorecard식 check, risk, policy finding, remediation queue를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -673,6 +683,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "security-readiness.html",
       goal: "Trivy식 target/scanner readiness를 보고 실제 스캐너 실행 전에 lockfile, license, IaC, secret-scan 범위 누락을 확인합니다.",
       evidence: `scanner coverage ${input.securityReadinessReport.scannerCoverage.length}개, action queue ${input.securityReadinessReport.actionQueue.length}개`
+    },
+    {
+      title: "Project scorecard risk queue 확인",
+      href: "scorecard.html",
+      goal: "OpenSSF Scorecard식 checks, policy findings, remediation queue를 보고 provider-only unknown과 정적 실패를 분리합니다.",
+      evidence: `aggregate ${input.scorecardReport.aggregateScore}/10, checks ${input.scorecardReport.checks.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -992,6 +1008,31 @@ function securitySignalCards(items: SecurityReadinessReport["securitySignals"]):
 function securitySignalHref(href: string): string {
   if (href.startsWith("html/")) return htmlPageHref(href);
   return `../${href}`;
+}
+
+function scorecardCheckCards(items: ScorecardReport["checks"]): string {
+  if (items.length === 0) return "<article class=\"scorecard-card\"><h3>Scorecard check가 없습니다.</h3><p>분석을 다시 실행하면 이곳에 체크 결과가 쌓입니다.</p></article>";
+  return items.map((item) => `<article class="scorecard-card" data-scorecard-status="${escapeHtml(item.status)}" data-scorecard-risk="${escapeHtml(item.risk)}"><h3>${escapeHtml(item.name)}</h3><p class="muted">${item.score === null ? "unknown" : `${item.score}/10`} · ${escapeHtml(item.status)} · ${escapeHtml(item.risk)}</p><p>${escapeHtml(item.evidence)}</p><h4>Remediation</h4><p>${escapeHtml(item.remediation)}</p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 페이지 열기</a></article>`).join("");
+}
+
+function scorecardCategoryList(items: ScorecardReport["categoryScores"]): string {
+  if (items.length === 0) return "<p class=\"muted\">category score가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.category)}</strong>: ${item.score === null ? "unknown" : `${item.score}/10`}<br>${escapeHtml(item.explanation)}<br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function scorecardPolicyList(items: ScorecardReport["policyFindings"]): string {
+  if (items.length === 0) return "<p class=\"muted\">policy finding이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.policy)}</strong> [${escapeHtml(item.result)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function scorecardRiskList(items: ScorecardReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong> ${escapeHtml(item.checkName)}<br>${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function scorecardStructuredList(items: ScorecardReport["structuredResults"]): string {
+  if (items.length === 0) return "<p class=\"muted\">structured result가 없습니다.</p>";
+  return `<ul>${items.slice(0, 30).map((item) => `<li><strong>${escapeHtml(item.checkName)}</strong> [${escapeHtml(item.outcome)}]<br>${escapeHtml(item.probe)}<br><span class="muted">${escapeHtml(item.evidence)}</span></li>`).join("")}</ul>`;
 }
 
 function contextPackCards(files: ContextPackReport["topFiles"]): string {

@@ -2365,6 +2365,38 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 124: Project Scorecard Report
+
+- Cloned and inspected `ossf/scorecard` under
+  `research/external-src/ossf-scorecard` without executing external source.
+- GitHub metadata: public repo, Apache-2.0 license, 5,475 stars, 656 forks,
+  updated 2026-06-02T01:43:46Z. No source code was copied into RepoTutor.
+- Added `ScorecardReportSchema` and `analysis/scorecard-report.json` with
+  OpenSSF Scorecard-style checks, 0-10 scores, unknown provider-only states,
+  risk-aware aggregate scoring, category scores, policy findings, risk queue,
+  structured results, and learner next steps.
+- Added `markdown/scorecard.md`, `html/scorecard.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target scorecard`.
+- Source pattern: Scorecard represents repository health as named checks with
+  scores, risk, remediation, and structured findings. RepoTutor maps that to a
+  deterministic static learner report and explicitly leaves Branch-Protection
+  and Code-Review as unknown because they require live source-host provider
+  data.
+- RED smoke generated
+  `/tmp/repotutor-scorecard-red-studies.j9fKRs/2026-06-04/local__simple-ts-app__main__d1482871`;
+  old behavior was missing `analysis/scorecard-report.json`,
+  `markdown/scorecard.md`, and `html/scorecard.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-scorecard-green-studies.Lj2fvZ/2026-06-04/local__simple-ts-app__main__d1482871`;
+  confirmed `verificationCheckedRequiredArtifacts=72`, aggregate score 3,
+  checks 12, risk queue 12, policy findings 5, `scorecard-card`,
+  `data-source-pattern="OpenSSF Scorecard"`, manifest/learning path entries,
+  and `open --target scorecard` -> `html/scorecard.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

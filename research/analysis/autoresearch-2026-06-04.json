@@ -319,6 +319,22 @@
         "severity-oriented action queue",
         "recommended scanner commands without executing external tooling"
       ]
+    },
+    {
+      "repo": "ossf/scorecard",
+      "url": "https://github.com/ossf/scorecard",
+      "localPath": "research/external-src/ossf-scorecard",
+      "stars": 5475,
+      "forks": 656,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-02T01:43:46Z",
+      "adoptedPatterns": [
+        "checks scored 0-10 with inconclusive provider-only states",
+        "risk-aware aggregate scoring",
+        "policy findings separated from check details",
+        "remediation queue from failed and unknown checks",
+        "structured results for machine-readable follow-up"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2044,6 +2060,28 @@
         "SecurityReadinessReportSchema",
         "Trivy targets scanners vulnerability secret misconfiguration license SBOM severity security readiness"
       ]
+    },
+    {
+      "name": "Project scorecard report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/scorecard-report.json",
+        "markdown/scorecard.md",
+        "html/scorecard.html",
+        "open --target scorecard",
+        "ScorecardReportSchema",
+        "OpenSSF Scorecard checks score 0-10 risk remediation structured results policy measurement"
+      ]
     }
   ],
   "verification": {
@@ -2281,7 +2319,13 @@
     "cliSecurityReadinessOpenTargetSmoke": "PASS",
     "buildSecurityReadiness": "PASS",
     "testSecurityReadiness": "PASS",
-    "auditBriefSecurityReadiness13": "PASS"
+    "auditBriefSecurityReadiness13": "PASS",
+    "fixtureScorecardReport": "PASS",
+    "cliScorecardSmoke": "PASS",
+    "cliScorecardOpenTargetSmoke": "PASS",
+    "buildScorecard": "PASS",
+    "testScorecard": "PASS",
+    "auditBriefScorecard13": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
