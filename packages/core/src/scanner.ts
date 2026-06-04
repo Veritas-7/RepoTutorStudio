@@ -75,6 +75,7 @@ import {
   AuthReadinessReport,
   PaymentReadinessReport,
   EmailReadinessReport,
+  QueueReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -156,6 +157,7 @@ export interface AnalysisBundle {
   authReadinessReport: AuthReadinessReport;
   paymentReadinessReport: PaymentReadinessReport;
   emailReadinessReport: EmailReadinessReport;
+  queueReadinessReport: QueueReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -237,8 +239,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const authReadinessReport = await buildAuthReadinessReport(walk);
   const paymentReadinessReport = await buildPaymentReadinessReport(walk);
   const emailReadinessReport = await buildEmailReadinessReport(walk);
+  const queueReadinessReport = await buildQueueReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -13218,6 +13221,281 @@ function emailReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/email-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildQueueReadinessReport(walk: WalkResult): Promise<QueueReadinessReport> {
+  const sourceFiles = await queueReadinessSourceFiles(walk);
+  const queueSetups = queueReadinessQueueSetups(sourceFiles);
+  const producerSignals = queueReadinessProducerSignals(sourceFiles);
+  const workerSignals = queueReadinessWorkerSignals(sourceFiles);
+  const reliabilitySignals = queueReadinessReliabilitySignals(sourceFiles);
+  const connectionSignals = queueReadinessConnectionSignals(sourceFiles);
+  const packageSignals = queueReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasBullMqPackage = packageSignals.some((item) => item.signal === "bullmq" && item.readiness === "ready");
+  const hasSetup = queueSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = queueSetups.some((item) => item.readiness === "ready");
+  const hasProducer = producerSignals.some((item) => ["queue-add", "add-bulk"].includes(item.signal) && item.readiness === "ready");
+  const hasWorker = workerSignals.some((item) => ["worker", "processor"].includes(item.signal) && item.readiness === "ready");
+  const hasConnection = connectionSignals.some((item) => ["REDIS_URL", "connection", "ioredis", "node-redis", "docker-compose-redis"].includes(item.signal) && item.readiness === "ready");
+  const hasRetryPolicy = reliabilitySignals.some((item) => ["attempts", "backoff", "retry"].includes(item.signal) && item.readiness === "ready");
+  const hasFailureHandling = reliabilitySignals.some((item) => ["failed-event", "queue-events", "dead-letter"].includes(item.signal) && item.readiness === "ready");
+  const hasDelayedOrRepeatJobs = producerSignals.some((item) => ["delay", "repeat"].includes(item.signal) && item.readiness === "ready") || queueSetups.some((item) => item.schedulerCount > 0);
+  const hasStalledHandling = workerSignals.some((item) => ["stalled-check", "lock-renewal"].includes(item.signal) && item.readiness === "ready");
+  const hasFlowJobs = producerSignals.some((item) => item.signal === "parent" && item.readiness === "ready") || queueSetups.some((item) => item.flowCount > 0);
+
+  const riskQueue: QueueReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasProducer) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the background job and queue strategy before claiming queue readiness.",
+      why: "Queue readiness starts with an explicit queue package, producer call, worker process, scheduler, or Redis-backed job surface.",
+      relatedHref: "html/queue-readiness.html"
+    });
+  }
+  if (hasBullMqPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair each BullMQ package signal with a queue producer and worker setup.",
+      why: "BullMQ readiness requires both producers that enqueue jobs and workers that process them against a Redis connection.",
+      relatedHref: "html/queue-readiness.html"
+    });
+  }
+  if ((hasBullMqPackage || hasSetup || hasProducer || hasWorker) && !hasConnection) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document Redis connection configuration for queue producers and workers.",
+      why: "BullMQ and related Redis-backed queues need auditable connection configuration before runtime worker QA.",
+      relatedHref: "html/queue-readiness.html"
+    });
+  }
+  if (hasProducer && !hasRetryPolicy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add retry attempts and backoff policy for queued jobs.",
+      why: "Background jobs often fail transiently; retry and backoff settings make failure handling explicit.",
+      relatedHref: "html/queue-readiness.html"
+    });
+  }
+  if (hasWorker && !hasFailureHandling) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Handle failed and completed worker events before production queue operation.",
+      why: "Workers need observable failure and completion paths so operators can retry, alert, or inspect job outcomes.",
+      relatedHref: "html/queue-readiness.html"
+    });
+  }
+  if (hasDelayedOrRepeatJobs && !hasStalledHandling) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review delayed or repeat jobs for stalled-job and lock-renewal behavior.",
+      why: "Scheduled queue work can strand jobs if worker locks, stalled checks, or recovery settings are not understood.",
+      relatedHref: "html/queue-readiness.html"
+    });
+  }
+  if (hasFlowJobs && !hasFailureHandling) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Define failure handling for parent and child job flows.",
+      why: "Flow jobs can leave dependent work blocked unless parent failure and child retry behavior are explicit.",
+      relatedHref: "html/queue-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run queue integration tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not start Redis, enqueue jobs, run workers, process queues, retry failed jobs, or run the analyzed project's tests.",
+    relatedHref: "html/queue-readiness.html"
+  });
+
+  return {
+    summary: `BullMQ식 queue readiness report: setup ${queueSetups.length}개, producer signal ${producerSignals.length}개, worker signal ${workerSignals.length}개, reliability signal ${reliabilitySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "BullMQ Queue Worker QueueEvents FlowProducer JobScheduler queue.add addBulk repeat attempts backoff removeOnComplete removeOnFail Redis connection concurrency limiter stalled failed completed metrics telemetry",
+    queueSetups,
+    producerSignals,
+    workerSignals,
+    reliabilitySignals,
+    connectionSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"new Queue|new Worker|QueueEvents|FlowProducer|JobScheduler|QueueScheduler\" src app pages packages", purpose: "Inventory BullMQ queue producers, workers, event listeners, flows, and schedulers." },
+      { command: "rg \"queue\\.add|addBulk|repeat|delay|priority|jobId|parent\" src app pages packages", purpose: "Find producer calls, delayed/repeat jobs, priorities, deterministic IDs, and parent-child flow evidence." },
+      { command: "rg \"attempts|backoff|removeOnComplete|removeOnFail|retry|failed|completed|stalled\" src app pages packages", purpose: "Review retry policy, cleanup policy, failure events, completion events, and stalled-job handling." },
+      { command: "rg \"REDIS_URL|REDIS_HOST|REDIS_PORT|REDIS_PASSWORD|connection|ioredis|redis\" src app pages packages docker-compose.yml", purpose: "Check Redis connection configuration and queue client dependencies." },
+      { command: "rg \"concurrency|limiter|metrics|telemetry|bull-board|taskforce|dashboard\" src app pages packages", purpose: "Trace worker concurrency, rate limiting, metrics, telemetry, and operator dashboard signals." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise producer payloads, worker processors, retry policy, and queue mocks." }
+    ],
+    learnerNextSteps: [
+      "먼저 queue setup 파일에서 Queue, Worker, QueueEvents, FlowProducer가 어디서 생성되는지 확인하세요.",
+      "queue.add 또는 addBulk 호출이 있으면 job name, payload, priority, delay, repeat, jobId, parent flow를 함께 추적하세요.",
+      "Worker가 있으면 processor, concurrency, limiter, stalled check, lock renewal, removeOnComplete/removeOnFail 설정을 확인하세요.",
+      "Redis 연결은 REDIS_URL 또는 connection/ioredis/node-redis 설정과 docker-compose Redis 서비스가 일관되는지 비교하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 Redis 실행, job enqueue/process/retry, worker crash recovery는 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type QueueReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function queueReadinessSourceFiles(walk: WalkResult): Promise<QueueReadinessSourceFile[]> {
+  const files: QueueReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !queueReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!queueReadinessPathSignal(file.relPath) && !queueReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function queueReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return queueReadinessPathSignal(filePath)
+    || /^(package\.json|\.env\.example|\.env\.sample|docker-compose\.ya?ml|compose\.ya?ml|Dockerfile|next\.config\.[cm]?[jt]s|vite\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env|toml)$/i.test(filePath);
+}
+
+function queueReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(queues?|jobs?|workers?|bullmq|bull|agenda|bree|graphile|redis|schedulers?|schedules?|tasks?)(\/|\.|-|_|$)|docker-compose|compose\.ya?ml/i.test(filePath);
+}
+
+function queueReadinessContentSignal(text: string): boolean {
+  return /\b(bullmq|BullMQ|new\s+Queue|new\s+Worker|QueueEvents|FlowProducer|JobScheduler|QueueScheduler|queue\.add|addBulk|repeat|attempts|backoff|removeOnComplete|removeOnFail|REDIS_URL|REDIS_HOST|REDIS_PORT|REDIS_PASSWORD|connection\s*:|ioredis|node-redis|stalled|failed|completed|concurrency|limiter|metrics|telemetry|bull-board|taskforce)\b/i.test(text);
+}
+
+function queueReadinessQueueSetups(sourceFiles: QueueReadinessSourceFile[]): QueueReadinessReport["queueSetups"] {
+  const rows: QueueReadinessReport["queueSetups"] = [];
+  for (const source of sourceFiles) {
+    const queueCount = countMatches(source.text, /\bnew\s+Queue\s*\(|\bQueue\s*\(|\bqueue\s*=/gi);
+    const workerCount = countMatches(source.text, /\bnew\s+Worker\s*\(|\bWorker\s*\(|\bprocessor\s*[:=]|\bprocess\s*\(/gi);
+    const schedulerCount = countMatches(source.text, /\bJobScheduler\b|\bQueueScheduler\b|\brepeat\s*:|\bcron\b|\bevery\b|\bdelay\s*:/gi);
+    const eventCount = countMatches(source.text, /\bQueueEvents\b|\.on\s*\(\s*["'](completed|failed|stalled|active|progress|drained)["']/gi);
+    const flowCount = countMatches(source.text, /\bFlowProducer\b|\bparent\s*:|\bchildren\s*:/gi);
+    const hasSetupSignal = queueCount + workerCount + schedulerCount + eventCount + flowCount > 0 || /\b(queue|job|worker|redis)\b/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: queueReadinessProvider(source),
+      queueCount,
+      workerCount,
+      schedulerCount,
+      eventCount,
+      flowCount,
+      readiness: queueCount > 0 && workerCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains queues ${queueCount}, workers ${workerCount}, schedulers ${schedulerCount}, event listeners ${eventCount}, flows ${flowCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function queueReadinessProvider(source: QueueReadinessSourceFile): QueueReadinessReport["queueSetups"][number]["provider"] {
+  if (/["']bullmq["']|\bbullmq\b|\bQueueEvents\b|\bFlowProducer\b|\bJobScheduler\b/i.test(source.text)) return "bullmq";
+  if (/["']bull["']|from\s+["']bull["']|\bBull\b/i.test(source.text)) return "bull";
+  if (/graphile-worker|makeWorkerUtils|runMigrations/i.test(source.text)) return "graphile-worker";
+  if (/["']bree["']|\bnew\s+Bree\b/i.test(source.text)) return "bree";
+  if (/["']agenda["']|\bnew\s+Agenda\b/i.test(source.text)) return "agenda";
+  if (/\b(queue|job|worker|redis)\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function queueReadinessProducerSignals(sourceFiles: QueueReadinessSourceFile[]): QueueReadinessReport["producerSignals"] {
+  const specs: Array<{ signal: QueueReadinessReport["producerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "queue-add", pattern: /\bqueue\.add\s*\(|\.add\s*\(\s*["'`]/i, evidence: "queue.add producer evidence was detected." },
+    { signal: "add-bulk", pattern: /\baddBulk\s*\(/i, evidence: "bulk enqueue evidence was detected." },
+    { signal: "job-name", pattern: /\bqueue\.add\s*\(\s*["'`][^"'`]+["'`]|name\s*:/i, evidence: "job name evidence was detected." },
+    { signal: "job-data", pattern: /\bqueue\.add\s*\([^,]+,\s*[{[]|\bdata\s*:/i, evidence: "job payload/data evidence was detected." },
+    { signal: "priority", pattern: /\bpriority\s*:/i, evidence: "priority evidence was detected." },
+    { signal: "delay", pattern: /\bdelay\s*:/i, evidence: "delayed job evidence was detected." },
+    { signal: "repeat", pattern: /\brepeat\s*:|\bcron\s*:|\bevery\s*:/i, evidence: "repeat or cron job evidence was detected." },
+    { signal: "job-id", pattern: /\bjobId\s*:|\bjobID\s*:|\bidempotent/i, evidence: "deterministic job ID evidence was detected." },
+    { signal: "parent", pattern: /\bparent\s*:|\bchildren\s*:|\bFlowProducer\b/i, evidence: "parent-child flow evidence was detected." }
+  ];
+  return queueReadinessSignalFromSpecs(sourceFiles, specs, "producer", "signal");
+}
+
+function queueReadinessWorkerSignals(sourceFiles: QueueReadinessSourceFile[]): QueueReadinessReport["workerSignals"] {
+  const specs: Array<{ signal: QueueReadinessReport["workerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "worker", pattern: /\bnew\s+Worker\s*\(|\bWorker\s*\(/i, evidence: "worker setup evidence was detected." },
+    { signal: "processor", pattern: /\bprocessor\s*[:=]|\basync\s*\(\s*job\b|\bprocess\s*\(\s*async|\bjob\s*=>/i, evidence: "job processor evidence was detected." },
+    { signal: "concurrency", pattern: /\bconcurrency\s*:/i, evidence: "worker concurrency evidence was detected." },
+    { signal: "rate-limit", pattern: /\blimiter\s*:|\brateLimit|maximumRateLimitDelay/i, evidence: "rate limiting evidence was detected." },
+    { signal: "sandbox", pattern: /\bsandbox|useWorkerThreads|worker_threads|processorFile/i, evidence: "sandbox or worker-thread evidence was detected." },
+    { signal: "stalled-check", pattern: /\bstalled\b|maxStalledCount|stalledInterval|skipStalledCheck/i, evidence: "stalled job handling evidence was detected." },
+    { signal: "lock-renewal", pattern: /lockDuration|lockRenewTime|skipLockRenewal/i, evidence: "lock renewal evidence was detected." },
+    { signal: "remove-on-complete", pattern: /removeOnComplete/i, evidence: "completed-job cleanup evidence was detected." },
+    { signal: "remove-on-fail", pattern: /removeOnFail/i, evidence: "failed-job cleanup evidence was detected." }
+  ];
+  return queueReadinessSignalFromSpecs(sourceFiles, specs, "worker", "signal");
+}
+
+function queueReadinessReliabilitySignals(sourceFiles: QueueReadinessSourceFile[]): QueueReadinessReport["reliabilitySignals"] {
+  const specs: Array<{ signal: QueueReadinessReport["reliabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "attempts", pattern: /\battempts\s*:/i, evidence: "retry attempts evidence was detected." },
+    { signal: "backoff", pattern: /\bbackoff\s*:/i, evidence: "backoff policy evidence was detected." },
+    { signal: "failed-event", pattern: /\.on\s*\(\s*["']failed["']|\bfailed\b|failReason/i, evidence: "failed event evidence was detected." },
+    { signal: "completed-event", pattern: /\.on\s*\(\s*["']completed["']|\bcompleted\b|returnvalue/i, evidence: "completed event evidence was detected." },
+    { signal: "queue-events", pattern: /\bQueueEvents\b/i, evidence: "QueueEvents evidence was detected." },
+    { signal: "retry", pattern: /\bretry\s*\(|\bretryJobs\b|\bretry\b/i, evidence: "manual retry evidence was detected." },
+    { signal: "dead-letter", pattern: /dead[-_ ]?letter|dlq|failedQueue|failureQueue/i, evidence: "dead-letter queue evidence was detected." },
+    { signal: "metrics", pattern: /\bmetrics\s*:|\bexportPrometheusMetrics\b|\bgetMetrics\b/i, evidence: "queue metrics evidence was detected." },
+    { signal: "telemetry", pattern: /\btelemetry\s*:|OpenTelemetry|traceId|spanId/i, evidence: "telemetry evidence was detected." },
+    { signal: "dashboard", pattern: /bull-board|@bull-board|taskforce|arena|dashboard/i, evidence: "queue dashboard evidence was detected." }
+  ];
+  return queueReadinessSignalFromSpecs(sourceFiles, specs, "reliability", "signal");
+}
+
+function queueReadinessConnectionSignals(sourceFiles: QueueReadinessSourceFile[]): QueueReadinessReport["connectionSignals"] {
+  const specs: Array<{ signal: QueueReadinessReport["connectionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "REDIS_URL", pattern: /\bREDIS_URL\b/i, evidence: "REDIS_URL evidence was detected." },
+    { signal: "REDIS_HOST", pattern: /\bREDIS_HOST\b/i, evidence: "REDIS_HOST evidence was detected." },
+    { signal: "REDIS_PORT", pattern: /\bREDIS_PORT\b/i, evidence: "REDIS_PORT evidence was detected." },
+    { signal: "REDIS_PASSWORD", pattern: /\bREDIS_PASSWORD\b/i, evidence: "REDIS_PASSWORD evidence was detected." },
+    { signal: "connection", pattern: /\bconnection\s*:|\bconnection\s*=|\bnew\s+IORedis\b|\bcreateClient\s*\(/i, evidence: "queue connection configuration evidence was detected." },
+    { signal: "ioredis", pattern: /["']ioredis["']|\bIORedis\b/i, evidence: "ioredis package/import evidence was detected." },
+    { signal: "node-redis", pattern: /["']redis["']|\bcreateClient\s*\(|node-redis/i, evidence: "node-redis package/import evidence was detected." },
+    { signal: "docker-compose-redis", pattern: /redis:\s*\n|image:\s*redis|REDIS_URL|docker-compose/i, evidence: "Docker Compose Redis evidence was detected." }
+  ];
+  return queueReadinessSignalFromSpecs(sourceFiles, specs, "connection", "signal");
+}
+
+function queueReadinessPackageSignals(sourceFiles: QueueReadinessSourceFile[]): QueueReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: QueueReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "bullmq", pattern: /["']bullmq["']|\bfrom\s+["']bullmq["']|\bBullMQ\b/i, evidence: "bullmq package/import evidence was detected." },
+    { signal: "bull", pattern: /["']bull["']|\bfrom\s+["']bull["']|\bBull\b/i, evidence: "bull package/import evidence was detected." },
+    { signal: "@nestjs/bullmq", pattern: /@nestjs\/bullmq/i, evidence: "@nestjs/bullmq package/import evidence was detected." },
+    { signal: "graphile-worker", pattern: /graphile-worker|makeWorkerUtils/i, evidence: "graphile-worker package/import evidence was detected." },
+    { signal: "bree", pattern: /["']bree["']|\bnew\s+Bree\b/i, evidence: "bree package/import evidence was detected." },
+    { signal: "agenda", pattern: /["']agenda["']|\bnew\s+Agenda\b/i, evidence: "agenda package/import evidence was detected." },
+    { signal: "ioredis", pattern: /["']ioredis["']|\bIORedis\b/i, evidence: "ioredis package/import evidence was detected." },
+    { signal: "redis", pattern: /["']redis["']|\bcreateClient\s*\(|node-redis/i, evidence: "redis package/import evidence was detected." }
+  ];
+  return queueReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function queueReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: QueueReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/queue-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

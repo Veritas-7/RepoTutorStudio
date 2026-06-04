@@ -70,6 +70,7 @@ import type {
   AuthReadinessReport,
   PaymentReadinessReport,
   EmailReadinessReport,
+  QueueReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -146,6 +147,7 @@ export interface StudyHtmlInput {
   authReadinessReport: AuthReadinessReport;
   paymentReadinessReport: PaymentReadinessReport;
   emailReadinessReport: EmailReadinessReport;
+  queueReadinessReport: QueueReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -684,6 +686,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Email Readiness", "email-readiness.html", `<section class="panel" data-source-pattern="Resend"><h2>Email Snapshot</h2><p>${escapeHtml(input.emailReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.emailReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.emailReadinessReport.emailSetups.length}</dd></div><div><dt>recipients</dt><dd>${input.emailReadinessReport.recipientSignals.length}</dd></div><div><dt>delivery</dt><dd>${input.emailReadinessReport.deliverySignals.length}</dd></div><div><dt>templates</dt><dd>${input.emailReadinessReport.templateSignals.length}</dd></div></dl><p class="muted">RepoTutor records email readiness only. It does not send email, call provider APIs, verify live DNS, process live callbacks, or run the analyzed project's tests.</p></section><section class="grid"><article class="email-readiness-card"><h3>Email Setups</h3>${emailReadinessSetupList(input.emailReadinessReport.emailSetups)}</article><article class="email-readiness-card"><h3>Recipient Signals</h3>${emailReadinessSignalList(input.emailReadinessReport.recipientSignals, "signal")}</article><article class="email-readiness-card"><h3>Delivery Signals</h3>${emailReadinessSignalList(input.emailReadinessReport.deliverySignals, "signal")}</article><article class="email-readiness-card"><h3>Template Signals</h3>${emailReadinessSignalList(input.emailReadinessReport.templateSignals, "signal")}</article></section><section class="grid"><article class="email-readiness-card"><h3>Credential Signals</h3>${emailReadinessSignalList(input.emailReadinessReport.credentialSignals, "signal")}</article><article class="email-readiness-card"><h3>Package Signals</h3>${emailReadinessSignalList(input.emailReadinessReport.packageSignals, "signal")}</article><article class="email-readiness-card"><h3>Recommended Commands</h3>${emailReadinessCommandList(input.emailReadinessReport.recommendedCommands)}</article><article class="email-readiness-card"><h3>Risk Queue</h3>${emailReadinessRiskList(input.emailReadinessReport.riskQueue)}</article><article class="email-readiness-card"><h3>다음 확인 단계</h3>${list(input.emailReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "queue-readiness.html",
+      title: "Queue Readiness",
+      html: pageShell("Queue Readiness", "queue-readiness.html", `<section class="panel" data-source-pattern="BullMQ"><h2>Queue Snapshot</h2><p>${escapeHtml(input.queueReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.queueReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.queueReadinessReport.queueSetups.length}</dd></div><div><dt>producers</dt><dd>${input.queueReadinessReport.producerSignals.length}</dd></div><div><dt>workers</dt><dd>${input.queueReadinessReport.workerSignals.length}</dd></div><div><dt>reliability</dt><dd>${input.queueReadinessReport.reliabilitySignals.length}</dd></div></dl><p class="muted">RepoTutor records queue readiness only. It does not start Redis, enqueue jobs, run workers, process queues, retry failed jobs, or run the analyzed project's tests.</p></section><section class="grid"><article class="queue-readiness-card"><h3>Queue Setups</h3>${queueReadinessSetupList(input.queueReadinessReport.queueSetups)}</article><article class="queue-readiness-card"><h3>Producer Signals</h3>${queueReadinessSignalList(input.queueReadinessReport.producerSignals, "signal")}</article><article class="queue-readiness-card"><h3>Worker Signals</h3>${queueReadinessSignalList(input.queueReadinessReport.workerSignals, "signal")}</article><article class="queue-readiness-card"><h3>Reliability Signals</h3>${queueReadinessSignalList(input.queueReadinessReport.reliabilitySignals, "signal")}</article></section><section class="grid"><article class="queue-readiness-card"><h3>Connection Signals</h3>${queueReadinessSignalList(input.queueReadinessReport.connectionSignals, "signal")}</article><article class="queue-readiness-card"><h3>Package Signals</h3>${queueReadinessSignalList(input.queueReadinessReport.packageSignals, "signal")}</article><article class="queue-readiness-card"><h3>Recommended Commands</h3>${queueReadinessCommandList(input.queueReadinessReport.recommendedCommands)}</article><article class="queue-readiness-card"><h3>Risk Queue</h3>${queueReadinessRiskList(input.queueReadinessReport.riskQueue)}</article><article class="queue-readiness-card"><h3>다음 확인 단계</h3>${list(input.queueReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -854,6 +861,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Auth Readiness", path: "html/auth-readiness.html", description: "Auth.js식 handlers, providers, callbacks, sessions, middleware, env secret 준비도를 확인합니다." },
       { label: "Payment Readiness", path: "html/payment-readiness.html", description: "Stripe식 server client, checkout, PaymentIntent, webhooks, billing lifecycle, env secret 준비도를 확인합니다." },
       { label: "Email Readiness", path: "html/email-readiness.html", description: "Resend식 provider client, send payload, templates, domains, webhooks, env secret 준비도를 확인합니다." },
+      { label: "Queue Readiness", path: "html/queue-readiness.html", description: "BullMQ식 Queue, Worker, QueueEvents, FlowProducer, Redis connection, retry 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1297,6 +1305,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "email-readiness.html",
       goal: "Resend식 provider client, send payload, templates, domains, webhooks, env secret을 보고 transactional email 관문을 확인합니다.",
       evidence: `email setups ${input.emailReadinessReport.emailSetups.length}개, recipient signals ${input.emailReadinessReport.recipientSignals.length}개`
+    },
+    {
+      title: "Queue readiness 확인",
+      href: "queue-readiness.html",
+      goal: "BullMQ식 Queue, Worker, QueueEvents, FlowProducer, Redis connection, retry/backoff 흐름을 보고 background job 관문을 확인합니다.",
+      evidence: `queue setups ${input.queueReadinessReport.queueSetups.length}개, producer signals ${input.queueReadinessReport.producerSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -2889,6 +2903,31 @@ function emailReadinessRiskList(items: EmailReadinessReport["riskQueue"]): strin
 }
 
 function emailReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function queueReadinessSetupList(items: QueueReadinessReport["queueSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">queue setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>queue/worker/scheduler/events/flows ${item.queueCount}/${item.workerCount}/${item.schedulerCount}/${item.eventCount}/${item.flowCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(queueReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function queueReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">queue signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(queueReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function queueReadinessCommandList(items: QueueReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function queueReadinessRiskList(items: QueueReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(queueReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function queueReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

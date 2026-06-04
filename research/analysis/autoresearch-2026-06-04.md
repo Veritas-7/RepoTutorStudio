@@ -3944,6 +3944,50 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 60/60 audit checks across 13 generated reports
 
+### Upgrade 163: Queue Readiness Report
+
+- Cloned and inspected `taskforcesh/bullmq` under
+  `research/external-src/taskforcesh-bullmq` without executing external source.
+  Clone HEAD was `3fe7cb1`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 8,964 stars, 626 forks, updated
+  2026-06-04T07:43:54Z. Compared with `OptimalBits/bull`,
+  `graphile/worker`, and `breejs/bree`; selected BullMQ because it directly
+  models Redis-backed queue readiness: `Queue`, `Worker`, `QueueEvents`,
+  `FlowProducer`, `JobScheduler`, producer calls, repeat/delay/priority/job ID
+  options, retry attempts/backoff, worker events, stalled job handling, Redis
+  connection setup, concurrency, rate limiting, metrics, and telemetry. No
+  source code was copied into RepoTutor.
+- Implemented BullMQ-style queue-readiness report:
+  `QueueReadinessReportSchema`, `analysis/queue-readiness-report.json`,
+  `markdown/queue-readiness.md`, `html/queue-readiness.html`, queue setups,
+  producer signals, worker signals, reliability signals, connection signals,
+  package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target queue-readiness`.
+- Source pattern: BullMQ separates Redis-backed queue producers through
+  `Queue` and `queue.add`, workers through `Worker` processors, lifecycle
+  observation through `QueueEvents`, multi-job dependencies through
+  `FlowProducer`, repeat or scheduled jobs through scheduler/repeat options,
+  reliability through attempts/backoff, failed/completed/stalled events,
+  cleanup policy, concurrency/rate limits, metrics, telemetry, and Redis
+  connection configuration. RepoTutor maps that to deterministic static queue
+  readiness and explicitly does not start Redis, enqueue jobs, run workers,
+  process queues, retry failed jobs, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-queue-readiness-red-studies.sY3u5L/2026-06-04/local__simple-ts-app__main__794225dd`;
+  old behavior was missing `analysis/queue-readiness-report.json`,
+  `markdown/queue-readiness.md`, and `html/queue-readiness.html`, and
+  `open --target queue-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-queue-readiness-green-studies.eOVjto/2026-06-04/local__simple-ts-app__main__794225dd`;
+  confirmed `verificationCheckedRequiredArtifacts=189`, queue setups 0,
+  producer signals 9, worker signals 9, reliability signals 10, connection
+  signals 8, package signals 8, risk queue 2, manifest/learning-path entries,
+  and `open --target queue-readiness` -> `html/queue-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 61/61 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

@@ -2926,6 +2926,42 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 162:
   - `7c492ad` email readiness report
 
+- 2026-06-04: AutoResearch Upgrade 163 candidate selected:
+  `taskforcesh/bullmq` (`https://github.com/taskforcesh/bullmq`; public MIT;
+  8,964 stars; 626 forks; updated 2026-06-04T07:43:54Z). Compared with
+  `OptimalBits/bull`, `graphile/worker`, and `breejs/bree`; selected BullMQ
+  because it directly models Redis-backed queue readiness: `Queue`, `Worker`,
+  `QueueEvents`, `FlowProducer`, `JobScheduler`, `queue.add`, `addBulk`,
+  repeat/delay/priority/job IDs, attempts/backoff, completed/failed/stalled
+  events, Redis connection configuration, concurrency, limiter, metrics, and
+  telemetry. Cloned ignored external source to
+  `research/external-src/taskforcesh-bullmq` and inspected README, license,
+  package metadata, queue, worker, flow, job-options, and worker-options source
+  without executing external source. Clone HEAD was `3fe7cb1`; tracked-file
+  count for `research/external-src/taskforcesh-bullmq` returned `0`.
+- 2026-06-04: RED queue-readiness smoke generated
+  `/tmp/repotutor-queue-readiness-red-studies.sY3u5L/2026-06-04/local__simple-ts-app__main__794225dd`;
+  old build was missing `analysis/queue-readiness-report.json`,
+  `markdown/queue-readiness.md`, and `html/queue-readiness.html`, and
+  `open --target queue-readiness` failed as expected.
+- 2026-06-04: Implemented BullMQ-style queue-readiness report:
+  `QueueReadinessReportSchema`, `analysis/queue-readiness-report.json`,
+  `markdown/queue-readiness.md`, `html/queue-readiness.html`, queue setups,
+  producer signals, worker signals, reliability signals, Redis connection
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target queue-readiness`.
+- 2026-06-04: GREEN queue-readiness smoke generated
+  `/tmp/repotutor-queue-readiness-green-studies.eOVjto/2026-06-04/local__simple-ts-app__main__794225dd`;
+  confirmed `verificationCheckedRequiredArtifacts=189`, queue setups 0,
+  producer signals 9, worker signals 9, reliability signals 10, connection
+  signals 8, package signals 8, risk queue 2, manifest/learning-path entries,
+  and `open --target queue-readiness` -> `html/queue-readiness.html`.
+- 2026-06-04: Verification for Upgrade 163:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 61/61 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
