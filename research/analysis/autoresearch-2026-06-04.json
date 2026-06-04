@@ -974,6 +974,23 @@
         "Redis connection and advanced scanning for REDIS_URL socket TLS clientSideCache RESP multi watch Pub/Sub cluster sentinel and telemetry",
         "safe static cache readiness that never starts Redis opens cache sockets reads or writes cache keys subscribes to channels flushes data or runs analyzed project tests"
       ]
+    },
+    {
+      "repo": "pinojs/pino",
+      "url": "https://github.com/pinojs/pino",
+      "localPath": "research/external-src/pinojs-pino",
+      "stars": 17911,
+      "forks": 958,
+      "license": "MIT",
+      "updatedAt": "2026-06-04T03:01:27Z",
+      "adoptedPatterns": [
+        "Pino logger setup scanning for pino createLogger logger factories levels bindings child loggers and log calls",
+        "logging level scanning for trace debug info warn error fatal silent and custom level evidence",
+        "logging context scanning for child loggers bindings request IDs HTTP request serializers mixins timestamps and formatters",
+        "logging safety scanning for redact redact paths secret fields safe stringification error serializers stdout stderr and flush-on-exit behavior",
+        "transport scanning for pino.transport destination pino-pretty multistream worker-thread async logging file output and log processors",
+        "safe static logging readiness that never executes logger calls emits logs starts transports flushes worker threads calls log processors or runs analyzed project tests"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3501,6 +3518,25 @@
         "markdown/cache-readiness.md",
         "html/cache-readiness.html"
       ]
+    },
+    {
+      "name": "Logging readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/logging-readiness-report.json",
+        "markdown/logging-readiness.md",
+        "html/logging-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4091,6 +4127,12 @@
     "cliCacheReadinessOpenTargetSmoke": "PASS",
     "buildCacheReadiness": "PASS",
     "testCacheReadiness": "PASS",
-    "auditBriefCacheReadiness62": "PASS"
+    "auditBriefCacheReadiness62": "PASS",
+    "fixtureLoggingReadinessReport": "PASS",
+    "cliLoggingReadinessSmoke": "PASS",
+    "cliLoggingReadinessOpenTargetSmoke": "PASS",
+    "buildLoggingReadiness": "PASS",
+    "testLoggingReadiness": "PASS",
+    "auditBriefLoggingReadiness63": "PASS"
   }
 }

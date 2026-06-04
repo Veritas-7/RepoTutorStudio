@@ -4033,6 +4033,51 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 62/62 audit checks across 13 generated reports
 
+### Upgrade 165: Logging Readiness Report
+
+- Cloned and inspected `pinojs/pino` under
+  `research/external-src/pinojs-pino` without executing external source.
+  Clone HEAD was `ff0dc5c`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 17,911 stars, 958 forks,
+  updated 2026-06-04T03:01:27Z. Compared with `winstonjs/winston`,
+  `fastify/fastify`, and `getsentry/sentry-javascript`; selected Pino because
+  it directly models structured logging readiness: `pino()`, JSON log levels,
+  `logger.info`, `logger.error`, child loggers, bindings, request context,
+  serializers, redaction, transports, destinations, `pino-pretty`,
+  multistream, timestamps, formatters, mixins, async worker-thread transports,
+  and flush behavior. No source code was copied into RepoTutor.
+- Implemented Pino-style logging-readiness report:
+  `LoggingReadinessReportSchema`, `analysis/logging-readiness-report.json`,
+  `markdown/logging-readiness.md`, `html/logging-readiness.html`, logging
+  setups, level signals, context signals, safety signals, transport signals,
+  package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target logging-readiness`.
+- Source pattern: Pino separates logger construction through `pino()` or
+  logger factories, emitted records through level calls such as `info`,
+  `warn`, `error`, and `fatal`, correlation through child loggers, bindings,
+  request IDs, serializers, mixins, timestamps, and formatters, safety through
+  redaction paths, secret-field detection, safe stringification, and error
+  serializers, and delivery through transports, destinations, multistream,
+  worker-thread async logging, file output, and log processors. RepoTutor maps
+  that to deterministic static logging readiness and explicitly does not
+  execute logger calls, emit logs, start transports, flush worker threads,
+  call log processors, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-logging-readiness-red-studies.fMi67e/2026-06-04/local__simple-ts-app__main__633408e3`;
+  old behavior was missing `analysis/logging-readiness-report.json`,
+  `markdown/logging-readiness.md`, and `html/logging-readiness.html`, and
+  `open --target logging-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-logging-readiness-green-studies.q38b5b/2026-06-04/local__simple-ts-app__main__633408e3`;
+  confirmed `verificationCheckedRequiredArtifacts=195`, logging setups 0,
+  level signals 8, context signals 8, safety signals 7, transport signals 8,
+  package signals 7, risk queue 2, manifest/learning-path entries, and
+  `open --target logging-readiness` -> `html/logging-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 63/63 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
