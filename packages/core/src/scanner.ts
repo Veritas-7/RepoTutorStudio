@@ -45,6 +45,7 @@ import {
   ObservabilityReport,
   PerformanceReport,
   E2eReport,
+  AccessibilityReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -96,6 +97,7 @@ export interface AnalysisBundle {
   observabilityReport: ObservabilityReport;
   performanceReport: PerformanceReport;
   e2eReport: E2eReport;
+  accessibilityReport: AccessibilityReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -147,8 +149,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const observabilityReport = await buildObservabilityReport(walk, runtimeEnvironmentReport);
   const performanceReport = await buildPerformanceReport(walk, runtimeEnvironmentReport);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
+  const accessibilityReport = await buildAccessibilityReport(walk, e2eReport);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -4612,6 +4615,285 @@ function e2eRuntimeTargets(
       readiness: runtimeSignals > 0 && ["web-server", "base-url", "env-vars"].includes(spec.target) ? "external" : "missing",
       evidence: `${spec.target} runtime target was not detected in E2E files.`,
       relatedHref: "html/runtime-environment.html"
+    };
+  });
+}
+
+async function buildAccessibilityReport(
+  walk: WalkResult,
+  e2eReport: E2eReport
+): Promise<AccessibilityReport> {
+  const sourceFiles = await accessibilitySourceFiles(walk);
+  const scanTargets = accessibilityScanTargets(sourceFiles);
+  const ruleTags = accessibilityRuleTags(sourceFiles);
+  const resultBuckets = accessibilityResultBuckets(sourceFiles);
+  const impactLevels = accessibilityImpactLevels(sourceFiles);
+  const integrationSignals = accessibilityIntegrationSignals(sourceFiles);
+  const contextControls = accessibilityContextControls(sourceFiles, e2eReport);
+  const hasScanTarget = scanTargets.some((item) => item.readiness === "ready");
+  const hasIntegration = integrationSignals.some((item) => item.readiness === "ready");
+  const hasResultModel = resultBuckets.some((item) => item.bucket === "violations" && item.readiness === "ready");
+  const hasWcagTag = ruleTags.some((item) => item.tag.startsWith("wcag") && item.readiness === "ready");
+  const hasManualReview = resultBuckets.some((item) => item.bucket === "incomplete" && item.readiness === "ready")
+    || integrationSignals.some((item) => item.integration === "manual-review" && item.readiness === "ready");
+
+  const riskQueue: AccessibilityReport["riskQueue"] = [];
+  if (!hasScanTarget) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add an accessibility scan target for at least one rendered page, component, or browser test flow.",
+      why: "axe-core needs rendered HTML or a browser/test harness context before results can represent user-facing UI.",
+      relatedHref: "html/accessibility.html"
+    });
+  }
+  if (hasScanTarget && !hasIntegration) {
+    riskQueue.push({
+      priority: "high",
+      action: "Wire axe-core, jest-axe, Playwright axe injection, Cypress axe, Pa11y, or Lighthouse into the test workflow.",
+      why: "Static markup hints are useful, but automated accessibility readiness needs an executable scan integration.",
+      relatedHref: "html/accessibility.html"
+    });
+  }
+  if (hasIntegration && !hasResultModel) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Persist or assert the axe result buckets: violations, passes, incomplete, and inapplicable.",
+      why: "The incomplete bucket is where axe-core asks for manual review; dropping it can hide important uncertainty.",
+      relatedHref: "html/accessibility.html"
+    });
+  }
+  if (hasIntegration && !hasWcagTag) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record WCAG/category tags or runOnly configuration so failures map back to standards and remediation queues.",
+      why: "Axe rules are more actionable when grouped by WCAG level, best-practice, and content category.",
+      relatedHref: "html/accessibility.html"
+    });
+  }
+  if (hasIntegration && !hasManualReview) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add a manual-review path for incomplete results and hidden or newly revealed UI states.",
+      why: "axe-core explicitly returns incomplete results when it cannot be certain.",
+      relatedHref: "html/accessibility.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the accessibility scanner against the original app before treating this report as an accessibility pass.",
+    why: "RepoTutor only performs static readiness analysis and never executes axe-core or a browser.",
+    relatedHref: "html/accessibility.html"
+  });
+
+  return {
+    summary: `axe-core식 accessibility readiness report: scan target ${scanTargets.length}개, integration signal ${integrationSignals.length}개, rule tag ${ruleTags.length}개, context control ${contextControls.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "axe-core accessibility engine WCAG tags violations passes incomplete inapplicable impact selectors context configure reporter iframes",
+    scanTargets,
+    ruleTags,
+    resultBuckets,
+    impactLevels,
+    integrationSignals,
+    contextControls,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npm install axe-core --save-dev", purpose: "Install the axe-core accessibility engine for browser or fixture tests." },
+      { command: "await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } })", purpose: "Run axe against rendered UI and scope the result to WCAG A/AA tags." },
+      { command: "expect(results.violations).toHaveLength(0)", purpose: "Fail CI when automated violations are returned." },
+      { command: "review results.incomplete", purpose: "Route uncertain axe checks to manual accessibility review." },
+      { command: "npx lighthouse <url> --only-categories=accessibility --output=json", purpose: "Optionally collect a browser-level accessibility audit artifact." }
+    ],
+    learnerNextSteps: [
+      "먼저 rendered page/component/test flow 중 어디에서 accessibility scan을 실행할지 정하세요.",
+      "`violations`만 보지 말고 `incomplete`를 manual review queue로 남기세요.",
+      "WCAG tag와 axe category를 저장하면 remediation 우선순위를 잡기 쉽습니다.",
+      "이 리포트는 정적 readiness입니다. 실제 접근성 pass/fail은 원본 앱에서 axe-core나 브라우저 audit로 확인하세요."
+    ]
+  };
+}
+
+type AccessibilitySourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function accessibilitySourceFiles(walk: WalkResult): Promise<AccessibilitySourceFile[]> {
+  const files: AccessibilitySourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !accessibilityInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!accessibilityPathSignal(file.relPath) && !accessibilityContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 140) break;
+  }
+  return files;
+}
+
+function accessibilityInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|playwright\.config\.[cm]?[jt]s|cypress\.config\.[cm]?[jt]s|lighthouserc\.(json|js|cjs|mjs)|pa11y\.(json|js|cjs|mjs)|axe\.(json|js|cjs|mjs))$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(html|tsx|jsx|vue|svelte|astro|ts|js|mjs|cjs|json|ya?ml|md)$/i.test(filePath);
+}
+
+function accessibilityPathSignal(filePath: string): boolean {
+  return /(accessibility|a11y|axe|pa11y|lighthouse|wcag|aria|screenreader|screen-reader|keyboard|contrast|semantic|landmark|alt-text)/i.test(filePath);
+}
+
+function accessibilityContentSignal(text: string): boolean {
+  return /(axe-core|axe\.run|axe\.configure|axe\.getRules|jest-axe|toHaveNoViolations|injectAxe|checkA11y|cy\.checkA11y|pa11y|lighthouse|violations|incomplete|inapplicable|wcag2a|wcag2aa|wcag21aa|wcag22aa|best-practice|aria-|role=|alt=|tabindex|skip link|color-contrast|accessible name|screen reader)/i.test(text);
+}
+
+function accessibilityScanTargets(sourceFiles: AccessibilitySourceFile[]): AccessibilityReport["scanTargets"] {
+  return sourceFiles
+    .filter((source) => /\.(html|tsx|jsx|vue|svelte|astro|ts|js|mjs|cjs|json|ya?ml)$/i.test(source.filePath))
+    .map((source) => ({
+      filePath: source.filePath,
+      kind: accessibilityTargetKind(source.filePath, source.text),
+      readiness: accessibilityContentSignal(source.text) ? "ready" as const : "partial" as const,
+      evidence: accessibilityTargetEvidence(source.filePath, source.text),
+      sourceHref: source.sourceHref
+    }))
+    .slice(0, 80);
+}
+
+function accessibilityTargetKind(filePath: string, text: string): AccessibilityReport["scanTargets"][number]["kind"] {
+  if (/package\.json|lighthouserc|pa11y|axe\.(json|js|cjs|mjs)/i.test(filePath)) return "config";
+  if (/\.(test|spec|cy|e2e)\.[cm]?[jt]sx?$/i.test(filePath) || /axe\.run|checkA11y|toHaveNoViolations|pa11y|lighthouse/i.test(text)) return "test";
+  if (/\.(tsx|jsx|vue|svelte|astro)$/i.test(filePath)) return "component";
+  if (/\.html$/i.test(filePath)) return "page";
+  if (/template|handlebars|mustache|njk|ejs/i.test(filePath)) return "template";
+  return "unknown";
+}
+
+function accessibilityTargetEvidence(filePath: string, text: string): string {
+  if (/axe\.run|checkA11y|toHaveNoViolations/i.test(text)) return `${filePath} includes an executable axe-style accessibility check.`;
+  if (/axe-core|jest-axe|pa11y|lighthouse/i.test(text)) return `${filePath} references an accessibility audit dependency or command.`;
+  if (/aria-|role=|alt=|tabindex|skip link|color-contrast|accessible name/i.test(text)) return `${filePath} contains accessibility-relevant markup or guidance.`;
+  return `${filePath} is an accessibility-shaped target candidate.`;
+}
+
+function accessibilityRuleTags(sourceFiles: AccessibilitySourceFile[]): AccessibilityReport["ruleTags"] {
+  const specs: Array<{ tag: AccessibilityReport["ruleTags"][number]["tag"]; pattern: RegExp; evidence: string }> = [
+    { tag: "wcag2a", pattern: /wcag2a|wcag 2(?:\.0)? level a|\bA\/AA\b/i, evidence: "WCAG 2 A tag evidence was detected." },
+    { tag: "wcag2aa", pattern: /wcag2aa|wcag 2(?:\.0)? level aa|\bA\/AA\b/i, evidence: "WCAG 2 AA tag evidence was detected." },
+    { tag: "wcag21a", pattern: /wcag21a|wcag 2\.1 level a/i, evidence: "WCAG 2.1 A tag evidence was detected." },
+    { tag: "wcag21aa", pattern: /wcag21aa|wcag 2\.1 level aa/i, evidence: "WCAG 2.1 AA tag evidence was detected." },
+    { tag: "wcag22aa", pattern: /wcag22aa|wcag 2\.2 level aa/i, evidence: "WCAG 2.2 AA tag evidence was detected." },
+    { tag: "best-practice", pattern: /best-practice|best practice/i, evidence: "axe best-practice tag evidence was detected." },
+    { tag: "section508", pattern: /section508|section 508/i, evidence: "Section 508 tag evidence was detected." },
+    { tag: "cat.aria", pattern: /cat\.aria|aria-/i, evidence: "ARIA category evidence was detected." },
+    { tag: "cat.color", pattern: /cat\.color|color-contrast|contrast ratio/i, evidence: "Color/contrast category evidence was detected." },
+    { tag: "cat.forms", pattern: /cat\.forms|label|form|input|select|textarea/i, evidence: "Forms category evidence was detected." },
+    { tag: "cat.keyboard", pattern: /cat\.keyboard|keyboard|tabindex|focus|skip link/i, evidence: "Keyboard category evidence was detected." },
+    { tag: "cat.language", pattern: /cat\.language|html lang|language/i, evidence: "Language category evidence was detected." },
+    { tag: "cat.name-role-value", pattern: /cat\.name-role-value|accessible name|role=|aria-label/i, evidence: "Name/role/value category evidence was detected." },
+    { tag: "cat.parsing", pattern: /cat\.parsing|duplicate id|valid html|parser/i, evidence: "Parsing category evidence was detected." },
+    { tag: "cat.semantics", pattern: /cat\.semantics|heading|landmark|main|nav|footer|header/i, evidence: "Semantics category evidence was detected." },
+    { tag: "cat.structure", pattern: /cat\.structure|iframe|frame|region|document title/i, evidence: "Structure category evidence was detected." },
+    { tag: "cat.tables", pattern: /cat\.tables|table|th|td|caption|scope/i, evidence: "Tables category evidence was detected." },
+    { tag: "cat.text-alternatives", pattern: /cat\.text-alternatives|alt=|alternative text|image alt/i, evidence: "Text alternatives category evidence was detected." },
+    { tag: "cat.time-and-media", pattern: /cat\.time-and-media|video|audio|caption|autoplay/i, evidence: "Time/media category evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      tag: spec.tag,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.tag} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/accessibility.html"
+    };
+  });
+}
+
+function accessibilityResultBuckets(sourceFiles: AccessibilitySourceFile[]): AccessibilityReport["resultBuckets"] {
+  const specs: Array<{ bucket: AccessibilityReport["resultBuckets"][number]["bucket"]; pattern: RegExp; evidence: string }> = [
+    { bucket: "violations", pattern: /violations|results\.violations|violation/i, evidence: "violations result bucket is read, asserted, or persisted." },
+    { bucket: "passes", pattern: /passes|results\.passes/i, evidence: "passes result bucket is read or persisted." },
+    { bucket: "incomplete", pattern: /incomplete|needs review|manual review/i, evidence: "incomplete/manual-review bucket is read or persisted." },
+    { bucket: "inapplicable", pattern: /inapplicable|not applicable/i, evidence: "inapplicable result bucket is read or persisted." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text));
+    return {
+      bucket: spec.bucket,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.bucket} result bucket evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/accessibility.html"
+    };
+  });
+}
+
+function accessibilityImpactLevels(sourceFiles: AccessibilitySourceFile[]): AccessibilityReport["impactLevels"] {
+  const specs: Array<{ impact: AccessibilityReport["impactLevels"][number]["impact"]; pattern: RegExp; evidence: string }> = [
+    { impact: "critical", pattern: /critical/i, evidence: "critical impact handling is referenced." },
+    { impact: "serious", pattern: /serious/i, evidence: "serious impact handling is referenced." },
+    { impact: "moderate", pattern: /moderate/i, evidence: "moderate impact handling is referenced." },
+    { impact: "minor", pattern: /minor/i, evidence: "minor impact handling is referenced." },
+    { impact: "unknown", pattern: /impact|severity|priority/i, evidence: "generic impact/severity handling is referenced." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text));
+    return {
+      impact: spec.impact,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.impact} impact evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/accessibility.html"
+    };
+  });
+}
+
+function accessibilityIntegrationSignals(sourceFiles: AccessibilitySourceFile[]): AccessibilityReport["integrationSignals"] {
+  const specs: Array<{ integration: AccessibilityReport["integrationSignals"][number]["integration"]; pattern: RegExp; evidence: string }> = [
+    { integration: "axe-run", pattern: /axe\.run|axe\.runPartial|axe\.finishRun/i, evidence: "runs axe directly against a rendered context." },
+    { integration: "axe-core-package", pattern: /["']axe-core["']|axe-core/i, evidence: "declares or imports axe-core." },
+    { integration: "jest-axe", pattern: /jest-axe|toHaveNoViolations/i, evidence: "uses jest-axe matchers." },
+    { integration: "playwright-axe", pattern: /@axe-core\/playwright|injectAxe|playwright.*axe|axe.*playwright/i, evidence: "uses Playwright accessibility scan integration." },
+    { integration: "cypress-axe", pattern: /cypress-axe|cy\.injectAxe|cy\.checkA11y/i, evidence: "uses Cypress accessibility scan integration." },
+    { integration: "pa11y", pattern: /pa11y/i, evidence: "uses Pa11y accessibility scan integration." },
+    { integration: "lighthouse", pattern: /lighthouse|only-categories=accessibility/i, evidence: "uses Lighthouse accessibility category." },
+    { integration: "manual-review", pattern: /manual review|needs review|incomplete/i, evidence: "keeps a manual review path for uncertain checks." }
+  ];
+  const rows: AccessibilityReport["integrationSignals"] = [];
+  for (const source of sourceFiles) {
+    for (const spec of specs) {
+      if (!spec.pattern.test(source.text) && !spec.pattern.test(source.filePath)) continue;
+      rows.push({
+        filePath: source.filePath,
+        integration: spec.integration,
+        readiness: "ready",
+        evidence: `${source.filePath} ${spec.evidence}`,
+        sourceHref: source.sourceHref
+      });
+    }
+  }
+  return rows.slice(0, 80);
+}
+
+function accessibilityContextControls(
+  sourceFiles: AccessibilitySourceFile[],
+  e2eReport: E2eReport
+): AccessibilityReport["contextControls"] {
+  const specs: Array<{ control: AccessibilityReport["contextControls"][number]["control"]; pattern: RegExp; evidence: string }> = [
+    { control: "include-exclude", pattern: /include|exclude|context\s*:|axe\.run\([^)]*\{/i, evidence: "include/exclude context scoping is configured." },
+    { control: "run-only-tags", pattern: /runOnly|wcag2a|wcag2aa|best-practice|tags/i, evidence: "runOnly tag or rule filtering is configured." },
+    { control: "disable-rules", pattern: /enabled\s*:\s*false|disableOtherRules|rules\s*:/i, evidence: "rule disabling or custom rule configuration is present." },
+    { control: "iframes", pattern: /iframe|frameMessenger|runPartial|finishRun|allowedOrigins/i, evidence: "iframe or frame communication control is referenced." },
+    { control: "shadow-dom", pattern: /shadow dom|shadowSelect|shadow/i, evidence: "Shadow DOM scanning constraints are referenced." },
+    { control: "locale", pattern: /locale|axe\.configure|resetLocale/i, evidence: "locale configuration is referenced." },
+    { control: "reporter", pattern: /reporter|json|html report|junit/i, evidence: "reporter/output configuration is referenced." },
+    { control: "jsdom", pattern: /jsdom/i, evidence: "JSDOM compatibility constraints are referenced." },
+    { control: "timeouts", pattern: /timeout|elementInternals|wait/i, evidence: "timeout or async scan controls are referenced." }
+  ];
+  const hasE2eRuntime = e2eReport.runtimeTargets.some((item) => item.readiness === "ready" || item.readiness === "external");
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      control: spec.control,
+      readiness: match ? "ready" : hasE2eRuntime && ["include-exclude", "reporter", "timeouts"].includes(spec.control) ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.control} control evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? (hasE2eRuntime ? "html/e2e.html" : "html/accessibility.html")
     };
   });
 }

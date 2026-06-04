@@ -1290,6 +1290,60 @@ export const E2eReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const AccessibilityReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  scanTargets: z.array(z.object({
+    filePath: z.string(),
+    kind: z.enum(["page", "component", "template", "test", "config", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  ruleTags: z.array(z.object({
+    tag: z.enum(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice", "section508", "cat.aria", "cat.color", "cat.forms", "cat.keyboard", "cat.language", "cat.name-role-value", "cat.parsing", "cat.semantics", "cat.structure", "cat.tables", "cat.text-alternatives", "cat.time-and-media", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resultBuckets: z.array(z.object({
+    bucket: z.enum(["violations", "passes", "incomplete", "inapplicable"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  impactLevels: z.array(z.object({
+    impact: z.enum(["critical", "serious", "moderate", "minor", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  integrationSignals: z.array(z.object({
+    filePath: z.string(),
+    integration: z.enum(["axe-run", "axe-core-package", "jest-axe", "playwright-axe", "cypress-axe", "pa11y", "lighthouse", "manual-review", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  contextControls: z.array(z.object({
+    control: z.enum(["include-exclude", "run-only-tags", "disable-rules", "iframes", "shadow-dom", "locale", "reporter", "jsdom", "timeouts"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1524,6 +1578,7 @@ export type ApiContractReport = z.infer<typeof ApiContractReportSchema>;
 export type ObservabilityReport = z.infer<typeof ObservabilityReportSchema>;
 export type PerformanceReport = z.infer<typeof PerformanceReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;
+export type AccessibilityReport = z.infer<typeof AccessibilityReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

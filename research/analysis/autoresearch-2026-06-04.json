@@ -462,6 +462,22 @@
         "webServer baseURL retries workers storageState and CI artifact readiness",
         "Playwright CLI and MCP browser automation patterns"
       ]
+    },
+    {
+      "repo": "dequelabs/axe-core",
+      "url": "https://github.com/dequelabs/axe-core",
+      "localPath": "research/external-src/dequelabs-axe-core",
+      "stars": 7215,
+      "forks": 891,
+      "license": "MPL-2.0",
+      "updatedAt": "2026-06-03T17:43:51Z",
+      "adoptedPatterns": [
+        "axe.run browser accessibility scan workflow",
+        "WCAG and category rule tags from axe.getRules",
+        "violations passes incomplete and inapplicable result buckets",
+        "critical serious moderate minor impact prioritization",
+        "context include exclude runOnly rule configuration reporter iframe and locale controls"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2363,6 +2379,28 @@
         "E2eReportSchema",
         "Playwright browser E2E tests config projects locators assertions traces screenshots video reporters CI webServer"
       ]
+    },
+    {
+      "name": "Accessibility readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/accessibility-report.json",
+        "markdown/accessibility.md",
+        "html/accessibility.html",
+        "open --target accessibility",
+        "AccessibilityReportSchema",
+        "axe-core accessibility engine WCAG tags violations passes incomplete inapplicable impact selectors context configure reporter iframes"
+      ]
     }
   ],
   "verification": {
@@ -2659,6 +2697,12 @@
     "cliE2eOpenTargetSmoke": "PASS",
     "buildE2e": "PASS",
     "testE2e": "PASS",
-    "auditBriefE2e30": "PASS"
+    "auditBriefE2e30": "PASS",
+    "fixtureAccessibilityReport": "PASS",
+    "cliAccessibilitySmoke": "PASS",
+    "cliAccessibilityOpenTargetSmoke": "PASS",
+    "buildAccessibility": "PASS",
+    "testAccessibility": "PASS",
+    "auditBriefAccessibility31": "PASS"
   }
 }

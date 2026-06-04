@@ -2674,6 +2674,41 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 30/30 audit checks across 13 generated reports
 
+### Upgrade 133: Accessibility Readiness Report
+
+- Cloned and inspected `dequelabs/axe-core` under
+  `research/external-src/dequelabs-axe-core` without executing external
+  source.
+- GitHub metadata: public repo, MPL-2.0 license, 7,215 stars, 891 forks,
+  updated 2026-06-03T17:43:51Z. No source code was copied into RepoTutor.
+- Added `AccessibilityReportSchema` and `analysis/accessibility-report.json`
+  with axe-core-style scan targets, WCAG/category rule tags, result buckets,
+  impact levels, integration signals, context controls, risk queue,
+  recommended commands, and learner next steps.
+- Added `markdown/accessibility.md`, `html/accessibility.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target accessibility`.
+- Source pattern: axe-core separates rendered scan targets, `axe.run`/
+  `axe.getRules`, WCAG and category tags, `violations`, `passes`,
+  `incomplete`, `inapplicable`, impact severity, selector/context controls,
+  reporters, iframes, locale/configuration, and manual review paths.
+  RepoTutor maps that to deterministic static accessibility readiness and
+  explicitly does not run axe-core or claim WCAG pass/fail results.
+- RED smoke generated
+  `/tmp/repotutor-accessibility-red-studies.adt06F/2026-06-04/local__simple-ts-app__main__538313d3`;
+  old behavior was missing `analysis/accessibility-report.json`,
+  `markdown/accessibility.md`, and `html/accessibility.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-accessibility-green-studies.z7ESax/2026-06-04/local__simple-ts-app__main__538313d3`;
+  confirmed `verificationCheckedRequiredArtifacts=99`, scan targets 0, rule
+  tags 19, result buckets 4, impact levels 5, integration signals 0, context
+  controls 9, recommended commands 5, risk queue 2, `accessibility-card`,
+  `data-source-pattern="axe-core"`, manifest/learning-path entries, and
+  `open --target accessibility` -> `html/accessibility.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 31/31 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
