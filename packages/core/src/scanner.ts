@@ -61,6 +61,7 @@ import {
   PackageManagerReport,
   GitHooksReport,
   TaskRunnerReport,
+  DependencyUpdateReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -128,6 +129,7 @@ export interface AnalysisBundle {
   packageManagerReport: PackageManagerReport;
   gitHooksReport: GitHooksReport;
   taskRunnerReport: TaskRunnerReport;
+  dependencyUpdateReport: DependencyUpdateReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -195,8 +197,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const packageManagerReport = await buildPackageManagerReport(walk);
   const gitHooksReport = await buildGitHooksReport(walk);
   const taskRunnerReport = await buildTaskRunnerReport(walk);
+  const dependencyUpdateReport = await buildDependencyUpdateReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -9303,6 +9306,303 @@ function taskRunnerSignalFromSpecs<T extends Record<K, string> & { pattern: RegE
 
 function stripJsonComments(text: string): string {
   return text.replace(/\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "");
+}
+
+async function buildDependencyUpdateReport(walk: WalkResult): Promise<DependencyUpdateReport> {
+  const sourceFiles = await dependencyUpdateSourceFiles(walk);
+  const configFiles = dependencyUpdateConfigFiles(sourceFiles);
+  const managerSignals = dependencyUpdateManagerSignals(sourceFiles);
+  const policySignals = dependencyUpdatePolicySignals(sourceFiles);
+  const workflowSignals = dependencyUpdateWorkflowSignals(sourceFiles);
+  const registrySignals = dependencyUpdateRegistrySignals(sourceFiles);
+  const packageFileSignals = dependencyUpdatePackageFileSignals(sourceFiles);
+
+  const hasConfig = configFiles.length > 0;
+  const hasPackageFiles = packageFileSignals.some((item) => item.readiness === "ready");
+  const hasPackageRules = policySignals.some((item) => item.signal === "package-rules" && item.readiness === "ready");
+  const hasDashboard = policySignals.some((item) => item.signal === "dependency-dashboard" && item.readiness === "ready");
+  const hasRateLimits = policySignals.some((item) => item.signal === "rate-limits" && item.readiness === "ready");
+  const hasRegistryRules = registrySignals.some((item) => ["host-rules", "registry-url", "private-packages"].includes(item.signal) && item.readiness === "ready");
+  const hasAutomerge = policySignals.some((item) => item.signal === "automerge" && item.readiness === "ready");
+  const hasSchedule = policySignals.some((item) => item.signal === "schedule" && item.readiness === "ready");
+
+  const riskQueue: DependencyUpdateReport["riskQueue"] = [];
+  if (hasPackageFiles && !hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a dependency update configuration before relying on automated update PRs.",
+      why: "Renovate-style automation needs repository policy for presets, grouping, schedules, and review boundaries.",
+      relatedHref: "html/dependency-updates.html"
+    });
+  }
+  if (hasConfig && !hasPackageRules) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review packageRules for grouping, major-update handling, and ecosystem-specific policy.",
+      why: "Renovate packageRules make selective automerge, labels, schedules, grouping, and manager-specific rules inspectable.",
+      relatedHref: "html/dependency-updates.html"
+    });
+  }
+  if (hasConfig && !hasDashboard) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Consider a dependency dashboard or approval workflow for high-risk updates.",
+      why: "Dependency dashboards give maintainers a single queue for approvals, blocked updates, and manual decisions.",
+      relatedHref: "html/dependency-updates.html"
+    });
+  }
+  if (hasConfig && !hasRateLimits) {
+    riskQueue.push({
+      priority: "low",
+      action: "Set PR or branch concurrency limits when the repository has many dependency files.",
+      why: "Automated update tools can create noisy PR bursts unless concurrency and hourly limits are explicit.",
+      relatedHref: "html/dependency-updates.html"
+    });
+  }
+  if (hasRegistryRules) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Verify private registry credentials outside static RepoTutor analysis.",
+      why: "RepoTutor can detect hostRules and registry URLs, but it does not validate tokens, access, or registry reachability.",
+      relatedHref: "html/dependency-updates.html"
+    });
+  }
+  if (hasAutomerge && !hasSchedule) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Pair automerge with schedule, status-check, and branch-protection review.",
+      why: "Renovate warns that automerge behavior depends on checks, platform automerge mode, and schedule semantics.",
+      relatedHref: "html/dependency-updates.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the config validator and dry-run in a trusted workspace before enabling update PRs.",
+    why: "RepoTutor records dependency-update readiness statically; it does not query registries, create branches, or open pull requests.",
+    relatedHref: "html/dependency-updates.html"
+  });
+
+  return {
+    summary: `Renovate식 dependency-update readiness report: config file ${configFiles.length}개, manager signal ${managerSignals.length}개, policy signal ${policySignals.length}개, package file signal ${packageFileSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Renovate config presets packageRules automerge schedule dependencyDashboard enabledManagers hostRules rangeStrategy prConcurrentLimit configMigration",
+    configFiles,
+    managerSignals,
+    policySignals,
+    workflowSignals,
+    registrySignals,
+    packageFileSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx renovate-config-validator", purpose: "Validate Renovate config syntax and schema in a trusted workspace." },
+      { command: "npx renovate --dry-run=full", purpose: "Preview discovered dependencies, branches, and PR decisions without writing changes." },
+      { command: "npx renovate --print-config", purpose: "Inspect the resolved config after presets and inherited settings are applied." },
+      { command: "npx renovate --platform=github --autodiscover=false <owner/repo>", purpose: "Run a scoped repository check instead of broad autodiscovery." },
+      { command: "npx renovate --dry-run=lookup", purpose: "Check lookup behavior before creating branches or pull requests." },
+      { command: "gh workflow run renovate.yml --ref <branch>", purpose: "Trigger a dedicated Renovate workflow only after reviewing workflow permissions." }
+    ],
+    learnerNextSteps: [
+      "Start with renovate.json, .renovaterc, or dependabot.yml to find the automation policy before reading package manifests.",
+      "Check packageRules and schedules before trusting automerge or grouped dependency PRs.",
+      "Separate public package-file discovery from private registry credentials such as hostRules and token environment variables.",
+      "RepoTutor does not call registries or create branches; use this page as a static review map before enabling automation."
+    ]
+  };
+}
+
+type DependencyUpdateSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function dependencyUpdateSourceFiles(walk: WalkResult): Promise<DependencyUpdateSourceFile[]> {
+  const files: DependencyUpdateSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !dependencyUpdateInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 200_000);
+    if (!text) continue;
+    if (!dependencyUpdatePathSignal(file.relPath) && !dependencyUpdatePackageFilePathSignal(file.relPath) && !dependencyUpdateContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 240) break;
+  }
+  return files;
+}
+
+function dependencyUpdateInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return dependencyUpdatePathSignal(filePath)
+    || /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|Dockerfile|go\.mod|pyproject\.toml|requirements.*\.txt|Gemfile|versions\.tf)$/i.test(base)
+    || filePath.startsWith(".github/workflows/")
+    || /\.(json|json5|ya?ml|toml|md)$/i.test(filePath);
+}
+
+function dependencyUpdatePathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(renovate\.json|renovate\.json5|\.renovaterc|\.renovaterc\.json|\.renovaterc\.json5|\.renovaterc\.ya?ml|renovate\.config\.[cm]?[jt]s|dependabot\.ya?ml)$/i.test(base)
+    || filePath === ".github/dependabot.yml"
+    || filePath === ".github/dependabot.yaml"
+    || /renovate|dependabot|dependency-update|dependency-updates/i.test(filePath);
+}
+
+function dependencyUpdatePackageFilePathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|Dockerfile|go\.mod|pyproject\.toml|requirements.*\.txt|Gemfile|versions\.tf)$/i.test(base)
+    || filePath.startsWith(".github/workflows/")
+    || /\.tf$/i.test(filePath);
+}
+
+function dependencyUpdateContentSignal(text: string): boolean {
+  return /renovate|dependabot|packageRules|dependencyDashboard|automerge|hostRules|enabledManagers|rangeStrategy|prConcurrentLimit|branchConcurrentLimit|lockFileMaintenance/i.test(text);
+}
+
+function dependencyUpdateConfigFiles(sourceFiles: DependencyUpdateSourceFile[]): DependencyUpdateReport["configFiles"] {
+  return sourceFiles
+    .filter((source) => dependencyUpdateConfigPathSignal(source.filePath, source.text))
+    .slice(0, 80)
+    .map((source) => {
+      const configType = dependencyUpdateConfigType(source.filePath, source.text);
+      const extendsCount = countMatches(source.text, /"extends"\s*:|extends:/g);
+      const packageRuleCount = dependencyUpdatePackageRuleCount(source.text);
+      const scheduleCount = countMatches(source.text, /schedule|automergeSchedule/g);
+      const automergeSignal = dependencyUpdateAutomergeSignal(source.text);
+      return {
+        filePath: source.filePath,
+        configType,
+        extendsCount,
+        packageRuleCount,
+        scheduleCount,
+        automergeSignal,
+        readiness: extendsCount > 0 || packageRuleCount > 0 || scheduleCount > 0 || automergeSignal !== "missing" ? "ready" : "partial",
+        evidence: `${source.filePath} contains ${configType} dependency-update config with ${extendsCount} preset signal(s), ${packageRuleCount} package rule signal(s), and ${scheduleCount} schedule signal(s).`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function dependencyUpdateConfigPathSignal(filePath: string, text: string): boolean {
+  const base = path.basename(filePath);
+  return dependencyUpdatePathSignal(filePath)
+    || (base === "package.json" && /"renovate"\s*:/.test(text))
+    || (filePath.startsWith(".github/workflows/") && /\brenovate\b|dependabot/i.test(text));
+}
+
+function dependencyUpdateConfigType(filePath: string, text: string): DependencyUpdateReport["configFiles"][number]["configType"] {
+  const base = path.basename(filePath).toLowerCase();
+  if (filePath === ".github/dependabot.yml" || filePath === ".github/dependabot.yaml" || /dependabot/i.test(filePath)) return "dependabot";
+  if (base === "package.json") return "package-json";
+  if (filePath.startsWith(".github/workflows/")) return "github-action";
+  if (/renovate|packageRules|dependencyDashboard|hostRules|enabledManagers/i.test(filePath) || /renovate|packageRules|dependencyDashboard|hostRules|enabledManagers/i.test(text)) return "renovate";
+  return "unknown";
+}
+
+function dependencyUpdatePackageRuleCount(text: string): number {
+  try {
+    const cleaned = stripJsonComments(text);
+    const json = JSON.parse(cleaned) as { packageRules?: unknown[]; renovate?: { packageRules?: unknown[] } };
+    return Array.isArray(json.packageRules) ? json.packageRules.length : Array.isArray(json.renovate?.packageRules) ? json.renovate.packageRules.length : 0;
+  } catch {
+    const section = text.match(/packageRules["']?\s*:\s*\[([\s\S]*?)\n\s*\]/)?.[1] ?? "";
+    return Math.max(countMatches(section, /\{[\s\S]*?\}/g), countMatches(text, /packageRules/g));
+  }
+}
+
+function dependencyUpdateAutomergeSignal(text: string): DependencyUpdateReport["configFiles"][number]["automergeSignal"] {
+  if (/automerge[^:\n]*["']?\s*:\s*true|platformAutomerge[^:\n]*["']?\s*:\s*true/i.test(text)) return /packageRules|matchPackage|matchDep|matchUpdateTypes/i.test(text) ? "conditional" : "enabled";
+  if (/automerge[^:\n]*["']?\s*:\s*false|platformAutomerge[^:\n]*["']?\s*:\s*false/i.test(text)) return "disabled";
+  if (/automergeType|automergeSchedule|automergeStrategy/i.test(text)) return "conditional";
+  return "missing";
+}
+
+function dependencyUpdateManagerSignals(sourceFiles: DependencyUpdateSourceFile[]): DependencyUpdateReport["managerSignals"] {
+  const specs: Array<{ signal: DependencyUpdateReport["managerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "npm", pattern: /package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|npm|pnpm|yarn|bun/i, evidence: "npm-family dependency manager evidence was detected." },
+    { signal: "docker", pattern: /Dockerfile|dockerfile|containerbase|docker-compose|docker/i, evidence: "Docker dependency manager evidence was detected." },
+    { signal: "github-actions", pattern: /\.github\/workflows|github-actions|github action/i, evidence: "GitHub Actions dependency manager evidence was detected." },
+    { signal: "python", pattern: /pyproject\.toml|requirements.*\.txt|poetry|pipenv|pip-compile/i, evidence: "Python dependency manager evidence was detected." },
+    { signal: "go", pattern: /go\.mod|go\.sum|gomod|golang/i, evidence: "Go module manager evidence was detected." },
+    { signal: "ruby", pattern: /Gemfile|bundler|rubygems/i, evidence: "Ruby dependency manager evidence was detected." },
+    { signal: "terraform", pattern: /\.tf\b|terraform|terragrunt/i, evidence: "Terraform dependency manager evidence was detected." },
+    { signal: "maven", pattern: /pom\.xml|maven/i, evidence: "Maven dependency manager evidence was detected." },
+    { signal: "gradle", pattern: /build\.gradle|gradle/i, evidence: "Gradle dependency manager evidence was detected." }
+  ];
+  return dependencyUpdateSignalFromSpecs(sourceFiles, specs, "manager", "signal");
+}
+
+function dependencyUpdatePolicySignals(sourceFiles: DependencyUpdateSourceFile[]): DependencyUpdateReport["policySignals"] {
+  const specs: Array<{ signal: DependencyUpdateReport["policySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "extends", pattern: /"extends"\s*:|extends:/i, evidence: "preset extends evidence was detected." },
+    { signal: "package-rules", pattern: /packageRules|package-rules/i, evidence: "packageRules evidence was detected." },
+    { signal: "schedule", pattern: /schedule|automergeSchedule/i, evidence: "schedule evidence was detected." },
+    { signal: "automerge", pattern: /automerge|platformAutomerge/i, evidence: "automerge policy evidence was detected." },
+    { signal: "dependency-dashboard", pattern: /dependencyDashboard|dependency dashboard|dependencyDashboardApproval/i, evidence: "dependency dashboard evidence was detected." },
+    { signal: "labels-reviewers", pattern: /labels|addLabels|reviewers|assignees/i, evidence: "labels, reviewers, or assignees evidence was detected." },
+    { signal: "rate-limits", pattern: /prConcurrentLimit|branchConcurrentLimit|prHourlyLimit|prCreation/i, evidence: "PR or branch rate-limit evidence was detected." },
+    { signal: "range-strategy", pattern: /rangeStrategy|range strategy|pinDigests|separateMajor/i, evidence: "version range strategy evidence was detected." },
+    { signal: "config-migration", pattern: /configMigration|config migration/i, evidence: "config migration evidence was detected." },
+    { signal: "host-rules", pattern: /hostRules|hostType|matchHost/i, evidence: "hostRules evidence was detected." },
+    { signal: "vulnerability-alerts", pattern: /vulnerabilityAlerts|osv|security|dependency-review/i, evidence: "vulnerability update evidence was detected." }
+  ];
+  return dependencyUpdateSignalFromSpecs(sourceFiles, specs, "policy", "signal");
+}
+
+function dependencyUpdateWorkflowSignals(sourceFiles: DependencyUpdateSourceFile[]): DependencyUpdateReport["workflowSignals"] {
+  const specs: Array<{ signal: DependencyUpdateReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "branch-pr", pattern: /prCreation|branchName|branchPrefix|pull request|update PR/i, evidence: "branch or PR creation evidence was detected." },
+    { signal: "dashboard-approval", pattern: /dependencyDashboardApproval|dashboard approval/i, evidence: "dashboard approval evidence was detected." },
+    { signal: "grouping", pattern: /groupName|minimumGroupSize|groupSlug/i, evidence: "dependency grouping evidence was detected." },
+    { signal: "separate-major", pattern: /separateMajor|separateMultipleMajor|matchUpdateTypes.*major/i, evidence: "major-update separation evidence was detected." },
+    { signal: "semantic-commits", pattern: /semanticCommit|commitMessagePrefix|commitMessageTopic/i, evidence: "semantic commit evidence was detected." },
+    { signal: "lockfile-maintenance", pattern: /lockFileMaintenance|lockfile maintenance/i, evidence: "lockfile maintenance evidence was detected." },
+    { signal: "rebase", pattern: /rebaseWhen|automerge.*rebase|conflicted/i, evidence: "rebase policy evidence was detected." },
+    { signal: "ignore-paths", pattern: /ignorePaths|ignoreDeps|ignorePresets|ignoreUnstable/i, evidence: "ignore path or ignore preset evidence was detected." }
+  ];
+  return dependencyUpdateSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function dependencyUpdateRegistrySignals(sourceFiles: DependencyUpdateSourceFile[]): DependencyUpdateReport["registrySignals"] {
+  const specs: Array<{ signal: DependencyUpdateReport["registrySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "host-rules", pattern: /hostRules|matchHost|hostType/i, evidence: "hostRules evidence was detected." },
+    { signal: "encrypted-secrets", pattern: /encrypted|encryptedSecrets|secrets/i, evidence: "encrypted secret evidence was detected." },
+    { signal: "registry-url", pattern: /registryUrls|registryUrl|npmrc|index-url|docker-registry/i, evidence: "registry URL evidence was detected." },
+    { signal: "token-env", pattern: /RENOVATE_TOKEN|GITHUB_TOKEN|NPM_TOKEN|DOCKER_PASSWORD|token/i, evidence: "token environment evidence was detected." },
+    { signal: "private-packages", pattern: /private package|private repositor|private registr|internal package|hostRules/i, evidence: "private package evidence was detected." }
+  ];
+  return dependencyUpdateSignalFromSpecs(sourceFiles, specs, "registry", "signal");
+}
+
+function dependencyUpdatePackageFileSignals(sourceFiles: DependencyUpdateSourceFile[]): DependencyUpdateReport["packageFileSignals"] {
+  const specs: Array<{ signal: DependencyUpdateReport["packageFileSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "package-json", pattern: /(^|\/)package\.json$/i, evidence: "package.json evidence was detected." },
+    { signal: "package-lock", pattern: /(^|\/)package-lock\.json$/i, evidence: "package-lock.json evidence was detected." },
+    { signal: "pnpm-lock", pattern: /(^|\/)pnpm-lock\.yaml$/i, evidence: "pnpm-lock.yaml evidence was detected." },
+    { signal: "yarn-lock", pattern: /(^|\/)yarn\.lock$/i, evidence: "yarn.lock evidence was detected." },
+    { signal: "bun-lock", pattern: /(^|\/)bun\.lockb?$/i, evidence: "bun lockfile evidence was detected." },
+    { signal: "dockerfile", pattern: /(^|\/)Dockerfile$/i, evidence: "Dockerfile evidence was detected." },
+    { signal: "github-actions", pattern: /^\.github\/workflows\/.+\.ya?ml$/i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "go-mod", pattern: /(^|\/)go\.mod$/i, evidence: "go.mod evidence was detected." },
+    { signal: "pyproject", pattern: /(^|\/)pyproject\.toml$/i, evidence: "pyproject.toml evidence was detected." },
+    { signal: "requirements", pattern: /(^|\/)requirements.*\.txt$/i, evidence: "Python requirements evidence was detected." },
+    { signal: "gemfile", pattern: /(^|\/)Gemfile$/i, evidence: "Gemfile evidence was detected." },
+    { signal: "terraform", pattern: /\.tf$/i, evidence: "Terraform file evidence was detected." }
+  ];
+  return dependencyUpdateSignalFromSpecs(sourceFiles, specs, "package file", "signal");
+}
+
+function dependencyUpdateSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DependencyUpdateSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/dependency-updates.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
 }
 
 function packageManagerLockfileEcosystem(filePath: string): PackageManagerReport["lockfileSignals"][number]["ecosystem"] | null {

@@ -2173,6 +2173,63 @@ export const TaskRunnerReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DependencyUpdateReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  configFiles: z.array(z.object({
+    filePath: z.string(),
+    configType: z.enum(["renovate", "dependabot", "package-json", "github-action", "unknown"]),
+    extendsCount: z.number().int().nonnegative(),
+    packageRuleCount: z.number().int().nonnegative(),
+    scheduleCount: z.number().int().nonnegative(),
+    automergeSignal: z.enum(["enabled", "disabled", "conditional", "missing"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  managerSignals: z.array(z.object({
+    signal: z.enum(["npm", "docker", "github-actions", "python", "go", "ruby", "terraform", "maven", "gradle", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  policySignals: z.array(z.object({
+    signal: z.enum(["extends", "package-rules", "schedule", "automerge", "dependency-dashboard", "labels-reviewers", "rate-limits", "range-strategy", "config-migration", "host-rules", "vulnerability-alerts", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["branch-pr", "dashboard-approval", "grouping", "separate-major", "semantic-commits", "lockfile-maintenance", "rebase", "ignore-paths", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  registrySignals: z.array(z.object({
+    signal: z.enum(["host-rules", "encrypted-secrets", "registry-url", "token-env", "private-packages", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageFileSignals: z.array(z.object({
+    signal: z.enum(["package-json", "package-lock", "pnpm-lock", "yarn-lock", "bun-lock", "dockerfile", "github-actions", "go-mod", "pyproject", "requirements", "gemfile", "terraform", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2423,6 +2480,7 @@ export type TypecheckReadinessReport = z.infer<typeof TypecheckReadinessReportSc
 export type PackageManagerReport = z.infer<typeof PackageManagerReportSchema>;
 export type GitHooksReport = z.infer<typeof GitHooksReportSchema>;
 export type TaskRunnerReport = z.infer<typeof TaskRunnerReportSchema>;
+export type DependencyUpdateReport = z.infer<typeof DependencyUpdateReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
