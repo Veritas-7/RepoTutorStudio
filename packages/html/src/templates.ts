@@ -42,6 +42,7 @@ import type {
   ObservabilityReport,
   PerformanceReport,
   E2eReport,
+  IntegrationTestEnvironmentReadinessReport,
   AccessibilityReport,
   StorybookReport,
   DesignTokensReport,
@@ -179,6 +180,7 @@ export interface StudyHtmlInput {
   observabilityReport: ObservabilityReport;
   performanceReport: PerformanceReport;
   e2eReport: E2eReport;
+  integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   accessibilityReport: AccessibilityReport;
   storybookReport: StorybookReport;
   designTokensReport: DesignTokensReport;
@@ -744,6 +746,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "e2e.html",
       title: "E2E Readiness",
       html: pageShell("E2E Readiness", "e2e.html", `<section class="panel" data-source-pattern="Playwright"><h2>E2E Snapshot</h2><p>${escapeHtml(input.e2eReport.summary)}</p><p class="muted">${escapeHtml(input.e2eReport.sourcePattern)}</p><dl class="meta"><div><dt>suites</dt><dd>${input.e2eReport.testSuites.length}</dd></div><div><dt>browser projects</dt><dd>${input.e2eReport.browserProjects.length}</dd></div><div><dt>locators</dt><dd>${input.e2eReport.locatorSignals.length}</dd></div><div><dt>artifacts</dt><dd>${input.e2eReport.artifacts.length}</dd></div></dl><p class="muted">RepoTutor records Playwright-style E2E readiness only. It does not launch browsers or claim user-flow pass/fail results.</p></section><section class="grid"><article class="e2e-card"><h3>Test Suites</h3>${e2eSuiteList(input.e2eReport.testSuites)}</article><article class="e2e-card"><h3>Browser Projects</h3>${e2eBrowserList(input.e2eReport.browserProjects)}</article><article class="e2e-card"><h3>Locator Signals</h3>${e2eLocatorList(input.e2eReport.locatorSignals)}</article><article class="e2e-card"><h3>Assertions</h3>${e2eAssertionList(input.e2eReport.assertions)}</article></section><section class="grid"><article class="e2e-card"><h3>Artifacts</h3>${e2eArtifactList(input.e2eReport.artifacts)}</article><article class="e2e-card"><h3>Runtime Targets</h3>${e2eRuntimeList(input.e2eReport.runtimeTargets)}</article><article class="e2e-card"><h3>Recommended Commands</h3>${e2eCommandList(input.e2eReport.recommendedCommands)}</article><article class="e2e-card"><h3>Risk Queue</h3>${e2eRiskList(input.e2eReport.riskQueue)}</article><article class="e2e-card"><h3>다음 확인 단계</h3>${list(input.e2eReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "integration-test-environment-readiness.html",
+      title: "Integration Test Environment Readiness",
+      html: pageShell("Integration Test Environment Readiness", "integration-test-environment-readiness.html", `<section class="panel" data-source-pattern="Testcontainers"><h2>Integration Test Environment Snapshot</h2><p>${escapeHtml(input.integrationTestEnvironmentReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.integrationTestEnvironmentReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.integrationTestEnvironmentReadinessReport.integrationSetups.length}</dd></div><div><dt>containers</dt><dd>${input.integrationTestEnvironmentReadinessReport.containerSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>waits</dt><dd>${input.integrationTestEnvironmentReadinessReport.waitSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>lifecycle</dt><dd>${input.integrationTestEnvironmentReadinessReport.lifecycleSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records Testcontainers-style integration environment readiness only; it does not start Docker, Podman, Docker Compose, Testcontainers modules, resource reapers, service containers, or the analyzed project's tests.</p></section><section class="grid"><article class="integration-test-environment-readiness-card"><h3>Integration Setups</h3>${integrationTestEnvironmentReadinessSetupList(input.integrationTestEnvironmentReadinessReport.integrationSetups)}</article><article class="integration-test-environment-readiness-card"><h3>Container Signals</h3>${integrationTestEnvironmentReadinessSignalList(input.integrationTestEnvironmentReadinessReport.containerSignals, "signal")}</article><article class="integration-test-environment-readiness-card"><h3>Wait Signals</h3>${integrationTestEnvironmentReadinessSignalList(input.integrationTestEnvironmentReadinessReport.waitSignals, "signal")}</article><article class="integration-test-environment-readiness-card"><h3>Lifecycle Signals</h3>${integrationTestEnvironmentReadinessSignalList(input.integrationTestEnvironmentReadinessReport.lifecycleSignals, "signal")}</article></section><section class="grid"><article class="integration-test-environment-readiness-card"><h3>Runtime Signals</h3>${integrationTestEnvironmentReadinessSignalList(input.integrationTestEnvironmentReadinessReport.runtimeSignals, "signal")}</article><article class="integration-test-environment-readiness-card"><h3>Package Signals</h3>${integrationTestEnvironmentReadinessSignalList(input.integrationTestEnvironmentReadinessReport.packageSignals, "signal")}</article><article class="integration-test-environment-readiness-card"><h3>Recommended Commands</h3>${integrationTestEnvironmentReadinessCommandList(input.integrationTestEnvironmentReadinessReport.recommendedCommands)}</article><article class="integration-test-environment-readiness-card"><h3>Risk Queue</h3>${integrationTestEnvironmentReadinessRiskList(input.integrationTestEnvironmentReadinessReport.riskQueue)}</article><article class="integration-test-environment-readiness-card"><h3>다음 확인 단계</h3>${list(input.integrationTestEnvironmentReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "accessibility.html",
@@ -1333,6 +1340,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Observability Readiness", path: "html/observability.html", description: "OpenTelemetry식 signal pipeline, instrumentation, exporter, resource/context 준비도를 확인합니다." },
       { label: "Performance Readiness", path: "html/performance.html", description: "k6식 load script, workload model, threshold, output 준비도를 확인합니다." },
       { label: "E2E Readiness", path: "html/e2e.html", description: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다." },
+      { label: "Integration Test Environment Readiness", path: "html/integration-test-environment-readiness.html", description: "Testcontainers식 container fixture, wait strategy, lifecycle cleanup, runtime 준비도를 확인합니다." },
       { label: "Accessibility Readiness", path: "html/accessibility.html", description: "axe-core식 scan target, WCAG/category tag, result bucket, impact 준비도를 확인합니다." },
       { label: "Storybook Readiness", path: "html/storybook.html", description: "Storybook식 CSF story, args, addon, test/publish signal 준비도를 확인합니다." },
       { label: "Design Tokens Readiness", path: "html/design-tokens.html", description: "Style Dictionary식 token source, platform, transform, usage 준비도를 확인합니다." },
@@ -1689,6 +1697,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "e2e.html",
       goal: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다.",
       evidence: `test suites ${input.e2eReport.testSuites.length}개, locator signals ${input.e2eReport.locatorSignals.length}개`
+    },
+    {
+      title: "Integration test environment 준비도 확인",
+      href: "integration-test-environment-readiness.html",
+      goal: "Testcontainers식 container fixture, wait strategy, lifecycle cleanup, runtime 준비도를 확인합니다.",
+      evidence: `setups ${input.integrationTestEnvironmentReadinessReport.integrationSetups.length}개, wait signals ${input.integrationTestEnvironmentReadinessReport.waitSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Accessibility 준비도 확인",
@@ -2964,6 +2978,34 @@ function e2eRiskList(items: E2eReport["riskQueue"]): string {
 }
 
 function e2eHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function integrationTestEnvironmentReadinessSetupList(items: IntegrationTestEnvironmentReadinessReport["integrationSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">integration setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.ecosystem)} / ${escapeHtml(item.readiness)}]<br>containers ${item.containerCount}, modules ${item.moduleCount}, wait ${item.hasWaitStrategy ? "yes" : "no"}, cleanup ${item.hasLifecycleCleanup ? "yes" : "no"}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(integrationTestEnvironmentReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function integrationTestEnvironmentReadinessSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(integrationTestEnvironmentReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function integrationTestEnvironmentReadinessCommandList(items: IntegrationTestEnvironmentReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function integrationTestEnvironmentReadinessRiskList(items: IntegrationTestEnvironmentReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(integrationTestEnvironmentReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function integrationTestEnvironmentReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
