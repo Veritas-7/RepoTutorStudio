@@ -35,6 +35,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "performance-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "accessibility-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "storybook-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -68,6 +69,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "performance.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "accessibility.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "storybook.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -104,6 +106,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "performance.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "accessibility.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "storybook.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -170,6 +173,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/performance.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/accessibility.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/storybook.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -558,6 +562,26 @@ describe("RepoTutor core pipeline", () => {
     expect(accessibilityMarkdown).toContain("Source pattern: axe-core");
     expect(accessibilityMarkdown).toContain("## Result Buckets");
     expect(accessibilityMarkdown).toContain("## Context Controls");
+    const storybookText = await fs.readFile(path.join(result.session.outputPaths.analysis, "storybook-report.json"), "utf8");
+    expect(storybookText).toContain("Storybook Component Story Format stories args argTypes decorators play functions autodocs addons test-runner Chromatic component workshop");
+    expect(storybookText).toContain("\"storyFiles\"");
+    expect(storybookText).toContain("\"configFiles\"");
+    expect(storybookText).toContain("\"storyAnnotations\"");
+    expect(storybookText).toContain("\"addonSignals\"");
+    expect(storybookText).toContain("\"testSignals\"");
+    expect(storybookText).toContain("\"publishSignals\"");
+    expect(storybookText).toContain("npx storybook@latest init");
+    const storybookHtml = await fs.readFile(path.join(result.session.outputPaths.html, "storybook.html"), "utf8");
+    expect(storybookHtml).toContain("Storybook Readiness");
+    expect(storybookHtml).toContain("storybook-card");
+    expect(storybookHtml).toContain("data-source-pattern=\"Storybook\"");
+    expect(storybookHtml).toContain("Story Annotations");
+    expect(storybookHtml).toContain("Publish Signals");
+    const storybookMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "storybook.md"), "utf8");
+    expect(storybookMarkdown).toContain("# Storybook Readiness");
+    expect(storybookMarkdown).toContain("Source pattern: Storybook");
+    expect(storybookMarkdown).toContain("## Story Annotations");
+    expect(storybookMarkdown).toContain("## Publish Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -684,6 +708,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/performance.html");
     expect(exportManifestText).toContain("html/e2e.html");
     expect(exportManifestText).toContain("html/accessibility.html");
+    expect(exportManifestText).toContain("html/storybook.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -774,6 +799,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("performance.html");
     expect(learningPathHtml).toContain("e2e.html");
     expect(learningPathHtml).toContain("accessibility.html");
+    expect(learningPathHtml).toContain("storybook.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");

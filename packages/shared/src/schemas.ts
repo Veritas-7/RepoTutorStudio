@@ -1344,6 +1344,60 @@ export const AccessibilityReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const StorybookReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  storyFiles: z.array(z.object({
+    filePath: z.string(),
+    format: z.enum(["csf3", "csf2", "mdx", "svelte-csf", "legacy", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configFiles: z.array(z.object({
+    filePath: z.string(),
+    configType: z.enum(["main", "preview", "manager", "test-runner", "vitest", "package-script", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  storyAnnotations: z.array(z.object({
+    annotation: z.enum(["component", "title", "args", "argTypes", "parameters", "decorators", "loaders", "tags", "render", "play", "name", "subcomponents"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  addonSignals: z.array(z.object({
+    addon: z.enum(["docs", "controls", "actions", "interactions", "a11y", "viewport", "backgrounds", "measure", "outline", "coverage", "vitest", "test-runner", "chromatic", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["render-tests", "interaction-tests", "accessibility-tests", "visual-tests", "snapshot-tests", "coverage", "ci", "storybook-test", "portable-stories"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  publishSignals: z.array(z.object({
+    signal: z.enum(["build-storybook", "storybook-static", "chromatic", "composition", "refs", "static-dirs", "docs-mode", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1579,6 +1633,7 @@ export type ObservabilityReport = z.infer<typeof ObservabilityReportSchema>;
 export type PerformanceReport = z.infer<typeof PerformanceReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;
 export type AccessibilityReport = z.infer<typeof AccessibilityReportSchema>;
+export type StorybookReport = z.infer<typeof StorybookReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

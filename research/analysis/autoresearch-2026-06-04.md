@@ -2709,6 +2709,46 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 31/31 audit checks across 13 generated reports
 
+### Upgrade 134: Storybook Readiness Report
+
+- Cloned and inspected `storybookjs/storybook` under
+  `research/external-src/storybookjs-storybook` without executing external
+  source.
+- GitHub metadata: public repo, MIT license, 90,173 stars, 10,113 forks,
+  updated 2026-06-03T21:40:35Z. Compared with `tajo/ladle`,
+  `histoire-dev/histoire`, and `mui/toolpad`; selected Storybook for the broad
+  CSF, docs, addon, test, and publish model. No source code was copied into
+  RepoTutor.
+- Added `StorybookReportSchema` and `analysis/storybook-report.json` with
+  Storybook-style story files, config files, story annotations, addon signals,
+  test signals, publish signals, risk queue, recommended commands, and learner
+  next steps.
+- Added `markdown/storybook.md`, `html/storybook.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target storybook`.
+- Source pattern: Storybook separates Component Story Format story files,
+  default metadata, named story exports, `args`, `argTypes`, `parameters`,
+  `decorators`, `loaders`, `tags`, `play` functions, `.storybook/main`,
+  `.storybook/preview`, Docs/Autodocs, addon signals, Storybook Test,
+  test-runner, coverage, visual testing, Chromatic, and static publish
+  workflows. RepoTutor maps that to deterministic static component-workshop
+  readiness and explicitly does not start Storybook or claim component-test
+  pass/fail results.
+- RED smoke generated
+  `/tmp/repotutor-storybook-red-studies.bLw8c4/2026-06-04/local__simple-ts-app__main__028712bd`;
+  old behavior was missing `analysis/storybook-report.json`,
+  `markdown/storybook.md`, and `html/storybook.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-storybook-green-studies.Czhy2F/2026-06-04/local__simple-ts-app__main__028712bd`;
+  confirmed `verificationCheckedRequiredArtifacts=102`, story files 0,
+  config files 0, annotations 12, addon signals 13, test signals 9,
+  publish signals 7, recommended commands 5, risk queue 2, `storybook-card`,
+  `data-source-pattern="Storybook"`, manifest/learning-path entries, and
+  `open --target storybook` -> `html/storybook.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 32/32 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

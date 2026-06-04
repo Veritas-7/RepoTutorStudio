@@ -478,6 +478,22 @@
         "critical serious moderate minor impact prioritization",
         "context include exclude runOnly rule configuration reporter iframe and locale controls"
       ]
+    },
+    {
+      "repo": "storybookjs/storybook",
+      "url": "https://github.com/storybookjs/storybook",
+      "localPath": "research/external-src/storybookjs-storybook",
+      "stars": 90173,
+      "forks": 10113,
+      "license": "MIT",
+      "updatedAt": "2026-06-03T21:40:35Z",
+      "adoptedPatterns": [
+        "Component Story Format story files with default metadata and named story exports",
+        "args argTypes parameters decorators loaders tags and play function annotations",
+        ".storybook main preview manager configuration model",
+        "Docs and Autodocs component documentation flow",
+        "Storybook Test test-runner visual accessibility coverage and Chromatic publish signals"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2401,6 +2417,28 @@
         "AccessibilityReportSchema",
         "axe-core accessibility engine WCAG tags violations passes incomplete inapplicable impact selectors context configure reporter iframes"
       ]
+    },
+    {
+      "name": "Storybook readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/storybook-report.json",
+        "markdown/storybook.md",
+        "html/storybook.html",
+        "open --target storybook",
+        "StorybookReportSchema",
+        "Storybook Component Story Format stories args argTypes decorators play functions autodocs addons test-runner Chromatic component workshop"
+      ]
     }
   ],
   "verification": {
@@ -2703,6 +2741,12 @@
     "cliAccessibilityOpenTargetSmoke": "PASS",
     "buildAccessibility": "PASS",
     "testAccessibility": "PASS",
-    "auditBriefAccessibility31": "PASS"
+    "auditBriefAccessibility31": "PASS",
+    "fixtureStorybookReport": "PASS",
+    "cliStorybookSmoke": "PASS",
+    "cliStorybookOpenTargetSmoke": "PASS",
+    "buildStorybook": "PASS",
+    "testStorybook": "PASS",
+    "auditBriefStorybook32": "PASS"
   }
 }

@@ -46,6 +46,7 @@ import {
   PerformanceReport,
   E2eReport,
   AccessibilityReport,
+  StorybookReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -98,6 +99,7 @@ export interface AnalysisBundle {
   performanceReport: PerformanceReport;
   e2eReport: E2eReport;
   accessibilityReport: AccessibilityReport;
+  storybookReport: StorybookReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -150,8 +152,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const performanceReport = await buildPerformanceReport(walk, runtimeEnvironmentReport);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
   const accessibilityReport = await buildAccessibilityReport(walk, e2eReport);
+  const storybookReport = await buildStorybookReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -4894,6 +4897,320 @@ function accessibilityContextControls(
       readiness: match ? "ready" : hasE2eRuntime && ["include-exclude", "reporter", "timeouts"].includes(spec.control) ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.control} control evidence was not detected.`,
       relatedHref: match?.sourceHref ?? (hasE2eRuntime ? "html/e2e.html" : "html/accessibility.html")
+    };
+  });
+}
+
+async function buildStorybookReport(walk: WalkResult): Promise<StorybookReport> {
+  const sourceFiles = await storybookSourceFiles(walk);
+  const storyFiles = storybookStoryFiles(sourceFiles);
+  const configFiles = storybookConfigFiles(sourceFiles);
+  const storyAnnotations = storybookAnnotations(sourceFiles);
+  const addonSignals = storybookAddonSignals(sourceFiles);
+  const testSignals = storybookTestSignals(sourceFiles);
+  const publishSignals = storybookPublishSignals(sourceFiles);
+  const hasStory = storyFiles.some((item) => item.readiness === "ready");
+  const hasConfig = configFiles.some((item) => item.configType === "main" && item.readiness === "ready");
+  const hasArgs = storyAnnotations.some((item) => item.annotation === "args" && item.readiness === "ready");
+  const hasDocs = addonSignals.some((item) => item.addon === "docs" && item.readiness === "ready")
+    || storyAnnotations.some((item) => item.annotation === "tags" && item.readiness === "ready");
+  const hasInteraction = storyAnnotations.some((item) => item.annotation === "play" && item.readiness === "ready")
+    || testSignals.some((item) => item.signal === "interaction-tests" && item.readiness === "ready");
+  const hasPublish = publishSignals.some((item) => item.signal === "build-storybook" && item.readiness === "ready")
+    || publishSignals.some((item) => item.signal === "chromatic" && item.readiness === "ready");
+
+  const riskQueue: StorybookReport["riskQueue"] = [];
+  if (!hasStory) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add colocated CSF or MDX story files before claiming component-state coverage.",
+      why: "Storybook's learning value starts with executable component examples such as Button.stories.tsx.",
+      relatedHref: "html/storybook.html"
+    });
+  }
+  if (hasStory && !hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add `.storybook/main.*` with story globs, framework, addons, and build settings.",
+      why: "Story files without a main config are hard to discover, build, or run consistently.",
+      relatedHref: "html/storybook.html"
+    });
+  }
+  if (hasStory && !hasArgs) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Use args and argTypes so learners can inspect component states through Controls.",
+      why: "Storybook's Controls and Autodocs are most useful when stories expose state as args.",
+      relatedHref: "html/storybook.html"
+    });
+  }
+  if (hasStory && !hasDocs) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Enable docs/autodocs tags or MDX pages for living component documentation.",
+      why: "Stories double as documentation when metadata, tags, and doc blocks are present.",
+      relatedHref: "html/storybook.html"
+    });
+  }
+  if (hasStory && !hasInteraction) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add play functions or Storybook Test coverage for interactive component states.",
+      why: "Render-only stories smoke-test appearance, but play functions capture user behavior.",
+      relatedHref: "html/storybook.html"
+    });
+  }
+  if (hasStory && !hasPublish) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add build-storybook, Chromatic, or composition signals before treating stories as shareable docs.",
+      why: "Published Storybooks are easier to review, compare visually, and link from learning material.",
+      relatedHref: "html/storybook.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run Storybook or Storybook Test against the original app before treating this report as a UI test pass.",
+    why: "RepoTutor only performs static readiness analysis and never starts the Storybook dev server.",
+    relatedHref: "html/storybook.html"
+  });
+
+  return {
+    summary: `Storybook식 component workshop readiness report: story file ${storyFiles.length}개, config ${configFiles.length}개, annotation ${storyAnnotations.length}개, addon signal ${addonSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Storybook Component Story Format stories args argTypes decorators play functions autodocs addons test-runner Chromatic component workshop",
+    storyFiles,
+    configFiles,
+    storyAnnotations,
+    addonSignals,
+    testSignals,
+    publishSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx storybook@latest init", purpose: "Scaffold Storybook config, framework integration, and starter stories." },
+      { command: "npm run storybook", purpose: "Start the component workshop locally for manual story review." },
+      { command: "npm run build-storybook", purpose: "Build static Storybook documentation for review or hosting." },
+      { command: "npm run test-storybook", purpose: "Run Storybook Test or test-runner checks for render and play-function coverage." },
+      { command: "npx chromatic --project-token=<token>", purpose: "Optionally publish visual regression snapshots and review diffs." }
+    ],
+    learnerNextSteps: [
+      "먼저 `.stories.*` 또는 MDX story가 컴포넌트 옆에 있는지 확인하세요.",
+      "args/argTypes/parameters/decorators를 보면 어떤 상태를 학습자가 조작할 수 있는지 알 수 있습니다.",
+      "play function은 story가 실제 사용자 행동까지 설명하는지 판단하는 핵심 신호입니다.",
+      "이 리포트는 정적 readiness입니다. 실제 pass/fail은 원본 앱에서 Storybook과 Storybook Test로 확인하세요."
+    ]
+  };
+}
+
+type StorybookSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function storybookSourceFiles(walk: WalkResult): Promise<StorybookSourceFile[]> {
+  const files: StorybookSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !storybookInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!storybookPathSignal(file.relPath) && !storybookContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 160) break;
+  }
+  return files;
+}
+
+function storybookInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|vitest\.config\.storybook\.[cm]?[jt]s|test-runner-jest\.config\.[cm]?[jt]s|chromatic\.(config\.)?(json|ya?ml|js|cjs|mjs))$/i.test(base)
+    || /^\.storybook\/.+\.[cm]?[jt]sx?$/i.test(filePath)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(stories|story)\.(ts|tsx|js|jsx|mjs|cjs|mdx|svelte|vue)$/i.test(filePath)
+    || /\.(ts|tsx|js|jsx|mjs|cjs|json|ya?ml|md|mdx)$/i.test(filePath);
+}
+
+function storybookPathSignal(filePath: string): boolean {
+  return /(^|\/)\.storybook\/|storybook|\.stories\.|\.story\.|chromatic|test-storybook|stories\.json/i.test(filePath);
+}
+
+function storybookContentSignal(text: string): boolean {
+  return /(@storybook\/|storybook|StoryObj|Meta<|satisfies\s+Meta|defineMeta|<Story\b|args\s*:|argTypes\s*:|decorators\s*:|parameters\s*:|loaders\s*:|tags\s*:|play\s*:|build-storybook|test-storybook|chromatic|composeStor(?:y|ies)|setProjectAnnotations)/i.test(text);
+}
+
+function storybookStoryFiles(sourceFiles: StorybookSourceFile[]): StorybookReport["storyFiles"] {
+  return sourceFiles
+    .filter((source) => /\.(stories|story)\.(ts|tsx|js|jsx|mjs|cjs|mdx|svelte|vue)$/i.test(source.filePath) || storybookStoryContent(source.text))
+    .map((source) => ({
+      filePath: source.filePath,
+      format: storybookStoryFormat(source.filePath, source.text),
+      readiness: storybookStoryContent(source.text) ? "ready" as const : "partial" as const,
+      evidence: storybookStoryEvidence(source.filePath, source.text),
+      sourceHref: source.sourceHref
+    }))
+    .slice(0, 100);
+}
+
+function storybookStoryContent(text: string): boolean {
+  return /export\s+default|defineMeta|<Meta\b|export\s+const\s+[A-Z]\w+|StoryObj|satisfies\s+Meta|args\s*:|play\s*:/i.test(text)
+    && /(@storybook\/|StoryObj|Meta<|defineMeta|<Story\b|\.stories\.|args\s*:|render\s*:|play\s*:)/i.test(text);
+}
+
+function storybookStoryFormat(filePath: string, text: string): StorybookReport["storyFiles"][number]["format"] {
+  if (/\.mdx$/i.test(filePath) || /<Meta\b|<Story\b/i.test(text)) return "mdx";
+  if (/defineMeta|@storybook\/addon-svelte-csf/i.test(text) || /\.stories\.svelte$/i.test(filePath)) return "svelte-csf";
+  if (/StoryObj|satisfies\s+Meta|export\s+const\s+\w+\s*:\s*Story|export\s+const\s+\w+\s*=\s*\{/i.test(text)) return "csf3";
+  if (/\.bind\(\{\}\)|Template\.bind|StoryFn|ComponentStory/i.test(text)) return "csf2";
+  if (/storiesOf\s*\(/i.test(text)) return "legacy";
+  return "unknown";
+}
+
+function storybookStoryEvidence(filePath: string, text: string): string {
+  if (/StoryObj|satisfies\s+Meta/i.test(text)) return `${filePath} uses typed CSF story objects.`;
+  if (/defineMeta|@storybook\/addon-svelte-csf/i.test(text)) return `${filePath} uses Svelte CSF metadata.`;
+  if (/<Meta\b|<Story\b/i.test(text)) return `${filePath} uses MDX story/doc blocks.`;
+  if (/play\s*:/i.test(text)) return `${filePath} includes play function evidence.`;
+  if (/args\s*:/i.test(text)) return `${filePath} exposes args for interactive story states.`;
+  return `${filePath} is a Storybook-shaped story file.`;
+}
+
+function storybookConfigFiles(sourceFiles: StorybookSourceFile[]): StorybookReport["configFiles"] {
+  const rows: StorybookReport["configFiles"] = [];
+  for (const source of sourceFiles) {
+    const configType = storybookConfigType(source.filePath, source.text);
+    if (configType === "unknown") continue;
+    rows.push({
+      filePath: source.filePath,
+      configType,
+      readiness: storybookConfigReadiness(configType, source.text),
+      evidence: storybookConfigEvidence(source.filePath, configType, source.text),
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 80);
+}
+
+function storybookConfigType(filePath: string, text: string): StorybookReport["configFiles"][number]["configType"] {
+  const base = path.basename(filePath);
+  if (/^main\.[cm]?[jt]sx?$/i.test(base) && filePath.includes(".storybook/")) return "main";
+  if (/^preview\.[cm]?[jt]sx?$/i.test(base) && filePath.includes(".storybook/")) return "preview";
+  if (/^manager\.[cm]?[jt]sx?$/i.test(base) && filePath.includes(".storybook/")) return "manager";
+  if (/test-runner-jest\.config/i.test(base) || /test-storybook|@storybook\/test-runner/i.test(text)) return "test-runner";
+  if (/vitest\.config\.storybook/i.test(base) || /storybook\/experimental-addon-test|@storybook\/addon-vitest/i.test(text)) return "vitest";
+  if (/^package\.json$/i.test(base) && /storybook|build-storybook|test-storybook|chromatic/i.test(text)) return "package-script";
+  return "unknown";
+}
+
+function storybookConfigReadiness(configType: StorybookReport["configFiles"][number]["configType"], text: string): StorybookReport["configFiles"][number]["readiness"] {
+  if (configType === "main" && /stories\s*:|framework\s*:|addons\s*:/i.test(text)) return "ready";
+  if (configType === "preview" && /decorators|parameters|globalTypes|tags/i.test(text)) return "ready";
+  if (configType === "package-script" && /storybook|build-storybook|test-storybook/i.test(text)) return "ready";
+  if (configType === "test-runner" || configType === "vitest" || configType === "manager") return "ready";
+  return "partial";
+}
+
+function storybookConfigEvidence(filePath: string, configType: StorybookReport["configFiles"][number]["configType"], text: string): string {
+  if (configType === "main") return `${filePath} configures stories, framework, addons, or build features.`;
+  if (configType === "preview") return `${filePath} configures global decorators, parameters, tags, or toolbar globals.`;
+  if (configType === "manager") return `${filePath} customizes the Storybook manager UI.`;
+  if (configType === "test-runner") return `${filePath} configures or invokes Storybook test-runner.`;
+  if (configType === "vitest") return `${filePath} configures Storybook Test or Vitest browser mode.`;
+  if (/build-storybook/i.test(text)) return `${filePath} exposes a static Storybook build command.`;
+  return `${filePath} contains Storybook package script evidence.`;
+}
+
+function storybookAnnotations(sourceFiles: StorybookSourceFile[]): StorybookReport["storyAnnotations"] {
+  const specs: Array<{ annotation: StorybookReport["storyAnnotations"][number]["annotation"]; pattern: RegExp; evidence: string }> = [
+    { annotation: "component", pattern: /component\s*:/i, evidence: "component metadata is present for docs and prop inference." },
+    { annotation: "title", pattern: /title\s*:/i, evidence: "static title metadata is present for story hierarchy." },
+    { annotation: "args", pattern: /args\s*:/i, evidence: "args are used to model component states." },
+    { annotation: "argTypes", pattern: /argTypes\s*:/i, evidence: "argTypes customize Controls and docs metadata." },
+    { annotation: "parameters", pattern: /parameters\s*:/i, evidence: "parameters configure addons or story rendering." },
+    { annotation: "decorators", pattern: /decorators\s*:/i, evidence: "decorators wrap stories with layout, providers, or mocks." },
+    { annotation: "loaders", pattern: /loaders\s*:/i, evidence: "loaders prepare data before stories render." },
+    { annotation: "tags", pattern: /tags\s*:|autodocs/i, evidence: "tags or autodocs annotations are present." },
+    { annotation: "render", pattern: /render\s*:/i, evidence: "custom render functions are present." },
+    { annotation: "play", pattern: /play\s*:|async\s+\(\s*\{\s*canvas/i, evidence: "play functions capture post-render interaction steps." },
+    { annotation: "name", pattern: /name\s*:/i, evidence: "story display name overrides are present." },
+    { annotation: "subcomponents", pattern: /subcomponents\s*:/i, evidence: "subcomponent documentation metadata is present." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text));
+    return {
+      annotation: spec.annotation,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.annotation} annotation evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/storybook.html"
+    };
+  });
+}
+
+function storybookAddonSignals(sourceFiles: StorybookSourceFile[]): StorybookReport["addonSignals"] {
+  const specs: Array<{ addon: StorybookReport["addonSignals"][number]["addon"]; pattern: RegExp; evidence: string }> = [
+    { addon: "docs", pattern: /@storybook\/addon-docs|autodocs|docs\s*:/i, evidence: "Docs or Autodocs addon evidence was detected." },
+    { addon: "controls", pattern: /@storybook\/addon-controls|controls\s*:|argTypes\s*:/i, evidence: "Controls addon or argTypes evidence was detected." },
+    { addon: "actions", pattern: /@storybook\/addon-actions|actions\s*:|fn\(\)|argTypesRegex/i, evidence: "Actions or spy function evidence was detected." },
+    { addon: "interactions", pattern: /@storybook\/addon-interactions|play\s*:|storybook\/test/i, evidence: "Interactions panel or play-function testing evidence was detected." },
+    { addon: "a11y", pattern: /@storybook\/addon-a11y|a11y\s*:|accessibility/i, evidence: "A11y addon evidence was detected." },
+    { addon: "viewport", pattern: /@storybook\/addon-viewport|viewport\s*:|globalTypes/i, evidence: "Viewport or globals toolbar evidence was detected." },
+    { addon: "backgrounds", pattern: /@storybook\/addon-backgrounds|backgrounds\s*:/i, evidence: "Backgrounds addon evidence was detected." },
+    { addon: "measure", pattern: /@storybook\/addon-measure|measure/i, evidence: "Measure addon evidence was detected." },
+    { addon: "outline", pattern: /@storybook\/addon-outline|outline/i, evidence: "Outline addon evidence was detected." },
+    { addon: "coverage", pattern: /@storybook\/addon-coverage|coverage/i, evidence: "Coverage addon evidence was detected." },
+    { addon: "vitest", pattern: /@storybook\/addon-vitest|storybook\/experimental-addon-test|vitest/i, evidence: "Storybook Test or Vitest addon evidence was detected." },
+    { addon: "test-runner", pattern: /@storybook\/test-runner|test-storybook/i, evidence: "Storybook test-runner evidence was detected." },
+    { addon: "chromatic", pattern: /chromatic|@chromatic-com\/storybook/i, evidence: "Chromatic visual testing or publish evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      addon: spec.addon,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.addon} addon evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/storybook.html"
+    };
+  });
+}
+
+function storybookTestSignals(sourceFiles: StorybookSourceFile[]): StorybookReport["testSignals"] {
+  const specs: Array<{ signal: StorybookReport["testSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "render-tests", pattern: /\.stories\.|render test|stories are tests/i, evidence: "stories can act as browser render tests." },
+    { signal: "interaction-tests", pattern: /play\s*:|userEvent|within\(|canvas\.|expect\(/i, evidence: "interaction testing evidence was detected." },
+    { signal: "accessibility-tests", pattern: /@storybook\/addon-a11y|a11y|axe|accessibility/i, evidence: "accessibility testing evidence was detected." },
+    { signal: "visual-tests", pattern: /chromatic|visual test|toHaveScreenshot|snapshot/i, evidence: "visual testing evidence was detected." },
+    { signal: "snapshot-tests", pattern: /toMatchSnapshot|snapshot test|__snapshots__|serializer/i, evidence: "snapshot testing evidence was detected." },
+    { signal: "coverage", pattern: /coverage|@storybook\/addon-coverage|--coverage/i, evidence: "coverage reporting evidence was detected." },
+    { signal: "ci", pattern: /\.github\/workflows|CI\b|upload-artifact|pull_request|storybook.*test/i, evidence: "CI workflow evidence was detected." },
+    { signal: "storybook-test", pattern: /vitest --project=storybook|@storybook\/addon-vitest|storybook\/experimental-addon-test/i, evidence: "Storybook Test with Vitest evidence was detected." },
+    { signal: "portable-stories", pattern: /composeStor(?:y|ies)|setProjectAnnotations|@storybook\/.*\/testing|portable stories/i, evidence: "portable stories reuse evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/storybook.html"
+    };
+  });
+}
+
+function storybookPublishSignals(sourceFiles: StorybookSourceFile[]): StorybookReport["publishSignals"] {
+  const specs: Array<{ signal: StorybookReport["publishSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "build-storybook", pattern: /build-storybook|storybook build|--output-dir/i, evidence: "static Storybook build command is configured." },
+    { signal: "storybook-static", pattern: /storybook-static|static storybook|dist-storybook/i, evidence: "static Storybook output path is referenced." },
+    { signal: "chromatic", pattern: /chromatic|@chromatic-com\/storybook/i, evidence: "Chromatic publish or visual review is configured." },
+    { signal: "composition", pattern: /storybook composition|refs\s*:|storybook composition/i, evidence: "Storybook composition evidence was detected." },
+    { signal: "refs", pattern: /refs\s*:/i, evidence: "refs are configured for composed Storybooks." },
+    { signal: "static-dirs", pattern: /staticDirs\s*:/i, evidence: "static asset directories are configured." },
+    { signal: "docs-mode", pattern: /docsMode\s*:|--docs/i, evidence: "docs-only mode evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/storybook.html"
     };
   });
 }
