@@ -1,6 +1,6 @@
 {
   "iteration": 8,
-  "createdAt": "2026-06-04T11:10:24.487Z",
+  "createdAt": "2026-06-04T11:23:32.722Z",
   "checks": [
     {
       "name": "project setup",
@@ -508,6 +508,13 @@
     },
     {
       "name": "chart visualization readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "diagram rendering readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

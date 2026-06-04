@@ -178,6 +178,28 @@ Transferable patterns:
 - Keep static readiness separate from rendering canvases, measuring pixels, or
   executing chart plugins.
 
+### mermaid-js/mermaid
+
+- URL: https://github.com/mermaid-js/mermaid
+- Local source: `research/external-src/mermaid-js-mermaid`
+- Stars at check: 88,421
+- Forks at check: 9,024
+- License: MIT
+- Updated: 2026-06-04T09:35:29Z
+- Relevance: text-to-diagram syntax, Mermaid render/parse/init flow, SVG
+  output, theme/layout configuration, sandbox security, and callback/link
+  safety readiness.
+
+Transferable patterns:
+
+- Separate diagram syntax, render path, theme, security, layout, output, and
+  package readiness instead of treating diagrams as generic Markdown text.
+- Track diagram safety explicitly: `securityLevel`, strict/sandbox modes,
+  sanitization, DOMPurify, external links, callbacks, and trusted-user
+  boundaries.
+- Keep static readiness separate from rendering Mermaid diagrams, executing
+  callbacks, opening sandboxed iframes, mutating SVG, or exporting images.
+
 ## Adopted Upgrade
 
 ### Upgrade 1: CodeBoarding-Inspired Coverage Report
@@ -4820,6 +4842,56 @@ Local verification:
 - `pnpm build`: PASS
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 77/77 audit checks across 13 generated reports
+
+### Upgrade 180: Diagram Rendering Readiness Report
+
+- Cloned and inspected `mermaid-js/mermaid` under
+  `research/external-src/mermaid-js-mermaid` without executing external
+  source. Clone HEAD was `0c00846`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 88,421 stars, 9,024 forks,
+  updated 2026-06-04T09:35:29Z. Compared with `plantuml/plantuml`,
+  `yuzutech/kroki`, and `markmap/markmap`; selected Mermaid because it directly
+  models text-to-diagram readiness: `mermaid.initialize`, `mermaid.run`,
+  `mermaid.render`, `mermaid.parse`, SVG output, `bindFunctions`, diagram
+  syntax families, theme/layout settings, sandbox mode, and sanitization
+  boundaries. No source code was copied into RepoTutor.
+- Implemented Mermaid-style diagram-rendering-readiness report:
+  `DiagramRenderingReadinessReportSchema`,
+  `analysis/diagram-rendering-readiness-report.json`,
+  `markdown/diagram-rendering-readiness.md`,
+  `html/diagram-rendering-readiness.html`, diagram setups, diagram type
+  signals, render signals, theme signals, security signals, layout signals,
+  output signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target diagram-rendering-readiness`.
+- Source pattern: Mermaid separates diagram syntax through flowchart, sequence,
+  class, state, ER, Gantt, journey, mindmap, and architecture diagrams; render
+  flow through initialize/run/render/parse/SVG/bindFunctions; theme through
+  theme, themeVariables, themeCSS, darkMode, fontFamily, and htmlLabels;
+  security through securityLevel, strict mode, sandbox, sanitization, DOMPurify,
+  and external links; layout through useMaxWidth, viewBox, ELK, Dagre,
+  tidy-tree, and responsive SVG; and output through SVG, iframe, download, live
+  editor, and snapshot-test signals. RepoTutor maps that to deterministic
+  static diagram rendering readiness and explicitly does not render Mermaid
+  diagrams, execute diagram callbacks, open sandboxed iframes, sanitize user
+  text, mutate SVG, export images, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-diagram-red-studies.K5YD0w/2026-06-04/local__simple-ts-app__HEAD__4fb02829`;
+  old behavior was missing
+  `analysis/diagram-rendering-readiness-report.json`,
+  `markdown/diagram-rendering-readiness.md`, and
+  `html/diagram-rendering-readiness.html`, and `open --target
+  diagram-rendering-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-diagram-green-studies.6nQ6vE/2026-06-04/local__simple-ts-app__main__4fb02829`;
+  confirmed `verificationCheckedRequiredArtifacts=240`, diagram setups 0,
+  diagram type signals 8, render signals 6, theme signals 6, security signals
+  6, layout signals 6, output signals 5, package signals 5, risk queue 2, all
+  three new artifacts, and `open --target diagram-rendering-readiness` ->
+  `html/diagram-rendering-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 78/78 audit checks across 13 generated reports
 
 ## Deferred Candidate Backlog
 
