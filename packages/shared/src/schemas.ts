@@ -3616,6 +3616,77 @@ export const DateTimeReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const IdGenerationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  idGeneratorSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["nanoid", "uuid", "cuid2", "ulid", "crypto-randomuuid", "custom", "unknown"]),
+    generatorCount: z.number().int().nonnegative(),
+    secureRandomCount: z.number().int().nonnegative(),
+    customAlphabetCount: z.number().int().nonnegative(),
+    customRandomCount: z.number().int().nonnegative(),
+    validationCount: z.number().int().nonnegative(),
+    usageRiskCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  generationSignals: z.array(z.object({
+    signal: z.enum(["default-nanoid", "sized-nanoid", "custom-alphabet", "custom-random", "url-alphabet", "random-bytes", "cli-generation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  entropySignals: z.array(z.object({
+    signal: z.enum(["crypto-random-values", "node-crypto", "web-crypto", "math-random", "non-secure-import", "collision-calculator", "uniformity", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  alphabetSignals: z.array(z.object({
+    signal: z.enum(["url-safe", "custom-alphabet", "alphabet-size-limit", "dictionary", "prefix-suffix", "length-override", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runtimeSignals: z.array(z.object({
+    signal: z.enum(["esm-import", "dynamic-import", "commonjs-require", "browser", "react-native-random-values", "deno-jsr", "cli", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  usageSignals: z.array(z.object({
+    signal: z.enum(["model-id", "database-id", "react-key", "mock-id", "branded-type", "public-url", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  validationSignals: z.array(z.object({
+    signal: z.enum(["positive-size", "alphabet-required-with-size", "collision-tests", "uniqueness-tests", "distribution-tests", "type-tests", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["nanoid", "uuid", "@paralleldrive/cuid2", "ulid", "react-native-get-random-values", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3890,6 +3961,7 @@ export type AnalyticsReadinessReport = z.infer<typeof AnalyticsReadinessReportSc
 export type HttpClientReadinessReport = z.infer<typeof HttpClientReadinessReportSchema>;
 export type SchemaValidationReadinessReport = z.infer<typeof SchemaValidationReadinessReportSchema>;
 export type DateTimeReadinessReport = z.infer<typeof DateTimeReadinessReportSchema>;
+export type IdGenerationReadinessReport = z.infer<typeof IdGenerationReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

@@ -1,6 +1,6 @@
 {
   "iteration": 1,
-  "createdAt": "2026-06-04T09:51:44.538Z",
+  "createdAt": "2026-06-04T10:00:55.843Z",
   "checks": [
     {
       "name": "project setup",
@@ -459,6 +459,13 @@
     },
     {
       "name": "datetime readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "id generation readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -80,6 +80,7 @@ import type {
   HttpClientReadinessReport,
   SchemaValidationReadinessReport,
   DateTimeReadinessReport,
+  IdGenerationReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -166,6 +167,7 @@ export interface StudyHtmlInput {
   httpClientReadinessReport: HttpClientReadinessReport;
   schemaValidationReadinessReport: SchemaValidationReadinessReport;
   dateTimeReadinessReport: DateTimeReadinessReport;
+  idGenerationReadinessReport: IdGenerationReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -266,6 +268,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["http-client-readiness.html", "HTTP Client"],
     ["schema-validation-readiness.html", "Validation"],
     ["datetime-readiness.html", "Datetime"],
+    ["id-generation-readiness.html", "ID Generation"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -758,6 +761,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Datetime Readiness", "datetime-readiness.html", `<section class="panel" data-source-pattern="Luxon"><h2>Datetime Snapshot</h2><p>${escapeHtml(input.dateTimeReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dateTimeReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dateTimeReadinessReport.dateTimeSetups.length}</dd></div><div><dt>parsing</dt><dd>${input.dateTimeReadinessReport.parsingSignals.length}</dd></div><div><dt>zones</dt><dd>${input.dateTimeReadinessReport.zoneSignals.length}</dd></div><div><dt>validity</dt><dd>${input.dateTimeReadinessReport.validitySignals.length}</dd></div></dl><p class="muted">RepoTutor records datetime readiness only. It does not evaluate current time, parse dates, change process timezone, modify Luxon Settings, run timers, or run the analyzed project's tests.</p></section><section class="grid"><article class="datetime-readiness-card"><h3>DateTime Setups</h3>${dateTimeReadinessSetupList(input.dateTimeReadinessReport.dateTimeSetups)}</article><article class="datetime-readiness-card"><h3>Construction Signals</h3>${dateTimeReadinessSignalList(input.dateTimeReadinessReport.constructionSignals, "signal")}</article><article class="datetime-readiness-card"><h3>Parsing Signals</h3>${dateTimeReadinessSignalList(input.dateTimeReadinessReport.parsingSignals, "signal")}</article><article class="datetime-readiness-card"><h3>Formatting Signals</h3>${dateTimeReadinessSignalList(input.dateTimeReadinessReport.formattingSignals, "signal")}</article></section><section class="grid"><article class="datetime-readiness-card"><h3>Zone Signals</h3>${dateTimeReadinessSignalList(input.dateTimeReadinessReport.zoneSignals, "signal")}</article><article class="datetime-readiness-card"><h3>Duration Signals</h3>${dateTimeReadinessSignalList(input.dateTimeReadinessReport.durationSignals, "signal")}</article><article class="datetime-readiness-card"><h3>Validity Signals</h3>${dateTimeReadinessSignalList(input.dateTimeReadinessReport.validitySignals, "signal")}</article><article class="datetime-readiness-card"><h3>Package Signals</h3>${dateTimeReadinessSignalList(input.dateTimeReadinessReport.packageSignals, "signal")}</article><article class="datetime-readiness-card"><h3>Recommended Commands</h3>${dateTimeReadinessCommandList(input.dateTimeReadinessReport.recommendedCommands)}</article><article class="datetime-readiness-card"><h3>Risk Queue</h3>${dateTimeReadinessRiskList(input.dateTimeReadinessReport.riskQueue)}</article><article class="datetime-readiness-card"><h3>다음 확인 단계</h3>${list(input.dateTimeReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "id-generation-readiness.html",
+      title: "ID Generation Readiness",
+      html: pageShell("ID Generation Readiness", "id-generation-readiness.html", `<section class="panel" data-source-pattern="Nano ID"><h2>ID Generation Snapshot</h2><p>${escapeHtml(input.idGenerationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.idGenerationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.idGenerationReadinessReport.idGeneratorSetups.length}</dd></div><div><dt>generation</dt><dd>${input.idGenerationReadinessReport.generationSignals.length}</dd></div><div><dt>entropy</dt><dd>${input.idGenerationReadinessReport.entropySignals.length}</dd></div><div><dt>usage</dt><dd>${input.idGenerationReadinessReport.usageSignals.length}</dd></div></dl><p class="muted">RepoTutor records ID generation readiness only. It does not generate IDs, call crypto or Math.random, run CLI generators, mutate stores, or run the analyzed project's tests.</p></section><section class="grid"><article class="id-generation-readiness-card"><h3>ID Generator Setups</h3>${idGenerationReadinessSetupList(input.idGenerationReadinessReport.idGeneratorSetups)}</article><article class="id-generation-readiness-card"><h3>Generation Signals</h3>${idGenerationReadinessSignalList(input.idGenerationReadinessReport.generationSignals, "signal")}</article><article class="id-generation-readiness-card"><h3>Entropy Signals</h3>${idGenerationReadinessSignalList(input.idGenerationReadinessReport.entropySignals, "signal")}</article><article class="id-generation-readiness-card"><h3>Alphabet Signals</h3>${idGenerationReadinessSignalList(input.idGenerationReadinessReport.alphabetSignals, "signal")}</article></section><section class="grid"><article class="id-generation-readiness-card"><h3>Runtime Signals</h3>${idGenerationReadinessSignalList(input.idGenerationReadinessReport.runtimeSignals, "signal")}</article><article class="id-generation-readiness-card"><h3>Usage Signals</h3>${idGenerationReadinessSignalList(input.idGenerationReadinessReport.usageSignals, "signal")}</article><article class="id-generation-readiness-card"><h3>Validation Signals</h3>${idGenerationReadinessSignalList(input.idGenerationReadinessReport.validationSignals, "signal")}</article><article class="id-generation-readiness-card"><h3>Package Signals</h3>${idGenerationReadinessSignalList(input.idGenerationReadinessReport.packageSignals, "signal")}</article><article class="id-generation-readiness-card"><h3>Recommended Commands</h3>${idGenerationReadinessCommandList(input.idGenerationReadinessReport.recommendedCommands)}</article><article class="id-generation-readiness-card"><h3>Risk Queue</h3>${idGenerationReadinessRiskList(input.idGenerationReadinessReport.riskQueue)}</article><article class="id-generation-readiness-card"><h3>다음 확인 단계</h3>${list(input.idGenerationReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -938,6 +946,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "HTTP Client Readiness", path: "html/http-client-readiness.html", description: "Got식 request, timeout, retry, hooks, transport, error metadata 준비도를 확인합니다." },
       { label: "Schema Validation Readiness", path: "html/schema-validation-readiness.html", description: "Zod식 schema shape, parse/safeParse, refinement, error output, integration 준비도를 확인합니다." },
       { label: "Datetime Readiness", path: "html/datetime-readiness.html", description: "Luxon식 parsing, formatting, timezone, duration, interval, validity 준비도를 확인합니다." },
+      { label: "ID Generation Readiness", path: "html/id-generation-readiness.html", description: "Nano ID식 generator, entropy, alphabet, runtime, usage, validation 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1441,6 +1450,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "datetime-readiness.html",
       goal: "Luxon식 DateTime, parsing, formatting, timezone, duration/interval, validity 흐름을 보고 시간 처리 관문을 확인합니다.",
       evidence: `datetime setups ${input.dateTimeReadinessReport.dateTimeSetups.length}개, zone signals ${input.dateTimeReadinessReport.zoneSignals.length}개`
+    },
+    {
+      title: "ID generation readiness 확인",
+      href: "id-generation-readiness.html",
+      goal: "Nano ID식 generator, entropy source, alphabet/size, runtime, usage, validation 흐름을 보고 ID 생성 관문을 확인합니다.",
+      evidence: `id generator setups ${input.idGenerationReadinessReport.idGeneratorSetups.length}개, entropy signals ${input.idGenerationReadinessReport.entropySignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -3283,6 +3298,31 @@ function dateTimeReadinessRiskList(items: DateTimeReadinessReport["riskQueue"]):
 }
 
 function dateTimeReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function idGenerationReadinessSetupList(items: IdGenerationReadinessReport["idGeneratorSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">ID generator setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>generator/secure-random/custom-alphabet/custom-random/validation/usage-risk ${item.generatorCount}/${item.secureRandomCount}/${item.customAlphabetCount}/${item.customRandomCount}/${item.validationCount}/${item.usageRiskCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(idGenerationReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function idGenerationReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">ID generation signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(idGenerationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function idGenerationReadinessCommandList(items: IdGenerationReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function idGenerationReadinessRiskList(items: IdGenerationReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(idGenerationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function idGenerationReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

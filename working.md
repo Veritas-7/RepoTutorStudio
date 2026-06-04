@@ -3334,6 +3334,45 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 172:
   - `1eae77d` datetime readiness report
 
+- 2026-06-04: AutoResearch Upgrade 173 candidate selected:
+  `ai/nanoid`
+  (`https://github.com/ai/nanoid`; public; MIT; 26,808 stars; 849 forks;
+  updated 2026-06-04T09:39:14Z). Compared with `uuidjs/uuid`,
+  `paralleldrive/cuid2`, and `ulid/javascript`; selected Nano ID because it
+  directly models secure URL-friendly IDs, `customAlphabet`, `customRandom`,
+  `urlAlphabet`, random bytes, non-secure fallback, size/alphabet CLI flags,
+  collision probability, uniformity, runtime imports, and React key cautions.
+  Cloned ignored external source to `research/external-src/ai-nanoid` and
+  inspected README, package metadata, type definitions, CLI source, and tests
+  without executing external source. Clone HEAD was `78f4a02`; tracked-file
+  count for `research/external-src/ai-nanoid` returned `0`.
+- 2026-06-04: RED id-generation-readiness smoke generated
+  `/tmp/repotutor-id-generation-readiness-red-studies.wP6s6n/2026-06-04/local__simple-ts-app__main__d3a4452c`;
+  old build was missing `analysis/id-generation-readiness-report.json`,
+  `markdown/id-generation-readiness.md`, and
+  `html/id-generation-readiness.html`, and `open --target
+  id-generation-readiness` failed as expected.
+- 2026-06-04: Implemented Nano ID-style id-generation-readiness report:
+  `IdGenerationReadinessReportSchema`,
+  `analysis/id-generation-readiness-report.json`,
+  `markdown/id-generation-readiness.md`,
+  `html/id-generation-readiness.html`, ID generator setups, generation signals,
+  entropy signals, alphabet signals, runtime signals, usage signals,
+  validation signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target id-generation-readiness`.
+- 2026-06-04: GREEN id-generation-readiness smoke generated
+  `/tmp/repotutor-id-generation-readiness-green-studies.Rs5B6i/2026-06-04/local__simple-ts-app__main__d3a4452c`;
+  confirmed `verificationCheckedRequiredArtifacts=219`, ID generator setups 0,
+  generation signals 7, entropy signals 7, alphabet signals 6, runtime signals
+  7, usage signals 6, validation signals 6, package signals 5, risk queue 2,
+  all three new artifacts, and `open --target id-generation-readiness` ->
+  `html/id-generation-readiness.html`.
+- 2026-06-04: Verification for Upgrade 173:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 71/71 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
