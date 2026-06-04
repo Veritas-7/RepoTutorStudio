@@ -2347,6 +2347,57 @@ export const FormatReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CommitConventionReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  configFiles: z.array(z.object({
+    filePath: z.string(),
+    configType: z.enum(["commitlint", "package-json", "husky", "unknown"]),
+    extendsCount: z.number().int().nonnegative(),
+    ruleCount: z.number().int().nonnegative(),
+    parserPreset: z.enum(["conventional", "custom", "missing"]),
+    promptSignal: z.boolean(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  ruleSignals: z.array(z.object({
+    signal: z.enum(["type-enum", "scope-enum", "subject-case", "subject-empty", "subject-full-stop", "header-max-length", "body-leading-blank", "body-max-line-length", "footer-leading-blank", "footer-max-line-length", "breaking-change", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  hookSignals: z.array(z.object({
+    signal: z.enum(["commit-msg", "husky", "ci-range", "last-commit", "edit-message", "prompt", "bypass", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  commandSignals: z.array(z.object({
+    signal: z.enum(["from-to", "last", "edit", "verbose", "strict", "format", "config", "help-url", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["commitlint-cli", "config-conventional", "commitizen", "cz-commitlint", "husky", "conventional-changelog", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2600,6 +2651,7 @@ export type TaskRunnerReport = z.infer<typeof TaskRunnerReportSchema>;
 export type DependencyUpdateReport = z.infer<typeof DependencyUpdateReportSchema>;
 export type LintReadinessReport = z.infer<typeof LintReadinessReportSchema>;
 export type FormatReadinessReport = z.infer<typeof FormatReadinessReportSchema>;
+export type CommitConventionReport = z.infer<typeof CommitConventionReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

@@ -64,6 +64,7 @@ import {
   DependencyUpdateReport,
   LintReadinessReport,
   FormatReadinessReport,
+  CommitConventionReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -134,6 +135,7 @@ export interface AnalysisBundle {
   dependencyUpdateReport: DependencyUpdateReport;
   lintReadinessReport: LintReadinessReport;
   formatReadinessReport: FormatReadinessReport;
+  commitConventionReport: CommitConventionReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -204,8 +206,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const dependencyUpdateReport = await buildDependencyUpdateReport(walk);
   const lintReadinessReport = await buildLintReadinessReport(walk);
   const formatReadinessReport = await buildFormatReadinessReport(walk);
+  const commitConventionReport = await buildCommitConventionReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -10161,6 +10164,252 @@ function formatReadinessSignalFromSpecs<T extends Record<K, string> & { pattern:
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/format-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildCommitConventionReport(walk: WalkResult): Promise<CommitConventionReport> {
+  const sourceFiles = await commitConventionSourceFiles(walk);
+  const configFiles = commitConventionConfigFiles(sourceFiles);
+  const ruleSignals = commitConventionRuleSignals(sourceFiles);
+  const hookSignals = commitConventionHookSignals(sourceFiles);
+  const commandSignals = commitConventionCommandSignals(sourceFiles);
+  const packageSignals = commitConventionPackageSignals(sourceFiles);
+
+  const hasConfig = configFiles.length > 0;
+  const hasHook = hookSignals.some((item) => item.signal === "commit-msg" && item.readiness === "ready");
+  const hasCiRange = hookSignals.some((item) => item.signal === "ci-range" && item.readiness === "ready");
+  const hasTypeEnum = ruleSignals.some((item) => item.signal === "type-enum" && item.readiness === "ready");
+  const hasCli = packageSignals.some((item) => item.signal === "commitlint-cli" && item.readiness === "ready");
+  const hasConventional = packageSignals.some((item) => item.signal === "config-conventional" && item.readiness === "ready")
+    || configFiles.some((item) => item.parserPreset === "conventional");
+
+  const riskQueue: CommitConventionReport["riskQueue"] = [];
+  if (!hasConfig && !hasHook && !hasCiRange) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add commitlint config, a commit-msg hook, or CI range check so learners can find the commit convention boundary.",
+      why: "Commitlint readiness starts from config discovery, rules, and the command surface that checks messages before merge.",
+      relatedHref: "html/commit-conventions.html"
+    });
+  }
+  if ((hasHook || hasCiRange) && !hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add the commitlint configuration referenced by hooks or CI.",
+      why: "A commit-msg hook without visible rules hides type, scope, subject, body, footer, and parser policy.",
+      relatedHref: "html/commit-conventions.html"
+    });
+  }
+  if (hasConfig && !hasTypeEnum && !hasConventional) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Define a type-enum rule or extend a conventional commit preset.",
+      why: "Commit types are the learner-facing contract for release notes, changelog grouping, and review triage.",
+      relatedHref: "html/commit-conventions.html"
+    });
+  }
+  if ((hasConfig || hasHook || hasCiRange) && !hasCli) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Confirm @commitlint/cli is installed where the hook or CI command runs.",
+      why: "Global commitlint installs and editor-only integrations are not reproducible from the repository alone.",
+      relatedHref: "html/commit-conventions.html"
+    });
+  }
+  if (hasHook && !hasCiRange) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add a CI range check for pull request commits.",
+      why: "Local hooks can be bypassed; commitlint --from/--to protects commits that arrive through remote workflows.",
+      relatedHref: "html/commit-conventions.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run commitlint in a trusted workspace before treating this static report as approval.",
+    why: "RepoTutor records commit convention readiness statically; it does not inspect private commit history or execute hooks.",
+    relatedHref: "html/commit-conventions.html"
+  });
+
+  return {
+    summary: `commitlint식 commit convention report: config file ${configFiles.length}개, rule signal ${ruleSignals.length}개, hook signal ${hookSignals.length}개, package signal ${packageSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "commitlint config conventional commits rules parserPreset commit-msg husky from to last edit strict verbose prompt",
+    configFiles,
+    ruleSignals,
+    hookSignals,
+    commandSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx commitlint --last --verbose", purpose: "Check the latest commit message in a trusted workspace." },
+      { command: "npx commitlint --from <base-sha> --to <head-sha> --verbose", purpose: "Check a pull request commit range in CI." },
+      { command: "npx commitlint --edit .git/COMMIT_EDITMSG", purpose: "Check the current commit message file from a commit-msg hook." },
+      { command: "npx commitlint --print-config", purpose: "Inspect resolved config, extends, parserPreset, and rules." },
+      { command: "npx commitlint --strict --last", purpose: "Fail on warnings as well as errors when the policy requires it." },
+      { command: "npx commit", purpose: "Use the prompt flow when @commitlint/prompt-cli or commitizen is configured." }
+    ],
+    learnerNextSteps: [
+      "Start with commitlint.config.* or package.json commitlint fields to learn the rules and presets.",
+      "Then inspect commit-msg hooks and CI range commands because local hooks can be bypassed.",
+      "Check type-enum, scope-enum, subject, body, footer, and breaking-change rules as the actual commit contract.",
+      "RepoTutor does not run commitlint or inspect private history; use this page as a static map before executing commit checks yourself."
+    ]
+  };
+}
+
+type CommitConventionSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function commitConventionSourceFiles(walk: WalkResult): Promise<CommitConventionSourceFile[]> {
+  const files: CommitConventionSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !commitConventionInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 200_000);
+    if (!text) continue;
+    if (!commitConventionPathSignal(file.relPath) && !commitConventionContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 240) break;
+  }
+  return files;
+}
+
+function commitConventionInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return commitConventionPathSignal(filePath)
+    || /^(package\.json|\.gitmessage|COMMIT_EDITMSG)$/i.test(base)
+    || filePath.startsWith(".github/workflows/")
+    || filePath.startsWith(".husky/")
+    || /\.(js|cjs|mjs|ts|json|json5|ya?ml|md|sh)$/i.test(filePath);
+}
+
+function commitConventionPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(commitlint\.config\.[cm]?[jt]s|\.commitlintrc|\.commitlintrc\.(json|ya?ml|js|cjs|mjs|ts|cts|mts)|package\.json)$/i.test(base)
+    || /commitlint|commit-msg|conventional-commit|commitizen|cz-commitlint/i.test(filePath);
+}
+
+function commitConventionContentSignal(text: string): boolean {
+  return /commitlint|conventional commits?|parserPreset|type-enum|scope-enum|commit-msg|COMMIT_EDITMSG|--from|--to|--last|--edit|@commitlint|commitizen|cz-commitlint/i.test(text);
+}
+
+function commitConventionConfigFiles(sourceFiles: CommitConventionSourceFile[]): CommitConventionReport["configFiles"] {
+  return sourceFiles
+    .filter((source) => commitConventionConfigPathSignal(source.filePath, source.text))
+    .slice(0, 80)
+    .map((source) => {
+      const configType = commitConventionConfigType(source.filePath, source.text);
+      const extendsCount = countMatches(source.text, /extends\s*:|@commitlint\/config-|commitlint-config-|config-conventional/g);
+      const ruleCount = countMatches(source.text, /rules\s*:|type-enum|scope-enum|subject-|body-|footer-|header-|breaking-/g);
+      const parserPreset = commitConventionParserPreset(source.text);
+      const promptSignal = /prompt|commitizen|cz-commitlint|@commitlint\/prompt/i.test(source.text);
+      return {
+        filePath: source.filePath,
+        configType,
+        extendsCount,
+        ruleCount,
+        parserPreset,
+        promptSignal,
+        readiness: extendsCount > 0 || ruleCount > 0 || parserPreset !== "missing" ? "ready" : "partial",
+        evidence: `${source.filePath} contains ${configType} commit convention config with ${extendsCount} extends signal(s), ${ruleCount} rule signal(s), and parserPreset ${parserPreset}.`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function commitConventionConfigPathSignal(filePath: string, text: string): boolean {
+  const base = path.basename(filePath);
+  return /^(commitlint\.config\.[cm]?[jt]s|\.commitlintrc|\.commitlintrc\.(json|ya?ml|js|cjs|mjs|ts|cts|mts))$/i.test(base)
+    || (base === "package.json" && /"commitlint"\s*:|"scripts"\s*:[\s\S]*(commitlint|"commit")/i.test(text))
+    || (filePath.startsWith(".husky/") && /commitlint/i.test(text));
+}
+
+function commitConventionConfigType(filePath: string, text: string): CommitConventionReport["configFiles"][number]["configType"] {
+  const base = path.basename(filePath).toLowerCase();
+  if (base === "package.json") return "package-json";
+  if (filePath.startsWith(".husky/")) return "husky";
+  if (/commitlint|\.commitlintrc/.test(base) || /commitlint|parserPreset|type-enum/i.test(text)) return "commitlint";
+  return "unknown";
+}
+
+function commitConventionParserPreset(text: string): CommitConventionReport["configFiles"][number]["parserPreset"] {
+  if (/conventional-changelog-conventionalcommits|config-conventional|conventionalcommits/i.test(text)) return "conventional";
+  if (/parserPreset\s*:/i.test(text)) return "custom";
+  return "missing";
+}
+
+function commitConventionRuleSignals(sourceFiles: CommitConventionSourceFile[]): CommitConventionReport["ruleSignals"] {
+  const specs: Array<{ signal: CommitConventionReport["ruleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "type-enum", pattern: /type-enum|@commitlint\/config-conventional|config-conventional|conventional commits?/i, evidence: "type-enum or conventional preset evidence was detected." },
+    { signal: "scope-enum", pattern: /scope-enum|scope-case|scope-empty/i, evidence: "scope rule evidence was detected." },
+    { signal: "subject-case", pattern: /subject-case|sentence-case|start-case|pascal-case|upper-case/i, evidence: "subject-case evidence was detected." },
+    { signal: "subject-empty", pattern: /subject-empty/i, evidence: "subject-empty evidence was detected." },
+    { signal: "subject-full-stop", pattern: /subject-full-stop/i, evidence: "subject-full-stop evidence was detected." },
+    { signal: "header-max-length", pattern: /header-max-length|header-max/i, evidence: "header length evidence was detected." },
+    { signal: "body-leading-blank", pattern: /body-leading-blank/i, evidence: "body leading blank evidence was detected." },
+    { signal: "body-max-line-length", pattern: /body-max-line-length/i, evidence: "body max line length evidence was detected." },
+    { signal: "footer-leading-blank", pattern: /footer-leading-blank/i, evidence: "footer leading blank evidence was detected." },
+    { signal: "footer-max-line-length", pattern: /footer-max-line-length/i, evidence: "footer max line length evidence was detected." },
+    { signal: "breaking-change", pattern: /BREAKING CHANGE|breaking-change|breakingBody|breaking/i, evidence: "breaking-change evidence was detected." }
+  ];
+  return commitConventionSignalFromSpecs(sourceFiles, specs, "rule", "signal");
+}
+
+function commitConventionHookSignals(sourceFiles: CommitConventionSourceFile[]): CommitConventionReport["hookSignals"] {
+  const specs: Array<{ signal: CommitConventionReport["hookSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "commit-msg", pattern: /\.husky\/commit-msg|commit-msg|COMMIT_EDITMSG|--edit/i, evidence: "commit-msg hook evidence was detected." },
+    { signal: "husky", pattern: /\.husky|husky|prepare.*husky/i, evidence: "Husky hook install evidence was detected." },
+    { signal: "ci-range", pattern: /--from|--to|pull_request|base\.sha|head\.sha/i, evidence: "CI commit range evidence was detected." },
+    { signal: "last-commit", pattern: /--last|last commit/i, evidence: "last commit command evidence was detected." },
+    { signal: "edit-message", pattern: /--edit|COMMIT_EDITMSG|edit/i, evidence: "commit message file evidence was detected." },
+    { signal: "prompt", pattern: /@commitlint\/prompt|prompt-cli|commitizen|cz-commitlint|npm run commit/i, evidence: "commit prompt evidence was detected." },
+    { signal: "bypass", pattern: /--no-verify|HUSKY=0|bypass/i, evidence: "hook bypass policy evidence was detected." }
+  ];
+  return commitConventionSignalFromSpecs(sourceFiles, specs, "hook", "signal");
+}
+
+function commitConventionCommandSignals(sourceFiles: CommitConventionSourceFile[]): CommitConventionReport["commandSignals"] {
+  const specs: Array<{ signal: CommitConventionReport["commandSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "from-to", pattern: /--from|--to/i, evidence: "from/to range command evidence was detected." },
+    { signal: "last", pattern: /--last/i, evidence: "last command evidence was detected." },
+    { signal: "edit", pattern: /--edit|COMMIT_EDITMSG/i, evidence: "edit command evidence was detected." },
+    { signal: "verbose", pattern: /--verbose|verbose/i, evidence: "verbose command evidence was detected." },
+    { signal: "strict", pattern: /--strict|strict/i, evidence: "strict command evidence was detected." },
+    { signal: "format", pattern: /--format|@commitlint\/format|formatter/i, evidence: "formatter command evidence was detected." },
+    { signal: "config", pattern: /--config|print-config|commitlint\.config|\.commitlintrc/i, evidence: "config command evidence was detected." },
+    { signal: "help-url", pattern: /help-url|helpUrl/i, evidence: "help URL evidence was detected." }
+  ];
+  return commitConventionSignalFromSpecs(sourceFiles, specs, "command", "signal");
+}
+
+function commitConventionPackageSignals(sourceFiles: CommitConventionSourceFile[]): CommitConventionReport["packageSignals"] {
+  const specs: Array<{ signal: CommitConventionReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "commitlint-cli", pattern: /@commitlint\/cli|commitlint\b/i, evidence: "@commitlint/cli evidence was detected." },
+    { signal: "config-conventional", pattern: /@commitlint\/config-conventional|config-conventional|conventional-changelog-conventionalcommits/i, evidence: "conventional config evidence was detected." },
+    { signal: "commitizen", pattern: /commitizen|cz-cli/i, evidence: "Commitizen evidence was detected." },
+    { signal: "cz-commitlint", pattern: /cz-commitlint|@commitlint\/cz-commitlint/i, evidence: "cz-commitlint evidence was detected." },
+    { signal: "husky", pattern: /"husky"\s*:|husky\b|\.husky/i, evidence: "Husky package evidence was detected." },
+    { signal: "conventional-changelog", pattern: /conventional-changelog|semantic-release|changesets/i, evidence: "release/changelog integration evidence was detected." }
+  ];
+  return commitConventionSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function commitConventionSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: CommitConventionSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/commit-conventions.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

@@ -59,6 +59,7 @@ import type {
   DependencyUpdateReport,
   LintReadinessReport,
   FormatReadinessReport,
+  CommitConventionReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -124,6 +125,7 @@ export interface StudyHtmlInput {
   dependencyUpdateReport: DependencyUpdateReport;
   lintReadinessReport: LintReadinessReport;
   formatReadinessReport: FormatReadinessReport;
+  commitConventionReport: CommitConventionReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -209,6 +211,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["dependency-updates.html", "Dependency Updates"],
     ["lint-readiness.html", "Lint"],
     ["format-readiness.html", "Format"],
+    ["commit-conventions.html", "Commits"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -329,6 +332,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Dependency Updates Readiness</h3><p>${escapeHtml(input.dependencyUpdateReport.summary)}</p><p>Renovate 패턴으로 update config, packageRules, automerge, dashboard, registry, package files를 정리합니다.</p><a href="dependency-updates.html">Dependency Updates 열기</a></article>
           <article><h3>Lint Readiness</h3><p>${escapeHtml(input.lintReadinessReport.summary)}</p><p>ESLint 패턴으로 flat config, rules, plugins, parser, ignores, fix/cache/report options를 정리합니다.</p><a href="lint-readiness.html">Lint 열기</a></article>
           <article><h3>Format Readiness</h3><p>${escapeHtml(input.formatReadinessReport.summary)}</p><p>Prettier 패턴으로 config, ignore, options, plugins, check/write/cache workflows를 정리합니다.</p><a href="format-readiness.html">Format 열기</a></article>
+          <article><h3>Commit Conventions</h3><p>${escapeHtml(input.commitConventionReport.summary)}</p><p>commitlint 패턴으로 config, rules, commit-msg hooks, CI ranges, prompt/CLI commands를 정리합니다.</p><a href="commit-conventions.html">Commits 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -585,6 +589,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Format Readiness", "format-readiness.html", `<section class="panel" data-source-pattern="Prettier"><h2>Format Snapshot</h2><p>${escapeHtml(input.formatReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.formatReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>configs</dt><dd>${input.formatReadinessReport.configFiles.length}</dd></div><div><dt>ignores</dt><dd>${input.formatReadinessReport.ignoreFiles.length}</dd></div><div><dt>scripts</dt><dd>${input.formatReadinessReport.scriptSignals.length}</dd></div><div><dt>packages</dt><dd>${input.formatReadinessReport.packageSignals.length}</dd></div></dl><p class="muted">RepoTutor records format readiness only. It does not execute Prettier, rewrite files, load plugins, or create cache files.</p></section><section class="grid"><article class="format-readiness-card"><h3>Config Files</h3>${formatReadinessConfigList(input.formatReadinessReport.configFiles)}</article><article class="format-readiness-card"><h3>Ignore Files</h3>${formatReadinessIgnoreList(input.formatReadinessReport.ignoreFiles)}</article><article class="format-readiness-card"><h3>Option Signals</h3>${formatReadinessSignalList(input.formatReadinessReport.optionSignals, "signal")}</article><article class="format-readiness-card"><h3>Script Signals</h3>${formatReadinessSignalList(input.formatReadinessReport.scriptSignals, "signal")}</article></section><section class="grid"><article class="format-readiness-card"><h3>Scope Signals</h3>${formatReadinessSignalList(input.formatReadinessReport.scopeSignals, "signal")}</article><article class="format-readiness-card"><h3>Package Signals</h3>${formatReadinessSignalList(input.formatReadinessReport.packageSignals, "signal")}</article><article class="format-readiness-card"><h3>Recommended Commands</h3>${formatReadinessCommandList(input.formatReadinessReport.recommendedCommands)}</article><article class="format-readiness-card"><h3>Risk Queue</h3>${formatReadinessRiskList(input.formatReadinessReport.riskQueue)}</article><article class="format-readiness-card"><h3>다음 확인 단계</h3>${list(input.formatReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "commit-conventions.html",
+      title: "Commit Conventions",
+      html: pageShell("Commit Conventions", "commit-conventions.html", `<section class="panel" data-source-pattern="commitlint"><h2>Commit Convention Snapshot</h2><p>${escapeHtml(input.commitConventionReport.summary)}</p><p class="muted">${escapeHtml(input.commitConventionReport.sourcePattern)}</p><dl class="meta"><div><dt>configs</dt><dd>${input.commitConventionReport.configFiles.length}</dd></div><div><dt>rules</dt><dd>${input.commitConventionReport.ruleSignals.length}</dd></div><div><dt>hooks</dt><dd>${input.commitConventionReport.hookSignals.length}</dd></div><div><dt>packages</dt><dd>${input.commitConventionReport.packageSignals.length}</dd></div></dl><p class="muted">RepoTutor records commit convention readiness only. It does not inspect private commit history, execute hooks, or rewrite commit messages.</p></section><section class="grid"><article class="commit-convention-card"><h3>Config Files</h3>${commitConventionConfigList(input.commitConventionReport.configFiles)}</article><article class="commit-convention-card"><h3>Rule Signals</h3>${commitConventionSignalList(input.commitConventionReport.ruleSignals, "signal")}</article><article class="commit-convention-card"><h3>Hook Signals</h3>${commitConventionSignalList(input.commitConventionReport.hookSignals, "signal")}</article><article class="commit-convention-card"><h3>Command Signals</h3>${commitConventionSignalList(input.commitConventionReport.commandSignals, "signal")}</article></section><section class="grid"><article class="commit-convention-card"><h3>Package Signals</h3>${commitConventionSignalList(input.commitConventionReport.packageSignals, "signal")}</article><article class="commit-convention-card"><h3>Recommended Commands</h3>${commitConventionCommandList(input.commitConventionReport.recommendedCommands)}</article><article class="commit-convention-card"><h3>Risk Queue</h3>${commitConventionRiskList(input.commitConventionReport.riskQueue)}</article><article class="commit-convention-card"><h3>다음 확인 단계</h3>${list(input.commitConventionReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -744,6 +753,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Dependency Updates Readiness", path: "html/dependency-updates.html", description: "Renovate식 config, packageRules, automerge, dashboard, registry, package file 준비도를 확인합니다." },
       { label: "Lint Readiness", path: "html/lint-readiness.html", description: "ESLint식 flat config, rules, plugins, parser, ignores, fix/cache/report 준비도를 확인합니다." },
       { label: "Format Readiness", path: "html/format-readiness.html", description: "Prettier식 config, ignore, options, plugins, check/write/cache 준비도를 확인합니다." },
+      { label: "Commit Conventions", path: "html/commit-conventions.html", description: "commitlint식 config, rules, commit-msg hook, CI range, prompt/CLI 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1121,6 +1131,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "format-readiness.html",
       goal: "Prettier식 config, ignore, options, plugins, check/write/cache 흐름을 보고 포맷팅 관문을 확인합니다.",
       evidence: `config files ${input.formatReadinessReport.configFiles.length}개, ignore files ${input.formatReadinessReport.ignoreFiles.length}개`
+    },
+    {
+      title: "Commit convention 확인",
+      href: "commit-conventions.html",
+      goal: "commitlint식 config, rules, commit-msg hook, CI range, prompt/CLI 명령을 보고 커밋 메시지 관문을 확인합니다.",
+      evidence: `config files ${input.commitConventionReport.configFiles.length}개, hook signals ${input.commitConventionReport.hookSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -2398,6 +2414,31 @@ function formatReadinessRiskList(items: FormatReadinessReport["riskQueue"]): str
 }
 
 function formatReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function commitConventionConfigList(items: CommitConventionReport["configFiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">commit convention config file이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.configType)}/${escapeHtml(item.readiness)}]<br>extends ${item.extendsCount} · rules ${item.ruleCount} · parser ${escapeHtml(item.parserPreset)} · prompt ${item.promptSignal ? "yes" : "no"}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(commitConventionHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function commitConventionSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">commit convention signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(commitConventionHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function commitConventionCommandList(items: CommitConventionReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function commitConventionRiskList(items: CommitConventionReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(commitConventionHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function commitConventionHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

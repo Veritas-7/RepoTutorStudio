@@ -2486,6 +2486,44 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 151:
   - `75db1b2` format readiness report
 
+- 2026-06-04: AutoResearch Upgrade 152 candidate selected:
+  `conventional-changelog/commitlint`
+  (`https://github.com/conventional-changelog/commitlint`; public MIT;
+  18,572 stars; 963 forks; updated 2026-06-03T17:02:48Z). Compared with
+  `conventional-changelog/conventional-changelog`, `changesets/changesets`,
+  and `semantic-release/semantic-release`; selected commitlint for
+  Conventional Commit config discovery, `@commitlint/config-conventional`
+  rule defaults, `parserPreset`, `type(scope?): subject` shape,
+  commit-message hooks, CI range checks, edit/last commit commands, verbose
+  diagnostics, strict mode, prompts, and commitizen handoff. Cloned ignored
+  external source to `research/external-src/conventional-changelog-commitlint`
+  and inspected README, license, package metadata, config docs, CLI docs,
+  rules docs, prompt config, and CI workflow without executing external
+  source. Tracked-file count for
+  `research/external-src/conventional-changelog-commitlint` returned `0`.
+- 2026-06-04: RED commit-conventions smoke generated
+  `/tmp/repotutor-commit-conventions-red-studies.qnxgrW/2026-06-04/local__simple-ts-app__main__48d2a74a`;
+  old build was missing `analysis/commit-conventions-report.json`,
+  `markdown/commit-conventions.md`, and `html/commit-conventions.html`, and
+  `open --target commit-conventions` failed as expected.
+- 2026-06-04: Implemented commitlint-style commit-conventions report:
+  `CommitConventionReportSchema`, `analysis/commit-conventions-report.json`,
+  `markdown/commit-conventions.md`, `html/commit-conventions.html`, config
+  files, rule signals, hook signals, command signals, package signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, nav entry, and `open --target commit-conventions`.
+- 2026-06-04: GREEN commit-conventions smoke generated
+  `/tmp/repotutor-commit-conventions-green-studies.lQ5POD/2026-06-04/local__simple-ts-app__main__48d2a74a`;
+  confirmed `verificationCheckedRequiredArtifacts=156`, config files 0,
+  rule signals 11, hook signals 7, command signals 8, package signals 6,
+  recommended commands 6, risk queue 2, no false-positive ready
+  `type-enum` signal on the simple fixture, manifest/learning-path entries,
+  and `open --target commit-conventions` -> `html/commit-conventions.html`.
+- 2026-06-04: Verification for Upgrade 152:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 50/50 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

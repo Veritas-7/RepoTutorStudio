@@ -3450,6 +3450,50 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 49/49 audit checks across 13 generated reports
 
+### Upgrade 152: Commit Conventions Report
+
+- Cloned and inspected `conventional-changelog/commitlint` under
+  `research/external-src/conventional-changelog-commitlint` without executing
+  external source.
+- GitHub metadata: public repo, MIT license, 18,572 stars, 963 forks, updated
+  2026-06-03T17:02:48Z. Compared with
+  `conventional-changelog/conventional-changelog`, `changesets/changesets`,
+  and `semantic-release/semantic-release`; selected commitlint because it
+  directly models Conventional Commit config discovery,
+  `@commitlint/config-conventional`, rule defaults, `parserPreset`,
+  commit-message hooks, CI range checks, edit/last commands, strict/verbose
+  diagnostics, prompts, and commitizen handoff. No source code was copied into
+  RepoTutor.
+- Implemented commitlint-style commit-conventions report:
+  `CommitConventionReportSchema`, `analysis/commit-conventions-report.json`,
+  `markdown/commit-conventions.md`, `html/commit-conventions.html`, config
+  files, rule signals, hook signals, command signals, package signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, and `open --target commit-conventions`.
+- Source pattern: commitlint separates config discovery through
+  `.commitlintrc*`, `commitlint.config.*`, and package metadata, shared config
+  extension, parser presets, rule checks for type/scope/subject/header/body
+  and footer shape, commit-message hooks, CI `--from`/`--to` ranges,
+  `--last`, `--edit`, verbose output, strict mode, prompts, and commitizen
+  flows. RepoTutor maps that to deterministic static commit-convention
+  readiness and explicitly does not lint real commits, mutate Git history,
+  install hooks, or run external commit tooling.
+- RED smoke generated
+  `/tmp/repotutor-commit-conventions-red-studies.qnxgrW/2026-06-04/local__simple-ts-app__main__48d2a74a`;
+  old behavior was missing `analysis/commit-conventions-report.json`,
+  `markdown/commit-conventions.md`, and `html/commit-conventions.html`, and
+  `open --target commit-conventions` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-commit-conventions-green-studies.lQ5POD/2026-06-04/local__simple-ts-app__main__48d2a74a`;
+  confirmed `verificationCheckedRequiredArtifacts=156`, config files 0,
+  rule signals 11, hook signals 7, command signals 8, package signals 6,
+  recommended commands 6, risk queue 2, no false-positive ready `type-enum`
+  signal on the simple fixture, manifest/learning-path entries, and
+  `open --target commit-conventions` -> `html/commit-conventions.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 50/50 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
