@@ -4950,6 +4950,77 @@ export const RpcReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const WorkspaceGraphReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  workspaceFiles: z.array(z.object({
+    filePath: z.string(),
+    configType: z.enum(["nx-json", "project-json", "package-json", "pnpm-workspace", "lerna", "rush", "turbo", "moon", "workspace", "unknown"]),
+    projectCount: z.number().int().nonnegative(),
+    targetCount: z.number().int().nonnegative(),
+    tagCount: z.number().int().nonnegative(),
+    implicitDependencyCount: z.number().int().nonnegative(),
+    namedInputCount: z.number().int().nonnegative(),
+    pluginCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  projectSignals: z.array(z.object({
+    signal: z.enum(["project-json", "package-workspace", "apps-dir", "libs-dir", "packages-dir", "project-name", "source-root", "project-type", "tags", "implicit-dependencies", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  graphSignals: z.array(z.object({
+    signal: z.enum(["project-graph", "create-project-graph", "read-project-graph", "nx-graph", "graph-file", "dependency-edge", "affected-graph", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  boundarySignals: z.array(z.object({
+    signal: z.enum(["enforce-module-boundaries", "dep-constraints", "tags", "scopes", "lint-rule", "tsconfig-paths", "implicit-dependencies", "circular", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  affectedSignals: z.array(z.object({
+    signal: z.enum(["nx-affected", "base-head", "affected-projects", "affected-target", "print-affected", "ci-affected", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  targetSignals: z.array(z.object({
+    signal: z.enum(["targets", "target-defaults", "named-inputs", "depends-on", "inputs", "outputs", "executor", "cache", "continuous", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  pluginSignals: z.array(z.object({
+    signal: z.enum(["nx-plugin", "plugins", "create-nodes", "generators", "executors", "migrations", "inferred-tasks", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["nx", "@nx/workspace", "@nx/js", "@nx/eslint-plugin", "turbo", "pnpm-workspace", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -5243,6 +5314,7 @@ export type CliReadinessReport = z.infer<typeof CliReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
+export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
