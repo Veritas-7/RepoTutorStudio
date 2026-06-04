@@ -2124,6 +2124,23 @@
         "Webhook operations evidence that distinguishes local debug tooling, dashboard/event visibility, request/attempt observability, failure-rate metrics, and replay workflow",
         "Static-only Hookdeck guardrails that do not start listeners, tunnel traffic, forward events, call dashboards, or mutate gateway state"
       ]
+    },
+    {
+      "repo": "novuhq/novu",
+      "url": "https://github.com/novuhq/novu",
+      "localPath": "research/external-src/novuhq-novu",
+      "stars": 39074,
+      "forks": 4308,
+      "license": "GitHub API: Other; README notes open core with MIT core and commercial enterprise code",
+      "updatedAt": "2026-06-04T18:21:59Z",
+      "defaultBranch": "next",
+      "cloneHead": "82bb6c7",
+      "adoptedPatterns": [
+        "Novu readiness through notification workflows, triggers, digest/delay/condition controls, payload variables, tenant and conversation context",
+        "Notification audience evidence that separates subscribers, subscriberId, topics, subscriptions, preferences, segments, user profiles, and tenant scoping",
+        "Multi-channel notification evidence across Inbox/in-app, email, SMS, push, chat, Slack, Microsoft Teams, Telegram, WhatsApp, templates, delivery logs, retries, analytics, and dashboards",
+        "Static-only notification guardrails that do not send notifications, call provider APIs, mutate subscribers/topics/preferences, inspect live dashboards, or verify real delivery"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -5652,6 +5669,26 @@
         "html/webhook-readiness.html"
       ],
       "commit": "fc7869b"
+    },
+    {
+      "name": "notification readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/notification-readiness-report.json",
+        "markdown/notification-readiness.md",
+        "html/notification-readiness.html"
+      ],
+      "commit": "093caab"
     }
   ],
   "verification": {
@@ -6283,7 +6320,17 @@
     "buildWebhookReadiness": "PASS",
     "testWebhookReadiness": "PASS",
     "auditBriefWebhookReadiness114": "PASS",
-    "webhookReadinessImplementationPushed": "PASS"
+    "webhookReadinessImplementationPushed": "PASS",
+    "externalNovuCloneIgnored": "PASS",
+    "notificationReadinessRedSmoke": "PASS",
+    "notificationReadinessGreenSmoke": "PASS",
+    "fixtureNotificationReadinessReport": "PASS",
+    "cliNotificationReadinessSmoke": "PASS",
+    "cliNotificationReadinessOpenTargetSmoke": "PASS",
+    "buildNotificationReadiness": "PASS",
+    "testNotificationReadiness": "PASS",
+    "auditBriefNotificationReadiness115": "PASS",
+    "notificationReadinessImplementationPushed": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -6843,6 +6890,16 @@
     "buildWebhookReadiness": "PASS",
     "testWebhookReadiness": "PASS",
     "auditBriefWebhookReadiness114": "PASS",
-    "webhookReadinessImplementationPushed": "PASS"
+    "webhookReadinessImplementationPushed": "PASS",
+    "externalNovuCloneIgnored": "PASS",
+    "notificationReadinessRedSmoke": "PASS",
+    "notificationReadinessGreenSmoke": "PASS",
+    "fixtureNotificationReadinessReport": "PASS",
+    "cliNotificationReadinessSmoke": "PASS",
+    "cliNotificationReadinessOpenTargetSmoke": "PASS",
+    "buildNotificationReadiness": "PASS",
+    "testNotificationReadiness": "PASS",
+    "auditBriefNotificationReadiness115": "PASS",
+    "notificationReadinessImplementationPushed": "PASS"
   }
 }

@@ -5268,6 +5268,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 216:
   - `fc7869b` webhook readiness report
 
+- 2026-06-05: AutoResearch Upgrade 217 candidate selected:
+  `novuhq/novu`
+  (`https://github.com/novuhq/novu`; open-source communication infrastructure
+  for products and agents; sparse ignored clone HEAD `82bb6c7`). Current
+  GitHub metadata: public, GitHub API license `Other` with README noting open
+  core/MIT core plus commercial enterprise code, 39,074 stars, 4,308 forks,
+  updated 2026-06-04T18:21:59Z, default branch `next`. The external source
+  path `research/external-src/novuhq-novu` remained ignored and
+  `git ls-files` returned `0`.
+- 2026-06-05: RED notification-readiness smoke generated
+  `/tmp/repotutor-notification-red-studies.kqMQUv/2026-06-05/local__repotutor-notification-redgreen-source__local__e75ad987`;
+  old behavior at `5eb1d13` had `verificationCheckedRequiredArtifacts=348`,
+  was missing `analysis/notification-readiness-report.json`,
+  `markdown/notification-readiness.md`, and
+  `html/notification-readiness.html`, and
+  `open --target notification-readiness` failed with
+  `Unsupported open target: notification-readiness`.
+- 2026-06-05: Implemented Novu-style notification-readiness report:
+  `NotificationReadinessReportSchema`,
+  `analysis/notification-readiness-report.json`,
+  `markdown/notification-readiness.md`,
+  `html/notification-readiness.html`, notification setup detection, workflow
+  signals, audience signals, channel signals, template signals, operations
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  CLI help target, and `open --target notification-readiness`.
+- 2026-06-05: GREEN notification-readiness smoke generated
+  `/tmp/repotutor-notification-green-studies.c3BPOq/2026-06-05/local__repotutor-notification-redgreen-source__local__b424da52`;
+  confirmed `verificationCheckedRequiredArtifacts=351`, all three new
+  artifacts, setup count 3, risk queue 0, ready channels
+  `inbox|email|sms|push|chat|slack|teams|telegram|whatsapp`, and
+  `open --target notification-readiness` ->
+  `html/notification-readiness.html`. The focused Vitest fixture covered Novu
+  workflows/triggers, subscriberId/subscribers, topics/subscriptions,
+  preferences, Inbox/in-app, email/SMS/push/chat/Slack/Teams/Telegram/WhatsApp
+  channels, template subject/body/editor/variables/localization/branding/
+  preview, API key/environment/webhook/delivery log/activity feed/rate limit/
+  retry/analytics/dashboard operations, and package signals with risk queue 0.
+- 2026-06-05: Verification for Upgrade 217:
+  - `pnpm build`: PASS
+  - focused notification Vitest: PASS, 1/1 selected test
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 24/24 tests
+  - `pnpm audit:brief`: PASS, 115/115 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 217:
+  - `093caab` notification readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
