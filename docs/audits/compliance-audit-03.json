@@ -1,6 +1,6 @@
 {
   "iteration": 3,
-  "createdAt": "2026-06-04T11:34:56.984Z",
+  "createdAt": "2026-06-04T11:45:03.594Z",
   "checks": [
     {
       "name": "project setup",
@@ -522,6 +522,13 @@
     },
     {
       "name": "link integrity readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "SEO metadata readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

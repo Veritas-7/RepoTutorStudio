@@ -94,6 +94,7 @@ import {
   ChartVisualizationReadinessReport,
   DiagramRenderingReadinessReport,
   LinkIntegrityReadinessReport,
+  SeoMetadataReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -194,6 +195,7 @@ export interface AnalysisBundle {
   chartVisualizationReadinessReport: ChartVisualizationReadinessReport;
   diagramRenderingReadinessReport: DiagramRenderingReadinessReport;
   linkIntegrityReadinessReport: LinkIntegrityReadinessReport;
+  seoMetadataReadinessReport: SeoMetadataReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -294,8 +296,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const chartVisualizationReadinessReport = await buildChartVisualizationReadinessReport(walk);
   const diagramRenderingReadinessReport = await buildDiagramRenderingReadinessReport(walk);
   const linkIntegrityReadinessReport = await buildLinkIntegrityReadinessReport(walk);
+  const seoMetadataReadinessReport = await buildSeoMetadataReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -18453,6 +18456,263 @@ function linkIntegrityReadinessSignalFromSpecs<T extends Record<K, string> & { p
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/link-integrity-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildSeoMetadataReadinessReport(walk: WalkResult): Promise<SeoMetadataReadinessReport> {
+  const sourceFiles = await seoMetadataReadinessSourceFiles(walk);
+  const seoSetups = seoMetadataReadinessSetups(sourceFiles);
+  const crawlSignals = seoMetadataReadinessCrawlSignals(sourceFiles);
+  const sitemapSignals = seoMetadataReadinessSitemapSignals(sourceFiles);
+  const metadataSignals = seoMetadataReadinessMetadataSignals(sourceFiles);
+  const structuredDataSignals = seoMetadataReadinessStructuredDataSignals(sourceFiles);
+  const aiReadinessSignals = seoMetadataReadinessAiSignals(sourceFiles);
+  const packageSignals = seoMetadataReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasSetup = seoSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = seoSetups.some((item) => item.readiness === "ready");
+  const hasCrawl = crawlSignals.some((item) => item.readiness === "ready") || seoSetups.some((item) => item.crawlCount > 0);
+  const hasSitemap = sitemapSignals.some((item) => item.readiness === "ready") || seoSetups.some((item) => item.sitemapCount > 0);
+  const hasMetadata = metadataSignals.some((item) => item.readiness === "ready") || seoSetups.some((item) => item.metadataCount > 0);
+  const hasStructuredData = structuredDataSignals.some((item) => item.readiness === "ready") || seoSetups.some((item) => item.structuredDataCount > 0);
+  const hasSocial = seoSetups.some((item) => item.socialCount > 0) || metadataSignals.some((item) => ["open-graph", "twitter-card"].includes(item.signal) && item.readiness === "ready");
+  const hasAi = aiReadinessSignals.some((item) => item.readiness === "ready") || seoSetups.some((item) => item.aiCount > 0);
+
+  const riskQueue: SeoMetadataReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document SEO metadata readiness before treating a site as publication-ready.",
+      why: "SEO/AEO readiness needs crawl control, sitemap, metadata, structured data, social preview, or AI crawler evidence.",
+      relatedHref: "html/seo-metadata-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && (!hasCrawl || !hasSitemap)) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair SEO metadata with robots and sitemap coverage.",
+      why: "Search and answer engines need both crawl permissions and discoverable route indexes.",
+      relatedHref: "html/seo-metadata-readiness.html"
+    });
+  }
+  if ((hasPackage || hasReadySetup) && !hasMetadata) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add title, description, canonical, Open Graph, Twitter card, and favicon metadata.",
+      why: "Metadata is the first surface search results, social previews, and crawler summaries consume.",
+      relatedHref: "html/seo-metadata-readiness.html"
+    });
+  }
+  if ((hasPackage || hasReadySetup) && !hasStructuredData) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add JSON-LD/Schema.org structured data for key page types.",
+      why: "Structured data helps crawlers and answer engines identify entities, breadcrumbs, articles, products, and FAQs.",
+      relatedHref: "html/seo-metadata-readiness.html"
+    });
+  }
+  if ((hasPackage || hasReadySetup) && (!hasSocial || !hasAi)) {
+    riskQueue.push({
+      priority: "low",
+      action: "Review social preview and AI crawler readability surfaces.",
+      why: "OpenGraph images, AI crawler policies, llms.txt, markdown endpoints, and agent-readability checks improve shareability and AEO coverage.",
+      relatedHref: "html/seo-metadata-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run real SEO validation only in a trusted deployed or preview environment.",
+    why: "RepoTutor records SEO metadata readiness only; it does not crawl websites, render pages, fetch robots.txt, validate sitemap XML, query search engines, execute Nuxt modules, or run the analyzed project's tests.",
+    relatedHref: "html/seo-metadata-readiness.html"
+  });
+
+  return {
+    summary: `Nuxt SEO-style metadata readiness report: setup ${seoSetups.length}개, crawl signal ${crawlSignals.length}개, sitemap signal ${sitemapSignals.length}개, metadata signal ${metadataSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Nuxt SEO robots sitemap Schema.org OpenGraph meta tags canonical siteUrl indexable i18n hreflang JSON-LD AEO llms",
+    seoSetups,
+    crawlSignals,
+    sitemapSignals,
+    metadataSignals,
+    structuredDataSignals,
+    aiReadinessSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"@nuxtjs/seo|nuxt-seo|@nuxtjs/robots|@nuxtjs/sitemap|nuxt-schema-org|nuxt-og-image|nuxt-seo-utils\" package.json pnpm-lock.yaml nuxt.config.* app pages docs", purpose: "Inventory SEO packages, modules, and app configuration." },
+      { command: "rg \"robots.txt|meta name=\\\"robots\\\"|X-Robots-Tag|indexable|noindex|crawler|Googlebot|GPTBot|ClaudeBot\" .", purpose: "Review crawl control and indexing policy." },
+      { command: "rg \"sitemap.xml|sitemap_index|hreflang|alternate|lastmod|Sitemap:\" .", purpose: "Check sitemap, locale alternate, and robots sitemap evidence." },
+      { command: "rg \"title|description|canonical|og:|twitter:|favicon|breadcrumb\" app pages docs nuxt.config.*", purpose: "Check metadata, canonical, social preview, favicon, and breadcrumb evidence." },
+      { command: "rg \"schema.org|application/ld\\\\+json|json-ld|FAQPage|Article|Product|BreadcrumbList\" .", purpose: "Check structured data evidence." },
+      { command: "npx vitest run", purpose: "Run local tests that cover metadata generation, route snapshots, and static output." }
+    ],
+    learnerNextSteps: [
+      "먼저 Nuxt SEO, robots, sitemap, schema.org, OG image, SEO utils 패키지와 module config를 찾으세요.",
+      "robots.txt, meta robots, X-Robots-Tag, indexable/noindex, crawler rules 신호로 crawl control을 확인하세요.",
+      "sitemap.xml, sitemap index, route sources, lastmod, hreflang, robots Sitemap 신호로 crawler discovery를 확인하세요.",
+      "title, description, canonical, Open Graph, Twitter card, favicon 신호로 search/social metadata를 확인하세요.",
+      "JSON-LD, Schema.org, breadcrumbs, article/product/FAQ 신호로 structured data coverage를 확인하세요.",
+      "AEO, llms.txt, markdown endpoint, AI crawler, agent-readability 신호는 실제 배포 환경에서 별도 검증하세요."
+    ]
+  };
+}
+
+type SeoMetadataReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function seoMetadataReadinessSourceFiles(walk: WalkResult): Promise<SeoMetadataReadinessSourceFile[]> {
+  const files: SeoMetadataReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !seoMetadataReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!seoMetadataReadinessPathSignal(file.relPath) && !seoMetadataReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function seoMetadataReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return seoMetadataReadinessPathSignal(filePath)
+    || /^(package\.json|README\.md|nuxt\.config\.(ts|js|mjs)|next\.config\.(js|mjs|ts)|astro\.config\.(js|mjs|ts)|robots\.txt|sitemap\.xml|llms\.txt)$/i.test(base)
+    || /\.(vue|js|cjs|mjs|ts|tsx|jsx|json|md|mdx|html?|ya?ml|toml)$/i.test(filePath);
+}
+
+function seoMetadataReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(seo|metadata|head|robots|sitemap|schema|og-image|open-graph|opengraph|llms|pages|app|routes|content|docs)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function seoMetadataReadinessContentSignal(text: string): boolean {
+  return /(@nuxtjs\/seo|nuxt-seo|@nuxtjs\/robots|@nuxtjs\/sitemap|nuxt-schema-org|nuxt-og-image|nuxt-seo-utils|useSeoMeta|useHead|robots\.txt|sitemap\.xml|canonical|og:|twitter:|schema\.org|application\/ld\+json|JSON-LD|hreflang|llms\.txt|AEO|agent-readability|indexable|noindex)/i.test(text);
+}
+
+function seoMetadataReadinessSetups(sourceFiles: SeoMetadataReadinessSourceFile[]): SeoMetadataReadinessReport["seoSetups"] {
+  const rows: SeoMetadataReadinessReport["seoSetups"] = [];
+  for (const source of sourceFiles) {
+    const crawlCount = countMatches(source.text, /robots\.txt|meta name=["']robots|X-Robots-Tag|indexable|noindex|crawler|Googlebot|GPTBot|ClaudeBot|PerplexityBot/gi);
+    const sitemapCount = countMatches(source.text, /sitemap\.xml|sitemap_index|sitemapindex|hreflang|alternate|lastmod|Sitemap:/gi);
+    const metadataCount = countMatches(source.text, /useSeoMeta|useHead|title|description|canonical|og:|OpenGraph|twitter:|favicon|breadcrumb/gi);
+    const structuredDataCount = countMatches(source.text, /schema\.org|application\/ld\+json|JSON-LD|json-ld|BreadcrumbList|Article|Product|FAQPage|defineSchemaOrg/gi);
+    const socialCount = countMatches(source.text, /og:image|defineOgImage|OpenGraph|twitter:card|twitter:image|social share|1200|630/gi);
+    const aiCount = countMatches(source.text, /AEO|answer engine|AI crawler|llms\.txt|markdown endpoint|agent-readability|ChatGPT|Claude|Perplexity|AI Overviews/gi);
+    const hasSetupSignal = crawlCount + sitemapCount + metadataCount + structuredDataCount + socialCount + aiCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: seoMetadataReadinessProvider(source),
+      crawlCount,
+      sitemapCount,
+      metadataCount,
+      structuredDataCount,
+      socialCount,
+      aiCount,
+      readiness: crawlCount > 0 && sitemapCount > 0 && metadataCount > 0 && structuredDataCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains crawl ${crawlCount}, sitemap ${sitemapCount}, metadata ${metadataCount}, structured data ${structuredDataCount}, social ${socialCount}, AI ${aiCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function seoMetadataReadinessProvider(source: SeoMetadataReadinessSourceFile): SeoMetadataReadinessReport["seoSetups"][number]["provider"] {
+  if (/@nuxtjs\/seo|nuxt-seo/i.test(source.text)) return "nuxt-seo";
+  if (/next-seo|next\/head|metadata\s*:/i.test(source.text)) return "next-seo";
+  if (/unhead|useSeoMeta|useHead/i.test(source.text)) return "unhead";
+  if (/astro-seo|astro:head/i.test(source.text)) return "astro-seo";
+  if (/seo|metadata|robots|sitemap|canonical|og:/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function seoMetadataReadinessCrawlSignals(sourceFiles: SeoMetadataReadinessSourceFile[]): SeoMetadataReadinessReport["crawlSignals"] {
+  const specs: Array<{ signal: SeoMetadataReadinessReport["crawlSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "robots-txt", pattern: /robots\.txt|@nuxtjs\/robots|nuxt-robots/i, evidence: "robots.txt evidence was detected." },
+    { signal: "meta-robots", pattern: /meta name=["']robots|useRobotsRule|robots:\s*{|max-image-preview|max-snippet/i, evidence: "meta robots evidence was detected." },
+    { signal: "x-robots-tag", pattern: /X-Robots-Tag|x-robots/i, evidence: "X-Robots-Tag evidence was detected." },
+    { signal: "indexable", pattern: /indexable|index,\s*follow|allow indexing/i, evidence: "indexable policy evidence was detected." },
+    { signal: "noindex", pattern: /noindex|nofollow|disallow|block indexing/i, evidence: "noindex/disallow evidence was detected." },
+    { signal: "crawler-rules", pattern: /Googlebot|GPTBot|ClaudeBot|PerplexityBot|AI crawler|crawler/i, evidence: "crawler-specific rule evidence was detected." }
+  ];
+  return seoMetadataReadinessSignalFromSpecs(sourceFiles, specs, "crawl", "signal");
+}
+
+function seoMetadataReadinessSitemapSignals(sourceFiles: SeoMetadataReadinessSourceFile[]): SeoMetadataReadinessReport["sitemapSignals"] {
+  const specs: Array<{ signal: SeoMetadataReadinessReport["sitemapSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "sitemap-xml", pattern: /sitemap\.xml|@nuxtjs\/sitemap|nuxt-sitemap/i, evidence: "sitemap.xml evidence was detected." },
+    { signal: "sitemap-index", pattern: /sitemap_index|sitemapindex|__sitemap__/i, evidence: "sitemap index evidence was detected." },
+    { signal: "route-sources", pattern: /sources|routes|urls|content|data sources/i, evidence: "sitemap route source evidence was detected." },
+    { signal: "lastmod", pattern: /lastmod|lastModified|modifiedAt/i, evidence: "lastmod evidence was detected." },
+    { signal: "hreflang", pattern: /hreflang|xhtml:link|alternate|locale/i, evidence: "hreflang/alternate evidence was detected." },
+    { signal: "robots-sitemap", pattern: /Sitemap:\s*https?:\/\/|Sitemap:/i, evidence: "robots Sitemap directive evidence was detected." }
+  ];
+  return seoMetadataReadinessSignalFromSpecs(sourceFiles, specs, "sitemap", "signal");
+}
+
+function seoMetadataReadinessMetadataSignals(sourceFiles: SeoMetadataReadinessSourceFile[]): SeoMetadataReadinessReport["metadataSignals"] {
+  const specs: Array<{ signal: SeoMetadataReadinessReport["metadataSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "title", pattern: /titleTemplate|title:\s*|<title>|og:title/i, evidence: "title evidence was detected." },
+    { signal: "description", pattern: /description:\s*|meta name=["']description|og:description/i, evidence: "description evidence was detected." },
+    { signal: "canonical", pattern: /canonical|rel=["']canonical|siteUrl|url:\s*['"]https?:\/\//i, evidence: "canonical/site URL evidence was detected." },
+    { signal: "open-graph", pattern: /og:|OpenGraph|defineOgImage|ogImage|og:image/i, evidence: "Open Graph evidence was detected." },
+    { signal: "twitter-card", pattern: /twitter:card|twitter:image|summary_large_image/i, evidence: "Twitter card evidence was detected." },
+    { signal: "favicon", pattern: /favicon|icon\.png|apple-touch-icon/i, evidence: "favicon evidence was detected." }
+  ];
+  return seoMetadataReadinessSignalFromSpecs(sourceFiles, specs, "metadata", "signal");
+}
+
+function seoMetadataReadinessStructuredDataSignals(sourceFiles: SeoMetadataReadinessSourceFile[]): SeoMetadataReadinessReport["structuredDataSignals"] {
+  const specs: Array<{ signal: SeoMetadataReadinessReport["structuredDataSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "json-ld", pattern: /application\/ld\+json|JSON-LD|json-ld/i, evidence: "JSON-LD evidence was detected." },
+    { signal: "schema-org", pattern: /schema\.org|nuxt-schema-org|defineSchemaOrg/i, evidence: "Schema.org evidence was detected." },
+    { signal: "breadcrumbs", pattern: /BreadcrumbList|breadcrumb/i, evidence: "breadcrumb structured data evidence was detected." },
+    { signal: "article", pattern: /Article|BlogPosting|NewsArticle/i, evidence: "article structured data evidence was detected." },
+    { signal: "product", pattern: /Product|Offer|AggregateRating/i, evidence: "product structured data evidence was detected." },
+    { signal: "faq", pattern: /FAQPage|Question|acceptedAnswer/i, evidence: "FAQ structured data evidence was detected." }
+  ];
+  return seoMetadataReadinessSignalFromSpecs(sourceFiles, specs, "structured data", "signal");
+}
+
+function seoMetadataReadinessAiSignals(sourceFiles: SeoMetadataReadinessSourceFile[]): SeoMetadataReadinessReport["aiReadinessSignals"] {
+  const specs: Array<{ signal: SeoMetadataReadinessReport["aiReadinessSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "aeo", pattern: /AEO|answer engine|AI Overviews|answer engines/i, evidence: "AEO evidence was detected." },
+    { signal: "llms-txt", pattern: /llms\.txt|llms-full\.txt/i, evidence: "llms.txt evidence was detected." },
+    { signal: "markdown-endpoint", pattern: /markdown endpoint|\.md endpoint|on-demand markdown|content endpoint/i, evidence: "markdown endpoint evidence was detected." },
+    { signal: "ai-crawlers", pattern: /GPTBot|ClaudeBot|PerplexityBot|ChatGPT|AI crawler/i, evidence: "AI crawler policy evidence was detected." },
+    { signal: "agent-readability", pattern: /agent-readability|@vercel\/agent-readability|AI parsers/i, evidence: "agent readability evidence was detected." }
+  ];
+  return seoMetadataReadinessSignalFromSpecs(sourceFiles, specs, "AI readiness", "signal");
+}
+
+function seoMetadataReadinessPackageSignals(sourceFiles: SeoMetadataReadinessSourceFile[]): SeoMetadataReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: SeoMetadataReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "nuxt-seo", pattern: /@nuxtjs\/seo|nuxt-seo/i, evidence: "Nuxt SEO package/module evidence was detected." },
+    { signal: "nuxt-robots", pattern: /@nuxtjs\/robots|nuxt-robots/i, evidence: "Nuxt Robots evidence was detected." },
+    { signal: "nuxt-sitemap", pattern: /@nuxtjs\/sitemap|nuxt-sitemap/i, evidence: "Nuxt Sitemap evidence was detected." },
+    { signal: "nuxt-schema-org", pattern: /nuxt-schema-org/i, evidence: "nuxt-schema-org evidence was detected." },
+    { signal: "nuxt-og-image", pattern: /nuxt-og-image|defineOgImage/i, evidence: "Nuxt OG Image evidence was detected." },
+    { signal: "seo-utils", pattern: /nuxt-seo-utils|useSeoMeta|canonical|breadcrumbs?|favicons?/i, evidence: "SEO utils evidence was detected." }
+  ];
+  return seoMetadataReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function seoMetadataReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: SeoMetadataReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/seo-metadata-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

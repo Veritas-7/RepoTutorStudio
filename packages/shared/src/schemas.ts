@@ -4232,6 +4232,71 @@ export const LinkIntegrityReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SeoMetadataReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  seoSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["nuxt-seo", "next-seo", "unhead", "astro-seo", "custom", "unknown"]),
+    crawlCount: z.number().int().nonnegative(),
+    sitemapCount: z.number().int().nonnegative(),
+    metadataCount: z.number().int().nonnegative(),
+    structuredDataCount: z.number().int().nonnegative(),
+    socialCount: z.number().int().nonnegative(),
+    aiCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  crawlSignals: z.array(z.object({
+    signal: z.enum(["robots-txt", "meta-robots", "x-robots-tag", "indexable", "noindex", "crawler-rules", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sitemapSignals: z.array(z.object({
+    signal: z.enum(["sitemap-xml", "sitemap-index", "route-sources", "lastmod", "hreflang", "robots-sitemap", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  metadataSignals: z.array(z.object({
+    signal: z.enum(["title", "description", "canonical", "open-graph", "twitter-card", "favicon", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structuredDataSignals: z.array(z.object({
+    signal: z.enum(["json-ld", "schema-org", "breadcrumbs", "article", "product", "faq", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  aiReadinessSignals: z.array(z.object({
+    signal: z.enum(["aeo", "llms-txt", "markdown-endpoint", "ai-crawlers", "agent-readability", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["nuxt-seo", "nuxt-robots", "nuxt-sitemap", "nuxt-schema-org", "nuxt-og-image", "seo-utils", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4515,6 +4580,7 @@ export type SpreadsheetReadinessReport = z.infer<typeof SpreadsheetReadinessRepo
 export type ChartVisualizationReadinessReport = z.infer<typeof ChartVisualizationReadinessReportSchema>;
 export type DiagramRenderingReadinessReport = z.infer<typeof DiagramRenderingReadinessReportSchema>;
 export type LinkIntegrityReadinessReport = z.infer<typeof LinkIntegrityReadinessReportSchema>;
+export type SeoMetadataReadinessReport = z.infer<typeof SeoMetadataReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
