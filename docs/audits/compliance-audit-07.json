@@ -1,6 +1,6 @@
 {
   "iteration": 7,
-  "createdAt": "2026-06-04T12:43:33.276Z",
+  "createdAt": "2026-06-04T12:57:16.312Z",
   "checks": [
     {
       "name": "project setup",
@@ -564,6 +564,13 @@
     },
     {
       "name": "GraphQL readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "CLI readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -100,6 +100,7 @@ import {
   EnvValidationReadinessReport,
   SecurityHeadersReadinessReport,
   GraphqlReadinessReport,
+  CliReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -206,6 +207,7 @@ export interface AnalysisBundle {
   envValidationReadinessReport: EnvValidationReadinessReport;
   securityHeadersReadinessReport: SecurityHeadersReadinessReport;
   graphqlReadinessReport: GraphqlReadinessReport;
+  cliReadinessReport: CliReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -312,8 +314,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const envValidationReadinessReport = await buildEnvValidationReadinessReport(walk);
   const securityHeadersReadinessReport = await buildSecurityHeadersReadinessReport(walk);
   const graphqlReadinessReport = await buildGraphqlReadinessReport(walk);
+  const cliReadinessReport = await buildCliReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -20041,6 +20044,284 @@ function graphqlReadinessSignalFromSpecs<T extends Record<K, string> & { pattern
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/graphql-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildCliReadinessReport(walk: WalkResult): Promise<CliReadinessReport> {
+  const sourceFiles = await cliReadinessSourceFiles(walk);
+  const cliSetups = cliReadinessSetups(sourceFiles);
+  const commandSignals = cliReadinessCommandSignals(sourceFiles);
+  const optionSignals = cliReadinessOptionSignals(sourceFiles);
+  const parseSignals = cliReadinessParseSignals(sourceFiles);
+  const actionSignals = cliReadinessActionSignals(sourceFiles);
+  const helpSignals = cliReadinessHelpSignals(sourceFiles);
+  const errorSignals = cliReadinessErrorSignals(sourceFiles);
+  const packageSignals = cliReadinessPackageSignals(sourceFiles);
+
+  const hasCommand = commandSignals.some((item) => item.readiness === "ready") || cliSetups.some((item) => item.commandCount > 0);
+  const hasOption = optionSignals.some((item) => item.readiness === "ready") || cliSetups.some((item) => item.optionCount > 0);
+  const hasArgument = commandSignals.some((item) => item.signal === "argument" && item.readiness === "ready") || cliSetups.some((item) => item.argumentCount > 0);
+  const hasParse = parseSignals.some((item) => item.readiness === "ready") || cliSetups.some((item) => item.parseCount > 0);
+  const hasAction = actionSignals.some((item) => item.readiness === "ready") || cliSetups.some((item) => item.actionCount > 0);
+  const hasHelp = helpSignals.some((item) => item.readiness === "ready") || cliSetups.some((item) => item.helpCount > 0);
+  const hasError = errorSignals.some((item) => item.readiness === "ready") || cliSetups.some((item) => item.errorCount > 0);
+
+  const riskQueue: CliReadinessReport["riskQueue"] = [];
+  if (!hasCommand && !hasOption && !hasParse) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the CLI command entry, option parser, or package.json bin surface before claiming CLI readiness.",
+      why: "Commander.js-style readiness starts with a command object, declared arguments/options, and a parse boundary learners can trace.",
+      relatedHref: "html/cli-readiness.html"
+    });
+  }
+  if ((hasCommand || hasOption || hasAction) && !hasParse) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace the parse(), parseAsync(), argv, or executable handoff that actually enters the CLI.",
+      why: "Command, option, and action declarations are incomplete unless users can see how argv reaches the parser.",
+      relatedHref: "html/cli-readiness.html"
+    });
+  }
+  if (hasCommand && !hasAction) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect each user-facing command to an action handler, executable subcommand, or documented dispatch path.",
+      why: "Learners need to know which code runs after a command is parsed.",
+      relatedHref: "html/cli-readiness.html"
+    });
+  }
+  if ((hasCommand || hasOption || hasArgument) && !hasHelp) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document usage/help output, descriptions, help options, or show-help-after-error behavior.",
+      why: "CLI readiness includes discoverability; Commander.js treats automated help as part of the command contract.",
+      relatedHref: "html/cli-readiness.html"
+    });
+  }
+  if ((hasCommand || hasOption || hasParse) && !hasError) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record error and exit-code behavior for missing arguments, invalid options, and unknown commands.",
+      why: "A CLI should make failure modes visible through stderr, exit codes, or parser exceptions.",
+      relatedHref: "html/cli-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify CLI behavior with trusted local tests or reviewed manual runs outside RepoTutor.",
+    why: "RepoTutor records CLI readiness only; it does not invoke CLI binaries, parse real argv, spawn subcommands, inspect completions, or verify terminal TTY behavior.",
+    relatedHref: "html/cli-readiness.html"
+  });
+
+  return {
+    summary: `Commander.js-style CLI readiness report: setup ${cliSetups.length}개, command signal ${commandSignals.length}개, option signal ${optionSignals.length}개, help signal ${helpSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Commander.js Command option requiredOption argument action parseAsync help usage exitOverride showHelpAfterError",
+    cliSetups,
+    commandSignals,
+    optionSignals,
+    parseSignals,
+    actionSignals,
+    helpSignals,
+    errorSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"new Command|program\\.command|\\.command\\(|addCommand|package.json.*bin\" package.json src app packages bin scripts", purpose: "Inventory CLI entry points, root commands, subcommands, and package bin ownership." },
+      { command: "rg \"\\.option\\(|requiredOption|addOption|new Option|choices\\(|conflicts\\(|implies\\(|\\.env\\(\" src app packages bin scripts", purpose: "Find options, required flags, choices, conflicts, implied values, and environment-backed options." },
+      { command: "rg \"\\.argument\\(|new Argument|arguments\\(|<[^>]+>|\\[[^\\]]+\\]\" src app packages bin scripts", purpose: "Trace positional arguments and variadic argument contracts." },
+      { command: "rg \"\\.action\\(|\\.hook\\(|preAction|postAction|parseAsync|parse\\(\" src app packages bin scripts", purpose: "Connect parsed commands to actions, lifecycle hooks, and async parse boundaries." },
+      { command: "rg \"\\.help\\(|\\.usage\\(|helpOption|addHelpText|showHelpAfterError|configureOutput|exitOverride|CommanderError\" src app packages bin scripts", purpose: "Review help, output, error, and exit-code behavior." },
+      { command: "pnpm test", purpose: "Run trusted local tests that cover CLI parsing, help text, and failure modes." }
+    ],
+    learnerNextSteps: [
+      "먼저 package.json bin, bin/ 폴더, new Command, program.command, addCommand 중 CLI entry가 어디인지 찾으세요.",
+      "command/subcommand와 argument/option/requiredOption/choices/default/env 신호를 함께 읽어 사용자가 입력할 수 있는 표면을 정리하세요.",
+      "parse 또는 parseAsync가 process.argv나 전달된 argv를 어디에서 받는지 확인하세요.",
+      "action, hook, preAction, postAction, executable subcommand를 따라 실제 실행되는 코드를 연결하세요.",
+      "help, usage, helpOption, addHelpText, showHelpAfterError, configureOutput, exitOverride로 사용자 안내와 실패 모드를 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 argv 파싱, exit code, TTY 색상/폭, shell completion은 원본 프로젝트 테스트나 수동 검증에서 별도 확인하세요."
+    ]
+  };
+}
+
+type CliReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function cliReadinessSourceFiles(walk: WalkResult): Promise<CliReadinessSourceFile[]> {
+  const files: CliReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !cliReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!cliReadinessPathSignal(file.relPath) && !cliReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function cliReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return cliReadinessPathSignal(filePath)
+    || /^(package\.json|commander\.(js|mjs|cjs|ts)|yargs\.(js|mjs|cjs|ts)|oclif\.(manifest\.)?json)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|json|md|mdx|ya?ml|toml)$/i.test(filePath);
+}
+
+function cliReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(cli|bin|cmd|command|commands|commander|yargs|oclif|cac|meow|clipanion|scripts?)(\/|\.|-|_|$)|package\.json$/i.test(filePath);
+}
+
+function cliReadinessContentSignal(text: string): boolean {
+  return /\b(new\s+Command|program\.command|\.command\s*\(|addCommand|\.option\s*\(|requiredOption|addOption|new\s+Option|\.argument\s*\(|new\s+Argument|\.action\s*\(|\.hook\s*\(|parseAsync\s*\(|\.parse\s*\(|exitOverride|showHelpAfterError|configureOutput|CommanderError|InvalidArgumentError|yargs\s*\(|@oclif\/core|runCommand|cac\s*\(|meow\s*\(|clipanion)\b|"(commander|yargs|@oclif\/core|cac|meow|clipanion)"|"\s*bin\s*"\s*:/i.test(text);
+}
+
+function cliReadinessSetups(sourceFiles: CliReadinessSourceFile[]): CliReadinessReport["cliSetups"] {
+  const rows: CliReadinessReport["cliSetups"] = [];
+  for (const source of sourceFiles) {
+    const commandCount = countMatches(source.text, /\b(new\s+Command|program\.command|\.command\s*\(|addCommand|createCommand|subcommand|runCommand|commands?\s*:|"bin"\s*:)/gi);
+    const optionCount = countMatches(source.text, /\b(\.option\s*\(|requiredOption|addOption|new\s+Option|\.options\s*\(|flags?\s*:|choices\s*\(|conflicts\s*\(|implies\s*\(|\.env\s*\()/gi);
+    const argumentCount = countMatches(source.text, /\b(\.argument\s*\(|arguments\s*\(|new\s+Argument|args?\s*:|variadic|positional)\b|<[^>\n]+>|\[[^\]\n]+\]/gi);
+    const actionCount = countMatches(source.text, /\b(\.action\s*\(|\.hook\s*\(|preAction|postAction|async\s+function|executableHandler|executableFile|passThroughOptions)\b/gi);
+    const parseCount = countMatches(source.text, /\b(parseAsync\s*\(|\.parse\s*\(|parseOptions|parseArg|process\.argv|argv\b|allowUnknownOption|exitOverride)\b/gi);
+    const helpCount = countMatches(source.text, /\b(\.help\s*\(|\.usage\s*\(|helpOption|helpCommand|addHelpText|showHelpAfterError|configureHelp|createHelp|formatHelp|completion)\b/gi);
+    const errorCount = countMatches(source.text, /\b(CommanderError|InvalidArgumentError|unknown option|unknown command|missing argument|exitCode|process\.exit|writeErr|stderr|error\s*:)/gi);
+    const outputCount = countMatches(source.text, /\b(configureOutput|writeOut|writeErr|stdout|stderr|console\.log|console\.error|outputError|getOutHelpWidth|getErrHelpWidth)\b/gi);
+    const hasSetupSignal = commandCount + optionCount + argumentCount + actionCount + parseCount + helpCount + errorCount + outputCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: cliReadinessProvider(source),
+      commandCount,
+      optionCount,
+      argumentCount,
+      actionCount,
+      parseCount,
+      helpCount,
+      errorCount,
+      outputCount,
+      readiness: (commandCount > 0 || optionCount > 0) && parseCount > 0 && (actionCount > 0 || helpCount > 0 || errorCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains commands ${commandCount}, options ${optionCount}, arguments ${argumentCount}, actions ${actionCount}, parse ${parseCount}, help ${helpCount}, errors ${errorCount}, output ${outputCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function cliReadinessProvider(source: CliReadinessSourceFile): CliReadinessReport["cliSetups"][number]["provider"] {
+  if (/\b(commander|new\s+Command|program\.command|CommanderError|requiredOption|showHelpAfterError)\b/i.test(source.text)) return "commander";
+  if (/\byargs\b|from ["']yargs["']|require\(["']yargs["']\)|hideBin|\.argv\b/i.test(source.text)) return "yargs";
+  if (/@oclif\/core|runCommand|Flags\.|Command\.run/i.test(source.text)) return "oclif";
+  if (/\bcac\s*\(|from ["']cac["']|require\(["']cac["']\)/i.test(source.text)) return "cac";
+  if (/\bmeow\s*\(|from ["']meow["']|require\(["']meow["']\)/i.test(source.text)) return "meow";
+  if (/clipanion|Cli\.from|Command\.Usage/i.test(source.text)) return "clipanion";
+  if (/(^|\/)(cli|bin|command|commands)(\/|\.|-|_|$)|"bin"\s*:/i.test(source.filePath) || /process\.argv|#!\/usr\/bin\/env\s+node/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function cliReadinessCommandSignals(sourceFiles: CliReadinessSourceFile[]): CliReadinessReport["commandSignals"] {
+  const specs: Array<{ signal: CliReadinessReport["commandSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "command", pattern: /new\s+Command|program\.command|\.command\s*\(|createCommand|runCommand/i, evidence: "command declaration evidence was detected." },
+    { signal: "subcommand", pattern: /addCommand|\.command\s*\([^)]*,\s*["'`]|executableSubcommand|subcommand|commands\s*:/i, evidence: "subcommand evidence was detected." },
+    { signal: "argument", pattern: /\.argument\s*\(|new\s+Argument|arguments\s*\(|<[^>\n]+>|\[[^\]\n]+\]/i, evidence: "positional argument evidence was detected." },
+    { signal: "description", pattern: /\.description\s*\(|\.summary\s*\(|description\s*:/i, evidence: "command description evidence was detected." },
+    { signal: "alias", pattern: /\.alias\s*\(|aliases?\s*:|\.aliases\s*\(/i, evidence: "alias evidence was detected." },
+    { signal: "version", pattern: /\.version\s*\(|versionOption|--version|"version"\s*:/i, evidence: "version flag evidence was detected." }
+  ];
+  return cliReadinessSignalFromSpecs(sourceFiles, specs, "command", "signal");
+}
+
+function cliReadinessOptionSignals(sourceFiles: CliReadinessSourceFile[]): CliReadinessReport["optionSignals"] {
+  const specs: Array<{ signal: CliReadinessReport["optionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "option", pattern: /\.option\s*\(|addOption|new\s+Option|flags?\s*:/i, evidence: "option declaration evidence was detected." },
+    { signal: "required-option", pattern: /requiredOption|makeOptionMandatory|mandatory\s*[:=]\s*true/i, evidence: "required option evidence was detected." },
+    { signal: "variadic-option", pattern: /<[^>\n]*\.\.\.[^>\n]*>|\[[^\]\n]*\.\.\.[^\]\n]*\]|variadic/i, evidence: "variadic option/argument evidence was detected." },
+    { signal: "default-value", pattern: /\.default\s*\(|defaultValue|default\s*:/i, evidence: "default value evidence was detected." },
+    { signal: "choices", pattern: /\.choices\s*\(|choices\s*:/i, evidence: "choice validation evidence was detected." },
+    { signal: "env", pattern: /\.env\s*\(|envVar|process\.env/i, evidence: "environment-backed option evidence was detected." },
+    { signal: "conflicts", pattern: /\.conflicts\s*\(|conflictsWith|conflicts\s*:/i, evidence: "option conflict evidence was detected." },
+    { signal: "implies", pattern: /\.implies\s*\(|impliedOptionValues|implies\s*:/i, evidence: "implied option evidence was detected." }
+  ];
+  return cliReadinessSignalFromSpecs(sourceFiles, specs, "option", "signal");
+}
+
+function cliReadinessParseSignals(sourceFiles: CliReadinessSourceFile[]): CliReadinessReport["parseSignals"] {
+  const specs: Array<{ signal: CliReadinessReport["parseSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "parse", pattern: /\.parse\s*\(|parseOptions|parseArg|parseCommand/i, evidence: "parse evidence was detected." },
+    { signal: "parse-async", pattern: /parseAsync\s*\(|async\s+action|await\s+program\.parse/i, evidence: "parseAsync evidence was detected." },
+    { signal: "program-name", pattern: /\.name\s*\(|programName|scriptPath|_name|bin\s*:/i, evidence: "program name/bin evidence was detected." },
+    { signal: "executable", pattern: /executableFile|executableDir|stand-?alone executable|childProcess|spawn\s*\(|execFile/i, evidence: "executable subcommand evidence was detected." },
+    { signal: "exit-override", pattern: /exitOverride|_exitCallback|CommanderError|process\.exit/i, evidence: "exit override/exit evidence was detected." },
+    { signal: "allow-unknown-option", pattern: /allowUnknownOption|allowExcessArguments|enablePositionalOptions|passThroughOptions/i, evidence: "parse option policy evidence was detected." }
+  ];
+  return cliReadinessSignalFromSpecs(sourceFiles, specs, "parse", "signal");
+}
+
+function cliReadinessActionSignals(sourceFiles: CliReadinessSourceFile[]): CliReadinessReport["actionSignals"] {
+  const specs: Array<{ signal: CliReadinessReport["actionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "action", pattern: /\.action\s*\(|actionHandler|_actionHandler|handler\s*:/i, evidence: "action handler evidence was detected." },
+    { signal: "hook", pattern: /\.hook\s*\(|lifeCycleHooks|hook\s*:/i, evidence: "lifecycle hook evidence was detected." },
+    { signal: "pre-action", pattern: /preAction/i, evidence: "preAction hook evidence was detected." },
+    { signal: "post-action", pattern: /postAction/i, evidence: "postAction hook evidence was detected." },
+    { signal: "async-action", pattern: /async\s+function|async\s*\(|parseAsync|await\s+/i, evidence: "async action evidence was detected." },
+    { signal: "pass-through-options", pattern: /passThroughOptions|enablePositionalOptions|--/i, evidence: "pass-through/positional option evidence was detected." }
+  ];
+  return cliReadinessSignalFromSpecs(sourceFiles, specs, "action", "signal");
+}
+
+function cliReadinessHelpSignals(sourceFiles: CliReadinessSourceFile[]): CliReadinessReport["helpSignals"] {
+  const specs: Array<{ signal: CliReadinessReport["helpSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "help", pattern: /\.help\s*\(|helpCommand|createHelp|formatHelp|Help\b/i, evidence: "help system evidence was detected." },
+    { signal: "usage", pattern: /\.usage\s*\(|Usage:|usage\s*:/i, evidence: "usage text evidence was detected." },
+    { signal: "help-option", pattern: /helpOption|--help|-h,\s*--help/i, evidence: "help option evidence was detected." },
+    { signal: "add-help-text", pattern: /addHelpText|afterAll|beforeAll|before\s+help|after\s+help/i, evidence: "custom help text evidence was detected." },
+    { signal: "show-help-after-error", pattern: /showHelpAfterError/i, evidence: "show-help-after-error evidence was detected." },
+    { signal: "completion", pattern: /completion|compgen|autocomplete|shell\s+completion/i, evidence: "completion evidence was detected." }
+  ];
+  return cliReadinessSignalFromSpecs(sourceFiles, specs, "help", "signal");
+}
+
+function cliReadinessErrorSignals(sourceFiles: CliReadinessSourceFile[]): CliReadinessReport["errorSignals"] {
+  const specs: Array<{ signal: CliReadinessReport["errorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "command-error", pattern: /CommanderError|CliError|CommandError|program\.error|\.error\s*\(/i, evidence: "command error evidence was detected." },
+    { signal: "missing-argument", pattern: /missing argument|required argument|missingMandatoryOptionValue|optionMissingArgument/i, evidence: "missing argument/option evidence was detected." },
+    { signal: "unknown-option", pattern: /unknown option|unknownOption|allowUnknownOption|unknown option/i, evidence: "unknown option evidence was detected." },
+    { signal: "invalid-option", pattern: /InvalidArgumentError|invalid option|invalidArgument|choices|argParser/i, evidence: "invalid option/argument evidence was detected." },
+    { signal: "exit-code", pattern: /exitCode|process\.exit|CommanderError\(\s*\d|exitOverride/i, evidence: "exit code evidence was detected." },
+    { signal: "stderr", pattern: /stderr|writeErr|console\.error|outputError|getErrHelpWidth/i, evidence: "stderr/error output evidence was detected." }
+  ];
+  return cliReadinessSignalFromSpecs(sourceFiles, specs, "error", "signal");
+}
+
+function cliReadinessPackageSignals(sourceFiles: CliReadinessSourceFile[]): CliReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: CliReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "commander", pattern: /"commander"|from ["']commander["']|require\(["']commander["']\)|new\s+Command/i, evidence: "Commander package evidence was detected." },
+    { signal: "yargs", pattern: /"yargs"|from ["']yargs["']|require\(["']yargs["']\)|hideBin/i, evidence: "yargs package evidence was detected." },
+    { signal: "@oclif/core", pattern: /"@oclif\/core"|from ["']@oclif\/core["']|require\(["']@oclif\/core["']\)|runCommand/i, evidence: "oclif package evidence was detected." },
+    { signal: "cac", pattern: /"cac"|from ["']cac["']|require\(["']cac["']\)|\bcac\s*\(/i, evidence: "cac package evidence was detected." },
+    { signal: "meow", pattern: /"meow"|from ["']meow["']|require\(["']meow["']\)|\bmeow\s*\(/i, evidence: "meow package evidence was detected." },
+    { signal: "clipanion", pattern: /"clipanion"|from ["']clipanion["']|require\(["']clipanion["']\)|Clipanion|Cli\.from/i, evidence: "clipanion package evidence was detected." }
+  ];
+  return cliReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function cliReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: CliReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/cli-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
