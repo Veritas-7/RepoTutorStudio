@@ -6632,6 +6632,60 @@ Local verification:
 - `pnpm audit:brief`: PASS, 113/113 audit checks across 13 generated reports
 - Pushed implementation commit: `b7aa9e4` openapi-client readiness report
 
+### Upgrade 216: Webhook Readiness Report
+
+- Cloned and inspected `svix/svix-webhooks` under
+  `research/external-src/svix-svix-webhooks`,
+  `standard-webhooks/standard-webhooks` under
+  `research/external-src/standard-webhooks-standard-webhooks`, and
+  `hookdeck/hookdeck-cli` under
+  `research/external-src/hookdeck-hookdeck-cli` without executing external
+  source. Clone HEADs were `52855a5`, `4e0fabc`, and `eeaecc8`; all three
+  clones remain ignored by RepoTutor and tracked file count returned `0`.
+- GitHub metadata: `svix/svix-webhooks` is public, MIT licensed, 3,237 stars,
+  250 forks, updated 2026-06-04T19:09:59Z.
+  `standard-webhooks/standard-webhooks` is public, Apache-2.0 licensed, 1,684
+  stars, 60 forks, updated 2026-06-03T13:50:36Z. `hookdeck/hookdeck-cli` is
+  public, Apache-2.0 licensed, 358 stars, 20 forks, updated
+  2026-06-04T16:32:11Z. Selected the three-source slice because together they
+  model webhook signature/replay/idempotency contracts and local delivery
+  debugging/observability. No source code was copied into RepoTutor.
+- Implemented Svix/Standard Webhooks/Hookdeck-style webhook-readiness report:
+  `WebhookReadinessReportSchema`, `analysis/webhook-readiness-report.json`,
+  `markdown/webhook-readiness.md`, `html/webhook-readiness.html`, webhook setup
+  detection, endpoint signals, signature signals, reliability signals,
+  operations signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target webhook-readiness`.
+- Source pattern: webhook readiness separates endpoint/source/destination/
+  connection routing, event filters, HTTPS/status/timeout handling, raw-body
+  signature verification, webhook-id/timestamp/signature headers, HMAC and
+  ed25519/asymmetric signing, secret prefixes and rotation, timestamp/replay
+  controls, idempotency/dedupe stores, retry schedules, backoff/jitter,
+  delivery attempts, manual replay, dead-letter behavior, dashboards, event
+  history, request/attempt logs, metrics, issues, alerts, local CLI listen, and
+  MCP investigation. RepoTutor maps that to deterministic static readiness and
+  explicitly does not receive callbacks, verify live provider signatures, replay
+  deliveries, forward traffic, call dashboards, or mutate webhook provider
+  state.
+- RED smoke generated
+  `/tmp/repotutor-webhook-red-studies.W6HjVU/2026-06-05/local__repotutor-webhook-red-source.Qn8vAF__local__5a758343`;
+  old behavior had `verificationCheckedRequiredArtifacts=345`, was missing
+  `analysis/webhook-readiness-report.json`, `markdown/webhook-readiness.md`,
+  and `html/webhook-readiness.html`, and `open --target webhook-readiness`
+  exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-webhook-green-studies.uHOUmm/2026-06-05/local__repotutor-webhook-red-source.Qn8vAF__local__ea1dc390`;
+  confirmed `verificationCheckedRequiredArtifacts=348`, all three new
+  artifacts, risk queue 0, ready providers `stripe`, `standard-webhooks`,
+  `hookdeck`, `github`, and `svix`, all endpoint/signature/reliability/
+  operations/package signals ready, and `open --target webhook-readiness` ->
+  `html/webhook-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 23/23 tests
+- `pnpm audit:brief`: PASS, 114/114 audit checks across 13 generated reports
+- Pushed implementation commit: `PENDING` webhook readiness report
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

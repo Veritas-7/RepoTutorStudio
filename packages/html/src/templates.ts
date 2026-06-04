@@ -105,6 +105,7 @@ import type {
   RealtimeCollaborationReadinessReport,
   WorkflowOrchestrationReadinessReport,
   OpenApiClientReadinessReport,
+  WebhookReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -234,6 +235,7 @@ export interface StudyHtmlInput {
   realtimeCollaborationReadinessReport: RealtimeCollaborationReadinessReport;
   workflowOrchestrationReadinessReport: WorkflowOrchestrationReadinessReport;
   openApiClientReadinessReport: OpenApiClientReadinessReport;
+  webhookReadinessReport: WebhookReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -377,6 +379,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["realtime-collaboration-readiness.html", "Realtime Collab"],
     ["workflow-orchestration-readiness.html", "Workflow Orchestration"],
     ["openapi-client-readiness.html", "OpenAPI Client"],
+    ["webhook-readiness.html", "Webhook"],
     ["server-framework-readiness.html", "Server Framework"],
     ["rpc-readiness.html", "RPC"],
     ["workspace-graph-readiness.html", "Workspace Graph"],
@@ -533,6 +536,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Realtime Collaboration Readiness</h3><p>${escapeHtml(input.realtimeCollaborationReadinessReport.summary)}</p><p>Yjs/Automerge/Liveblocks 패턴으로 shared document, provider, presence, sync, persistence, history 준비도를 정리합니다.</p><a href="realtime-collaboration-readiness.html">Realtime Collab 열기</a></article>
           <article><h3>Workflow Orchestration Readiness</h3><p>${escapeHtml(input.workflowOrchestrationReadinessReport.summary)}</p><p>Temporal/Inngest/Trigger.dev 패턴으로 trigger, execution, durability, flow control, runtime, observability 준비도를 정리합니다.</p><a href="workflow-orchestration-readiness.html">Workflow Orchestration 열기</a></article>
           <article><h3>OpenAPI Client Readiness</h3><p>${escapeHtml(input.openApiClientReadinessReport.summary)}</p><p>openapi-typescript/Orval/OpenAPI Generator 패턴으로 spec, generator, output, runtime, quality 준비도를 정리합니다.</p><a href="openapi-client-readiness.html">OpenAPI Client 열기</a></article>
+          <article><h3>Webhook Readiness</h3><p>${escapeHtml(input.webhookReadinessReport.summary)}</p><p>Svix/Standard Webhooks/Hookdeck 패턴으로 endpoint, signature, replay, idempotency, delivery, local debug 준비도를 정리합니다.</p><a href="webhook-readiness.html">Webhook 열기</a></article>
           <article><h3>Server Framework Readiness</h3><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p>Fastify 패턴으로 routes, schemas, plugins, hooks, decorators, errors, runtime, tests 준비도를 정리합니다.</p><a href="server-framework-readiness.html">Server Framework 열기</a></article>
           <article><h3>RPC Readiness</h3><p>${escapeHtml(input.rpcReadinessReport.summary)}</p><p>tRPC 패턴으로 routers, procedures, validation, context, clients, adapters, errors 준비도를 정리합니다.</p><a href="rpc-readiness.html">RPC 열기</a></article>
           <article><h3>Workspace Graph Readiness</h3><p>${escapeHtml(input.workspaceGraphReadinessReport.summary)}</p><p>Nx 패턴으로 project graph, targets, affected, boundaries, plugins 준비도를 정리합니다.</p><a href="workspace-graph-readiness.html">Workspace Graph 열기</a></article>
@@ -1030,6 +1034,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("OpenAPI Client Readiness", "openapi-client-readiness.html", `<section class="panel" data-source-pattern="OpenAPI Client"><h2>OpenAPI Client Snapshot</h2><p>${escapeHtml(input.openApiClientReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.openApiClientReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.openApiClientReadinessReport.clientSetups.length}</dd></div><div><dt>specs</dt><dd>${input.openApiClientReadinessReport.specSignals.length}</dd></div><div><dt>generators</dt><dd>${input.openApiClientReadinessReport.generatorSignals.length}</dd></div><div><dt>outputs</dt><dd>${input.openApiClientReadinessReport.outputSignals.length}</dd></div><div><dt>quality</dt><dd>${input.openApiClientReadinessReport.qualitySignals.length}</dd></div></dl><p class="muted">RepoTutor records OpenAPI client readiness only; it does not run generators, download remote schemas, execute generated clients, render templates, mutate generated files, or run analyzed project tests.</p></section><section class="grid"><article class="openapi-client-readiness-card"><h3>Client Setups</h3>${openApiClientReadinessSetupList(input.openApiClientReadinessReport.clientSetups)}</article><article class="openapi-client-readiness-card"><h3>Spec Signals</h3>${openApiClientReadinessSignalList(input.openApiClientReadinessReport.specSignals, "signal")}</article><article class="openapi-client-readiness-card"><h3>Generator Signals</h3>${openApiClientReadinessSignalList(input.openApiClientReadinessReport.generatorSignals, "signal")}</article><article class="openapi-client-readiness-card"><h3>Output Signals</h3>${openApiClientReadinessSignalList(input.openApiClientReadinessReport.outputSignals, "signal")}</article></section><section class="grid"><article class="openapi-client-readiness-card"><h3>Runtime Signals</h3>${openApiClientReadinessSignalList(input.openApiClientReadinessReport.runtimeSignals, "signal")}</article><article class="openapi-client-readiness-card"><h3>Quality Signals</h3>${openApiClientReadinessSignalList(input.openApiClientReadinessReport.qualitySignals, "signal")}</article><article class="openapi-client-readiness-card"><h3>Package Signals</h3>${openApiClientReadinessSignalList(input.openApiClientReadinessReport.packageSignals, "signal")}</article><article class="openapi-client-readiness-card"><h3>Recommended Commands</h3>${openApiClientReadinessCommandList(input.openApiClientReadinessReport.recommendedCommands)}</article><article class="openapi-client-readiness-card"><h3>Risk Queue</h3>${openApiClientReadinessRiskList(input.openApiClientReadinessReport.riskQueue)}</article><article class="openapi-client-readiness-card"><h3>다음 확인 단계</h3>${list(input.openApiClientReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "webhook-readiness.html",
+      title: "Webhook Readiness",
+      html: pageShell("Webhook Readiness", "webhook-readiness.html", `<section class="panel" data-source-pattern="Webhook"><h2>Webhook Snapshot</h2><p>${escapeHtml(input.webhookReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.webhookReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.webhookReadinessReport.webhookSetups.length}</dd></div><div><dt>endpoints</dt><dd>${input.webhookReadinessReport.endpointSignals.length}</dd></div><div><dt>signatures</dt><dd>${input.webhookReadinessReport.signatureSignals.length}</dd></div><div><dt>reliability</dt><dd>${input.webhookReadinessReport.reliabilitySignals.length}</dd></div><div><dt>operations</dt><dd>${input.webhookReadinessReport.operationsSignals.length}</dd></div></dl><p class="muted">RepoTutor records webhook readiness only; it does not receive provider callbacks, verify live signatures, replay deliveries, call dashboards, forward traffic, or mutate webhook provider state.</p></section><section class="grid"><article class="webhook-readiness-card"><h3>Webhook Setups</h3>${webhookReadinessSetupList(input.webhookReadinessReport.webhookSetups)}</article><article class="webhook-readiness-card"><h3>Endpoint Signals</h3>${webhookReadinessSignalList(input.webhookReadinessReport.endpointSignals, "signal")}</article><article class="webhook-readiness-card"><h3>Signature Signals</h3>${webhookReadinessSignalList(input.webhookReadinessReport.signatureSignals, "signal")}</article><article class="webhook-readiness-card"><h3>Reliability Signals</h3>${webhookReadinessSignalList(input.webhookReadinessReport.reliabilitySignals, "signal")}</article></section><section class="grid"><article class="webhook-readiness-card"><h3>Operations Signals</h3>${webhookReadinessSignalList(input.webhookReadinessReport.operationsSignals, "signal")}</article><article class="webhook-readiness-card"><h3>Package Signals</h3>${webhookReadinessSignalList(input.webhookReadinessReport.packageSignals, "signal")}</article><article class="webhook-readiness-card"><h3>Recommended Commands</h3>${webhookReadinessCommandList(input.webhookReadinessReport.recommendedCommands)}</article><article class="webhook-readiness-card"><h3>Risk Queue</h3>${webhookReadinessRiskList(input.webhookReadinessReport.riskQueue)}</article><article class="webhook-readiness-card"><h3>다음 확인 단계</h3>${list(input.webhookReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "server-framework-readiness.html",
       title: "Server Framework Readiness",
       html: pageShell("Server Framework Readiness", "server-framework-readiness.html", `<section class="panel" data-source-pattern="Fastify"><h2>Server Framework Snapshot</h2><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.serverFrameworkReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.serverFrameworkReadinessReport.serverSetups.length}</dd></div><div><dt>routes</dt><dd>${input.serverFrameworkReadinessReport.routeSignals.length}</dd></div><div><dt>schemas</dt><dd>${input.serverFrameworkReadinessReport.schemaSignals.length}</dd></div><div><dt>plugins</dt><dd>${input.serverFrameworkReadinessReport.pluginSignals.length}</dd></div></dl><p class="muted">RepoTutor records server framework readiness only; it does not start listeners, execute handlers, send HTTP requests, run plugins, compile schemas, or mutate runtime state.</p></section><section class="grid"><article class="server-framework-readiness-card"><h3>Server Setups</h3>${serverFrameworkReadinessSetupList(input.serverFrameworkReadinessReport.serverSetups)}</article><article class="server-framework-readiness-card"><h3>Route Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.routeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Schema Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.schemaSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Plugin Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.pluginSignals, "signal")}</article></section><section class="grid"><article class="server-framework-readiness-card"><h3>Lifecycle Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.lifecycleSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Runtime Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.runtimeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Error Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.errorSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Test Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.testSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Package Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.packageSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Recommended Commands</h3>${serverFrameworkReadinessCommandList(input.serverFrameworkReadinessReport.recommendedCommands)}</article><article class="server-framework-readiness-card"><h3>Risk Queue</h3>${serverFrameworkReadinessRiskList(input.serverFrameworkReadinessReport.riskQueue)}</article><article class="server-framework-readiness-card"><h3>다음 확인 단계</h3>${list(input.serverFrameworkReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1325,6 +1334,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Realtime Collaboration Readiness", path: "html/realtime-collaboration-readiness.html", description: "Yjs/Automerge/Liveblocks식 shared document, provider, presence, sync, persistence 준비도를 확인합니다." },
       { label: "Workflow Orchestration Readiness", path: "html/workflow-orchestration-readiness.html", description: "Temporal/Inngest/Trigger.dev식 trigger, execution, durability, flow control, runtime 준비도를 확인합니다." },
       { label: "OpenAPI Client Readiness", path: "html/openapi-client-readiness.html", description: "openapi-typescript/Orval/OpenAPI Generator식 spec, generator, output, runtime, quality 준비도를 확인합니다." },
+      { label: "Webhook Readiness", path: "html/webhook-readiness.html", description: "Svix/Standard Webhooks/Hookdeck식 endpoint, signature, replay, idempotency, delivery, local debug 준비도를 확인합니다." },
       { label: "Server Framework Readiness", path: "html/server-framework-readiness.html", description: "Fastify식 route, schema, plugin, hook, runtime, test 준비도를 확인합니다." },
       { label: "RPC Readiness", path: "html/rpc-readiness.html", description: "tRPC식 router, procedure, validation, context, client, adapter 준비도를 확인합니다." },
       { label: "Workspace Graph Readiness", path: "html/workspace-graph-readiness.html", description: "Nx식 project graph, target, affected, boundary, plugin 준비도를 확인합니다." },
@@ -1988,6 +1998,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "openapi-client-readiness.html",
       goal: "openapi-typescript/Orval/OpenAPI Generator식 spec, generator, output, runtime, quality 흐름을 보고 generated API client contract를 확인합니다.",
       evidence: `client setups ${input.openApiClientReadinessReport.clientSetups.length}개, generator signals ${input.openApiClientReadinessReport.generatorSignals.length}개`
+    },
+    {
+      title: "Webhook readiness 확인",
+      href: "webhook-readiness.html",
+      goal: "Svix/Standard Webhooks/Hookdeck식 endpoint, signature, replay, idempotency, delivery, local debug 흐름을 보고 webhook contract를 확인합니다.",
+      evidence: `webhook setups ${input.webhookReadinessReport.webhookSetups.length}개, signature signals ${input.webhookReadinessReport.signatureSignals.length}개`
     },
     {
       title: "Server framework readiness 확인",
@@ -4563,6 +4579,31 @@ function openApiClientReadinessRiskList(items: OpenApiClientReadinessReport["ris
 }
 
 function openApiClientReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function webhookReadinessSetupList(items: WebhookReadinessReport["webhookSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">webhook setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>endpoint/signature/replay/idempotency/retry/delivery/event/local-debug/observability/security ${item.endpointCount}/${item.signatureCount}/${item.replayCount}/${item.idempotencyCount}/${item.retryCount}/${item.deliveryCount}/${item.eventTypeCount}/${item.localDebugCount}/${item.observabilityCount}/${item.securityCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(webhookReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function webhookReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">webhook signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(webhookReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function webhookReadinessCommandList(items: WebhookReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function webhookReadinessRiskList(items: WebhookReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(webhookReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function webhookReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
