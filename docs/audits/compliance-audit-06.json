@@ -1,6 +1,6 @@
 {
   "iteration": 6,
-  "createdAt": "2026-06-04T14:29:50.045Z",
+  "createdAt": "2026-06-04T14:45:01.873Z",
   "checks": [
     {
       "name": "project setup",
@@ -613,6 +613,13 @@
     },
     {
       "name": "Scheduler readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Build tool readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -107,6 +107,7 @@ import {
   WorkspaceGraphReadinessReport,
   ScaffoldingReadinessReport,
   SchedulerReadinessReport,
+  BuildToolReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -220,6 +221,7 @@ export interface AnalysisBundle {
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
   scaffoldingReadinessReport: ScaffoldingReadinessReport;
   schedulerReadinessReport: SchedulerReadinessReport;
+  buildToolReadinessReport: BuildToolReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -333,8 +335,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
   const scaffoldingReadinessReport = await buildScaffoldingReadinessReport(walk);
   const schedulerReadinessReport = await buildSchedulerReadinessReport(walk);
+  const buildToolReadinessReport = await buildBuildToolReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -22127,6 +22130,329 @@ function schedulerSignalFromSpecs<T extends Record<K, string> & { pattern: RegEx
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/scheduler-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildBuildToolReadinessReport(walk: WalkResult): Promise<BuildToolReadinessReport> {
+  const sourceFiles = await buildToolSourceFiles(walk);
+  const buildToolSetups = buildToolSetupFiles(sourceFiles);
+  const configSignals = buildToolConfigSignals(sourceFiles);
+  const pluginSignals = buildToolPluginSignals(sourceFiles);
+  const devServerSignals = buildToolDevServerSignals(sourceFiles);
+  const buildSignals = buildToolBuildSignals(sourceFiles);
+  const environmentSignals = buildToolEnvironmentSignals(sourceFiles);
+  const ssrSignals = buildToolSsrSignals(sourceFiles);
+  const dependencyOptimizationSignals = buildToolDependencyOptimizationSignals(sourceFiles);
+  const packageSignals = buildToolPackageSignals(sourceFiles);
+
+  const hasBuildTool = buildToolSetups.length > 0 || packageSignals.some((item) => item.readiness === "ready");
+  const hasConfig = configSignals.some((item) => item.readiness === "ready") || buildToolSetups.some((item) => item.configCount > 0);
+  const hasPlugin = pluginSignals.some((item) => item.readiness === "ready") || buildToolSetups.some((item) => item.pluginCount > 0);
+  const hasDevOrBuild = devServerSignals.some((item) => item.readiness === "ready")
+    || buildSignals.some((item) => item.readiness === "ready")
+    || buildToolSetups.some((item) => item.devServerCount + item.buildCount + item.previewCount > 0);
+  const hasEnv = environmentSignals.some((item) => item.readiness === "ready") || buildToolSetups.some((item) => item.envCount > 0);
+  const hasDepOptimization = dependencyOptimizationSignals.some((item) => item.readiness === "ready") || buildToolSetups.some((item) => item.depOptimizationCount > 0);
+
+  const riskQueue: BuildToolReadinessReport["riskQueue"] = [];
+  if (!hasBuildTool) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document build tooling before claiming frontend build readiness.",
+      why: "Build-tool readiness starts with a discoverable Vite, Webpack, Rollup, esbuild, Parcel, framework config, or package script signal.",
+      relatedHref: "html/build-tool-readiness.html"
+    });
+  }
+  if (hasBuildTool && !hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record config files, defineConfig usage, root/base, aliases, env dir, and cache directory choices.",
+      why: "Learners need the build contract before they can explain entry resolution, asset paths, mode-specific behavior, or cache behavior.",
+      relatedHref: "html/build-tool-readiness.html"
+    });
+  }
+  if (hasBuildTool && !hasPlugin) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Trace plugin arrays, official plugins, custom plugin hooks, apply/enforce scope, and HTML/HMR transforms.",
+      why: "Vite-style build behavior is often hidden in plugin lifecycle hooks rather than plain config fields.",
+      relatedHref: "html/build-tool-readiness.html"
+    });
+  }
+  if (hasBuildTool && !hasDevOrBuild) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document dev server, preview server, production build, output, sourcemap, target, and manifest behavior.",
+      why: "A build tool is incomplete for study if learners cannot distinguish development serving from production output.",
+      relatedHref: "html/build-tool-readiness.html"
+    });
+  }
+  if (hasBuildTool && !hasEnv) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document envPrefix, loadEnv, import.meta.env, mode, base URL, define replacements, and dotenv boundaries.",
+      why: "Frontend builds can leak or miss environment values when public prefixes and mode-specific values are not explicit.",
+      relatedHref: "html/build-tool-readiness.html"
+    });
+  }
+  if (hasBuildTool && !hasDepOptimization) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record dependency optimization include/exclude/entries, force/cache behavior, and linked-package rules.",
+      why: "Vite-like tools can behave differently for pre-bundled dependencies, linked workspaces, and stale caches.",
+      relatedHref: "html/build-tool-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify builds in the original runtime before treating this report as operational approval.",
+    why: "RepoTutor records build-tool readiness only; it does not start dev servers, run production builds, transform modules, execute plugins, pre-bundle dependencies, load env files, or validate SSR output.",
+    relatedHref: "html/build-tool-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Vite-style build tool readiness report: setup ${buildToolSetups.length}개, config signal ${configSignals.length}개, plugin signal ${pluginSignals.length}개, build signal ${buildSignals.length}개, dependency optimization signal ${dependencyOptimizationSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Vite defineConfig plugins createServer preview build optimizeDeps ssr loadEnv import.meta.env transformIndexHtml configureServer",
+    buildToolSetups,
+    configSignals,
+    pluginSignals,
+    devServerSignals,
+    buildSignals,
+    environmentSignals,
+    ssrSignals,
+    dependencyOptimizationSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"vite.config|defineConfig|webpack.config|rollup.config|parcel|esbuild|astro.config|nuxt.config|next.config\" .", purpose: "Find build tool config entrypoints and framework wrappers." },
+      { command: "rg \"plugins:|@vitejs/plugin|transformIndexHtml|configureServer|configurePreviewServer|handleHotUpdate|resolveId|load\\(|transform\\(\" .", purpose: "Trace plugin arrays and lifecycle hooks that can change module output." },
+      { command: "rg \"server:|preview:|middlewareMode|proxy:|cors:|https:|hmr:|warmup|vite preview\" .", purpose: "Review development and preview server behavior without starting the server." },
+      { command: "rg \"build:|outDir|sourcemap|minify|target|lib:|manifest|rollupOptions|rolldownOptions|optimizeDeps|loadEnv|import\\.meta\\.env|envPrefix|ssr:\" .", purpose: "Check production build, env, SSR, and dependency optimization contracts." }
+    ],
+    learnerNextSteps: [
+      "먼저 vite.config, webpack.config, rollup.config, package scripts, framework config 파일로 build tool entrypoint를 확인하세요.",
+      "defineConfig, root/base, resolve.alias, envDir, cacheDir 신호로 config contract를 분리하세요.",
+      "plugins array, official plugin, custom plugin, transformIndexHtml, configureServer, handleHotUpdate, Rollup hook 신호로 plugin lifecycle을 확인하세요.",
+      "server, preview, proxy, cors, https, middlewareMode, hmr, warmup 신호로 dev/preview runtime 차이를 정리하세요.",
+      "build, outDir, sourcemap, minify, target, lib, manifest, rollupOptions/rolldownOptions 신호로 production output을 확인하세요.",
+      "optimizeDeps include/exclude/entries/force/cache, linked package, esbuild/rolldown options 신호로 dependency pre-bundling 준비도를 확인하세요.",
+      "이 리포트는 정적 readiness입니다. dev server start, production build, plugin execution, dependency pre-bundling, SSR rendering은 원본 런타임에서 별도 검증하세요."
+    ]
+  };
+}
+
+type BuildToolSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function buildToolSourceFiles(walk: WalkResult): Promise<BuildToolSourceFile[]> {
+  const files: BuildToolSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !buildToolInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!buildToolPathSignal(file.relPath) && !buildToolContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function buildToolInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return buildToolPathSignal(filePath)
+    || /^(package\.json|vite\.config\.[cm]?[jt]s|webpack\.config\.[cm]?[jt]s|rollup\.config\.[cm]?[jt]s|esbuild\.config\.[cm]?[jt]s|parcelrc|\.parcelrc|astro\.config\.[cm]?[jt]s|nuxt\.config\.[cm]?[jt]s|next\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|json|ya?ml|toml|md|mdx)$/i.test(filePath);
+}
+
+function buildToolPathSignal(filePath: string): boolean {
+  return /(^|\/)(vite|webpack|rollup|esbuild|parcel|astro|nuxt|next)\.config\.[cm]?[jt]s$/i.test(filePath)
+    || /(^|\/)(package\.json|pnpm-workspace\.yaml|turbo\.json|\.parcelrc)$/i.test(filePath)
+    || /(^|\/)(build|scripts|config|configs)(\/|$)/i.test(filePath)
+    || /(^|\/)\.env\.(example|sample|template)$/i.test(filePath);
+}
+
+function buildToolContentSignal(text: string): boolean {
+  return /(Vite|defineConfig|PluginOption|plugins\s*:|createServer\s*\(|vite build|vite preview|optimizeDeps|loadEnv|envPrefix|import\.meta\.env|transformIndexHtml|configureServer|configurePreviewServer|handleHotUpdate|rollupOptions|rolldownOptions|webpack|rollup|esbuild|parcel|ssrManifest|ModuleRunner)/i.test(text);
+}
+
+function buildToolSetupFiles(sourceFiles: BuildToolSourceFile[]): BuildToolReadinessReport["buildToolSetups"] {
+  const rows: BuildToolReadinessReport["buildToolSetups"] = [];
+  for (const source of sourceFiles) {
+    const configCount = countMatches(source.text, /vite\.config|webpack\.config|rollup\.config|esbuild\.config|parcelrc|astro\.config|nuxt\.config|next\.config|defineConfig|UserConfig|loadConfigFromFile|resolveConfig|root\s*:|base\s*:|cacheDir|resolve\s*:\s*\{|alias\s*:/gi) + (/(^|\/)(vite|webpack|rollup|esbuild|parcel|astro|nuxt|next)\.config/i.test(source.filePath) ? 1 : 0);
+    const pluginCount = countMatches(source.text, /plugins\s*:|PluginOption|@vitejs\/plugin-|transformIndexHtml|configureServer|configurePreviewServer|handleHotUpdate|configResolved|resolveId|load\s*\(|transform\s*\(|buildStart|generateBundle|closeBundle/gi);
+    const devServerCount = countMatches(source.text, /createServer\s*\(|server\s*:\s*\{|middlewareMode|hmr\s*:|proxy\s*:|cors\s*:|https\s*:|strictPort|warmup|DEFAULT_DEV_PORT|vite --host|vite --debug/gi);
+    const buildCount = countMatches(source.text, /build\s*:\s*\{|vite build|build\(|outDir|assetsDir|sourcemap|minify|target|lib\s*:|manifest|rolldownOptions|rollupOptions|cssCodeSplit|ssrManifest/gi);
+    const previewCount = countMatches(source.text, /preview\s*:\s*\{|vite preview|configurePreviewServer|PreviewServer|DEFAULT_PREVIEW_PORT|preview\.port|allowedHosts|headers/gi);
+    const envCount = countMatches(source.text, /loadEnv|envPrefix|envDir|import\.meta\.env|MODE|BASE_URL|DEV|PROD|define\s*:|dotenv|VITE_/gi);
+    const ssrCount = countMatches(source.text, /ssr\s*:|build\.ssr|ssrLoadModule|ModuleRunner|middlewareMode|ssrManifest|ssr\.external|ssr\.noExternal|ssr\.target|import\.meta\.env\.SSR/gi);
+    const depOptimizationCount = countMatches(source.text, /optimizeDeps|dep optimization|pre-bundl|include\s*:|exclude\s*:|entries\s*:|cacheDir|--force|forceOptimizeDeps|rolldownOptions|esbuildOptions|linked dep/gi);
+    const hasSignal = configCount + pluginCount + devServerCount + buildCount + previewCount + envCount + ssrCount + depOptimizationCount > 0;
+    if (!hasSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: buildToolTool(source),
+      configCount,
+      pluginCount,
+      devServerCount,
+      buildCount,
+      previewCount,
+      envCount,
+      ssrCount,
+      depOptimizationCount,
+      readiness: configCount > 0 && (pluginCount > 0 || devServerCount > 0 || buildCount > 0) ? "ready" : hasSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains config ${configCount}, plugins ${pluginCount}, dev server ${devServerCount}, build ${buildCount}, preview ${previewCount}, env ${envCount}, SSR ${ssrCount}, dependency optimization ${depOptimizationCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function buildToolTool(source: BuildToolSourceFile): BuildToolReadinessReport["buildToolSetups"][number]["tool"] {
+  if (/vite|@vitejs\/plugin-|defineConfig|optimizeDeps|transformIndexHtml|configureServer/i.test(source.filePath) || /"vite"|from ['"]vite|defineConfig|@vitejs\/plugin-|optimizeDeps|transformIndexHtml|configureServer/i.test(source.text)) return "vite";
+  if (/webpack\.config/i.test(source.filePath) || /"webpack"|from ['"]webpack|webpack\(|module\.exports|webpack-dev-server/i.test(source.text)) return "webpack";
+  if (/rollup\.config/i.test(source.filePath) || /"rollup"|from ['"]rollup|rollupOptions|rollup\(/i.test(source.text)) return "rollup";
+  if (/esbuild/i.test(source.filePath) || /"esbuild"|from ['"]esbuild|esbuild\.build|esbuildOptions/i.test(source.text)) return "esbuild";
+  if (/parcel|\.parcelrc/i.test(source.filePath) || /"parcel"|parcel build|parcel serve/i.test(source.text)) return "parcel";
+  if (/next\.config/i.test(source.filePath) || /"next"|next build|next dev/i.test(source.text)) return "next";
+  if (/nuxt\.config/i.test(source.filePath) || /"nuxt"|nuxt build|nuxt dev/i.test(source.text)) return "nuxt";
+  if (/astro\.config/i.test(source.filePath) || /"astro"|astro build|astro dev/i.test(source.text)) return "astro";
+  if (/build|bundle|compile/i.test(source.filePath) || /build\s*:\s*\{|bundle|transpile/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function buildToolConfigSignals(sourceFiles: BuildToolSourceFile[]): BuildToolReadinessReport["configSignals"] {
+  const specs: Array<{ signal: BuildToolReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "config-file", pattern: /(^|\/)(vite|webpack|rollup|esbuild|parcel|astro|nuxt|next)\.config\.[cm]?[jt]s|\.parcelrc/i, evidence: "build config file evidence was detected." },
+    { signal: "define-config", pattern: /defineConfig\s*\(/i, evidence: "defineConfig evidence was detected." },
+    { signal: "config-function", pattern: /export\s+default\s+(?:defineConfig\s*\()?(\(|async\s*\(|function)|mode\s*=>|command\s*=>/i, evidence: "mode-aware config function evidence was detected." },
+    { signal: "mode-aware", pattern: /\bmode\b|\bcommand\b|process\.env\.NODE_ENV|import\.meta\.env\.MODE/i, evidence: "mode-aware config evidence was detected." },
+    { signal: "root-base", pattern: /root\s*:|base\s*:/i, evidence: "root/base path evidence was detected." },
+    { signal: "resolve-alias", pattern: /resolve\s*:\s*\{|alias\s*:/i, evidence: "resolve alias evidence was detected." },
+    { signal: "env-dir", pattern: /envDir|\.env\.(example|sample|template)/i, evidence: "environment directory/example evidence was detected." },
+    { signal: "cache-dir", pattern: /cacheDir|node_modules\/\.vite|\.vite\/deps/i, evidence: "cache directory evidence was detected." }
+  ];
+  return buildToolSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function buildToolPluginSignals(sourceFiles: BuildToolSourceFile[]): BuildToolReadinessReport["pluginSignals"] {
+  const specs: Array<{ signal: BuildToolReadinessReport["pluginSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "plugins-array", pattern: /plugins\s*:/i, evidence: "plugins array evidence was detected." },
+    { signal: "official-plugin", pattern: /@vitejs\/plugin-|vite-plugin-|@rollup\/plugin-/i, evidence: "official or ecosystem plugin evidence was detected." },
+    { signal: "custom-plugin", pattern: /name\s*:\s*['"][^'"]+['"].{0,400}(?:transform|resolveId|load|configureServer|buildStart)|function\s+\w*Plugin/i, evidence: "custom plugin evidence was detected." },
+    { signal: "enforce-order", pattern: /enforce\s*:\s*['"](pre|post)['"]/i, evidence: "plugin enforce order evidence was detected." },
+    { signal: "apply-scope", pattern: /apply\s*:\s*['"](serve|build)['"]|apply\s*:\s*\(/i, evidence: "plugin apply scope evidence was detected." },
+    { signal: "config-resolved", pattern: /configResolved\s*\(/i, evidence: "configResolved lifecycle evidence was detected." },
+    { signal: "transform-index-html", pattern: /transformIndexHtml/i, evidence: "transformIndexHtml hook evidence was detected." },
+    { signal: "hmr-hook", pattern: /handleHotUpdate|hotUpdate|moduleGraph|server\.ws/i, evidence: "HMR hook evidence was detected." },
+    { signal: "rollup-hook", pattern: /resolveId\s*\(|load\s*\(|transform\s*\(|buildStart\s*\(|generateBundle\s*\(|closeBundle\s*\(/i, evidence: "Rollup-compatible hook evidence was detected." }
+  ];
+  return buildToolSignalFromSpecs(sourceFiles, specs, "plugin", "signal");
+}
+
+function buildToolDevServerSignals(sourceFiles: BuildToolSourceFile[]): BuildToolReadinessReport["devServerSignals"] {
+  const specs: Array<{ signal: BuildToolReadinessReport["devServerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dev-server", pattern: /createServer\s*\(|vite dev|vite --host|webpack-dev-server|next dev|astro dev|nuxt dev/i, evidence: "dev server evidence was detected." },
+    { signal: "server-port", pattern: /server\s*:\s*\{|port\s*:|strictPort|DEFAULT_DEV_PORT/i, evidence: "server port evidence was detected." },
+    { signal: "proxy", pattern: /proxy\s*:/i, evidence: "proxy evidence was detected." },
+    { signal: "cors", pattern: /cors\s*:/i, evidence: "CORS evidence was detected." },
+    { signal: "https", pattern: /https\s*:/i, evidence: "HTTPS evidence was detected." },
+    { signal: "open", pattern: /open\s*:/i, evidence: "auto-open evidence was detected." },
+    { signal: "middleware-mode", pattern: /middlewareMode|middlewares/i, evidence: "middleware mode evidence was detected." },
+    { signal: "hmr", pattern: /hmr\s*:|handleHotUpdate|server\.ws/i, evidence: "HMR evidence was detected." },
+    { signal: "warmup", pattern: /warmup\s*:/i, evidence: "warmup evidence was detected." }
+  ];
+  return buildToolSignalFromSpecs(sourceFiles, specs, "dev server", "signal");
+}
+
+function buildToolBuildSignals(sourceFiles: BuildToolSourceFile[]): BuildToolReadinessReport["buildSignals"] {
+  const specs: Array<{ signal: BuildToolReadinessReport["buildSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "build-command", pattern: /vite build|webpack --mode production|rollup -c|parcel build|esbuild .*--bundle|npm run build|pnpm build/i, evidence: "build command evidence was detected." },
+    { signal: "out-dir", pattern: /outDir|output\.path|dist\/|build\/|assetsDir/i, evidence: "output directory evidence was detected." },
+    { signal: "sourcemap", pattern: /sourcemap|sourceMap|devtool\s*:/i, evidence: "sourcemap evidence was detected." },
+    { signal: "minify", pattern: /minify|terser|esbuild.*minify|cssMinify/i, evidence: "minify evidence was detected." },
+    { signal: "target", pattern: /target\s*:|browserslist|esnext|modules\s*:/i, evidence: "target evidence was detected." },
+    { signal: "library-mode", pattern: /lib\s*:|library\s*:|formats\s*:|entry\s*:/i, evidence: "library mode evidence was detected." },
+    { signal: "manifest", pattern: /manifest\s*:|ssrManifest|manifest\.json/i, evidence: "manifest evidence was detected." },
+    { signal: "rollup-options", pattern: /rollupOptions|rolldownOptions|manualChunks|external\s*:|output\s*:/i, evidence: "Rollup/Rolldown options evidence was detected." },
+    { signal: "assets", pattern: /assetsDir|assetsInclude|assetFileNames|cssCodeSplit|inlineLimit/i, evidence: "asset handling evidence was detected." }
+  ];
+  return buildToolSignalFromSpecs(sourceFiles, specs, "build", "signal");
+}
+
+function buildToolEnvironmentSignals(sourceFiles: BuildToolSourceFile[]): BuildToolReadinessReport["environmentSignals"] {
+  const specs: Array<{ signal: BuildToolReadinessReport["environmentSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "env-prefix", pattern: /envPrefix|VITE_/i, evidence: "env prefix evidence was detected." },
+    { signal: "load-env", pattern: /loadEnv\s*\(/i, evidence: "loadEnv evidence was detected." },
+    { signal: "import-meta-env", pattern: /import\.meta\.env/i, evidence: "import.meta.env evidence was detected." },
+    { signal: "mode", pattern: /\bMODE\b|\bmode\b|process\.env\.NODE_ENV/i, evidence: "mode evidence was detected." },
+    { signal: "base-url", pattern: /BASE_URL|base\s*:/i, evidence: "base URL evidence was detected." },
+    { signal: "ssr-env", pattern: /import\.meta\.env\.SSR|\bSSR\b/i, evidence: "SSR env evidence was detected." },
+    { signal: "dotenv", pattern: /dotenv|\.env\.(example|sample|template|local|development|production)/i, evidence: "dotenv evidence was detected." },
+    { signal: "define", pattern: /define\s*:/i, evidence: "define replacement evidence was detected." }
+  ];
+  return buildToolSignalFromSpecs(sourceFiles, specs, "environment", "signal");
+}
+
+function buildToolSsrSignals(sourceFiles: BuildToolSourceFile[]): BuildToolReadinessReport["ssrSignals"] {
+  const specs: Array<{ signal: BuildToolReadinessReport["ssrSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ssr-entry", pattern: /build\.ssr|ssr\s*:|entry-server|server-entry|ssrLoadModule/i, evidence: "SSR entry evidence was detected." },
+    { signal: "ssr-external", pattern: /ssr\.external|external\s*:/i, evidence: "SSR external evidence was detected." },
+    { signal: "ssr-no-external", pattern: /ssr\.noExternal|noExternal/i, evidence: "SSR noExternal evidence was detected." },
+    { signal: "ssr-target", pattern: /ssr\.target|target\s*:\s*['"](node|webworker)/i, evidence: "SSR target evidence was detected." },
+    { signal: "ssr-manifest", pattern: /ssrManifest|manifest\s*:/i, evidence: "SSR manifest evidence was detected." },
+    { signal: "middleware-mode", pattern: /middlewareMode|appType\s*:\s*['"]custom['"]/i, evidence: "SSR middleware evidence was detected." },
+    { signal: "module-runner", pattern: /ModuleRunner|ssrLoadModule|runner\.import/i, evidence: "module runner evidence was detected." }
+  ];
+  return buildToolSignalFromSpecs(sourceFiles, specs, "SSR", "signal");
+}
+
+function buildToolDependencyOptimizationSignals(sourceFiles: BuildToolSourceFile[]): BuildToolReadinessReport["dependencyOptimizationSignals"] {
+  const specs: Array<{ signal: BuildToolReadinessReport["dependencyOptimizationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "optimize-deps", pattern: /optimizeDeps|dep optimization|pre-bundl/i, evidence: "dependency optimization evidence was detected." },
+    { signal: "include", pattern: /optimizeDeps[\s\S]{0,400}include\s*:|include\s*:/i, evidence: "include evidence was detected." },
+    { signal: "exclude", pattern: /optimizeDeps[\s\S]{0,400}exclude\s*:|exclude\s*:/i, evidence: "exclude evidence was detected." },
+    { signal: "entries", pattern: /optimizeDeps[\s\S]{0,400}entries\s*:|entries\s*:/i, evidence: "entries evidence was detected." },
+    { signal: "force", pattern: /--force|forceOptimizeDeps|optimizeDeps[\s\S]{0,400}force/i, evidence: "force optimization evidence was detected." },
+    { signal: "cache-dir", pattern: /cacheDir|node_modules\/\.vite|\.vite\/deps/i, evidence: "cache directory evidence was detected." },
+    { signal: "rolldown-options", pattern: /rolldownOptions/i, evidence: "Rolldown options evidence was detected." },
+    { signal: "esbuild-options", pattern: /esbuildOptions/i, evidence: "esbuild options evidence was detected." },
+    { signal: "linked-package", pattern: /linked package|linked dep|workspace:|pnpm-workspace|preserveSymlinks/i, evidence: "linked package evidence was detected." }
+  ];
+  return buildToolSignalFromSpecs(sourceFiles, specs, "dependency optimization", "signal");
+}
+
+function buildToolPackageSignals(sourceFiles: BuildToolSourceFile[]): BuildToolReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: BuildToolReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vite", pattern: /"vite"|from ['"]vite|defineConfig|vite build|vite preview/i, evidence: "Vite evidence was detected." },
+    { signal: "@vitejs/plugin-react", pattern: /@vitejs\/plugin-react/i, evidence: "@vitejs/plugin-react evidence was detected." },
+    { signal: "@vitejs/plugin-vue", pattern: /@vitejs\/plugin-vue/i, evidence: "@vitejs/plugin-vue evidence was detected." },
+    { signal: "webpack", pattern: /"webpack"|webpack\.config|webpack-dev-server/i, evidence: "Webpack evidence was detected." },
+    { signal: "rollup", pattern: /"rollup"|rollup\.config|rollupOptions/i, evidence: "Rollup evidence was detected." },
+    { signal: "esbuild", pattern: /"esbuild"|esbuild\.build|esbuildOptions/i, evidence: "esbuild evidence was detected." },
+    { signal: "parcel", pattern: /"parcel"|\.parcelrc|parcel build/i, evidence: "Parcel evidence was detected." },
+    { signal: "rolldown", pattern: /rolldown|rolldownOptions/i, evidence: "Rolldown evidence was detected." }
+  ];
+  return buildToolSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function buildToolSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: BuildToolSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/build-tool-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
