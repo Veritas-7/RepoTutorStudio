@@ -5552,6 +5552,55 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 92/92 audit checks across 13 generated reports
 
+### Upgrade 195: Build Tool Readiness Report
+
+- Cloned and inspected `vitejs/vite` under
+  `research/external-src/vitejs-vite` without executing external source. Clone
+  HEAD was `4551a4b`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 80,990 stars, 8,254 forks, updated
+  2026-06-04T13:55:56Z. Compared with `webpack/webpack`,
+  `rollup/rollup`, `evanw/esbuild`, and `parcel-bundler/parcel`; selected
+  Vite because bundle analysis, task runner, and package manager readiness were
+  already represented, while Vite directly models config, plugins, dev server,
+  preview server, production build, environment, SSR, and dependency
+  optimization boundaries. No source code was copied into RepoTutor.
+- Implemented Vite-style build-tool-readiness report:
+  `BuildToolReadinessReportSchema`,
+  `analysis/build-tool-readiness-report.json`,
+  `markdown/build-tool-readiness.md`, `html/build-tool-readiness.html`, build
+  tool setups, config signals, plugin signals, dev server signals, build
+  signals, environment signals, SSR signals, dependency optimization signals,
+  package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target build-tool-readiness`.
+- Source pattern: Vite separates `defineConfig`, config files, `plugins`,
+  official and custom plugins, `configureServer`, `configurePreviewServer`,
+  `transformIndexHtml`, `handleHotUpdate`, Rollup-compatible hooks, `server`,
+  `preview`, `build`, `rollupOptions`, `rolldownOptions`, `loadEnv`,
+  `envPrefix`, `import.meta.env`, `ssr`, `ssrManifest`, and `optimizeDeps`.
+  RepoTutor maps that to deterministic static build tool readiness and
+  explicitly does not start dev servers, run production builds, transform
+  modules, execute plugins, pre-bundle dependencies, load env files, or validate
+  SSR output.
+- RED smoke generated
+  `/tmp/repotutor-build-tool-red-studies.RkpAGA/2026-06-04/local__simple-ts-app__HEAD__1139dbe2`;
+  old behavior had `verificationCheckedRequiredArtifacts=282`, was missing
+  `analysis/build-tool-readiness-report.json`,
+  `markdown/build-tool-readiness.md`, and
+  `html/build-tool-readiness.html`, and `open --target
+  build-tool-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-build-tool-green-studies.IyvrS3/2026-06-04/local__simple-ts-app__main__1139dbe2`;
+  confirmed `verificationCheckedRequiredArtifacts=285`, build tool setups 1,
+  config signals 8, plugin signals 9, dev server signals 9, build signals 9,
+  environment signals 8, SSR signals 7, dependency optimization signals 9,
+  package signals 8, risk queue 5, all three new artifacts, and
+  `open --target build-tool-readiness` ->
+  `html/build-tool-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 93/93 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

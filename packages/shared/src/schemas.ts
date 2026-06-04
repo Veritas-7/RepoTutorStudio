@@ -5142,6 +5142,85 @@ export const SchedulerReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const BuildToolReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  buildToolSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["vite", "webpack", "rollup", "esbuild", "parcel", "next", "nuxt", "astro", "custom", "unknown"]),
+    configCount: z.number().int().nonnegative(),
+    pluginCount: z.number().int().nonnegative(),
+    devServerCount: z.number().int().nonnegative(),
+    buildCount: z.number().int().nonnegative(),
+    previewCount: z.number().int().nonnegative(),
+    envCount: z.number().int().nonnegative(),
+    ssrCount: z.number().int().nonnegative(),
+    depOptimizationCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["config-file", "define-config", "config-function", "mode-aware", "root-base", "resolve-alias", "env-dir", "cache-dir", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  pluginSignals: z.array(z.object({
+    signal: z.enum(["plugins-array", "official-plugin", "custom-plugin", "enforce-order", "apply-scope", "config-resolved", "transform-index-html", "hmr-hook", "rollup-hook", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  devServerSignals: z.array(z.object({
+    signal: z.enum(["dev-server", "server-port", "proxy", "cors", "https", "open", "middleware-mode", "hmr", "warmup", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  buildSignals: z.array(z.object({
+    signal: z.enum(["build-command", "out-dir", "sourcemap", "minify", "target", "library-mode", "manifest", "rollup-options", "assets", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  environmentSignals: z.array(z.object({
+    signal: z.enum(["env-prefix", "load-env", "import-meta-env", "mode", "base-url", "ssr-env", "dotenv", "define", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ssrSignals: z.array(z.object({
+    signal: z.enum(["ssr-entry", "ssr-external", "ssr-no-external", "ssr-target", "ssr-manifest", "middleware-mode", "module-runner", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dependencyOptimizationSignals: z.array(z.object({
+    signal: z.enum(["optimize-deps", "include", "exclude", "entries", "force", "cache-dir", "rolldown-options", "esbuild-options", "linked-package", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["vite", "@vitejs/plugin-react", "@vitejs/plugin-vue", "webpack", "rollup", "esbuild", "parcel", "rolldown", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -5438,6 +5517,7 @@ export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;
 export type ScaffoldingReadinessReport = z.infer<typeof ScaffoldingReadinessReportSchema>;
 export type SchedulerReadinessReport = z.infer<typeof SchedulerReadinessReportSchema>;
+export type BuildToolReadinessReport = z.infer<typeof BuildToolReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

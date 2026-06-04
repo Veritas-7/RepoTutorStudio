@@ -4269,6 +4269,49 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 194:
   - `1139e26` scheduler readiness report
 
+- 2026-06-04: AutoResearch Upgrade 195 candidate selected:
+  `vitejs/vite`
+  (`https://github.com/vitejs/vite`; public; MIT; 80,990 stars; 8,254 forks;
+  updated 2026-06-04T13:55:56Z). Compared with `webpack/webpack`,
+  `rollup/rollup`, `evanw/esbuild`, and `parcel-bundler/parcel`; selected Vite
+  because existing RepoTutor reports already cover package manager, task runner,
+  and bundle analysis surfaces, while Vite directly models build tool
+  readiness: config, plugin lifecycle, dev server, preview, production build,
+  env, SSR, and dependency optimization. Cloned ignored external source to
+  `research/external-src/vitejs-vite` and inspected docs/source hits without
+  executing external source. Clone HEAD was `4551a4b`; tracked file count for
+  `research/external-src/vitejs-vite` returned `0`.
+- 2026-06-04: RED build-tool-readiness smoke generated
+  `/tmp/repotutor-build-tool-red-studies.RkpAGA/2026-06-04/local__simple-ts-app__HEAD__1139dbe2`;
+  old build had `verificationCheckedRequiredArtifacts=282`, was missing
+  `analysis/build-tool-readiness-report.json`,
+  `markdown/build-tool-readiness.md`, and
+  `html/build-tool-readiness.html`, and `open --target
+  build-tool-readiness` failed as expected.
+- 2026-06-04: Implemented Vite-style build-tool-readiness report:
+  `BuildToolReadinessReportSchema`,
+  `analysis/build-tool-readiness-report.json`,
+  `markdown/build-tool-readiness.md`, `html/build-tool-readiness.html`, build
+  tool setups, config signals, plugin signals, dev server signals, build
+  signals, environment signals, SSR signals, dependency optimization signals,
+  package signals, recommended commands, risk queue, manifest/session
+  verification coverage, learning-path linkage, nav entry, and
+  `open --target build-tool-readiness`.
+- 2026-06-04: GREEN build-tool-readiness smoke generated
+  `/tmp/repotutor-build-tool-green-studies.IyvrS3/2026-06-04/local__simple-ts-app__main__1139dbe2`;
+  confirmed `verificationCheckedRequiredArtifacts=285`, build tool setups 1,
+  config signals 8, plugin signals 9, dev server signals 9, build signals 9,
+  environment signals 8, SSR signals 7, dependency optimization signals 9,
+  package signals 8, risk queue 5, all three new artifacts, and
+  `open --target build-tool-readiness` ->
+  `html/build-tool-readiness.html`.
+- 2026-06-04: Verification for Upgrade 195:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 93/93 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
