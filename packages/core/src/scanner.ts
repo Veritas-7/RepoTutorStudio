@@ -77,6 +77,7 @@ import {
   EmailReadinessReport,
   QueueReadinessReport,
   CacheReadinessReport,
+  LoggingReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -160,6 +161,7 @@ export interface AnalysisBundle {
   emailReadinessReport: EmailReadinessReport;
   queueReadinessReport: QueueReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
+  loggingReadinessReport: LoggingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -243,8 +245,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const emailReadinessReport = await buildEmailReadinessReport(walk);
   const queueReadinessReport = await buildQueueReadinessReport(walk);
   const cacheReadinessReport = await buildCacheReadinessReport(walk);
+  const loggingReadinessReport = await buildLoggingReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -13773,6 +13776,275 @@ function cacheReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/cache-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildLoggingReadinessReport(walk: WalkResult): Promise<LoggingReadinessReport> {
+  const sourceFiles = await loggingReadinessSourceFiles(walk);
+  const loggingSetups = loggingReadinessSetups(sourceFiles);
+  const levelSignals = loggingReadinessLevelSignals(sourceFiles);
+  const contextSignals = loggingReadinessContextSignals(sourceFiles);
+  const safetySignals = loggingReadinessSafetySignals(sourceFiles);
+  const transportSignals = loggingReadinessTransportSignals(sourceFiles);
+  const packageSignals = loggingReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasPinoPackage = packageSignals.some((item) => item.signal === "pino" && item.readiness === "ready");
+  const hasSetup = loggingSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = loggingSetups.some((item) => item.readiness === "ready");
+  const hasLogCall = levelSignals.some((item) => item.readiness === "ready");
+  const hasStructuredContext = contextSignals.some((item) => ["child-logger", "bindings", "request-id", "http-request", "mixin"].includes(item.signal) && item.readiness === "ready");
+  const hasErrorLogs = levelSignals.some((item) => ["error", "fatal"].includes(item.signal) && item.readiness === "ready");
+  const hasErrorSerializer = safetySignals.some((item) => ["error-serializer", "safe-stringify"].includes(item.signal) && item.readiness === "ready");
+  const hasRedaction = safetySignals.some((item) => ["redact", "redact-paths", "secret-fields"].includes(item.signal) && item.readiness === "ready");
+  const hasTransport = transportSignals.some((item) => ["transport", "destination", "multistream", "file-output", "log-processor"].includes(item.signal) && item.readiness === "ready");
+  const hasFlushHandling = safetySignals.some((item) => item.signal === "flush-on-exit" && item.readiness === "ready");
+  const hasConsoleOnly = loggingSetups.some((item) => item.provider === "console") && !hasPackage;
+
+  const riskQueue: LoggingReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasLogCall) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the application logging strategy before claiming logging readiness.",
+      why: "Logging readiness starts with an explicit logger package, setup module, level policy, context binding, redaction, or transport surface.",
+      relatedHref: "html/logging-readiness.html"
+    });
+  }
+  if (hasPinoPackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair each Pino package signal with logger construction, level policy, and log calls.",
+      why: "Pino readiness requires an instantiated logger and evidence that application paths emit structured records.",
+      relatedHref: "html/logging-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup || hasLogCall) && !hasStructuredContext) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Bind request, user, job, or module context to structured logs.",
+      why: "Logs without stable context are hard to correlate across HTTP handlers, workers, and background tasks.",
+      relatedHref: "html/logging-readiness.html"
+    });
+  }
+  if (hasErrorLogs && !hasErrorSerializer) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Confirm error serialization preserves message, type, stack, and cause safely.",
+      why: "Plain error objects can lose useful fields or expose sensitive data unless serializers and safe stringification are explicit.",
+      relatedHref: "html/logging-readiness.html"
+    });
+  }
+  if ((hasPinoPackage || hasReadySetup || hasStructuredContext) && !hasRedaction) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add redaction for tokens, passwords, cookies, authorization headers, and secret fields.",
+      why: "Structured logs frequently include request and payload context; redaction keeps sensitive fields out of durable log streams.",
+      relatedHref: "html/logging-readiness.html"
+    });
+  }
+  if (hasTransport && !hasFlushHandling) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review async transport readiness and flush behavior before process exit.",
+      why: "Pino transports can run asynchronously in worker threads; early process exit can drop records unless readiness and flush behavior are handled.",
+      relatedHref: "html/logging-readiness.html"
+    });
+  }
+  if (hasConsoleOnly) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Replace console-only logging with a structured logger or document why console output is sufficient.",
+      why: "Console-only logs usually lack level policy, redaction, request bindings, serializers, and transport controls.",
+      relatedHref: "html/logging-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run logging integration checks only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not execute logger calls, emit logs, start transports, flush worker threads, call log processors, or run the analyzed project's tests.",
+    relatedHref: "html/logging-readiness.html"
+  });
+
+  return {
+    summary: `Pino식 logging readiness report: setup ${loggingSetups.length}개, level signal ${levelSignals.length}개, context signal ${contextSignals.length}개, safety signal ${safetySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Pino pino logger.info logger.error child logger level transport destination redact serializers pino-pretty multistream timestamp formatters mixin bindings",
+    loggingSetups,
+    levelSignals,
+    contextSignals,
+    safetySignals,
+    transportSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"pino\\(|createLogger|winston|bunyan|loglevel|logger\\.|console\\.\" src app pages packages", purpose: "Inventory logger setup and log-call sites." },
+      { command: "rg \"trace|debug|info|warn|error|fatal|level|customLevels|silent\" src app pages packages", purpose: "Review level policy, custom levels, and noisy or disabled logging paths." },
+      { command: "rg \"child\\(|bindings\\(|requestId|req\\.id|correlation|serializer|stdSerializers|mixin|timestamp|formatters\" src app pages packages", purpose: "Trace structured context, request IDs, serializers, mixins, timestamps, and formatters." },
+      { command: "rg \"redact|redaction|password|token|authorization|cookie|secret|safe-stable-stringify\" src app pages packages", purpose: "Check sensitive-field redaction and safe stringification policy." },
+      { command: "rg \"transport|destination|pino-pretty|multistream|worker thread|flush|onTerminated|log processor\" src app pages packages", purpose: "Inspect transports, destinations, pretty printing, async worker handling, and flush behavior." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise logging context, serializers, redaction, transport configuration, and error paths." }
+    ],
+    learnerNextSteps: [
+      "먼저 logger setup 파일에서 pino(), createLogger, logger factory, level, base bindings가 어디서 정의되는지 확인하세요.",
+      "logger.info/error/fatal 호출을 따라가며 requestId, userId, jobId, module 같은 correlation context가 함께 기록되는지 확인하세요.",
+      "error 로그가 있으면 Error object serializer, stack/cause 보존, safe-stable-stringify 같은 안전한 직렬화 경로를 확인하세요.",
+      "redact 설정은 token, password, authorization, cookie, secret 같은 필드를 실제 경로명으로 막는지 검토하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 로그 출력, transport readiness, flush-on-exit, log processor 연동은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type LoggingReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function loggingReadinessSourceFiles(walk: WalkResult): Promise<LoggingReadinessSourceFile[]> {
+  const files: LoggingReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !loggingReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!loggingReadinessPathSignal(file.relPath) && !loggingReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function loggingReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return loggingReadinessPathSignal(filePath)
+    || /^(package\.json|\.env\.example|\.env\.sample|docker-compose\.ya?ml|compose\.ya?ml|Dockerfile|next\.config\.[cm]?[jt]s|vite\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env|toml)$/i.test(filePath);
+}
+
+function loggingReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(logs?|logger|logging|observability|telemetry|pino|winston|bunyan|loglevel|transport|serializers?|redaction?)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function loggingReadinessContentSignal(text: string): boolean {
+  return /\b(pino\(|from\s+["']pino["']|require\(["']pino["']|createLogger|winston|bunyan|loglevel|logger\.(trace|debug|info|warn|error|fatal)|logger\.child|stdSerializers|serializers\s*:|redact\s*:|pino-pretty|multistream|transport\s*:|destination\s*:|safe-stable-stringify)\b/i.test(text);
+}
+
+function loggingReadinessSetups(sourceFiles: LoggingReadinessSourceFile[]): LoggingReadinessReport["loggingSetups"] {
+  const rows: LoggingReadinessReport["loggingSetups"] = [];
+  for (const source of sourceFiles) {
+    const loggerSetupCount = countMatches(source.text, /\bpino\s*\(|\bcreateLogger\s*\(|\bnew\s+Logger\b|\bgetLogger\s*\(|\blogger\s*=\s*|\bcreatePinoLogger\b/gi);
+    const levelCount = countMatches(source.text, /\b(trace|debug|info|warn|error|fatal|silent)\b|\blevel\s*:/gi);
+    const callCount = countMatches(source.text, /\b(?:logger|log)\.(?:trace|debug|info|warn|error|fatal)\s*\(|\bconsole\.(?:debug|info|warn|error|log)\s*\(/gi);
+    const childLoggerCount = countMatches(source.text, /\.child\s*\(|\.bindings\s*\(|\bbindings\s*:/gi);
+    const transportCount = countMatches(source.text, /\btransport\s*:|\bpino\.transport\s*\(|\bdestination\s*:|\bpino\.destination\s*\(|\bmultistream\s*\(|pino-pretty/gi);
+    const hasSetupSignal = loggerSetupCount + levelCount + callCount + childLoggerCount + transportCount > 0 || /\b(logger|logging|pino|winston|bunyan|loglevel)\b/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: loggingReadinessProvider(source),
+      loggerSetupCount,
+      levelCount,
+      callCount,
+      childLoggerCount,
+      transportCount,
+      readiness: loggerSetupCount > 0 && callCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains logger setup ${loggerSetupCount}, level signals ${levelCount}, log calls ${callCount}, child/bindings ${childLoggerCount}, transports ${transportCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function loggingReadinessProvider(source: LoggingReadinessSourceFile): LoggingReadinessReport["loggingSetups"][number]["provider"] {
+  if (/["']pino["']|\bpino\s*\(|pino-pretty|pino\.transport|stdSerializers/i.test(source.text)) return "pino";
+  if (/["']winston["']|\bwinston\b|createLogger\s*\(/i.test(source.text)) return "winston";
+  if (/["']bunyan["']|\bbunyan\b/i.test(source.text)) return "bunyan";
+  if (/["']loglevel["']|\bloglevel\b/i.test(source.text)) return "loglevel";
+  if (/\bconsole\.(log|debug|info|warn|error)\b/i.test(source.text)) return "console";
+  if (/\b(logger|logging|log\.)\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function loggingReadinessLevelSignals(sourceFiles: LoggingReadinessSourceFile[]): LoggingReadinessReport["levelSignals"] {
+  const specs: Array<{ signal: LoggingReadinessReport["levelSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "trace", pattern: /\.trace\s*\(|\btrace\b/i, evidence: "trace-level evidence was detected." },
+    { signal: "debug", pattern: /\.debug\s*\(|\bdebug\b/i, evidence: "debug-level evidence was detected." },
+    { signal: "info", pattern: /\.info\s*\(|\binfo\b/i, evidence: "info-level evidence was detected." },
+    { signal: "warn", pattern: /\.warn\s*\(|\bwarn\b|\bwarning\b/i, evidence: "warn-level evidence was detected." },
+    { signal: "error", pattern: /\.error\s*\(|\berror\b/i, evidence: "error-level evidence was detected." },
+    { signal: "fatal", pattern: /\.fatal\s*\(|\bfatal\b/i, evidence: "fatal-level evidence was detected." },
+    { signal: "silent", pattern: /\bsilent\b|level\s*:\s*["']silent["']/i, evidence: "silent level evidence was detected." },
+    { signal: "custom-level", pattern: /customLevels|levelVal|levelComparison|useOnlyCustomLevels/i, evidence: "custom level evidence was detected." }
+  ];
+  return loggingReadinessSignalFromSpecs(sourceFiles, specs, "level", "signal");
+}
+
+function loggingReadinessContextSignals(sourceFiles: LoggingReadinessSourceFile[]): LoggingReadinessReport["contextSignals"] {
+  const specs: Array<{ signal: LoggingReadinessReport["contextSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "child-logger", pattern: /\.child\s*\(/i, evidence: "child logger evidence was detected." },
+    { signal: "bindings", pattern: /\.bindings\s*\(|\bbindings\s*:|\bbase\s*:/i, evidence: "logger bindings evidence was detected." },
+    { signal: "request-id", pattern: /request[-_ ]?id|requestId|req\.id|correlation[-_ ]?id|traceId/i, evidence: "request/correlation ID evidence was detected." },
+    { signal: "http-request", pattern: /pino-http|req\s*:|res\s*:|stdSerializers\.(req|res)|mapHttpRequest|mapHttpResponse/i, evidence: "HTTP request/response logging evidence was detected." },
+    { signal: "error-object", pattern: /new\s+Error|Error\(|err\s*:|error\s*:|stdSerializers\.err/i, evidence: "Error object logging evidence was detected." },
+    { signal: "serializer", pattern: /serializers\s*:|stdSerializers|wrapErrorSerializer|wrapRequestSerializer|wrapResponseSerializer/i, evidence: "serializer evidence was detected." },
+    { signal: "mixin", pattern: /\bmixin\s*\(|\bmixin\s*:/i, evidence: "Pino mixin evidence was detected." },
+    { signal: "timestamp", pattern: /\btimestamp\s*:|stdTimeFunctions|time\s*:|formatters\s*:/i, evidence: "timestamp or formatter evidence was detected." }
+  ];
+  return loggingReadinessSignalFromSpecs(sourceFiles, specs, "context", "signal");
+}
+
+function loggingReadinessSafetySignals(sourceFiles: LoggingReadinessSourceFile[]): LoggingReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: LoggingReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "redact", pattern: /\bredact\s*:|redaction|@pinojs\/redact/i, evidence: "redaction configuration evidence was detected." },
+    { signal: "redact-paths", pattern: /paths\s*:\s*\[|censor\s*:|remove\s*:/i, evidence: "redaction path/censor evidence was detected." },
+    { signal: "secret-fields", pattern: /password|passwd|token|authorization|cookie|secret|api[-_ ]?key|session/i, evidence: "sensitive field evidence was detected." },
+    { signal: "safe-stringify", pattern: /safe-stable-stringify|fast-safe-stringify|safeStringify|JSON\.stringify/i, evidence: "safe stringification evidence was detected." },
+    { signal: "error-serializer", pattern: /stdSerializers\.err|errWithCause|wrapErrorSerializer|errorLikeObjectKeys/i, evidence: "error serializer evidence was detected." },
+    { signal: "stdout-stderr", pattern: /process\.(stdout|stderr)|destination\s*:\s*[12]\b|pino\.destination\s*\(/i, evidence: "stdout/stderr destination evidence was detected." },
+    { signal: "flush-on-exit", pattern: /\.flush\s*\(|flushSync|onTerminated|transport\.on\s*\(\s*["']ready["']|process\.on\s*\(\s*["'](beforeExit|exit|SIGTERM|SIGINT)["']/i, evidence: "flush-on-exit evidence was detected." }
+  ];
+  return loggingReadinessSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function loggingReadinessTransportSignals(sourceFiles: LoggingReadinessSourceFile[]): LoggingReadinessReport["transportSignals"] {
+  const specs: Array<{ signal: LoggingReadinessReport["transportSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "transport", pattern: /\btransport\s*:|\bpino\.transport\s*\(/i, evidence: "transport setup evidence was detected." },
+    { signal: "destination", pattern: /\bdestination\s*:|\bpino\.destination\s*\(|pino\/file/i, evidence: "destination evidence was detected." },
+    { signal: "pino-pretty", pattern: /pino-pretty|prettyPrint/i, evidence: "pino-pretty development formatting evidence was detected." },
+    { signal: "multistream", pattern: /\bmultistream\s*\(|targets\s*:\s*\[/i, evidence: "multistream or multi-target transport evidence was detected." },
+    { signal: "worker-thread", pattern: /worker[-_ ]?thread|Worker Thread|thread-stream|worker_threads/i, evidence: "worker-thread transport evidence was detected." },
+    { signal: "async-logging", pattern: /sync\s*:\s*false|asynchronous|async logging|thread-stream|minLength/i, evidence: "async logging evidence was detected." },
+    { signal: "file-output", pattern: /pino\/file|destination\s*:\s*["'`].+\.log|append\s*:|mkdir\s*:/i, evidence: "file output evidence was detected." },
+    { signal: "log-processor", pattern: /log processor|logtail|datadog|cloudwatch|axiom|sentry|opentelemetry|seq|airbrake/i, evidence: "external log processor evidence was detected." }
+  ];
+  return loggingReadinessSignalFromSpecs(sourceFiles, specs, "transport", "signal");
+}
+
+function loggingReadinessPackageSignals(sourceFiles: LoggingReadinessSourceFile[]): LoggingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: LoggingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "pino", pattern: /["']pino["']|\bfrom\s+["']pino["']|\bpino\s*\(/i, evidence: "pino package/import evidence was detected." },
+    { signal: "pino-pretty", pattern: /pino-pretty/i, evidence: "pino-pretty package/import evidence was detected." },
+    { signal: "pino-http", pattern: /pino-http/i, evidence: "pino-http package/import evidence was detected." },
+    { signal: "winston", pattern: /["']winston["']|\bwinston\b/i, evidence: "winston package/import evidence was detected." },
+    { signal: "bunyan", pattern: /["']bunyan["']|\bbunyan\b/i, evidence: "bunyan package/import evidence was detected." },
+    { signal: "loglevel", pattern: /["']loglevel["']|\bloglevel\b/i, evidence: "loglevel package/import evidence was detected." },
+    { signal: "@pinojs/redact", pattern: /@pinojs\/redact/i, evidence: "@pinojs/redact package/import evidence was detected." }
+  ];
+  return loggingReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function loggingReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: LoggingReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/logging-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

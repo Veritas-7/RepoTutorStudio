@@ -3120,6 +3120,64 @@ export const CacheReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const LoggingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  loggingSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["pino", "winston", "bunyan", "loglevel", "console", "custom", "unknown"]),
+    loggerSetupCount: z.number().int().nonnegative(),
+    levelCount: z.number().int().nonnegative(),
+    callCount: z.number().int().nonnegative(),
+    childLoggerCount: z.number().int().nonnegative(),
+    transportCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  levelSignals: z.array(z.object({
+    signal: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent", "custom-level", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["child-logger", "bindings", "request-id", "http-request", "error-object", "serializer", "mixin", "timestamp", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["redact", "redact-paths", "secret-fields", "safe-stringify", "error-serializer", "stdout-stderr", "flush-on-exit", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  transportSignals: z.array(z.object({
+    signal: z.enum(["transport", "destination", "pino-pretty", "multistream", "worker-thread", "async-logging", "file-output", "log-processor", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["pino", "pino-pretty", "pino-http", "winston", "bunyan", "loglevel", "@pinojs/redact", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -3386,6 +3444,7 @@ export type PaymentReadinessReport = z.infer<typeof PaymentReadinessReportSchema
 export type EmailReadinessReport = z.infer<typeof EmailReadinessReportSchema>;
 export type QueueReadinessReport = z.infer<typeof QueueReadinessReportSchema>;
 export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
+export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

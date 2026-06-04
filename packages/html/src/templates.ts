@@ -72,6 +72,7 @@ import type {
   EmailReadinessReport,
   QueueReadinessReport,
   CacheReadinessReport,
+  LoggingReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -150,6 +151,7 @@ export interface StudyHtmlInput {
   emailReadinessReport: EmailReadinessReport;
   queueReadinessReport: QueueReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
+  loggingReadinessReport: LoggingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -698,6 +700,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Cache Readiness", "cache-readiness.html", `<section class="panel" data-source-pattern="Node Redis"><h2>Cache Snapshot</h2><p>${escapeHtml(input.cacheReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.cacheReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.cacheReadinessReport.cacheSetups.length}</dd></div><div><dt>operations</dt><dd>${input.cacheReadinessReport.operationSignals.length}</dd></div><div><dt>policy</dt><dd>${input.cacheReadinessReport.policySignals.length}</dd></div><div><dt>connection</dt><dd>${input.cacheReadinessReport.connectionSignals.length}</dd></div></dl><p class="muted">RepoTutor records cache readiness only. It does not start Redis, open cache sockets, read or write cache keys, subscribe to channels, flush data, or run the analyzed project's tests.</p></section><section class="grid"><article class="cache-readiness-card"><h3>Cache Setups</h3>${cacheReadinessSetupList(input.cacheReadinessReport.cacheSetups)}</article><article class="cache-readiness-card"><h3>Operation Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.operationSignals, "signal")}</article><article class="cache-readiness-card"><h3>Policy Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.policySignals, "signal")}</article><article class="cache-readiness-card"><h3>Connection Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.connectionSignals, "signal")}</article></section><section class="grid"><article class="cache-readiness-card"><h3>Advanced Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.advancedSignals, "signal")}</article><article class="cache-readiness-card"><h3>Package Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.packageSignals, "signal")}</article><article class="cache-readiness-card"><h3>Recommended Commands</h3>${cacheReadinessCommandList(input.cacheReadinessReport.recommendedCommands)}</article><article class="cache-readiness-card"><h3>Risk Queue</h3>${cacheReadinessRiskList(input.cacheReadinessReport.riskQueue)}</article><article class="cache-readiness-card"><h3>다음 확인 단계</h3>${list(input.cacheReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "logging-readiness.html",
+      title: "Logging Readiness",
+      html: pageShell("Logging Readiness", "logging-readiness.html", `<section class="panel" data-source-pattern="Pino"><h2>Logging Snapshot</h2><p>${escapeHtml(input.loggingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.loggingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.loggingReadinessReport.loggingSetups.length}</dd></div><div><dt>levels</dt><dd>${input.loggingReadinessReport.levelSignals.length}</dd></div><div><dt>context</dt><dd>${input.loggingReadinessReport.contextSignals.length}</dd></div><div><dt>safety</dt><dd>${input.loggingReadinessReport.safetySignals.length}</dd></div></dl><p class="muted">RepoTutor records logging readiness only. It does not execute logger calls, emit logs, start transports, flush worker threads, call log processors, or run the analyzed project's tests.</p></section><section class="grid"><article class="logging-readiness-card"><h3>Logging Setups</h3>${loggingReadinessSetupList(input.loggingReadinessReport.loggingSetups)}</article><article class="logging-readiness-card"><h3>Level Signals</h3>${loggingReadinessSignalList(input.loggingReadinessReport.levelSignals, "signal")}</article><article class="logging-readiness-card"><h3>Context Signals</h3>${loggingReadinessSignalList(input.loggingReadinessReport.contextSignals, "signal")}</article><article class="logging-readiness-card"><h3>Safety Signals</h3>${loggingReadinessSignalList(input.loggingReadinessReport.safetySignals, "signal")}</article></section><section class="grid"><article class="logging-readiness-card"><h3>Transport Signals</h3>${loggingReadinessSignalList(input.loggingReadinessReport.transportSignals, "signal")}</article><article class="logging-readiness-card"><h3>Package Signals</h3>${loggingReadinessSignalList(input.loggingReadinessReport.packageSignals, "signal")}</article><article class="logging-readiness-card"><h3>Recommended Commands</h3>${loggingReadinessCommandList(input.loggingReadinessReport.recommendedCommands)}</article><article class="logging-readiness-card"><h3>Risk Queue</h3>${loggingReadinessRiskList(input.loggingReadinessReport.riskQueue)}</article><article class="logging-readiness-card"><h3>다음 확인 단계</h3>${list(input.loggingReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -870,6 +877,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Email Readiness", path: "html/email-readiness.html", description: "Resend식 provider client, send payload, templates, domains, webhooks, env secret 준비도를 확인합니다." },
       { label: "Queue Readiness", path: "html/queue-readiness.html", description: "BullMQ식 Queue, Worker, QueueEvents, FlowProducer, Redis connection, retry 준비도를 확인합니다." },
       { label: "Cache Readiness", path: "html/cache-readiness.html", description: "Node Redis식 client setup, get/set, TTL, invalidation, connection, advanced Redis 준비도를 확인합니다." },
+      { label: "Logging Readiness", path: "html/logging-readiness.html", description: "Pino식 logger setup, level, context binding, redaction, transport 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1325,6 +1333,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "cache-readiness.html",
       goal: "Node Redis식 createClient, get/set, TTL, invalidation, connection, Pub/Sub, client-side cache 흐름을 보고 cache 관문을 확인합니다.",
       evidence: `cache setups ${input.cacheReadinessReport.cacheSetups.length}개, operation signals ${input.cacheReadinessReport.operationSignals.length}개`
+    },
+    {
+      title: "Logging readiness 확인",
+      href: "logging-readiness.html",
+      goal: "Pino식 logger setup, level policy, child logger, request context, redaction, transport 흐름을 보고 logging 관문을 확인합니다.",
+      evidence: `logging setups ${input.loggingReadinessReport.loggingSetups.length}개, level signals ${input.loggingReadinessReport.levelSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -2967,6 +2981,31 @@ function cacheReadinessRiskList(items: CacheReadinessReport["riskQueue"]): strin
 }
 
 function cacheReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function loggingReadinessSetupList(items: LoggingReadinessReport["loggingSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">logging setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>logger/level/calls/child/transport ${item.loggerSetupCount}/${item.levelCount}/${item.callCount}/${item.childLoggerCount}/${item.transportCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(loggingReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function loggingReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">logging signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(loggingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function loggingReadinessCommandList(items: LoggingReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function loggingReadinessRiskList(items: LoggingReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(loggingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function loggingReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

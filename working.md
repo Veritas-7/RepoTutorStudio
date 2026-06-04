@@ -3002,6 +3002,42 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 164:
   - `dc6f56d` cache readiness report
 
+- 2026-06-04: AutoResearch Upgrade 165 candidate selected:
+  `pinojs/pino` (`https://github.com/pinojs/pino`; public MIT;
+  17,911 stars; 958 forks; updated 2026-06-04T03:01:27Z). Compared with
+  `winstonjs/winston`, `fastify/fastify`, and `getsentry/sentry-javascript`;
+  selected Pino because it directly models structured JSON logging readiness:
+  `pino()`, `logger.info`, `logger.error`, child loggers, bindings, level
+  policy, transports, destinations, redaction, serializers, `pino-pretty`,
+  multistream, timestamps, formatters, mixins, async worker-thread transports,
+  and flush behavior. Cloned ignored external source to
+  `research/external-src/pinojs-pino` and inspected README, license, package
+  metadata, docs, examples, and tests without executing external source. Clone
+  HEAD was `ff0dc5c`; tracked-file count for
+  `research/external-src/pinojs-pino` returned `0`.
+- 2026-06-04: RED logging-readiness smoke generated
+  `/tmp/repotutor-logging-readiness-red-studies.fMi67e/2026-06-04/local__simple-ts-app__main__633408e3`;
+  old build was missing `analysis/logging-readiness-report.json`,
+  `markdown/logging-readiness.md`, and `html/logging-readiness.html`, and
+  `open --target logging-readiness` failed as expected.
+- 2026-06-04: Implemented Pino-style logging-readiness report:
+  `LoggingReadinessReportSchema`, `analysis/logging-readiness-report.json`,
+  `markdown/logging-readiness.md`, `html/logging-readiness.html`, logging
+  setups, level signals, context signals, safety signals, transport signals,
+  package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target logging-readiness`.
+- 2026-06-04: GREEN logging-readiness smoke generated
+  `/tmp/repotutor-logging-readiness-green-studies.q38b5b/2026-06-04/local__simple-ts-app__main__633408e3`;
+  confirmed `verificationCheckedRequiredArtifacts=195`, logging setups 0,
+  level signals 8, context signals 8, safety signals 7, transport signals 8,
+  package signals 7, risk queue 2, manifest/learning-path entries, and
+  `open --target logging-readiness` -> `html/logging-readiness.html`.
+- 2026-06-04: Verification for Upgrade 165:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 63/63 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
