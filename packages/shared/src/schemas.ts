@@ -776,6 +776,41 @@ export const SbomReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SecurityReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  scannerTargets: z.array(z.object({
+    target: z.enum(["filesystem", "git-repository", "container-image", "kubernetes", "sbom"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scannerCoverage: z.array(z.object({
+    scanner: z.enum(["vulnerability", "secret", "misconfiguration", "license", "sbom"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  securitySignals: z.array(z.object({
+    kind: z.enum(["manifest", "lockfile", "container-config", "iac-config", "secret-candidate", "license", "sbom"]),
+    filePath: z.string(),
+    severity: z.enum(["info", "warn", "error"]),
+    message: z.string(),
+    sourceHref: z.string()
+  })),
+  actionQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1000,6 +1035,7 @@ export type LearningJournalReport = z.infer<typeof LearningJournalReportSchema>;
 export type ProjectActivityReport = z.infer<typeof ProjectActivityReportSchema>;
 export type LicenseRightsReport = z.infer<typeof LicenseRightsReportSchema>;
 export type SbomReport = z.infer<typeof SbomReportSchema>;
+export type SecurityReadinessReport = z.infer<typeof SecurityReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

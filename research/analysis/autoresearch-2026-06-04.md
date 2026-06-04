@@ -2333,6 +2333,38 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 123: Security Readiness Report
+
+- Cloned and inspected `aquasecurity/trivy` under
+  `research/external-src/aquasecurity-trivy` without executing external source.
+- GitHub metadata: public repo, Apache-2.0 license, 35,386 stars, 415 forks,
+  updated 2026-06-03T21:09:55Z. No source code was copied into RepoTutor.
+- Added `SecurityReadinessReportSchema` and
+  `analysis/security-readiness-report.json` with Trivy-style scanner targets,
+  scanner coverage, security signals, action queue, and recommended commands.
+- Added `markdown/security-readiness.md`,
+  `html/security-readiness.html`, manifest/session-verification coverage,
+  learning-path linkage, and `open --target security-readiness`.
+- Source pattern: Trivy separates scan targets such as filesystem, repository,
+  container image, Kubernetes, and SBOM from scanners such as vulnerability,
+  secret, misconfiguration, license, and SBOM. RepoTutor maps that to static
+  readiness metadata and explicitly does not produce vulnerability or secret
+  scan results.
+- RED smoke generated
+  `/tmp/repotutor-security-readiness-red-studies.MSL819/2026-06-04/local__simple-ts-app__main__17ba0081`;
+  old behavior was missing `analysis/security-readiness-report.json`,
+  `markdown/security-readiness.md`, and `html/security-readiness.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-security-readiness-green-studies.oQb24K/2026-06-04/local__simple-ts-app__main__17ba0081`;
+  confirmed `verificationCheckedRequiredArtifacts=69`, targets 5, scanner
+  coverage 5, security signals 2, actions 4, recommended commands 3,
+  `security-readiness-card`, `data-source-pattern="Trivy"`,
+  manifest/learning path entries, and `open --target security-readiness` ->
+  `html/security-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

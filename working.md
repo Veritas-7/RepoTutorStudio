@@ -1477,6 +1477,36 @@ to a private repository, and preserve resumable state in this file.
   - `pnpm audit:brief`: PASS, 13/13 audit reports
 - 2026-06-04: Pushed AutoResearch Upgrade 122:
   - `b670092` software bill of materials report
+- 2026-06-04: AutoResearch Upgrade 123 candidate selected:
+  `aquasecurity/trivy` (`https://github.com/aquasecurity/trivy`; public
+  Apache-2.0; 35,386 stars; 415 forks; updated
+  2026-06-03T21:09:55Z). Cloned ignored external source to
+  `research/external-src/aquasecurity-trivy` and inspected README plus
+  vulnerability/secret/misconfiguration/license scanner docs without executing
+  it.
+- 2026-06-04: RED security-readiness smoke generated
+  `/tmp/repotutor-security-readiness-red-studies.MSL819/2026-06-04/local__simple-ts-app__main__17ba0081`;
+  old build was missing `analysis/security-readiness-report.json`,
+  `markdown/security-readiness.md`, and `html/security-readiness.html` as
+  expected.
+- 2026-06-04: Implemented Trivy-style security readiness report:
+  `SecurityReadinessReportSchema`,
+  `analysis/security-readiness-report.json`,
+  `markdown/security-readiness.md`, `html/security-readiness.html`, scanner
+  targets, scanner coverage, security signals, action queue, recommended
+  commands, manifest/session-verification coverage, learning-path linkage, and
+  `open --target security-readiness`.
+- 2026-06-04: GREEN security-readiness smoke generated
+  `/tmp/repotutor-security-readiness-green-studies.oQb24K/2026-06-04/local__simple-ts-app__main__17ba0081`;
+  confirmed `verificationCheckedRequiredArtifacts=69`, targets 5, scanner
+  coverage 5, security signals 2, actions 4, recommended commands 3,
+  `security-readiness-card`, `data-source-pattern="Trivy"`,
+  manifest/learning-path entries, and `open --target security-readiness` ->
+  `html/security-readiness.html`.
+- 2026-06-04: Verification for Upgrade 123:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 13/13 audit reports
 
 ## Next Actions
 
