@@ -1594,6 +1594,23 @@
         "Routing and deployment evidence through workers_dev routes custom domains migrations placement wrangler deploy versions tail secret kv r2 d1 and CI action signals",
         "Local edge development and test signals through wrangler dev local remote typegen Miniflare and @cloudflare/vitest-pool-workers"
       ]
+    },
+    {
+      "repo": "docker/compose",
+      "url": "https://github.com/docker/compose",
+      "localPath": "research/external-src/docker-compose",
+      "stars": 37482,
+      "forks": 5904,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T14:39:01Z",
+      "cloneHead": "f3969cd",
+      "adoptedPatterns": [
+        "Compose topology through compose.yaml docker-compose.yml override files services build image ports expose command entrypoint restart profiles deploy replicas and resources",
+        "Dependency readiness through depends_on service_healthy healthcheck links external networks and aliases",
+        "Resource wiring through volumes bind mounts named volumes networks secrets configs env_file environment and .env files",
+        "Local workflow signals through docker compose config up down build run exec logs ps pull watch wait and legacy docker-compose commands",
+        "Static-only Compose readiness guardrails that do not run Docker Compose, Docker daemon, image build/pull/push, containers, networks, volumes, secrets, or configs"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -4843,6 +4860,25 @@
         "markdown/edge-readiness.md",
         "html/edge-readiness.html"
       ]
+    },
+    {
+      "name": "compose readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/compose-readiness-report.json",
+        "markdown/compose-readiness.md",
+        "html/compose-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -5389,7 +5425,15 @@
     "edgeReadinessOpenTarget": "PASS",
     "buildEdgeReadiness": "PASS",
     "testEdgeReadiness": "PASS",
-    "complianceAudit100Checks": "PASS"
+    "complianceAudit100Checks": "PASS",
+    "externalDockerComposeCloneIgnored": "PASS",
+    "composeReadinessRedSmoke": "PASS",
+    "composeReadinessGreenSmoke": "PASS",
+    "fixtureComposeReadinessReport": "PASS",
+    "composeReadinessOpenTarget": "PASS",
+    "buildComposeReadiness": "PASS",
+    "testComposeReadiness": "PASS",
+    "complianceAudit101Checks": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -5804,6 +5848,13 @@
     "cliEdgeReadinessOpenTargetSmoke": "PASS",
     "buildEdgeReadiness": "PASS",
     "testEdgeReadiness": "PASS",
-    "auditBriefEdgeReadiness100": "PASS"
+    "auditBriefEdgeReadiness100": "PASS",
+    "externalDockerComposeCloneIgnored": "PASS",
+    "fixtureComposeReadinessReport": "PASS",
+    "cliComposeReadinessSmoke": "PASS",
+    "cliComposeReadinessOpenTargetSmoke": "PASS",
+    "buildComposeReadiness": "PASS",
+    "testComposeReadiness": "PASS",
+    "auditBriefComposeReadiness101": "PASS"
   }
 }

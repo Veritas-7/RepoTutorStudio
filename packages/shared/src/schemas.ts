@@ -5730,6 +5730,83 @@ export const EdgeReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ComposeReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  composeSetups: z.array(z.object({
+    filePath: z.string(),
+    format: z.enum(["compose-yaml", "docker-compose-yaml", "override", "env-file", "package-script", "unknown"]),
+    serviceCount: z.number().int().nonnegative(),
+    buildCount: z.number().int().nonnegative(),
+    imageCount: z.number().int().nonnegative(),
+    portCount: z.number().int().nonnegative(),
+    volumeCount: z.number().int().nonnegative(),
+    networkCount: z.number().int().nonnegative(),
+    dependencyCount: z.number().int().nonnegative(),
+    healthcheckCount: z.number().int().nonnegative(),
+    envCount: z.number().int().nonnegative(),
+    secretConfigCount: z.number().int().nonnegative(),
+    profileCount: z.number().int().nonnegative(),
+    commandCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["compose-yaml", "docker-compose-yaml", "override-file", "services", "name", "include", "extends", "x-extension", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  serviceSignals: z.array(z.object({
+    signal: z.enum(["build", "image", "command", "entrypoint", "ports", "expose", "restart", "profiles", "scale-deploy", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dependencySignals: z.array(z.object({
+    signal: z.enum(["depends-on", "service-healthy", "healthcheck", "links", "external-network", "aliases", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resourceSignals: z.array(z.object({
+    signal: z.enum(["volumes", "bind-mounts", "named-volumes", "networks", "secrets", "configs", "env-file", "environment", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["config", "up", "down", "build", "run", "exec", "logs", "ps", "pull", "watch", "wait", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["healthcheck", "restart-policy", "profiles", "resource-limits", "read-only", "cap-drop", "security-opt", "secrets", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["docker-compose-plugin", "docker-compose-v1", "compose-spec", "compose-watch", "dockerfile", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -6034,6 +6111,7 @@ export type DeploymentReadinessReport = z.infer<typeof DeploymentReadinessReport
 export type ServerlessReadinessReport = z.infer<typeof ServerlessReadinessReportSchema>;
 export type MobileReadinessReport = z.infer<typeof MobileReadinessReportSchema>;
 export type EdgeReadinessReport = z.infer<typeof EdgeReadinessReportSchema>;
+export type ComposeReadinessReport = z.infer<typeof ComposeReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

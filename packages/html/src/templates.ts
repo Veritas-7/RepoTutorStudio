@@ -110,6 +110,7 @@ import type {
   ServerlessReadinessReport,
   MobileReadinessReport,
   EdgeReadinessReport,
+  ComposeReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -226,6 +227,7 @@ export interface StudyHtmlInput {
   serverlessReadinessReport: ServerlessReadinessReport;
   mobileReadinessReport: MobileReadinessReport;
   edgeReadinessReport: EdgeReadinessReport;
+  composeReadinessReport: ComposeReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -504,6 +506,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Serverless Readiness</h3><p>${escapeHtml(input.serverlessReadinessReport.summary)}</p><p>Serverless Framework 패턴으로 service, provider, functions, events, resources, packaging, plugins, deploy commands 준비도를 정리합니다.</p><a href="serverless-readiness.html">Serverless 열기</a></article>
           <article><h3>Mobile Readiness</h3><p>${escapeHtml(input.mobileReadinessReport.summary)}</p><p>Expo 패턴으로 app config, platform identifiers, navigation, EAS build, OTA updates, assets, packages 준비도를 정리합니다.</p><a href="mobile-readiness.html">Mobile 열기</a></article>
           <article><h3>Edge Readiness</h3><p>${escapeHtml(input.edgeReadinessReport.summary)}</p><p>Cloudflare Workers 패턴으로 Wrangler config, module handlers, bindings, routes, dev/deploy/tail workflow 준비도를 정리합니다.</p><a href="edge-readiness.html">Edge 열기</a></article>
+          <article><h3>Compose Readiness</h3><p>${escapeHtml(input.composeReadinessReport.summary)}</p><p>Docker Compose 패턴으로 compose files, services, dependencies, resources, safety, local workflow 준비도를 정리합니다.</p><a href="compose-readiness.html">Compose 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -1006,6 +1009,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "edge-readiness.html",
       title: "Edge Readiness",
       html: pageShell("Edge Readiness", "edge-readiness.html", `<section class="panel" data-source-pattern="Cloudflare Workers"><h2>Edge Snapshot</h2><p>${escapeHtml(input.edgeReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.edgeReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.edgeReadinessReport.edgeSetups.length}</dd></div><div><dt>config</dt><dd>${input.edgeReadinessReport.configSignals.length}</dd></div><div><dt>handlers</dt><dd>${input.edgeReadinessReport.handlerSignals.length}</dd></div><div><dt>bindings</dt><dd>${input.edgeReadinessReport.bindingSignals.length}</dd></div><div><dt>routes</dt><dd>${input.edgeReadinessReport.routingSignals.length}</dd></div><div><dt>deploy</dt><dd>${input.edgeReadinessReport.deploymentSignals.length}</dd></div></dl><p class="muted">RepoTutor records edge readiness only; it does not run Wrangler, Miniflare, dev servers, deploy Workers, tail logs, publish versions, mutate routes, touch KV/R2/D1/Queues/Durable Objects, or read/write Cloudflare secrets.</p></section><section class="grid"><article class="edge-readiness-card"><h3>Edge Setups</h3>${edgeReadinessSetupList(input.edgeReadinessReport.edgeSetups)}</article><article class="edge-readiness-card"><h3>Config Signals</h3>${edgeReadinessSignalList(input.edgeReadinessReport.configSignals, "signal")}</article><article class="edge-readiness-card"><h3>Handler Signals</h3>${edgeReadinessSignalList(input.edgeReadinessReport.handlerSignals, "signal")}</article><article class="edge-readiness-card"><h3>Binding Signals</h3>${edgeReadinessSignalList(input.edgeReadinessReport.bindingSignals, "signal")}</article></section><section class="grid"><article class="edge-readiness-card"><h3>Routing Signals</h3>${edgeReadinessSignalList(input.edgeReadinessReport.routingSignals, "signal")}</article><article class="edge-readiness-card"><h3>Dev Signals</h3>${edgeReadinessSignalList(input.edgeReadinessReport.devSignals, "signal")}</article><article class="edge-readiness-card"><h3>Deployment Signals</h3>${edgeReadinessSignalList(input.edgeReadinessReport.deploymentSignals, "signal")}</article><article class="edge-readiness-card"><h3>Observability Signals</h3>${edgeReadinessSignalList(input.edgeReadinessReport.observabilitySignals, "signal")}</article><article class="edge-readiness-card"><h3>Package Signals</h3>${edgeReadinessSignalList(input.edgeReadinessReport.packageSignals, "signal")}</article><article class="edge-readiness-card"><h3>Recommended Commands</h3>${edgeReadinessCommandList(input.edgeReadinessReport.recommendedCommands)}</article><article class="edge-readiness-card"><h3>Risk Queue</h3>${edgeReadinessRiskList(input.edgeReadinessReport.riskQueue)}</article><article class="edge-readiness-card"><h3>다음 확인 단계</h3>${list(input.edgeReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "compose-readiness.html",
+      title: "Compose Readiness",
+      html: pageShell("Compose Readiness", "compose-readiness.html", `<section class="panel" data-source-pattern="Docker Compose"><h2>Compose Snapshot</h2><p>${escapeHtml(input.composeReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.composeReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.composeReadinessReport.composeSetups.length}</dd></div><div><dt>config</dt><dd>${input.composeReadinessReport.configSignals.length}</dd></div><div><dt>services</dt><dd>${input.composeReadinessReport.serviceSignals.length}</dd></div><div><dt>dependencies</dt><dd>${input.composeReadinessReport.dependencySignals.length}</dd></div><div><dt>resources</dt><dd>${input.composeReadinessReport.resourceSignals.length}</dd></div><div><dt>workflow</dt><dd>${input.composeReadinessReport.workflowSignals.length}</dd></div></dl><p class="muted">RepoTutor records Compose readiness only; it does not run Docker, Docker Compose, Docker daemon, build/pull/push images, start/stop containers, mutate networks/volumes/secrets/configs, or inspect local runtime state.</p></section><section class="grid"><article class="compose-readiness-card"><h3>Compose Setups</h3>${composeReadinessSetupList(input.composeReadinessReport.composeSetups)}</article><article class="compose-readiness-card"><h3>Config Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.configSignals, "signal")}</article><article class="compose-readiness-card"><h3>Service Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.serviceSignals, "signal")}</article><article class="compose-readiness-card"><h3>Dependency Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.dependencySignals, "signal")}</article></section><section class="grid"><article class="compose-readiness-card"><h3>Resource Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.resourceSignals, "signal")}</article><article class="compose-readiness-card"><h3>Workflow Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.workflowSignals, "signal")}</article><article class="compose-readiness-card"><h3>Safety Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.safetySignals, "signal")}</article><article class="compose-readiness-card"><h3>Package Signals</h3>${composeReadinessSignalList(input.composeReadinessReport.packageSignals, "signal")}</article><article class="compose-readiness-card"><h3>Recommended Commands</h3>${composeReadinessCommandList(input.composeReadinessReport.recommendedCommands)}</article><article class="compose-readiness-card"><h3>Risk Queue</h3>${composeReadinessRiskList(input.composeReadinessReport.riskQueue)}</article><article class="compose-readiness-card"><h3>다음 확인 단계</h3>${list(input.composeReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "context-pack.html",
@@ -1898,6 +1906,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "edge-readiness.html",
       goal: "Cloudflare Workers식 Wrangler config, module handler, binding, route, dev/deploy/tail 흐름을 확인합니다.",
       evidence: `edge setups ${input.edgeReadinessReport.edgeSetups.length}개, binding signals ${input.edgeReadinessReport.bindingSignals.length}개`
+    },
+    {
+      title: "Compose readiness 확인",
+      href: "compose-readiness.html",
+      goal: "Docker Compose식 compose file, service topology, dependencies, resources, health, local workflow 흐름을 확인합니다.",
+      evidence: `compose setups ${input.composeReadinessReport.composeSetups.length}개, workflow signals ${input.composeReadinessReport.workflowSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -4490,6 +4504,31 @@ function edgeReadinessRiskList(items: EdgeReadinessReport["riskQueue"]): string 
 }
 
 function edgeReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function composeReadinessSetupList(items: ComposeReadinessReport["composeSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">compose setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.format)}/${escapeHtml(item.readiness)}]<br>services/build/image/ports/volumes/networks/dependencies/health/env/secrets/profiles/commands ${item.serviceCount}/${item.buildCount}/${item.imageCount}/${item.portCount}/${item.volumeCount}/${item.networkCount}/${item.dependencyCount}/${item.healthcheckCount}/${item.envCount}/${item.secretConfigCount}/${item.profileCount}/${item.commandCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(composeReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function composeReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">compose signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(composeReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function composeReadinessCommandList(items: ComposeReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function composeReadinessRiskList(items: ComposeReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(composeReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function composeReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
