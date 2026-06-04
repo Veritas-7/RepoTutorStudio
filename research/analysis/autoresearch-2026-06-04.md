@@ -5320,6 +5320,54 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 87/87 audit checks across 13 generated reports
 
+### Upgrade 190: Server Framework Readiness Report
+
+- Cloned and inspected `fastify/fastify` under
+  `research/external-src/fastify-fastify` without executing external source.
+  Clone HEAD was `66128b0`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 36,365 stars, 2,700 forks, updated
+  2026-06-04T09:17:25Z. Compared with `expressjs/express`, `koajs/koa`, and
+  `honojs/hono`; selected Fastify because it exposes explicit server framework
+  boundaries for route shorthands, route objects, JSON Schema validation,
+  plugins, hooks, decorators, listen/runtime configuration, error handlers, and
+  inject-style tests. No source code was copied into RepoTutor.
+- Implemented Fastify-style server-framework-readiness report:
+  `ServerFrameworkReadinessReportSchema`,
+  `analysis/server-framework-readiness-report.json`,
+  `markdown/server-framework-readiness.md`,
+  `html/server-framework-readiness.html`, server setups, route signals, schema
+  signals, plugin signals, lifecycle signals, runtime signals, error signals,
+  test signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target server-framework-readiness`.
+- Source pattern: Fastify separates `fastify()`, `Fastify()`, `route`, method
+  shorthands, `schema.body`, `schema.querystring`, `schema.params`,
+  `schema.headers`, `schema.response`, `addSchema`, validator/serializer
+  compilers, `register`, `fastify-plugin`, `@fastify/autoload`, `addHook`,
+  `decorate`, `setErrorHandler`, `setNotFoundHandler`, `listen`, host/port,
+  logger/body limit/content-type parser settings, `inject`, and
+  `light-my-request`. RepoTutor maps that to deterministic static server
+  framework readiness and explicitly does not start listeners, execute route
+  handlers, send HTTP requests, run plugins, compile schemas, or mutate runtime
+  state.
+- RED smoke generated
+  `/tmp/repotutor-server-framework-red-studies.qaHUyw/2026-06-04/local__simple-ts-app__HEAD__f2fdfcbf`;
+  old behavior had `verificationCheckedRequiredArtifacts=267`, was missing
+  `analysis/server-framework-readiness-report.json`,
+  `markdown/server-framework-readiness.md`, and
+  `html/server-framework-readiness.html`, and `open --target
+  server-framework-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-server-framework-green-studies.uWtHsN/2026-06-04/local__simple-ts-app__main__f2fdfcbf`;
+  confirmed `verificationCheckedRequiredArtifacts=270`, server setups 0, route
+  signals 9, schema signals 8, plugin signals 7, lifecycle signals 9, runtime
+  signals 7, error signals 5, test signals 5, package signals 8, risk queue 2,
+  all three new artifacts, and `open --target server-framework-readiness` ->
+  `html/server-framework-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 88/88 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
