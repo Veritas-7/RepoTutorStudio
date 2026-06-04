@@ -94,6 +94,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workspace-graph-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "scaffolding-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -186,6 +187,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rpc-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workspace-graph-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "scaffolding-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -278,6 +280,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "server-framework-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rpc-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workspace-graph-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "scaffolding-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -401,6 +404,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/server-framework-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rpc-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workspace-graph-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/scaffolding-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -2002,6 +2006,25 @@ describe("RepoTutor core pipeline", () => {
     expect(workspaceGraphReadinessMarkdown).toContain("Source pattern: Nx");
     expect(workspaceGraphReadinessMarkdown).toContain("## Graph Signals");
     expect(workspaceGraphReadinessMarkdown).toContain("## Affected Signals");
+    const scaffoldingReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "scaffolding-readiness-report.json"), "utf8");
+    expect(scaffoldingReadinessText).toContain("Plop setGenerator prompts actions add addMany modify append templateFile helpers partials load skipIfExists force abortOnFail");
+    expect(scaffoldingReadinessText).toContain("\"generatorFiles\"");
+    expect(scaffoldingReadinessText).toContain("\"promptSignals\"");
+    expect(scaffoldingReadinessText).toContain("\"actionSignals\"");
+    expect(scaffoldingReadinessText).toContain("\"templateSignals\"");
+    expect(scaffoldingReadinessText).toContain("\"safetySignals\"");
+    expect(scaffoldingReadinessText).toContain("Plop");
+    const scaffoldingReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "scaffolding-readiness.html"), "utf8");
+    expect(scaffoldingReadinessHtml).toContain("Scaffolding Readiness");
+    expect(scaffoldingReadinessHtml).toContain("scaffolding-readiness-card");
+    expect(scaffoldingReadinessHtml).toContain("data-source-pattern=\"Plop\"");
+    expect(scaffoldingReadinessHtml).toContain("Generator Files");
+    expect(scaffoldingReadinessHtml).toContain("Template Signals");
+    const scaffoldingReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "scaffolding-readiness.md"), "utf8");
+    expect(scaffoldingReadinessMarkdown).toContain("# Scaffolding Readiness");
+    expect(scaffoldingReadinessMarkdown).toContain("Source pattern: Plop");
+    expect(scaffoldingReadinessMarkdown).toContain("## Action Signals");
+    expect(scaffoldingReadinessMarkdown).toContain("## Safety Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");

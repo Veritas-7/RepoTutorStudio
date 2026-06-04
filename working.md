@@ -4186,6 +4186,46 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 192:
   - `948f442` workspace graph readiness report
 
+- 2026-06-04: AutoResearch Upgrade 193 candidate selected:
+  `plopjs/plop`
+  (`https://github.com/plopjs/plop`; public; MIT; 7,661 stars; 295 forks;
+  updated 2026-06-04T08:40:11Z). Compared with `jondot/hygen`,
+  `yeoman/generator`, `facebook/jscodeshift`, and
+  `OpenAPITools/openapi-generator`; selected Plop because it directly models
+  prompt-driven micro-generators, action arrays, templates, helpers, partials,
+  package loading, and overwrite safety. Cloned ignored external source to
+  `research/external-src/plopjs-plop` and inspected docs/source/example/test
+  hits without executing external source. Clone HEAD was `0c90e7e`; tracked file
+  count for `research/external-src/plopjs-plop` returned `0`.
+- 2026-06-04: RED scaffolding-readiness smoke generated
+  `/tmp/repotutor-scaffolding-red-studies.UcXxzJ/2026-06-04/local__simple-ts-app__HEAD__ac1bf33d`;
+  old build had `verificationCheckedRequiredArtifacts=276`, was missing
+  `analysis/scaffolding-readiness-report.json`,
+  `markdown/scaffolding-readiness.md`, and
+  `html/scaffolding-readiness.html`, and `open --target scaffolding-readiness`
+  failed as expected.
+- 2026-06-04: Implemented Plop-style scaffolding-readiness report:
+  `ScaffoldingReadinessReportSchema`,
+  `analysis/scaffolding-readiness-report.json`,
+  `markdown/scaffolding-readiness.md`,
+  `html/scaffolding-readiness.html`, generator files, prompt signals, action
+  signals, template signals, safety signals, package signals, recommended
+  commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, nav entry, and `open --target scaffolding-readiness`.
+- 2026-06-04: GREEN scaffolding-readiness smoke generated
+  `/tmp/repotutor-scaffolding-green-studies.Y1ydxh/2026-06-04/local__simple-ts-app__main__ac1bf33d`;
+  confirmed `verificationCheckedRequiredArtifacts=279`, generator files 0,
+  prompt signals 9, action signals 8, template signals 8, safety signals 8,
+  package signals 8, risk queue 2, all three new artifacts, and
+  `open --target scaffolding-readiness` ->
+  `html/scaffolding-readiness.html`.
+- 2026-06-04: Verification for Upgrade 193:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 91/91 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

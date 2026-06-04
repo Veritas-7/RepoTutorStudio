@@ -1,6 +1,6 @@
 # Compliance Audit 11
 
-Created: 2026-06-04T14:00:23.240Z
+Created: 2026-06-04T14:13:28.816Z
 
 Status: PASS
 
@@ -515,6 +515,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Workspace graph readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Scaffolding readiness report
 
 - missing files: none
 - missing strings: none
