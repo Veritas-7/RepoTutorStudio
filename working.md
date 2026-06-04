@@ -3709,6 +3709,8 @@ to a private repository, and preserve resumable state in this file.
   - GREEN current smoke: PASS
   - `pnpm test`: PASS, 4/4 tests
   - `pnpm audit:brief`: PASS, 79/79 audit checks across 13 reports
+- 2026-06-04: Pushed AutoResearch Upgrade 181:
+  - `b4e24b0` link integrity readiness report
 
 ## Next Actions
 
