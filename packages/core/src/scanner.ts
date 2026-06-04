@@ -110,6 +110,7 @@ import {
   BuildToolReadinessReport,
   StylingReadinessReport,
   VisualRegressionReadinessReport,
+  InfrastructureReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -226,6 +227,7 @@ export interface AnalysisBundle {
   buildToolReadinessReport: BuildToolReadinessReport;
   stylingReadinessReport: StylingReadinessReport;
   visualRegressionReadinessReport: VisualRegressionReadinessReport;
+  infrastructureReadinessReport: InfrastructureReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -342,8 +344,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const buildToolReadinessReport = await buildBuildToolReadinessReport(walk);
   const stylingReadinessReport = await buildStylingReadinessReport(walk);
   const visualRegressionReadinessReport = await buildVisualRegressionReadinessReport(walk);
+  const infrastructureReadinessReport = await buildInfrastructureReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -23031,6 +23034,295 @@ function visualRegressionSignalFromSpecs<T extends Record<K, string> & { pattern
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/visual-regression-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildInfrastructureReadinessReport(walk: WalkResult): Promise<InfrastructureReadinessReport> {
+  const sourceFiles = await infrastructureSourceFiles(walk);
+  const infrastructureSetups = infrastructureSetupFiles(sourceFiles);
+  const configSignals = infrastructureConfigSignals(sourceFiles);
+  const stateSignals = infrastructureStateSignals(sourceFiles);
+  const workflowSignals = infrastructureWorkflowSignals(sourceFiles);
+  const moduleSignals = infrastructureModuleSignals(sourceFiles);
+  const variableSignals = infrastructureVariableSignals(sourceFiles);
+  const policySignals = infrastructurePolicySignals(sourceFiles);
+  const packageSignals = infrastructurePackageSignals(sourceFiles);
+
+  const hasConfig = infrastructureSetups.length > 0 || configSignals.some((item) => item.readiness === "ready");
+  const hasState = stateSignals.some((item) => ["backend", "remote-state", "state-lock", "terraform-lock-hcl", "state-encryption"].includes(item.signal) && item.readiness === "ready");
+  const hasPlan = workflowSignals.some((item) => item.signal === "plan-command" && item.readiness === "ready");
+  const hasPolicy = policySignals.some((item) => item.readiness === "ready");
+  const hasVariables = variableSignals.some((item) => item.readiness === "ready") || infrastructureSetups.some((item) => item.variableCount > 0);
+
+  const riskQueue: InfrastructureReadinessReport["riskQueue"] = [];
+  if (!hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add an infrastructure inventory if this project owns cloud resources.",
+      why: "OpenTofu-style review starts from concrete .tf files, providers, resources, modules, variables, and outputs.",
+      relatedHref: "html/infrastructure-readiness.html"
+    });
+  }
+  if (hasConfig && !hasState) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document backend, state locking, workspace, and lockfile ownership.",
+      why: "Infrastructure changes are unsafe when state storage, locking, and dependency selections are implicit.",
+      relatedHref: "html/infrastructure-readiness.html"
+    });
+  }
+  if (hasConfig && !hasPlan) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record a plan-before-apply workflow in docs or CI.",
+      why: "OpenTofu execution plans let reviewers inspect intended infrastructure changes before apply.",
+      relatedHref: "html/infrastructure-readiness.html"
+    });
+  }
+  if (hasConfig && !hasPolicy) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add static IaC guardrails such as tflint, tfsec, checkov, OPA, or conftest.",
+      why: "Policy and lint checks catch unsafe infrastructure patterns before plan or apply.",
+      relatedHref: "html/infrastructure-readiness.html"
+    });
+  }
+  if (hasConfig && !hasVariables) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document input variables, tfvars files, and sensitive values.",
+      why: "Reviewers need to know which values are supplied at plan/apply time and which must stay secret.",
+      relatedHref: "html/infrastructure-readiness.html"
+    });
+  }
+
+  return {
+    summary: `OpenTofu-style infrastructure readiness report: setup ${infrastructureSetups.length}개, config signal ${configSignals.length}개, state signal ${stateSignals.length}개, workflow signal ${workflowSignals.length}개, policy signal ${policySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "OpenTofu terraform block provider resource data module variable output backend state lockfile init plan apply import workspace validate fmt test",
+    infrastructureSetups,
+    configSignals,
+    stateSignals,
+    workflowSignals,
+    moduleSignals,
+    variableSignals,
+    policySignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "tofu init -backend=false", purpose: "Check provider/module initialization without touching a remote backend." },
+      { command: "tofu validate", purpose: "Validate OpenTofu configuration syntax and provider-facing constraints." },
+      { command: "tofu plan -out plan.tfplan", purpose: "Generate a reviewable execution plan before apply." },
+      { command: "tofu show -json plan.tfplan", purpose: "Export the plan for policy, cost, or review tooling." }
+    ],
+    learnerNextSteps: [
+      "Open Infrastructure Readiness and identify the root .tf files first.",
+      "Confirm required providers, backend/state ownership, and workspace policy before reading resources.",
+      "Use the plan/apply/import workflow signals to understand how infrastructure changes are reviewed.",
+      "Review variable and policy signals before trusting any apply path."
+    ]
+  };
+}
+
+type InfrastructureSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function infrastructureSourceFiles(walk: WalkResult): Promise<InfrastructureSourceFile[]> {
+  const files: InfrastructureSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !infrastructureInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath);
+    if (!text) continue;
+    if (!infrastructurePathSignal(file.relPath) && !infrastructureContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return files;
+}
+
+function infrastructureInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return infrastructurePathSignal(filePath)
+    || /(^|\/)(README|docs?|infrastructure|infra|terraform|tofu|terragrunt|pulumi|cdk|cloudformation|deployment|deploy|iac|policy|policies|ci|workflows?|scripts?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|Makefile|Taskfile\.ya?ml|justfile)$/i.test(base);
+}
+
+function infrastructurePathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /\.(tf|tfvars|tftest\.hcl)$/i.test(filePath)
+    || base === ".terraform.lock.hcl"
+    || /^terragrunt\.hcl$/i.test(base)
+    || /^(Pulumi\.(ya?ml|json)|cdk\.json|template\.(ya?ml|json))$/i.test(base)
+    || /(^|\/)(terraform|opentofu|tofu|terragrunt|pulumi|cdk|cloudformation|infra|infrastructure|iac)(\/|$)/i.test(filePath);
+}
+
+function infrastructureContentSignal(text: string): boolean {
+  return /(OpenTofu|tofu\s+(init|plan|apply|validate|fmt|test|import|destroy)|terraform\s+(init|plan|apply|validate|fmt|test|import|destroy)|terraform\s*\{|required_providers|required_version|provider\s+"|resource\s+"|data\s+"|module\s+"|variable\s+"|output\s+"|backend\s+"|terraform_remote_state|\.terraform\.lock\.hcl|terragrunt|tflint|tfsec|checkov|conftest|infracost)/i.test(text);
+}
+
+function infrastructureSetupFiles(sourceFiles: InfrastructureSourceFile[]): InfrastructureReadinessReport["infrastructureSetups"] {
+  const rows: InfrastructureReadinessReport["infrastructureSetups"] = [];
+  for (const source of sourceFiles) {
+    const terraformBlockCount = countMatches(source.text, /(^|\n)\s*terraform\s*\{/g);
+    const providerCount = countMatches(source.text, /(^|\n)\s*provider\s+"[^"]+"/g);
+    const resourceCount = countMatches(source.text, /(^|\n)\s*resource\s+"[^"]+"\s+"[^"]+"/g);
+    const dataSourceCount = countMatches(source.text, /(^|\n)\s*data\s+"[^"]+"\s+"[^"]+"/g);
+    const moduleCount = countMatches(source.text, /(^|\n)\s*module\s+"[^"]+"/g);
+    const variableCount = countMatches(source.text, /(^|\n)\s*variable\s+"[^"]+"/g);
+    const outputCount = countMatches(source.text, /(^|\n)\s*output\s+"[^"]+"/g);
+    const backendCount = countMatches(source.text, /backend\s+"[^"]+"|terraform_remote_state|remote state|state backend/gi);
+    const workflowCount = countMatches(source.text, /\b(tofu|terraform)\s+(init|plan|apply|validate|fmt|test|import|destroy)\b/g);
+    const totalSignals = terraformBlockCount + providerCount + resourceCount + dataSourceCount + moduleCount + variableCount + outputCount + backendCount + workflowCount;
+    if (totalSignals === 0 && !infrastructurePathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: infrastructureTool(source),
+      terraformBlockCount,
+      providerCount,
+      resourceCount,
+      dataSourceCount,
+      moduleCount,
+      variableCount,
+      outputCount,
+      backendCount,
+      workflowCount,
+      readiness: totalSignals >= 5 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} OpenTofu/Terraform-style infrastructure signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.resourceCount + b.moduleCount + b.providerCount + b.workflowCount;
+    const aScore = a.resourceCount + a.moduleCount + a.providerCount + a.workflowCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 50);
+}
+
+function infrastructureTool(source: InfrastructureSourceFile): InfrastructureReadinessReport["infrastructureSetups"][number]["tool"] {
+  if (/opentofu|tofu\s+(init|plan|apply|validate|fmt|test|import|destroy)/i.test(source.text)) return "opentofu";
+  if (/terragrunt/i.test(source.filePath) || /terragrunt/i.test(source.text)) return "terragrunt";
+  if (/pulumi/i.test(source.filePath) || /pulumi/i.test(source.text)) return "pulumi";
+  if (/cdk\.json|aws-cdk|cdktf/i.test(source.filePath) || /aws-cdk|cdktf/i.test(source.text)) return "cdk";
+  if (/cloudformation|AWSTemplateFormatVersion|Resources:/i.test(source.filePath) || /AWSTemplateFormatVersion|CloudFormation/i.test(source.text)) return "cloudformation";
+  if (/helm|Chart\.yaml/i.test(source.filePath) || /helm/i.test(source.text)) return "helm";
+  if (/kustomize|kustomization\.ya?ml/i.test(source.filePath) || /kustomize/i.test(source.text)) return "kustomize";
+  if (/terraform|\.tf(vars)?$|\.terraform\.lock\.hcl/i.test(source.filePath) || /terraform\s*\{|terraform\s+(init|plan|apply|validate|fmt|test|import|destroy)/i.test(source.text)) return "terraform";
+  return "unknown";
+}
+
+function infrastructureConfigSignals(sourceFiles: InfrastructureSourceFile[]): InfrastructureReadinessReport["configSignals"] {
+  const specs: Array<{ signal: InfrastructureReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tf-file", pattern: /\.tf$|\.tfvars$|\.tftest\.hcl$/i, evidence: "Terraform/OpenTofu file evidence was detected." },
+    { signal: "terraform-block", pattern: /(^|\n)\s*terraform\s*\{/i, evidence: "terraform block evidence was detected." },
+    { signal: "required-providers", pattern: /required_providers/i, evidence: "required provider declaration evidence was detected." },
+    { signal: "required-version", pattern: /required_version/i, evidence: "required version evidence was detected." },
+    { signal: "provider-block", pattern: /(^|\n)\s*provider\s+"[^"]+"/i, evidence: "provider block evidence was detected." },
+    { signal: "resource-block", pattern: /(^|\n)\s*resource\s+"[^"]+"\s+"[^"]+"/i, evidence: "resource block evidence was detected." },
+    { signal: "data-source", pattern: /(^|\n)\s*data\s+"[^"]+"\s+"[^"]+"/i, evidence: "data source evidence was detected." },
+    { signal: "module-block", pattern: /(^|\n)\s*module\s+"[^"]+"/i, evidence: "module block evidence was detected." },
+    { signal: "variable-block", pattern: /(^|\n)\s*variable\s+"[^"]+"/i, evidence: "variable block evidence was detected." },
+    { signal: "output-block", pattern: /(^|\n)\s*output\s+"[^"]+"/i, evidence: "output block evidence was detected." },
+    { signal: "locals-block", pattern: /(^|\n)\s*locals\s*\{/i, evidence: "locals block evidence was detected." }
+  ];
+  return infrastructureSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function infrastructureStateSignals(sourceFiles: InfrastructureSourceFile[]): InfrastructureReadinessReport["stateSignals"] {
+  const specs: Array<{ signal: InfrastructureReadinessReport["stateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "backend", pattern: /backend\s+"[^"]+"|state backend|remote backend/i, evidence: "backend evidence was detected." },
+    { signal: "remote-state", pattern: /terraform_remote_state|remote state/i, evidence: "remote state data source evidence was detected." },
+    { signal: "state-lock", pattern: /state lock|locking|lock table|DynamoDB|Consul|pg_advisory_lock/i, evidence: "state locking evidence was detected." },
+    { signal: "workspace", pattern: /\bworkspace\b|tofu workspace|terraform workspace/i, evidence: "workspace evidence was detected." },
+    { signal: "terraform-lock-hcl", pattern: /\.terraform\.lock\.hcl|provider lock|dependency lock/i, evidence: "dependency lockfile evidence was detected." },
+    { signal: "state-file-warning", pattern: /terraform\.tfstate|state file|do not commit state|sensitive state/i, evidence: "state file warning evidence was detected." },
+    { signal: "state-encryption", pattern: /state encryption|encrypted state|key_provider|encryption\s*\{/i, evidence: "state or plan encryption evidence was detected." }
+  ];
+  return infrastructureSignalFromSpecs(sourceFiles, specs, "state", "signal");
+}
+
+function infrastructureWorkflowSignals(sourceFiles: InfrastructureSourceFile[]): InfrastructureReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: InfrastructureReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "init-command", pattern: /\b(tofu|terraform)\s+init\b/i, evidence: "init command evidence was detected." },
+    { signal: "plan-command", pattern: /\b(tofu|terraform)\s+plan\b/i, evidence: "plan command evidence was detected." },
+    { signal: "apply-command", pattern: /\b(tofu|terraform)\s+apply\b/i, evidence: "apply command evidence was detected." },
+    { signal: "destroy-command", pattern: /\b(tofu|terraform)\s+destroy\b/i, evidence: "destroy command evidence was detected." },
+    { signal: "import-command", pattern: /\b(tofu|terraform)\s+import\b|(^|\n)\s*import\s*\{/i, evidence: "import workflow evidence was detected." },
+    { signal: "validate-command", pattern: /\b(tofu|terraform)\s+validate\b/i, evidence: "validate command evidence was detected." },
+    { signal: "fmt-command", pattern: /\b(tofu|terraform)\s+fmt\b/i, evidence: "format command evidence was detected." },
+    { signal: "test-command", pattern: /\b(tofu|terraform)\s+test\b|\.tftest\.hcl/i, evidence: "test command or tftest evidence was detected." }
+  ];
+  return infrastructureSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function infrastructureModuleSignals(sourceFiles: InfrastructureSourceFile[]): InfrastructureReadinessReport["moduleSignals"] {
+  const specs: Array<{ signal: InfrastructureReadinessReport["moduleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "source-url", pattern: /source\s*=\s*"[^"]*(git::|https?:\/\/|ssh:\/\/)/i, evidence: "module source URL evidence was detected." },
+    { signal: "local-module", pattern: /source\s*=\s*"\.\/|source\s*=\s*"\.\.\//i, evidence: "local module source evidence was detected." },
+    { signal: "registry-module", pattern: /source\s*=\s*"[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+"/i, evidence: "registry module source evidence was detected." },
+    { signal: "provider-alias", pattern: /alias\s*=|providers\s*=\s*\{/i, evidence: "provider alias or provider passing evidence was detected." },
+    { signal: "for-each", pattern: /for_each\s*=/i, evidence: "for_each evidence was detected." },
+    { signal: "count", pattern: /count\s*=/i, evidence: "count evidence was detected." },
+    { signal: "depends-on", pattern: /depends_on\s*=/i, evidence: "explicit dependency evidence was detected." }
+  ];
+  return infrastructureSignalFromSpecs(sourceFiles, specs, "module", "signal");
+}
+
+function infrastructureVariableSignals(sourceFiles: InfrastructureSourceFile[]): InfrastructureReadinessReport["variableSignals"] {
+  const specs: Array<{ signal: InfrastructureReadinessReport["variableSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tfvars", pattern: /\.tfvars$/i, evidence: "tfvars file evidence was detected." },
+    { signal: "auto-tfvars", pattern: /\.auto\.tfvars$/i, evidence: "auto tfvars evidence was detected." },
+    { signal: "sensitive-var", pattern: /sensitive\s*=\s*true|secret|password|token/i, evidence: "sensitive variable evidence was detected." },
+    { signal: "validation", pattern: /validation\s*\{|condition\s*=|error_message\s*=/i, evidence: "variable validation evidence was detected." },
+    { signal: "default-value", pattern: /default\s*=/i, evidence: "variable default evidence was detected." },
+    { signal: "environment-var", pattern: /TF_VAR_|environment variable|env var/i, evidence: "environment variable evidence was detected." },
+    { signal: "input-variable", pattern: /(^|\n)\s*variable\s+"[^"]+"/i, evidence: "input variable block evidence was detected." }
+  ];
+  return infrastructureSignalFromSpecs(sourceFiles, specs, "variable", "signal");
+}
+
+function infrastructurePolicySignals(sourceFiles: InfrastructureSourceFile[]): InfrastructureReadinessReport["policySignals"] {
+  const specs: Array<{ signal: InfrastructureReadinessReport["policySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tflint", pattern: /tflint|\.tflint\.hcl/i, evidence: "TFLint evidence was detected." },
+    { signal: "tfsec", pattern: /tfsec/i, evidence: "tfsec evidence was detected." },
+    { signal: "checkov", pattern: /checkov/i, evidence: "Checkov evidence was detected." },
+    { signal: "opa", pattern: /\bopa\b|rego/i, evidence: "OPA/Rego evidence was detected." },
+    { signal: "conftest", pattern: /conftest/i, evidence: "Conftest evidence was detected." },
+    { signal: "sentinel", pattern: /sentinel/i, evidence: "Sentinel evidence was detected." },
+    { signal: "infracost", pattern: /infracost/i, evidence: "Infracost evidence was detected." },
+    { signal: "terraform-test", pattern: /\.tftest\.hcl|\b(tofu|terraform)\s+test\b/i, evidence: "OpenTofu/Terraform test evidence was detected." }
+  ];
+  return infrastructureSignalFromSpecs(sourceFiles, specs, "policy", "signal");
+}
+
+function infrastructurePackageSignals(sourceFiles: InfrastructureSourceFile[]): InfrastructureReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: InfrastructureReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "opentofu", pattern: /opentofu|tofu\s+(init|plan|apply|validate|fmt|test|import|destroy)/i, evidence: "OpenTofu package or command evidence was detected." },
+    { signal: "terraform", pattern: /terraform\s+(init|plan|apply|validate|fmt|test|import|destroy)|hashicorp\/terraform|\.terraform\.lock\.hcl/i, evidence: "Terraform package or command evidence was detected." },
+    { signal: "terragrunt", pattern: /terragrunt/i, evidence: "Terragrunt evidence was detected." },
+    { signal: "tflint", pattern: /tflint/i, evidence: "TFLint evidence was detected." },
+    { signal: "tfsec", pattern: /tfsec/i, evidence: "tfsec evidence was detected." },
+    { signal: "checkov", pattern: /checkov/i, evidence: "Checkov evidence was detected." },
+    { signal: "cdktf", pattern: /cdktf|cdk\.json/i, evidence: "CDKTF evidence was detected." },
+    { signal: "pulumi", pattern: /pulumi/i, evidence: "Pulumi evidence was detected." }
+  ];
+  return infrastructureSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function infrastructureSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: InfrastructureSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/infrastructure-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

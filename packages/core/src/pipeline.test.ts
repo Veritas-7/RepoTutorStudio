@@ -99,6 +99,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "build-tool-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "styling-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "visual-regression-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "infrastructure-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -196,6 +197,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "build-tool-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "styling-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "visual-regression-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "infrastructure-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -293,6 +295,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "build-tool-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "styling-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "visual-regression-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "infrastructure-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -421,6 +424,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/build-tool-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/styling-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/visual-regression-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/infrastructure-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -2115,6 +2119,24 @@ describe("RepoTutor core pipeline", () => {
     expect(visualRegressionReadinessMarkdown).toContain("Source pattern: reg-suit");
     expect(visualRegressionReadinessMarkdown).toContain("## Threshold Signals");
     expect(visualRegressionReadinessMarkdown).toContain("## Plugin Signals");
+    const infrastructureReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "infrastructure-readiness-report.json"), "utf8");
+    expect(infrastructureReadinessText).toContain("OpenTofu terraform block provider resource data module variable output backend state lockfile init plan apply import workspace validate fmt test");
+    expect(infrastructureReadinessText).toContain("\"infrastructureSetups\"");
+    expect(infrastructureReadinessText).toContain("\"stateSignals\"");
+    expect(infrastructureReadinessText).toContain("\"workflowSignals\"");
+    expect(infrastructureReadinessText).toContain("\"policySignals\"");
+    expect(infrastructureReadinessText).toContain("OpenTofu");
+    const infrastructureReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "infrastructure-readiness.html"), "utf8");
+    expect(infrastructureReadinessHtml).toContain("Infrastructure Readiness");
+    expect(infrastructureReadinessHtml).toContain("infrastructure-readiness-card");
+    expect(infrastructureReadinessHtml).toContain("data-source-pattern=\"OpenTofu\"");
+    expect(infrastructureReadinessHtml).toContain("State Signals");
+    expect(infrastructureReadinessHtml).toContain("Workflow Signals");
+    const infrastructureReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "infrastructure-readiness.md"), "utf8");
+    expect(infrastructureReadinessMarkdown).toContain("# Infrastructure Readiness");
+    expect(infrastructureReadinessMarkdown).toContain("Source pattern: OpenTofu");
+    expect(infrastructureReadinessMarkdown).toContain("## State Signals");
+    expect(infrastructureReadinessMarkdown).toContain("## Workflow Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -2503,6 +2525,83 @@ describe("RepoTutor core pipeline", () => {
     expect(failedSessionVerification.failures.some((failure) => failure.check === "evidence-index" && failure.path === "source/src/main.ts")).toBe(true);
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
+  });
+
+  it("detects OpenTofu infrastructure readiness in Terraform files", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-infra-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-infra-source-"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Infrastructure fixture",
+      "",
+      "Use tofu init, tofu validate, tofu plan, and tofu apply during operator review."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "main.tf"), [
+      "terraform {",
+      "  required_version = \">= 1.8.0\"",
+      "  required_providers {",
+      "    aws = {",
+      "      source = \"hashicorp/aws\"",
+      "      version = \">= 5.0.0\"",
+      "    }",
+      "  }",
+      "  backend \"local\" {",
+      "    path = \"state/terraform.tfstate\"",
+      "  }",
+      "}",
+      "",
+      "provider \"aws\" {",
+      "  region = var.region",
+      "}",
+      "",
+      "variable \"region\" {",
+      "  type = string",
+      "  default = \"us-east-1\"",
+      "  validation {",
+      "    condition = length(var.region) > 0",
+      "    error_message = \"Region is required.\"",
+      "  }",
+      "}",
+      "",
+      "resource \"aws_s3_bucket\" \"logs\" {",
+      "  bucket = \"repotutor-infra-fixture\"",
+      "}",
+      "",
+      "data \"aws_caller_identity\" \"current\" {}",
+      "",
+      "module \"network\" {",
+      "  source = \"./modules/network\"",
+      "  providers = { aws = aws }",
+      "}",
+      "",
+      "output \"account_id\" {",
+      "  value = data.aws_caller_identity.current.account_id",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".terraform.lock.hcl"), "# provider dependency lockfile fixture\n");
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "infrastructure-readiness-report.json"), "utf8")) as {
+      infrastructureSetups: Array<{ filePath: string; providerCount: number; resourceCount: number; dataSourceCount: number; moduleCount: number; variableCount: number; outputCount: number; backendCount: number; workflowCount: number }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      moduleSignals: Array<{ signal: string; readiness: string }>;
+      variableSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const mainSetup = report.infrastructureSetups.find((item) => item.filePath === "main.tf");
+    expect(report.infrastructureSetups.length).toBeGreaterThan(0);
+    expect(mainSetup?.providerCount).toBeGreaterThan(0);
+    expect(mainSetup?.resourceCount).toBeGreaterThan(0);
+    expect(mainSetup?.dataSourceCount).toBeGreaterThan(0);
+    expect(mainSetup?.moduleCount).toBeGreaterThan(0);
+    expect(mainSetup?.variableCount).toBeGreaterThan(0);
+    expect(mainSetup?.outputCount).toBeGreaterThan(0);
+    expect(mainSetup?.backendCount).toBeGreaterThan(0);
+    expect(report.infrastructureSetups.some((item) => item.workflowCount > 0)).toBe(true);
+    expect(report.stateSignals.some((item) => item.signal === "backend" && item.readiness === "ready")).toBe(true);
+    expect(report.stateSignals.some((item) => item.signal === "terraform-lock-hcl" && item.readiness === "ready")).toBe(true);
+    expect(report.workflowSignals.some((item) => item.signal === "plan-command" && item.readiness === "ready")).toBe(true);
+    expect(report.moduleSignals.some((item) => item.signal === "local-module" && item.readiness === "ready")).toBe(true);
+    expect(report.variableSignals.some((item) => item.signal === "validation" && item.readiness === "ready")).toBe(true);
   });
 
   it("compares a new study session against the previous source snapshot", async () => {

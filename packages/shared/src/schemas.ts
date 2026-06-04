@@ -5362,6 +5362,80 @@ export const VisualRegressionReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const InfrastructureReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  infrastructureSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["opentofu", "terraform", "terragrunt", "pulumi", "cdk", "cloudformation", "helm", "kustomize", "custom", "unknown"]),
+    terraformBlockCount: z.number().int().nonnegative(),
+    providerCount: z.number().int().nonnegative(),
+    resourceCount: z.number().int().nonnegative(),
+    dataSourceCount: z.number().int().nonnegative(),
+    moduleCount: z.number().int().nonnegative(),
+    variableCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    backendCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["tf-file", "terraform-block", "required-providers", "required-version", "provider-block", "resource-block", "data-source", "module-block", "variable-block", "output-block", "locals-block", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["backend", "remote-state", "state-lock", "workspace", "terraform-lock-hcl", "state-file-warning", "state-encryption", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["init-command", "plan-command", "apply-command", "destroy-command", "import-command", "validate-command", "fmt-command", "test-command", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  moduleSignals: z.array(z.object({
+    signal: z.enum(["source-url", "local-module", "registry-module", "provider-alias", "for-each", "count", "depends-on", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  variableSignals: z.array(z.object({
+    signal: z.enum(["tfvars", "auto-tfvars", "sensitive-var", "validation", "default-value", "environment-var", "input-variable", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  policySignals: z.array(z.object({
+    signal: z.enum(["tflint", "tfsec", "checkov", "opa", "conftest", "sentinel", "infracost", "terraform-test", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["opentofu", "terraform", "terragrunt", "tflint", "tfsec", "checkov", "cdktf", "pulumi", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -5661,6 +5735,7 @@ export type SchedulerReadinessReport = z.infer<typeof SchedulerReadinessReportSc
 export type BuildToolReadinessReport = z.infer<typeof BuildToolReadinessReportSchema>;
 export type StylingReadinessReport = z.infer<typeof StylingReadinessReportSchema>;
 export type VisualRegressionReadinessReport = z.infer<typeof VisualRegressionReadinessReportSchema>;
+export type InfrastructureReadinessReport = z.infer<typeof InfrastructureReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
