@@ -5463,6 +5463,44 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 220:
   - `a4a01d8` authorization readiness report
 
+- 2026-06-05: AutoResearch Upgrade 221 candidate selected:
+  `stryker-mutator/stryker-js`
+  (`https://github.com/stryker-mutator/stryker-js`; Apache-2.0, public,
+  2,901 stars, 266 forks, updated 2026-06-04T19:52:35Z, ignored clone HEAD
+  `6201b38`) with comparison sources
+  `stryker-mutator/mutation-testing-elements` (Apache-2.0, public, 27 stars,
+  21 forks, updated 2026-06-02T20:38:13Z, ignored clone HEAD `4e68c7e`)
+  and `infection/infection` (BSD-3-Clause, public, 2,206 stars, 183 forks,
+  updated 2026-06-04T15:32:24Z, ignored clone HEAD `1e9c712`). Static source
+  inspection only; `git ls-files` for all three external source paths returned
+  `0`.
+- 2026-06-05: Implemented Stryker/Infection-style
+  mutation-testing-readiness report:
+  `MutationTestingReadinessReportSchema`,
+  `analysis/mutation-testing-readiness-report.json`,
+  `markdown/mutation-testing-readiness.md`,
+  `html/mutation-testing-readiness.html`, mutation setup detection,
+  tool/config/quality/reporter/scope/package signals, recommended commands,
+  risk queue, manifest/session-verification coverage, learning-path linkage,
+  nav entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target mutation-testing-readiness`.
+- 2026-06-05: RED/GREEN mutation-testing-readiness smoke recorded:
+  old behavior at `19f0855` had no
+  `MutationTestingReadinessReportSchema` and no
+  `mutation-testing-readiness` CLI target (`RED missing-count=2 expected=2`).
+  GREEN focused fixture detected ready Stryker, Infection,
+  Mutation Testing Elements, mutmut, PIT, custom terminology, all config,
+  quality, reporter, scope, and package signals, risk queue 0, and all three
+  new artifacts.
+- 2026-06-05: Verification for Upgrade 221:
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - focused mutation-testing Vitest: PASS, 1/1 selected test
+  - full pipeline Vitest: PASS, 28/28 tests
+  - `pnpm test`: PASS, 28/28 tests
+  - `pnpm audit:brief`: PASS, 119/119 audit checks across 13 reports
+  - RED baseline smoke: PASS
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

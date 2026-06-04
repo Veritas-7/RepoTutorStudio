@@ -47,6 +47,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "mutation-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "typecheck-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "package-manager-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "git-hooks-report.json"))).resolves.toBeUndefined();
@@ -167,6 +168,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ci-cd.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "mutation-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "typecheck-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "package-manager.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "git-hooks.md"))).resolves.toBeUndefined();
@@ -290,6 +292,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ci-cd.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "mutation-testing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "typecheck-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "package-manager.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "git-hooks.html"))).resolves.toBeUndefined();
@@ -440,6 +443,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/database-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ci-cd.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/mutation-testing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/typecheck-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/package-manager.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/git-hooks.html\"");
@@ -1142,6 +1146,27 @@ describe("RepoTutor core pipeline", () => {
     expect(unitTestMarkdown).toContain("Source pattern: Vitest");
     expect(unitTestMarkdown).toContain("## Test Files");
     expect(unitTestMarkdown).toContain("## Coverage Signals");
+    const mutationTestingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "mutation-testing-readiness-report.json"), "utf8");
+    expect(mutationTestingText).toContain("Stryker mutation testing mutate patterns mutators testRunner coverageAnalysis reporters thresholds mutationScore killed survived timeout ignored incremental dashboard HTML JSON mutation-testing-report-schema Infection MSI covered MSI with-uncovered");
+    expect(mutationTestingText).toContain("\"mutationSetups\"");
+    expect(mutationTestingText).toContain("\"toolSignals\"");
+    expect(mutationTestingText).toContain("\"configSignals\"");
+    expect(mutationTestingText).toContain("\"qualitySignals\"");
+    expect(mutationTestingText).toContain("\"reporterSignals\"");
+    expect(mutationTestingText).toContain("\"scopeSignals\"");
+    expect(mutationTestingText).toContain("\"packageSignals\"");
+    expect(mutationTestingText).toContain("npx stryker run");
+    const mutationTestingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "mutation-testing-readiness.html"), "utf8");
+    expect(mutationTestingHtml).toContain("Mutation Testing Readiness");
+    expect(mutationTestingHtml).toContain("mutation-testing-readiness-card");
+    expect(mutationTestingHtml).toContain("data-source-pattern=\"Stryker\"");
+    expect(mutationTestingHtml).toContain("Mutation Setups");
+    expect(mutationTestingHtml).toContain("Quality Signals");
+    const mutationTestingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "mutation-testing-readiness.md"), "utf8");
+    expect(mutationTestingMarkdown).toContain("# Mutation Testing Readiness");
+    expect(mutationTestingMarkdown).toContain("Source pattern: Stryker");
+    expect(mutationTestingMarkdown).toContain("## Mutation Setups");
+    expect(mutationTestingMarkdown).toContain("## Reporter Signals");
     const typecheckText = await fs.readFile(path.join(result.session.outputPaths.analysis, "typecheck-readiness-report.json"), "utf8");
     expect(typecheckText).toContain("TypeScript compilerOptions strict noImplicitAny strictNullChecks composite references declaration noEmit moduleResolution paths types skipLibCheck tsc build");
     expect(typecheckText).toContain("\"tsconfigFiles\"");
@@ -2757,6 +2782,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/database-readiness.html");
     expect(exportManifestText).toContain("html/ci-cd.html");
     expect(exportManifestText).toContain("html/unit-tests.html");
+    expect(exportManifestText).toContain("html/mutation-testing-readiness.html");
     expect(exportManifestText).toContain("html/typecheck-readiness.html");
     expect(exportManifestText).toContain("html/package-manager.html");
     expect(exportManifestText).toContain("html/git-hooks.html");
@@ -2901,6 +2927,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("database-readiness.html");
     expect(learningPathHtml).toContain("ci-cd.html");
     expect(learningPathHtml).toContain("unit-tests.html");
+    expect(learningPathHtml).toContain("mutation-testing-readiness.html");
     expect(learningPathHtml).toContain("typecheck-readiness.html");
     expect(learningPathHtml).toContain("package-manager.html");
     expect(learningPathHtml).toContain("git-hooks.html");
@@ -3040,6 +3067,114 @@ describe("RepoTutor core pipeline", () => {
     expect(failedSessionVerification.failures.some((failure) => failure.check === "evidence-index" && failure.path === "source/src/main.ts")).toBe(true);
     const quizText = await fs.readFile(path.join(result.session.outputPaths.analysis, "quiz.json"), "utf8");
     expect(quizText).toContain("\"choices\"");
+  });
+
+  it("detects mutation testing readiness patterns without executing mutation engines", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-mutation-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-mutation-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "reports", "mutation"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "lib"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Mutation testing fixture",
+      "",
+      "This project documents mutation testing, mutator review, mutation score, and survived mutant handling."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "calc.ts"), "export const add = (a: number, b: number) => a + b;\n");
+    await fs.writeFile(path.join(sourceRoot, "lib", "legacy.ts"), "export const negate = (value: boolean) => !value;\n");
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        test: "vitest run",
+        "test:mutation": "stryker run --reporters html,json,clear-text,progress,dashboard,badge,junit",
+        "test:mutation:incremental": "stryker run --incremental --dry-run"
+      },
+      devDependencies: {
+        "@stryker-mutator/core": "^8.0.0",
+        "@stryker-mutator/vitest-runner": "^8.0.0",
+        "@stryker-mutator/jest-runner": "^8.0.0",
+        "mutation-testing-report-schema": "^3.0.0",
+        "infection/infection": "^0.29.0",
+        mutmut: "^3.0.0",
+        pitest: "^1.15.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "stryker.conf.json"), JSON.stringify({
+      "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+      mutate: ["src/**/*.ts", "lib/**/*.ts", "!src/**/*.test.ts"],
+      mutator: { excludedMutations: ["StringLiteral"] },
+      testRunner: "vitest",
+      coverageAnalysis: "perTest",
+      reporters: ["html", "json", "clear-text", "progress", "dashboard", "badge", "junit"],
+      thresholds: { high: 80, low: 60, break: 50 },
+      timeoutMS: 10000,
+      timeoutFactor: 1.5,
+      incremental: true,
+      disableTypeChecks: "{src,lib,test}/**/*.{ts,tsx}",
+      ignoreStatic: true,
+      dashboard: { project: "repotutor-fixture" }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "infection.json"), JSON.stringify({
+      "$schema": "vendor/infection/infection/resources/schema.json",
+      source: { directories: ["src", "lib"] },
+      sourceDirs: ["src", "lib"],
+      testFramework: "phpunit",
+      timeout: 15,
+      logs: {
+        html: "reports/infection.html",
+        json: "reports/infection.json",
+        text: "reports/infection.txt",
+        junit: "reports/infection-junit.xml"
+      },
+      mutators: { "@default": true, BooleanLiteral: true, ReturnRemoval: true },
+      minMsi: 80,
+      minCoveredMsi: 90,
+      withUncovered: true,
+      notes: "Killed Survived Timeout Ignored NoCoverage with-uncovered covered MSI MSI"
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "mutation.yml"), [
+      "name: mutation",
+      "on: [pull_request]",
+      "jobs:",
+      "  mutation:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - run: npx stryker run --incremental --dry-run --reporters html,json,clear-text,progress,dashboard,badge,junit"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "reports", "mutation", "mutation-report.json"), JSON.stringify({
+      schemaVersion: "3.0",
+      thresholds: { high: 80, low: 60 },
+      mutationScore: 85,
+      coveredScore: 90,
+      files: {
+        "src/calc.ts": {
+          mutants: [
+            { id: "1", mutatorName: "BooleanLiteral", status: "Killed" },
+            { id: "2", mutatorName: "StringLiteral", status: "Survived" },
+            { id: "3", mutatorName: "ArrayDeclaration", status: "Timeout" },
+            { id: "4", mutatorName: "ReturnRemoval", status: "Ignored" },
+            { id: "5", mutatorName: "StringLiteral", status: "NoCoverage" }
+          ]
+        }
+      },
+      package: "mutation-testing-report-schema"
+    }, null, 2));
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = result.analysis.mutationTestingReadinessReport;
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.mutationSetups.some((item) => item.tool === "stryker" && item.readiness === "ready")).toBe(true);
+    expect(report.mutationSetups.some((item) => item.tool === "infection" && item.readiness === "ready")).toBe(true);
+    expect(readySignals(report.toolSignals)).toEqual(expect.arrayContaining(["stryker", "infection", "mutation-testing-elements", "mutmut", "pitest", "custom"]));
+    expect(readySignals(report.configSignals)).toEqual(expect.arrayContaining(["config-file", "package-script", "schema", "mutate-pattern", "test-runner", "coverage-analysis", "disable-type-checks"]));
+    expect(readySignals(report.qualitySignals)).toEqual(expect.arrayContaining(["thresholds", "mutation-score", "covered-score", "survived", "killed", "timeout", "ignored", "no-coverage"]));
+    expect(readySignals(report.reporterSignals)).toEqual(expect.arrayContaining(["html", "json", "clear-text", "progress", "dashboard", "badge", "junit", "mutation-testing-report-schema"]));
+    expect(readySignals(report.scopeSignals)).toEqual(expect.arrayContaining(["src", "lib", "test-files", "ignore-patterns", "with-uncovered", "incremental", "dry-run"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@stryker-mutator/core", "@stryker-mutator/vitest-runner", "@stryker-mutator/jest-runner", "mutation-testing-report-schema", "infection/infection", "mutmut", "pitest", "custom"]));
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "mutation-testing-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "mutation-testing-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "mutation-testing-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects OpenTofu infrastructure readiness in Terraform files", async () => {

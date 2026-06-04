@@ -58,6 +58,7 @@ import {
   DatabaseReadinessReport,
   CiCdReport,
   UnitTestReport,
+  MutationTestingReadinessReport,
   TypecheckReadinessReport,
   PackageManagerReport,
   GitHooksReport,
@@ -197,6 +198,7 @@ export interface AnalysisBundle {
   databaseReadinessReport: DatabaseReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
+  mutationTestingReadinessReport: MutationTestingReadinessReport;
   typecheckReadinessReport: TypecheckReadinessReport;
   packageManagerReport: PackageManagerReport;
   gitHooksReport: GitHooksReport;
@@ -336,6 +338,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const databaseReadinessReport = await buildDatabaseReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
+  const mutationTestingReadinessReport = await buildMutationTestingReadinessReport(walk);
   const typecheckReadinessReport = await buildTypecheckReadinessReport(walk);
   const packageManagerReport = await buildPackageManagerReport(walk);
   const gitHooksReport = await buildGitHooksReport(walk);
@@ -412,7 +415,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -8674,6 +8677,290 @@ function unitTestSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/unit-tests.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildMutationTestingReadinessReport(walk: WalkResult): Promise<MutationTestingReadinessReport> {
+  const sourceFiles = await mutationTestingSourceFiles(walk);
+  const mutationSetups = mutationTestingSetups(sourceFiles);
+  const toolSignals = mutationTestingToolSignals(sourceFiles);
+  const configSignals = mutationTestingConfigSignals(sourceFiles);
+  const qualitySignals = mutationTestingQualitySignals(sourceFiles);
+  const reporterSignals = mutationTestingReporterSignals(sourceFiles);
+  const scopeSignals = mutationTestingScopeSignals(sourceFiles);
+  const packageSignals = mutationTestingPackageSignals(sourceFiles);
+  const hasSetup = mutationSetups.length > 0;
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasMutate = configSignals.some((item) => item.signal === "mutate-pattern" && item.readiness === "ready")
+    || scopeSignals.some((item) => ["src", "lib"].includes(item.signal) && item.readiness === "ready");
+  const hasRunner = configSignals.some((item) => item.signal === "test-runner" && item.readiness === "ready");
+  const hasThreshold = qualitySignals.some((item) => ["thresholds", "mutation-score", "covered-score"].includes(item.signal) && item.readiness === "ready");
+  const hasReporter = reporterSignals.some((item) => ["html", "json", "dashboard", "mutation-testing-report-schema", "junit"].includes(item.signal) && item.readiness === "ready");
+  const hasSafety = qualitySignals.some((item) => ["survived", "timeout", "ignored", "no-coverage"].includes(item.signal) && item.readiness === "ready")
+    || scopeSignals.some((item) => ["ignore-patterns", "with-uncovered"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: MutationTestingReadinessReport["riskQueue"] = [];
+  if (!hasSetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add mutation testing configuration before claiming mutation readiness.",
+      why: "Stryker and Infection both center readiness on explicit config, mutation scope, runner, reporters, and score thresholds; this scan did not find a setup.",
+      relatedHref: "html/mutation-testing-readiness.html"
+    });
+  }
+  if (hasSetup && !hasPackage) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Declare the mutation testing tool dependency or documented installer.",
+      why: "A config file without an installed Stryker, Infection, mutmut, or PIT package makes the repeatable command unclear.",
+      relatedHref: "html/mutation-testing-readiness.html"
+    });
+  }
+  if (hasSetup && !hasMutate) {
+    riskQueue.push({
+      priority: "high",
+      action: "Define the mutation scope with mutate/source patterns.",
+      why: "Mutation engines need explicit source files or directories so tests are not wasted on fixtures, generated files, or test files.",
+      relatedHref: "html/mutation-testing-readiness.html"
+    });
+  }
+  if (hasSetup && !hasRunner) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect the mutation engine to the test runner.",
+      why: "Mutation score is only meaningful when the engine can run the repository's real test framework for each mutant.",
+      relatedHref: "html/mutation-testing-readiness.html"
+    });
+  }
+  if (hasSetup && !hasThreshold) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Set mutation score thresholds before using mutation testing as a release gate.",
+      why: "Thresholds such as Stryker high/low/break or Infection min-msi/min-covered-msi convert reports into enforceable quality gates.",
+      relatedHref: "html/mutation-testing-readiness.html"
+    });
+  }
+  if (hasSetup && !hasReporter) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add HTML or JSON mutation reports for learner review.",
+      why: "Machine-readable and browsable reports show killed, survived, timeout, ignored, and no-coverage mutants without rerunning the engine.",
+      relatedHref: "html/mutation-testing-readiness.html"
+    });
+  }
+  if (hasSetup && !hasSafety) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document timeout, ignored mutant, or no-coverage handling.",
+      why: "Mutation testing can produce slow or intentionally equivalent mutants; safety metadata helps learners separate real gaps from tool noise.",
+      relatedHref: "html/mutation-testing-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Mutation testing readiness report: setups ${mutationSetups.length}개, tool signals ${toolSignals.filter((item) => item.readiness === "ready").length}개, quality signals ${qualitySignals.filter((item) => item.readiness === "ready").length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Stryker mutation testing mutate patterns mutators testRunner coverageAnalysis reporters thresholds mutationScore killed survived timeout ignored incremental dashboard HTML JSON mutation-testing-report-schema Infection MSI covered MSI with-uncovered",
+    mutationSetups,
+    toolSignals,
+    configSignals,
+    qualitySignals,
+    reporterSignals,
+    scopeSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx stryker run", purpose: "Run the configured JavaScript or TypeScript mutation test suite once." },
+      { command: "npx stryker run --incremental", purpose: "Reuse prior Stryker results when the repository supports incremental mutation testing." },
+      { command: "npx stryker run --reporters html,json,clear-text", purpose: "Emit learner-friendly and machine-readable mutation reports." },
+      { command: "npx stryker run --testRunner vitest", purpose: "Force Stryker to use the Vitest runner when the config is ambiguous." },
+      { command: "vendor/bin/infection --min-msi=80 --min-covered-msi=90", purpose: "Run Infection in a trusted PHP workspace with explicit MSI gates." },
+      { command: "rg \"stryker|infection|mutationScore|mutate|mutators|thresholds\" .", purpose: "Audit mutation testing configuration and report evidence statically." }
+    ],
+    learnerNextSteps: [
+      "Open the mutation config first: identify mutate/source scope, runner, mutators, coverage analysis, timeout, reporters, and score thresholds.",
+      "Compare survived mutants with existing tests and write one focused test that kills a high-value survived mutant.",
+      "Use HTML/JSON mutation reports to separate killed, survived, timeout, ignored, and no-coverage mutants before changing thresholds.",
+      "RepoTutor records static mutation-readiness evidence only; run Stryker or Infection in a trusted workspace before treating this as quality approval."
+    ]
+  };
+}
+
+type MutationTestingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function mutationTestingSourceFiles(walk: WalkResult): Promise<MutationTestingSourceFile[]> {
+  const files: MutationTestingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !mutationTestingInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    const base = path.basename(file.relPath);
+    if (!mutationTestingPathSignal(file.relPath) && !mutationTestingContentSignal(text) && base !== "package.json") continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function mutationTestingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return mutationTestingPathSignal(filePath)
+    || /^(package\.json|composer\.json|stryker\.conf\.[cm]?[jt]s|stryker\.conf\.json|stryker\.config\.[cm]?[jt]s|infection\.json5?|README\.md)$/i.test(base)
+    || /\.(json|md|ya?ml|xml|php|[cm]?[jt]sx?)$/i.test(base);
+}
+
+function mutationTestingPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /(^|\/)(stryker|infection|mutmut|pitest|mutation|mutations?|mutators?|mutation-reports?|reports\/mutation|reports\/stryker|\.stryker-tmp)(\/|$)/i.test(filePath)
+    || /^stryker\.(conf|config)\./i.test(base)
+    || /^infection\.json5?$/i.test(base)
+    || /(mutation|mutator|stryker|infection|mutmut|pitest)/i.test(filePath);
+}
+
+function mutationTestingContentSignal(text: string): boolean {
+  return /\b(@stryker-mutator|stryker\s+run|Stryker|infection\/infection|bin\/infection|mutation testing|mutationScore|mutation score|mutators?|mutants?|testRunner|coverageAnalysis|disableTypeChecks|min-msi|min-covered-msi|covered MSI|with-uncovered|NoCoverage|mutation-testing-report-schema|mutmut|pitest)\b/i.test(text);
+}
+
+function mutationTestingSetups(sourceFiles: MutationTestingSourceFile[]): MutationTestingReadinessReport["mutationSetups"] {
+  return sourceFiles
+    .filter((source) => mutationTestingPathSignal(source.filePath) || mutationTestingContentSignal(source.text))
+    .slice(0, 160)
+    .map((source) => {
+      const configCount = countMatches(source.text, /stryker\.conf|stryker\.config|infection\.json|pitest|mutmut|mutation testing|@stryker-mutator\/core|infection\/infection/gim);
+      const mutatePatternCount = countMatches(source.text, /mutate\s*:|mutate"\s*:|sourceDirs|src\/|lib\/|--with-uncovered|with-uncovered/gim);
+      const mutatorCount = countMatches(source.text, /mutator|mutators|BooleanLiteral|StringLiteral|ArrayDeclaration|ReturnRemoval/gim);
+      const runnerCount = countMatches(source.text, /testRunner|vitest|jest|mocha|jasmine|phpunit|testFramework|JUnit/gim);
+      const thresholdCount = countMatches(source.text, /threshold|thresholds|min-msi|min-covered-msi|mutationScore|mutation score|msi|covered MSI|high|low|break/gim);
+      const reporterCount = countMatches(source.text, /reporters?|html|json|clear-text|dashboard|badge|junit|mutation-testing-report-schema|logs/gim);
+      const timeoutCount = countMatches(source.text, /timeout|timeoutMS|timeoutFactor/gim);
+      const incrementalCount = countMatches(source.text, /incremental|stryker-incremental|download-incremental-reports/gim);
+      const ciCount = countMatches(source.text, /\.github\/workflows|CI|pull_request|workflow|dashboard/gim) + (/\.github\/workflows/i.test(source.filePath) ? 1 : 0);
+      const total = configCount + mutatePatternCount + mutatorCount + runnerCount + thresholdCount + reporterCount + timeoutCount + incrementalCount + ciCount;
+      return {
+        filePath: source.filePath,
+        tool: mutationTestingTool(source),
+        configCount,
+        mutatePatternCount,
+        mutatorCount,
+        runnerCount,
+        thresholdCount,
+        reporterCount,
+        timeoutCount,
+        incrementalCount,
+        ciCount,
+        readiness: configCount > 0 && mutatePatternCount > 0 && runnerCount > 0 && (thresholdCount > 0 || reporterCount > 0) && total >= 8 ? "ready" : total > 0 ? "partial" : "missing",
+        evidence: `${source.filePath} has ${total} mutation testing setup signal(s): scope ${mutatePatternCount}, runner ${runnerCount}, thresholds ${thresholdCount}, reporters ${reporterCount}.`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function mutationTestingTool(source: MutationTestingSourceFile): MutationTestingReadinessReport["mutationSetups"][number]["tool"] {
+  if (/@stryker-mutator|stryker\s+run|stryker\.conf|Stryker/i.test(source.text) || /stryker/i.test(source.filePath)) return "stryker";
+  if (/infection\/infection|bin\/infection|infection\.json|MSI|covered MSI|min-msi|min-covered-msi/i.test(source.text) || /infection/i.test(source.filePath)) return "infection";
+  if (/mutation-testing-report-schema|mutation-testing-elements|mutation testing report/i.test(source.text) || /mutation-testing-elements/i.test(source.filePath)) return "mutation-testing-elements";
+  if (/mutmut/i.test(source.text) || /mutmut/i.test(source.filePath)) return "mutmut";
+  if (/pitest|\bPIT\b/i.test(source.text) || /pitest/i.test(source.filePath)) return "pitest";
+  if (/mutation testing|mutator|mutants?/i.test(source.text) || /mutation|mutator/i.test(source.filePath)) return "custom";
+  return "unknown";
+}
+
+function mutationTestingToolSignals(sourceFiles: MutationTestingSourceFile[]): MutationTestingReadinessReport["toolSignals"] {
+  const specs: Array<{ signal: MutationTestingReadinessReport["toolSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "stryker", pattern: /@stryker-mutator|stryker\s+run|stryker\.conf|Stryker/i, evidence: "Stryker mutation testing evidence was detected." },
+    { signal: "infection", pattern: /infection\/infection|bin\/infection|infection\.json|min-msi|min-covered-msi|\bMSI\b|covered MSI/i, evidence: "Infection mutation testing evidence was detected." },
+    { signal: "mutmut", pattern: /\bmutmut\b/i, evidence: "mutmut evidence was detected." },
+    { signal: "pitest", pattern: /\bpitest\b|\bPIT\b/i, evidence: "PIT mutation testing evidence was detected." },
+    { signal: "mutation-testing-elements", pattern: /mutation-testing-report-schema|mutation-testing-elements|mutation testing report/i, evidence: "Mutation Testing Elements report schema evidence was detected." },
+    { signal: "custom", pattern: /mutation testing|mutator|mutants?|mutationScore|mutation score/i, evidence: "custom mutation testing terminology was detected." }
+  ];
+  return mutationTestingSignalFromSpecs(sourceFiles, specs, "tool");
+}
+
+function mutationTestingConfigSignals(sourceFiles: MutationTestingSourceFile[]): MutationTestingReadinessReport["configSignals"] {
+  const specs: Array<{ signal: MutationTestingReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "config-file", pattern: /stryker\.(conf|config)\.|infection\.json|pitest|mutmut/i, evidence: "mutation testing config file evidence was detected." },
+    { signal: "package-script", pattern: /"[^"]*(mutation|stryker|infection)[^"]*"\s*:\s*"[^"]*(stryker|infection|mutmut|pitest)[^"]*"/i, evidence: "package script evidence was detected." },
+    { signal: "schema", pattern: /\$schema|mutation-testing-report-schema|schemaVersion/i, evidence: "schema evidence was detected." },
+    { signal: "mutate-pattern", pattern: /mutate\s*:|mutate"\s*:|sourceDirs|src\/|lib\/|include\s*:|files\s*:/i, evidence: "mutation scope pattern evidence was detected." },
+    { signal: "test-runner", pattern: /testRunner|vitest|jest|mocha|jasmine|phpunit|testFramework/i, evidence: "test runner evidence was detected." },
+    { signal: "coverage-analysis", pattern: /coverageAnalysis|perTest|all|coverage/i, evidence: "coverage analysis evidence was detected." },
+    { signal: "disable-type-checks", pattern: /disableTypeChecks|disable type checks/i, evidence: "disableTypeChecks evidence was detected." }
+  ];
+  return mutationTestingSignalFromSpecs(sourceFiles, specs, "config");
+}
+
+function mutationTestingQualitySignals(sourceFiles: MutationTestingSourceFile[]): MutationTestingReadinessReport["qualitySignals"] {
+  const specs: Array<{ signal: MutationTestingReadinessReport["qualitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "thresholds", pattern: /threshold|thresholds|min-msi|min-covered-msi|high\s*:|low\s*:|break\s*:/i, evidence: "mutation threshold evidence was detected." },
+    { signal: "mutation-score", pattern: /mutationScore|mutation score|\bMSI\b|min-msi/i, evidence: "mutation score evidence was detected." },
+    { signal: "covered-score", pattern: /coveredScore|covered score|covered MSI|min-covered-msi/i, evidence: "covered mutation score evidence was detected." },
+    { signal: "survived", pattern: /survived|Survived/i, evidence: "survived mutant evidence was detected." },
+    { signal: "killed", pattern: /killed|Killed/i, evidence: "killed mutant evidence was detected." },
+    { signal: "timeout", pattern: /timeout|Timeout|timeoutMS|timeoutFactor/i, evidence: "timeout mutant or config evidence was detected." },
+    { signal: "ignored", pattern: /ignored|Ignored|ignoreStatic|ignore-pattern/i, evidence: "ignored mutant evidence was detected." },
+    { signal: "no-coverage", pattern: /NoCoverage|no coverage|no-coverage/i, evidence: "no-coverage mutant evidence was detected." }
+  ];
+  return mutationTestingSignalFromSpecs(sourceFiles, specs, "quality");
+}
+
+function mutationTestingReporterSignals(sourceFiles: MutationTestingSourceFile[]): MutationTestingReadinessReport["reporterSignals"] {
+  const specs: Array<{ signal: MutationTestingReadinessReport["reporterSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "html", pattern: /reporters?[\s\S]{0,200}html|\bhtml\b/i, evidence: "HTML reporter evidence was detected." },
+    { signal: "json", pattern: /reporters?[\s\S]{0,200}json|\bjson\b/i, evidence: "JSON reporter evidence was detected." },
+    { signal: "clear-text", pattern: /clear-text|clearText/i, evidence: "clear-text reporter evidence was detected." },
+    { signal: "progress", pattern: /\bprogress\b/i, evidence: "progress reporter evidence was detected." },
+    { signal: "dashboard", pattern: /dashboard/i, evidence: "dashboard reporter evidence was detected." },
+    { signal: "badge", pattern: /\bbadge\b/i, evidence: "badge reporter evidence was detected." },
+    { signal: "junit", pattern: /\bjunit\b|JUnit/i, evidence: "JUnit reporter evidence was detected." },
+    { signal: "mutation-testing-report-schema", pattern: /mutation-testing-report-schema|schemaVersion/i, evidence: "mutation testing report schema evidence was detected." }
+  ];
+  return mutationTestingSignalFromSpecs(sourceFiles, specs, "reporter");
+}
+
+function mutationTestingScopeSignals(sourceFiles: MutationTestingSourceFile[]): MutationTestingReadinessReport["scopeSignals"] {
+  const specs: Array<{ signal: MutationTestingReadinessReport["scopeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "src", pattern: /src\/|sourceDirs[\s\S]{0,120}src|["']src["']/i, evidence: "src mutation scope evidence was detected." },
+    { signal: "lib", pattern: /lib\/|["']lib["']|mutate[\s\S]{0,120}lib/i, evidence: "lib mutation scope evidence was detected." },
+    { signal: "test-files", pattern: /tests?\/|__tests__|\.test\.|\.spec\.|testRunner|phpunit/i, evidence: "test file or runner scope evidence was detected." },
+    { signal: "ignore-patterns", pattern: /ignoreStatic|ignorePatterns|ignore-pattern|excludedMutations|exclude\s*:/i, evidence: "ignore pattern evidence was detected." },
+    { signal: "with-uncovered", pattern: /--with-uncovered|with-uncovered|withUncovered/i, evidence: "with-uncovered evidence was detected." },
+    { signal: "incremental", pattern: /incremental|stryker-incremental|download-incremental-reports/i, evidence: "incremental mutation testing evidence was detected." },
+    { signal: "dry-run", pattern: /dryRun|dry-run|dry run/i, evidence: "dry-run evidence was detected." }
+  ];
+  return mutationTestingSignalFromSpecs(sourceFiles, specs, "scope");
+}
+
+function mutationTestingPackageSignals(sourceFiles: MutationTestingSourceFile[]): MutationTestingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: MutationTestingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@stryker-mutator/core", pattern: /@stryker-mutator\/core/i, evidence: "@stryker-mutator/core dependency evidence was detected." },
+    { signal: "@stryker-mutator/vitest-runner", pattern: /@stryker-mutator\/vitest-runner/i, evidence: "Stryker Vitest runner dependency evidence was detected." },
+    { signal: "@stryker-mutator/jest-runner", pattern: /@stryker-mutator\/jest-runner/i, evidence: "Stryker Jest runner dependency evidence was detected." },
+    { signal: "mutation-testing-report-schema", pattern: /mutation-testing-report-schema/i, evidence: "mutation testing report schema package evidence was detected." },
+    { signal: "infection/infection", pattern: /infection\/infection|bin\/infection/i, evidence: "Infection package evidence was detected." },
+    { signal: "mutmut", pattern: /\bmutmut\b/i, evidence: "mutmut package evidence was detected." },
+    { signal: "pitest", pattern: /\bpitest\b|\bPIT\b/i, evidence: "PIT package evidence was detected." },
+    { signal: "custom", pattern: /mutation testing|mutator|mutants?|mutationScore|mutation score/i, evidence: "custom mutation testing package or terminology evidence was detected." }
+  ];
+  return mutationTestingSignalFromSpecs(sourceFiles, specs, "package");
+}
+
+function mutationTestingSignalFromSpecs<T extends { signal: string; pattern: RegExp; evidence: string }>(
+  sourceFiles: MutationTestingSourceFile[],
+  specs: T[],
+  label: string
+): Array<{ signal: T["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/mutation-testing-readiness.html"
+    };
   });
 }
 

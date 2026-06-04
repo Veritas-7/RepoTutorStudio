@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-04T21:58:12.710Z",
+  "createdAt": "2026-06-04T22:13:15.313Z",
   "checks": [
     {
       "name": "project setup",
@@ -270,6 +270,13 @@
     },
     {
       "name": "unit test readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "mutation testing readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
