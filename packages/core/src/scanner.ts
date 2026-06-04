@@ -50,6 +50,7 @@ import {
   DesignTokensReport,
   I18nReport,
   ReleaseReadinessReport,
+  SecretReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -106,6 +107,7 @@ export interface AnalysisBundle {
   designTokensReport: DesignTokensReport;
   i18nReport: I18nReport;
   releaseReadinessReport: ReleaseReadinessReport;
+  secretReadinessReport: SecretReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -162,8 +164,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const designTokensReport = await buildDesignTokensReport(walk, storybookReport);
   const i18nReport = await buildI18nReport(walk);
   const releaseReadinessReport = await buildReleaseReadinessReport(walk);
+  const secretReadinessReport = await buildSecretReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -6189,6 +6192,299 @@ function releasePluginSteps(sourceFiles: ReleaseSourceFile[]): ReleaseReadinessR
       relatedHref: match?.sourceHref ?? "html/release-readiness.html"
     };
   });
+}
+
+async function buildSecretReadinessReport(walk: WalkResult): Promise<SecretReadinessReport> {
+  const sourceFiles = await secretSourceFiles(walk);
+  const secretSurfaces = secretSurfaceRows(walk, sourceFiles);
+  const configSignals = secretConfigSignals(sourceFiles);
+  const scanTargets = secretScanTargets(sourceFiles, walk);
+  const reportingSignals = secretReportingSignals(sourceFiles);
+  const preventionSignals = secretPreventionSignals(sourceFiles);
+  const advancedSignals = secretAdvancedSignals(sourceFiles);
+  const hasConfig = configSignals.some((item) => ["gitleaks-config", "extend-default", "custom-rule"].includes(item.signal));
+  const hasGitScan = scanTargets.some((item) => item.target === "git-history" && item.readiness === "ready");
+  const hasDirScan = scanTargets.some((item) => item.target === "working-tree" && item.readiness === "ready");
+  const hasPrevention = preventionSignals.some((item) => ["pre-commit", "staged", "github-action", "ci"].includes(item.signal) && item.readiness === "ready");
+  const hasReport = reportingSignals.some((item) => ["json", "sarif", "report-path"].includes(item.signal) && item.readiness === "ready");
+  const hasRedaction = reportingSignals.some((item) => item.signal === "redaction" && item.readiness === "ready");
+  const hasBaseline = reportingSignals.some((item) => item.signal === "baseline" && item.readiness === "ready");
+  const hasAllowlist = configSignals.some((item) => ["allowlist", "gitleaksignore", "allow-comment"].includes(item.signal));
+
+  const riskQueue: SecretReadinessReport["riskQueue"] = [];
+  if (!hasGitScan && !hasDirScan) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a Gitleaks git or dir scan target before claiming secret scanning coverage.",
+      why: "Gitleaks separates git-history scanning from working-tree file scanning, and each catches different leak surfaces.",
+      relatedHref: "html/secret-readiness.html"
+    });
+  }
+  if (!hasPrevention) {
+    riskQueue.push({
+      priority: "high",
+      action: "Run secret scanning before commits or in CI.",
+      why: "A report-only scanner catches leaks late; pre-commit, staged, and CI gates reduce the chance of publishing credentials.",
+      relatedHref: "html/secret-readiness.html"
+    });
+  }
+  if (secretSurfaces.length > 0 && !hasConfig) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add a .gitleaks.toml config or explicit config path for project-specific rules and false-positive handling.",
+      why: "Secret-shaped paths exist, so default rules may need project-specific allowlists or custom rule tuning.",
+      relatedHref: "html/secret-readiness.html"
+    });
+  }
+  if (!hasReport) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Emit machine-readable secret scan reports such as JSON or SARIF.",
+      why: "Auditable release gates need a durable report path rather than transient terminal output.",
+      relatedHref: "html/secret-readiness.html"
+    });
+  }
+  if (!hasRedaction) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Use --redact when showing findings in logs.",
+      why: "Secret scanners can accidentally reprint credentials unless output is redacted.",
+      relatedHref: "html/secret-readiness.html"
+    });
+  }
+  if (!hasBaseline && secretSurfaces.length > 0) {
+    riskQueue.push({
+      priority: "low",
+      action: "Create a baseline before enforcing on a repository with existing findings.",
+      why: "Gitleaks baselines let teams separate old accepted findings from new leaks.",
+      relatedHref: "html/secret-readiness.html"
+    });
+  }
+  if (!hasAllowlist && hasConfig) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document allowlists or .gitleaksignore fingerprints for intentional test fixtures.",
+      why: "False-positive handling should be reviewable and narrow instead of disabling broad scan coverage.",
+      relatedHref: "html/secret-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run Gitleaks in the original repository before treating this static report as secret-scan approval.",
+    why: "RepoTutor does not inspect excluded secret-like file contents or traverse full git history.",
+    relatedHref: "html/secret-readiness.html"
+  });
+
+  return {
+    summary: `Gitleaks식 secret readiness report: scan target ${scanTargets.length}개, secret surface ${secretSurfaces.length}개, config signal ${configSignals.length}개, prevention signal ${preventionSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Gitleaks git dir stdin baseline config rules allowlists redaction report formats pre-commit staged secret scanning",
+    scanTargets,
+    secretSurfaces,
+    configSignals,
+    reportingSignals,
+    preventionSignals,
+    advancedSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "gitleaks git --redact --report-format sarif --report-path gitleaks.sarif .", purpose: "Scan git history and write a redacted SARIF report for code-scanning systems." },
+      { command: "gitleaks dir --redact --report-format json --report-path gitleaks.json .", purpose: "Scan the current working tree and write durable JSON findings." },
+      { command: "gitleaks git --baseline-path gitleaks-report.json --report-path findings.json .", purpose: "Filter known findings through a baseline and report only new issues." },
+      { command: "gitleaks git --pre-commit --redact --staged --verbose", purpose: "Run a staged pre-commit scan before local commits." },
+      { command: "gitleaks git --config .gitleaks.toml --redact .", purpose: "Run with project-specific rules, entropy thresholds, and allowlists." }
+    ],
+    learnerNextSteps: [
+      "git-history scan과 working-tree scan은 다릅니다. 둘 중 무엇을 커버하는지 먼저 확인하세요.",
+      "secret-shaped path는 내용이 안전 필터로 제외될 수 있으므로 원본 repo에서 실제 scanner를 다시 실행하세요.",
+      "baseline, allowlist, gitleaks:allow는 누락을 숨길 수 있으므로 좁은 scope와 fingerprint 중심으로 검토하세요.",
+      "로그나 CI summary에 findings를 노출할 때는 반드시 redaction과 report artifact 경로를 확인하세요."
+    ]
+  };
+}
+
+type SecretSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function secretSourceFiles(walk: WalkResult): Promise<SecretSourceFile[]> {
+  const files: SecretSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !secretInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 200_000);
+    if (!text) continue;
+    if (!secretPathSignal(file.relPath) && !secretContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 200) break;
+  }
+  return files;
+}
+
+function secretInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|\.gitleaks\.toml|gitleaks\.toml|\.gitleaksignore|\.pre-commit-config\.ya?ml|pre-commit-config\.ya?ml|\.pre-commit-hooks\.ya?ml|README\.md|SECURITY\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(toml|ya?ml|json|md|js|ts|tsx|sh|env|example|sample)$/i.test(filePath);
+}
+
+function secretPathSignal(filePath: string): boolean {
+  return /(gitleaks|secret|secrets|credential|credentials|token|tokens|password|passwd|apikey|api-key|\.env|pre-commit|security|sarif)/i.test(filePath);
+}
+
+function secretContentSignal(text: string): boolean {
+  return /(gitleaks|secret scanning|detect secrets|hardcoded secrets|baseline-path|gitleaksignore|gitleaks:allow|allowlists?|secretGroup|entropy|report-format|report-path|redact|pre-commit|--staged|SARIF|GITLEAKS_CONFIG|GITLEAKS_CONFIG_TOML|max-decode-depth|max-archive-depth)/i.test(text);
+}
+
+function secretSurfaceRows(walk: WalkResult, sourceFiles: SecretSourceFile[]): SecretReadinessReport["secretSurfaces"] {
+  const ignored = walk.secretCandidatePaths.map((filePath): SecretReadinessReport["secretSurfaces"][number] => ({
+    filePath,
+    surfaceType: "ignored-secret-candidate",
+    readiness: "partial",
+    evidence: `${filePath} matched RepoTutor secret-like path filters and was excluded from copied source content.`,
+    sourceHref: "html/secret-readiness.html"
+  }));
+  const detected = sourceFiles
+    .filter((source) => secretSurfaceType(source.filePath) !== "unknown")
+    .map((source): SecretReadinessReport["secretSurfaces"][number] => {
+      const surfaceType = secretSurfaceType(source.filePath);
+      return {
+        filePath: source.filePath,
+        surfaceType,
+        readiness: surfaceType === "unknown" ? "partial" : "ready",
+        evidence: `${source.filePath} is a secret-scanning surface candidate by path or config role.`,
+        sourceHref: source.sourceHref
+      };
+    });
+  const rows = [...ignored, ...detected];
+  return rows.slice(0, 120);
+}
+
+function secretSurfaceType(filePath: string): SecretReadinessReport["secretSurfaces"][number]["surfaceType"] {
+  const base = path.basename(filePath).toLowerCase();
+  if (/^\.env|\.env\.|env\.|\.env$/.test(base)) return "env-file";
+  if (/\.(pem|key|p12|pfx|crt|cer|jks)$/i.test(base)) return "key-file";
+  if (/(credential|credentials|secrets?)\.(json|ya?ml|toml|ini|conf)$/i.test(base) || /(credential|credentials|secrets?)\//i.test(filePath)) return "credential-config";
+  if (/(token|apikey|api-key|password|passwd)/i.test(filePath)) return "token-path";
+  return "unknown";
+}
+
+function secretConfigSignals(sourceFiles: SecretSourceFile[]): SecretReadinessReport["configSignals"] {
+  const rows: SecretReadinessReport["configSignals"] = [];
+  for (const source of sourceFiles) {
+    for (const signal of secretConfigSignalTypes(source.filePath, source.text)) {
+      rows.push({
+        filePath: source.filePath,
+        signal,
+        readiness: signal === "unknown" ? "partial" : "ready",
+        evidence: secretConfigSignalEvidence(source.filePath, signal),
+        sourceHref: source.sourceHref
+      });
+    }
+  }
+  return rows.slice(0, 140);
+}
+
+function secretConfigSignalTypes(filePath: string, text: string): SecretReadinessReport["configSignals"][number]["signal"][] {
+  const signals = new Set<SecretReadinessReport["configSignals"][number]["signal"]>();
+  if (/\.gitleaks\.toml$|gitleaks\.toml$/i.test(filePath) || /GITLEAKS_CONFIG|GITLEAKS_CONFIG_TOML/i.test(text)) signals.add("gitleaks-config");
+  if (/\[extend\]|useDefault|disabledRules|path\s*=.*gitleaks/i.test(text)) signals.add("extend-default");
+  if (/\[\[rules\]\]|id\s*=|description\s*=|regex\s*=|path\s*=/i.test(text)) signals.add("custom-rule");
+  if (/entropy\s*=/i.test(text)) signals.add("entropy");
+  if (/secretGroup\s*=/i.test(text)) signals.add("secret-group");
+  if (/keywords\s*=/i.test(text)) signals.add("keywords");
+  if (/allowlists?|targetRules|stopwords|regexTarget/i.test(text)) signals.add("allowlist");
+  if (/\.gitleaksignore$/i.test(filePath) || /Fingerprint|gitleaksignore/i.test(text)) signals.add("gitleaksignore");
+  if (/gitleaks:allow/i.test(text)) signals.add("allow-comment");
+  if (signals.size === 0 && secretContentSignal(text)) signals.add("unknown");
+  return [...signals];
+}
+
+function secretConfigSignalEvidence(filePath: string, signal: SecretReadinessReport["configSignals"][number]["signal"]): string {
+  if (signal === "gitleaks-config") return `${filePath} provides or references Gitleaks configuration.`;
+  if (signal === "extend-default") return `${filePath} config extends default or shared Gitleaks rules.`;
+  if (signal === "custom-rule") return `${filePath} contains custom rule metadata or regex evidence.`;
+  if (signal === "entropy") return `${filePath} config references entropy thresholds.`;
+  if (signal === "secret-group") return `${filePath} config references secretGroup extraction.`;
+  if (signal === "keywords") return `${filePath} config references keyword prefilters.`;
+  if (signal === "allowlist") return `${filePath} config references allowlist criteria.`;
+  if (signal === "gitleaksignore") return `${filePath} references finding fingerprint ignore workflow.`;
+  if (signal === "allow-comment") return `${filePath} references inline gitleaks:allow suppression.`;
+  return `${filePath} contains secret-scanning configuration evidence.`;
+}
+
+function secretScanTargets(sourceFiles: SecretSourceFile[], walk: WalkResult): SecretReadinessReport["scanTargets"] {
+  const specs: Array<{ target: SecretReadinessReport["scanTargets"][number]["target"]; pattern: RegExp; evidence: string }> = [
+    { target: "git-history", pattern: /gitleaks\s+(git|detect)|git log -p|log-opts/i, evidence: "git history scan evidence was detected." },
+    { target: "working-tree", pattern: /gitleaks\s+(dir|files|directory)|scan directories|scan files/i, evidence: "directory or file scan evidence was detected." },
+    { target: "stdin", pattern: /gitleaks\s+stdin|detect secrets from stdin/i, evidence: "stdin scan evidence was detected." },
+    { target: "pre-commit", pattern: /pre-commit|--pre-commit|\.pre-commit-config/i, evidence: "pre-commit scan evidence was detected." },
+    { target: "archive", pattern: /max-archive-depth|archive scanning|zip|tarball/i, evidence: "archive scan evidence was detected." },
+    { target: "config", pattern: /\.gitleaks\.toml|--config|GITLEAKS_CONFIG/i, evidence: "config-driven scan evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    const hasSurface = walk.files.some((file) => file.isTextCandidate) || walk.secretCandidatePaths.length > 0;
+    return {
+      target: spec.target,
+      readiness: match ? "ready" : hasSurface ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.target} scan target evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/secret-readiness.html"
+    };
+  });
+}
+
+function secretReportingSignals(sourceFiles: SecretSourceFile[]): SecretReadinessReport["reportingSignals"] {
+  const specs: Array<{ signal: SecretReadinessReport["reportingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "json", pattern: /report-format\s+(json|.*json)|--report-format[=\s]+json/i, evidence: "JSON report output evidence was detected." },
+    { signal: "csv", pattern: /report-format\s+(csv|.*csv)|--report-format[=\s]+csv/i, evidence: "CSV report output evidence was detected." },
+    { signal: "junit", pattern: /report-format\s+(junit|.*junit)|--report-format[=\s]+junit/i, evidence: "JUnit report output evidence was detected." },
+    { signal: "sarif", pattern: /sarif|--report-format[=\s]+sarif/i, evidence: "SARIF report output evidence was detected." },
+    { signal: "template", pattern: /--report-template|report format template|\.tmpl/i, evidence: "custom template report evidence was detected." },
+    { signal: "report-path", pattern: /--report-path|report-path|gitleaks-report\.json|findings\.json/i, evidence: "durable report path evidence was detected." },
+    { signal: "baseline", pattern: /--baseline-path|baseline-path|baseline/i, evidence: "baseline report evidence was detected." },
+    { signal: "fingerprint", pattern: /Fingerprint|fingerprint/i, evidence: "finding fingerprint evidence was detected." },
+    { signal: "redaction", pattern: /--redact|redact/i, evidence: "redacted output evidence was detected." }
+  ];
+  return specs.map((spec) => secretReadinessFromSpecs(sourceFiles, spec, "reporting"));
+}
+
+function secretPreventionSignals(sourceFiles: SecretSourceFile[]): SecretReadinessReport["preventionSignals"] {
+  const specs: Array<{ signal: SecretReadinessReport["preventionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "pre-commit", pattern: /pre-commit|\.pre-commit-config|\.pre-commit-hooks/i, evidence: "pre-commit hook evidence was detected." },
+    { signal: "staged", pattern: /--staged|staged/i, evidence: "staged diff scan evidence was detected." },
+    { signal: "git-hook", pattern: /\.git\/hooks|git hooks?|pre-commit\.py/i, evidence: "git hook installation evidence was detected." },
+    { signal: "github-action", pattern: /gitleaks-action|uses:\s*gitleaks|github action/i, evidence: "GitHub Action scanner evidence was detected." },
+    { signal: "ci", pattern: /^\.github\/workflows\//i, evidence: "CI workflow can host secret scanning." },
+    { signal: "exit-code", pattern: /--exit-code|exit-code/i, evidence: "scanner failure exit code evidence was detected." },
+    { signal: "protect-legacy", pattern: /gitleaks\s+protect|protect command/i, evidence: "legacy protect command evidence was detected." }
+  ];
+  return specs.map((spec) => secretReadinessFromSpecs(sourceFiles, spec, "prevention"));
+}
+
+function secretAdvancedSignals(sourceFiles: SecretSourceFile[]): SecretReadinessReport["advancedSignals"] {
+  const specs: Array<{ signal: SecretReadinessReport["advancedSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "decode-depth", pattern: /--max-decode-depth|max-decode-depth|decoded:/i, evidence: "recursive decoding evidence was detected." },
+    { signal: "archive-depth", pattern: /--max-archive-depth|max-archive-depth|archive scanning/i, evidence: "archive traversal evidence was detected." },
+    { signal: "diagnostics", pattern: /--diagnostics|diagnostics-dir|pprof|cpu,mem,trace/i, evidence: "diagnostics evidence was detected." },
+    { signal: "enable-rule", pattern: /--enable-rule|enable-rule/i, evidence: "rule selection evidence was detected." },
+    { signal: "log-opts", pattern: /--log-opts|log-opts|git log -p/i, evidence: "git log option evidence was detected." },
+    { signal: "timeout", pattern: /--timeout|timeout/i, evidence: "scanner timeout control evidence was detected." }
+  ];
+  return specs.map((spec) => secretReadinessFromSpecs(sourceFiles, spec, "advanced"));
+}
+
+function secretReadinessFromSpecs<T extends string>(
+  sourceFiles: SecretSourceFile[],
+  spec: { signal: T; pattern: RegExp; evidence: string },
+  label: string
+): { signal: T; readiness: "ready" | "partial" | "missing" | "external"; evidence: string; relatedHref: string } {
+  const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+  return {
+    signal: spec.signal,
+    readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+    evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} ${label} evidence was not detected.`,
+    relatedHref: match?.sourceHref ?? "html/secret-readiness.html"
+  };
 }
 
 function advisoryEcosystemForPackage(packageType: string, fallback: string): string {

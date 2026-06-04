@@ -2872,6 +2872,47 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 35/35 audit checks across 13 generated reports
 
+### Upgrade 138: Secret Readiness Report
+
+- Cloned and inspected `gitleaks/gitleaks` under
+  `research/external-src/gitleaks-gitleaks` without executing external source.
+- GitHub metadata: public repo, MIT license, 27,491 stars, 2,094 forks,
+  updated 2026-06-04T01:09:53Z. Compared with
+  `trufflesecurity/trufflehog`, `Yelp/detect-secrets`, and
+  `awslabs/git-secrets`; selected Gitleaks because it directly models git,
+  directory, stdin, baseline, config, allowlist, redaction, report format,
+  pre-commit, and staged scanning workflows. No source code was copied into
+  RepoTutor.
+- Added `SecretReadinessReportSchema` and
+  `analysis/secret-readiness-report.json` with scan targets, secret surfaces,
+  config signals, reporting signals, prevention signals, advanced signals,
+  risk queue, recommended commands, and learner next steps.
+- Added `markdown/secret-readiness.md`, `html/secret-readiness.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target secret-readiness`.
+- Source pattern: Gitleaks separates `git`, `dir`, and `stdin` scan targets;
+  `--baseline-path`/fingerprint handling; `.gitleaks.toml` config precedence;
+  custom `[[rules]]` with regex, `secretGroup`, entropy, keywords, tags, and
+  composite rules; global/rule allowlists and `.gitleaksignore`; `--redact`;
+  JSON, CSV, JUnit, SARIF, and template reports; archive/decode depth;
+  pre-commit staged scans and CI gates. RepoTutor maps that to deterministic
+  static secret readiness and explicitly does not scan excluded secret-like
+  content or traverse full git history.
+- RED smoke generated
+  `/tmp/repotutor-secret-red-studies.nvmRuY/2026-06-04/local__simple-ts-app__main__9b8131fe`;
+  old behavior was missing `analysis/secret-readiness-report.json`,
+  `markdown/secret-readiness.md`, and `html/secret-readiness.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-secret-green-studies.Fey0h5/2026-06-04/local__simple-ts-app__main__9b8131fe`;
+  confirmed `verificationCheckedRequiredArtifacts=114`, scan targets 6,
+  secret surfaces 0, config signals 0, reporting signals 9, prevention
+  signals 7, advanced signals 6, recommended commands 5, risk queue 5,
+  `secret-card`, `data-source-pattern="Gitleaks"`, manifest/learning-path
+  entries, and `open --target secret-readiness` -> `html/secret-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 36/36 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
