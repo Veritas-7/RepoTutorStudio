@@ -5739,6 +5739,51 @@ Local verification:
 - `pnpm test`: PASS, 5/5 tests
 - `pnpm audit:brief`: PASS, 96/96 audit checks across 13 generated reports
 
+### Upgrade 199: Deployment Readiness Report
+
+- Cloned and inspected `helm/helm` under `research/external-src/helm-helm`
+  without executing external source. Clone HEAD was `827a960`; the clone remains
+  ignored by RepoTutor.
+- GitHub metadata: public repo, Apache-2.0 license, 29,845 stars, 7,635 forks,
+  updated 2026-06-04T12:49:12Z. Compared with
+  `kubernetes-sigs/kustomize`, `argoproj/argo-cd`, `fluxcd/flux2`, and
+  `kubernetes/kubernetes`; selected Helm because it directly models Kubernetes
+  deployment readiness through chart metadata, values, templates, release
+  commands, dependency management, packaging, repositories, test hooks, and
+  safety flags. No source code was copied into RepoTutor.
+- Implemented Helm-style deployment-readiness report:
+  `DeploymentReadinessReportSchema`,
+  `analysis/deployment-readiness-report.json`,
+  `markdown/deployment-readiness.md`, `html/deployment-readiness.html`,
+  deployment setups, chart signals, template signals, value signals, release
+  signals, safety signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target deployment-readiness`.
+- Source pattern: Helm separates `Chart.yaml`, `values.yaml`,
+  `values.schema.json`, `Chart.lock`, `.helmignore`, `templates/`, `charts/`,
+  `crds/`, Kubernetes manifests, Helm hooks, test hooks, `helm lint`,
+  `helm template`, `helm install`, `helm upgrade`, `helm rollback`,
+  `helm dependency`, `helm package`, `helm repo`, and `helm test`. RepoTutor
+  maps that to deterministic static deployment readiness and explicitly does
+  not run Helm, render templates, contact Kubernetes APIs, mutate releases,
+  update repo caches, package charts, push OCI artifacts, or execute hooks.
+- RED smoke generated
+  `/tmp/repotutor-deploy-red-studies.2HHnxY/2026-06-05/local__simple-ts-app__HEAD__9c5e2546`;
+  old behavior had `verificationCheckedRequiredArtifacts=294`, was missing
+  `analysis/deployment-readiness-report.json`,
+  `markdown/deployment-readiness.md`, and `html/deployment-readiness.html`, and
+  `open --target deployment-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-deploy-green-studies.TFOtPG/2026-06-05/local__simple-ts-app__main__9c5e2546`;
+  confirmed `verificationCheckedRequiredArtifacts=297`, deployment setups 0,
+  chart signals 11, template signals 12, value signals 8, release signals 12,
+  safety signals 9, package signals 7, risk queue 1, all three new artifacts,
+  and `open --target deployment-readiness` ->
+  `html/deployment-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 6/6 tests
+- `pnpm audit:brief`: PASS, 97/97 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

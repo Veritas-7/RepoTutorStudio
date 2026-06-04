@@ -5436,6 +5436,72 @@ export const InfrastructureReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DeploymentReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  deploymentSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["helm", "kustomize", "kubernetes", "argo-cd", "flux", "skaffold", "kubectl", "custom", "unknown"]),
+    chartMetadataCount: z.number().int().nonnegative(),
+    valuesCount: z.number().int().nonnegative(),
+    templateCount: z.number().int().nonnegative(),
+    manifestCount: z.number().int().nonnegative(),
+    dependencyCount: z.number().int().nonnegative(),
+    hookCount: z.number().int().nonnegative(),
+    releaseWorkflowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  chartSignals: z.array(z.object({
+    signal: z.enum(["chart-yaml", "api-version", "chart-name", "chart-version", "app-version", "chart-type", "dependencies", "chart-lock", "helmignore", "values-yaml", "values-schema", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  templateSignals: z.array(z.object({
+    signal: z.enum(["deployment", "service", "ingress", "configmap", "secret", "serviceaccount", "hpa", "notes", "helpers", "crd", "hooks", "tests", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  valueSignals: z.array(z.object({
+    signal: z.enum(["values-file", "values-override", "set-flag", "set-string-flag", "set-file-flag", "set-json-flag", "schema-validation", "global-values", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  releaseSignals: z.array(z.object({
+    signal: z.enum(["lint-command", "template-command", "install-command", "upgrade-command", "rollback-command", "uninstall-command", "test-command", "status-command", "history-command", "dependency-command", "package-command", "repo-command", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["dry-run", "wait", "rollback-on-failure", "no-hooks", "skip-crds", "disable-openapi-validation", "namespace", "kube-context", "create-namespace", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["helm", "kustomize", "kubectl", "argo-cd", "flux", "skaffold", "chart-releaser", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -5736,6 +5802,7 @@ export type BuildToolReadinessReport = z.infer<typeof BuildToolReadinessReportSc
 export type StylingReadinessReport = z.infer<typeof StylingReadinessReportSchema>;
 export type VisualRegressionReadinessReport = z.infer<typeof VisualRegressionReadinessReportSchema>;
 export type InfrastructureReadinessReport = z.infer<typeof InfrastructureReadinessReportSchema>;
+export type DeploymentReadinessReport = z.infer<typeof DeploymentReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
