@@ -5080,7 +5080,8 @@
         "analysis/backup-readiness-report.json",
         "markdown/backup-readiness.md",
         "html/backup-readiness.html"
-      ]
+      ],
+      "commit": "5588c88"
     }
   ],
   "verification": {
@@ -5674,7 +5675,8 @@
     "backupReadinessOpenTarget": "PASS",
     "buildBackupReadiness": "PASS",
     "testBackupReadiness": "PASS",
-    "complianceAudit105Checks": "PASS"
+    "complianceAudit105Checks": "PASS",
+    "backupReadinessImplementationPushed": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -6131,6 +6133,7 @@
     "cliBackupReadinessOpenTargetSmoke": "PASS",
     "buildBackupReadiness": "PASS",
     "testBackupReadiness": "PASS",
-    "auditBriefBackupReadiness105": "PASS"
+    "auditBriefBackupReadiness105": "PASS",
+    "backupReadinessImplementationPushed": "PASS"
   }
 }
