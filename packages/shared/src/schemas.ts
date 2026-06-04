@@ -1785,6 +1785,62 @@ export const DocumentationReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DatabaseReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  schemaFiles: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["postgresql", "mysql", "sqlite", "sqlserver", "mongodb", "cockroachdb", "mariadb", "unknown"]),
+    datasourceCount: z.number().int().nonnegative(),
+    generatorCount: z.number().int().nonnegative(),
+    modelCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  datasourceSignals: z.array(z.object({
+    provider: z.enum(["postgresql", "mysql", "sqlite", "sqlserver", "mongodb", "cockroachdb", "mariadb", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  migrationSignals: z.array(z.object({
+    signal: z.enum(["migrations-folder", "migration-sql", "migration-lock", "migrate-dev", "migrate-deploy", "db-push", "introspection", "schema-drift", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  clientSignals: z.array(z.object({
+    signal: z.enum(["prisma-client", "client-generation", "custom-output", "prisma-client-js", "driver-adapter", "typed-query", "studio", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["prisma-config", "database-url", "dotenv", "seed", "package-script", "docker-compose", "env-example", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  modelSignals: z.array(z.object({
+    signal: z.enum(["model", "relation", "id", "unique", "index", "enum", "native-type", "default", "map", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2028,6 +2084,7 @@ export type SecretReadinessReport = z.infer<typeof SecretReadinessReportSchema>;
 export type ContainerReadinessReport = z.infer<typeof ContainerReadinessReportSchema>;
 export type CodeQualityReport = z.infer<typeof CodeQualityReportSchema>;
 export type DocumentationReport = z.infer<typeof DocumentationReportSchema>;
+export type DatabaseReadinessReport = z.infer<typeof DatabaseReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

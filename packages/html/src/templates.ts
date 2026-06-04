@@ -49,6 +49,7 @@ import type {
   ContainerReadinessReport,
   CodeQualityReport,
   DocumentationReport,
+  DatabaseReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -104,6 +105,7 @@ export interface StudyHtmlInput {
   containerReadinessReport: ContainerReadinessReport;
   codeQualityReport: CodeQualityReport;
   documentationReport: DocumentationReport;
+  databaseReadinessReport: DatabaseReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -179,6 +181,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["container-readiness.html", "Containers"],
     ["code-quality.html", "Code Quality"],
     ["documentation.html", "Documentation"],
+    ["database-readiness.html", "Database"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -289,6 +292,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Container Readiness</h3><p>${escapeHtml(input.containerReadinessReport.summary)}</p><p>Hadolint 패턴으로 Dockerfile, Compose, config, instruction risk, labels, CI signals를 정리합니다.</p><a href="container-readiness.html">Containers 열기</a></article>
           <article><h3>Code Quality</h3><p>${escapeHtml(input.codeQualityReport.summary)}</p><p>Biome 패턴으로 formatter, linter, assist, config, CI/editor signals를 정리합니다.</p><a href="code-quality.html">Code Quality 열기</a></article>
           <article><h3>Documentation</h3><p>${escapeHtml(input.documentationReport.summary)}</p><p>Docusaurus 패턴으로 docs, blog, pages, navigation, i18n, search, build/deploy 준비도를 정리합니다.</p><a href="documentation.html">Documentation 열기</a></article>
+          <article><h3>Database Readiness</h3><p>${escapeHtml(input.databaseReadinessReport.summary)}</p><p>Prisma 패턴으로 schema, datasource, migrations, generated client, seed, env 준비도를 정리합니다.</p><a href="database-readiness.html">Database 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -495,6 +499,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Documentation Readiness", "documentation.html", `<section class="panel" data-source-pattern="Docusaurus"><h2>Documentation Snapshot</h2><p>${escapeHtml(input.documentationReport.summary)}</p><p class="muted">${escapeHtml(input.documentationReport.sourcePattern)}</p><dl class="meta"><div><dt>configs</dt><dd>${input.documentationReport.siteConfigs.length}</dd></div><div><dt>surfaces</dt><dd>${input.documentationReport.contentSurfaces.length}</dd></div><div><dt>navigation</dt><dd>${input.documentationReport.navigationSignals.length}</dd></div><div><dt>release</dt><dd>${input.documentationReport.releaseSignals.length}</dd></div></dl><p class="muted">RepoTutor records Docusaurus-style readiness only. It does not compile MDX, generate routes, check links, index search, or deploy documentation.</p></section><section class="grid"><article class="documentation-card"><h3>Site Configs</h3>${documentationConfigList(input.documentationReport.siteConfigs)}</article><article class="documentation-card"><h3>Content Surfaces</h3>${documentationContentList(input.documentationReport.contentSurfaces)}</article><article class="documentation-card"><h3>Navigation Signals</h3>${documentationSignalList(input.documentationReport.navigationSignals, "signal")}</article><article class="documentation-card"><h3>Quality Signals</h3>${documentationSignalList(input.documentationReport.qualitySignals, "signal")}</article></section><section class="grid"><article class="documentation-card"><h3>Localization Signals</h3>${documentationSignalList(input.documentationReport.localizationSignals, "signal")}</article><article class="documentation-card"><h3>Release Signals</h3>${documentationSignalList(input.documentationReport.releaseSignals, "signal")}</article><article class="documentation-card"><h3>Recommended Commands</h3>${documentationCommandList(input.documentationReport.recommendedCommands)}</article><article class="documentation-card"><h3>Risk Queue</h3>${documentationRiskList(input.documentationReport.riskQueue)}</article><article class="documentation-card"><h3>다음 확인 단계</h3>${list(input.documentationReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "database-readiness.html",
+      title: "Database Readiness",
+      html: pageShell("Database Readiness", "database-readiness.html", `<section class="panel" data-source-pattern="Prisma"><h2>Database Snapshot</h2><p>${escapeHtml(input.databaseReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.databaseReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>schemas</dt><dd>${input.databaseReadinessReport.schemaFiles.length}</dd></div><div><dt>datasources</dt><dd>${input.databaseReadinessReport.datasourceSignals.length}</dd></div><div><dt>migrations</dt><dd>${input.databaseReadinessReport.migrationSignals.length}</dd></div><div><dt>client</dt><dd>${input.databaseReadinessReport.clientSignals.length}</dd></div></dl><p class="muted">RepoTutor records Prisma-style readiness only. It does not connect to databases, run migrations, introspect schemas, generate clients, or seed data.</p></section><section class="grid"><article class="database-card"><h3>Schema Files</h3>${databaseSchemaList(input.databaseReadinessReport.schemaFiles)}</article><article class="database-card"><h3>Datasource Signals</h3>${databaseDatasourceList(input.databaseReadinessReport.datasourceSignals)}</article><article class="database-card"><h3>Migration Signals</h3>${databaseSignalList(input.databaseReadinessReport.migrationSignals, "signal")}</article><article class="database-card"><h3>Client Signals</h3>${databaseSignalList(input.databaseReadinessReport.clientSignals, "signal")}</article></section><section class="grid"><article class="database-card"><h3>Config Signals</h3>${databaseSignalList(input.databaseReadinessReport.configSignals, "signal")}</article><article class="database-card"><h3>Model Signals</h3>${databaseSignalList(input.databaseReadinessReport.modelSignals, "signal")}</article><article class="database-card"><h3>Recommended Commands</h3>${databaseCommandList(input.databaseReadinessReport.recommendedCommands)}</article><article class="database-card"><h3>Risk Queue</h3>${databaseRiskList(input.databaseReadinessReport.riskQueue)}</article><article class="database-card"><h3>다음 확인 단계</h3>${list(input.databaseReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -644,6 +653,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Container Readiness", path: "html/container-readiness.html", description: "Hadolint식 Dockerfile, Compose, config, instruction, label, CI 준비도를 확인합니다." },
       { label: "Code Quality", path: "html/code-quality.html", description: "Biome식 formatter, linter, assist, config, CI/editor 준비도를 확인합니다." },
       { label: "Documentation Readiness", path: "html/documentation.html", description: "Docusaurus식 docs, blog, pages, navigation, i18n, search, build/deploy 준비도를 확인합니다." },
+      { label: "Database Readiness", path: "html/database-readiness.html", description: "Prisma식 schema, datasource, migration, generated client, seed/env 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -961,6 +971,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "documentation.html",
       goal: "Docusaurus식 docs, blog, pages, navigation, i18n, search, build/deploy 준비도를 확인합니다.",
       evidence: `site configs ${input.documentationReport.siteConfigs.length}개, release signals ${input.documentationReport.releaseSignals.length}개`
+    },
+    {
+      title: "Database 준비도 확인",
+      href: "database-readiness.html",
+      goal: "Prisma식 schema, datasource, migration, generated client, seed/env 준비도를 확인합니다.",
+      evidence: `schemas ${input.databaseReadinessReport.schemaFiles.length}개, migration signals ${input.databaseReadinessReport.migrationSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -1963,6 +1979,36 @@ function documentationRiskList(items: DocumentationReport["riskQueue"]): string 
 }
 
 function documentationHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function databaseSchemaList(items: DatabaseReadinessReport["schemaFiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">schema.prisma 파일이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)} / ${escapeHtml(item.readiness)}]<br>datasource ${item.datasourceCount}, generator ${item.generatorCount}, model ${item.modelCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(databaseHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function databaseDatasourceList(items: DatabaseReadinessReport["datasourceSignals"]): string {
+  if (items.length === 0) return "<p class=\"muted\">datasource signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.provider)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(databaseHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function databaseSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">database signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(databaseHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function databaseCommandList(items: DatabaseReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function databaseRiskList(items: DatabaseReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(databaseHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function databaseHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

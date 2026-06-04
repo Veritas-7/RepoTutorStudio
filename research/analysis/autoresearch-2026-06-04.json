@@ -606,6 +606,22 @@
         "docs versioning through versioned_docs versioned_sidebars and docs:version commands",
         "search sitemap analytics PWA build serve deploy and CI preview readiness signals"
       ]
+    },
+    {
+      "repo": "prisma/prisma",
+      "url": "https://github.com/prisma/prisma",
+      "localPath": "research/external-src/prisma-prisma",
+      "stars": 46060,
+      "forks": 2234,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-03T16:29:53Z",
+      "adoptedPatterns": [
+        "schema.prisma datasource generator and model readiness",
+        "prisma.config datasource URL and migrations path configuration",
+        "Prisma migrate dev deploy db push and introspection workflow separation",
+        "Prisma Client generation custom output driver adapter and runtime import signals",
+        "seed scripts dotenv DATABASE_URL local database service and Studio inspection readiness"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2696,6 +2712,25 @@
         "markdown/documentation.md",
         "html/documentation.html"
       ]
+    },
+    {
+      "name": "Database readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/database-readiness-report.json",
+        "markdown/database-readiness.md",
+        "html/database-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -2945,7 +2980,13 @@
     "cliDocumentationOpenTargetSmoke": "PASS",
     "buildDocumentation": "PASS",
     "testDocumentation": "PASS",
-    "auditBriefDocumentation39": "PASS"
+    "auditBriefDocumentation39": "PASS",
+    "fixtureDatabaseReadinessReport": "PASS",
+    "cliDatabaseReadinessSmoke": "PASS",
+    "cliDatabaseReadinessOpenTargetSmoke": "PASS",
+    "buildDatabaseReadiness": "PASS",
+    "testDatabaseReadiness": "PASS",
+    "auditBriefDatabaseReadiness40": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"

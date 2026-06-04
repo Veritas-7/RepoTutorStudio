@@ -3039,6 +3039,46 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 39/39 audit checks across 13 generated reports
 
+### Upgrade 142: Database Readiness Report
+
+- Cloned and inspected `prisma/prisma` under
+  `research/external-src/prisma-prisma` without executing external source.
+- GitHub metadata: public repo, Apache-2.0 license, 46,060 stars, 2,234 forks,
+  updated 2026-06-03T16:29:53Z. Compared with `drizzle-team/drizzle-orm`,
+  `typeorm/typeorm`, and `sequelize/sequelize`; selected Prisma because it
+  directly models schema.prisma, datasource/generator/model blocks,
+  `prisma.config`, migrations, generate/db push workflows, Prisma Client,
+  driver adapters, `DATABASE_URL`, seed scripts, and local database services.
+  No source code was copied into RepoTutor.
+- Added `DatabaseReadinessReportSchema` and
+  `analysis/database-readiness-report.json` with schema files, datasource
+  signals, migration signals, client signals, config signals, model signals,
+  risk queue, recommended commands, and learner next steps.
+- Added `markdown/database-readiness.md`, `html/database-readiness.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target database-readiness`.
+- Source pattern: Prisma separates schema files, datasource providers,
+  generators, models, migrations, db push, introspection, generated clients,
+  driver adapters, `prisma.config`, `DATABASE_URL`, seed scripts, and Studio
+  inspection. RepoTutor maps that to deterministic static database readiness
+  and explicitly does not connect to databases, run migrations, introspect
+  schemas, generate clients, or seed data.
+- RED smoke generated
+  `/tmp/repotutor-database-red-studies.I6noIN/2026-06-04/local__simple-ts-app__main__3afacc02`;
+  old behavior was missing `analysis/database-readiness-report.json`,
+  `markdown/database-readiness.md`, and `html/database-readiness.html`, and
+  `open --target database-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-database-green-studies.XJ1CF2/2026-06-04/local__simple-ts-app__main__3afacc02`;
+  confirmed `verificationCheckedRequiredArtifacts=126`, schema files 0,
+  datasource signals 7, migration signals 8, client signals 7, config signals
+  7, model signals 9, recommended commands 7, risk queue 1, `database-card`,
+  `data-source-pattern="Prisma"`, manifest/learning-path entries, and
+  `open --target database-readiness` -> `html/database-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 40/40 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
