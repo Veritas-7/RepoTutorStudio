@@ -2398,6 +2398,69 @@ export const CommitConventionReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ChangelogReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  configFiles: z.array(z.object({
+    filePath: z.string(),
+    configType: z.enum(["changeset-config", "package-json", "workflow", "unknown"]),
+    changelogMode: z.enum(["default", "github", "custom", "disabled", "missing"]),
+    baseBranch: z.string().nullable(),
+    fixedCount: z.number().int().nonnegative(),
+    linkedCount: z.number().int().nonnegative(),
+    ignoredCount: z.number().int().nonnegative(),
+    privatePackagePolicy: z.enum(["version-only", "tagged", "disabled", "missing"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  changesetFiles: z.array(z.object({
+    filePath: z.string(),
+    packageCount: z.number().int().nonnegative(),
+    bumpTypes: z.array(z.enum(["major", "minor", "patch", "none", "unknown"])),
+    summaryLines: z.number().int().nonnegative(),
+    empty: z.boolean(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["status-check", "changeset-bot", "changesets-action", "version-pr", "publish", "follow-tags", "manual-release", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  commandSignals: z.array(z.object({
+    signal: z.enum(["add", "status", "version", "publish", "pre", "tag", "snapshot", "since", "output", "otp", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["changesets-cli", "changesets-action", "changelog-github", "workspace", "package-manager", "npm-publish", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  policySignals: z.array(z.object({
+    signal: z.enum(["fixed", "linked", "base-branch", "internal-deps", "access", "ignore", "private-packages", "pre-mode", "snapshot", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2652,6 +2715,7 @@ export type DependencyUpdateReport = z.infer<typeof DependencyUpdateReportSchema
 export type LintReadinessReport = z.infer<typeof LintReadinessReportSchema>;
 export type FormatReadinessReport = z.infer<typeof FormatReadinessReportSchema>;
 export type CommitConventionReport = z.infer<typeof CommitConventionReportSchema>;
+export type ChangelogReadinessReport = z.infer<typeof ChangelogReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

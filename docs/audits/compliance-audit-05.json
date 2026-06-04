@@ -1,6 +1,6 @@
 {
   "iteration": 5,
-  "createdAt": "2026-06-04T05:44:40.448Z",
+  "createdAt": "2026-06-04T05:54:45.974Z",
   "checks": [
     {
       "name": "project setup",
@@ -319,6 +319,13 @@
     },
     {
       "name": "commit conventions report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "changelog readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
