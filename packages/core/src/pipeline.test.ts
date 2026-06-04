@@ -101,6 +101,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "openapi-client-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "webhook-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "notification-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "consent-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workspace-graph-readiness-report.json"))).resolves.toBeUndefined();
@@ -218,6 +219,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "openapi-client-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "webhook-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "notification-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "consent-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rpc-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workspace-graph-readiness.md"))).resolves.toBeUndefined();
@@ -335,6 +337,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "openapi-client-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "webhook-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "notification-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "consent-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "server-framework-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rpc-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workspace-graph-readiness.html"))).resolves.toBeUndefined();
@@ -483,6 +486,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/openapi-client-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/webhook-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/notification-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/consent-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/server-framework-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rpc-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workspace-graph-readiness.html\"");
@@ -2249,6 +2253,25 @@ describe("RepoTutor core pipeline", () => {
     expect(notificationReadinessMarkdown).toContain("Source pattern: Notification readiness");
     expect(notificationReadinessMarkdown).toContain("## Audience Signals");
     expect(notificationReadinessMarkdown).toContain("## Channel Signals");
+    const consentReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "consent-readiness-report.json"), "utf8");
+    expect(consentReadinessText).toContain("Consent readiness CookieConsent Klaro IAB TCF CMP banner modal categories services purposes vendors accept all accept selected reject all withdraw privacy policy data-src text/plain data-type data-name autoclear cookies localStorage revision translations __tcfapi TCString cmpId GVL purposeConsents vendorConsents legitimateInterests");
+    expect(consentReadinessText).toContain("\"consentSetups\"");
+    expect(consentReadinessText).toContain("\"bannerSignals\"");
+    expect(consentReadinessText).toContain("\"categorySignals\"");
+    expect(consentReadinessText).toContain("\"scriptSignals\"");
+    expect(consentReadinessText).toContain("\"privacySignals\"");
+    expect(consentReadinessText).toContain("\"tcfSignals\"");
+    expect(consentReadinessText).toContain("\"packageSignals\"");
+    const consentReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "consent-readiness.html"), "utf8");
+    expect(consentReadinessHtml).toContain("Consent Readiness");
+    expect(consentReadinessHtml).toContain("consent-readiness-card");
+    expect(consentReadinessHtml).toContain("data-source-pattern=\"Consent\"");
+    expect(consentReadinessHtml).toContain("TCF Signals");
+    const consentReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "consent-readiness.md"), "utf8");
+    expect(consentReadinessMarkdown).toContain("# Consent Readiness");
+    expect(consentReadinessMarkdown).toContain("Source pattern: Consent readiness");
+    expect(consentReadinessMarkdown).toContain("## Script Signals");
+    expect(consentReadinessMarkdown).toContain("## TCF Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
     expect(serverFrameworkReadinessText).toContain("Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
@@ -2724,6 +2747,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/openapi-client-readiness.html");
     expect(exportManifestText).toContain("html/webhook-readiness.html");
     expect(exportManifestText).toContain("html/notification-readiness.html");
+    expect(exportManifestText).toContain("html/consent-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -2859,6 +2883,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("openapi-client-readiness.html");
     expect(learningPathHtml).toContain("webhook-readiness.html");
     expect(learningPathHtml).toContain("notification-readiness.html");
+    expect(learningPathHtml).toContain("consent-readiness.html");
     expect(learningPathHtml).toContain("backup-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
@@ -6064,6 +6089,131 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "notification-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "notification-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects consent readiness patterns without executing CMP scripts", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-consent-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-consent-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "consent"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "consent:check": "rg \"CookieConsent|klaro|__tcfapi|TCString|ConsentManager\" src docs"
+      },
+      dependencies: {
+        "vanilla-cookieconsent": "latest",
+        "klaro": "latest",
+        "@iabtcf/core": "latest",
+        "@iabtcf/cmpapi": "latest",
+        "@iabtcf/stub": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "consent", "cookieconsent.ts"), [
+      "import * as CookieConsent from 'vanilla-cookieconsent';",
+      "CookieConsent.run({",
+      "  revision: 4,",
+      "  hideFromBots: true,",
+      "  disablePageInteraction: true,",
+      "  guiOptions: { consentModal: { layout: 'box' }, preferencesModal: { layout: 'bar' } },",
+      "  cookie: { name: 'cc_cookie', expiresAfterDays: 180 },",
+      "  language: { default: 'en', translations: { en: { consentModal: { title: 'Cookie banner privacy policy' }, preferencesModal: { title: 'Manage preferences' } } } },",
+      "  categories: {",
+      "    necessary: { enabled: true, readOnly: true },",
+      "    analytics: { autoclear: { cookies: [{ name: /^_ga/ }] }, services: { ga4: { label: 'Analytics service' } } },",
+      "    marketing: { services: { ads: { label: 'Marketing pixel' } } },",
+      "    preferences: { services: { theme: { label: 'Preferences service' } } },",
+      "    functional: { services: { chat: { label: 'Functional service' } } },",
+      "    performance: { services: { perf: { label: 'Performance service' } } }",
+      "  },",
+      "  onConsent: () => localStorage.setItem('consent proof timestamp', Date.now().toString()),",
+      "  onChange: () => sessionStorage.setItem('lastConsent', 'changed')",
+      "});",
+      "export const controls = 'acceptAll acceptSelected rejectAll settings button privacy policy withdraw consent opt-out consentMode gpc do not track legitimate interest consent log proof';"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "consent", "klaro.js"), [
+      "import * as klaro from 'klaro';",
+      "const manager = new klaro.ConsentManager({",
+      "  services: [{ name: 'analytics-service', purposes: ['analytics', 'performance'] }, { name: 'ads-service', purposes: ['marketing'] }],",
+      "  apps: [{ name: 'preferences-app', purposes: ['preferences', 'functional'] }]",
+      "});",
+      "klaro.show();",
+      "manager.getConsent('analytics-service');",
+      "export const blockedScript = '<script type=\"text/plain\" data-type=\"text/javascript\" data-name=\"analytics-service\" data-src=\"https://example.test/analytics.js\"></script>';",
+      "export const pageScripts = 'pageScripts script blocking data-src text/plain data-type data-name autoclear disable page interaction withdraw opt-out';"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "consent", "tcf.ts"), [
+      "import { TCString, GVL } from '@iabtcf/core';",
+      "import { CmpApi } from '@iabtcf/cmpapi';",
+      "import '@iabtcf/stub';",
+      "const cmp = new CmpApi(123, 2, true);",
+      "window.__tcfapi?.('addEventListener', 2, () => {}, []);",
+      "export const tcModel = {",
+      "  TCString,",
+      "  GVL,",
+      "  cmpId: 123,",
+      "  cmpVersion: 2,",
+      "  vendorListVersion: 88,",
+      "  purposeConsents: { 1: true, 2: true },",
+      "  vendorConsents: { 42: true },",
+      "  purposeLegitimateInterests: { 7: true },",
+      "  vendorLegitimateInterests: { 42: true },",
+      "  legitimateInterests: true",
+      "};",
+      "void cmp;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "consent.md"), [
+      "# Consent readiness",
+      "The CMP shows a cookie banner and modal with accept all, accept selected, reject all, and a settings button.",
+      "Categories include necessary, analytics, marketing, preferences, functional, performance, services, and purposes.",
+      "Scripts use data-src, text/plain, data-type, data-name, autoclear, page-script, and disable-page-interaction.",
+      "Privacy controls include privacy policy, withdraw, opt-out, consent mode, GPC, do not track, legitimate interest, and proof records.",
+      "IAB TCF uses __tcfapi, TCString, cmpId, vendor list, purposeConsents, vendorConsents, legitimateInterests, and GVL."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "consent-readiness-report.json"), "utf8")) as {
+      consentSetups: Array<{ filePath: string; provider: string; bannerCount: number; modalCount: number; categoryCount: number; serviceCount: number; purposeCount: number; vendorCount: number; scriptBlockingCount: number; storageCount: number; localizationCount: number; apiCount: number }>;
+      bannerSignals: Array<{ signal: string; readiness: string }>;
+      categorySignals: Array<{ signal: string; readiness: string }>;
+      scriptSignals: Array<{ signal: string; readiness: string }>;
+      privacySignals: Array<{ signal: string; readiness: string }>;
+      tcfSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    expect(report.consentSetups.length).toBeGreaterThan(0);
+    expect(report.consentSetups.some((item) => item.provider === "cookieconsent")).toBe(true);
+    expect(report.consentSetups.some((item) => item.provider === "klaro")).toBe(true);
+    expect(report.consentSetups.some((item) => item.provider === "iab-tcf")).toBe(true);
+    const cookieSetup = report.consentSetups.find((item) => item.filePath === "src/consent/cookieconsent.ts");
+    const klaroSetup = report.consentSetups.find((item) => item.filePath === "src/consent/klaro.js");
+    const tcfSetup = report.consentSetups.find((item) => item.filePath === "src/consent/tcf.ts");
+    expect(cookieSetup?.bannerCount).toBeGreaterThan(0);
+    expect(cookieSetup?.modalCount).toBeGreaterThan(0);
+    expect(cookieSetup?.categoryCount).toBeGreaterThan(0);
+    expect(cookieSetup?.storageCount).toBeGreaterThan(0);
+    expect(cookieSetup?.localizationCount).toBeGreaterThan(0);
+    expect(cookieSetup?.apiCount).toBeGreaterThan(0);
+    expect(klaroSetup?.serviceCount).toBeGreaterThan(0);
+    expect(klaroSetup?.scriptBlockingCount).toBeGreaterThan(0);
+    expect(tcfSetup?.purposeCount).toBeGreaterThan(0);
+    expect(tcfSetup?.vendorCount).toBeGreaterThan(0);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.bannerSignals, ["banner", "modal", "accept-all", "accept-selected", "reject-all", "settings-button", "revision", "hide-from-bots"]);
+    expectReady(report.categorySignals, ["necessary", "analytics", "marketing", "preferences", "functional", "performance", "services", "purposes"]);
+    expectReady(report.scriptSignals, ["data-src", "text-plain", "data-type", "data-name", "autoclear", "page-script", "disable-page-interaction"]);
+    expectReady(report.privacySignals, ["privacy-policy", "withdraw", "opt-out", "consent-mode", "gpc", "do-not-track", "legitimate-interest", "proof"]);
+    expectReady(report.tcfSignals, ["__tcfapi", "tc-string", "cmp-id", "vendor-list", "purpose-consents", "vendor-consents", "legitimate-interests", "gvl"]);
+    expectReady(report.packageSignals, ["vanilla-cookieconsent", "klaro", "@iabtcf/core", "@iabtcf/cmpapi", "@iabtcf/stub", "custom"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "consent-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "consent-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects object storage readiness patterns without contacting object storage", async () => {

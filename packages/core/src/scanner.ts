@@ -112,6 +112,7 @@ import {
   OpenApiClientReadinessReport,
   WebhookReadinessReport,
   NotificationReadinessReport,
+  ConsentReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -248,6 +249,7 @@ export interface AnalysisBundle {
   openApiClientReadinessReport: OpenApiClientReadinessReport;
   webhookReadinessReport: WebhookReadinessReport;
   notificationReadinessReport: NotificationReadinessReport;
+  consentReadinessReport: ConsentReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -384,6 +386,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const openApiClientReadinessReport = await buildOpenApiClientReadinessReport(walk);
   const webhookReadinessReport = await buildWebhookReadinessReport(walk);
   const notificationReadinessReport = await buildNotificationReadinessReport(walk);
+  const consentReadinessReport = await buildConsentReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
@@ -403,7 +406,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -23505,6 +23508,287 @@ function notificationSignalFromSpecs<T extends Record<K, string> & { pattern: Re
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/notification-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildConsentReadinessReport(walk: WalkResult): Promise<ConsentReadinessReport> {
+  const sourceFiles = await consentReadinessSourceFiles(walk);
+  const consentSetups = consentReadinessSetups(sourceFiles);
+  const bannerSignals = consentReadinessBannerSignals(sourceFiles);
+  const categorySignals = consentReadinessCategorySignals(sourceFiles);
+  const scriptSignals = consentReadinessScriptSignals(sourceFiles);
+  const privacySignals = consentReadinessPrivacySignals(sourceFiles);
+  const tcfSignals = consentReadinessTcfSignals(sourceFiles);
+  const packageSignals = consentReadinessPackageSignals(sourceFiles);
+
+  const hasBannerOrModal = bannerSignals.some((item) => ["banner", "modal"].includes(item.signal) && item.readiness === "ready") || consentSetups.some((item) => item.bannerCount + item.modalCount > 0);
+  const hasCategoriesOrPurposes = categorySignals.some((item) => item.readiness === "ready") || consentSetups.some((item) => item.categoryCount + item.purposeCount + item.serviceCount > 0);
+  const hasChoiceControls = bannerSignals.some((item) => ["accept-all", "accept-selected", "reject-all", "settings-button"].includes(item.signal) && item.readiness === "ready");
+  const hasScriptBlocking = scriptSignals.some((item) => item.readiness === "ready") || consentSetups.some((item) => item.scriptBlockingCount > 0);
+  const hasPrivacyControls = privacySignals.some((item) => ["privacy-policy", "withdraw", "opt-out", "proof"].includes(item.signal) && item.readiness === "ready");
+  const hasTcf = tcfSignals.some((item) => item.signal !== "unknown" && item.readiness === "ready") || consentSetups.some((item) => item.vendorCount + item.purposeCount > 0);
+  const hasTcfConsentModel = tcfSignals.some((item) => ["vendor-list", "purpose-consents", "vendor-consents", "gvl"].includes(item.signal) && item.readiness === "ready");
+  const hasStorageAndLocalization = consentSetups.some((item) => item.storageCount > 0 && item.localizationCount > 0) || bannerSignals.some((item) => item.signal === "revision" && item.readiness === "ready");
+
+  const riskQueue: ConsentReadinessReport["riskQueue"] = [];
+  if (!hasBannerOrModal) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document a consent banner, modal, or settings entry point before claiming privacy consent readiness.",
+      why: "Consent management needs a visible user interaction surface, not just a package dependency or policy text.",
+      relatedHref: "html/consent-readiness.html"
+    });
+  }
+  if (hasBannerOrModal && !hasCategoriesOrPurposes) {
+    riskQueue.push({
+      priority: "high",
+      action: "Model consent categories, services, or purposes such as necessary, analytics, marketing, and preferences.",
+      why: "A banner without categories or purposes cannot explain what users are accepting or rejecting.",
+      relatedHref: "html/consent-readiness.html"
+    });
+  }
+  if (hasCategoriesOrPurposes && !hasChoiceControls) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Expose accept-all, accept-selected, reject-all, and settings controls for the consent surface.",
+      why: "Consent readiness depends on granular choice controls that match the declared categories and purposes.",
+      relatedHref: "html/consent-readiness.html"
+    });
+  }
+  if (hasCategoriesOrPurposes && !hasScriptBlocking) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Wire non-essential scripts through data-src, text/plain script blocking, autoclear, or equivalent consent gates.",
+      why: "Categories alone do not prevent analytics or marketing scripts from loading before consent.",
+      relatedHref: "html/consent-readiness.html"
+    });
+  }
+  if (hasBannerOrModal && !hasPrivacyControls) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Link privacy policy, withdrawal, opt-out, or consent proof flows from the consent implementation.",
+      why: "Users and auditors need a way to revisit consent choices and trace the policy basis.",
+      relatedHref: "html/consent-readiness.html"
+    });
+  }
+  if (hasTcf && !hasTcfConsentModel) {
+    riskQueue.push({
+      priority: "high",
+      action: "Complete IAB TCF vendor list, purpose consent, vendor consent, and GVL evidence.",
+      why: "TCF evidence is incomplete unless the CMP exposes vendor and purpose consent state.",
+      relatedHref: "html/consent-readiness.html"
+    });
+  }
+  if (hasBannerOrModal && !hasStorageAndLocalization) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document consent storage, revision handling, and localized consent copy.",
+      why: "Consent updates and multilingual users are harder to audit without persisted revision and translation evidence.",
+      relatedHref: "html/consent-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Consent readiness report: consent setup ${consentSetups.length}개, banner signal ${bannerSignals.length}개, category signal ${categorySignals.length}개, TCF signal ${tcfSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Consent readiness CookieConsent Klaro IAB TCF CMP banner modal categories services purposes vendors accept all accept selected reject all withdraw privacy policy data-src text/plain data-type data-name autoclear cookies localStorage revision translations __tcfapi TCString cmpId GVL purposeConsents vendorConsents legitimateInterests",
+    consentSetups,
+    bannerSignals,
+    categorySignals,
+    scriptSignals,
+    privacySignals,
+    tcfSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"CookieConsent|cookieconsent|klaro|__tcfapi|TCString|ConsentManager\" package.json src app docs", purpose: "Find CMP packages, consent manager entry points, and IAB TCF APIs." },
+      { command: "rg \"categories|services|purposes|necessary|analytics|marketing|preferences|data-src|text/plain|data-type|data-name|autoclear\" src app docs", purpose: "Trace categories, services, purposes, and script blocking controls." },
+      { command: "rg \"privacy policy|withdraw|opt-out|consentMode|gpc|do not track|purposeConsents|vendorConsents|GVL\" src app docs", purpose: "Check privacy policy links, withdrawal controls, consent mode, GPC/DNT, and TCF consent state." }
+    ],
+    learnerNextSteps: [
+      "먼저 banner/modal/settings UI가 어디서 노출되는지 확인하세요.",
+      "necessary, analytics, marketing, preferences 같은 category와 service/purpose 매핑을 찾으세요.",
+      "data-src, text/plain, data-type, data-name, autoclear 같은 script blocking이 비필수 스크립트에 적용되는지 확인하세요.",
+      "IAB TCF를 쓰는 repo라면 __tcfapi, TCString, GVL, purpose/vendor consent 상태가 함께 보이는지 추적하세요."
+    ]
+  };
+}
+
+type ConsentSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function consentReadinessSourceFiles(walk: WalkResult): Promise<ConsentSourceFile[]> {
+  const rows: ConsentSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!consentInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!consentPathSignal(file.relPath) && !consentContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 180);
+}
+
+function consentInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|cookieconsent\.(json|ya?ml|ts|tsx|js|mjs|cjs)|klaro\.(json|ya?ml|ts|tsx|js|mjs|cjs)|consent\.(json|ya?ml|md|ts|tsx|js|mjs|cjs)|privacy\.(json|ya?ml|md|ts|tsx|js)|cookies?\.(json|ya?ml|md|ts|tsx|js)|cmp\.(json|ya?ml|ts|tsx|js)|tcf\.(json|ya?ml|ts|tsx|js))$/i.test(base)
+    || /(^|\/)(consent|cookie|cookies|privacy|klaro|cmp|tcf|iab|vendor|vendors|purpose|purposes|gdpr|preferences?)(\/|\.|-|_|$)/i.test(filePath)
+    || /\.(json|ya?ml|ts|tsx|js|jsx|mjs|cjs|md|html|vue|svelte|go|rs|py|rb|php)$/i.test(filePath);
+}
+
+function consentPathSignal(filePath: string): boolean {
+  return /(^|\/)(consent|cookie|cookies|privacy|klaro|cmp|tcf|iab|vendor|vendors|purpose|purposes|gdpr|preferences?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|cookieconsent\.(json|ya?ml|ts|tsx|js|mjs|cjs)|klaro\.(json|ya?ml|ts|tsx|js|mjs|cjs)|consent\.(json|ya?ml|md|ts|tsx|js|mjs|cjs)|privacy\.(json|ya?ml|md|ts|tsx|js)|cmp\.(json|ya?ml|ts|tsx|js)|tcf\.(json|ya?ml|ts|tsx|js))$/i.test(path.basename(filePath));
+}
+
+function consentContentSignal(text: string): boolean {
+  return /CookieConsent|cookieconsent|vanilla-cookieconsent|klaro|ConsentManager|cookie consent|consent manager|\bCMP\b|__tcfapi|TCString|purposeConsents|vendorConsents|legitimateInterest|data-src|data-type|data-name|text\/plain|autoclear|privacy policy|withdraw consent|acceptAll|acceptSelected|rejectAll/i.test(text);
+}
+
+function consentReadinessSetups(sourceFiles: ConsentSourceFile[]): ConsentReadinessReport["consentSetups"] {
+  const rows: ConsentReadinessReport["consentSetups"] = [];
+  for (const source of sourceFiles) {
+    const bannerCount = countMatches(source.text, /\b(banner|notice|bar|consentNotice|consent notice|guiOptions|cookie banner|cookie notice)\b/gi);
+    const modalCount = countMatches(source.text, /\b(modal|settings|preferencesModal|consentModal|preferences modal|settings button|showPreferences|showSettings)\b/gi);
+    const categoryCount = countMatches(source.text, /\b(category|categories|necessary|analytics|marketing|preferences|functional|performance)\b/gi);
+    const serviceCount = countMatches(source.text, /\b(service|services|apps|third.?party|module|scriptName|data-name)\b/gi);
+    const purposeCount = countMatches(source.text, /\b(purpose|purposes|purposeConsents|purposeLegitimateInterests|purpose one|purpose two)\b/gi);
+    const vendorCount = countMatches(source.text, /\b(vendor|vendors|GVL|vendorList|vendorConsents|vendorLegitimateInterests|vendor list)\b/gi);
+    const scriptBlockingCount = countMatches(source.text, /\b(data-src|text\/plain|data-type|data-name|autoclear|script blocking|disablePageInteraction|pageScripts|page scripts)\b/gi);
+    const storageCount = countMatches(source.text, /\b(cookie|cookies|localStorage|sessionStorage|storageName|consent cookie|revision|cookie_expiration|cookieDomain)\b/gi);
+    const localizationCount = countMatches(source.text, /\b(language|languages|translations|locale|locales|i18n|consentLanguage|default_language)\b/gi);
+    const apiCount = countMatches(source.text, /\b(onConsent|onChange|getConsent|ConsentManager|klaro\.show|__tcfapi|addEventListener|TCString|CmpApi|acceptAll|acceptSelected|rejectAll)\b/gi);
+    const totalSignals = bannerCount + modalCount + categoryCount + serviceCount + purposeCount + vendorCount + scriptBlockingCount + storageCount + localizationCount + apiCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: consentProvider(source),
+      bannerCount,
+      modalCount,
+      categoryCount,
+      serviceCount,
+      purposeCount,
+      vendorCount,
+      scriptBlockingCount,
+      storageCount,
+      localizationCount,
+      apiCount,
+      readiness: (bannerCount + modalCount) > 0 && (categoryCount + serviceCount + purposeCount) > 0 && (scriptBlockingCount + apiCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} consent readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.bannerCount + b.modalCount + b.categoryCount + b.scriptBlockingCount + b.apiCount) - (a.bannerCount + a.modalCount + a.categoryCount + a.scriptBlockingCount + a.apiCount))
+    .slice(0, 45);
+}
+
+function consentProvider(source: ConsentSourceFile): ConsentReadinessReport["consentSetups"][number]["provider"] {
+  if (/cookieconsent/i.test(source.filePath) || /CookieConsent|cookieconsent|vanilla-cookieconsent/i.test(source.text)) return "cookieconsent";
+  if (/klaro/i.test(source.filePath) || /klaro|ConsentManager|getConsent/i.test(source.text)) return "klaro";
+  if (/(^|\/)(iab|tcf|cmp)(\/|\.|-|_|$)/i.test(source.filePath) || /@iabtcf|__tcfapi|TCString|CmpApi|GVL|purposeConsents|vendorConsents/i.test(source.text)) return "iab-tcf";
+  if (/consent|cookie|privacy|cmp/i.test(source.filePath) || /consent|cookie|privacy|CMP/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function consentReadinessBannerSignals(sourceFiles: ConsentSourceFile[]): ConsentReadinessReport["bannerSignals"] {
+  const specs: Array<{ signal: ConsentReadinessReport["bannerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "banner", pattern: /banner|consentNotice|cookie notice|cookie banner|guiOptions/i, evidence: "consent banner evidence was detected." },
+    { signal: "modal", pattern: /modal|settings|preferencesModal|consentModal|preferences modal/i, evidence: "consent modal/settings evidence was detected." },
+    { signal: "accept-all", pattern: /acceptAll|accept all|accept_all|btn-accept-all/i, evidence: "accept-all control evidence was detected." },
+    { signal: "accept-selected", pattern: /acceptSelected|accept selected|accept_necessary|accept necessary|save preferences/i, evidence: "accept-selected/preference save evidence was detected." },
+    { signal: "reject-all", pattern: /rejectAll|reject all|reject_all|decline|deny/i, evidence: "reject-all control evidence was detected." },
+    { signal: "settings-button", pattern: /settings button|showSettings|showPreferences|preferences button|manage preferences/i, evidence: "settings button evidence was detected." },
+    { signal: "revision", pattern: /revision|policyVersion|consentVersion|versioned consent/i, evidence: "consent revision/version evidence was detected." },
+    { signal: "hide-from-bots", pattern: /hideFromBots|hide from bots|bot.*consent|crawler/i, evidence: "bot/crawler handling evidence was detected." }
+  ];
+  return consentSignalFromSpecs(sourceFiles, specs, "banner", "signal");
+}
+
+function consentReadinessCategorySignals(sourceFiles: ConsentSourceFile[]): ConsentReadinessReport["categorySignals"] {
+  const specs: Array<{ signal: ConsentReadinessReport["categorySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "necessary", pattern: /necessary|required|essential/i, evidence: "necessary category evidence was detected." },
+    { signal: "analytics", pattern: /analytics|measurement|statistics|gtag|ga4/i, evidence: "analytics category evidence was detected." },
+    { signal: "marketing", pattern: /marketing|advertising|ads|remarketing|pixel/i, evidence: "marketing category evidence was detected." },
+    { signal: "preferences", pattern: /preferences|personalization|settings/i, evidence: "preferences category evidence was detected." },
+    { signal: "functional", pattern: /functional|functionality/i, evidence: "functional category evidence was detected." },
+    { signal: "performance", pattern: /performance|perf|speed|monitoring/i, evidence: "performance category evidence was detected." },
+    { signal: "services", pattern: /\bservices\b|\bapps\b|third.?party|data-name/i, evidence: "service mapping evidence was detected." },
+    { signal: "purposes", pattern: /\bpurposes?\b|purposeConsents|purposeLegitimateInterests/i, evidence: "purpose mapping evidence was detected." }
+  ];
+  return consentSignalFromSpecs(sourceFiles, specs, "category", "signal");
+}
+
+function consentReadinessScriptSignals(sourceFiles: ConsentSourceFile[]): ConsentReadinessReport["scriptSignals"] {
+  const specs: Array<{ signal: ConsentReadinessReport["scriptSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "data-src", pattern: /data-src/i, evidence: "data-src script blocking evidence was detected." },
+    { signal: "text-plain", pattern: /text\/plain|type=["']text\/plain/i, evidence: "text/plain script blocking evidence was detected." },
+    { signal: "data-type", pattern: /data-type/i, evidence: "data-type consent script evidence was detected." },
+    { signal: "data-name", pattern: /data-name/i, evidence: "data-name service mapping evidence was detected." },
+    { signal: "autoclear", pattern: /autoclear|autoClear/i, evidence: "autoclear evidence was detected." },
+    { signal: "page-script", pattern: /pageScripts|page scripts|script.*category|managed script/i, evidence: "page script management evidence was detected." },
+    { signal: "disable-page-interaction", pattern: /disablePageInteraction|disable page interaction|block.*interaction/i, evidence: "page interaction blocking evidence was detected." }
+  ];
+  return consentSignalFromSpecs(sourceFiles, specs, "script", "signal");
+}
+
+function consentReadinessPrivacySignals(sourceFiles: ConsentSourceFile[]): ConsentReadinessReport["privacySignals"] {
+  const specs: Array<{ signal: ConsentReadinessReport["privacySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "privacy-policy", pattern: /privacy policy|privacyPolicy|privacy[-_ ]url|policy link/i, evidence: "privacy policy evidence was detected." },
+    { signal: "withdraw", pattern: /withdraw|revoke|change consent|reset consent/i, evidence: "withdraw/revoke evidence was detected." },
+    { signal: "opt-out", pattern: /opt.?out|do not sell|unsubscribe|reject/i, evidence: "opt-out evidence was detected." },
+    { signal: "consent-mode", pattern: /consentMode|consent mode|ad_storage|analytics_storage/i, evidence: "consent mode evidence was detected." },
+    { signal: "gpc", pattern: /\bGPC\b|global privacy control|navigator\.globalPrivacyControl/i, evidence: "Global Privacy Control evidence was detected." },
+    { signal: "do-not-track", pattern: /do not track|\bDNT\b|navigator\.doNotTrack/i, evidence: "Do Not Track evidence was detected." },
+    { signal: "legitimate-interest", pattern: /legitimate interest|legitimateInterests|purposeLegitimateInterests|vendorLegitimateInterests/i, evidence: "legitimate interest evidence was detected." },
+    { signal: "proof", pattern: /proof|audit|consent log|consent record|timestamp|lastConsent/i, evidence: "consent proof/audit evidence was detected." }
+  ];
+  return consentSignalFromSpecs(sourceFiles, specs, "privacy", "signal");
+}
+
+function consentReadinessTcfSignals(sourceFiles: ConsentSourceFile[]): ConsentReadinessReport["tcfSignals"] {
+  const specs: Array<{ signal: ConsentReadinessReport["tcfSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "__tcfapi", pattern: /__tcfapi/i, evidence: "IAB TCF API evidence was detected." },
+    { signal: "tc-string", pattern: /TCString|tcString|getTCData/i, evidence: "TC string evidence was detected." },
+    { signal: "cmp-id", pattern: /cmpId|cmpVersion|cmpStatus|eventStatus/i, evidence: "CMP identity/status evidence was detected." },
+    { signal: "vendor-list", pattern: /vendorList|vendor list|vendorListVersion/i, evidence: "vendor list evidence was detected." },
+    { signal: "purpose-consents", pattern: /purposeConsents|purpose consent|purposeConsent/i, evidence: "purpose consent evidence was detected." },
+    { signal: "vendor-consents", pattern: /vendorConsents|vendor consent|vendorConsent/i, evidence: "vendor consent evidence was detected." },
+    { signal: "legitimate-interests", pattern: /legitimateInterests|purposeLegitimateInterests|vendorLegitimateInterests/i, evidence: "legitimate interests evidence was detected." },
+    { signal: "gvl", pattern: /\bGVL\b|GlobalVendorList|global vendor list/i, evidence: "Global Vendor List evidence was detected." }
+  ];
+  return consentSignalFromSpecs(sourceFiles, specs, "TCF", "signal");
+}
+
+function consentReadinessPackageSignals(sourceFiles: ConsentSourceFile[]): ConsentReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ConsentReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vanilla-cookieconsent", pattern: /"vanilla-cookieconsent"|vanilla-cookieconsent|CookieConsent/i, evidence: "vanilla-cookieconsent package or API evidence was detected." },
+    { signal: "klaro", pattern: /"klaro"|klaro|ConsentManager/i, evidence: "Klaro package or API evidence was detected." },
+    { signal: "@iabtcf/core", pattern: /"@iabtcf\/core"|@iabtcf\/core|TCString/i, evidence: "IAB TCF core package or API evidence was detected." },
+    { signal: "@iabtcf/cmpapi", pattern: /"@iabtcf\/cmpapi"|@iabtcf\/cmpapi|CmpApi/i, evidence: "IAB TCF CMP API package evidence was detected." },
+    { signal: "@iabtcf/stub", pattern: /"@iabtcf\/stub"|@iabtcf\/stub/i, evidence: "IAB TCF stub package evidence was detected." },
+    { signal: "custom", pattern: /consent|cookie|privacy|CMP|data-src|text\/plain/i, evidence: "custom consent implementation evidence was detected." }
+  ];
+  return consentSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function consentSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ConsentSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/consent-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }

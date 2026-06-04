@@ -5565,6 +5565,75 @@ export const NotificationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ConsentReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  consentSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["cookieconsent", "klaro", "iab-tcf", "custom", "unknown"]),
+    bannerCount: z.number().int().nonnegative(),
+    modalCount: z.number().int().nonnegative(),
+    categoryCount: z.number().int().nonnegative(),
+    serviceCount: z.number().int().nonnegative(),
+    purposeCount: z.number().int().nonnegative(),
+    vendorCount: z.number().int().nonnegative(),
+    scriptBlockingCount: z.number().int().nonnegative(),
+    storageCount: z.number().int().nonnegative(),
+    localizationCount: z.number().int().nonnegative(),
+    apiCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  bannerSignals: z.array(z.object({
+    signal: z.enum(["banner", "modal", "accept-all", "accept-selected", "reject-all", "settings-button", "revision", "hide-from-bots", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  categorySignals: z.array(z.object({
+    signal: z.enum(["necessary", "analytics", "marketing", "preferences", "functional", "performance", "services", "purposes", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scriptSignals: z.array(z.object({
+    signal: z.enum(["data-src", "text-plain", "data-type", "data-name", "autoclear", "page-script", "disable-page-interaction", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  privacySignals: z.array(z.object({
+    signal: z.enum(["privacy-policy", "withdraw", "opt-out", "consent-mode", "gpc", "do-not-track", "legitimate-interest", "proof", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  tcfSignals: z.array(z.object({
+    signal: z.enum(["__tcfapi", "tc-string", "cmp-id", "vendor-list", "purpose-consents", "vendor-consents", "legitimate-interests", "gvl", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["vanilla-cookieconsent", "klaro", "@iabtcf/core", "@iabtcf/cmpapi", "@iabtcf/stub", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ServerFrameworkReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7212,6 +7281,7 @@ export type WorkflowOrchestrationReadinessReport = z.infer<typeof WorkflowOrches
 export type OpenApiClientReadinessReport = z.infer<typeof OpenApiClientReadinessReportSchema>;
 export type WebhookReadinessReport = z.infer<typeof WebhookReadinessReportSchema>;
 export type NotificationReadinessReport = z.infer<typeof NotificationReadinessReportSchema>;
+export type ConsentReadinessReport = z.infer<typeof ConsentReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;
