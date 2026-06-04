@@ -1855,6 +1855,40 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 134:
   - `c500fd7` storybook readiness report
 
+- 2026-06-04: AutoResearch Upgrade 135 candidate selected:
+  `style-dictionary/style-dictionary`
+  (`https://github.com/style-dictionary/style-dictionary`; public Apache-2.0;
+  4,674 stars; 621 forks; updated 2026-06-02T15:14:43Z). Compared with
+  `tokens-studio/sd-transforms`, `tailwindlabs/tailwindcss`, and
+  `primer/primitives`; selected Style Dictionary because it directly models
+  canonical design token inputs, transforms, and multi-platform outputs.
+  Cloned ignored external source to
+  `research/external-src/style-dictionary-style-dictionary` and inspected the
+  README, basic examples, and examples index without executing external source.
+- 2026-06-04: RED design tokens smoke generated
+  `/tmp/repotutor-design-tokens-red-studies.Oeb524/2026-06-04/local__simple-ts-app__main__557a2318`;
+  old build was missing `analysis/design-tokens-report.json`,
+  `markdown/design-tokens.md`, and `html/design-tokens.html` as expected.
+- 2026-06-04: Implemented Style Dictionary-style design token readiness report:
+  `DesignTokensReportSchema`, `analysis/design-tokens-report.json`,
+  `markdown/design-tokens.md`, `html/design-tokens.html`, token sources,
+  token categories, platform targets, transform signals, usage signals,
+  governance signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target design-tokens`.
+- 2026-06-04: GREEN design tokens smoke generated
+  `/tmp/repotutor-design-tokens-green-studies.WSnXYL/2026-06-04/local__simple-ts-app__main__557a2318`;
+  confirmed `verificationCheckedRequiredArtifacts=105`, token sources 0,
+  token categories 14, platform targets 11, transform signals 12, usage
+  signals 8, governance signals 9, recommended commands 5, risk queue 2,
+  `design-token-card`, `data-source-pattern="Style Dictionary"`,
+  manifest/learning-path entries, and `open --target design-tokens` ->
+  `html/design-tokens.html`.
+- 2026-06-04: Verification for Upgrade 135:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 33/33 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

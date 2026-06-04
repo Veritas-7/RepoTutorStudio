@@ -1398,6 +1398,59 @@ export const StorybookReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DesignTokensReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  tokenSources: z.array(z.object({
+    filePath: z.string(),
+    format: z.enum(["style-dictionary-config", "tokens-json", "tokens-js", "dtcg-json", "css-custom-properties", "tailwind-theme", "sass-variables", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  tokenCategories: z.array(z.object({
+    category: z.enum(["color", "size", "dimension", "typography", "font", "spacing", "border", "radius", "shadow", "motion", "opacity", "breakpoint", "asset", "z-index", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  platformTargets: z.array(z.object({
+    target: z.enum(["css", "scss", "javascript", "typescript", "android", "compose", "ios", "ios-swift", "flutter", "react-native", "docs", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  transformSignals: z.array(z.object({
+    signal: z.enum(["transform-group", "transforms", "formats", "build-path", "files", "filters", "custom-transform", "custom-format", "custom-parser", "output-references", "expand", "dtcg"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  usageSignals: z.array(z.object({
+    signal: z.enum(["css-variables", "theme-provider", "tailwind-config", "component-style", "storybook", "docs", "package-script", "build-output", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  governanceSignals: z.array(z.object({
+    signal: z.enum(["cti-structure", "aliases", "comments", "themes", "multi-brand", "deprecation", "npm-module", "ci-build", "s3-publish", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1634,6 +1687,7 @@ export type PerformanceReport = z.infer<typeof PerformanceReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;
 export type AccessibilityReport = z.infer<typeof AccessibilityReportSchema>;
 export type StorybookReport = z.infer<typeof StorybookReportSchema>;
+export type DesignTokensReport = z.infer<typeof DesignTokensReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

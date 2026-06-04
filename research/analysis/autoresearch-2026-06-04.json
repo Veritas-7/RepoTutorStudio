@@ -494,6 +494,22 @@
         "Docs and Autodocs component documentation flow",
         "Storybook Test test-runner visual accessibility coverage and Chromatic publish signals"
       ]
+    },
+    {
+      "repo": "style-dictionary/style-dictionary",
+      "url": "https://github.com/style-dictionary/style-dictionary",
+      "localPath": "research/external-src/style-dictionary-style-dictionary",
+      "stars": 4674,
+      "forks": 621,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-02T15:14:43Z",
+      "adoptedPatterns": [
+        "source/include token file globs for canonical design token inputs",
+        "platform build targets with transformGroup transforms buildPath files destination and format",
+        "CTI category type item token structure with aliases and comments",
+        "multi-platform CSS Android Compose iOS and iOS Swift outputs",
+        "custom transforms formats parsers output references and token governance examples"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2439,6 +2455,28 @@
         "StorybookReportSchema",
         "Storybook Component Story Format stories args argTypes decorators play functions autodocs addons test-runner Chromatic component workshop"
       ]
+    },
+    {
+      "name": "Design tokens readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/design-tokens-report.json",
+        "markdown/design-tokens.md",
+        "html/design-tokens.html",
+        "open --target design-tokens",
+        "DesignTokensReportSchema",
+        "Style Dictionary design tokens source include platforms transformGroup transforms buildPath files formats CTI aliases multi-platform CSS Android iOS"
+      ]
     }
   ],
   "verification": {
@@ -2747,6 +2785,12 @@
     "cliStorybookOpenTargetSmoke": "PASS",
     "buildStorybook": "PASS",
     "testStorybook": "PASS",
-    "auditBriefStorybook32": "PASS"
+    "auditBriefStorybook32": "PASS",
+    "fixtureDesignTokensReport": "PASS",
+    "cliDesignTokensSmoke": "PASS",
+    "cliDesignTokensOpenTargetSmoke": "PASS",
+    "buildDesignTokens": "PASS",
+    "testDesignTokens": "PASS",
+    "auditBriefDesignTokens33": "PASS"
   }
 }

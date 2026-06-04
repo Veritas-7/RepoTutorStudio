@@ -47,6 +47,7 @@ import {
   E2eReport,
   AccessibilityReport,
   StorybookReport,
+  DesignTokensReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -100,6 +101,7 @@ export interface AnalysisBundle {
   e2eReport: E2eReport;
   accessibilityReport: AccessibilityReport;
   storybookReport: StorybookReport;
+  designTokensReport: DesignTokensReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -153,8 +155,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
   const accessibilityReport = await buildAccessibilityReport(walk, e2eReport);
   const storybookReport = await buildStorybookReport(walk);
+  const designTokensReport = await buildDesignTokensReport(walk, storybookReport);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -5211,6 +5214,298 @@ function storybookPublishSignals(sourceFiles: StorybookSourceFile[]): StorybookR
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/storybook.html"
+    };
+  });
+}
+
+async function buildDesignTokensReport(
+  walk: WalkResult,
+  storybookReport: StorybookReport
+): Promise<DesignTokensReport> {
+  const sourceFiles = await designTokenSourceFiles(walk);
+  const tokenSources = designTokenSources(sourceFiles);
+  const tokenCategories = designTokenCategories(sourceFiles);
+  const platformTargets = designTokenPlatformTargets(sourceFiles);
+  const transformSignals = designTokenTransformSignals(sourceFiles);
+  const usageSignals = designTokenUsageSignals(sourceFiles, storybookReport);
+  const governanceSignals = designTokenGovernanceSignals(sourceFiles);
+  const hasTokenSource = tokenSources.some((item) => item.readiness === "ready");
+  const hasPlatform = platformTargets.some((item) => item.readiness === "ready");
+  const hasTransform = transformSignals.some((item) => ["transform-group", "transforms", "formats"].includes(item.signal) && item.readiness === "ready");
+  const hasUsage = usageSignals.some((item) => item.readiness === "ready");
+  const hasGovernance = governanceSignals.some((item) => ["aliases", "comments", "deprecation", "multi-brand", "themes"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: DesignTokensReport["riskQueue"] = [];
+  if (!hasTokenSource) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a canonical design token source such as tokens/**/*.json or a Style Dictionary config.",
+      why: "Generated styles are only trustworthy when design values have a single source of truth.",
+      relatedHref: "html/design-tokens.html"
+    });
+  }
+  if (hasTokenSource && !hasPlatform) {
+    riskQueue.push({
+      priority: "high",
+      action: "Define Style Dictionary platforms with buildPath, files, destination, and format outputs.",
+      why: "Tokens need explicit platform targets before they can reach CSS, Android, iOS, JS, or docs.",
+      relatedHref: "html/design-tokens.html"
+    });
+  }
+  if (hasTokenSource && !hasTransform) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Choose transformGroup or transforms and output formats for each target platform.",
+      why: "Raw token values often need naming, unit, color, or platform transforms before use.",
+      relatedHref: "html/design-tokens.html"
+    });
+  }
+  if (hasTokenSource && !hasUsage) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect generated tokens to CSS variables, theme providers, Tailwind config, components, or Storybook docs.",
+      why: "A token build that is never consumed will drift from the real UI.",
+      relatedHref: "html/design-tokens.html"
+    });
+  }
+  if (hasTokenSource && !hasGovernance) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add naming, alias, comment, theme, deprecation, or release governance for tokens.",
+      why: "Design tokens become shared API; governance prevents breaking style changes.",
+      relatedHref: "html/design-tokens.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the token build in the original repository before treating this report as design-system parity.",
+    why: "RepoTutor only performs static readiness analysis and never executes Style Dictionary.",
+    relatedHref: "html/design-tokens.html"
+  });
+
+  return {
+    summary: `Style Dictionary식 design token readiness report: token source ${tokenSources.length}개, platform target ${platformTargets.length}개, transform signal ${transformSignals.length}개, usage signal ${usageSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Style Dictionary design tokens source include platforms transformGroup transforms buildPath files formats CTI aliases multi-platform CSS Android iOS",
+    tokenSources,
+    tokenCategories,
+    platformTargets,
+    transformSignals,
+    usageSignals,
+    governanceSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npm install -D style-dictionary", purpose: "Install Style Dictionary as the design token build tool." },
+      { command: "style-dictionary init basic", purpose: "Create a starter token source and multi-platform config." },
+      { command: "style-dictionary build --config config.json", purpose: "Build all configured token platforms." },
+      { command: "style-dictionary build --platform css", purpose: "Build one target platform while iterating on transforms or formats." },
+      { command: "git diff -- build/", purpose: "Review generated token artifacts before publishing them." }
+    ],
+    learnerNextSteps: [
+      "먼저 canonical token source와 Style Dictionary config가 분리되어 있는지 확인하세요.",
+      "source/include, platforms, transformGroup, buildPath, files, format이 한 흐름으로 이어지는지 보세요.",
+      "color/size/font 같은 token category와 alias reference가 실제 UI 사용처까지 연결되는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 token output은 원본 repo에서 Style Dictionary build로 확인하세요."
+    ]
+  };
+}
+
+type DesignTokenSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function designTokenSourceFiles(walk: WalkResult): Promise<DesignTokenSourceFile[]> {
+  const files: DesignTokenSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !designTokenInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!designTokenPathSignal(file.relPath) && !designTokenContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 160) break;
+  }
+  return files;
+}
+
+function designTokenInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|config\.(json|js|cjs|mjs|ts)|style-dictionary\.(config\.)?(json|js|cjs|mjs|ts)|tokens\.(json|js|cjs|mjs|ts)|tailwind\.config\.[cm]?[jt]s)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(tokens?|design-tokens?|style-dictionary|theme|themes|styles|css|scss|sass)\//i.test(filePath)
+    || /\.(json|ya?ml|ts|tsx|js|jsx|mjs|cjs|css|scss|sass|md|mdx)$/i.test(filePath);
+}
+
+function designTokenPathSignal(filePath: string): boolean {
+  return /(style-dictionary|design-tokens?|tokens?\/|\/tokens?|theme|themes|variables|primitives|semantic|css\/variables|tailwind\.config|colors?|typography|spacing|radius|shadow)/i.test(filePath);
+}
+
+function designTokenContentSignal(text: string): boolean {
+  return /(style-dictionary|source\s*:|include\s*:|platforms\s*:|transformGroup|transforms\s*:|buildPath|destination\s*:|format\s*:|css\/variables|scss\/variables|android\/|ios-|ios\/|compose\/|registerTransform|registerFormat|registerParser|outputReferences|usesDtcg|DTCG|\$type|["']value["']|--[a-z0-9-]+:\s*|theme\s*:|colors\s*:|spacing\s*:|fontSize\s*:)/i.test(text);
+}
+
+function designTokenSources(sourceFiles: DesignTokenSourceFile[]): DesignTokensReport["tokenSources"] {
+  const rows: DesignTokensReport["tokenSources"] = [];
+  for (const source of sourceFiles) {
+    const format = designTokenSourceFormat(source.filePath, source.text);
+    if (format === "unknown" && !/["']value["']|\$type|--[a-z0-9-]+:\s*/i.test(source.text)) continue;
+    rows.push({
+      filePath: source.filePath,
+      format,
+      readiness: format === "unknown" ? "partial" : "ready",
+      evidence: designTokenSourceEvidence(source.filePath, format, source.text),
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function designTokenSourceFormat(filePath: string, text: string): DesignTokensReport["tokenSources"][number]["format"] {
+  if (/style-dictionary|platforms\s*:|transformGroup|buildPath|source\s*:/i.test(text) || /style-dictionary|config\.(json|js|cjs|mjs|ts)$/i.test(filePath)) return "style-dictionary-config";
+  if (/usesDtcg|DTCG|\$type|\$value/i.test(text)) return "dtcg-json";
+  if (/tokens?\.(js|cjs|mjs|ts)$/i.test(filePath)) return "tokens-js";
+  if (/tokens?.*\.json|design-tokens?.*\.json/i.test(filePath) || /["']value["']\s*:/i.test(text)) return "tokens-json";
+  if (/--[a-z0-9-]+:\s*[^;]+;/i.test(text) || /\.css$/i.test(filePath)) return "css-custom-properties";
+  if (/tailwind\.config/i.test(filePath) || /theme\s*:|colors\s*:|spacing\s*:|fontSize\s*:/i.test(text)) return "tailwind-theme";
+  if (/\$[a-z0-9_-]+:\s*[^;]+;/i.test(text) || /\.(scss|sass)$/i.test(filePath)) return "sass-variables";
+  return "unknown";
+}
+
+function designTokenSourceEvidence(filePath: string, format: DesignTokensReport["tokenSources"][number]["format"], text: string): string {
+  if (format === "style-dictionary-config") return `${filePath} configures Style Dictionary source/platform/build output.`;
+  if (format === "dtcg-json") return `${filePath} contains DTCG-style token metadata.`;
+  if (format === "tokens-json" || format === "tokens-js") return `${filePath} contains token value objects.`;
+  if (format === "css-custom-properties") return `${filePath} exposes CSS custom property tokens.`;
+  if (format === "tailwind-theme") return `${filePath} exposes Tailwind theme tokens.`;
+  if (format === "sass-variables") return `${filePath} exposes Sass variable tokens.`;
+  if (/["']value["']|\$type/i.test(text)) return `${filePath} contains token-shaped value metadata.`;
+  return `${filePath} is a design-token-shaped source candidate.`;
+}
+
+function designTokenCategories(sourceFiles: DesignTokenSourceFile[]): DesignTokensReport["tokenCategories"] {
+  const specs: Array<{ category: DesignTokensReport["tokenCategories"][number]["category"]; pattern: RegExp; evidence: string }> = [
+    { category: "color", pattern: /color|colors|#[0-9a-f]{3,8}|rgb\(|hsl\(|\$type["']?\s*:\s*["']color/i, evidence: "color token evidence was detected." },
+    { category: "size", pattern: /\bsize\b|sizing|dimension|\d+(px|rem|em|dp|sp)/i, evidence: "size/dimension token evidence was detected." },
+    { category: "dimension", pattern: /dimension|\$type["']?\s*:\s*["']dimension/i, evidence: "DTCG dimension token evidence was detected." },
+    { category: "typography", pattern: /typography|fontFamily|fontWeight|lineHeight|letterSpacing/i, evidence: "typography token evidence was detected." },
+    { category: "font", pattern: /\bfont\b|fontSize|font-size|font-weight/i, evidence: "font token evidence was detected." },
+    { category: "spacing", pattern: /spacing|space|gap|padding|margin/i, evidence: "spacing token evidence was detected." },
+    { category: "border", pattern: /border|stroke/i, evidence: "border token evidence was detected." },
+    { category: "radius", pattern: /radius|borderRadius|rounded/i, evidence: "radius token evidence was detected." },
+    { category: "shadow", pattern: /shadow|boxShadow|elevation/i, evidence: "shadow/elevation token evidence was detected." },
+    { category: "motion", pattern: /motion|duration|easing|transition|animation/i, evidence: "motion token evidence was detected." },
+    { category: "opacity", pattern: /opacity|alpha/i, evidence: "opacity token evidence was detected." },
+    { category: "breakpoint", pattern: /breakpoint|screen|media/i, evidence: "breakpoint token evidence was detected." },
+    { category: "asset", pattern: /asset|icon|image|font-face|base64/i, evidence: "asset token evidence was detected." },
+    { category: "z-index", pattern: /zIndex|z-index|layer/i, evidence: "z-index token evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      category: spec.category,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.category} token evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/design-tokens.html"
+    };
+  });
+}
+
+function designTokenPlatformTargets(sourceFiles: DesignTokenSourceFile[]): DesignTokensReport["platformTargets"] {
+  const specs: Array<{ target: DesignTokensReport["platformTargets"][number]["target"]; pattern: RegExp; evidence: string }> = [
+    { target: "css", pattern: /css\/variables|build\/css|\.css|platforms\s*:[\s\S]*css/i, evidence: "CSS token output target is configured or referenced." },
+    { target: "scss", pattern: /scss\/variables|sass\/|scss|\.scss/i, evidence: "SCSS/Sass token output target is configured or referenced." },
+    { target: "javascript", pattern: /javascript|js\/|\.js|format["']?\s*:\s*["']javascript/i, evidence: "JavaScript token output target is configured or referenced." },
+    { target: "typescript", pattern: /typescript|\.d\.ts|\.ts|ts\/definitions/i, evidence: "TypeScript token output target is configured or referenced." },
+    { target: "android", pattern: /android\/|build\/android|fontDimens|colors\.xml/i, evidence: "Android token output target is configured." },
+    { target: "compose", pattern: /compose\/|StyleDictionary.*\.kt|Kotlin/i, evidence: "Jetpack Compose token output target is configured." },
+    { target: "ios", pattern: /ios\/|build\/ios|\.h"|\.m"|UIColor/i, evidence: "iOS Objective-C token output target is configured." },
+    { target: "ios-swift", pattern: /ios-swift|SwiftUI|\.swift|enum\.swift|class\.swift/i, evidence: "iOS Swift token output target is configured." },
+    { target: "flutter", pattern: /flutter|\.dart/i, evidence: "Flutter token output target is referenced." },
+    { target: "react-native", pattern: /react-native|React Native/i, evidence: "React Native token output target is referenced." },
+    { target: "docs", pattern: /style documentation|docs|html\/|markdown/i, evidence: "Token documentation output target is referenced." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      target: spec.target,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.target} platform target evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/design-tokens.html"
+    };
+  });
+}
+
+function designTokenTransformSignals(sourceFiles: DesignTokenSourceFile[]): DesignTokensReport["transformSignals"] {
+  const specs: Array<{ signal: DesignTokensReport["transformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "transform-group", pattern: /transformGroup/i, evidence: "transformGroup is configured." },
+    { signal: "transforms", pattern: /transforms\s*:/i, evidence: "explicit transform list is configured." },
+    { signal: "formats", pattern: /format\s*:|formats\./i, evidence: "output formats are configured." },
+    { signal: "build-path", pattern: /buildPath/i, evidence: "buildPath output directory is configured." },
+    { signal: "files", pattern: /files\s*:|destination\s*:/i, evidence: "generated output files are configured." },
+    { signal: "filters", pattern: /filter\s*:|\$type/i, evidence: "file/token filters are configured." },
+    { signal: "custom-transform", pattern: /registerTransform|transformTypes|custom transform/i, evidence: "custom transform evidence was detected." },
+    { signal: "custom-format", pattern: /registerFormat|custom format/i, evidence: "custom format evidence was detected." },
+    { signal: "custom-parser", pattern: /registerParser|custom parser|yaml tokens/i, evidence: "custom parser evidence was detected." },
+    { signal: "output-references", pattern: /outputReferences|references|aliasing|\{[a-z0-9_.-]+\}/i, evidence: "alias/reference output evidence was detected." },
+    { signal: "expand", pattern: /expand\s*:|expanded tokens/i, evidence: "token expansion evidence was detected." },
+    { signal: "dtcg", pattern: /DTCG|usesDtcg|\$value|\$type/i, evidence: "DTCG token compatibility evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} transform evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/design-tokens.html"
+    };
+  });
+}
+
+function designTokenUsageSignals(
+  sourceFiles: DesignTokenSourceFile[],
+  storybookReport: StorybookReport
+): DesignTokensReport["usageSignals"] {
+  const specs: Array<{ signal: DesignTokensReport["usageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "css-variables", pattern: /var\(--|css\/variables|--[a-z0-9-]+:/i, evidence: "CSS variable token consumption is referenced." },
+    { signal: "theme-provider", pattern: /ThemeProvider|theme provider|createTheme|ConfigProvider/i, evidence: "theme provider token consumption is referenced." },
+    { signal: "tailwind-config", pattern: /tailwind\.config|theme\s*:|colors\s*:|spacing\s*:/i, evidence: "Tailwind theme token consumption is referenced." },
+    { signal: "component-style", pattern: /styled\.|className|style=|\.module\.css|emotion|styled-components/i, evidence: "component style consumption evidence was detected." },
+    { signal: "storybook", pattern: /storybook|\.stories\.|autodocs/i, evidence: "Storybook documentation or preview consumption is referenced." },
+    { signal: "docs", pattern: /style documentation|design token docs|mdx|docs/i, evidence: "token documentation consumption is referenced." },
+    { signal: "package-script", pattern: /style-dictionary build|build:tokens|tokens:build/i, evidence: "package script invokes token build." },
+    { signal: "build-output", pattern: /build\/|dist\/|generated|do not edit/i, evidence: "generated token output path is referenced." }
+  ];
+  const hasStorybook = storybookReport.storyFiles.length > 0 || storybookReport.configFiles.length > 0;
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : hasStorybook && ["storybook", "docs", "component-style"].includes(spec.signal) ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} usage evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? (hasStorybook ? "html/storybook.html" : "html/design-tokens.html")
+    };
+  });
+}
+
+function designTokenGovernanceSignals(sourceFiles: DesignTokenSourceFile[]): DesignTokensReport["governanceSignals"] {
+  const specs: Array<{ signal: DesignTokensReport["governanceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "cti-structure", pattern: /category\/type\/item|attribute\/cti|cti|color[\\s\\S]{0,80}background|size[\\s\\S]{0,80}font/i, evidence: "CTI naming/category structure evidence was detected." },
+    { signal: "aliases", pattern: /\{[a-z0-9_.-]+\}|alias|references?/i, evidence: "alias/reference governance evidence was detected." },
+    { signal: "comments", pattern: /comment\s*:|description\s*:|\$description/i, evidence: "token comments or descriptions are present." },
+    { signal: "themes", pattern: /theme|themes|dark|light|mode/i, evidence: "theme/mode token evidence was detected." },
+    { signal: "multi-brand", pattern: /multi-brand|brand|brands/i, evidence: "multi-brand token evidence was detected." },
+    { signal: "deprecation", pattern: /deprecated|deprecation/i, evidence: "token deprecation evidence was detected." },
+    { signal: "npm-module", pattern: /npm module|publishConfig|package\.json|npm publish/i, evidence: "token package publish evidence was detected." },
+    { signal: "ci-build", pattern: /\.github\/workflows|style-dictionary build|build:tokens|tokens:build/i, evidence: "CI or scripted token build evidence was detected." },
+    { signal: "s3-publish", pattern: /s3|aws/i, evidence: "remote token artifact publish evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} governance evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/design-tokens.html"
     };
   });
 }
