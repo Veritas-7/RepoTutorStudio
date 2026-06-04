@@ -5586,7 +5586,7 @@
         "markdown/openapi-client-readiness.md",
         "html/openapi-client-readiness.html"
       ],
-      "commit": "PENDING"
+      "commit": "b7aa9e4"
     }
   ],
   "verification": {
@@ -6206,7 +6206,7 @@
     "buildOpenApiClientReadiness": "PASS",
     "testOpenApiClientReadiness": "PASS",
     "auditBriefOpenApiClientReadiness113": "PASS",
-    "openApiClientReadinessImplementationPushed": "PENDING"
+    "openApiClientReadinessImplementationPushed": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -6754,6 +6754,6 @@
     "buildOpenApiClientReadiness": "PASS",
     "testOpenApiClientReadiness": "PASS",
     "auditBriefOpenApiClientReadiness113": "PASS",
-    "openApiClientReadinessImplementationPushed": "PENDING"
+    "openApiClientReadinessImplementationPushed": "PASS"
   }
 }
