@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-04T20:47:03.333Z",
+  "createdAt": "2026-06-04T21:00:37.329Z",
   "checks": [
     {
       "name": "project setup",
@@ -767,6 +767,13 @@
     },
     {
       "name": "Webhook readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "notification readiness",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

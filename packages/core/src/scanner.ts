@@ -111,6 +111,7 @@ import {
   WorkflowOrchestrationReadinessReport,
   OpenApiClientReadinessReport,
   WebhookReadinessReport,
+  NotificationReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -246,6 +247,7 @@ export interface AnalysisBundle {
   workflowOrchestrationReadinessReport: WorkflowOrchestrationReadinessReport;
   openApiClientReadinessReport: OpenApiClientReadinessReport;
   webhookReadinessReport: WebhookReadinessReport;
+  notificationReadinessReport: NotificationReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -381,6 +383,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const workflowOrchestrationReadinessReport = await buildWorkflowOrchestrationReadinessReport(walk);
   const openApiClientReadinessReport = await buildOpenApiClientReadinessReport(walk);
   const webhookReadinessReport = await buildWebhookReadinessReport(walk);
+  const notificationReadinessReport = await buildNotificationReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
@@ -400,7 +403,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -23232,6 +23235,276 @@ function webhookSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp;
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/webhook-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildNotificationReadinessReport(walk: WalkResult): Promise<NotificationReadinessReport> {
+  const sourceFiles = await notificationReadinessSourceFiles(walk);
+  const notificationSetups = notificationReadinessSetups(sourceFiles);
+  const workflowSignals = notificationReadinessWorkflowSignals(sourceFiles);
+  const audienceSignals = notificationReadinessAudienceSignals(sourceFiles);
+  const channelSignals = notificationReadinessChannelSignals(sourceFiles);
+  const templateSignals = notificationReadinessTemplateSignals(sourceFiles);
+  const operationsSignals = notificationReadinessOperationsSignals(sourceFiles);
+  const packageSignals = notificationReadinessPackageSignals(sourceFiles);
+
+  const hasWorkflow = workflowSignals.some((item) => ["workflow", "trigger"].includes(item.signal) && item.readiness === "ready") || notificationSetups.some((item) => item.workflowCount + item.triggerCount > 0);
+  const hasAudience = audienceSignals.some((item) => ["subscriber", "subscriber-id", "topic", "subscription"].includes(item.signal) && item.readiness === "ready") || notificationSetups.some((item) => item.subscriberCount + item.topicCount > 0);
+  const hasChannel = channelSignals.some((item) => item.readiness === "ready") || notificationSetups.some((item) => item.channelCount + item.inboxCount > 0);
+  const hasPreferences = audienceSignals.some((item) => item.signal === "preferences" && item.readiness === "ready") || notificationSetups.some((item) => item.preferenceCount > 0);
+  const hasOperations = operationsSignals.some((item) => ["api-key", "environment", "delivery-log", "retry", "dashboard"].includes(item.signal) && item.readiness === "ready") || notificationSetups.some((item) => item.credentialCount + item.observabilityCount > 0);
+
+  const riskQueue: NotificationReadinessReport["riskQueue"] = [];
+  if (!hasWorkflow) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document notification workflows and triggers before claiming notification readiness.",
+      why: "Product notifications need a workflow contract that connects trigger payloads to channel delivery.",
+      relatedHref: "html/notification-readiness.html"
+    });
+  }
+  if (hasWorkflow && !hasAudience) {
+    riskQueue.push({
+      priority: "high",
+      action: "Model subscribers, subscriber IDs, topics, or subscriptions for notification targeting.",
+      why: "A workflow without an audience model cannot prove who receives the notification or how fan-out is controlled.",
+      relatedHref: "html/notification-readiness.html"
+    });
+  }
+  if (hasAudience && !hasChannel) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect notification workflows to explicit channels such as inbox, email, SMS, push, chat, Slack, or Teams.",
+      why: "Novu-style readiness depends on a unified workflow that still maps to concrete delivery channels.",
+      relatedHref: "html/notification-readiness.html"
+    });
+  }
+  if (hasChannel && !hasPreferences) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add user preferences, subscription controls, or per-channel opt-out documentation.",
+      why: "Multi-channel notifications can become noisy or non-compliant when users cannot control them.",
+      relatedHref: "html/notification-readiness.html"
+    });
+  }
+  if (hasChannel && !hasOperations) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document notification API keys, environments, delivery logs, retries, analytics, and dashboard ownership.",
+      why: "Delivery issues are hard to debug unless operators can trace attempts, failures, credentials, and provider state.",
+      relatedHref: "html/notification-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Notification readiness report: setup ${notificationSetups.length}개, workflow signal ${workflowSignals.length}개, audience signal ${audienceSignals.length}개, channel signal ${channelSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Notification readiness Novu workflows trigger subscriberId subscribers topics subscriptions preferences Inbox email SMS push chat Slack Teams Telegram WhatsApp digest delay conditions payload tenant templates variables API key delivery logs retries dashboard analytics",
+    notificationSetups,
+    workflowSignals,
+    audienceSignals,
+    channelSignals,
+    templateSignals,
+    operationsSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"@novu|Novu|workflow|trigger|subscriberId|topic|preferences|Inbox\" package.json src app docs", purpose: "Find notification SDKs, workflows, subscriber targeting, topics, preferences, and inbox integrations." },
+      { command: "rg \"email|sms|push|chat|slack|teams|telegram|whatsapp|digest|delay|condition\" src app docs", purpose: "Trace delivery channels and workflow control steps." },
+      { command: "rg \"NOVU|api.?key|delivery|activity|retry|dashboard|webhook|analytics|rate.?limit\" src app docs .env.example", purpose: "Check credentials, environment setup, delivery operations, retry visibility, and provider dashboards." }
+    ],
+    learnerNextSteps: [
+      "먼저 notification workflow와 trigger payload가 어디서 정의되는지 찾으세요.",
+      "subscriberId, subscriber profile, topic, subscription, preference가 workflow와 연결되는지 확인하세요.",
+      "Inbox/email/SMS/push/chat 같은 채널과 template variable이 실제 사용자 경험까지 이어지는지 보세요.",
+      "RepoTutor는 알림을 보내거나 provider API를 호출하지 않습니다. 실제 delivery는 원본 repo에서 provider sandbox나 staging 환경으로 검증하세요."
+    ]
+  };
+}
+
+type NotificationSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function notificationReadinessSourceFiles(walk: WalkResult): Promise<NotificationSourceFile[]> {
+  const rows: NotificationSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!notificationInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!notificationPathSignal(file.relPath) && !notificationContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 160);
+}
+
+function notificationInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|novu\.(json|ya?ml)|notifications?\.(json|ya?ml|md)|preferences?\.(json|ya?ml|md))$/i.test(base)
+    || /(^|\/)(notifications?|novu|inbox|subscribers?|topics?|preferences?|workflows?|messages?|push|sms|chat|slack|teams|telegram|whatsapp)(\/|\.|-|_|$)/i.test(filePath)
+    || /\.(json|ya?ml|ts|tsx|js|jsx|mjs|cjs|md|go|rs|py|rb|php)$/i.test(filePath);
+}
+
+function notificationPathSignal(filePath: string): boolean {
+  return /(^|\/)(notifications?|novu|inbox|subscribers?|topics?|preferences?|workflows?|messages?|push|sms|chat|slack|teams|telegram|whatsapp)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|novu\.(json|ya?ml)|notifications?\.(json|ya?ml|md))$/i.test(path.basename(filePath));
+}
+
+function notificationContentSignal(text: string): boolean {
+  return /(@novu\/|Novu|notification workflow|notification center|<Inbox|subscriberId|subscribers?\.|topics?\.|preferences?|digest|in-app|push notification|SMS|Slack|Microsoft Teams|Telegram|WhatsApp|delivery logs?)/i.test(text);
+}
+
+function notificationReadinessSetups(sourceFiles: NotificationSourceFile[]): NotificationReadinessReport["notificationSetups"] {
+  const rows: NotificationReadinessReport["notificationSetups"] = [];
+  for (const source of sourceFiles) {
+    const workflowCount = countMatches(source.text, /\b(workflow|workflows|notification workflow|defineWorkflow|workflowId|step\.)\b/gi);
+    const triggerCount = countMatches(source.text, /\b(trigger|triggers|novu\.trigger|events?\.trigger|send notification|sendNotification)\b/gi);
+    const subscriberCount = countMatches(source.text, /\b(subscriber|subscribers|subscriberId|subscriber_id|identify|user profile|profile)\b/gi);
+    const topicCount = countMatches(source.text, /\b(topic|topics|subscription|subscriptions|createSubscription|removeSubscription|fan.?out|broadcast|segment)\b/gi);
+    const preferenceCount = countMatches(source.text, /\b(preference|preferences|PreferenceLevel|opt.?in|opt.?out|unsubscribe|subscription controls|digest preference)\b/gi);
+    const channelCount = countMatches(source.text, /\b(email|sms|push|chat|slack|teams|microsoft teams|telegram|whatsapp|discord|channel|channels|provider integrations)\b/gi);
+    const inboxCount = countMatches(source.text, /\b(inbox|in-app|notification center|<Inbox|NovuProvider|useNovu|notification feed)\b/gi);
+    const templateCount = countMatches(source.text, /\b(template|templates|subject|body|content|editor|variables|payload|localization|branding|preview)\b/gi);
+    const credentialCount = countMatches(source.text, /\b(NOVU|api.?key|secret|environment|endpoint|baseURL|applicationIdentifier|subscriberHash|tenant)\b/gi);
+    const observabilityCount = countMatches(source.text, /\b(delivery|activity feed|delivery log|logs|retry|retries|analytics|dashboard|rate limit|webhook|status|failure)\b/gi);
+    const totalSignals = workflowCount + triggerCount + subscriberCount + topicCount + preferenceCount + channelCount + inboxCount + templateCount + credentialCount + observabilityCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: notificationProvider(source),
+      workflowCount,
+      triggerCount,
+      subscriberCount,
+      topicCount,
+      preferenceCount,
+      channelCount,
+      inboxCount,
+      templateCount,
+      credentialCount,
+      observabilityCount,
+      readiness: workflowCount > 0 && triggerCount > 0 && subscriberCount > 0 && (channelCount + inboxCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} notification readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.workflowCount + b.triggerCount + b.subscriberCount + b.channelCount + b.inboxCount) - (a.workflowCount + a.triggerCount + a.subscriberCount + a.channelCount + a.inboxCount))
+    .slice(0, 45);
+}
+
+function notificationProvider(source: NotificationSourceFile): NotificationReadinessReport["notificationSetups"][number]["provider"] {
+  if (/novu/i.test(source.filePath) || /@novu\/|Novu|NOVU_/i.test(source.text)) return "novu";
+  if (/knock/i.test(source.filePath) || /@knocklabs\/|Knock/i.test(source.text)) return "knock";
+  if (/magicbell/i.test(source.filePath) || /@magicbell\/|MagicBell/i.test(source.text)) return "magicbell";
+  if (/firebase/i.test(source.filePath) || /firebase-admin|fcm|messaging\(\)/i.test(source.text)) return "firebase";
+  if (/onesignal/i.test(source.filePath) || /OneSignal|onesignal-node/i.test(source.text)) return "onesignal";
+  if (/notification|inbox|subscriber|topic|preference/i.test(source.filePath) || /notification|inbox|subscriber|topic|preference/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function notificationReadinessWorkflowSignals(sourceFiles: NotificationSourceFile[]): NotificationReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: NotificationReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "workflow", pattern: /workflow|workflows|notification workflow|workflowId|defineWorkflow/i, evidence: "notification workflow evidence was detected." },
+    { signal: "trigger", pattern: /trigger|novu\.trigger|sendNotification|send notification|events?\.trigger/i, evidence: "notification trigger evidence was detected." },
+    { signal: "step", pattern: /step\.|steps|email step|sms step|inbox step|chat step/i, evidence: "workflow step evidence was detected." },
+    { signal: "digest", pattern: /digest|batch|summary notification|group notifications/i, evidence: "digest/batching evidence was detected." },
+    { signal: "delay", pattern: /delay|schedule|scheduled|wait|throttle/i, evidence: "delay/scheduling evidence was detected." },
+    { signal: "condition", pattern: /condition|conditions|branch|if\s*\(|filter|rules/i, evidence: "workflow condition evidence was detected." },
+    { signal: "payload", pattern: /payload|variables|template data|data payload|merge tags/i, evidence: "payload/template data evidence was detected." },
+    { signal: "tenant", pattern: /tenant|tenantId|organization|workspace/i, evidence: "tenant/workspace scoping evidence was detected." },
+    { signal: "conversation", pattern: /conversation|thread|reply|inbound message|agent communication/i, evidence: "conversation model evidence was detected." }
+  ];
+  return notificationSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function notificationReadinessAudienceSignals(sourceFiles: NotificationSourceFile[]): NotificationReadinessReport["audienceSignals"] {
+  const specs: Array<{ signal: NotificationReadinessReport["audienceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "subscriber", pattern: /\bsubscriber\b|subscribers\.|Subscriber/i, evidence: "subscriber model evidence was detected." },
+    { signal: "subscriber-id", pattern: /subscriberId|subscriber_id|to:\s*['\"]|recipientId|userId/i, evidence: "subscriber ID evidence was detected." },
+    { signal: "topic", pattern: /\btopic\b|topics\.|TopicSubscription/i, evidence: "topic evidence was detected." },
+    { signal: "subscription", pattern: /subscription|subscriptions|createSubscription|removeSubscription|subscribe|unsubscribe/i, evidence: "subscription evidence was detected." },
+    { signal: "preferences", pattern: /preferences?|PreferenceLevel|notification settings|opt.?in|opt.?out/i, evidence: "user preference evidence was detected." },
+    { signal: "segments", pattern: /segment|segments|audience|cohort|group/i, evidence: "segment/audience evidence was detected." },
+    { signal: "user-profile", pattern: /firstName|lastName|email|phone|avatar|profile|identify/i, evidence: "user profile evidence was detected." },
+    { signal: "tenant", pattern: /tenant|tenantId|organizationId|workspaceId/i, evidence: "tenant audience evidence was detected." }
+  ];
+  return notificationSignalFromSpecs(sourceFiles, specs, "audience", "signal");
+}
+
+function notificationReadinessChannelSignals(sourceFiles: NotificationSourceFile[]): NotificationReadinessReport["channelSignals"] {
+  const specs: Array<{ signal: NotificationReadinessReport["channelSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "inbox", pattern: /Inbox|<Inbox|in-app|notification center|notification feed|NovuProvider/i, evidence: "inbox/in-app channel evidence was detected." },
+    { signal: "email", pattern: /\bemail\b|mail|subject|from:|to:|EmailProvider/i, evidence: "email channel evidence was detected." },
+    { signal: "sms", pattern: /\bsms\b|SMS|phone|twilio|SmsProvider/i, evidence: "SMS channel evidence was detected." },
+    { signal: "push", pattern: /\bpush\b|push notification|FCM|APNS|expo|PushProvider/i, evidence: "push channel evidence was detected." },
+    { signal: "chat", pattern: /\bchat\b|ChatProvider|discord|mattermost|rocket\.chat/i, evidence: "chat channel evidence was detected." },
+    { signal: "slack", pattern: /Slack|slack/i, evidence: "Slack channel evidence was detected." },
+    { signal: "teams", pattern: /Microsoft Teams|msTeams|teams/i, evidence: "Microsoft Teams channel evidence was detected." },
+    { signal: "telegram", pattern: /Telegram|telegram/i, evidence: "Telegram channel evidence was detected." },
+    { signal: "whatsapp", pattern: /WhatsApp|whatsapp/i, evidence: "WhatsApp channel evidence was detected." }
+  ];
+  return notificationSignalFromSpecs(sourceFiles, specs, "channel", "signal");
+}
+
+function notificationReadinessTemplateSignals(sourceFiles: NotificationSourceFile[]): NotificationReadinessReport["templateSignals"] {
+  const specs: Array<{ signal: NotificationReadinessReport["templateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "template", pattern: /template|templates|message template|notification template/i, evidence: "template evidence was detected." },
+    { signal: "subject", pattern: /subject|title|headline/i, evidence: "subject/title evidence was detected." },
+    { signal: "body", pattern: /body|content|html|text|markdown/i, evidence: "body/content evidence was detected." },
+    { signal: "editor", pattern: /editor|no-code email editor|drag.?and.?drop|visual editor/i, evidence: "template editor evidence was detected." },
+    { signal: "variables", pattern: /variables|payload|merge tags|handlebars|liquid|template data/i, evidence: "template variable evidence was detected." },
+    { signal: "localization", pattern: /locale|localization|i18n|translation|language/i, evidence: "template localization evidence was detected." },
+    { signal: "branding", pattern: /brand|branding|theme|logo|appearance/i, evidence: "template branding evidence was detected." },
+    { signal: "preview", pattern: /preview|test send|sandbox|dry.?run/i, evidence: "template preview evidence was detected." }
+  ];
+  return notificationSignalFromSpecs(sourceFiles, specs, "template", "signal");
+}
+
+function notificationReadinessOperationsSignals(sourceFiles: NotificationSourceFile[]): NotificationReadinessReport["operationsSignals"] {
+  const specs: Array<{ signal: NotificationReadinessReport["operationsSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "api-key", pattern: /NOVU.*KEY|api.?key|secret|token|applicationIdentifier|subscriberHash/i, evidence: "notification credential evidence was detected." },
+    { signal: "environment", pattern: /environment|production|staging|sandbox|baseURL|apiUrl/i, evidence: "environment evidence was detected." },
+    { signal: "webhook", pattern: /webhook|inbound message|callback|delivery hook/i, evidence: "notification webhook/inbound evidence was detected." },
+    { signal: "delivery-log", pattern: /delivery log|activity feed|activity|message status|delivery status|logs/i, evidence: "delivery log evidence was detected." },
+    { signal: "activity-feed", pattern: /activity feed|notifications list|feed|timeline/i, evidence: "activity feed evidence was detected." },
+    { signal: "rate-limit", pattern: /rate.?limit|quota|throttle|429/i, evidence: "rate limit evidence was detected." },
+    { signal: "retry", pattern: /retry|retries|backoff|failed delivery|failure/i, evidence: "retry/failure evidence was detected." },
+    { signal: "analytics", pattern: /analytics|metrics|open rate|click rate|engagement/i, evidence: "analytics evidence was detected." },
+    { signal: "dashboard", pattern: /dashboard|admin panel|console|portal/i, evidence: "dashboard evidence was detected." }
+  ];
+  return notificationSignalFromSpecs(sourceFiles, specs, "operations", "signal");
+}
+
+function notificationReadinessPackageSignals(sourceFiles: NotificationSourceFile[]): NotificationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: NotificationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@novu/node", pattern: /"@novu\/node"|@novu\/node/i, evidence: "Novu Node package evidence was detected." },
+    { signal: "@novu/js", pattern: /"@novu\/js"|@novu\/js/i, evidence: "Novu JS package evidence was detected." },
+    { signal: "@novu/react", pattern: /"@novu\/react"|@novu\/react/i, evidence: "Novu React package evidence was detected." },
+    { signal: "@knocklabs/node", pattern: /"@knocklabs\/node"|@knocklabs\/node/i, evidence: "Knock Node package evidence was detected." },
+    { signal: "@magicbell/react", pattern: /"@magicbell\/react"|@magicbell\/react/i, evidence: "MagicBell React package evidence was detected." },
+    { signal: "firebase-admin", pattern: /"firebase-admin"|firebase-admin|admin\.messaging/i, evidence: "Firebase Admin messaging package evidence was detected." },
+    { signal: "onesignal-node", pattern: /"onesignal-node"|OneSignal|onesignal-node/i, evidence: "OneSignal package evidence was detected." },
+    { signal: "custom", pattern: /notification|subscriber|topic|inbox|push|sms|slack|teams/i, evidence: "custom notification implementation evidence was detected." }
+  ];
+  return notificationSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function notificationSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: NotificationSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/notification-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }

@@ -100,6 +100,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workflow-orchestration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "openapi-client-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "webhook-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "notification-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workspace-graph-readiness-report.json"))).resolves.toBeUndefined();
@@ -216,6 +217,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workflow-orchestration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "openapi-client-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "webhook-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "notification-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rpc-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workspace-graph-readiness.md"))).resolves.toBeUndefined();
@@ -332,6 +334,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "workflow-orchestration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "openapi-client-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "webhook-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "notification-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "server-framework-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rpc-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workspace-graph-readiness.html"))).resolves.toBeUndefined();
@@ -479,6 +482,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/workflow-orchestration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/openapi-client-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/webhook-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/notification-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/server-framework-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rpc-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workspace-graph-readiness.html\"");
@@ -2226,6 +2230,25 @@ describe("RepoTutor core pipeline", () => {
     expect(webhookReadinessMarkdown).toContain("Source pattern: Webhook readiness");
     expect(webhookReadinessMarkdown).toContain("## Signature Signals");
     expect(webhookReadinessMarkdown).toContain("## Reliability Signals");
+    const notificationReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "notification-readiness-report.json"), "utf8");
+    expect(notificationReadinessText).toContain("Notification readiness Novu workflows trigger subscriberId subscribers topics subscriptions preferences Inbox email SMS push chat Slack Teams Telegram WhatsApp digest delay conditions payload tenant templates variables API key delivery logs retries dashboard analytics");
+    expect(notificationReadinessText).toContain("\"notificationSetups\"");
+    expect(notificationReadinessText).toContain("\"workflowSignals\"");
+    expect(notificationReadinessText).toContain("\"audienceSignals\"");
+    expect(notificationReadinessText).toContain("\"channelSignals\"");
+    expect(notificationReadinessText).toContain("\"templateSignals\"");
+    expect(notificationReadinessText).toContain("\"operationsSignals\"");
+    expect(notificationReadinessText).toContain("\"packageSignals\"");
+    const notificationReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "notification-readiness.html"), "utf8");
+    expect(notificationReadinessHtml).toContain("Notification Readiness");
+    expect(notificationReadinessHtml).toContain("notification-readiness-card");
+    expect(notificationReadinessHtml).toContain("data-source-pattern=\"Notifications\"");
+    expect(notificationReadinessHtml).toContain("Audience Signals");
+    const notificationReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "notification-readiness.md"), "utf8");
+    expect(notificationReadinessMarkdown).toContain("# Notification Readiness");
+    expect(notificationReadinessMarkdown).toContain("Source pattern: Notification readiness");
+    expect(notificationReadinessMarkdown).toContain("## Audience Signals");
+    expect(notificationReadinessMarkdown).toContain("## Channel Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
     expect(serverFrameworkReadinessText).toContain("Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
@@ -2700,6 +2723,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/workflow-orchestration-readiness.html");
     expect(exportManifestText).toContain("html/openapi-client-readiness.html");
     expect(exportManifestText).toContain("html/webhook-readiness.html");
+    expect(exportManifestText).toContain("html/notification-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -2834,6 +2858,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("workflow-orchestration-readiness.html");
     expect(learningPathHtml).toContain("openapi-client-readiness.html");
     expect(learningPathHtml).toContain("webhook-readiness.html");
+    expect(learningPathHtml).toContain("notification-readiness.html");
     expect(learningPathHtml).toContain("backup-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
@@ -5941,6 +5966,104 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "webhook-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "webhook-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects notification readiness patterns without sending notifications", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-notification-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-notification-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "notifications"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "components"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "notifications:check": "rg \"@novu|subscriberId|preferences|delivery log\" src docs"
+      },
+      dependencies: {
+        "@novu/node": "latest",
+        "@novu/js": "latest",
+        "@novu/react": "latest",
+        "@knocklabs/node": "latest",
+        "@magicbell/react": "latest",
+        "firebase-admin": "latest",
+        "onesignal-node": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "notifications", "novu.ts"), [
+      "import { Novu } from '@novu/node';",
+      "import { novu } from '@novu/js';",
+      "const client = new Novu(process.env.NOVU_API_KEY ?? 'test_key');",
+      "export async function triggerInvoiceWorkflow(user: { id: string; email: string; firstName: string }, organizationId: string) {",
+      "  const payload = { invoiceId: 'inv_123', variables: { total: '$10' }, firstName: user.firstName, email: user.email };",
+      "  await client.subscribers.identify(user.id, { email: user.email, firstName: user.firstName, profile: { plan: 'pro' } });",
+      "  await client.topics.create({ key: 'billing-topic', name: 'Billing topic' });",
+      "  await client.topics.addSubscribers('billing-topic', { subscribers: [user.id] });",
+      "  await client.trigger('invoice-paid-workflow', { to: { subscriberId: user.id }, payload, tenant: organizationId, tenantId: organizationId });",
+      "  return novu.notifications.list({ subscriberId: user.id });",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "components", "notification-inbox.tsx"), [
+      "import { Inbox, NovuProvider, PreferenceLevel, WorkflowCriticalityEnum, useNovu } from '@novu/react';",
+      "export function NotificationInbox() {",
+      "  const { preferences, createSubscription, removeSubscription } = useNovu();",
+      "  const channels = 'Inbox in-app notification center email SMS push chat Slack Microsoft Teams Telegram WhatsApp';",
+      "  const settings = `${PreferenceLevel.TEMPLATE} ${WorkflowCriticalityEnum.CRITICAL} opt-in opt-out unsubscribe subscription controls`;",
+      "  void preferences;",
+      "  void createSubscription;",
+      "  void removeSubscription;",
+      "  return <NovuProvider applicationIdentifier=\"app_id\" subscriberId=\"user_123\" subscriberHash=\"hash\"><Inbox />{channels}{settings}</NovuProvider>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "notifications.md"), [
+      "# Notification workflow",
+      "Novu workflows trigger subscriberId subscribers topics subscriptions preferences through one notification workflow.",
+      "The workflow uses step.email, step.inbox, digest batching, delay scheduling, wait rules, branch conditions, payload variables, tenant routing, and a conversation thread for inbound message replies.",
+      "Audience coverage includes subscriber profile, user profile, topic subscription, segments, groups, tenantId, organizationId, subscribe, unsubscribe, opt-in, and opt-out controls.",
+      "Channel coverage includes Inbox, in-app, email, SMS, push notification, chat, Slack, Teams, Telegram, WhatsApp, and Discord providers.",
+      "Template coverage includes template subject title body content editor no-code email editor variables payload localization i18n branding theme logo preview test send sandbox dry-run.",
+      "Operations coverage includes NOVU_API_KEY environment staging production baseURL webhook callback delivery log activity feed delivery status logs rate limit 429 retry retries backoff analytics metrics dashboard admin panel portal failure.",
+      "Package comparison notes mention @knocklabs/node, @magicbell/react, firebase-admin admin.messaging, OneSignal onesignal-node, and a custom notification sender."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "notification-readiness-report.json"), "utf8")) as {
+      notificationSetups: Array<{ filePath: string; provider: string; workflowCount: number; triggerCount: number; subscriberCount: number; topicCount: number; preferenceCount: number; channelCount: number; inboxCount: number; templateCount: number; credentialCount: number; observabilityCount: number }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      audienceSignals: Array<{ signal: string; readiness: string }>;
+      channelSignals: Array<{ signal: string; readiness: string }>;
+      templateSignals: Array<{ signal: string; readiness: string }>;
+      operationsSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    expect(report.notificationSetups.length).toBeGreaterThan(0);
+    expect(report.notificationSetups.some((item) => item.provider === "novu")).toBe(true);
+    const novuSetup = report.notificationSetups.find((item) => item.filePath === "src/notifications/novu.ts");
+    const docsSetup = report.notificationSetups.find((item) => item.filePath === "docs/notifications.md");
+    expect(novuSetup?.workflowCount).toBeGreaterThan(0);
+    expect(novuSetup?.triggerCount).toBeGreaterThan(0);
+    expect(novuSetup?.subscriberCount).toBeGreaterThan(0);
+    expect(novuSetup?.topicCount).toBeGreaterThan(0);
+    expect(docsSetup?.preferenceCount).toBeGreaterThan(0);
+    expect(docsSetup?.channelCount).toBeGreaterThan(0);
+    expect(docsSetup?.templateCount).toBeGreaterThan(0);
+    expect(docsSetup?.credentialCount).toBeGreaterThan(0);
+    expect(docsSetup?.observabilityCount).toBeGreaterThan(0);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.workflowSignals, ["workflow", "trigger", "step", "digest", "delay", "condition", "payload", "tenant", "conversation"]);
+    expectReady(report.audienceSignals, ["subscriber", "subscriber-id", "topic", "subscription", "preferences", "segments", "user-profile", "tenant"]);
+    expectReady(report.channelSignals, ["inbox", "email", "sms", "push", "chat", "slack", "teams", "telegram", "whatsapp"]);
+    expectReady(report.templateSignals, ["template", "subject", "body", "editor", "variables", "localization", "branding", "preview"]);
+    expectReady(report.operationsSignals, ["api-key", "environment", "webhook", "delivery-log", "activity-feed", "rate-limit", "retry", "analytics", "dashboard"]);
+    expectReady(report.packageSignals, ["@novu/node", "@novu/js", "@novu/react", "@knocklabs/node", "@magicbell/react", "firebase-admin", "onesignal-node", "custom"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "notification-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "notification-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects object storage readiness patterns without contacting object storage", async () => {
