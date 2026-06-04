@@ -6021,6 +6021,55 @@ Local verification:
 - `pnpm audit:brief`: PASS, 102/102 audit checks across 13 generated reports
 - Pushed implementation commit: `a3ea1dc` devcontainer readiness report
 
+### Upgrade 205: Kubernetes Readiness Report
+
+- Cloned and inspected `kubernetes/examples` under
+  `research/external-src/kubernetes-examples` and `kubernetes-sigs/kustomize`
+  under `research/external-src/kustomize` without executing external source.
+  Clone HEADs were `d6b8cd2` and `313aaced`; both clones remain ignored by
+  RepoTutor.
+- GitHub metadata: `kubernetes/examples` is public, Apache-2.0 licensed, 6,640
+  stars, 4,704 forks, updated 2026-06-04T12:36:40Z.
+  `kubernetes-sigs/kustomize` is public, Apache-2.0 licensed, 12,063 stars,
+  2,390 forks, updated 2026-06-04T16:28:44Z. Selected Kubernetes examples plus
+  Kustomize because together they model raw manifests, Kustomize overlays,
+  workload/service/RBAC/config/storage/health/scaling objects, and `kubectl`
+  operational workflows. No source code was copied into RepoTutor.
+- Implemented Kubernetes/Kustomize-style kubernetes-readiness report:
+  `KubernetesReadinessReportSchema`,
+  `analysis/kubernetes-readiness-report.json`,
+  `markdown/kubernetes-readiness.md`, `html/kubernetes-readiness.html`,
+  Kubernetes setup detection, manifest signals, workload signals, network
+  signals, config signals, storage signals, security signals, health signals,
+  Kustomize signals, workflow signals, package signals, recommended commands,
+  risk queue, manifest/session-verification coverage, learning-path linkage,
+  nav entry, and `open --target kubernetes-readiness`.
+- Source pattern: Kubernetes readiness separates `apiVersion`, `kind`,
+  `metadata`, labels, annotations, namespaces, workload kinds, Service,
+  Ingress, NetworkPolicy, ConfigMap, Secret references, ServiceAccount, RBAC,
+  PersistentVolume/PersistentVolumeClaim, probes, resources, HPA, PDB,
+  `kustomization.yaml`, resources, bases, patches, generators, images,
+  replacements, components, and `kubectl apply/diff/wait/rollout/logs/
+  describe/port-forward/delete` workflows. RepoTutor maps that to deterministic
+  static Kubernetes readiness and explicitly does not run `kubectl`,
+  `kustomize`, contact Kubernetes APIs, mutate clusters/namespaces/resources/
+  secrets, port-forward, or stream logs.
+- RED smoke confirmed old behavior was missing
+  `analysis/kubernetes-readiness-report.json`,
+  `markdown/kubernetes-readiness.md`, and `html/kubernetes-readiness.html`,
+  and `open --target kubernetes-readiness` exited with `Unsupported open
+  target`.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-kubernetes-green-studies.wPOkkN/2026-06-05/local__repotutor-kubernetes-green-repo.qXeGhZ__local__b52b1c0b`;
+  confirmed `verificationCheckedRequiredArtifacts=315`, Kubernetes setups 16,
+  manifest signals 6, workload signals 7, Kustomize signals 9, workflow
+  signals 9, risk queue 0, all three new artifacts, and
+  `open --target kubernetes-readiness` ->
+  `html/kubernetes-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 12/12 tests
+- `pnpm audit:brief`: PASS, 103/103 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

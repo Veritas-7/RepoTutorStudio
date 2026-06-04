@@ -4698,6 +4698,47 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 204:
   - `a3ea1dc` devcontainer readiness report
 
+- 2026-06-05: AutoResearch Upgrade 205 candidate selected:
+  `kubernetes/examples` (`https://github.com/kubernetes/examples`; public;
+  Apache-2.0; 6,640 stars; 4,704 forks; updated 2026-06-04T12:36:40Z).
+  Compared with `kubernetes-sigs/kustomize` (`https://github.com/kubernetes-sigs/kustomize`;
+  public; Apache-2.0; 12,063 stars; 2,390 forks; updated
+  2026-06-04T16:28:44Z); selected Kubernetes examples plus Kustomize because
+  they directly model raw Kubernetes manifests, Kustomize overlays, workload/
+  service/RBAC/config/storage/health/scaling patterns, and `kubectl` workflow
+  readiness. Cloned ignored external sources to
+  `research/external-src/kubernetes-examples` and
+  `research/external-src/kustomize` and inspected manifests, examples,
+  README/workflow docs, and Kustomize examples without executing external
+  source. Clone HEADs were `d6b8cd2` and `313aaced`; tracked file count for
+  both ignored source paths returned `0`.
+- 2026-06-05: RED kubernetes-readiness smoke confirmed old behavior was
+  missing `analysis/kubernetes-readiness-report.json`,
+  `markdown/kubernetes-readiness.md`, and `html/kubernetes-readiness.html`;
+  `open --target kubernetes-readiness` failed as expected before the
+  implementation.
+- 2026-06-05: Implemented Kubernetes/Kustomize-style kubernetes-readiness
+  report: `KubernetesReadinessReportSchema`,
+  `analysis/kubernetes-readiness-report.json`,
+  `markdown/kubernetes-readiness.md`, `html/kubernetes-readiness.html`,
+  Kubernetes setup detection, manifest signals, workload signals, network
+  signals, config signals, storage signals, security signals, health signals,
+  Kustomize signals, workflow signals, package signals, recommended commands,
+  risk queue, manifest/session verification coverage, learning-path linkage,
+  nav entry, CLI help target, and `open --target kubernetes-readiness`.
+- 2026-06-05: GREEN kubernetes-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-kubernetes-green-studies.wPOkkN/2026-06-05/local__repotutor-kubernetes-green-repo.qXeGhZ__local__b52b1c0b`;
+  confirmed `verificationCheckedRequiredArtifacts=315`, Kubernetes setups 16,
+  manifest signals 6, workload signals 7, Kustomize signals 9, workflow
+  signals 9, risk queue 0, all three new artifacts, and
+  `open --target kubernetes-readiness` -> `html/kubernetes-readiness.html`.
+- 2026-06-05: Verification for Upgrade 205:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 12/12 tests
+  - `pnpm audit:brief`: PASS, 103/103 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

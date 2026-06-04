@@ -5895,6 +5895,101 @@ export const DevContainerReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const KubernetesReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  kubernetesSetups: z.array(z.object({
+    filePath: z.string(),
+    format: z.enum(["manifest-yaml", "kustomization", "package-script", "workflow", "readme", "unknown"]),
+    manifestCount: z.number().int().nonnegative(),
+    workloadCount: z.number().int().nonnegative(),
+    serviceCount: z.number().int().nonnegative(),
+    configCount: z.number().int().nonnegative(),
+    storageCount: z.number().int().nonnegative(),
+    securityCount: z.number().int().nonnegative(),
+    policyCount: z.number().int().nonnegative(),
+    probeCount: z.number().int().nonnegative(),
+    resourceCount: z.number().int().nonnegative(),
+    autoscalingCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  manifestSignals: z.array(z.object({
+    signal: z.enum(["api-version", "kind", "metadata", "labels", "annotations", "namespace", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workloadSignals: z.array(z.object({
+    signal: z.enum(["deployment", "statefulset", "daemonset", "job", "cronjob", "pod", "replicas", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  networkSignals: z.array(z.object({
+    signal: z.enum(["service", "ingress", "network-policy", "ports", "selectors", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["configmap", "secret", "env", "env-from", "image-pull-secret", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  storageSignals: z.array(z.object({
+    signal: z.enum(["persistent-volume", "persistent-volume-claim", "volume-mount", "volume", "storage-class", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  securitySignals: z.array(z.object({
+    signal: z.enum(["service-account", "role", "role-binding", "cluster-role", "cluster-role-binding", "security-context", "pod-security-context", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  healthSignals: z.array(z.object({
+    signal: z.enum(["readiness-probe", "liveness-probe", "startup-probe", "resources", "limits", "requests", "hpa", "pdb", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  kustomizeSignals: z.array(z.object({
+    signal: z.enum(["kustomization", "resources", "bases", "patches", "configmap-generator", "secret-generator", "images", "replacements", "components", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["kubectl-apply", "kubectl-diff", "kubectl-wait", "kubectl-rollout", "kubectl-logs", "kubectl-describe", "kubectl-port-forward", "kubectl-delete", "kustomize-build", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["kubectl", "kustomize", "kubernetes-yaml", "kind", "minikube", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -6201,6 +6296,7 @@ export type MobileReadinessReport = z.infer<typeof MobileReadinessReportSchema>;
 export type EdgeReadinessReport = z.infer<typeof EdgeReadinessReportSchema>;
 export type ComposeReadinessReport = z.infer<typeof ComposeReadinessReportSchema>;
 export type DevContainerReadinessReport = z.infer<typeof DevContainerReadinessReportSchema>;
+export type KubernetesReadinessReport = z.infer<typeof KubernetesReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
