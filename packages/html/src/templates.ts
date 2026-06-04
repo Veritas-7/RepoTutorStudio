@@ -39,6 +39,7 @@ import type {
   ApiContractReport,
   ObservabilityReport,
   PerformanceReport,
+  E2eReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -84,6 +85,7 @@ export interface StudyHtmlInput {
   apiContractReport: ApiContractReport;
   observabilityReport: ObservabilityReport;
   performanceReport: PerformanceReport;
+  e2eReport: E2eReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -149,6 +151,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["api-contracts.html", "API Contracts"],
     ["observability.html", "Observability"],
     ["performance.html", "Performance"],
+    ["e2e.html", "E2E"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -249,6 +252,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>API Contract Readiness</h3><p>${escapeHtml(input.apiContractReport.summary)}</p><p>Schemathesis 패턴으로 schema, generated case phase, response check, runtime/reporting 준비도를 정리합니다.</p><a href="api-contracts.html">API Contracts 열기</a></article>
           <article><h3>Observability Readiness</h3><p>${escapeHtml(input.observabilityReport.summary)}</p><p>OpenTelemetry 패턴으로 traces, metrics, logs, exporter, resource/context readiness를 정리합니다.</p><a href="observability.html">Observability 열기</a></article>
           <article><h3>Performance Readiness</h3><p>${escapeHtml(input.performanceReport.summary)}</p><p>k6 패턴으로 load script, workload, thresholds, checks, metrics/output 준비도를 정리합니다.</p><a href="performance.html">Performance 열기</a></article>
+          <article><h3>E2E Readiness</h3><p>${escapeHtml(input.e2eReport.summary)}</p><p>Playwright 패턴으로 browser projects, locators, assertions, traces/reporters, webServer/baseURL 준비도를 정리합니다.</p><a href="e2e.html">E2E 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -405,6 +409,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Performance Readiness", "performance.html", `<section class="panel" data-source-pattern="k6"><h2>Performance Snapshot</h2><p>${escapeHtml(input.performanceReport.summary)}</p><p class="muted">${escapeHtml(input.performanceReport.sourcePattern)}</p><dl class="meta"><div><dt>scripts</dt><dd>${input.performanceReport.scriptTargets.length}</dd></div><div><dt>workloads</dt><dd>${input.performanceReport.workloadModels.length}</dd></div><div><dt>thresholds</dt><dd>${input.performanceReport.thresholds.length}</dd></div><div><dt>outputs</dt><dd>${input.performanceReport.outputs.length}</dd></div></dl><p class="muted">RepoTutor records k6 readiness only. It does not generate traffic or claim performance pass/fail results.</p></section><section class="grid"><article class="performance-card"><h3>Script Targets</h3>${performanceScriptList(input.performanceReport.scriptTargets)}</article><article class="performance-card"><h3>Workload Models</h3>${performanceWorkloadList(input.performanceReport.workloadModels)}</article><article class="performance-card"><h3>Thresholds</h3>${performanceThresholdList(input.performanceReport.thresholds)}</article><article class="performance-card"><h3>Checks</h3>${performanceCheckList(input.performanceReport.checks)}</article></section><section class="grid"><article class="performance-card"><h3>Metrics</h3>${performanceMetricList(input.performanceReport.metrics)}</article><article class="performance-card"><h3>Outputs</h3>${performanceOutputList(input.performanceReport.outputs)}</article><article class="performance-card"><h3>Runtime Controls</h3>${performanceRuntimeList(input.performanceReport.runtimeControls)}</article><article class="performance-card"><h3>Recommended Commands</h3>${performanceCommandList(input.performanceReport.recommendedCommands)}</article><article class="performance-card"><h3>Risk Queue</h3>${performanceRiskList(input.performanceReport.riskQueue)}</article><article class="performance-card"><h3>다음 확인 단계</h3>${list(input.performanceReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "e2e.html",
+      title: "E2E Readiness",
+      html: pageShell("E2E Readiness", "e2e.html", `<section class="panel" data-source-pattern="Playwright"><h2>E2E Snapshot</h2><p>${escapeHtml(input.e2eReport.summary)}</p><p class="muted">${escapeHtml(input.e2eReport.sourcePattern)}</p><dl class="meta"><div><dt>suites</dt><dd>${input.e2eReport.testSuites.length}</dd></div><div><dt>browser projects</dt><dd>${input.e2eReport.browserProjects.length}</dd></div><div><dt>locators</dt><dd>${input.e2eReport.locatorSignals.length}</dd></div><div><dt>artifacts</dt><dd>${input.e2eReport.artifacts.length}</dd></div></dl><p class="muted">RepoTutor records Playwright-style E2E readiness only. It does not launch browsers or claim user-flow pass/fail results.</p></section><section class="grid"><article class="e2e-card"><h3>Test Suites</h3>${e2eSuiteList(input.e2eReport.testSuites)}</article><article class="e2e-card"><h3>Browser Projects</h3>${e2eBrowserList(input.e2eReport.browserProjects)}</article><article class="e2e-card"><h3>Locator Signals</h3>${e2eLocatorList(input.e2eReport.locatorSignals)}</article><article class="e2e-card"><h3>Assertions</h3>${e2eAssertionList(input.e2eReport.assertions)}</article></section><section class="grid"><article class="e2e-card"><h3>Artifacts</h3>${e2eArtifactList(input.e2eReport.artifacts)}</article><article class="e2e-card"><h3>Runtime Targets</h3>${e2eRuntimeList(input.e2eReport.runtimeTargets)}</article><article class="e2e-card"><h3>Recommended Commands</h3>${e2eCommandList(input.e2eReport.recommendedCommands)}</article><article class="e2e-card"><h3>Risk Queue</h3>${e2eRiskList(input.e2eReport.riskQueue)}</article><article class="e2e-card"><h3>다음 확인 단계</h3>${list(input.e2eReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -544,6 +553,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "API Contract Readiness", path: "html/api-contracts.html", description: "Schemathesis식 schema, generated phase, response check, runtime/reporting 준비도를 확인합니다." },
       { label: "Observability Readiness", path: "html/observability.html", description: "OpenTelemetry식 signal pipeline, instrumentation, exporter, resource/context 준비도를 확인합니다." },
       { label: "Performance Readiness", path: "html/performance.html", description: "k6식 load script, workload model, threshold, output 준비도를 확인합니다." },
+      { label: "E2E Readiness", path: "html/e2e.html", description: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -801,6 +811,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "performance.html",
       goal: "k6식 load script, workload model, threshold, check, output 준비도를 확인합니다.",
       evidence: `script targets ${input.performanceReport.scriptTargets.length}개, thresholds ${input.performanceReport.thresholds.length}개`
+    },
+    {
+      title: "E2E 준비도 확인",
+      href: "e2e.html",
+      goal: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다.",
+      evidence: `test suites ${input.e2eReport.testSuites.length}개, locator signals ${input.e2eReport.locatorSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -1443,6 +1459,51 @@ function performanceRiskList(items: PerformanceReport["riskQueue"]): string {
 }
 
 function performanceHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function e2eSuiteList(items: E2eReport["testSuites"]): string {
+  if (items.length === 0) return "<p class=\"muted\">E2E test suite가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)} / ${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(e2eHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function e2eBrowserList(items: E2eReport["browserProjects"]): string {
+  if (items.length === 0) return "<p class=\"muted\">browser project readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.browser)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(e2eHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function e2eLocatorList(items: E2eReport["locatorSignals"]): string {
+  if (items.length === 0) return "<p class=\"muted\">locator signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.locatorType)}</strong> in ${escapeHtml(item.filePath)} [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(e2eHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function e2eAssertionList(items: E2eReport["assertions"]): string {
+  if (items.length === 0) return "<p class=\"muted\">assertion readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.assertion)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(e2eHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function e2eArtifactList(items: E2eReport["artifacts"]): string {
+  if (items.length === 0) return "<p class=\"muted\">artifact readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.artifact)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(e2eHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function e2eRuntimeList(items: E2eReport["runtimeTargets"]): string {
+  if (items.length === 0) return "<p class=\"muted\">runtime target readiness가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.target)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(e2eHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function e2eCommandList(items: E2eReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function e2eRiskList(items: E2eReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(e2eHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function e2eHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

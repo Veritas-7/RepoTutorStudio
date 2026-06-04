@@ -44,6 +44,7 @@ import {
   ApiContractReport,
   ObservabilityReport,
   PerformanceReport,
+  E2eReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -94,6 +95,7 @@ export interface AnalysisBundle {
   apiContractReport: ApiContractReport;
   observabilityReport: ObservabilityReport;
   performanceReport: PerformanceReport;
+  e2eReport: E2eReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -144,8 +146,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const apiContractReport = await buildApiContractReport(walk);
   const observabilityReport = await buildObservabilityReport(walk, runtimeEnvironmentReport);
   const performanceReport = await buildPerformanceReport(walk, runtimeEnvironmentReport);
+  const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -4336,6 +4339,279 @@ function performanceRuntimeControls(
       readiness: runtimeSignals > 0 && ["env-vars", "distributed"].includes(spec.control) ? "external" : "missing",
       evidence: `${spec.control} runtime control was not detected in static performance files.`,
       relatedHref: runtimeHref
+    };
+  });
+}
+
+async function buildE2eReport(
+  walk: WalkResult,
+  runtimeEnvironmentReport: RuntimeEnvironmentReport
+): Promise<E2eReport> {
+  const sourceFiles = await e2eSourceFiles(walk);
+  const testSuites = e2eTestSuites(sourceFiles);
+  const browserProjects = e2eBrowserProjects(sourceFiles);
+  const locatorSignals = e2eLocatorSignals(sourceFiles);
+  const assertions = e2eAssertions(sourceFiles);
+  const artifacts = e2eArtifacts(sourceFiles);
+  const runtimeTargets = e2eRuntimeTargets(sourceFiles, runtimeEnvironmentReport);
+  const hasSuite = testSuites.some((item) => item.readiness === "ready");
+  const hasLocator = locatorSignals.length > 0;
+  const hasAssertion = assertions.some((item) => item.readiness === "ready");
+  const hasArtifact = artifacts.some((item) => item.artifact !== "none" && item.readiness !== "missing");
+  const hasRuntime = runtimeTargets.some((item) => item.target === "web-server" && item.readiness === "ready")
+    || runtimeTargets.some((item) => item.target === "base-url" && item.readiness === "ready");
+
+  const riskQueue: E2eReport["riskQueue"] = [];
+  if (!hasSuite) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a Playwright test suite or equivalent browser E2E tests before claiming user-flow coverage.",
+      why: "Browser readiness requires executable tests that drive real pages or API contexts.",
+      relatedHref: "html/e2e.html"
+    });
+  }
+  if (hasSuite && !hasRuntime) {
+    riskQueue.push({
+      priority: "high",
+      action: "Configure webServer or baseURL so E2E tests can start and target the app deterministically.",
+      why: "Tests that depend on an already-running local server are harder to reproduce in CI.",
+      relatedHref: "html/runtime-environment.html"
+    });
+  }
+  if (hasSuite && !hasLocator) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Prefer user-facing locators such as getByRole, getByLabel, getByText, or getByTestId.",
+      why: "Playwright's resilient locator model reduces brittle CSS/XPath coupling.",
+      relatedHref: "html/e2e.html"
+    });
+  }
+  if (hasSuite && !hasAssertion) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add web-first assertions for URL, visibility, title, text, network, or snapshots.",
+      why: "Navigation without assertions only proves automation can click, not that the flow works.",
+      relatedHref: "html/e2e.html"
+    });
+  }
+  if (hasSuite && !hasArtifact) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Enable trace, screenshot, video, HTML, JUnit, or JSON artifacts for failed tests.",
+      why: "E2E failures are expensive to triage without retained browser evidence.",
+      relatedHref: "html/e2e.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run Playwright against the original app before treating this report as an E2E pass.",
+    why: "RepoTutor only performs static readiness analysis and never launches a browser.",
+    relatedHref: "html/e2e.html"
+  });
+
+  return {
+    summary: `Playwright식 E2E readiness report: test suite ${testSuites.length}개, browser project ${browserProjects.length}개, locator signal ${locatorSignals.length}개, artifact ${artifacts.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Playwright browser E2E tests config projects locators assertions traces screenshots video reporters CI webServer",
+    testSuites,
+    browserProjects,
+    locatorSignals,
+    assertions,
+    artifacts,
+    runtimeTargets,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npm init playwright@latest", purpose: "Scaffold Playwright Test configuration and starter browser tests." },
+      { command: "npx playwright install --with-deps", purpose: "Install browser binaries and system dependencies for CI-like runs." },
+      { command: "npx playwright test", purpose: "Run the configured E2E test suite." },
+      { command: "npx playwright test --project=chromium --reporter=html,junit", purpose: "Run one browser project while producing local HTML and CI-readable JUnit output." },
+      { command: "npx playwright show-trace trace.zip", purpose: "Open a retained trace artifact for failed-test triage." }
+    ],
+    learnerNextSteps: [
+      "먼저 Playwright config와 test suite가 있는지 확인하세요.",
+      "webServer 또는 baseURL이 없으면 로컬/CI 재현성이 약합니다.",
+      "getByRole/getByLabel/getByText 같은 사용자 중심 locator와 web-first assertion을 함께 보세요.",
+      "이 리포트는 브라우저 실행 결과가 아닙니다. 실제 pass/fail은 원본 앱에서 별도 실행하세요."
+    ]
+  };
+}
+
+type E2eSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function e2eSourceFiles(walk: WalkResult): Promise<E2eSourceFile[]> {
+  const files: E2eSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !e2eInspectablePath(file.relPath)) continue;
+    const pathCandidate = e2ePathSignal(file.relPath);
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!pathCandidate && !e2eContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 140) break;
+  }
+  return files;
+}
+
+function e2eInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|playwright\.config\.[cm]?[jt]s|cypress\.config\.[cm]?[jt]s|wdio\.conf\.[cm]?[jt]s|selenium.*\.(json|ya?ml)|docker-compose\.ya?ml)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(ts|tsx|js|jsx|mjs|cjs|json|ya?ml|md|feature)$/i.test(filePath);
+}
+
+function e2ePathSignal(filePath: string): boolean {
+  return /(playwright|cypress|selenium|webdriverio|wdio|e2e|end-to-end|browser|ui-test|trace|screenshots?|videos?|test-results?)/i.test(filePath);
+}
+
+function e2eContentSignal(text: string): boolean {
+  return /(@playwright\/test|playwright\.config|defineConfig|npx playwright|test\(|expect\(page|page\.goto|getByRole|getByText|getByLabel|getByTestId|page\.locator|toBeVisible|toHaveURL|toHaveTitle|trace:|screenshot:|video:|webServer|baseURL|cypress|cy\.|selenium|webdriverio|browser\.url)/i.test(text);
+}
+
+function e2eTestSuites(sourceFiles: E2eSourceFile[]): E2eReport["testSuites"] {
+  const rows: E2eReport["testSuites"] = [];
+  for (const source of sourceFiles) {
+    const framework = e2eFrameworkFor(source.filePath, source.text);
+    if (framework === "unknown" && !/\b(test|it)\s*\(|describe\s*\(/i.test(source.text)) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework,
+      readiness: framework === "unknown" ? "partial" : "ready",
+      evidence: e2eSuiteEvidence(source.filePath, framework, source.text),
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 80);
+}
+
+function e2eFrameworkFor(filePath: string, text: string): E2eReport["testSuites"][number]["framework"] {
+  if (/@playwright\/test|playwright\.config|npx playwright|from ["']playwright|from ["']@playwright/i.test(text) || /playwright/i.test(filePath)) return "playwright";
+  if (/cypress|cy\./i.test(text) || /cypress/i.test(filePath)) return "cypress";
+  if (/selenium|webdriver\.|By\./i.test(text) || /selenium/i.test(filePath)) return "selenium";
+  if (/webdriverio|browser\.url|\$\(.*\)\.click|wdio/i.test(text) || /wdio|webdriverio/i.test(filePath)) return "webdriverio";
+  return "unknown";
+}
+
+function e2eSuiteEvidence(filePath: string, framework: E2eReport["testSuites"][number]["framework"], text: string): string {
+  if (/playwright\.config|defineConfig/i.test(text)) return `${filePath} configures Playwright Test.`;
+  if (/@playwright\/test/i.test(text)) return `${filePath} imports Playwright Test fixtures and assertions.`;
+  if (/cypress|cy\./i.test(text)) return `${filePath} contains Cypress browser test evidence.`;
+  if (/selenium/i.test(text)) return `${filePath} contains Selenium browser automation evidence.`;
+  if (/webdriverio|browser\.url/i.test(text)) return `${filePath} contains WebdriverIO browser automation evidence.`;
+  return `${filePath} has browser/E2E test-shaped evidence.`;
+}
+
+function e2eBrowserProjects(sourceFiles: E2eSourceFile[]): E2eReport["browserProjects"] {
+  const specs: Array<{ browser: E2eReport["browserProjects"][number]["browser"]; pattern: RegExp; evidence: string }> = [
+    { browser: "chromium", pattern: /chromium|Desktop Chrome|Google Chrome/i, evidence: "Chromium browser project is configured or referenced." },
+    { browser: "firefox", pattern: /firefox|Desktop Firefox/i, evidence: "Firefox browser project is configured or referenced." },
+    { browser: "webkit", pattern: /webkit|Desktop Safari|Safari/i, evidence: "WebKit/Safari browser project is configured or referenced." },
+    { browser: "mobile", pattern: /Pixel 5|iPhone|iPad|devices\[/i, evidence: "Mobile device project or device descriptor is configured." },
+    { browser: "api", pattern: /request\.newContext|APIRequestContext|api testing|playwright\/test.*request/i, evidence: "Playwright API testing context is referenced." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      browser: spec.browser,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.browser} project evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/e2e.html"
+    };
+  });
+}
+
+function e2eLocatorSignals(sourceFiles: E2eSourceFile[]): E2eReport["locatorSignals"] {
+  const specs: Array<{ locatorType: E2eReport["locatorSignals"][number]["locatorType"]; pattern: RegExp; evidence: string }> = [
+    { locatorType: "role", pattern: /getByRole\s*\(/i, evidence: "uses role-based user-facing locators." },
+    { locatorType: "text", pattern: /getByText\s*\(|locator\(\s*["']text=/i, evidence: "uses visible text locators." },
+    { locatorType: "label", pattern: /getByLabel\s*\(|getByPlaceholder\s*\(/i, evidence: "uses form label or placeholder locators." },
+    { locatorType: "testid", pattern: /getByTestId\s*\(|data-testid|data-test-id/i, evidence: "uses stable test id locators." },
+    { locatorType: "css", pattern: /page\.locator\s*\(\s*["'][#.A-Za-z[]|locator\(\s*["']css=/i, evidence: "uses CSS locator selectors." },
+    { locatorType: "xpath", pattern: /locator\(\s*["']xpath=|\/\/[A-Za-z]/i, evidence: "uses XPath locator selectors." },
+    { locatorType: "page-object", pattern: /class\s+\w*(Page|Pom|Object)|Page Object|POM/i, evidence: "uses a page object model or page wrapper." }
+  ];
+  const rows: E2eReport["locatorSignals"] = [];
+  for (const source of sourceFiles) {
+    for (const spec of specs) {
+      if (!spec.pattern.test(source.text) && !spec.pattern.test(source.filePath)) continue;
+      rows.push({
+        filePath: source.filePath,
+        locatorType: spec.locatorType,
+        readiness: "ready",
+        evidence: `${source.filePath} ${spec.evidence}`,
+        sourceHref: source.sourceHref
+      });
+    }
+  }
+  return rows.slice(0, 80);
+}
+
+function e2eAssertions(sourceFiles: E2eSourceFile[]): E2eReport["assertions"] {
+  const specs: Array<{ assertion: E2eReport["assertions"][number]["assertion"]; pattern: RegExp; evidence: string }> = [
+    { assertion: "url", pattern: /toHaveURL|url\(\)|expect\(.*url/i, evidence: "URL assertion evidence was detected." },
+    { assertion: "visible", pattern: /toBeVisible|toBeHidden|isVisible/i, evidence: "Visibility assertion evidence was detected." },
+    { assertion: "text", pattern: /toHaveText|toContainText|textContent/i, evidence: "Text assertion evidence was detected." },
+    { assertion: "title", pattern: /toHaveTitle|title\(\)/i, evidence: "Title assertion evidence was detected." },
+    { assertion: "network", pattern: /waitForResponse|route\(|request\.|response\.|toHaveStatus/i, evidence: "Network/API assertion or routing evidence was detected." },
+    { assertion: "snapshot", pattern: /toHaveScreenshot|toMatchSnapshot|snapshot/i, evidence: "Snapshot assertion evidence was detected." },
+    { assertion: "accessibility", pattern: /aria|accessibility|axe|toHaveAccessibleName|toHaveAccessibleDescription/i, evidence: "Accessibility assertion evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text));
+    return {
+      assertion: spec.assertion,
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.assertion} assertion evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/e2e.html"
+    };
+  });
+}
+
+function e2eArtifacts(sourceFiles: E2eSourceFile[]): E2eReport["artifacts"] {
+  const specs: Array<{ artifact: Exclude<E2eReport["artifacts"][number]["artifact"], "none">; pattern: RegExp; evidence: string }> = [
+    { artifact: "trace", pattern: /trace\s*:|show-trace|trace\.zip|trace viewer/i, evidence: "trace artifact capture is configured or documented." },
+    { artifact: "screenshot", pattern: /screenshot\s*:|toHaveScreenshot|page\.screenshot|screenshots?/i, evidence: "screenshot artifact capture is configured or documented." },
+    { artifact: "video", pattern: /video\s*:|recordVideo|videos?/i, evidence: "video artifact capture is configured or documented." },
+    { artifact: "html-report", pattern: /reporter\s*:.*html|html reporter|show-report|playwright-report/i, evidence: "HTML reporter output is configured or documented." },
+    { artifact: "junit", pattern: /reporter\s*:.*junit|\bjunit\b/i, evidence: "JUnit reporter output is configured or documented." },
+    { artifact: "json", pattern: /reporter\s*:.*json|\bjson reporter\b|test-results\.json/i, evidence: "JSON reporter output is configured or documented." }
+  ];
+  const rows: E2eReport["artifacts"] = [];
+  for (const spec of specs) {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    if (!match) continue;
+    rows.push({ artifact: spec.artifact, readiness: "ready", evidence: `${match.filePath} ${spec.evidence}`, relatedHref: match.sourceHref });
+  }
+  if (rows.length === 0) {
+    rows.push({ artifact: "none", readiness: "missing", evidence: "No trace, screenshot, video, HTML, JUnit, or JSON E2E artifact signal was detected.", relatedHref: "html/e2e.html" });
+  }
+  return rows;
+}
+
+function e2eRuntimeTargets(
+  sourceFiles: E2eSourceFile[],
+  runtimeEnvironmentReport: RuntimeEnvironmentReport
+): E2eReport["runtimeTargets"] {
+  const specs: Array<{ target: E2eReport["runtimeTargets"][number]["target"]; pattern: RegExp; evidence: string }> = [
+    { target: "web-server", pattern: /webServer\s*:|reuseExistingServer|npm run dev|pnpm dev|yarn dev/i, evidence: "webServer or dev-server startup is configured." },
+    { target: "base-url", pattern: /baseURL\s*:|PLAYWRIGHT_BASE_URL|process\.env\.\w*BASE_URL/i, evidence: "baseURL target is configured." },
+    { target: "env-vars", pattern: /process\.env|dotenv|PLAYWRIGHT_|CI\b/i, evidence: "environment variable controls are referenced." },
+    { target: "parallel-workers", pattern: /workers\s*:|fullyParallel|parallel/i, evidence: "parallel worker controls are configured." },
+    { target: "retries", pattern: /retries\s*:|--retries/i, evidence: "retry controls are configured." },
+    { target: "ci-artifacts", pattern: /upload-artifact|actions\/upload-artifact|test-results|playwright-report/i, evidence: "CI artifact upload or retained test output is configured." },
+    { target: "storage-state", pattern: /storageState|auth\.json|context\(\)\.storageState/i, evidence: "authenticated storage state reuse is configured." }
+  ];
+  const runtimeSignals = runtimeEnvironmentReport.setupSignals.length + runtimeEnvironmentReport.containerSignals.length;
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    if (match) return { target: spec.target, readiness: "ready", evidence: `${match.filePath} ${spec.evidence}`, relatedHref: match.sourceHref };
+    return {
+      target: spec.target,
+      readiness: runtimeSignals > 0 && ["web-server", "base-url", "env-vars"].includes(spec.target) ? "external" : "missing",
+      evidence: `${spec.target} runtime target was not detected in E2E files.`,
+      relatedHref: "html/runtime-environment.html"
     };
   });
 }

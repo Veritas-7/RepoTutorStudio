@@ -1754,6 +1754,39 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 131:
   - `7627676` performance readiness report
 
+- 2026-06-04: AutoResearch Upgrade 132 candidate selected:
+  `microsoft/playwright` (`https://github.com/microsoft/playwright`; public
+  Apache-2.0; 90,218 stars; 5,853 forks; updated 2026-06-04T01:39:58Z).
+  Compared with `cypress-io/cypress`, `SeleniumHQ/selenium`, and
+  `webdriverio/webdriverio`; selected Playwright for current activity, license
+  clarity, browser-project model, trace/report artifacts, and direct alignment
+  with RepoTutor user-flow readiness. Cloned ignored external source to
+  `research/external-src/microsoft-playwright` and inspected README, config
+  docs, browser projects, locators, assertions, trace/screenshot/video
+  reporting, webServer/baseURL/runtime controls, and CLI/MCP docs without
+  executing external source.
+- 2026-06-04: RED e2e smoke generated
+  `/tmp/repotutor-e2e-red-studies.T2zTjI/2026-06-04/local__simple-ts-app__main__c688d74e`;
+  old build was missing `analysis/e2e-report.json`, `markdown/e2e.md`, and
+  `html/e2e.html` as expected.
+- 2026-06-04: Implemented Playwright-style E2E readiness report:
+  `E2eReportSchema`, `analysis/e2e-report.json`, `markdown/e2e.md`,
+  `html/e2e.html`, test suites, browser projects, locator signals, assertions,
+  artifacts, runtime targets, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target e2e`.
+- 2026-06-04: GREEN e2e smoke generated
+  `/tmp/repotutor-e2e-green-studies.Ce8iow/2026-06-04/local__simple-ts-app__main__c688d74e`;
+  confirmed `verificationCheckedRequiredArtifacts=96`, test suites 0, browser
+  projects 5, locator signals 0, assertions 7, artifacts 1, runtime targets 7,
+  recommended commands 5, risk queue 2, `e2e-card`,
+  `data-source-pattern="Playwright"`, manifest/learning-path entries, and
+  `open --target e2e` -> `html/e2e.html`.
+- 2026-06-04: Verification for Upgrade 132:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 30/30 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

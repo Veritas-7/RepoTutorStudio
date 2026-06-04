@@ -1236,6 +1236,60 @@ export const PerformanceReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const E2eReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  testSuites: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["playwright", "cypress", "selenium", "webdriverio", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  browserProjects: z.array(z.object({
+    browser: z.enum(["chromium", "firefox", "webkit", "mobile", "api", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  locatorSignals: z.array(z.object({
+    filePath: z.string(),
+    locatorType: z.enum(["role", "text", "label", "testid", "css", "xpath", "page-object", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  assertions: z.array(z.object({
+    assertion: z.enum(["url", "visible", "text", "title", "network", "snapshot", "accessibility", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  artifacts: z.array(z.object({
+    artifact: z.enum(["trace", "screenshot", "video", "html-report", "junit", "json", "none"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runtimeTargets: z.array(z.object({
+    target: z.enum(["web-server", "base-url", "env-vars", "parallel-workers", "retries", "ci-artifacts", "storage-state"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1469,6 +1523,7 @@ export type PolicyGateReport = z.infer<typeof PolicyGateReportSchema>;
 export type ApiContractReport = z.infer<typeof ApiContractReportSchema>;
 export type ObservabilityReport = z.infer<typeof ObservabilityReportSchema>;
 export type PerformanceReport = z.infer<typeof PerformanceReportSchema>;
+export type E2eReport = z.infer<typeof E2eReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
