@@ -3853,6 +3853,53 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 58/58 audit checks across 13 generated reports
 
+### Upgrade 161: Payment Readiness Report
+
+- Cloned and inspected `stripe/stripe-node` under
+  `research/external-src/stripe-stripe-node` without executing external
+  source. Clone HEAD was `23f097e`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 4,430 stars, 908 forks, updated
+  2026-06-03T11:34:15Z. Compared with `stripe/stripe-js`,
+  `stripe/react-stripe-js`, and
+  `stripe-samples/checkout-single-subscription`; selected Stripe Node because
+  it directly models server-side payment readiness: `new Stripe`, Checkout
+  Sessions, PaymentIntents, subscriptions, customers, invoices, billing
+  portal, webhooks, `constructEvent`, raw body/signature verification,
+  idempotency, `apiVersion`, secret/env configuration, price/product IDs,
+  currency, and quantity assumptions. No source code was copied into
+  RepoTutor.
+- Implemented Stripe-style payment-readiness report:
+  `PaymentReadinessReportSchema`, `analysis/payment-readiness-report.json`,
+  `markdown/payment-readiness.md`, `html/payment-readiness.html`, payment
+  setups, checkout signals, webhook signals, customer/billing signals,
+  credential signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target payment-readiness`.
+- Source pattern: Stripe Node separates server-side client setup through
+  `new Stripe`, secret-key and `apiVersion` configuration, Checkout Session
+  and PaymentIntent creation, subscription/customer/invoice/billing portal
+  lifecycle surfaces, raw-body webhook signature verification through
+  `constructEvent`, event-type dispatch, idempotency or duplicate-event
+  handling, and price/product/currency/quantity assumptions. RepoTutor maps
+  that to deterministic static payment readiness and explicitly does not call
+  payment APIs, create checkout sessions, charge cards, verify live webhooks,
+  or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-payment-readiness-red-studies.D5t0yw/2026-06-04/local__simple-ts-app__main__5e1943ff`;
+  old behavior was missing `analysis/payment-readiness-report.json`,
+  `markdown/payment-readiness.md`, and `html/payment-readiness.html`, and
+  `open --target payment-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-payment-readiness-green-studies.esOBKP/2026-06-04/local__simple-ts-app__main__5e1943ff`;
+  confirmed `verificationCheckedRequiredArtifacts=183`, payment setups 0,
+  checkout signals 8, webhook signals 8, customer signals 8, credential
+  signals 7, package signals 6, risk queue 2, manifest/learning-path entries,
+  and `open --target payment-readiness` ->
+  `html/payment-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 59/59 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

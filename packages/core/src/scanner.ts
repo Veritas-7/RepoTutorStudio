@@ -73,6 +73,7 @@ import {
   StateManagementReadinessReport,
   FormReadinessReport,
   AuthReadinessReport,
+  PaymentReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -152,6 +153,7 @@ export interface AnalysisBundle {
   stateManagementReadinessReport: StateManagementReadinessReport;
   formReadinessReport: FormReadinessReport;
   authReadinessReport: AuthReadinessReport;
+  paymentReadinessReport: PaymentReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -231,8 +233,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const stateManagementReadinessReport = await buildStateManagementReadinessReport(walk);
   const formReadinessReport = await buildFormReadinessReport(walk);
   const authReadinessReport = await buildAuthReadinessReport(walk);
+  const paymentReadinessReport = await buildPaymentReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -12656,6 +12659,271 @@ function authReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: R
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/auth-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildPaymentReadinessReport(walk: WalkResult): Promise<PaymentReadinessReport> {
+  const sourceFiles = await paymentReadinessSourceFiles(walk);
+  const paymentSetups = paymentReadinessPaymentSetups(sourceFiles);
+  const checkoutSignals = paymentReadinessCheckoutSignals(sourceFiles);
+  const webhookSignals = paymentReadinessWebhookSignals(sourceFiles);
+  const customerSignals = paymentReadinessCustomerSignals(sourceFiles);
+  const credentialSignals = paymentReadinessCredentialSignals(sourceFiles);
+  const packageSignals = paymentReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasStripePackage = packageSignals.some((item) => item.signal === "stripe" && item.readiness === "ready");
+  const hasSetup = paymentSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = paymentSetups.some((item) => item.readiness === "ready");
+  const hasCheckout = checkoutSignals.some((item) => ["checkout-session", "payment-intent", "subscription"].includes(item.signal) && item.readiness === "ready");
+  const hasWebhook = webhookSignals.some((item) => item.signal === "webhook-route" && item.readiness === "ready");
+  const hasSignatureVerification = webhookSignals.some((item) => item.signal === "signature-verification" && item.readiness === "ready");
+  const hasSecret = credentialSignals.some((item) => item.signal === "STRIPE_SECRET_KEY" && item.readiness === "ready");
+  const hasWebhookSecret = credentialSignals.some((item) => ["STRIPE_WEBHOOK_SECRET", "webhook-secret"].includes(item.signal) && item.readiness === "ready");
+  const hasPrice = checkoutSignals.some((item) => item.signal === "price-id" && item.readiness === "ready") || credentialSignals.some((item) => item.signal === "price-env" && item.readiness === "ready");
+  const hasIdempotency = webhookSignals.some((item) => item.signal === "idempotency" && item.readiness === "ready");
+  const hasCustomerBilling = customerSignals.some((item) => ["customer", "subscription", "invoice", "billing-portal"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: PaymentReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasCheckout) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the payment strategy before claiming payment readiness.",
+      why: "Payment readiness starts with an explicit payment package, server client setup, checkout flow, payment intent, subscription, or webhook surface.",
+      relatedHref: "html/payment-readiness.html"
+    });
+  }
+  if (hasStripePackage && !hasReadySetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Expose a server-side Stripe client setup before trusting payment flow scans.",
+      why: "Stripe's Node SDK expects server-side initialization with a secret key and optional API version before creating customers, checkout sessions, or payment intents.",
+      relatedHref: "html/payment-readiness.html"
+    });
+  }
+  if ((hasStripePackage || hasSetup) && !hasSecret) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document STRIPE_SECRET_KEY or the equivalent server-only secret key in deployment configuration.",
+      why: "Payment server calls must not depend on missing or client-exposed secret-key configuration.",
+      relatedHref: "html/payment-readiness.html"
+    });
+  }
+  if (hasCheckout && !hasPrice) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Map checkout prices/products to environment variables or a typed pricing table.",
+      why: "Checkout and subscription flows need auditable price IDs, product IDs, currency, and quantity assumptions.",
+      relatedHref: "html/payment-readiness.html"
+    });
+  }
+  if (hasWebhook && (!hasSignatureVerification || !hasWebhookSecret)) {
+    riskQueue.push({
+      priority: "high",
+      action: "Verify webhook raw-body handling and signature verification with a webhook secret.",
+      why: "Stripe webhooks must use the raw request body and constructEvent signature verification to reject forged events.",
+      relatedHref: "html/payment-readiness.html"
+    });
+  }
+  if (hasWebhook && !hasIdempotency) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add idempotency or duplicate-event handling for payment webhooks.",
+      why: "Payment webhooks may be retried; fulfillment and entitlement updates need duplicate-safe processing.",
+      relatedHref: "html/payment-readiness.html"
+    });
+  }
+  if (hasCustomerBilling && !hasWebhook) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect billing lifecycle events to a verified webhook handler.",
+      why: "Subscriptions, invoices, refunds, and portals usually need server-side event handling to keep local entitlement state in sync.",
+      relatedHref: "html/payment-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run payment flow tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not call payment APIs, create checkout sessions, charge cards, verify live webhooks, or run the analyzed project's tests.",
+    relatedHref: "html/payment-readiness.html"
+  });
+
+  return {
+    summary: `Stripe식 payment readiness report: payment setup ${paymentSetups.length}개, checkout signal ${checkoutSignals.length}개, webhook signal ${webhookSignals.length}개, customer/billing signal ${customerSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Stripe new Stripe checkout sessions payment intents subscriptions customers invoices billing portal webhooks constructEvent raw body signature idempotency apiVersion env price",
+    paymentSetups,
+    checkoutSignals,
+    webhookSignals,
+    customerSignals,
+    credentialSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"new Stripe|Stripe\\(|STRIPE_SECRET_KEY|apiVersion\" src app pages packages", purpose: "Inventory server-side Stripe client setup and API version configuration." },
+      { command: "rg \"checkout\\.sessions|paymentIntents|PaymentIntent|redirectToCheckout|loadStripe\" src app pages packages", purpose: "Find Checkout Sessions, PaymentIntents, and client redirect or Elements surfaces." },
+      { command: "rg \"webhooks|constructEvent|stripe-signature|rawBody|raw body|STRIPE_WEBHOOK_SECRET\" src app pages packages", purpose: "Review webhook route, raw-body handling, signature verification, and webhook secret configuration." },
+      { command: "rg \"checkout.session.completed|invoice.paid|invoice.payment_failed|payment_intent.succeeded|customer.subscription\" src app pages packages", purpose: "Trace event handling for fulfillment, invoices, payment failures, and subscription changes." },
+      { command: "rg \"price_|product_|PRICE|currency|quantity|billingPortal|subscriptions|customers|invoices|refunds\" src app pages packages", purpose: "Check pricing, products, billing portal, customer, invoice, subscription, and refund assumptions." },
+      { command: "npx vitest run", purpose: "Run local tests that exercise checkout creation, webhook verification, entitlement updates, and duplicate-event handling." }
+    ],
+    learnerNextSteps: [
+      "먼저 서버 쪽 Stripe client 생성 위치를 찾고 STRIPE_SECRET_KEY와 apiVersion이 어떻게 들어가는지 확인하세요.",
+      "checkout.sessions.create 또는 paymentIntents.create가 있으면 price, currency, quantity, success/cancel URL을 함께 추적하세요.",
+      "webhooks.constructEvent가 있으면 raw body와 stripe-signature header, STRIPE_WEBHOOK_SECRET 연결을 반드시 같이 확인하세요.",
+      "subscription, invoice, billing portal, refund 신호가 있으면 webhook event와 로컬 entitlement 업데이트가 중복 안전하게 연결되는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 결제, 카드 청구, provider callback, webhook 검증은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type PaymentReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function paymentReadinessSourceFiles(walk: WalkResult): Promise<PaymentReadinessSourceFile[]> {
+  const files: PaymentReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !paymentReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!paymentReadinessPathSignal(file.relPath) && !paymentReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function paymentReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return paymentReadinessPathSignal(filePath)
+    || /^(package\.json|\.env\.example|\.env\.sample|next\.config\.[cm]?[jt]s|vite\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|env)$/i.test(filePath);
+}
+
+function paymentReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(payments?|billing|checkout|stripe|webhooks?|subscriptions?|invoices?|customers?|pricing|prices?|products?|refunds?)(\/|\.|-|_|$)|paypal|paddle|lemonsqueezy/i.test(filePath);
+}
+
+function paymentReadinessContentSignal(text: string): boolean {
+  return /\b(Stripe|stripe|checkout\.sessions|paymentIntents|PaymentIntent|subscriptions|billingPortal|webhooks|constructEvent|stripe-signature|rawBody|idempotencyKey|apiVersion|STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|STRIPE_PUBLISHABLE_KEY|NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY|price_|product_|currency|quantity|invoice|refund|customer|PayPal|Paddle|LemonSqueezy)\b/i.test(text);
+}
+
+function paymentReadinessPaymentSetups(sourceFiles: PaymentReadinessSourceFile[]): PaymentReadinessReport["paymentSetups"] {
+  const rows: PaymentReadinessReport["paymentSetups"] = [];
+  for (const source of sourceFiles) {
+    const serverClientCount = countMatches(source.text, /\bnew\s+Stripe\s*\(|\bStripe\s*\(\s*(process\.env\.)?STRIPE_SECRET_KEY|require\(["']stripe["']\)\s*\(/gi);
+    const checkoutSessionCount = countMatches(source.text, /\bcheckout\.sessions\.(create|retrieve|list)|\bCheckoutSession\b|\bredirectToCheckout\b/gi);
+    const paymentIntentCount = countMatches(source.text, /\bpaymentIntents\.(create|retrieve|confirm|update)|\bPaymentIntent\b/gi);
+    const webhookHandlerCount = countMatches(source.text, /\bwebhooks\.constructEvent\b|\bconstructEvent\s*\(|\bstripe-signature\b|\bwebhook\b/gi);
+    const hasSetupSignal = serverClientCount + checkoutSessionCount + paymentIntentCount + webhookHandlerCount > 0 || /\bpaypal|paddle|lemonsqueezy\b/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: paymentReadinessProvider(source),
+      serverClientCount,
+      checkoutSessionCount,
+      paymentIntentCount,
+      webhookHandlerCount,
+      readiness: serverClientCount > 0 && (checkoutSessionCount > 0 || paymentIntentCount > 0 || webhookHandlerCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains server client ${serverClientCount}, checkout sessions ${checkoutSessionCount}, payment intents ${paymentIntentCount}, webhook handlers ${webhookHandlerCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function paymentReadinessProvider(source: PaymentReadinessSourceFile): PaymentReadinessReport["paymentSetups"][number]["provider"] {
+  if (/\bStripe\b|["']stripe["']|@stripe\//i.test(source.text)) return "stripe";
+  if (/\bpaypal|@paypal/i.test(source.text)) return "paypal";
+  if (/\bpaddle|@paddle/i.test(source.text)) return "paddle";
+  if (/\blemonsqueezy|lemon-squeezy/i.test(source.text)) return "lemonsqueezy";
+  if (/\bpayment|billing|checkout\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function paymentReadinessCheckoutSignals(sourceFiles: PaymentReadinessSourceFile[]): PaymentReadinessReport["checkoutSignals"] {
+  const specs: Array<{ signal: PaymentReadinessReport["checkoutSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "checkout-session", pattern: /\bcheckout\.sessions\.(create|retrieve|list)|\bCheckoutSession\b|\bredirectToCheckout\b/i, evidence: "Checkout Session evidence was detected." },
+    { signal: "payment-intent", pattern: /\bpaymentIntents\.(create|retrieve|confirm|update)|\bPaymentIntent\b/i, evidence: "PaymentIntent evidence was detected." },
+    { signal: "subscription", pattern: /\bsubscriptions?\.(create|retrieve|update|cancel)|\bmode\s*:\s*['\"]subscription|\bcustomer\.subscription|\bSubscription\b/i, evidence: "subscription evidence was detected." },
+    { signal: "customer-portal", pattern: /\bbillingPortal\b|\bbilling_portal\b|\bportal\.sessions\.(create|retrieve)|customer portal/i, evidence: "billing portal evidence was detected." },
+    { signal: "price-id", pattern: /\bprice_[A-Za-z0-9]+|\bprice\s*:\s*|PRICE_ID|STRIPE_PRICE/i, evidence: "price ID evidence was detected." },
+    { signal: "product-id", pattern: /\bprod_[A-Za-z0-9]+|\bproduct\s*:\s*|PRODUCT_ID|STRIPE_PRODUCT/i, evidence: "product ID evidence was detected." },
+    { signal: "currency", pattern: /\bcurrency\s*:\s*['\"][a-z]{3}['\"]|\bCURRENCY\b/i, evidence: "currency evidence was detected." },
+    { signal: "quantity", pattern: /\bquantity\s*:\s*\d+|\bquantity\s*:/i, evidence: "quantity evidence was detected." }
+  ];
+  return paymentReadinessSignalFromSpecs(sourceFiles, specs, "checkout", "signal");
+}
+
+function paymentReadinessWebhookSignals(sourceFiles: PaymentReadinessSourceFile[]): PaymentReadinessReport["webhookSignals"] {
+  const specs: Array<{ signal: PaymentReadinessReport["webhookSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "webhook-route", pattern: /(^|\/)webhooks?(\/|\.|-|_|$)|\bwebhook\b|\bwebhooks\b/i, evidence: "webhook route or handler evidence was detected." },
+    { signal: "signature-verification", pattern: /\bwebhooks\.constructEvent\b|\bconstructEvent\s*\(|\bverifyHeader\b|\bstripe-signature\b/i, evidence: "webhook signature verification evidence was detected." },
+    { signal: "raw-body", pattern: /\brawBody\b|\braw\s*\(|\bbuffer\s*\(|\btext\s*\(\s*\)|raw request body|bodyParser\s*:\s*false/i, evidence: "raw body handling evidence was detected." },
+    { signal: "event-switch", pattern: /\bswitch\s*\([^)]*event\.type|\bevent\.type\b|\bcase\s+['\"][a-z0-9_.]+['\"]/i, evidence: "webhook event type dispatch evidence was detected." },
+    { signal: "checkout-completed", pattern: /checkout\.session\.completed/i, evidence: "checkout completion event evidence was detected." },
+    { signal: "invoice-paid", pattern: /invoice\.(paid|payment_succeeded|finalized)/i, evidence: "invoice paid/finalized event evidence was detected." },
+    { signal: "payment-failed", pattern: /invoice\.payment_failed|payment_intent\.payment_failed|charge\.failed/i, evidence: "payment failure event evidence was detected." },
+    { signal: "idempotency", pattern: /\bidempotency(Key)?\b|\bidempotent\b|\bevent\.id\b|\bprocessedEvents\b/i, evidence: "idempotency or duplicate-event evidence was detected." }
+  ];
+  return paymentReadinessSignalFromSpecs(sourceFiles, specs, "webhook", "signal");
+}
+
+function paymentReadinessCustomerSignals(sourceFiles: PaymentReadinessSourceFile[]): PaymentReadinessReport["customerSignals"] {
+  const specs: Array<{ signal: PaymentReadinessReport["customerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "customer", pattern: /\bcustomers?\.(create|retrieve|update|list)|\bcustomer\s*:/i, evidence: "customer API evidence was detected." },
+    { signal: "subscription", pattern: /\bsubscriptions?\.(create|retrieve|update|cancel|list)|\bSubscription\b/i, evidence: "subscription API evidence was detected." },
+    { signal: "invoice", pattern: /\binvoices?\.(create|retrieve|finalize|pay|list)|\binvoiceItems?\./i, evidence: "invoice API evidence was detected." },
+    { signal: "billing-portal", pattern: /\bbillingPortal\b|\bportal\.sessions\b|customer portal/i, evidence: "billing portal evidence was detected." },
+    { signal: "trial", pattern: /\btrial_period_days\b|\btrial_end\b|\btrial\b/i, evidence: "trial configuration evidence was detected." },
+    { signal: "coupon", pattern: /\bcoupon\b|\bpromotionCode\b|\bdiscount\b/i, evidence: "coupon or discount evidence was detected." },
+    { signal: "tax", pattern: /\bautomatic_tax\b|\btax_rates?\b|\btax_behavior\b|\btax_code\b/i, evidence: "tax configuration evidence was detected." },
+    { signal: "refund", pattern: /\brefunds?\.(create|retrieve|list)|\bRefund\b/i, evidence: "refund evidence was detected." }
+  ];
+  return paymentReadinessSignalFromSpecs(sourceFiles, specs, "customer", "signal");
+}
+
+function paymentReadinessCredentialSignals(sourceFiles: PaymentReadinessSourceFile[]): PaymentReadinessReport["credentialSignals"] {
+  const specs: Array<{ signal: PaymentReadinessReport["credentialSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "STRIPE_SECRET_KEY", pattern: /\bSTRIPE_SECRET_KEY\b|\bsk_(test|live)_/i, evidence: "STRIPE_SECRET_KEY evidence was detected." },
+    { signal: "STRIPE_WEBHOOK_SECRET", pattern: /\bSTRIPE_WEBHOOK_SECRET\b|\bwhsec_/i, evidence: "STRIPE_WEBHOOK_SECRET evidence was detected." },
+    { signal: "STRIPE_PUBLISHABLE_KEY", pattern: /\bSTRIPE_PUBLISHABLE_KEY\b|\bpk_(test|live)_/i, evidence: "STRIPE_PUBLISHABLE_KEY evidence was detected." },
+    { signal: "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY", pattern: /\bNEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY\b/i, evidence: "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY evidence was detected." },
+    { signal: "price-env", pattern: /\bSTRIPE_PRICE|\bPRICE_ID\b|\bPRICE_[A-Z0-9_]+\b/i, evidence: "price environment variable evidence was detected." },
+    { signal: "api-version", pattern: /\bapiVersion\s*:|\bStripe-Version\b|API_VERSION/i, evidence: "Stripe API version evidence was detected." },
+    { signal: "webhook-secret", pattern: /\bwebhookSecret\b|\bendpointSecret\b|\bsigningSecret\b/i, evidence: "webhook secret variable evidence was detected." }
+  ];
+  return paymentReadinessSignalFromSpecs(sourceFiles, specs, "credential", "signal");
+}
+
+function paymentReadinessPackageSignals(sourceFiles: PaymentReadinessSourceFile[]): PaymentReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: PaymentReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "stripe", pattern: /["']stripe["']|from\s+["']stripe["']|\bnew\s+Stripe\b/i, evidence: "stripe package/import evidence was detected." },
+    { signal: "@stripe/stripe-js", pattern: /@stripe\/stripe-js|\bloadStripe\b/i, evidence: "@stripe/stripe-js package/import evidence was detected." },
+    { signal: "@stripe/react-stripe-js", pattern: /@stripe\/react-stripe-js|\bElements\b|\bPaymentElement\b/i, evidence: "@stripe/react-stripe-js package/import evidence was detected." },
+    { signal: "paypal", pattern: /@paypal|\bpaypal\b/i, evidence: "PayPal package/import evidence was detected." },
+    { signal: "paddle", pattern: /@paddle|\bpaddle\b/i, evidence: "Paddle package/import evidence was detected." },
+    { signal: "lemonsqueezy", pattern: /lemonsqueezy|lemon-squeezy/i, evidence: "Lemon Squeezy package/import evidence was detected." }
+  ];
+  return paymentReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function paymentReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: PaymentReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/payment-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

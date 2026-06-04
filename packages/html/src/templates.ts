@@ -68,6 +68,7 @@ import type {
   StateManagementReadinessReport,
   FormReadinessReport,
   AuthReadinessReport,
+  PaymentReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -142,6 +143,7 @@ export interface StudyHtmlInput {
   stateManagementReadinessReport: StateManagementReadinessReport;
   formReadinessReport: FormReadinessReport;
   authReadinessReport: AuthReadinessReport;
+  paymentReadinessReport: PaymentReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -236,6 +238,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["state-management-readiness.html", "State Management"],
     ["form-readiness.html", "Forms"],
     ["auth-readiness.html", "Auth"],
+    ["payment-readiness.html", "Payments"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -365,6 +368,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>State Management Readiness</h3><p>${escapeHtml(input.stateManagementReadinessReport.summary)}</p><p>Redux Toolkit 패턴으로 configureStore, slices, selectors, middleware, entity adapters, RTK Query 연결을 정리합니다.</p><a href="state-management-readiness.html">State Management 열기</a></article>
           <article><h3>Form Readiness</h3><p>${escapeHtml(input.formReadinessReport.summary)}</p><p>React Hook Form 패턴으로 useForm, register, submit, validation, errors, field array 준비도를 정리합니다.</p><a href="form-readiness.html">Forms 열기</a></article>
           <article><h3>Auth Readiness</h3><p>${escapeHtml(input.authReadinessReport.summary)}</p><p>Auth.js 패턴으로 handlers, providers, callbacks, sessions, middleware, env secret 준비도를 정리합니다.</p><a href="auth-readiness.html">Auth 열기</a></article>
+          <article><h3>Payment Readiness</h3><p>${escapeHtml(input.paymentReadinessReport.summary)}</p><p>Stripe 패턴으로 server client, checkout, PaymentIntent, webhooks, billing lifecycle, env secret 준비도를 정리합니다.</p><a href="payment-readiness.html">Payments 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -666,6 +670,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Auth Readiness", "auth-readiness.html", `<section class="panel" data-source-pattern="Auth.js"><h2>Auth Snapshot</h2><p>${escapeHtml(input.authReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.authReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.authReadinessReport.authSetups.length}</dd></div><div><dt>sessions</dt><dd>${input.authReadinessReport.sessionSurfaces.length}</dd></div><div><dt>protection</dt><dd>${input.authReadinessReport.protectionSignals.length}</dd></div><div><dt>providers</dt><dd>${input.authReadinessReport.providerSignals.length}</dd></div></dl><p class="muted">RepoTutor records auth readiness only. It does not start auth servers, call providers, mint tokens, submit credentials, or run the analyzed project's tests.</p></section><section class="grid"><article class="auth-readiness-card"><h3>Auth Setups</h3>${authReadinessSetupList(input.authReadinessReport.authSetups)}</article><article class="auth-readiness-card"><h3>Session Surfaces</h3>${authReadinessSessionList(input.authReadinessReport.sessionSurfaces)}</article><article class="auth-readiness-card"><h3>Protection Signals</h3>${authReadinessSignalList(input.authReadinessReport.protectionSignals, "signal")}</article><article class="auth-readiness-card"><h3>Provider Signals</h3>${authReadinessSignalList(input.authReadinessReport.providerSignals, "signal")}</article></section><section class="grid"><article class="auth-readiness-card"><h3>Callback Signals</h3>${authReadinessSignalList(input.authReadinessReport.callbackSignals, "signal")}</article><article class="auth-readiness-card"><h3>Credential Signals</h3>${authReadinessSignalList(input.authReadinessReport.credentialSignals, "signal")}</article><article class="auth-readiness-card"><h3>Package Signals</h3>${authReadinessSignalList(input.authReadinessReport.packageSignals, "signal")}</article><article class="auth-readiness-card"><h3>Recommended Commands</h3>${authReadinessCommandList(input.authReadinessReport.recommendedCommands)}</article><article class="auth-readiness-card"><h3>Risk Queue</h3>${authReadinessRiskList(input.authReadinessReport.riskQueue)}</article><article class="auth-readiness-card"><h3>다음 확인 단계</h3>${list(input.authReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "payment-readiness.html",
+      title: "Payment Readiness",
+      html: pageShell("Payment Readiness", "payment-readiness.html", `<section class="panel" data-source-pattern="Stripe"><h2>Payment Snapshot</h2><p>${escapeHtml(input.paymentReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.paymentReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.paymentReadinessReport.paymentSetups.length}</dd></div><div><dt>checkout</dt><dd>${input.paymentReadinessReport.checkoutSignals.length}</dd></div><div><dt>webhooks</dt><dd>${input.paymentReadinessReport.webhookSignals.length}</dd></div><div><dt>credentials</dt><dd>${input.paymentReadinessReport.credentialSignals.length}</dd></div></dl><p class="muted">RepoTutor records payment readiness only. It does not call payment APIs, create checkout sessions, charge cards, verify live webhooks, or run the analyzed project's tests.</p></section><section class="grid"><article class="payment-readiness-card"><h3>Payment Setups</h3>${paymentReadinessSetupList(input.paymentReadinessReport.paymentSetups)}</article><article class="payment-readiness-card"><h3>Checkout Signals</h3>${paymentReadinessSignalList(input.paymentReadinessReport.checkoutSignals, "signal")}</article><article class="payment-readiness-card"><h3>Webhook Signals</h3>${paymentReadinessSignalList(input.paymentReadinessReport.webhookSignals, "signal")}</article><article class="payment-readiness-card"><h3>Customer Signals</h3>${paymentReadinessSignalList(input.paymentReadinessReport.customerSignals, "signal")}</article></section><section class="grid"><article class="payment-readiness-card"><h3>Credential Signals</h3>${paymentReadinessSignalList(input.paymentReadinessReport.credentialSignals, "signal")}</article><article class="payment-readiness-card"><h3>Package Signals</h3>${paymentReadinessSignalList(input.paymentReadinessReport.packageSignals, "signal")}</article><article class="payment-readiness-card"><h3>Recommended Commands</h3>${paymentReadinessCommandList(input.paymentReadinessReport.recommendedCommands)}</article><article class="payment-readiness-card"><h3>Risk Queue</h3>${paymentReadinessRiskList(input.paymentReadinessReport.riskQueue)}</article><article class="payment-readiness-card"><h3>다음 확인 단계</h3>${list(input.paymentReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -834,6 +843,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "State Management Readiness", path: "html/state-management-readiness.html", description: "Redux Toolkit식 store setup, slices, selectors, side effects, middleware, RTK Query 준비도를 확인합니다." },
       { label: "Form Readiness", path: "html/form-readiness.html", description: "React Hook Form식 useForm, register, submit, validation, errors, field array 준비도를 확인합니다." },
       { label: "Auth Readiness", path: "html/auth-readiness.html", description: "Auth.js식 handlers, providers, callbacks, sessions, middleware, env secret 준비도를 확인합니다." },
+      { label: "Payment Readiness", path: "html/payment-readiness.html", description: "Stripe식 server client, checkout, PaymentIntent, webhooks, billing lifecycle, env secret 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1265,6 +1275,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "auth-readiness.html",
       goal: "Auth.js식 handlers, providers, callbacks, sessions, middleware, env secret을 보고 인증 관문을 확인합니다.",
       evidence: `auth setups ${input.authReadinessReport.authSetups.length}개, session surfaces ${input.authReadinessReport.sessionSurfaces.length}개`
+    },
+    {
+      title: "Payment readiness 확인",
+      href: "payment-readiness.html",
+      goal: "Stripe식 server client, checkout, PaymentIntent, webhooks, billing lifecycle, env secret을 보고 결제 관문을 확인합니다.",
+      evidence: `payment setups ${input.paymentReadinessReport.paymentSetups.length}개, checkout signals ${input.paymentReadinessReport.checkoutSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -2807,6 +2823,31 @@ function authReadinessRiskList(items: AuthReadinessReport["riskQueue"]): string 
 }
 
 function authReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function paymentReadinessSetupList(items: PaymentReadinessReport["paymentSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">payment setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>server/checkout/intent/webhook ${item.serverClientCount}/${item.checkoutSessionCount}/${item.paymentIntentCount}/${item.webhookHandlerCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(paymentReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function paymentReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">payment signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(paymentReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function paymentReadinessCommandList(items: PaymentReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function paymentReadinessRiskList(items: PaymentReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(paymentReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function paymentReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
