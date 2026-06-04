@@ -44,6 +44,7 @@ import {
   VexReport,
   PolicyGateReport,
   ApiContractReport,
+  ConsumerContractReadinessReport,
   ObservabilityReport,
   PerformanceReport,
   E2eReport,
@@ -188,6 +189,7 @@ export interface AnalysisBundle {
   vexReport: VexReport;
   policyGateReport: PolicyGateReport;
   apiContractReport: ApiContractReport;
+  consumerContractReadinessReport: ConsumerContractReadinessReport;
   observabilityReport: ObservabilityReport;
   performanceReport: PerformanceReport;
   e2eReport: E2eReport;
@@ -332,6 +334,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const vexReport = buildVexReport(walk, sbomReport, securityReadinessReport, advisoryReport, provenanceReport, sourceSnapshotReport);
   const policyGateReport = await buildPolicyGateReport(walk, securityReadinessReport);
   const apiContractReport = await buildApiContractReport(walk);
+  const consumerContractReadinessReport = await buildConsumerContractReadinessReport(walk);
   const observabilityReport = await buildObservabilityReport(walk, runtimeEnvironmentReport);
   const performanceReport = await buildPerformanceReport(walk, runtimeEnvironmentReport);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
@@ -427,7 +430,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -4581,6 +4584,310 @@ async function apiContractRepoSignals(walk: WalkResult): Promise<ApiContractRepo
     testFiles: [...new Set(signals.testFiles)].slice(0, 80),
     mockServerFiles: [...new Set(signals.mockServerFiles)].slice(0, 40)
   };
+}
+
+async function buildConsumerContractReadinessReport(walk: WalkResult): Promise<ConsumerContractReadinessReport> {
+  const sourceFiles = await consumerContractReadinessSourceFiles(walk);
+  const contractSetups = consumerContractReadinessSetups(sourceFiles);
+  const interactionSignals = consumerContractReadinessInteractionSignals(sourceFiles);
+  const providerSignals = consumerContractReadinessProviderSignals(sourceFiles);
+  const brokerSignals = consumerContractReadinessBrokerSignals(sourceFiles);
+  const matcherSignals = consumerContractReadinessMatcherSignals(sourceFiles);
+  const ciSignals = consumerContractReadinessCiSignals(sourceFiles);
+  const packageSignals = consumerContractReadinessPackageSignals(sourceFiles);
+  const riskQueue: ConsumerContractReadinessReport["riskQueue"] = [];
+  const hasInteraction = interactionSignals.some((item) => item.readiness === "ready") || contractSetups.some((item) => item.interactionCount > 0);
+  const hasProviderState = providerSignals.some((item) => item.signal === "provider-state" && item.readiness === "ready") || contractSetups.some((item) => item.providerStateCount > 0);
+  const hasVerifier = providerSignals.some((item) => item.signal === "verifier" && item.readiness === "ready") || contractSetups.some((item) => item.verifierCount > 0);
+  const hasBroker = brokerSignals.some((item) => ["pact-broker", "pactflow"].includes(item.signal) && item.readiness === "ready") || contractSetups.some((item) => item.brokerCount > 0);
+  const hasCanIDeploy = brokerSignals.some((item) => item.signal === "can-i-deploy" && item.readiness === "ready");
+  const hasPublishMetadata = providerSignals.some((item) => ["publish-results", "provider-version", "provider-branch"].includes(item.signal) && item.readiness === "ready");
+  const hasMatchers = matcherSignals.some((item) => item.readiness === "ready") || contractSetups.some((item) => item.matcherCount > 0);
+
+  if (sourceFiles.length === 0) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document whether this project intentionally has no consumer-driven contract testing strategy.",
+      why: "No Pact interaction, provider verifier, provider state, broker, PactFlow, can-i-deploy, matcher, or contract CI signals were detected.",
+      relatedHref: "html/consumer-contract-readiness.html"
+    });
+  }
+  if (hasInteraction && !hasProviderState) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add explicit provider states for consumer contract interactions.",
+      why: "Pact examples use provider states to make each consumer interaction replayable against a provider with known setup data.",
+      relatedHref: interactionSignals.find((item) => item.readiness === "ready")?.relatedHref ?? "html/consumer-contract-readiness.html"
+    });
+  }
+  if (hasInteraction && !hasMatchers) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Use matchers for bodies, headers, IDs, and provider-state-derived values instead of only exact example values.",
+      why: "Consumer contracts stay maintainable when they describe the shape and variability of the interaction, not only one literal response.",
+      relatedHref: "html/consumer-contract-readiness.html"
+    });
+  }
+  if (hasInteraction && !hasVerifier) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Wire provider verification so generated pacts are replayed against the real provider.",
+      why: "Consumer tests alone can write pact files, but provider verification is what proves the provider still satisfies those contracts.",
+      relatedHref: "html/consumer-contract-readiness.html"
+    });
+  }
+  if (hasVerifier && !hasBroker) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add Pact Broker or PactFlow evidence when provider verification is meant to gate releases across services.",
+      why: "Broker-backed verification coordinates which consumer pacts a provider must satisfy and keeps verification results queryable.",
+      relatedHref: providerSignals.find((item) => item.signal === "verifier" && item.readiness === "ready")?.relatedHref ?? "html/consumer-contract-readiness.html"
+    });
+  }
+  if (hasBroker && !hasCanIDeploy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add can-i-deploy to CI or release checks before relying on broker state for deployment decisions.",
+      why: "A broker stores contracts and verification results; can-i-deploy is the explicit compatibility gate before promotion.",
+      relatedHref: brokerSignals.find((item) => item.readiness === "ready")?.relatedHref ?? "html/consumer-contract-readiness.html"
+    });
+  }
+  if (hasVerifier && !hasPublishMetadata) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Publish verification results with provider version, branch, and selector metadata.",
+      why: "Provider verification is easier to trust when results are attached to an immutable provider version and release line.",
+      relatedHref: "html/consumer-contract-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run Pact consumer tests, provider verification, and broker can-i-deploy on the original source tree before treating this report as approval.",
+    why: "RepoTutor records static consumer contract readiness only; it does not start mock servers, write pact files, verify providers, publish results, or contact brokers.",
+    relatedHref: "html/consumer-contract-readiness.html"
+  });
+
+  return {
+    summary: `Pact consumer contract readiness report: setup ${contractSetups.length}개, interaction signal ${interactionSignals.filter((item) => item.readiness === "ready").length}개, provider signal ${providerSignals.filter((item) => item.readiness === "ready").length}개, broker signal ${brokerSignals.filter((item) => item.readiness === "ready").length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Pact consumer driven contracts interactions provider states verifier broker can-i-deploy matchers publish verification",
+    contractSetups,
+    interactionSignals,
+    providerSignals,
+    brokerSignals,
+    matcherSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"PactV3|PactV4|PactDslWithProvider|Pact.service_consumer|given|uponReceiving\" .", purpose: "Inventory consumer interaction DSLs, provider states, and pact-writing tests." },
+      { command: "rg \"Verifier|verifyProvider|PactVerificationContext|@Provider|@State|stateHandlers\" .", purpose: "Find provider verification, state handler, and live provider replay wiring." },
+      { command: "rg \"pactBrokerUrl|pactflow|can-i-deploy|publishVerificationResult|consumerVersionSelectors\" .", purpose: "Trace broker, PactFlow, deployment gate, selector, and verification publishing evidence." },
+      { command: "pact-broker can-i-deploy --pacticipant <service> --version <version> --to-environment <env>", purpose: "Check service compatibility through Pact Broker or PactFlow after real verification results exist." },
+      { command: "npm test -- --runInBand", purpose: "Run Pact JS consumer/provider tests in a deterministic local test process when this is a Node project." }
+    ],
+    learnerNextSteps: [
+      "먼저 consumer interaction이 mock server와 pact file을 만드는지 확인하세요.",
+      "각 interaction에는 provider state와 matcher가 붙어 있어야 replay가 의미 있습니다.",
+      "Provider verifier가 broker 또는 local pact file을 읽고 실제 provider에 대해 검증하는지 확인하세요.",
+      "Pact Broker/PactFlow를 쓰는 경우 publishVerificationResult, provider version, branch, selector, can-i-deploy를 같이 보세요.",
+      "이 리포트는 정적 readiness입니다. 실제 contract pass/fail은 원본 프로젝트에서 Pact 도구를 실행해 판정하세요."
+    ]
+  };
+}
+
+type ConsumerContractReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function consumerContractReadinessSourceFiles(walk: WalkResult): Promise<ConsumerContractReadinessSourceFile[]> {
+  const files: ConsumerContractReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !consumerContractReadinessInspectablePath(file.relPath)) continue;
+    const pathCandidate = consumerContractReadinessPathSignal(file.relPath);
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!pathCandidate && !consumerContractReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function consumerContractReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pnpm-lock\.yaml|yarn\.lock|package-lock\.json|pom\.xml|build\.gradle(\.kts)?|settings\.gradle(\.kts)?|Gemfile|.*\.gemspec|go\.mod|pyproject\.toml|requirements.*\.txt|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(^|\/)(pacts?|contract|contracts|consumer|provider|broker|pactflow|tests?|spec|docs?|ci)(\/|$)/i.test(filePath)
+    || /\.(ts|tsx|js|jsx|mjs|cjs|java|kt|groovy|rb|go|py|json|toml|ya?ml|md|sh)$/i.test(filePath);
+}
+
+function consumerContractReadinessPathSignal(filePath: string): boolean {
+  return /(pact|pactflow|contract|consumer|provider|broker|can-i-deploy|verify-provider|provider[-_ ]?state)/i.test(filePath);
+}
+
+function consumerContractReadinessContentSignal(text: string): boolean {
+  return /\b(@pact-foundation\/pact|PactV3|PactV4|PactDslWithProvider|PactVerificationContext|PactVerification|Pact\.service_consumer|Pact\.service_provider|MatchersV3|Matchers|uponReceiving|withRequest|willRespondWith|executeTest|stateHandlers|providerStatesSetupUrl|verifyProvider|pactBrokerUrl|Pact Broker|PactBroker|pactflow|can-i-deploy|publishVerificationResult|consumerVersionSelectors|generate_from_provider_state|pathFromProviderState|valueFromProviderState|PACT_BROKER|PACT_PROVIDER_VERSION)\b/i.test(text);
+}
+
+function consumerContractReadinessSetups(sourceFiles: ConsumerContractReadinessSourceFile[]): ConsumerContractReadinessReport["contractSetups"] {
+  const rows: ConsumerContractReadinessReport["contractSetups"] = [];
+  for (const source of sourceFiles) {
+    const interactionCount = countMatches(source.text, /\b(PactV3|PactV4|new\s+Pact|PactDslWithProvider|Pact\.service_consumer|addInteraction|interaction|given|uponReceiving|withRequest|willRespondWith|executeTest)\b/gi);
+    const providerStateCount = countMatches(source.text, /\b(given|provider state|provider states|stateHandlers|providerStatesSetupUrl|@State|generate_from_provider_state|pathFromProviderState|valueFromProviderState)\b/gi);
+    const verifierCount = countMatches(source.text, /\b(Verifier|verifyProvider|PactVerificationContext|@Provider|PactVerification|pactVerify|Pact\.service_provider|providerBaseUrl)\b/gi);
+    const brokerCount = countMatches(source.text, /\b(pactBrokerUrl|Pact Broker|PactBroker|pactflow|can-i-deploy|PACT_BROKER|consumerVersionSelectors|publishVerificationResult|enablePending|includeWipPactsSince)\b/gi);
+    const matcherCount = countMatches(source.text, /\b(MatchersV3|Matchers|like|eachLike|each_like|regex|term|matchingRules|fromProviderState|pathFromProviderState|valueFromProviderState|headers|body)\b/gi);
+    const messageCount = countMatches(source.text, /\b(message|MessagePact|PactMessage|GraphQLInteraction|Kafka|plugin|asynchronous|synchronous)\b/gi);
+    const totalSignals = interactionCount + providerStateCount + verifierCount + brokerCount + matcherCount + messageCount;
+    if (totalSignals === 0 && !consumerContractReadinessPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      role: consumerContractReadinessRole(source, { interactionCount, verifierCount, brokerCount }),
+      framework: consumerContractReadinessFramework(source),
+      interactionCount,
+      providerStateCount,
+      verifierCount,
+      brokerCount,
+      matcherCount,
+      messageCount,
+      readiness: (interactionCount > 0 && providerStateCount > 0 && matcherCount > 0) || (verifierCount > 0 && providerStateCount > 0) || (brokerCount > 0 && /can-i-deploy|publishVerificationResult/i.test(source.text)) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains interactions ${interactionCount}, provider states ${providerStateCount}, verifiers ${verifierCount}, broker signals ${brokerCount}, matchers ${matcherCount}, messages ${messageCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.interactionCount + b.verifierCount + b.brokerCount + b.matcherCount) - (a.interactionCount + a.verifierCount + a.brokerCount + a.matcherCount))
+    .slice(0, 140);
+}
+
+function consumerContractReadinessRole(
+  source: ConsumerContractReadinessSourceFile,
+  counts: { interactionCount: number; verifierCount: number; brokerCount: number }
+): ConsumerContractReadinessReport["contractSetups"][number]["role"] {
+  const haystack = `${source.filePath}\n${source.text}`;
+  const hasConsumer = counts.interactionCount > 0 || /consumer|Pact\.service_consumer|uponReceiving|withRequest|willRespondWith/i.test(haystack);
+  const hasProvider = counts.verifierCount > 0 || /provider|verifyProvider|PactVerificationContext|@Provider|@State|stateHandlers/i.test(haystack);
+  const hasBroker = counts.brokerCount > 0 || /broker|pactflow|can-i-deploy/i.test(haystack);
+  if ([hasConsumer, hasProvider, hasBroker].filter(Boolean).length > 1) return "mixed";
+  if (hasBroker) return "broker";
+  if (hasProvider) return "provider";
+  if (hasConsumer) return "consumer";
+  if (/^\.github\/workflows\//i.test(source.filePath)) return "ci";
+  return "unknown";
+}
+
+function consumerContractReadinessFramework(source: ConsumerContractReadinessSourceFile): ConsumerContractReadinessReport["contractSetups"][number]["framework"] {
+  const haystack = `${source.filePath}\n${source.text}`;
+  if (/@pact-foundation\/pact|PactV3|PactV4|MatchersV3|verifyProvider/i.test(haystack) && /\.(ts|tsx|js|jsx|mjs|cjs|json|ya?ml|md)$/i.test(source.filePath)) return "pact-js";
+  if (/au\.com\.dius\.pact|pact-jvm|PactDslWithProvider|PactVerificationContext|@Provider|@State|build\.gradle|pom\.xml/i.test(haystack)) return "pact-jvm";
+  if (/pact-ruby|Pact\.service_consumer|Pact\.service_provider|generate_from_provider_state|Gemfile|gemspec|rake/i.test(haystack)) return "pact-ruby";
+  if (/github\.com\/pact-foundation\/pact-go|pact-go/i.test(haystack)) return "pact-go";
+  if (/pact-python|pact-python-ffi|python.*pact/i.test(haystack)) return "pact-python";
+  if (/pact|contract/i.test(haystack)) return "custom";
+  return "unknown";
+}
+
+function consumerContractReadinessInteractionSignals(sourceFiles: ConsumerContractReadinessSourceFile[]): ConsumerContractReadinessReport["interactionSignals"] {
+  const specs: Array<{ signal: ConsumerContractReadinessReport["interactionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "pact-v3", pattern: /PactV3|pact.*v3/i, evidence: "Pact V3 consumer DSL evidence was detected." },
+    { signal: "pact-v4", pattern: /PactV4|pact.*v4/i, evidence: "Pact V4 consumer DSL evidence was detected." },
+    { signal: "interaction", pattern: /addInteraction|\binteraction\b|PactDslWithProvider/i, evidence: "interaction construction evidence was detected." },
+    { signal: "given", pattern: /\.given\b|\bgiven\(|provider state/i, evidence: "provider-state given clause evidence was detected." },
+    { signal: "upon-receiving", pattern: /uponReceiving|upon_receiving/i, evidence: "consumer interaction description evidence was detected." },
+    { signal: "with-request", pattern: /withRequest|with_request/i, evidence: "request contract evidence was detected." },
+    { signal: "will-respond-with", pattern: /willRespondWith|will_respond_with/i, evidence: "response contract evidence was detected." },
+    { signal: "execute-test", pattern: /executeTest|execute_test/i, evidence: "Pact mock-server execution evidence was detected." },
+    { signal: "message", pattern: /MessagePact|message provider|asynchronous message|PactMessage/i, evidence: "message pact evidence was detected." },
+    { signal: "graphql", pattern: /GraphQLInteraction|graphql/i, evidence: "GraphQL interaction evidence was detected." },
+    { signal: "plugin", pattern: /plugin|pact-plugin/i, evidence: "Pact plugin interaction evidence was detected." }
+  ];
+  return consumerContractReadinessSignalFromSpecs(sourceFiles, specs, "interaction", "signal");
+}
+
+function consumerContractReadinessProviderSignals(sourceFiles: ConsumerContractReadinessSourceFile[]): ConsumerContractReadinessReport["providerSignals"] {
+  const specs: Array<{ signal: ConsumerContractReadinessReport["providerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "verifier", pattern: /\bVerifier\b|verifyProvider|PactVerification|pactVerify|Pact\.service_provider/i, evidence: "provider verifier evidence was detected." },
+    { signal: "provider-state", pattern: /provider state|provider states|@State|\bgiven\(|generate_from_provider_state|pathFromProviderState|valueFromProviderState/i, evidence: "provider state evidence was detected." },
+    { signal: "state-handlers", pattern: /stateHandlers|providerStatesSetupUrl|state handler/i, evidence: "state handler evidence was detected." },
+    { signal: "provider-base-url", pattern: /providerBaseUrl|provider base url|provider_base_url|provider.baseUrl/i, evidence: "provider base URL evidence was detected." },
+    { signal: "verification-context", pattern: /PactVerificationContext|VerificationContext/i, evidence: "provider verification context evidence was detected." },
+    { signal: "publish-results", pattern: /publishVerificationResult|publish.*verification|PACT_BROKER_PUBLISH_VERIFICATION_RESULTS/i, evidence: "verification result publishing evidence was detected." },
+    { signal: "provider-version", pattern: /providerVersion|PACT_PROVIDER_VERSION|provider version/i, evidence: "provider version metadata evidence was detected." },
+    { signal: "provider-branch", pattern: /providerVersionBranch|PACT_PROVIDER_BRANCH|provider branch|branch:/i, evidence: "provider branch metadata evidence was detected." }
+  ];
+  return consumerContractReadinessSignalFromSpecs(sourceFiles, specs, "provider", "signal");
+}
+
+function consumerContractReadinessBrokerSignals(sourceFiles: ConsumerContractReadinessSourceFile[]): ConsumerContractReadinessReport["brokerSignals"] {
+  const specs: Array<{ signal: ConsumerContractReadinessReport["brokerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "pact-broker", pattern: /pactBrokerUrl|Pact Broker|PactBroker|PACT_BROKER_BASE_URL|pact-broker/i, evidence: "Pact Broker evidence was detected." },
+    { signal: "pactflow", pattern: /pactflow|PactFlow/i, evidence: "PactFlow evidence was detected." },
+    { signal: "can-i-deploy", pattern: /can-i-deploy|canIDeploy|can_i_deploy/i, evidence: "can-i-deploy gate evidence was detected." },
+    { signal: "consumer-version-selector", pattern: /consumerVersionSelectors|consumer version selector|consumer_version_selectors|matchingBranch|deployedOrReleased/i, evidence: "consumer version selector evidence was detected." },
+    { signal: "pending-pacts", pattern: /enablePending|pending pacts?|pendingPacts/i, evidence: "pending pacts evidence was detected." },
+    { signal: "wip-pacts", pattern: /includeWipPactsSince|WIP pacts?|wipPacts/i, evidence: "WIP pacts evidence was detected." },
+    { signal: "webhook", pattern: /webhook|pact.*webhook/i, evidence: "broker webhook evidence was detected." },
+    { signal: "token-auth", pattern: /pactBrokerToken|PACT_BROKER_TOKEN|broker.*token|PactBroker.*token/i, evidence: "broker token auth evidence was detected." }
+  ];
+  return consumerContractReadinessSignalFromSpecs(sourceFiles, specs, "broker", "signal");
+}
+
+function consumerContractReadinessMatcherSignals(sourceFiles: ConsumerContractReadinessSourceFile[]): ConsumerContractReadinessReport["matcherSignals"] {
+  const specs: Array<{ signal: ConsumerContractReadinessReport["matcherSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "like", pattern: /MatchersV3\.like|\blike\(|\beach_like\(/i, evidence: "like matcher evidence was detected." },
+    { signal: "each-like", pattern: /eachLike|each_like/i, evidence: "each-like matcher evidence was detected." },
+    { signal: "regex", pattern: /regex|regexp|term\(|matchingRegex/i, evidence: "regex matcher evidence was detected." },
+    { signal: "term", pattern: /\bterm\(|Term\(/i, evidence: "term matcher evidence was detected." },
+    { signal: "from-provider-state", pattern: /fromProviderState|from_provider_state|pathFromProviderState|valueFromProviderState|generate_from_provider_state/i, evidence: "provider-state value generator evidence was detected." },
+    { signal: "matching-rules", pattern: /matchingRules|matching rules/i, evidence: "matching rules evidence was detected." },
+    { signal: "headers", pattern: /headers|withHeaders|matchHeader/i, evidence: "header contract evidence was detected." },
+    { signal: "body", pattern: /\bbody\b|withBody|response body|request body/i, evidence: "body contract evidence was detected." }
+  ];
+  return consumerContractReadinessSignalFromSpecs(sourceFiles, specs, "matcher", "signal");
+}
+
+function consumerContractReadinessCiSignals(sourceFiles: ConsumerContractReadinessSourceFile[]): ConsumerContractReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: ConsumerContractReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "publish-pact", pattern: /pact-broker\s+publish|publish.*pact|PACT_BROKER_BASE_URL/i, evidence: "pact publish evidence was detected." },
+    { signal: "verify-provider", pattern: /verifyProvider|provider verification|pactVerify|mvn.*pact|gradle.*pact/i, evidence: "provider verification CI evidence was detected." },
+    { signal: "junit", pattern: /junit|surefire|reports?/i, evidence: "JUnit/report evidence was detected." },
+    { signal: "github-actions", pattern: /^\.github\/workflows\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "gradle", pattern: /gradle|build\.gradle|gradlew/i, evidence: "Gradle Pact workflow evidence was detected." },
+    { signal: "maven", pattern: /maven|pom\.xml|mvn\s/i, evidence: "Maven Pact workflow evidence was detected." },
+    { signal: "npm-script", pattern: /"[^"]*pact[^"]*"\s*:|"test:pact"|npm run .*pact|pnpm .*pact|yarn .*pact/i, evidence: "npm Pact script evidence was detected." },
+    { signal: "rake-task", pattern: /rake.*pact|Pact::VerificationTask|pact:verify/i, evidence: "Rake Pact task evidence was detected." }
+  ];
+  return consumerContractReadinessSignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function consumerContractReadinessPackageSignals(sourceFiles: ConsumerContractReadinessSourceFile[]): ConsumerContractReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ConsumerContractReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@pact-foundation/pact", pattern: /@pact-foundation\/pact/i, evidence: "Pact JS package evidence was detected." },
+    { signal: "pact-jvm", pattern: /au\.com\.dius\.pact|pact-jvm|pact-jvm-provider|pact-jvm-consumer/i, evidence: "Pact JVM package evidence was detected." },
+    { signal: "pact-ruby", pattern: /pact-ruby|\bgem ['"]pact['"]|Pact\.service_consumer/i, evidence: "Pact Ruby package evidence was detected." },
+    { signal: "pact-broker-client", pattern: /pact-broker-client|pact_broker-client|pact-broker\s+(publish|can-i-deploy)/i, evidence: "Pact Broker client evidence was detected." },
+    { signal: "pactflow", pattern: /pactflow|PactFlow/i, evidence: "PactFlow package or service evidence was detected." }
+  ];
+  return consumerContractReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function consumerContractReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ConsumerContractReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/consumer-contract-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
 }
 
 function parseJsonObject(text: string): unknown | null {

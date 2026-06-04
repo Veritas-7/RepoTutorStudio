@@ -33,6 +33,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "vex-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "policy-gate-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "api-contract-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "consumer-contract-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "observability-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "performance-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
@@ -158,6 +159,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "vex.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "policy-gates.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "api-contracts.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "consumer-contract-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "observability.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "performance.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
@@ -286,6 +288,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "vex.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "policy-gates.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "api-contracts.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "consumer-contract-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "observability.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "performance.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
@@ -441,6 +444,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/vex.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/policy-gates.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/api-contracts.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/consumer-contract-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/observability.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/performance.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
@@ -880,6 +884,27 @@ describe("RepoTutor core pipeline", () => {
     expect(apiContractMarkdown).toContain("Source pattern: Schemathesis");
     expect(apiContractMarkdown).toContain("## Schema Documents");
     expect(apiContractMarkdown).toContain("## Reporting Outputs");
+    const consumerContractText = await fs.readFile(path.join(result.session.outputPaths.analysis, "consumer-contract-readiness-report.json"), "utf8");
+    expect(consumerContractText).toContain("Pact consumer driven contracts interactions provider states verifier broker can-i-deploy matchers publish verification");
+    expect(consumerContractText).toContain("\"contractSetups\"");
+    expect(consumerContractText).toContain("\"interactionSignals\"");
+    expect(consumerContractText).toContain("\"providerSignals\"");
+    expect(consumerContractText).toContain("\"brokerSignals\"");
+    expect(consumerContractText).toContain("\"matcherSignals\"");
+    expect(consumerContractText).toContain("\"ciSignals\"");
+    expect(consumerContractText).toContain("\"packageSignals\"");
+    expect(consumerContractText).toContain("can-i-deploy");
+    const consumerContractHtml = await fs.readFile(path.join(result.session.outputPaths.html, "consumer-contract-readiness.html"), "utf8");
+    expect(consumerContractHtml).toContain("Consumer Contract Readiness");
+    expect(consumerContractHtml).toContain("consumer-contract-readiness-card");
+    expect(consumerContractHtml).toContain("data-source-pattern=\"Pact\"");
+    expect(consumerContractHtml).toContain("Consumer Contract Snapshot");
+    expect(consumerContractHtml).toContain("Broker Signals");
+    const consumerContractMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "consumer-contract-readiness.md"), "utf8");
+    expect(consumerContractMarkdown).toContain("# Consumer Contract Readiness");
+    expect(consumerContractMarkdown).toContain("Source pattern: Pact");
+    expect(consumerContractMarkdown).toContain("## Contract Setups");
+    expect(consumerContractMarkdown).toContain("## Broker Signals");
     const observabilityText = await fs.readFile(path.join(result.session.outputPaths.analysis, "observability-report.json"), "utf8");
     expect(observabilityText).toContain("OpenTelemetry traces metrics logs resource context propagation exporter instrumentation semantic conventions diagnostics");
     expect(observabilityText).toContain("\"signalPipelines\"");
@@ -3682,6 +3707,118 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "chaos-engineering-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "chaos-engineering-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "chaos-engineering-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects consumer contract readiness patterns without running Pact tools", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-consumer-contract-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-consumer-contract-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "tests"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "test:pact": "vitest run tests/consumer.pact.test.ts",
+        "pact:verify": "node tests/provider.pact.test.ts",
+        "pact:publish": "pact-broker publish pacts --consumer-app-version $GITHUB_SHA",
+        "pact:can-i-deploy": "pact-broker can-i-deploy --pacticipant checkout-web --version $GITHUB_SHA --to-environment production"
+      },
+      devDependencies: {
+        "@pact-foundation/pact": "^13.0.0",
+        "pact-broker-client": "^1.0.0",
+        "pactflow-cli": "^1.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "tests", "consumer.pact.test.ts"), [
+      "import { PactV3, MatchersV3 } from '@pact-foundation/pact';",
+      "",
+      "const provider = new PactV3({ consumer: 'checkout-web', provider: 'inventory-api' });",
+      "",
+      "it('gets available inventory through a consumer contract', async () => {",
+      "  await provider",
+      "    .given('inventory item exists', { sku: 'sku-1' })",
+      "    .uponReceiving('a request for available inventory')",
+      "    .withRequest({",
+      "      method: 'GET',",
+      "      path: MatchersV3.fromProviderState('/inventory/${sku}', '/inventory/sku-1'),",
+      "      headers: { Authorization: MatchersV3.regex('Bearer token', 'Bearer .+') },",
+      "      body: { traceId: MatchersV3.like('primary') }",
+      "    })",
+      "    .willRespondWith({",
+      "      status: 200,",
+      "      headers: { 'Content-Type': 'application/json' },",
+      "      body: { items: MatchersV3.eachLike({ sku: MatchersV3.regex('sku-1', 'sku-[0-9]+'), quantity: MatchersV3.like(2) }) }",
+      "    })",
+      "    .executeTest(async (mockServer) => fetch(`${mockServer.url}/inventory/sku-1`));",
+      "});",
+      "",
+      "const messageContract = 'asynchronous message pact for Kafka order events';",
+      "const graphqlInteraction = 'GraphQLInteraction plugin contract';",
+      "void messageContract;",
+      "void graphqlInteraction;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "provider.pact.test.ts"), [
+      "import { Verifier } from '@pact-foundation/pact';",
+      "",
+      "export async function verifyInventoryProvider() {",
+      "  const verifier = new Verifier({",
+      "    provider: 'inventory-api',",
+      "    providerBaseUrl: 'http://localhost:8080',",
+      "    pactBrokerUrl: process.env.PACT_BROKER_BASE_URL,",
+      "    pactBrokerToken: process.env.PACT_BROKER_TOKEN,",
+      "    publishVerificationResult: true,",
+      "    providerVersion: process.env.PACT_PROVIDER_VERSION,",
+      "    providerVersionBranch: process.env.PACT_PROVIDER_BRANCH,",
+      "    enablePending: true,",
+      "    includeWipPactsSince: '2024-01-01',",
+      "    consumerVersionSelectors: [{ matchingBranch: true }, { deployedOrReleased: true }],",
+      "    stateHandlers: {",
+      "      'inventory item exists': async () => ({ sku: 'sku-1' })",
+      "    }",
+      "  });",
+      "  return verifier.verifyProvider();",
+      "}",
+      "",
+      "void 'PactVerificationContext @Provider @State provider state provider states';"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "pact.yml"), [
+      "name: pact",
+      "on: [pull_request]",
+      "jobs:",
+      "  contract:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npm run test:pact",
+      "      - run: npm run pact:verify",
+      "      - run: pact-broker publish pacts --consumer-app-version $GITHUB_SHA --broker-base-url $PACT_BROKER_BASE_URL",
+      "      - run: pact-broker can-i-deploy --pacticipant checkout-web --version $GITHUB_SHA --to-environment production",
+      "      - run: echo junit pact verification report"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = result.analysis.consumerContractReadinessReport;
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const consumerSetup = report.contractSetups.find((item) => item.filePath.endsWith("consumer.pact.test.ts"));
+    const providerSetup = report.contractSetups.find((item) => item.filePath.endsWith("provider.pact.test.ts"));
+
+    expect(report.contractSetups.length).toBeGreaterThan(0);
+    expect(consumerSetup?.framework).toBe("pact-js");
+    expect(consumerSetup?.interactionCount).toBeGreaterThan(0);
+    expect(consumerSetup?.providerStateCount).toBeGreaterThan(0);
+    expect(consumerSetup?.matcherCount).toBeGreaterThan(0);
+    expect(consumerSetup?.readiness).toBe("ready");
+    expect(providerSetup?.framework).toBe("pact-js");
+    expect(providerSetup?.verifierCount).toBeGreaterThan(0);
+    expect(providerSetup?.brokerCount).toBeGreaterThan(0);
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["pact-v3", "given", "upon-receiving", "with-request", "will-respond-with", "execute-test", "message", "graphql", "plugin"]));
+    expect(readySignals(report.providerSignals)).toEqual(expect.arrayContaining(["verifier", "provider-state", "state-handlers", "provider-base-url", "verification-context", "publish-results", "provider-version", "provider-branch"]));
+    expect(readySignals(report.brokerSignals)).toEqual(expect.arrayContaining(["pact-broker", "pactflow", "can-i-deploy", "consumer-version-selector", "pending-pacts", "wip-pacts", "token-auth"]));
+    expect(readySignals(report.matcherSignals)).toEqual(expect.arrayContaining(["like", "each-like", "regex", "from-provider-state", "headers", "body"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["publish-pact", "verify-provider", "junit", "github-actions", "npm-script"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@pact-foundation/pact", "pact-broker-client", "pactflow"]));
+    expect(report.riskQueue.at(-1)?.action).toContain("Run Pact consumer tests");
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "consumer-contract-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "consumer-contract-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "consumer-contract-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects mutation testing readiness patterns without executing mutation engines", async () => {
