@@ -119,6 +119,7 @@ import {
   DevContainerReadinessReport,
   KubernetesReadinessReport,
   GitOpsReadinessReport,
+  BackupReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -244,6 +245,7 @@ export interface AnalysisBundle {
   devContainerReadinessReport: DevContainerReadinessReport;
   kubernetesReadinessReport: KubernetesReadinessReport;
   gitopsReadinessReport: GitOpsReadinessReport;
+  backupReadinessReport: BackupReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -369,8 +371,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const devContainerReadinessReport = await buildDevContainerReadinessReport(walk);
   const kubernetesReadinessReport = await buildKubernetesReadinessReport(walk);
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
+  const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -25857,6 +25860,305 @@ function gitopsSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/gitops-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildBackupReadinessReport(walk: WalkResult): Promise<BackupReadinessReport> {
+  const sourceFiles = await backupSourceFiles(walk);
+  const backupSetups = backupSetupFiles(sourceFiles);
+  const veleroSignals = backupVeleroSignals(sourceFiles);
+  const litestreamSignals = backupLitestreamSignals(sourceFiles);
+  const resticSignals = backupResticSignals(sourceFiles);
+  const restoreDrillSignals = backupRestoreDrillSignals(sourceFiles);
+  const safetySignals = backupSafetySignals(sourceFiles);
+  const packageSignals = backupPackageSignals(sourceFiles);
+
+  const hasTool = packageSignals.some((item) => item.readiness === "ready") || backupSetups.length > 0;
+  const hasBackup = backupSetups.some((item) => item.backupCount > 0) || veleroSignals.some((item) => item.signal === "backup" && item.readiness === "ready") || resticSignals.some((item) => item.signal === "backup-command" && item.readiness === "ready") || litestreamSignals.some((item) => item.signal === "replicate-command" && item.readiness === "ready");
+  const hasRestore = backupSetups.some((item) => item.restoreCount > 0) || restoreDrillSignals.some((item) => item.signal === "restore-command" && item.readiness === "ready");
+  const hasStorage = backupSetups.some((item) => item.storageCount > 0) || safetySignals.some((item) => ["storage-location", "snapshot-location", "external-repository"].includes(item.signal) && item.readiness === "ready");
+  const hasRetention = backupSetups.some((item) => item.retentionCount > 0) || safetySignals.some((item) => ["retention-policy", "prune-policy"].includes(item.signal) && item.readiness === "ready");
+  const hasVerification = backupSetups.some((item) => item.verificationCount > 0) || safetySignals.some((item) => item.signal === "verification-check" && item.readiness === "ready") || restoreDrillSignals.some((item) => ["integrity-check", "read-data"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: BackupReadinessReport["riskQueue"] = [];
+  if (!hasTool) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add explicit backup tooling or documented backup scripts before claiming backup readiness.",
+      why: "Backup readiness needs concrete Velero, Litestream, restic, workflow, or script evidence instead of generic operational notes.",
+      relatedHref: "html/backup-readiness.html"
+    });
+  }
+  if (hasTool && !hasBackup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document the actual backup or replication command/resource.",
+      why: "A backup system without a backup resource, replication process, or backup command cannot explain what data is protected.",
+      relatedHref: "html/backup-readiness.html"
+    });
+  }
+  if (hasTool && !hasRestore) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a restore command or restore runbook.",
+      why: "The restore path is the operational proof of backup value; static readiness should surface it next to backup creation.",
+      relatedHref: "html/backup-readiness.html"
+    });
+  }
+  if (hasTool && !hasStorage) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record storage location, snapshot location, replica URL, or repository configuration.",
+      why: "Learners need to know where backup data lands before reviewing retention, credentials, or recovery blast radius.",
+      relatedHref: "html/backup-readiness.html"
+    });
+  }
+  if (hasTool && !hasRetention) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add retention, TTL, forget, prune, or keep policy evidence.",
+      why: "Backups without retention policy can silently grow forever or expire too early.",
+      relatedHref: "html/backup-readiness.html"
+    });
+  }
+  if (hasTool && !hasVerification) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add integrity checks, read-data checks, describe/log commands, or restore drill validation.",
+      why: "Backup workflows should prove recoverability, not only create backup artifacts.",
+      relatedHref: "html/backup-readiness.html"
+    });
+  }
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+
+  return {
+    summary: `Backup readiness report: setup ${backupSetups.length}개, Velero signal ${veleroSignals.length}개, Litestream signal ${litestreamSignals.length}개, restic signal ${resticSignals.length}개, restore drill signal ${restoreDrillSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Backup readiness Velero Backup Schedule Restore BackupStorageLocation VolumeSnapshotLocation includedNamespaces excludedNamespaces ttl storageLocation snapshotVolumes defaultVolumesToFsBackup backup describe logs restore describe Litestream litestream.yml dbs path replicas s3 gcs azure snapshot interval retention replicate restore databases Restic RESTIC_REPOSITORY RESTIC_PASSWORD_FILE init backup snapshots restore forget prune check read-data tags exclude",
+    backupSetups,
+    veleroSignals,
+    litestreamSignals,
+    resticSignals,
+    restoreDrillSignals,
+    safetySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "velero backup create <name> --include-namespaces <namespace> --wait", purpose: "Create and wait for a scoped Kubernetes backup after reviewing namespace and volume scope." },
+      { command: "velero backup describe <name>", purpose: "Inspect backup phase, included resources, storage location, and warnings." },
+      { command: "velero backup logs <name>", purpose: "Read backup logs during a controlled drill without changing cluster resources." },
+      { command: "velero restore create --from-backup <name> --wait", purpose: "Run a restore drill from a known backup in a trusted target namespace." },
+      { command: "litestream replicate -config litestream.yml", purpose: "Start SQLite replication after reviewing db paths, replica URLs, and retention." },
+      { command: "litestream restore -o <db-path> <replica-url>", purpose: "Restore a SQLite database copy from the configured replica." },
+      { command: "restic backup <path> --tag <service>", purpose: "Create an encrypted restic snapshot for a scoped data path." },
+      { command: "restic forget --keep-daily 7 --keep-weekly 4 --prune", purpose: "Apply retention policy and prune unneeded repository data after review." },
+      { command: "restic check --read-data-subset=5%", purpose: "Verify repository integrity with bounded data reads." },
+      { command: "restic restore latest --target <restore-dir>", purpose: "Restore the latest snapshot into a separate target directory for validation." }
+    ],
+    learnerNextSteps: [
+      "Open Backup Readiness and identify whether the repo uses Velero, Litestream, restic, scripts, or workflows.",
+      "Map backup creation or replication first, then map the restore command or restore resource.",
+      "Trace storage locations, replica URLs, snapshot locations, repository env vars, and credential indirection before trusting a backup path.",
+      "Review TTL, retention, forget, prune, and keep policy evidence so backup cost and expiry behavior are visible.",
+      "Look for describe, logs, check, read-data, and restore drill commands that prove recoverability.",
+      "Run the recommended commands only in trusted infrastructure; RepoTutor records backup readiness statically and does not contact clusters, object stores, repositories, or restore data."
+    ]
+  };
+}
+
+type BackupSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function backupSourceFiles(walk: WalkResult): Promise<BackupSourceFile[]> {
+  const files: BackupSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !backupInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!backupPathSignal(file.relPath) && !backupContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function backupInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return backupPathSignal(filePath)
+    || /(^|\/)(README|docs?|runbooks?|backup|backups|restore|recovery|disaster|dr|ops|scripts?|bin|k8s|kubernetes|manifests?|deploy|infra|config|cron|workflows?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|Makefile|Taskfile\.ya?ml|justfile|docker-compose\.ya?ml|compose\.ya?ml)$/i.test(base);
+}
+
+function backupPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /(^|\/)(velero|litestream|restic|backup|restore|recovery|disaster|dr)(\/|\.|-|_|$)/i.test(filePath)
+    || /^\.github\/workflows\/.*(backup|restore|recovery|velero|litestream|restic).*\.(ya?ml)$/i.test(filePath)
+    || /^(litestream\.ya?ml|restic.*|backup.*|restore.*|velero.*)\.(ya?ml|json|md|sh|bash|txt)$/i.test(base);
+}
+
+function backupContentSignal(text: string): boolean {
+  return /(velero\s+(backup|schedule|restore|install|plugin)|kind\s*:\s*(Backup|Schedule|Restore|BackupStorageLocation|VolumeSnapshotLocation)\b|litestream\s+(replicate|restore|databases)|litestream\.ya?ml|(^|\n)\s*dbs\s*:|(^|\n)\s*replicas\s*:|restic\s+(init|backup|snapshots|restore|forget|prune|check)|RESTIC_REPOSITORY|RESTIC_PASSWORD|restore drill|point[- ]in[- ]time|backup retention)/i.test(text);
+}
+
+function backupSetupFiles(sourceFiles: BackupSourceFile[]): BackupReadinessReport["backupSetups"] {
+  const rows: BackupReadinessReport["backupSetups"] = [];
+  for (const source of sourceFiles) {
+    const backupCount = countMatches(source.text, /kind\s*:\s*Backup\b|velero\s+backup\s+create\b|restic\s+backup\b|litestream\s+replicate\b|(^|\n)\s*backup\s*:/gi);
+    const restoreCount = countMatches(source.text, /kind\s*:\s*Restore\b|velero\s+restore\s+create\b|restic\s+restore\b|litestream\s+restore\b|(^|\n)\s*restore\s*:/gi);
+    const scheduleCount = countMatches(source.text, /kind\s*:\s*Schedule\b|velero\s+schedule\s+create\b|schedule\s*:|cron|crontab/gi);
+    const storageCount = countMatches(source.text, /BackupStorageLocation|VolumeSnapshotLocation|storageLocation\s*:|volumeSnapshotLocations\s*:|replicas\s*:|s3:\/\/|gcs:\/\/|abs:\/\/|azure|RESTIC_REPOSITORY|--repo\b/gi);
+    const retentionCount = countMatches(source.text, /ttl\s*:|retention\s*:|forget\b|prune\b|--keep-(daily|weekly|monthly|yearly|last)\b/gi);
+    const verificationCount = countMatches(source.text, /velero\s+backup\s+(describe|logs|get)\b|velero\s+restore\s+describe\b|restic\s+check\b|--read-data|litestream\s+databases\b|--wait\b|restore drill/gi);
+    const totalSignals = backupCount + restoreCount + scheduleCount + storageCount + retentionCount + verificationCount;
+    if (totalSignals === 0 && !backupPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: backupTool(source),
+      backupCount,
+      restoreCount,
+      scheduleCount,
+      storageCount,
+      retentionCount,
+      verificationCount,
+      readiness: totalSignals >= 6 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} backup/restore signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.backupCount + b.restoreCount + b.storageCount + b.retentionCount + b.verificationCount;
+    const aScore = a.backupCount + a.restoreCount + a.storageCount + a.retentionCount + a.verificationCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 80);
+}
+
+function backupTool(source: BackupSourceFile): BackupReadinessReport["backupSetups"][number]["tool"] {
+  const velero = /velero|BackupStorageLocation|VolumeSnapshotLocation|kind\s*:\s*(Backup|Schedule|Restore)\b/i.test(source.filePath) || /velero|BackupStorageLocation|VolumeSnapshotLocation|kind\s*:\s*(Backup|Schedule|Restore)\b/i.test(source.text);
+  const litestream = /litestream/i.test(source.filePath) || /litestream|(^|\n)\s*dbs\s*:|(^|\n)\s*replicas\s*:/i.test(source.text);
+  const restic = /restic/i.test(source.filePath) || /restic|RESTIC_REPOSITORY|RESTIC_PASSWORD/i.test(source.text);
+  const count = [velero, litestream, restic].filter(Boolean).length;
+  if (count > 1) return "hybrid";
+  if (velero) return "velero";
+  if (litestream) return "litestream";
+  if (restic) return "restic";
+  if (/\.github\/workflows\/.*\.ya?ml$/i.test(source.filePath)) return "workflow";
+  if (/\.(sh|bash|zsh)$/i.test(source.filePath) || /^(Makefile|Taskfile\.ya?ml|justfile|package\.json)$/i.test(path.basename(source.filePath))) return "script";
+  if (/^README\.md$/i.test(path.basename(source.filePath))) return "readme";
+  return "unknown";
+}
+
+function backupVeleroSignals(sourceFiles: BackupSourceFile[]): BackupReadinessReport["veleroSignals"] {
+  const specs: Array<{ signal: BackupReadinessReport["veleroSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "backup", pattern: /kind\s*:\s*Backup\b|velero\s+backup\s+create\b/i, evidence: "Velero Backup evidence was detected." },
+    { signal: "schedule", pattern: /kind\s*:\s*Schedule\b|velero\s+schedule\s+create\b/i, evidence: "Velero Schedule evidence was detected." },
+    { signal: "restore", pattern: /kind\s*:\s*Restore\b|velero\s+restore\s+create\b/i, evidence: "Velero Restore evidence was detected." },
+    { signal: "backup-storage-location", pattern: /kind\s*:\s*BackupStorageLocation\b|BackupStorageLocation/i, evidence: "BackupStorageLocation evidence was detected." },
+    { signal: "volume-snapshot-location", pattern: /kind\s*:\s*VolumeSnapshotLocation\b|VolumeSnapshotLocation/i, evidence: "VolumeSnapshotLocation evidence was detected." },
+    { signal: "included-namespaces", pattern: /includedNamespaces\s*:|--include-namespaces\b/i, evidence: "included namespace scope evidence was detected." },
+    { signal: "excluded-namespaces", pattern: /excludedNamespaces\s*:|--exclude-namespaces\b/i, evidence: "excluded namespace scope evidence was detected." },
+    { signal: "ttl", pattern: /ttl\s*:|--ttl\b/i, evidence: "TTL evidence was detected." },
+    { signal: "storage-location", pattern: /storageLocation\s*:|--storage-location\b/i, evidence: "storage location evidence was detected." },
+    { signal: "volume-snapshot", pattern: /snapshotVolumes\s*:|volumeSnapshotLocations\s*:|--snapshot-volumes\b/i, evidence: "volume snapshot evidence was detected." },
+    { signal: "fs-backup", pattern: /defaultVolumesToFsBackup\s*:|--default-volumes-to-fs-backup|file-system backup/i, evidence: "file-system backup evidence was detected." },
+    { signal: "backup-describe", pattern: /velero\s+backup\s+describe\b/i, evidence: "backup describe evidence was detected." },
+    { signal: "backup-logs", pattern: /velero\s+backup\s+logs\b/i, evidence: "backup logs evidence was detected." },
+    { signal: "restore-describe", pattern: /velero\s+restore\s+describe\b/i, evidence: "restore describe evidence was detected." }
+  ];
+  return backupSignalFromSpecs(sourceFiles, specs, "velero", "signal");
+}
+
+function backupLitestreamSignals(sourceFiles: BackupSourceFile[]): BackupReadinessReport["litestreamSignals"] {
+  const specs: Array<{ signal: BackupReadinessReport["litestreamSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "config", pattern: /litestream\.ya?ml|(^|\n)\s*dbs\s*:/i, evidence: "Litestream config evidence was detected." },
+    { signal: "db-path", pattern: /(^|\n)\s*-\s*path\s*:|(^|\n)\s*path\s*:\s*.*\.db\b/i, evidence: "database path evidence was detected." },
+    { signal: "replica-url", pattern: /replicas\s*:|(^|\n)\s*url\s*:\s*(s3|gcs|abs|file):/i, evidence: "replica URL evidence was detected." },
+    { signal: "s3", pattern: /s3:\/\//i, evidence: "S3 replica evidence was detected." },
+    { signal: "gcs", pattern: /gcs:\/\//i, evidence: "GCS replica evidence was detected." },
+    { signal: "azure", pattern: /abs:\/\/|azure|blob/i, evidence: "Azure Blob replica evidence was detected." },
+    { signal: "snapshot-interval", pattern: /snapshot\s*:|interval\s*:/i, evidence: "snapshot interval evidence was detected." },
+    { signal: "snapshot-retention", pattern: /retention\s*:/i, evidence: "snapshot retention evidence was detected." },
+    { signal: "replicate-command", pattern: /litestream\s+replicate\b/i, evidence: "litestream replicate evidence was detected." },
+    { signal: "restore-command", pattern: /litestream\s+restore\b/i, evidence: "litestream restore evidence was detected." },
+    { signal: "database-command", pattern: /litestream\s+databases\b/i, evidence: "litestream databases evidence was detected." }
+  ];
+  return backupSignalFromSpecs(sourceFiles, specs, "litestream", "signal");
+}
+
+function backupResticSignals(sourceFiles: BackupSourceFile[]): BackupReadinessReport["resticSignals"] {
+  const specs: Array<{ signal: BackupReadinessReport["resticSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "repository", pattern: /RESTIC_REPOSITORY|--repo\b|-r\s+\S+|restic\s+-r\b/i, evidence: "restic repository evidence was detected." },
+    { signal: "password-file", pattern: /RESTIC_PASSWORD_FILE|RESTIC_PASSWORD_COMMAND|--password-file\b/i, evidence: "restic password indirection evidence was detected." },
+    { signal: "init", pattern: /restic\s+init\b/i, evidence: "restic init evidence was detected." },
+    { signal: "backup-command", pattern: /restic\s+backup\b/i, evidence: "restic backup evidence was detected." },
+    { signal: "snapshots-command", pattern: /restic\s+snapshots\b/i, evidence: "restic snapshots evidence was detected." },
+    { signal: "restore-command", pattern: /restic\s+restore\b/i, evidence: "restic restore evidence was detected." },
+    { signal: "forget-prune", pattern: /restic\s+forget\b|restic\s+prune\b|--prune\b/i, evidence: "restic forget/prune evidence was detected." },
+    { signal: "check", pattern: /restic\s+check\b/i, evidence: "restic check evidence was detected." },
+    { signal: "tags", pattern: /--tag\b|--tags\b/i, evidence: "restic tag evidence was detected." },
+    { signal: "exclude", pattern: /--exclude\b|--iexclude\b|exclude-file/i, evidence: "restic exclude evidence was detected." },
+    { signal: "read-data", pattern: /--read-data\b|--read-data-subset\b/i, evidence: "restic read-data evidence was detected." }
+  ];
+  return backupSignalFromSpecs(sourceFiles, specs, "restic", "signal");
+}
+
+function backupRestoreDrillSignals(sourceFiles: BackupSourceFile[]): BackupReadinessReport["restoreDrillSignals"] {
+  const specs: Array<{ signal: BackupReadinessReport["restoreDrillSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "restore-runbook", pattern: /restore drill|restore runbook|disaster recovery|recovery drill/i, evidence: "restore runbook evidence was detected." },
+    { signal: "restore-command", pattern: /velero\s+restore\s+create|litestream\s+restore|restic\s+restore|kind\s*:\s*Restore\b/i, evidence: "restore command evidence was detected." },
+    { signal: "point-in-time", pattern: /point[- ]in[- ]time|PITR|timestamp|generation|wal/i, evidence: "point-in-time recovery evidence was detected." },
+    { signal: "wait", pattern: /--wait\b|kubectl\s+wait\b/i, evidence: "wait evidence was detected." },
+    { signal: "describe", pattern: /velero\s+(backup|restore)\s+describe\b|kubectl\s+describe\b/i, evidence: "describe evidence was detected." },
+    { signal: "logs", pattern: /velero\s+backup\s+logs\b|kubectl\s+logs\b/i, evidence: "log inspection evidence was detected." },
+    { signal: "integrity-check", pattern: /restic\s+check\b|checksum|integrity/i, evidence: "integrity check evidence was detected." },
+    { signal: "read-data", pattern: /--read-data\b|--read-data-subset\b/i, evidence: "read-data evidence was detected." },
+    { signal: "target-path", pattern: /--target\b|--from-backup\b|-o\s+\S+\.db\b|target directory/i, evidence: "restore target evidence was detected." }
+  ];
+  return backupSignalFromSpecs(sourceFiles, specs, "restore drill", "signal");
+}
+
+function backupSafetySignals(sourceFiles: BackupSourceFile[]): BackupReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: BackupReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "retention-policy", pattern: /retention\s*:|ttl\s*:|--ttl\b|--keep-(daily|weekly|monthly|yearly|last)\b/i, evidence: "retention policy evidence was detected." },
+    { signal: "encrypted-secret", pattern: /RESTIC_PASSWORD_FILE|RESTIC_PASSWORD_COMMAND|secretRef\s*:|credential|password-file|\/run\/secrets/i, evidence: "credential indirection evidence was detected." },
+    { signal: "namespace-scope", pattern: /includedNamespaces\s*:|excludedNamespaces\s*:|--include-namespaces|--exclude-namespaces|namespace\s*:/i, evidence: "namespace scope evidence was detected." },
+    { signal: "storage-location", pattern: /BackupStorageLocation|storageLocation\s*:|s3:\/\/|gcs:\/\/|RESTIC_REPOSITORY|replica/i, evidence: "storage location evidence was detected." },
+    { signal: "snapshot-location", pattern: /VolumeSnapshotLocation|volumeSnapshotLocations\s*:|snapshotVolumes\s*:/i, evidence: "snapshot location evidence was detected." },
+    { signal: "verification-check", pattern: /restic\s+check\b|velero\s+backup\s+(describe|logs|get)\b|litestream\s+databases\b/i, evidence: "verification check evidence was detected." },
+    { signal: "prune-policy", pattern: /forget\b|prune\b|--prune\b/i, evidence: "prune policy evidence was detected." },
+    { signal: "restore-drill", pattern: /restore drill|velero\s+restore\s+create|litestream\s+restore|restic\s+restore|kind\s*:\s*Restore\b/i, evidence: "restore drill evidence was detected." },
+    { signal: "external-repository", pattern: /s3:\/\/|gcs:\/\/|abs:\/\/|RESTIC_REPOSITORY|objectStorage\s*:|bucket\s*:/i, evidence: "external repository evidence was detected." }
+  ];
+  return backupSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function backupPackageSignals(sourceFiles: BackupSourceFile[]): BackupReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: BackupReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "velero", pattern: /(^|\W)velero(\W|$)|velero\.io|BackupStorageLocation|VolumeSnapshotLocation/i, evidence: "Velero evidence was detected." },
+    { signal: "litestream", pattern: /(^|\W)litestream(\W|$)|litestream\.ya?ml/i, evidence: "Litestream evidence was detected." },
+    { signal: "restic", pattern: /(^|\W)restic(\W|$)|RESTIC_REPOSITORY/i, evidence: "restic evidence was detected." },
+    { signal: "backup-script", pattern: /backup.*\.(sh|bash|zsh)|restore.*\.(sh|bash|zsh)|backup:/i, evidence: "backup script evidence was detected." },
+    { signal: "cron", pattern: /cron|crontab|schedule\s*:|0\s+\d+\s+\*\s+\*\s+\*/i, evidence: "cron/schedule evidence was detected." },
+    { signal: "workflow", pattern: /\.github\/workflows\/|workflow_dispatch|schedule:/i, evidence: "workflow evidence was detected." }
+  ];
+  return backupSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function backupSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: BackupSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/backup-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

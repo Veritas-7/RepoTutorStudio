@@ -1689,6 +1689,51 @@
         "Flux reconciliation readiness through Kustomization HelmRelease dependsOn prune suspend healthChecks timeout retryInterval targetNamespace and serviceAccount patterns",
         "Flux image automation notification and workflow signals through ImageRepository ImagePolicy ImageUpdateAutomation Receiver Alert Provider flux bootstrap reconcile get suspend resume trace tree logs and events commands"
       ]
+    },
+    {
+      "repo": "velero-io/velero",
+      "url": "https://github.com/velero-io/velero",
+      "localPath": "research/external-src/velero",
+      "stars": 10041,
+      "forks": 1538,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T16:21:12Z",
+      "cloneHead": "b34c843",
+      "adoptedPatterns": [
+        "Velero backup readiness through Backup Schedule Restore BackupStorageLocation VolumeSnapshotLocation includedNamespaces excludedNamespaces ttl storageLocation snapshotVolumes and defaultVolumesToFsBackup patterns",
+        "Velero restore and inspection workflow signals through backup describe backup logs restore describe restore wait and namespace-scoped restore planning",
+        "Static-only backup readiness guardrails that do not run velero, contact Kubernetes APIs, mutate clusters, read secrets, create snapshots, or restore data"
+      ]
+    },
+    {
+      "repo": "benbjohnson/litestream",
+      "url": "https://github.com/benbjohnson/litestream",
+      "localPath": "research/external-src/litestream",
+      "stars": 13699,
+      "forks": 361,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T15:15:20Z",
+      "cloneHead": "4784cc9",
+      "adoptedPatterns": [
+        "Litestream readiness through litestream.yml dbs path replicas s3 gcs azure snapshot interval retention and replica URL configuration",
+        "SQLite replication and recovery workflow signals through replicate restore databases and point-in-time restore commands",
+        "Static-only Litestream guardrails that do not run litestream, open databases, contact object stores, write replicas, or restore database files"
+      ]
+    },
+    {
+      "repo": "restic/restic",
+      "url": "https://github.com/restic/restic",
+      "localPath": "research/external-src/restic",
+      "stars": 33861,
+      "forks": 1769,
+      "license": "BSD-2-Clause",
+      "updatedAt": "2026-06-04T16:26:02Z",
+      "cloneHead": "ed571c8",
+      "adoptedPatterns": [
+        "Restic readiness through RESTIC_REPOSITORY RESTIC_PASSWORD_FILE init backup snapshots restore forget prune check read-data tags and exclude patterns",
+        "Encrypted backup repository restore-drill and verification workflows with repository credentials separated from inspected source text",
+        "Static-only restic guardrails that do not run restic, contact repositories, read password files, prune retention, verify data, or restore files"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -5017,6 +5062,25 @@
         "html/gitops-readiness.html"
       ],
       "commit": "63a8c87"
+    },
+    {
+      "name": "backup readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/backup-readiness-report.json",
+        "markdown/backup-readiness.md",
+        "html/backup-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -5600,7 +5664,17 @@
     "buildGitOpsReadiness": "PASS",
     "testGitOpsReadiness": "PASS",
     "complianceAudit104Checks": "PASS",
-    "gitopsReadinessImplementationPushed": "PASS"
+    "gitopsReadinessImplementationPushed": "PASS",
+    "externalVeleroCloneIgnored": "PASS",
+    "externalLitestreamCloneIgnored": "PASS",
+    "externalResticCloneIgnored": "PASS",
+    "backupReadinessRedSmoke": "PASS",
+    "backupReadinessGreenSmoke": "PASS",
+    "fixtureBackupReadinessReport": "PASS",
+    "backupReadinessOpenTarget": "PASS",
+    "buildBackupReadiness": "PASS",
+    "testBackupReadiness": "PASS",
+    "complianceAudit105Checks": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -6048,6 +6122,15 @@
     "buildGitOpsReadiness": "PASS",
     "testGitOpsReadiness": "PASS",
     "auditBriefGitOpsReadiness104": "PASS",
-    "gitopsReadinessImplementationPushed": "PASS"
+    "gitopsReadinessImplementationPushed": "PASS",
+    "externalVeleroCloneIgnored": "PASS",
+    "externalLitestreamCloneIgnored": "PASS",
+    "externalResticCloneIgnored": "PASS",
+    "fixtureBackupReadinessReport": "PASS",
+    "cliBackupReadinessSmoke": "PASS",
+    "cliBackupReadinessOpenTargetSmoke": "PASS",
+    "buildBackupReadiness": "PASS",
+    "testBackupReadiness": "PASS",
+    "auditBriefBackupReadiness105": "PASS"
   }
 }

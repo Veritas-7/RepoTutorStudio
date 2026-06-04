@@ -6065,6 +6065,71 @@ export const GitOpsReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const BackupReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  backupSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["velero", "litestream", "restic", "hybrid", "script", "workflow", "readme", "unknown"]),
+    backupCount: z.number().int().nonnegative(),
+    restoreCount: z.number().int().nonnegative(),
+    scheduleCount: z.number().int().nonnegative(),
+    storageCount: z.number().int().nonnegative(),
+    retentionCount: z.number().int().nonnegative(),
+    verificationCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  veleroSignals: z.array(z.object({
+    signal: z.enum(["backup", "schedule", "restore", "backup-storage-location", "volume-snapshot-location", "included-namespaces", "excluded-namespaces", "ttl", "storage-location", "volume-snapshot", "fs-backup", "backup-describe", "backup-logs", "restore-describe", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  litestreamSignals: z.array(z.object({
+    signal: z.enum(["config", "db-path", "replica-url", "s3", "gcs", "azure", "snapshot-interval", "snapshot-retention", "replicate-command", "restore-command", "database-command", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resticSignals: z.array(z.object({
+    signal: z.enum(["repository", "password-file", "init", "backup-command", "snapshots-command", "restore-command", "forget-prune", "check", "tags", "exclude", "read-data", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  restoreDrillSignals: z.array(z.object({
+    signal: z.enum(["restore-runbook", "restore-command", "point-in-time", "wait", "describe", "logs", "integrity-check", "read-data", "target-path", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["retention-policy", "encrypted-secret", "namespace-scope", "storage-location", "snapshot-location", "verification-check", "prune-policy", "restore-drill", "external-repository", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["velero", "litestream", "restic", "backup-script", "cron", "workflow", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -6373,6 +6438,7 @@ export type ComposeReadinessReport = z.infer<typeof ComposeReadinessReportSchema
 export type DevContainerReadinessReport = z.infer<typeof DevContainerReadinessReportSchema>;
 export type KubernetesReadinessReport = z.infer<typeof KubernetesReadinessReportSchema>;
 export type GitOpsReadinessReport = z.infer<typeof GitOpsReadinessReportSchema>;
+export type BackupReadinessReport = z.infer<typeof BackupReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
