@@ -59,6 +59,7 @@ import {
   UnitTestReport,
   TypecheckReadinessReport,
   PackageManagerReport,
+  GitHooksReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -124,6 +125,7 @@ export interface AnalysisBundle {
   unitTestReport: UnitTestReport;
   typecheckReadinessReport: TypecheckReadinessReport;
   packageManagerReport: PackageManagerReport;
+  gitHooksReport: GitHooksReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -189,8 +191,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const unitTestReport = await buildUnitTestReport(walk);
   const typecheckReadinessReport = await buildTypecheckReadinessReport(walk);
   const packageManagerReport = await buildPackageManagerReport(walk);
+  const gitHooksReport = await buildGitHooksReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -8734,6 +8737,296 @@ function packageManagerSignalFromSpecs<T extends Record<K, string> & { pattern: 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/package-manager.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildGitHooksReport(walk: WalkResult): Promise<GitHooksReport> {
+  const sourceFiles = await gitHooksSourceFiles(walk);
+  const hookFiles = gitHooksHookFiles(sourceFiles);
+  const installSignals = gitHooksInstallSignals(sourceFiles);
+  const commandSignals = gitHooksCommandSignals(sourceFiles);
+  const policySignals = gitHooksPolicySignals(sourceFiles);
+  const toolConfigFiles = gitHooksToolConfigFiles(sourceFiles);
+
+  const hasHuskyDependency = gitHooksPackageHasDependency(sourceFiles, "husky");
+  const hasHookFiles = hookFiles.length > 0;
+  const hasInstallSignal = installSignals.some((item) => ["prepare-script", "postinstall-script", "husky-init", "core-hooks-path"].includes(item.signal) && item.readiness === "ready");
+  const hasPreCommit = policySignals.some((item) => item.signal === "pre-commit" && item.readiness === "ready");
+  const hasPrePush = policySignals.some((item) => item.signal === "pre-push" && item.readiness === "ready");
+  const hasCommitMsg = policySignals.some((item) => item.signal === "commit-msg" && item.readiness === "ready");
+  const hasBypassPolicy = policySignals.some((item) => ["skip-env", "no-verify"].includes(item.signal) && item.readiness === "ready");
+  const hasLintStaged = commandSignals.some((item) => item.signal === "lint-staged" && item.readiness === "ready") || toolConfigFiles.some((item) => item.tool === "lint-staged");
+  const hasDeprecatedHuskyShim = policySignals.some((item) => item.signal === "deprecated-husky-sh" && item.readiness === "ready");
+
+  const riskQueue: GitHooksReport["riskQueue"] = [];
+  if (!hasHookFiles && toolConfigFiles.length === 0 && !hasHuskyDependency) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Decide whether local Git hooks should be part of the learner-facing quality path.",
+      why: "Husky-style projects make local checks visible through .husky hook files and install scripts, while this source has no hook evidence.",
+      relatedHref: "html/git-hooks.html"
+    });
+  }
+  if (hasHuskyDependency && !hasHookFiles) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or recover the .husky hook files that use the declared Husky dependency.",
+      why: "A Husky dependency without hook files leaves contributors unable to see what will run before commit or push.",
+      relatedHref: "html/git-hooks.html"
+    });
+  }
+  if (hasHookFiles && !hasInstallSignal) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document how hooks are installed, such as a prepare script or core.hooksPath setup.",
+      why: "Husky initializes Git through core.hooksPath; without an install signal, hooks may exist but never run for new contributors.",
+      relatedHref: "html/git-hooks.html"
+    });
+  }
+  if (hasHookFiles && !hasPreCommit) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add a pre-commit hook or document why commits do not run local checks.",
+      why: "pre-commit is the common hook for fast local test, lint, format, or staged-file checks.",
+      relatedHref: "html/git-hooks.html"
+    });
+  }
+  if (hasPreCommit && !hasLintStaged) {
+    riskQueue.push({
+      priority: "low",
+      action: "Consider a staged-file command for expensive lint or format hooks.",
+      why: "Husky documentation points to lint-staged when teams need staged-file filtering instead of whole-repo commands.",
+      relatedHref: "html/git-hooks.html"
+    });
+  }
+  if (hasHookFiles && !hasPrePush) {
+    riskQueue.push({
+      priority: "low",
+      action: "Decide whether slower checks belong in pre-push instead of pre-commit.",
+      why: "pre-push can protect shared branches without slowing every local commit.",
+      relatedHref: "html/git-hooks.html"
+    });
+  }
+  if (!hasCommitMsg) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add commit-msg policy only if the team relies on structured commit messages.",
+      why: "commitlint-style commit-msg hooks make commit conventions explicit, but they are optional for many learning repos.",
+      relatedHref: "html/git-hooks.html"
+    });
+  }
+  if (hasHookFiles && !hasBypassPolicy) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document emergency bypass behavior for hooks.",
+      why: "Husky supports HUSKY=0 and Git supports --no-verify; learners should know when bypassing is allowed.",
+      relatedHref: "html/git-hooks.html"
+    });
+  }
+  if (hasDeprecatedHuskyShim) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Remove deprecated husky.sh shim lines from hook files.",
+      why: "Husky v9 warns that old husky.sh sourcing lines are deprecated and will fail in v10.",
+      relatedHref: "html/git-hooks.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run real hook commands in a trusted workspace before treating this static report as approval.",
+    why: "RepoTutor records Git hook readiness statically; it does not run hooks, mutate Git config, or create commits.",
+    relatedHref: "html/git-hooks.html"
+  });
+
+  return {
+    summary: `Husky식 Git hook readiness report: hook file ${hookFiles.length}개, install signal ${installSignals.length}개, command signal ${commandSignals.length}개, tool config ${toolConfigFiles.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Husky .husky hook files prepare core.hooksPath pre-commit pre-push commit-msg HUSKY=0 no-verify lint-staged POSIX shell",
+    hookFiles,
+    installSignals,
+    commandSignals,
+    policySignals,
+    toolConfigFiles,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "pnpm exec husky init", purpose: "Initialize a Husky hook directory and prepare script in a trusted JavaScript workspace." },
+      { command: "pnpm run prepare", purpose: "Run the install hook that configures Git hooks for the repository." },
+      { command: "git config --get core.hooksPath", purpose: "Confirm which hook directory Git will read from." },
+      { command: "pnpm exec lint-staged", purpose: "Run staged-file tasks without creating a commit when lint-staged is configured." },
+      { command: "pnpm exec commitlint --from HEAD~1 --to HEAD", purpose: "Check recent commit messages when commitlint policy exists." },
+      { command: "HUSKY=0 git commit ...", purpose: "Understand the documented emergency bypass path; do not use it as a normal workflow." }
+    ],
+    learnerNextSteps: [
+      "Start with .husky files: hook filenames explain when a command runs, and file contents explain what command runs.",
+      "Then read package.json scripts; Husky usually installs through prepare or postinstall, and hooks often call package scripts.",
+      "Separate fast pre-commit checks from slower pre-push checks so learners understand latency and safety tradeoffs.",
+      "Treat HUSKY=0 and --no-verify as policy-sensitive escape hatches, not ordinary commands."
+    ]
+  };
+}
+
+type GitHooksSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function gitHooksSourceFiles(walk: WalkResult): Promise<GitHooksSourceFile[]> {
+  const files: GitHooksSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !gitHooksInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!gitHooksPathSignal(file.relPath) && !gitHooksContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 220) break;
+  }
+  return files;
+}
+
+function gitHooksInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return filePath.startsWith(".husky/")
+    || /^(\.lintstagedrc(\..+)?|lint-staged\.config\.(js|cjs|mjs|ts)|commitlint\.config\.(js|cjs|mjs|ts)|lefthook\.ya?ml|\.pre-commit-config\.ya?ml|\.simple-git-hooks\.(json|js|cjs)|package\.json|README\.md)$/i.test(base)
+    || /(husky|lint-staged|commitlint|pre-commit|pre-push|commit-msg|git-hooks?|hooksPath|lefthook|simple-git-hooks)/i.test(filePath)
+    || /\.(json|md|ya?ml|sh|bash|zsh|js|cjs|mjs|ts)$/i.test(filePath);
+}
+
+function gitHooksPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return filePath.startsWith(".husky/")
+    || /^(\.lintstagedrc(\..+)?|lint-staged\.config\.(js|cjs|mjs|ts)|commitlint\.config\.(js|cjs|mjs|ts)|lefthook\.ya?ml|\.pre-commit-config\.ya?ml|\.simple-git-hooks\.(json|js|cjs)|package\.json)$/i.test(base)
+    || /(husky|lint-staged|commitlint|pre-commit|pre-push|commit-msg|git-hooks?|hooksPath|lefthook|simple-git-hooks)/i.test(filePath);
+}
+
+function gitHooksContentSignal(text: string): boolean {
+  return /husky|\.husky|core\.hooksPath|pre-commit|pre-push|commit-msg|prepare-commit-msg|HUSKY=0|--no-verify|lint-staged|commitlint|lefthook|pre-commit-config|simple-git-hooks|node_modules\/\.bin/i.test(text);
+}
+
+function gitHooksHookFiles(sourceFiles: GitHooksSourceFile[]): GitHooksReport["hookFiles"] {
+  return sourceFiles
+    .filter((source) => source.filePath.startsWith(".husky/") && !source.filePath.startsWith(".husky/_/") && !path.basename(source.filePath).includes("."))
+    .slice(0, 80)
+    .map((source) => {
+      const commandCount = source.text.split(/\r?\n/).filter((line) => {
+        const trimmed = line.trim();
+        return trimmed.length > 0 && !trimmed.startsWith("#") && !trimmed.startsWith(". \"$(dirname");
+      }).length;
+      const hasBypassHint = /HUSKY=0|--no-verify|\b-n\b/i.test(source.text);
+      const hasNodePathHint = /node_modules\/\.bin|\bPATH\b|NVM_DIR|nvm|fnm|asdf|volta|init\.sh/i.test(source.text);
+      return {
+        filePath: source.filePath,
+        hookName: path.basename(source.filePath),
+        commandCount,
+        hasBypassHint,
+        hasNodePathHint,
+        readiness: commandCount > 0 ? "ready" : "partial",
+        evidence: `${source.filePath} declares ${commandCount} executable command line(s).`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function gitHooksInstallSignals(sourceFiles: GitHooksSourceFile[]): GitHooksReport["installSignals"] {
+  const specs: Array<{ signal: GitHooksReport["installSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "prepare-script", pattern: /"prepare"\s*:\s*"[^"]*husky|prepare.*husky/i, evidence: "prepare script or prepare documentation for Husky was detected." },
+    { signal: "postinstall-script", pattern: /"postinstall"\s*:\s*"[^"]*husky|postinstall.*husky/i, evidence: "postinstall hook setup evidence was detected." },
+    { signal: "husky-init", pattern: /\b(npx|pnpm exec|bunx|yarn dlx)?\s*husky\s+init\b/i, evidence: "husky init setup evidence was detected." },
+    { signal: "core-hooks-path", pattern: /core\.hooksPath|hooksPath|git config.*core\.hooksPath|\.husky\/_/i, evidence: "Git core.hooksPath setup evidence was detected." },
+    { signal: "git-root-subdir", pattern: /cd\s+\.\.\s*&&\s*husky|husky\s+[^"'\n]*\/\.husky|Project Not in Git Root Directory/i, evidence: "subdirectory project hook setup evidence was detected." },
+    { signal: "ci-skip", pattern: /HUSKY=0|process\.env\.CI|CI\s*={0,2}\s*['"]?true|NODE_ENV\s*={0,2}\s*['"]?production/i, evidence: "CI or production hook install skip evidence was detected." }
+  ];
+  return gitHooksSignalFromSpecs(sourceFiles, specs, "install", "signal");
+}
+
+function gitHooksCommandSignals(sourceFiles: GitHooksSourceFile[]): GitHooksReport["commandSignals"] {
+  const specs: Array<{ signal: GitHooksReport["commandSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "test", pattern: /\b(npm|pnpm|yarn|bun)\s+(run\s+)?test\b|\bvitest\b|\bjest\b/i, evidence: "test command evidence was detected." },
+    { signal: "lint", pattern: /\b(npm|pnpm|yarn|bun)\s+(run\s+)?lint\b|\beslint\b|\blint\b/i, evidence: "lint command evidence was detected." },
+    { signal: "format", pattern: /\bprettier\b|\bformat\b/i, evidence: "format command evidence was detected." },
+    { signal: "typecheck", pattern: /\btsc\b|typecheck|type-check/i, evidence: "typecheck command evidence was detected." },
+    { signal: "security", pattern: /\bgitleaks\b|\bsemgrep\b|\bsnyk\b|\baudit\b/i, evidence: "security or audit command evidence was detected." },
+    { signal: "commitlint", pattern: /\bcommitlint\b|commit-msg/i, evidence: "commit message lint evidence was detected." },
+    { signal: "lint-staged", pattern: /\blint-staged\b|lintstaged/i, evidence: "staged-file task evidence was detected." },
+    { signal: "npm-run", pattern: /\bnpm\s+run\s+/i, evidence: "npm script invocation evidence was detected." },
+    { signal: "pnpm-run", pattern: /\bpnpm\s+(run|exec)\s+/i, evidence: "pnpm script or exec invocation evidence was detected." },
+    { signal: "node-entrypoint", pattern: /\bnode\s+\.husky\/[^\s]+|\bnode\s+[^"'\n]*(pre-commit|pre-push|commit-msg)[^"'\n]*\.(mjs|cjs|js)\b|\.husky\/[^\s"']+\.(mjs|cjs|js)\b/i, evidence: "Node hook entrypoint evidence was detected." },
+    { signal: "posix-shell", pattern: /^#!\/(?:usr\/bin\/env\s+)?sh\b|POSIX|bash\s+<<\s*EOF|set\s+-e/im, evidence: "POSIX shell hook evidence was detected." }
+  ];
+  return gitHooksSignalFromSpecs(sourceFiles, specs, "command", "signal");
+}
+
+function gitHooksPolicySignals(sourceFiles: GitHooksSourceFile[]): GitHooksReport["policySignals"] {
+  const specs: Array<{ signal: GitHooksReport["policySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "pre-commit", pattern: /\.husky\/pre-commit|\bpre-commit\b/i, evidence: "pre-commit hook evidence was detected." },
+    { signal: "pre-push", pattern: /\.husky\/pre-push|\bpre-push\b/i, evidence: "pre-push hook evidence was detected." },
+    { signal: "commit-msg", pattern: /\.husky\/commit-msg|\bcommit-msg\b/i, evidence: "commit-msg hook evidence was detected." },
+    { signal: "prepare-commit-msg", pattern: /\.husky\/prepare-commit-msg|\bprepare-commit-msg\b/i, evidence: "prepare-commit-msg hook evidence was detected." },
+    { signal: "post-merge", pattern: /\.husky\/post-merge|\bpost-merge\b/i, evidence: "post-merge hook evidence was detected." },
+    { signal: "skip-env", pattern: /HUSKY=0|export\s+HUSKY=0/i, evidence: "HUSKY=0 skip policy evidence was detected." },
+    { signal: "no-verify", pattern: /--no-verify|git\s+\w+[^\n]*\s-n(\s|$)/i, evidence: "Git --no-verify bypass evidence was detected." },
+    { signal: "gui-node-path", pattern: /init\.sh|node_modules\/\.bin|\bPATH\b|NVM_DIR|version manager|nvm|fnm|asdf|volta/i, evidence: "GUI or Node PATH mitigation evidence was detected." },
+    { signal: "deprecated-husky-sh", pattern: /husky\.sh|_\/husky\.sh/i, evidence: "deprecated husky.sh shim evidence was detected." }
+  ];
+  return gitHooksSignalFromSpecs(sourceFiles, specs, "policy", "signal");
+}
+
+function gitHooksToolConfigFiles(sourceFiles: GitHooksSourceFile[]): GitHooksReport["toolConfigFiles"] {
+  return sourceFiles
+    .filter((source) => gitHooksToolForPath(source.filePath, source.text) !== null)
+    .slice(0, 80)
+    .map((source) => {
+      const tool = gitHooksToolForPath(source.filePath, source.text) ?? "unknown";
+      return {
+        filePath: source.filePath,
+        tool,
+        readiness: tool === "unknown" ? "partial" : "ready",
+        evidence: `${source.filePath} contains ${tool} hook-tool configuration evidence.`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function gitHooksToolForPath(filePath: string, text: string): GitHooksReport["toolConfigFiles"][number]["tool"] | null {
+  const base = path.basename(filePath).toLowerCase();
+  if (filePath.startsWith(".husky/") || /\bhusky\b/i.test(text)) return "husky";
+  if (/^\.lintstagedrc|lint-staged\.config\./i.test(base) || /\blint-staged\b|lintstaged/i.test(text)) return "lint-staged";
+  if (/^commitlint\.config\./i.test(base) || /\bcommitlint\b/i.test(text)) return "commitlint";
+  if (/^lefthook\.ya?ml$/i.test(base) || /\blefthook\b/i.test(text)) return "lefthook";
+  if (/^\.pre-commit-config\.ya?ml$/i.test(base) || /\brepos:\s*\n[\s\S]*hooks:/i.test(text)) return "pre-commit";
+  if (/^\.simple-git-hooks\./i.test(base) || /simple-git-hooks/i.test(text)) return "simple-git-hooks";
+  return null;
+}
+
+function gitHooksPackageHasDependency(sourceFiles: GitHooksSourceFile[], dependencyName: string): boolean {
+  return sourceFiles.some((source) => {
+    if (path.basename(source.filePath) !== "package.json") return false;
+    try {
+      const json = JSON.parse(source.text) as {
+        dependencies?: Record<string, unknown>;
+        devDependencies?: Record<string, unknown>;
+        optionalDependencies?: Record<string, unknown>;
+      };
+      return Boolean(json.dependencies?.[dependencyName] ?? json.devDependencies?.[dependencyName] ?? json.optionalDependencies?.[dependencyName]);
+    } catch {
+      return source.text.includes(`"${dependencyName}"`);
+    }
+  });
+}
+
+function gitHooksSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: GitHooksSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/git-hooks.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

@@ -3241,6 +3241,48 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 44/44 audit checks across 13 generated reports
 
+### Upgrade 147: Git Hooks Readiness Report
+
+- Cloned and inspected `typicode/husky` under
+  `research/external-src/typicode-husky` without executing external source.
+- GitHub metadata: public repo, MIT license, 35,122 stars, 1,086 forks,
+  updated 2026-03-19T23:03:16Z. Compared with `lint-staged/lint-staged`,
+  `conventional-changelog/commitlint`, and `pre-commit/pre-commit`; selected
+  Husky because it directly models `.husky` hook files, prepare install
+  scripts, Git `core.hooksPath`, pre-commit/pre-push/commit-msg policy,
+  `HUSKY=0` and `--no-verify` bypass semantics, CI skip handling,
+  GUI/Node PATH mitigation, POSIX shell hooks, and lint-staged handoff. No
+  source code was copied into RepoTutor.
+- Implemented Husky-style Git hooks readiness report:
+  `GitHooksReportSchema`, `analysis/git-hooks-report.json`,
+  `markdown/git-hooks.md`, `html/git-hooks.html`, hook files, install signals,
+  command signals, policy signals, tool config files, recommended commands,
+  risk queue, manifest/session-verification coverage, learning-path linkage,
+  nav entry for package-manager/git-hooks, and `open --target git-hooks`.
+- Source pattern: Husky separates `.husky` hook files, install/setup through
+  `prepare` or `core.hooksPath`, hook trigger names such as pre-commit,
+  pre-push, and commit-msg, bypass policy through `HUSKY=0` and
+  `--no-verify`, POSIX shell portability, GUI/Node PATH mitigation, and
+  staged-file handoff to lint-staged. RepoTutor maps that to deterministic
+  static Git hook readiness and explicitly does not run hooks, mutate Git
+  config, or create commits.
+- RED smoke generated
+  `/tmp/repotutor-git-hooks-red-studies.o0Mw9c/2026-06-04/local__simple-ts-app__main__9d91477c`;
+  old behavior was missing `analysis/git-hooks-report.json`,
+  `markdown/git-hooks.md`, and `html/git-hooks.html`, and
+  `open --target git-hooks` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-git-hooks-green-studies.OiRXQ5/2026-06-04/local__simple-ts-app__main__9d91477c`;
+  confirmed `verificationCheckedRequiredArtifacts=141`, hook files 0,
+  install signals 6, command signals 11, policy signals 9, tool config files
+  0, recommended commands 6, risk queue 3, `git-hooks-card`,
+  `data-source-pattern="Husky"`, manifest/learning-path entries,
+  `node-entrypoint=external`, and `open --target git-hooks` ->
+  `html/git-hooks.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 45/45 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

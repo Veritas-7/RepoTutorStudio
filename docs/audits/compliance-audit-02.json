@@ -1,6 +1,6 @@
 {
   "iteration": 2,
-  "createdAt": "2026-06-04T04:36:12.326Z",
+  "createdAt": "2026-06-04T04:49:07.066Z",
   "checks": [
     {
       "name": "project setup",
@@ -277,6 +277,13 @@
     },
     {
       "name": "package manager readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "git hooks readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
