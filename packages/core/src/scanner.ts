@@ -101,6 +101,7 @@ import {
   SecurityHeadersReadinessReport,
   GraphqlReadinessReport,
   CliReadinessReport,
+  LlmReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -208,6 +209,7 @@ export interface AnalysisBundle {
   securityHeadersReadinessReport: SecurityHeadersReadinessReport;
   graphqlReadinessReport: GraphqlReadinessReport;
   cliReadinessReport: CliReadinessReport;
+  llmReadinessReport: LlmReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -315,8 +317,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const securityHeadersReadinessReport = await buildSecurityHeadersReadinessReport(walk);
   const graphqlReadinessReport = await buildGraphqlReadinessReport(walk);
   const cliReadinessReport = await buildCliReadinessReport(walk);
+  const llmReadinessReport = await buildLlmReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -20322,6 +20325,310 @@ function cliReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: Re
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/cli-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildLlmReadinessReport(walk: WalkResult): Promise<LlmReadinessReport> {
+  const sourceFiles = await llmReadinessSourceFiles(walk);
+  const llmSetups = llmReadinessSetups(sourceFiles);
+  const modelSignals = llmReadinessModelSignals(sourceFiles);
+  const promptSignals = llmReadinessPromptSignals(sourceFiles);
+  const toolSignals = llmReadinessToolSignals(sourceFiles);
+  const retrievalSignals = llmReadinessRetrievalSignals(sourceFiles);
+  const structuredOutputSignals = llmReadinessStructuredOutputSignals(sourceFiles);
+  const streamingSignals = llmReadinessStreamingSignals(sourceFiles);
+  const safetySignals = llmReadinessSafetySignals(sourceFiles);
+  const packageSignals = llmReadinessPackageSignals(sourceFiles);
+
+  const hasModel = modelSignals.some((item) => item.readiness === "ready") || llmSetups.some((item) => item.modelCount > 0);
+  const hasPrompt = promptSignals.some((item) => item.readiness === "ready") || llmSetups.some((item) => item.promptCount > 0);
+  const hasTools = toolSignals.some((item) => item.readiness === "ready") || llmSetups.some((item) => item.toolCount > 0 || item.agentCount > 0);
+  const hasRetrieval = retrievalSignals.some((item) => item.readiness === "ready") || llmSetups.some((item) => item.retrievalCount > 0 || item.embeddingCount > 0);
+  const hasStructuredOutput = structuredOutputSignals.some((item) => item.readiness === "ready") || llmSetups.some((item) => item.outputCount > 0);
+  const hasStreaming = streamingSignals.some((item) => item.readiness === "ready") || llmSetups.some((item) => item.streamingCount > 0 || item.observabilityCount > 0);
+  const hasSafety = safetySignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: LlmReadinessReport["riskQueue"] = [];
+  if (!hasModel && !hasPrompt && !hasTools && !hasRetrieval) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the LLM model, prompt, tool, or retrieval boundary before claiming LLM readiness.",
+      why: "LangChain.js-style readiness starts with a model provider plus prompts, tools, retrieval, or output parsing learners can trace.",
+      relatedHref: "html/llm-readiness.html"
+    });
+  }
+  if ((hasPrompt || hasTools || hasRetrieval || hasStructuredOutput) && !hasModel) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace the chat/completion/embedding model provider and model-name configuration.",
+      why: "Prompts, tools, RAG, and parsers need an explicit model boundary to explain cost, latency, streaming, and failure behavior.",
+      relatedHref: "html/llm-readiness.html"
+    });
+  }
+  if (hasModel && !hasPrompt) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document the system/human prompt template or message assembly path next to the model call.",
+      why: "LLM behavior is mostly shaped by prompts and message history; model calls alone are not enough for learner rebuilds.",
+      relatedHref: "html/llm-readiness.html"
+    });
+  }
+  if ((hasTools || hasRetrieval) && !hasStructuredOutput) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add structured output, schema validation, or parser evidence for tool/RAG responses.",
+      why: "Agent and retrieval flows are easier to test when outputs are parsed through Zod, JSON Schema, output parsers, or structured tool calls.",
+      relatedHref: "html/llm-readiness.html"
+    });
+  }
+  if ((hasModel || hasTools || hasRetrieval) && !hasStreaming) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record streaming, callbacks, token usage, tracing, or LangSmith-style observability for LLM runs.",
+      why: "Production LLM apps need visibility into latency, token usage, callbacks, traces, and partial output behavior.",
+      relatedHref: "html/llm-readiness.html"
+    });
+  }
+  if ((hasModel || hasTools || hasRetrieval) && !hasSafety) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document retry, fallback, guardrail, moderation, refusal, and rate-limit handling around LLM calls.",
+      why: "LLM integrations fail through provider limits, invalid output, prompt injection, unsafe content, and transient model errors.",
+      relatedHref: "html/llm-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify LLM behavior with trusted tests, mocked providers, evals, or reviewed traces outside RepoTutor.",
+    why: "RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.",
+    relatedHref: "html/llm-readiness.html"
+  });
+
+  return {
+    summary: `LangChain.js-style LLM readiness report: setup ${llmSetups.length}개, model signal ${modelSignals.length}개, prompt signal ${promptSignals.length}개, tool signal ${toolSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "LangChain.js ChatOpenAI ChatPromptTemplate RunnableSequence tool createAgent VectorStore Retriever StructuredOutputParser stream callbacks LangSmith",
+    llmSetups,
+    modelSignals,
+    promptSignals,
+    toolSignals,
+    retrievalSignals,
+    structuredOutputSignals,
+    streamingSignals,
+    safetySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"ChatOpenAI|ChatAnthropic|ChatGoogle|OpenAI\\(|Anthropic\\(|Ollama|model:\" package.json src app server packages", purpose: "Inventory model providers, model names, temperatures, and runtime configuration." },
+      { command: "rg \"ChatPromptTemplate|PromptTemplate|SystemMessage|HumanMessage|MessagesPlaceholder|fromMessages\" src app server packages", purpose: "Trace prompt templates, message history, and chat input assembly." },
+      { command: "rg \"tool\\(|DynamicTool|StructuredTool|createAgent|AgentExecutor|bindTools|tool_choice|tools:\" src app server packages", purpose: "Find tool calling, agent orchestration, and tool schema boundaries." },
+      { command: "rg \"VectorStore|asRetriever|Retriever|Embeddings|TextSplitter|DocumentLoader|retrieval|RAG\" src app server packages", purpose: "Map retrieval, embeddings, vector stores, and document loading paths." },
+      { command: "rg \"StructuredOutputParser|withStructuredOutput|zod|json_schema|JsonOutputParser|OutputParser\" src app server packages", purpose: "Review structured output and parser validation coverage." },
+      { command: "rg \"\\.stream\\(|streamEvents|callbacks|LangSmith|LANGSMITH|traceable|tokenUsage|retry|fallback|moderation|rateLimit\" src app server packages", purpose: "Check streaming, callbacks, observability, retries, and safety handling." }
+    ],
+    learnerNextSteps: [
+      "먼저 ChatOpenAI, ChatAnthropic, AI SDK, OpenAI client, Ollama 같은 model provider와 model name 설정을 찾으세요.",
+      "ChatPromptTemplate, PromptTemplate, SystemMessage, HumanMessage, MessagesPlaceholder로 prompt와 message history가 어떻게 조립되는지 확인하세요.",
+      "tool(), StructuredTool, bindTools, createAgent, AgentExecutor가 있으면 tool schema와 side effect 경계를 확인하세요.",
+      "VectorStore, Retriever, Embeddings, TextSplitter, DocumentLoader가 있으면 RAG 입력 데이터와 검색 파라미터를 같이 보세요.",
+      "StructuredOutputParser, withStructuredOutput, Zod, JSON Schema, output parser로 응답 검증이 있는지 확인하세요.",
+      "stream, callbacks, LangSmith, token usage, retry/fallback/moderation/rate limit 신호로 운영 가시성과 실패 대응을 분리해서 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 모델 호출, agent run, vector search, prompt 품질, 비용/지연시간은 원본 프로젝트 테스트, mock, eval, trace에서 별도 확인하세요."
+    ]
+  };
+}
+
+type LlmReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function llmReadinessSourceFiles(walk: WalkResult): Promise<LlmReadinessSourceFile[]> {
+  const files: LlmReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !llmReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!llmReadinessPathSignal(file.relPath) && !llmReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function llmReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return llmReadinessPathSignal(filePath)
+    || /^(package\.json|langchain\.(json|ya?ml|js|mjs|cjs|ts)|ai\.(config\.)?(json|ya?ml|js|mjs|cjs|ts)|openai\.(json|ya?ml|js|mjs|cjs|ts))$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml)$/i.test(filePath);
+}
+
+function llmReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(ai|llm|llms|agent|agents|prompt|prompts|rag|retrieval|retriever|retrievers|vector|vectors|embedding|embeddings|tools?|langchain|langgraph|langsmith|openai|anthropic|ollama|llamaindex)(\/|\.|-|_|$)|package\.json$/i.test(filePath);
+}
+
+function llmReadinessContentSignal(text: string): boolean {
+  return /\b(ChatOpenAI|OpenAIEmbeddings|ChatAnthropic|ChatGoogle|Ollama|ChatPromptTemplate|PromptTemplate|SystemMessage|HumanMessage|MessagesPlaceholder|RunnableSequence|StringOutputParser|StructuredOutputParser|JsonOutputParser|withStructuredOutput|tool\s*\(|StructuredTool|DynamicTool|createAgent|AgentExecutor|createReactAgent|bindTools|VectorStore|MemoryVectorStore|asRetriever|BaseRetriever|TextSplitter|DocumentLoader|streamEvents|LangSmith|traceable|LANGSMITH|tokenUsage|LLMChain|RetrievalQAChain)\b|"(langchain|@langchain\/core|@langchain\/openai|ai|openai|@anthropic-ai\/sdk|llamaindex|ollama)"/i.test(text);
+}
+
+function llmReadinessSetups(sourceFiles: LlmReadinessSourceFile[]): LlmReadinessReport["llmSetups"] {
+  const rows: LlmReadinessReport["llmSetups"] = [];
+  for (const source of sourceFiles) {
+    const modelCount = countMatches(source.text, /\b(ChatOpenAI|AzureChatOpenAI|OpenAI\(|ChatAnthropic|Anthropic\(|ChatGoogle|GoogleGenerativeAI|Ollama|model\s*:|modelName|temperature|baseURL|apiKey)\b/gi);
+    const promptCount = countMatches(source.text, /\b(ChatPromptTemplate|PromptTemplate|SystemMessage|HumanMessage|AIMessage|MessagesPlaceholder|fromMessages|fromTemplate|FewShotPromptTemplate)\b/gi);
+    const toolCount = countMatches(source.text, /\b(tool\s*\(|StructuredTool|DynamicTool|bindTools|tool_choice|toolCall|ToolMessage|MCP|ModelContextProtocol|tools\s*:)\b/gi);
+    const agentCount = countMatches(source.text, /\b(createAgent|AgentExecutor|createReactAgent|createOpenAIFunctionsAgent|LangGraph|StateGraph|agent\s*:)\b/gi);
+    const retrievalCount = countMatches(source.text, /\b(VectorStore|MemoryVectorStore|asRetriever|Retriever|BaseRetriever|retrieval|RAG|DocumentLoader|TextSplitter|RecursiveCharacterTextSplitter)\b/gi);
+    const embeddingCount = countMatches(source.text, /\b(Embeddings|OpenAIEmbeddings|embedQuery|embedDocuments|embeddingModel|vectorstore|vectorStore)\b/gi);
+    const outputCount = countMatches(source.text, /\b(StructuredOutputParser|StringOutputParser|JsonOutputParser|withStructuredOutput|OutputParser|zod|z\.object|json_schema|JSONSchema|function_call|tool_calls)\b/gi);
+    const streamingCount = countMatches(source.text, /\b(\.stream\s*\(|streamEvents|streamLog|for await|callbacks|CallbackManager|handleLLMNewToken|on_llm_new_token)\b/gi);
+    const observabilityCount = countMatches(source.text, /\b(LangSmith|LANGSMITH|traceable|tracing|runName|metadata|tags|tokenUsage|usage_metadata|callbacks)\b/gi);
+    const hasSetupSignal = modelCount + promptCount + toolCount + agentCount + retrievalCount + embeddingCount + outputCount + streamingCount + observabilityCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: llmReadinessProvider(source),
+      modelCount,
+      promptCount,
+      toolCount,
+      agentCount,
+      retrievalCount,
+      embeddingCount,
+      outputCount,
+      streamingCount,
+      observabilityCount,
+      readiness: modelCount > 0 && (promptCount > 0 || toolCount > 0 || retrievalCount > 0 || outputCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains models ${modelCount}, prompts ${promptCount}, tools ${toolCount}, agents ${agentCount}, retrieval ${retrievalCount}, embeddings ${embeddingCount}, output ${outputCount}, streaming ${streamingCount}, observability ${observabilityCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function llmReadinessProvider(source: LlmReadinessSourceFile): LlmReadinessReport["llmSetups"][number]["provider"] {
+  if (/langchain|@langchain\/core|ChatPromptTemplate|RunnableSequence|StructuredOutputParser|createAgent|AgentExecutor/i.test(source.text)) return "langchain";
+  if (/"ai"|from ["']ai["']|generateText|streamText|tool\s*\(/i.test(source.text)) return "vercel-ai-sdk";
+  if (/openai|ChatOpenAI|OpenAIEmbeddings|new\s+OpenAI|OpenAI\(/i.test(source.text)) return "openai";
+  if (/anthropic|ChatAnthropic|@anthropic-ai\/sdk|Claude/i.test(source.text)) return "anthropic";
+  if (/google-genai|GoogleGenerativeAI|ChatGoogle|Gemini/i.test(source.text)) return "google-genai";
+  if (/ollama|ChatOllama|OllamaEmbeddings/i.test(source.text)) return "ollama";
+  if (/llamaindex|LlamaIndex/i.test(source.text)) return "llamaindex";
+  if (/llm|model\s*:|prompt|embedding|vector/i.test(source.filePath) || /LLM|AI model|prompt template/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function llmReadinessModelSignals(sourceFiles: LlmReadinessSourceFile[]): LlmReadinessReport["modelSignals"] {
+  const specs: Array<{ signal: LlmReadinessReport["modelSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "chat-model", pattern: /ChatOpenAI|AzureChatOpenAI|ChatAnthropic|ChatGoogle|ChatOllama|chatModel|chat\s*:/i, evidence: "chat model evidence was detected." },
+    { signal: "completion-model", pattern: /\bnew\s+OpenAI\(|Completion|generateText|complete\s*\(|LLMChain/i, evidence: "completion/generation model evidence was detected." },
+    { signal: "embedding-model", pattern: /Embeddings|OpenAIEmbeddings|embedQuery|embedDocuments|embeddingModel/i, evidence: "embedding model evidence was detected." },
+    { signal: "provider-config", pattern: /apiKey|baseURL|organization|project|OPENAI_API_KEY|ANTHROPIC_API_KEY|LANGCHAIN_API_KEY/i, evidence: "provider configuration evidence was detected." },
+    { signal: "model-name", pattern: /model\s*:|modelName|model_name|gpt-|claude-|gemini-|llama/i, evidence: "model name evidence was detected." },
+    { signal: "temperature", pattern: /temperature|topP|top_p|maxTokens|max_tokens/i, evidence: "sampling parameter evidence was detected." },
+    { signal: "fallback", pattern: /fallback|withFallbacks|backupModel|fallbacks/i, evidence: "model fallback evidence was detected." }
+  ];
+  return llmReadinessSignalFromSpecs(sourceFiles, specs, "model", "signal");
+}
+
+function llmReadinessPromptSignals(sourceFiles: LlmReadinessSourceFile[]): LlmReadinessReport["promptSignals"] {
+  const specs: Array<{ signal: LlmReadinessReport["promptSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "prompt-template", pattern: /PromptTemplate|fromTemplate|template\s*:/i, evidence: "prompt template evidence was detected." },
+    { signal: "chat-prompt-template", pattern: /ChatPromptTemplate|fromMessages/i, evidence: "chat prompt template evidence was detected." },
+    { signal: "system-message", pattern: /SystemMessage|system\s*:/i, evidence: "system message evidence was detected." },
+    { signal: "human-message", pattern: /HumanMessage|user\s*:/i, evidence: "human/user message evidence was detected." },
+    { signal: "messages-placeholder", pattern: /MessagesPlaceholder|chat_history|history\s*:/i, evidence: "message history placeholder evidence was detected." },
+    { signal: "few-shot", pattern: /FewShotPromptTemplate|exampleSelector|examples\s*:/i, evidence: "few-shot prompt evidence was detected." }
+  ];
+  return llmReadinessSignalFromSpecs(sourceFiles, specs, "prompt", "signal");
+}
+
+function llmReadinessToolSignals(sourceFiles: LlmReadinessSourceFile[]): LlmReadinessReport["toolSignals"] {
+  const specs: Array<{ signal: LlmReadinessReport["toolSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tool", pattern: /\btool\s*\(|StructuredTool|DynamicTool|ToolMessage|tools\s*:/i, evidence: "tool declaration evidence was detected." },
+    { signal: "tool-schema", pattern: /schema\s*:|z\.object|parameters\s*:|argsSchema|inputSchema/i, evidence: "tool schema evidence was detected." },
+    { signal: "tool-calling", pattern: /bindTools|tool_calls|tool_choice|function_call|withConfig\([^)]*tools/i, evidence: "tool calling evidence was detected." },
+    { signal: "agent", pattern: /createAgent|createReactAgent|agent\s*:|LangGraph|StateGraph/i, evidence: "agent evidence was detected." },
+    { signal: "agent-executor", pattern: /AgentExecutor|executor|invoke\s*\([^)]*messages/i, evidence: "agent executor evidence was detected." },
+    { signal: "mcp-tool", pattern: /MCP|ModelContextProtocol|@modelcontextprotocol|langchain-mcp-adapters/i, evidence: "MCP tool evidence was detected." }
+  ];
+  return llmReadinessSignalFromSpecs(sourceFiles, specs, "tool", "signal");
+}
+
+function llmReadinessRetrievalSignals(sourceFiles: LlmReadinessSourceFile[]): LlmReadinessReport["retrievalSignals"] {
+  const specs: Array<{ signal: LlmReadinessReport["retrievalSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vector-store", pattern: /VectorStore|MemoryVectorStore|Chroma|Pinecone|FAISS|pgvector|RedisVector|MongoDBAtlasVectorSearch/i, evidence: "vector store evidence was detected." },
+    { signal: "retriever", pattern: /Retriever|asRetriever|BaseRetriever|createRetrieverTool/i, evidence: "retriever evidence was detected." },
+    { signal: "embeddings", pattern: /Embeddings|OpenAIEmbeddings|embedQuery|embedDocuments/i, evidence: "embeddings evidence was detected." },
+    { signal: "text-splitter", pattern: /TextSplitter|RecursiveCharacterTextSplitter|TokenTextSplitter|splitDocuments/i, evidence: "text splitter evidence was detected." },
+    { signal: "document-loader", pattern: /DocumentLoader|PDFLoader|CSVLoader|WebBaseLoader|loadAndSplit/i, evidence: "document loader evidence was detected." },
+    { signal: "rag-chain", pattern: /RetrievalQAChain|createRetrievalChain|stuffDocumentsChain|RAG|context\s*:/i, evidence: "RAG chain/context evidence was detected." }
+  ];
+  return llmReadinessSignalFromSpecs(sourceFiles, specs, "retrieval", "signal");
+}
+
+function llmReadinessStructuredOutputSignals(sourceFiles: LlmReadinessSourceFile[]): LlmReadinessReport["structuredOutputSignals"] {
+  const specs: Array<{ signal: LlmReadinessReport["structuredOutputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "output-parser", pattern: /OutputParser|StructuredOutputParser|StringOutputParser|JsonOutputParser|parse\s*\(/i, evidence: "output parser evidence was detected." },
+    { signal: "zod-schema", pattern: /z\.object|zod|ZodSchema|schema\s*:/i, evidence: "Zod/schema validation evidence was detected." },
+    { signal: "with-structured-output", pattern: /withStructuredOutput|structuredOutput|response_format/i, evidence: "structured output evidence was detected." },
+    { signal: "json-schema", pattern: /json_schema|JSONSchema|JsonSchema|schemaType/i, evidence: "JSON Schema evidence was detected." },
+    { signal: "function-calling", pattern: /function_call|tool_calls|OpenAIFunctions|functions\s*:/i, evidence: "function/tool calling output evidence was detected." }
+  ];
+  return llmReadinessSignalFromSpecs(sourceFiles, specs, "structured output", "signal");
+}
+
+function llmReadinessStreamingSignals(sourceFiles: LlmReadinessSourceFile[]): LlmReadinessReport["streamingSignals"] {
+  const specs: Array<{ signal: LlmReadinessReport["streamingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "stream", pattern: /\.stream\s*\(|streamText|streamObject|streaming\s*:/i, evidence: "streaming evidence was detected." },
+    { signal: "stream-events", pattern: /streamEvents|streamLog|on_llm_new_token|handleLLMNewToken/i, evidence: "stream events evidence was detected." },
+    { signal: "callbacks", pattern: /callbacks|CallbackManager|handleLLMStart|handleLLMEnd/i, evidence: "callback evidence was detected." },
+    { signal: "tracing", pattern: /traceable|tracing|runName|tags\s*:|metadata\s*:/i, evidence: "tracing metadata evidence was detected." },
+    { signal: "langsmith", pattern: /LangSmith|LANGSMITH|smith\.langchain/i, evidence: "LangSmith evidence was detected." },
+    { signal: "token-usage", pattern: /tokenUsage|usage_metadata|completion_tokens|prompt_tokens|total_tokens/i, evidence: "token usage evidence was detected." }
+  ];
+  return llmReadinessSignalFromSpecs(sourceFiles, specs, "streaming", "signal");
+}
+
+function llmReadinessSafetySignals(sourceFiles: LlmReadinessSourceFile[]): LlmReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: LlmReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "guardrail", pattern: /guardrail|policy|safety|jailbreak|prompt injection/i, evidence: "guardrail/safety policy evidence was detected." },
+    { signal: "moderation", pattern: /moderation|moderate|contentFilter|safetySettings/i, evidence: "moderation evidence was detected." },
+    { signal: "refusal", pattern: /refusal|refuse|blocked|unsafe/i, evidence: "refusal/blocked output evidence was detected." },
+    { signal: "retry", pattern: /retry|withRetry|maxRetries|backoff/i, evidence: "retry evidence was detected." },
+    { signal: "fallback", pattern: /fallback|withFallbacks|backupModel/i, evidence: "fallback evidence was detected." },
+    { signal: "rate-limit", pattern: /rateLimit|rate-limit|429|quota|throttle/i, evidence: "rate limit evidence was detected." }
+  ];
+  return llmReadinessSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function llmReadinessPackageSignals(sourceFiles: LlmReadinessSourceFile[]): LlmReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: LlmReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "langchain", pattern: /"langchain"|from ["']langchain["']|require\(["']langchain["']\)/i, evidence: "langchain package evidence was detected." },
+    { signal: "@langchain/core", pattern: /"@langchain\/core"|from ["']@langchain\/core/i, evidence: "@langchain/core evidence was detected." },
+    { signal: "@langchain/openai", pattern: /"@langchain\/openai"|from ["']@langchain\/openai/i, evidence: "@langchain/openai evidence was detected." },
+    { signal: "ai", pattern: /"ai"|from ["']ai["']|generateText|streamText/i, evidence: "Vercel AI SDK evidence was detected." },
+    { signal: "openai", pattern: /"openai"|from ["']openai["']|new\s+OpenAI/i, evidence: "OpenAI SDK evidence was detected." },
+    { signal: "@anthropic-ai/sdk", pattern: /"@anthropic-ai\/sdk"|from ["']@anthropic-ai\/sdk|ChatAnthropic/i, evidence: "Anthropic SDK evidence was detected." },
+    { signal: "llamaindex", pattern: /"llamaindex"|from ["']llamaindex["']|LlamaIndex/i, evidence: "LlamaIndex evidence was detected." },
+    { signal: "ollama", pattern: /"ollama"|from ["']ollama["']|ChatOllama|OllamaEmbeddings/i, evidence: "Ollama evidence was detected." }
+  ];
+  return llmReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function llmReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: LlmReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/llm-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

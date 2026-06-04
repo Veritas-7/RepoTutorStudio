@@ -4704,6 +4704,86 @@ export const CliReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const LlmReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  llmSetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["langchain", "vercel-ai-sdk", "openai", "anthropic", "google-genai", "ollama", "llamaindex", "custom", "unknown"]),
+    modelCount: z.number().int().nonnegative(),
+    promptCount: z.number().int().nonnegative(),
+    toolCount: z.number().int().nonnegative(),
+    agentCount: z.number().int().nonnegative(),
+    retrievalCount: z.number().int().nonnegative(),
+    embeddingCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    streamingCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  modelSignals: z.array(z.object({
+    signal: z.enum(["chat-model", "completion-model", "embedding-model", "provider-config", "model-name", "temperature", "fallback", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  promptSignals: z.array(z.object({
+    signal: z.enum(["prompt-template", "chat-prompt-template", "system-message", "human-message", "messages-placeholder", "few-shot", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  toolSignals: z.array(z.object({
+    signal: z.enum(["tool", "tool-schema", "tool-calling", "agent", "agent-executor", "mcp-tool", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  retrievalSignals: z.array(z.object({
+    signal: z.enum(["vector-store", "retriever", "embeddings", "text-splitter", "document-loader", "rag-chain", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structuredOutputSignals: z.array(z.object({
+    signal: z.enum(["output-parser", "zod-schema", "with-structured-output", "json-schema", "function-calling", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  streamingSignals: z.array(z.object({
+    signal: z.enum(["stream", "stream-events", "callbacks", "tracing", "langsmith", "token-usage", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["guardrail", "moderation", "refusal", "retry", "fallback", "rate-limit", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["langchain", "@langchain/core", "@langchain/openai", "ai", "openai", "@anthropic-ai/sdk", "llamaindex", "ollama", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -4994,6 +5074,7 @@ export type EnvValidationReadinessReport = z.infer<typeof EnvValidationReadiness
 export type SecurityHeadersReadinessReport = z.infer<typeof SecurityHeadersReadinessReportSchema>;
 export type GraphqlReadinessReport = z.infer<typeof GraphqlReadinessReportSchema>;
 export type CliReadinessReport = z.infer<typeof CliReadinessReportSchema>;
+export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

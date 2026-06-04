@@ -1,6 +1,6 @@
 # Compliance Audit 12
 
-Created: 2026-06-04T12:57:29.756Z
+Created: 2026-06-04T13:09:56.157Z
 
 Status: PASS
 
@@ -491,6 +491,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - CLI readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - LLM readiness report
 
 - missing files: none
 - missing strings: none
