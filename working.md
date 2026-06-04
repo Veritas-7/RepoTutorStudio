@@ -3757,6 +3757,47 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 182:
   - `eb7b5ad` SEO metadata readiness report
 
+- 2026-06-04: AutoResearch Upgrade 183 candidate selected:
+  `vite-pwa/vite-plugin-pwa`
+  (`https://github.com/vite-pwa/vite-plugin-pwa`; public; MIT; 4,181 stars;
+  256 forks; updated 2026-06-04T08:29:09Z). Compared with
+  `GoogleChrome/workbox`, `pwa-builder/PWABuilder`, and `nuxt-modules/pwa`
+  (repo not found); selected Vite PWA because it directly models PWA readiness:
+  `manifest.webmanifest`, icons, `theme_color`, `start_url`, display, scope,
+  `registerSW`, `virtual:pwa-register`, generateSW, injectManifest, Workbox
+  precache/runtimeCaching, glob patterns, CacheFirst/NetworkFirst/
+  StaleWhileRevalidate, `offlineReady`, `needRefresh`, update prompts,
+  `skipWaiting`, `clientsClaim`, install prompts, credentials, shortcuts, and
+  Vite package integration. Cloned ignored external source to
+  `research/external-src/vite-pwa-vite-plugin-pwa` and inspected docs/source
+  hits without executing external source. Clone HEAD was `05670fc`; tracked
+  file count for `research/external-src/vite-pwa-vite-plugin-pwa` returned `0`.
+- 2026-06-04: RED pwa-readiness smoke generated
+  `/tmp/repotutor-pwa-red-studies.oJcQHU/2026-06-04/local__simple-ts-app__HEAD__aa1377b8`;
+  old build had `verificationCheckedRequiredArtifacts=246`, was missing
+  `analysis/pwa-readiness-report.json`, `markdown/pwa-readiness.md`, and
+  `html/pwa-readiness.html`, and `open --target pwa-readiness` failed as
+  expected.
+- 2026-06-04: Implemented Vite PWA-style pwa-readiness report:
+  `PwaReadinessReportSchema`, `analysis/pwa-readiness-report.json`,
+  `markdown/pwa-readiness.md`, `html/pwa-readiness.html`, PWA setups, manifest
+  signals, service worker signals, caching signals, update signals, install
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target pwa-readiness`.
+- 2026-06-04: GREEN pwa-readiness smoke generated
+  `/tmp/repotutor-pwa-green-studies.EK2MKg/2026-06-04/local__simple-ts-app__main__aa1377b8`;
+  confirmed `verificationCheckedRequiredArtifacts=249`, PWA setups 0, manifest
+  signals 6, service worker signals 6, caching signals 6, update signals 5,
+  install signals 5, package signals 6, risk queue 2, all three new artifacts,
+  and `open --target pwa-readiness` -> `html/pwa-readiness.html`.
+- 2026-06-04: Verification for Upgrade 183:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 81/81 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
