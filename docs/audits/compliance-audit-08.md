@@ -1,6 +1,6 @@
 # Compliance Audit 8
 
-Created: 2026-06-04T17:10:29.855Z
+Created: 2026-06-04T17:30:46.367Z
 
 Status: PASS
 
@@ -587,6 +587,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Dev Container readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Kubernetes readiness report
 
 - missing files: none
 - missing strings: none

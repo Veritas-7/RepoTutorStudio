@@ -106,6 +106,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "edge-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "compose-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "devcontainer-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "kubernetes-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -210,6 +211,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "edge-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "compose-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "devcontainer-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "kubernetes-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -314,6 +316,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "edge-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "compose-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "devcontainer-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "kubernetes-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -449,6 +452,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/edge-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/compose-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/devcontainer-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/kubernetes-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -2245,6 +2249,19 @@ describe("RepoTutor core pipeline", () => {
     expect(devContainerReadinessMarkdown).toContain("# Dev Container Readiness");
     expect(devContainerReadinessMarkdown).toContain("Source pattern: Dev Containers");
     expect(devContainerReadinessMarkdown).toContain("## Lifecycle Signals");
+    const kubernetesReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "kubernetes-readiness-report.json"), "utf8");
+    expect(kubernetesReadinessText).toContain("Kubernetes apiVersion kind metadata labels annotations namespace Deployment StatefulSet DaemonSet Service Ingress ConfigMap Secret ServiceAccount Role RoleBinding ClusterRole ClusterRoleBinding NetworkPolicy PersistentVolume PersistentVolumeClaim readinessProbe livenessProbe resources requests limits HorizontalPodAutoscaler PodDisruptionBudget kustomization resources patches kubectl apply diff wait rollout logs describe port-forward delete");
+    expect(kubernetesReadinessText).toContain("\"kubernetesSetups\"");
+    expect(kubernetesReadinessText).toContain("\"kustomizeSignals\"");
+    expect(kubernetesReadinessText).toContain("\"workflowSignals\"");
+    const kubernetesReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "kubernetes-readiness.html"), "utf8");
+    expect(kubernetesReadinessHtml).toContain("Kubernetes Readiness");
+    expect(kubernetesReadinessHtml).toContain("kubernetes-readiness-card");
+    expect(kubernetesReadinessHtml).toContain("data-source-pattern=\"Kubernetes\"");
+    const kubernetesReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "kubernetes-readiness.md"), "utf8");
+    expect(kubernetesReadinessMarkdown).toContain("# Kubernetes Readiness");
+    expect(kubernetesReadinessMarkdown).toContain("Source pattern: Kubernetes");
+    expect(kubernetesReadinessMarkdown).toContain("## Kustomize Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -2409,6 +2426,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/edge-readiness.html");
     expect(exportManifestText).toContain("html/compose-readiness.html");
     expect(exportManifestText).toContain("html/devcontainer-readiness.html");
+    expect(exportManifestText).toContain("html/kubernetes-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -3517,6 +3535,500 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "devcontainer-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "devcontainer-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects Kubernetes readiness patterns without contacting a cluster", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-kubernetes-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-kubernetes-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "k8s", "base"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "k8s", "overlays", "dev"), { recursive: true });
+    await fs.appendFile(path.join(sourceRoot, "README.md"), [
+      "",
+      "Kubernetes local workflow:",
+      "kustomize build k8s/overlays/dev",
+      "kubectl diff -k k8s/overlays/dev",
+      "kubectl apply --dry-run=server -k k8s/overlays/dev",
+      "kubectl apply -k k8s/overlays/dev",
+      "kubectl wait --for=condition=Available deployment/repotutor-api -n repotutor-dev --timeout=180s",
+      "kubectl rollout status deployment/repotutor-api -n repotutor-dev",
+      "kubectl get pods -l app=repotutor-api -n repotutor-dev",
+      "kubectl logs -l app=repotutor-api -n repotutor-dev",
+      "kubectl describe hpa/repotutor-api -n repotutor-dev",
+      "kubectl port-forward service/repotutor-api 8080:80 -n repotutor-dev",
+      "kubectl delete -k k8s/overlays/dev",
+      "kind create cluster --name repotutor-dev",
+      "minikube start"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "k8s:build": "kustomize build k8s/overlays/dev",
+        "k8s:diff": "kubectl diff -k k8s/overlays/dev",
+        "k8s:apply": "kubectl apply -k k8s/overlays/dev",
+        "k8s:wait": "kubectl wait --for=condition=Available deployment/repotutor-api -n repotutor-dev",
+        "k8s:rollout": "kubectl rollout status deployment/repotutor-api -n repotutor-dev",
+        "k8s:logs": "kubectl logs -l app=repotutor-api -n repotutor-dev",
+        "k8s:describe": "kubectl describe deployment/repotutor-api -n repotutor-dev",
+        "k8s:port": "kubectl port-forward service/repotutor-api 8080:80 -n repotutor-dev",
+        "k8s:delete": "kubectl delete -k k8s/overlays/dev"
+      },
+      devDependencies: {
+        kubectl: "latest",
+        kustomize: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "base", "kustomization.yaml"), [
+      "resources:",
+      "  - namespace.yaml",
+      "  - serviceaccount.yaml",
+      "  - rbac.yaml",
+      "  - app-config.yaml",
+      "  - storage.yaml",
+      "  - workloads.yaml",
+      "  - deployment.yaml",
+      "  - service.yaml",
+      "  - ingress.yaml",
+      "  - hpa.yaml",
+      "  - pdb.yaml",
+      "  - networkpolicy.yaml",
+      "configMapGenerator:",
+      "  - name: repotutor-generated-config",
+      "    literals:",
+      "      - FEATURE_FLAG=enabled",
+      "images:",
+      "  - name: ghcr.io/veritas/repotutor-api",
+      "    newTag: dev"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "base", "namespace.yaml"), [
+      "apiVersion: v1",
+      "kind: Namespace",
+      "metadata:",
+      "  name: repotutor-dev",
+      "  labels:",
+      "    app.kubernetes.io/name: repotutor"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "base", "serviceaccount.yaml"), [
+      "apiVersion: v1",
+      "kind: ServiceAccount",
+      "metadata:",
+      "  name: repotutor-api",
+      "  namespace: repotutor-dev",
+      "imagePullSecrets:",
+      "  - name: repotutor-registry-reference"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "base", "rbac.yaml"), [
+      "apiVersion: rbac.authorization.k8s.io/v1",
+      "kind: Role",
+      "metadata:",
+      "  name: repotutor-reader",
+      "  namespace: repotutor-dev",
+      "rules:",
+      "  - apiGroups: [\"\"]",
+      "    resources: [\"configmaps\", \"pods\"]",
+      "    verbs: [\"get\", \"list\", \"watch\"]",
+      "---",
+      "apiVersion: rbac.authorization.k8s.io/v1",
+      "kind: RoleBinding",
+      "metadata:",
+      "  name: repotutor-reader-binding",
+      "  namespace: repotutor-dev",
+      "subjects:",
+      "  - kind: ServiceAccount",
+      "    name: repotutor-api",
+      "    namespace: repotutor-dev",
+      "roleRef:",
+      "  kind: Role",
+      "  name: repotutor-reader",
+      "  apiGroup: rbac.authorization.k8s.io",
+      "---",
+      "apiVersion: rbac.authorization.k8s.io/v1",
+      "kind: ClusterRole",
+      "metadata:",
+      "  name: repotutor-cluster-reader",
+      "rules:",
+      "  - apiGroups: [\"\"]",
+      "    resources: [\"nodes\"]",
+      "    verbs: [\"get\", \"list\"]",
+      "---",
+      "apiVersion: rbac.authorization.k8s.io/v1",
+      "kind: ClusterRoleBinding",
+      "metadata:",
+      "  name: repotutor-cluster-reader-binding",
+      "subjects:",
+      "  - kind: ServiceAccount",
+      "    name: repotutor-api",
+      "    namespace: repotutor-dev",
+      "roleRef:",
+      "  kind: ClusterRole",
+      "  name: repotutor-cluster-reader",
+      "  apiGroup: rbac.authorization.k8s.io"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "base", "app-config.yaml"), [
+      "apiVersion: v1",
+      "kind: ConfigMap",
+      "metadata:",
+      "  name: repotutor-api-config",
+      "  namespace: repotutor-dev",
+      "data:",
+      "  APP_MODE: dev",
+      "---",
+      "apiVersion: v1",
+      "kind: Secret",
+      "metadata:",
+      "  name: repotutor-api-reference",
+      "  namespace: repotutor-dev",
+      "type: Opaque",
+      "stringData:",
+      "  TOKEN_NAME: APP_TOKEN_NAME"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "base", "storage.yaml"), [
+      "apiVersion: v1",
+      "kind: PersistentVolume",
+      "metadata:",
+      "  name: repotutor-pv",
+      "spec:",
+      "  capacity:",
+      "    storage: 1Gi",
+      "  accessModes: [\"ReadWriteOnce\"]",
+      "  storageClassName: manual",
+      "  hostPath:",
+      "    path: /tmp/repotutor",
+      "---",
+      "apiVersion: v1",
+      "kind: PersistentVolumeClaim",
+      "metadata:",
+      "  name: repotutor-pvc",
+      "  namespace: repotutor-dev",
+      "spec:",
+      "  storageClassName: manual",
+      "  accessModes: [\"ReadWriteOnce\"]",
+      "  resources:",
+      "    requests:",
+      "      storage: 1Gi"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "base", "workloads.yaml"), [
+      "apiVersion: apps/v1",
+      "kind: StatefulSet",
+      "metadata:",
+      "  name: repotutor-stateful",
+      "  namespace: repotutor-dev",
+      "spec:",
+      "  serviceName: repotutor-stateful",
+      "  selector:",
+      "    matchLabels:",
+      "      app: repotutor-stateful",
+      "  template:",
+      "    metadata:",
+      "      labels:",
+      "        app: repotutor-stateful",
+      "    spec:",
+      "      containers:",
+      "        - name: sidecar",
+      "          image: ghcr.io/veritas/repotutor-sidecar:dev",
+      "---",
+      "apiVersion: apps/v1",
+      "kind: DaemonSet",
+      "metadata:",
+      "  name: repotutor-agent",
+      "  namespace: repotutor-dev",
+      "spec:",
+      "  selector:",
+      "    matchLabels:",
+      "      app: repotutor-agent",
+      "  template:",
+      "    metadata:",
+      "      labels:",
+      "        app: repotutor-agent",
+      "    spec:",
+      "      containers:",
+      "        - name: agent",
+      "          image: ghcr.io/veritas/repotutor-agent:dev",
+      "---",
+      "apiVersion: batch/v1",
+      "kind: Job",
+      "metadata:",
+      "  name: repotutor-migrate",
+      "  namespace: repotutor-dev",
+      "spec:",
+      "  template:",
+      "    spec:",
+      "      restartPolicy: Never",
+      "      containers:",
+      "        - name: migrate",
+      "          image: ghcr.io/veritas/repotutor-api:dev",
+      "---",
+      "apiVersion: batch/v1",
+      "kind: CronJob",
+      "metadata:",
+      "  name: repotutor-refresh",
+      "  namespace: repotutor-dev",
+      "spec:",
+      "  schedule: \"*/30 * * * *\"",
+      "  jobTemplate:",
+      "    spec:",
+      "      template:",
+      "        spec:",
+      "          restartPolicy: OnFailure",
+      "          containers:",
+      "            - name: refresh",
+      "              image: ghcr.io/veritas/repotutor-api:dev",
+      "---",
+      "apiVersion: v1",
+      "kind: Pod",
+      "metadata:",
+      "  name: repotutor-debug",
+      "  namespace: repotutor-dev",
+      "  labels:",
+      "    app: repotutor-debug",
+      "spec:",
+      "  containers:",
+      "    - name: debug",
+      "      image: ghcr.io/veritas/repotutor-api:dev"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "base", "deployment.yaml"), [
+      "apiVersion: apps/v1",
+      "kind: Deployment",
+      "metadata:",
+      "  name: repotutor-api",
+      "  namespace: repotutor-dev",
+      "  labels:",
+      "    app: repotutor-api",
+      "spec:",
+      "  replicas: 2",
+      "  selector:",
+      "    matchLabels:",
+      "      app: repotutor-api",
+      "  template:",
+      "    metadata:",
+      "      labels:",
+      "        app: repotutor-api",
+      "      annotations:",
+      "        prometheus.io/scrape: \"true\"",
+      "        repotutor.dev/config: placeholder",
+      "    spec:",
+      "      serviceAccountName: repotutor-api",
+      "      securityContext:",
+      "        runAsNonRoot: true",
+      "      containers:",
+      "        - name: api",
+      "          image: ghcr.io/veritas/repotutor-api:dev",
+      "          ports:",
+      "            - containerPort: 8080",
+      "          env:",
+      "            - name: APP_MODE",
+      "              value: dev",
+      "          envFrom:",
+      "            - configMapRef:",
+      "                name: repotutor-api-config",
+      "          volumeMounts:",
+      "            - name: data",
+      "              mountPath: /data",
+      "          readinessProbe:",
+      "            httpGet:",
+      "              path: /ready",
+      "              port: 8080",
+      "          livenessProbe:",
+      "            httpGet:",
+      "              path: /health",
+      "              port: 8080",
+      "          startupProbe:",
+      "            httpGet:",
+      "              path: /startup",
+      "              port: 8080",
+      "          resources:",
+      "            requests:",
+      "              cpu: 100m",
+      "              memory: 128Mi",
+      "            limits:",
+      "              cpu: 500m",
+      "              memory: 512Mi",
+      "          securityContext:",
+      "            allowPrivilegeEscalation: false",
+      "      volumes:",
+      "        - name: data",
+      "          persistentVolumeClaim:",
+      "            claimName: repotutor-pvc"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "base", "service.yaml"), [
+      "apiVersion: v1",
+      "kind: Service",
+      "metadata:",
+      "  name: repotutor-api",
+      "  namespace: repotutor-dev",
+      "spec:",
+      "  selector:",
+      "    app: repotutor-api",
+      "  ports:",
+      "    - port: 80",
+      "      targetPort: 8080"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "base", "ingress.yaml"), [
+      "apiVersion: networking.k8s.io/v1",
+      "kind: Ingress",
+      "metadata:",
+      "  name: repotutor-api",
+      "  namespace: repotutor-dev",
+      "spec:",
+      "  rules:",
+      "    - host: repotutor.local",
+      "      http:",
+      "        paths:",
+      "          - path: /",
+      "            pathType: Prefix",
+      "            backend:",
+      "              service:",
+      "                name: repotutor-api",
+      "                port:",
+      "                  number: 80"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "base", "hpa.yaml"), [
+      "apiVersion: autoscaling/v2",
+      "kind: HorizontalPodAutoscaler",
+      "metadata:",
+      "  name: repotutor-api",
+      "  namespace: repotutor-dev",
+      "spec:",
+      "  scaleTargetRef:",
+      "    apiVersion: apps/v1",
+      "    kind: Deployment",
+      "    name: repotutor-api",
+      "  minReplicas: 2",
+      "  maxReplicas: 5",
+      "  metrics:",
+      "    - type: Resource",
+      "      resource:",
+      "        name: cpu",
+      "        target:",
+      "          type: Utilization",
+      "          averageUtilization: 70"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "base", "pdb.yaml"), [
+      "apiVersion: policy/v1",
+      "kind: PodDisruptionBudget",
+      "metadata:",
+      "  name: repotutor-api",
+      "  namespace: repotutor-dev",
+      "spec:",
+      "  minAvailable: 1",
+      "  selector:",
+      "    matchLabels:",
+      "      app: repotutor-api"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "base", "networkpolicy.yaml"), [
+      "apiVersion: networking.k8s.io/v1",
+      "kind: NetworkPolicy",
+      "metadata:",
+      "  name: repotutor-api",
+      "  namespace: repotutor-dev",
+      "spec:",
+      "  podSelector:",
+      "    matchLabels:",
+      "      app: repotutor-api",
+      "  policyTypes:",
+      "    - Ingress"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "k8s", "overlays", "dev", "kustomization.yaml"), [
+      "bases:",
+      "  - ../../base",
+      "resources:",
+      "  - ../../base",
+      "namespace: repotutor-dev",
+      "components:",
+      "  - ../components/observability",
+      "patches:",
+      "  - target:",
+      "      kind: Deployment",
+      "      name: repotutor-api",
+      "    patch: |-",
+      "      - op: replace",
+      "        path: /spec/replicas",
+      "        value: 2",
+      "configMapGenerator:",
+      "  - name: repotutor-dev-settings",
+      "    literals:",
+      "      - LOG_LEVEL=debug",
+      "secretGenerator:",
+      "  - name: repotutor-generated-reference",
+      "    literals:",
+      "      - TOKEN_NAME=APP_TOKEN_NAME",
+      "images:",
+      "  - name: ghcr.io/veritas/repotutor-api",
+      "    newTag: dev-2026",
+      "replacements:",
+      "  - source:",
+      "      kind: ConfigMap",
+      "      name: repotutor-dev-settings",
+      "      fieldPath: metadata.name",
+      "    targets:",
+      "      - select:",
+      "          kind: Deployment",
+      "          name: repotutor-api",
+      "        fieldPaths:",
+      "          - spec.template.metadata.annotations.[repotutor.dev/config]"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "kubernetes-readiness-report.json"), "utf8")) as {
+      kubernetesSetups: Array<{ filePath: string; format: string; manifestCount: number; workloadCount: number; serviceCount: number; configCount: number; storageCount: number; securityCount: number; policyCount: number; probeCount: number; resourceCount: number; autoscalingCount: number; observabilityCount: number; workflowCount: number }>;
+      manifestSignals: Array<{ signal: string; readiness: string }>;
+      workloadSignals: Array<{ signal: string; readiness: string }>;
+      networkSignals: Array<{ signal: string; readiness: string }>;
+      configSignals: Array<{ signal: string; readiness: string }>;
+      storageSignals: Array<{ signal: string; readiness: string }>;
+      securitySignals: Array<{ signal: string; readiness: string }>;
+      healthSignals: Array<{ signal: string; readiness: string }>;
+      kustomizeSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    const deploymentSetup = report.kubernetesSetups.find((item) => item.filePath === "k8s/base/deployment.yaml");
+    const overlaySetup = report.kubernetesSetups.find((item) => item.filePath === "k8s/overlays/dev/kustomization.yaml");
+    expect(report.kubernetesSetups.length).toBeGreaterThan(0);
+    expect(deploymentSetup?.format).toBe("manifest-yaml");
+    expect(deploymentSetup?.manifestCount).toBeGreaterThan(0);
+    expect(deploymentSetup?.workloadCount).toBeGreaterThan(0);
+    expect(deploymentSetup?.serviceCount).toBeGreaterThan(0);
+    expect(deploymentSetup?.configCount).toBeGreaterThan(0);
+    expect(deploymentSetup?.storageCount).toBeGreaterThan(0);
+    expect(deploymentSetup?.securityCount).toBeGreaterThan(0);
+    expect(deploymentSetup?.probeCount).toBeGreaterThan(0);
+    expect(deploymentSetup?.resourceCount).toBeGreaterThan(0);
+    expect(overlaySetup?.format).toBe("kustomization");
+    expect(report.kubernetesSetups.some((item) => item.workflowCount > 0)).toBe(true);
+    for (const signal of ["api-version", "kind", "metadata", "labels", "annotations", "namespace"]) {
+      expect(report.manifestSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["deployment", "statefulset", "daemonset", "job", "cronjob", "pod", "replicas"]) {
+      expect(report.workloadSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["service", "ingress", "network-policy", "ports", "selectors"]) {
+      expect(report.networkSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["configmap", "secret", "env", "env-from", "image-pull-secret"]) {
+      expect(report.configSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["persistent-volume", "persistent-volume-claim", "volume-mount", "volume", "storage-class"]) {
+      expect(report.storageSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["service-account", "role", "role-binding", "cluster-role", "cluster-role-binding", "security-context", "pod-security-context"]) {
+      expect(report.securitySignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["readiness-probe", "liveness-probe", "startup-probe", "resources", "limits", "requests", "hpa", "pdb"]) {
+      expect(report.healthSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["kustomization", "resources", "bases", "patches", "configmap-generator", "secret-generator", "images", "replacements", "components"]) {
+      expect(report.kustomizeSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["kubectl-apply", "kubectl-diff", "kubectl-wait", "kubectl-rollout", "kubectl-logs", "kubectl-describe", "kubectl-port-forward", "kubectl-delete", "kustomize-build"]) {
+      expect(report.workflowSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    for (const signal of ["kubectl", "kustomize", "kubernetes-yaml", "kind", "minikube"]) {
+      expect(report.packageSignals.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+    }
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "kubernetes-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "kubernetes-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("compares a new study session against the previous source snapshot", async () => {

@@ -117,6 +117,7 @@ import {
   EdgeReadinessReport,
   ComposeReadinessReport,
   DevContainerReadinessReport,
+  KubernetesReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -240,6 +241,7 @@ export interface AnalysisBundle {
   edgeReadinessReport: EdgeReadinessReport;
   composeReadinessReport: ComposeReadinessReport;
   devContainerReadinessReport: DevContainerReadinessReport;
+  kubernetesReadinessReport: KubernetesReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -363,8 +365,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const edgeReadinessReport = await buildEdgeReadinessReport(walk);
   const composeReadinessReport = await buildComposeReadinessReport(walk);
   const devContainerReadinessReport = await buildDevContainerReadinessReport(walk);
+  const kubernetesReadinessReport = await buildKubernetesReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -25149,6 +25152,372 @@ function devContainerSignalFromSpecs<T extends Record<K, string> & { pattern: Re
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/devcontainer-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildKubernetesReadinessReport(walk: WalkResult): Promise<KubernetesReadinessReport> {
+  const sourceFiles = await kubernetesSourceFiles(walk);
+  const kubernetesSetups = kubernetesSetupFiles(sourceFiles);
+  const manifestSignals = kubernetesManifestSignals(sourceFiles);
+  const workloadSignals = kubernetesWorkloadSignals(sourceFiles);
+  const networkSignals = kubernetesNetworkSignals(sourceFiles);
+  const configSignals = kubernetesConfigSignals(sourceFiles);
+  const storageSignals = kubernetesStorageSignals(sourceFiles);
+  const securitySignals = kubernetesSecuritySignals(sourceFiles);
+  const healthSignals = kubernetesHealthSignals(sourceFiles);
+  const kustomizeSignals = kubernetesKustomizeSignals(sourceFiles);
+  const workflowSignals = kubernetesWorkflowSignals(sourceFiles);
+  const packageSignals = kubernetesPackageSignals(sourceFiles);
+
+  const hasManifest = kubernetesSetups.length > 0 || manifestSignals.some((item) => item.readiness === "ready");
+  const hasWorkload = workloadSignals.some((item) => item.readiness === "ready") || kubernetesSetups.some((item) => item.workloadCount > 0);
+  const hasNetwork = networkSignals.some((item) => item.readiness === "ready") || kubernetesSetups.some((item) => item.serviceCount > 0);
+  const hasConfig = configSignals.some((item) => item.readiness === "ready") || kubernetesSetups.some((item) => item.configCount > 0);
+  const hasSecurity = securitySignals.some((item) => item.readiness === "ready") || kubernetesSetups.some((item) => item.securityCount > 0);
+  const hasHealth = healthSignals.some((item) => item.readiness === "ready") || kubernetesSetups.some((item) => item.probeCount > 0 || item.resourceCount > 0 || item.autoscalingCount > 0);
+  const hasKustomize = kustomizeSignals.some((item) => item.readiness === "ready") || kubernetesSetups.some((item) => item.format === "kustomization");
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready") || kubernetesSetups.some((item) => item.workflowCount > 0);
+
+  const riskQueue: KubernetesReadinessReport["riskQueue"] = [];
+  if (!hasManifest) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add Kubernetes manifest or Kustomize evidence before claiming raw Kubernetes readiness.",
+      why: "Kubernetes readiness starts from concrete apiVersion/kind/metadata manifests or a kustomization.yaml that references them.",
+      relatedHref: "html/kubernetes-readiness.html"
+    });
+  }
+  if (hasManifest && !hasWorkload) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document workload objects such as Deployment, StatefulSet, DaemonSet, Job, CronJob, or Pod.",
+      why: "A manifest set without workload evidence cannot explain what will run in the cluster.",
+      relatedHref: "html/kubernetes-readiness.html"
+    });
+  }
+  if (hasManifest && !hasNetwork) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Trace Service, Ingress, NetworkPolicy, selector, and port wiring.",
+      why: "Learners need network topology to understand how pods are reached and constrained.",
+      relatedHref: "html/kubernetes-readiness.html"
+    });
+  }
+  if (hasManifest && !hasConfig) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record ConfigMap, Secret reference, env, envFrom, and imagePullSecrets usage.",
+      why: "Runtime configuration and secret references are common rebuild blockers even when manifests apply.",
+      relatedHref: "html/kubernetes-readiness.html"
+    });
+  }
+  if (hasManifest && !hasHealth) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add readiness/liveness/startup probes, resource requests/limits, HPA, or PDB evidence.",
+      why: "Health, resources, and scaling controls define whether the workload can be operated safely after apply.",
+      relatedHref: "html/kubernetes-readiness.html"
+    });
+  }
+  if (hasManifest && !hasSecurity) {
+    riskQueue.push({
+      priority: "low",
+      action: "Trace ServiceAccount, RBAC, securityContext, and podSecurityContext before production reuse.",
+      why: "Kubernetes manifests often work locally while still over-granting permissions or running with unsafe container defaults.",
+      relatedHref: "html/kubernetes-readiness.html"
+    });
+  }
+  if (hasManifest && !hasKustomize) {
+    riskQueue.push({
+      priority: "low",
+      action: "Consider adding a kustomization.yaml or documenting why raw manifests are applied directly.",
+      why: "Kustomize resources, overlays, patches, images, and generators make environment-specific rebuild steps visible.",
+      relatedHref: "html/kubernetes-readiness.html"
+    });
+  }
+  if (hasManifest && !hasWorkflow) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add documented kubectl/kustomize commands for diff, dry-run, apply, wait, rollout, logs, describe, port-forward, and delete.",
+      why: "Operational commands explain how the manifest set is verified without forcing RepoTutor to touch a cluster.",
+      relatedHref: "html/kubernetes-readiness.html"
+    });
+  }
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+
+  return {
+    summary: `Kubernetes readiness report: setup ${kubernetesSetups.length}개, manifest signal ${manifestSignals.length}개, workload signal ${workloadSignals.length}개, kustomize signal ${kustomizeSignals.length}개, workflow signal ${workflowSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Kubernetes apiVersion kind metadata labels annotations namespace Deployment StatefulSet DaemonSet Service Ingress ConfigMap Secret ServiceAccount Role RoleBinding ClusterRole ClusterRoleBinding NetworkPolicy PersistentVolume PersistentVolumeClaim readinessProbe livenessProbe resources requests limits HorizontalPodAutoscaler PodDisruptionBudget kustomization resources patches kubectl apply diff wait rollout logs describe port-forward delete",
+    kubernetesSetups,
+    manifestSignals,
+    workloadSignals,
+    networkSignals,
+    configSignals,
+    storageSignals,
+    securitySignals,
+    healthSignals,
+    kustomizeSignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "kustomize build <overlay>", purpose: "Render the selected overlay locally before touching a cluster." },
+      { command: "kubectl diff -k <overlay>", purpose: "Preview server-side object drift for a Kustomize overlay." },
+      { command: "kubectl apply --dry-run=server -k <overlay>", purpose: "Ask the API server to validate the rendered objects without persisting them." },
+      { command: "kubectl apply -k <overlay>", purpose: "Apply a reviewed Kustomize overlay to the target namespace." },
+      { command: "kubectl wait --for=condition=Available deployment/<name> -n <namespace>", purpose: "Block until the main workload reports availability." },
+      { command: "kubectl rollout status deployment/<name> -n <namespace>", purpose: "Watch rollout completion for the primary Deployment." },
+      { command: "kubectl logs -l app=<label> -n <namespace>", purpose: "Inspect application logs for pods matching the release label." },
+      { command: "kubectl describe <kind>/<name> -n <namespace>", purpose: "Inspect events, selector wiring, and controller status for one object." },
+      { command: "kubectl port-forward service/<name> 8080:80 -n <namespace>", purpose: "Create a local tunnel to validate service routing manually." },
+      { command: "kubectl delete -k <overlay>", purpose: "Remove the same overlay after a disposable validation run." }
+    ],
+    learnerNextSteps: [
+      "Open Kubernetes Readiness and identify the primary manifest or kustomization.yaml first.",
+      "Map apiVersion, kind, metadata, labels, annotations, namespaces, and selectors before reading workloads.",
+      "Trace Deployment/StatefulSet/DaemonSet/Job/CronJob/Pod, Service, Ingress, and NetworkPolicy together as one topology.",
+      "Check ConfigMap, Secret references, env/envFrom, imagePullSecrets, volumes, PVC/PV, ServiceAccount, RBAC, and securityContext before running kubectl.",
+      "Review readinessProbe, livenessProbe, startupProbe, resources requests/limits, HorizontalPodAutoscaler, and PodDisruptionBudget for operability.",
+      "Use Kustomize resources, bases, patches, generators, images, replacements, and components to understand environment overlays.",
+      "Run the recommended kubectl/kustomize commands only in a trusted cluster; RepoTutor records readiness statically and does not contact Kubernetes APIs."
+    ]
+  };
+}
+
+type KubernetesSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function kubernetesSourceFiles(walk: WalkResult): Promise<KubernetesSourceFile[]> {
+  const files: KubernetesSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !kubernetesInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!kubernetesPathSignal(file.relPath) && !kubernetesContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function kubernetesInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return kubernetesPathSignal(filePath)
+    || /(^|\/)(README|docs?|k8s|kubernetes|manifests?|deploy|deployment|overlays?|base|infra|infrastructure|scripts?|ci|workflows?|dev|prod|staging|test|tests)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|Makefile|Taskfile\.ya?ml|justfile|kustomization\.ya?ml)$/i.test(base);
+}
+
+function kubernetesPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^kustomization\.ya?ml$/i.test(base)
+    || /(^|\/)(k8s|kubernetes|manifests?|deploy|deployment|overlays?|base)\/.*\.(ya?ml|json)$/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/.*\.(ya?ml)$/i.test(filePath)
+    || /(^|\/)(deployment|service|ingress|configmap|namespace|rbac|role|rolebinding|serviceaccount|hpa|pdb|networkpolicy|persistentvolume|pvc|pv)[-.].*\.(ya?ml|json)$/i.test(filePath)
+    || /^(deployment|service|ingress|configmap|namespace|rbac|role|rolebinding|serviceaccount|hpa|pdb|networkpolicy|persistentvolume|pvc|pv)\.(ya?ml|json)$/i.test(base);
+}
+
+function kubernetesContentSignal(text: string): boolean {
+  return /(Kubernetes|kubectl\s+(apply|diff|wait|rollout|logs|describe|port-forward|delete|get)|kustomize\s+build|(^|\n)\s*apiVersion\s*:|(^|\n)\s*kind\s*:|(^|\n)\s*metadata\s*:|HorizontalPodAutoscaler|PodDisruptionBudget|NetworkPolicy|ServiceAccount|RoleBinding|ClusterRoleBinding|readinessProbe|livenessProbe|startupProbe|configMapGenerator|secretGenerator|(^|\n)\s*resources\s*:|(^|\n)\s*patches\s*:)/i.test(text);
+}
+
+function kubernetesSetupFiles(sourceFiles: KubernetesSourceFile[]): KubernetesReadinessReport["kubernetesSetups"] {
+  const rows: KubernetesReadinessReport["kubernetesSetups"] = [];
+  for (const source of sourceFiles) {
+    const manifestCount = countMatches(source.text, /(^|\n)\s*apiVersion\s*:|(^|\n)\s*kind\s*:/gi);
+    const workloadCount = countMatches(source.text, /kind\s*:\s*(Deployment|StatefulSet|DaemonSet|Job|CronJob|Pod)\b|(^|\n)\s*replicas\s*:/gi);
+    const serviceCount = countMatches(source.text, /kind\s*:\s*(Service|Ingress|NetworkPolicy)\b|(^|\n)\s*(ports|selector|selectors)\s*:/gi);
+    const configCount = countMatches(source.text, /kind\s*:\s*(ConfigMap|Secret)\b|(^|\n)\s*(env|envFrom|configMapRef|secretRef|imagePullSecrets|stringData|data)\s*:/gi);
+    const storageCount = countMatches(source.text, /kind\s*:\s*(PersistentVolume|PersistentVolumeClaim)\b|(^|\n)\s*(volumeMounts|volumes|storageClassName|emptyDir|hostPath)\s*:/gi);
+    const securityCount = countMatches(source.text, /kind\s*:\s*(ServiceAccount|Role|RoleBinding|ClusterRole|ClusterRoleBinding)\b|(^|\n)\s*(serviceAccountName|securityContext|podSecurityContext|runAsNonRoot|allowPrivilegeEscalation)\s*:/gi);
+    const policyCount = countMatches(source.text, /kind\s*:\s*(NetworkPolicy|PodDisruptionBudget|ResourceQuota|LimitRange)\b|(^|\n)\s*policyTypes\s*:/gi);
+    const probeCount = countMatches(source.text, /(^|\n)\s*(readinessProbe|livenessProbe|startupProbe)\s*:/gi);
+    const resourceCount = countMatches(source.text, /(^|\n)\s*(resources|requests|limits)\s*:/gi);
+    const autoscalingCount = countMatches(source.text, /kind\s*:\s*HorizontalPodAutoscaler\b|autoscaling\/v\d|(^|\n)\s*(minReplicas|maxReplicas|scaleTargetRef|metrics)\s*:/gi);
+    const observabilityCount = countMatches(source.text, /kind\s*:\s*(ServiceMonitor|PrometheusRule|APIService)\b|prometheus\.io\/scrape|custom\.metrics|metrics\.k8s\.io/gi);
+    const workflowCount = countMatches(source.text, /kubectl\s+(apply|diff|wait|rollout|logs|describe|port-forward|delete|get)|kustomize\s+build/gi);
+    const kustomizeCount = countMatches(source.text, /(^|\n)\s*(resources|bases|patches|patchesStrategicMerge|configMapGenerator|secretGenerator|images|replacements|components|namespace|namePrefix|nameSuffix)\s*:/gi) + (/^kustomization\.ya?ml$/i.test(path.basename(source.filePath)) ? 1 : 0);
+    const totalSignals = manifestCount + workloadCount + serviceCount + configCount + storageCount + securityCount + policyCount + probeCount + resourceCount + autoscalingCount + observabilityCount + workflowCount + kustomizeCount;
+    if (totalSignals === 0 && !kubernetesPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      format: kubernetesFormat(source),
+      manifestCount,
+      workloadCount,
+      serviceCount,
+      configCount,
+      storageCount,
+      securityCount,
+      policyCount,
+      probeCount,
+      resourceCount,
+      autoscalingCount,
+      observabilityCount,
+      workflowCount,
+      readiness: totalSignals >= 7 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} Kubernetes/Kustomize signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.manifestCount + b.workloadCount + b.serviceCount + b.securityCount + b.probeCount + b.autoscalingCount + b.workflowCount;
+    const aScore = a.manifestCount + a.workloadCount + a.serviceCount + a.securityCount + a.probeCount + a.autoscalingCount + a.workflowCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 80);
+}
+
+function kubernetesFormat(source: KubernetesSourceFile): KubernetesReadinessReport["kubernetesSetups"][number]["format"] {
+  const base = path.basename(source.filePath).toLowerCase();
+  if (/^kustomization\.ya?ml$/.test(base)) return "kustomization";
+  if (/\.(ya?ml|json)$/.test(base) && /(^|\n)\s*(apiVersion|kind)\s*:/i.test(source.text)) return "manifest-yaml";
+  if (/^(package\.json|Makefile|Taskfile\.ya?ml|justfile)$/i.test(base) || /kubectl\s+|kustomize\s+build/i.test(source.text)) return "package-script";
+  if (/\.github\/workflows\/.*\.ya?ml$/i.test(source.filePath)) return "workflow";
+  if (/^README\.md$/i.test(base)) return "readme";
+  return "unknown";
+}
+
+function kubernetesManifestSignals(sourceFiles: KubernetesSourceFile[]): KubernetesReadinessReport["manifestSignals"] {
+  const specs: Array<{ signal: KubernetesReadinessReport["manifestSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "api-version", pattern: /(^|\n)\s*apiVersion\s*:/i, evidence: "apiVersion evidence was detected." },
+    { signal: "kind", pattern: /(^|\n)\s*kind\s*:/i, evidence: "kind evidence was detected." },
+    { signal: "metadata", pattern: /(^|\n)\s*metadata\s*:/i, evidence: "metadata evidence was detected." },
+    { signal: "labels", pattern: /(^|\n)\s*labels\s*:/i, evidence: "labels evidence was detected." },
+    { signal: "annotations", pattern: /(^|\n)\s*annotations\s*:/i, evidence: "annotations evidence was detected." },
+    { signal: "namespace", pattern: /(^|\n)\s*namespace\s*:|kind\s*:\s*Namespace\b|kubectl\s+create\s+namespace/i, evidence: "namespace evidence was detected." }
+  ];
+  return kubernetesSignalFromSpecs(sourceFiles, specs, "manifest", "signal");
+}
+
+function kubernetesWorkloadSignals(sourceFiles: KubernetesSourceFile[]): KubernetesReadinessReport["workloadSignals"] {
+  const specs: Array<{ signal: KubernetesReadinessReport["workloadSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "deployment", pattern: /kind\s*:\s*Deployment\b|deployment\/[A-Za-z0-9_.-]+/i, evidence: "Deployment evidence was detected." },
+    { signal: "statefulset", pattern: /kind\s*:\s*StatefulSet\b/i, evidence: "StatefulSet evidence was detected." },
+    { signal: "daemonset", pattern: /kind\s*:\s*DaemonSet\b/i, evidence: "DaemonSet evidence was detected." },
+    { signal: "job", pattern: /kind\s*:\s*Job\b/i, evidence: "Job evidence was detected." },
+    { signal: "cronjob", pattern: /kind\s*:\s*CronJob\b/i, evidence: "CronJob evidence was detected." },
+    { signal: "pod", pattern: /kind\s*:\s*Pod\b|(^|\n)\s*pods?\b/i, evidence: "Pod evidence was detected." },
+    { signal: "replicas", pattern: /(^|\n)\s*replicas\s*:/i, evidence: "replica count evidence was detected." }
+  ];
+  return kubernetesSignalFromSpecs(sourceFiles, specs, "workload", "signal");
+}
+
+function kubernetesNetworkSignals(sourceFiles: KubernetesSourceFile[]): KubernetesReadinessReport["networkSignals"] {
+  const specs: Array<{ signal: KubernetesReadinessReport["networkSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "service", pattern: /kind\s*:\s*Service\b|service\/[A-Za-z0-9_.-]+/i, evidence: "Service evidence was detected." },
+    { signal: "ingress", pattern: /kind\s*:\s*Ingress\b|networking\.k8s\.io\/v1/i, evidence: "Ingress evidence was detected." },
+    { signal: "network-policy", pattern: /kind\s*:\s*NetworkPolicy\b/i, evidence: "NetworkPolicy evidence was detected." },
+    { signal: "ports", pattern: /(^|\n)\s*(ports|containerPort|targetPort|port)\s*:/i, evidence: "port wiring evidence was detected." },
+    { signal: "selectors", pattern: /(^|\n)\s*(selector|selectors|matchLabels|podSelector)\s*:/i, evidence: "selector evidence was detected." }
+  ];
+  return kubernetesSignalFromSpecs(sourceFiles, specs, "network", "signal");
+}
+
+function kubernetesConfigSignals(sourceFiles: KubernetesSourceFile[]): KubernetesReadinessReport["configSignals"] {
+  const specs: Array<{ signal: KubernetesReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "configmap", pattern: /kind\s*:\s*ConfigMap\b|configMapRef|configMapGenerator/i, evidence: "ConfigMap evidence was detected." },
+    { signal: "secret", pattern: /kind\s*:\s*Secret\b|secretRef|secretGenerator|stringData/i, evidence: "Secret reference evidence was detected." },
+    { signal: "env", pattern: /(^|\n)\s*env\s*:/i, evidence: "env evidence was detected." },
+    { signal: "env-from", pattern: /(^|\n)\s*envFrom\s*:/i, evidence: "envFrom evidence was detected." },
+    { signal: "image-pull-secret", pattern: /(^|\n)\s*imagePullSecrets\s*:/i, evidence: "imagePullSecrets evidence was detected." }
+  ];
+  return kubernetesSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function kubernetesStorageSignals(sourceFiles: KubernetesSourceFile[]): KubernetesReadinessReport["storageSignals"] {
+  const specs: Array<{ signal: KubernetesReadinessReport["storageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "persistent-volume", pattern: /kind\s*:\s*PersistentVolume\b/i, evidence: "PersistentVolume evidence was detected." },
+    { signal: "persistent-volume-claim", pattern: /kind\s*:\s*PersistentVolumeClaim\b/i, evidence: "PersistentVolumeClaim evidence was detected." },
+    { signal: "volume-mount", pattern: /(^|\n)\s*volumeMounts\s*:/i, evidence: "volumeMounts evidence was detected." },
+    { signal: "volume", pattern: /(^|\n)\s*volumes\s*:/i, evidence: "volumes evidence was detected." },
+    { signal: "storage-class", pattern: /(^|\n)\s*storageClassName\s*:/i, evidence: "storageClassName evidence was detected." }
+  ];
+  return kubernetesSignalFromSpecs(sourceFiles, specs, "storage", "signal");
+}
+
+function kubernetesSecuritySignals(sourceFiles: KubernetesSourceFile[]): KubernetesReadinessReport["securitySignals"] {
+  const specs: Array<{ signal: KubernetesReadinessReport["securitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "service-account", pattern: /kind\s*:\s*ServiceAccount\b|(^|\n)\s*serviceAccountName\s*:/i, evidence: "ServiceAccount evidence was detected." },
+    { signal: "role", pattern: /kind\s*:\s*Role\b/i, evidence: "Role evidence was detected." },
+    { signal: "role-binding", pattern: /kind\s*:\s*RoleBinding\b/i, evidence: "RoleBinding evidence was detected." },
+    { signal: "cluster-role", pattern: /kind\s*:\s*ClusterRole\b/i, evidence: "ClusterRole evidence was detected." },
+    { signal: "cluster-role-binding", pattern: /kind\s*:\s*ClusterRoleBinding\b/i, evidence: "ClusterRoleBinding evidence was detected." },
+    { signal: "security-context", pattern: /(^|\n)\s*securityContext\s*:/i, evidence: "container securityContext evidence was detected." },
+    { signal: "pod-security-context", pattern: /podSecurityContext|runAsNonRoot|allowPrivilegeEscalation/i, evidence: "pod security policy evidence was detected." }
+  ];
+  return kubernetesSignalFromSpecs(sourceFiles, specs, "security", "signal");
+}
+
+function kubernetesHealthSignals(sourceFiles: KubernetesSourceFile[]): KubernetesReadinessReport["healthSignals"] {
+  const specs: Array<{ signal: KubernetesReadinessReport["healthSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "readiness-probe", pattern: /(^|\n)\s*readinessProbe\s*:/i, evidence: "readinessProbe evidence was detected." },
+    { signal: "liveness-probe", pattern: /(^|\n)\s*livenessProbe\s*:/i, evidence: "livenessProbe evidence was detected." },
+    { signal: "startup-probe", pattern: /(^|\n)\s*startupProbe\s*:/i, evidence: "startupProbe evidence was detected." },
+    { signal: "resources", pattern: /(^|\n)\s*resources\s*:/i, evidence: "resources block evidence was detected." },
+    { signal: "limits", pattern: /(^|\n)\s*limits\s*:/i, evidence: "resource limits evidence was detected." },
+    { signal: "requests", pattern: /(^|\n)\s*requests\s*:/i, evidence: "resource requests evidence was detected." },
+    { signal: "hpa", pattern: /kind\s*:\s*HorizontalPodAutoscaler\b|autoscaling\/v\d/i, evidence: "HorizontalPodAutoscaler evidence was detected." },
+    { signal: "pdb", pattern: /kind\s*:\s*PodDisruptionBudget\b/i, evidence: "PodDisruptionBudget evidence was detected." }
+  ];
+  return kubernetesSignalFromSpecs(sourceFiles, specs, "health", "signal");
+}
+
+function kubernetesKustomizeSignals(sourceFiles: KubernetesSourceFile[]): KubernetesReadinessReport["kustomizeSignals"] {
+  const specs: Array<{ signal: KubernetesReadinessReport["kustomizeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kustomization", pattern: /(^|\/)kustomization\.ya?ml$/i, evidence: "kustomization.yaml evidence was detected." },
+    { signal: "resources", pattern: /(^|\n)\s*resources\s*:/i, evidence: "Kustomize resources evidence was detected." },
+    { signal: "bases", pattern: /(^|\n)\s*bases\s*:/i, evidence: "legacy bases evidence was detected." },
+    { signal: "patches", pattern: /(^|\n)\s*(patches|patchesStrategicMerge|patchesJson6902)\s*:/i, evidence: "Kustomize patches evidence was detected." },
+    { signal: "configmap-generator", pattern: /(^|\n)\s*configMapGenerator\s*:/i, evidence: "configMapGenerator evidence was detected." },
+    { signal: "secret-generator", pattern: /(^|\n)\s*secretGenerator\s*:/i, evidence: "secretGenerator evidence was detected." },
+    { signal: "images", pattern: /(^|\n)\s*images\s*:/i, evidence: "Kustomize image override evidence was detected." },
+    { signal: "replacements", pattern: /(^|\n)\s*replacements\s*:/i, evidence: "Kustomize replacements evidence was detected." },
+    { signal: "components", pattern: /(^|\n)\s*components\s*:/i, evidence: "Kustomize components evidence was detected." }
+  ];
+  return kubernetesSignalFromSpecs(sourceFiles, specs, "kustomize", "signal");
+}
+
+function kubernetesWorkflowSignals(sourceFiles: KubernetesSourceFile[]): KubernetesReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: KubernetesReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kubectl-apply", pattern: /kubectl\s+apply\b/i, evidence: "kubectl apply evidence was detected." },
+    { signal: "kubectl-diff", pattern: /kubectl\s+diff\b/i, evidence: "kubectl diff evidence was detected." },
+    { signal: "kubectl-wait", pattern: /kubectl\s+wait\b/i, evidence: "kubectl wait evidence was detected." },
+    { signal: "kubectl-rollout", pattern: /kubectl\s+rollout\b/i, evidence: "kubectl rollout evidence was detected." },
+    { signal: "kubectl-logs", pattern: /kubectl\s+logs\b/i, evidence: "kubectl logs evidence was detected." },
+    { signal: "kubectl-describe", pattern: /kubectl\s+describe\b/i, evidence: "kubectl describe evidence was detected." },
+    { signal: "kubectl-port-forward", pattern: /kubectl\s+port-forward\b/i, evidence: "kubectl port-forward evidence was detected." },
+    { signal: "kubectl-delete", pattern: /kubectl\s+delete\b/i, evidence: "kubectl delete evidence was detected." },
+    { signal: "kustomize-build", pattern: /kustomize\s+build\b|kubectl\s+(apply|diff).*-k\b/i, evidence: "Kustomize build/apply evidence was detected." }
+  ];
+  return kubernetesSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function kubernetesPackageSignals(sourceFiles: KubernetesSourceFile[]): KubernetesReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: KubernetesReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kubectl", pattern: /(^|\W)kubectl(\W|$)|"kubectl"\s*:/i, evidence: "kubectl evidence was detected." },
+    { signal: "kustomize", pattern: /(^|\W)kustomize(\W|$)|"kustomize"\s*:/i, evidence: "kustomize evidence was detected." },
+    { signal: "kubernetes-yaml", pattern: /(^|\n)\s*apiVersion\s*:|Kubernetes/i, evidence: "Kubernetes YAML evidence was detected." },
+    { signal: "kind", pattern: /(^|\W)kind\s+(create|load|export|get)|kindest\/node/i, evidence: "kind cluster tool evidence was detected." },
+    { signal: "minikube", pattern: /(^|\W)minikube(\W|$)/i, evidence: "minikube evidence was detected." }
+  ];
+  return kubernetesSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function kubernetesSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: KubernetesSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/kubernetes-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

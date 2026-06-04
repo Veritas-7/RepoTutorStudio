@@ -1628,6 +1628,37 @@
         "Environment workspace and customization readiness through containerEnv remoteEnv secrets remoteUser containerUser mounts forwardPorts portsAttributes customizations VS Code and Codespaces settings",
         "Static-only Dev Container workflow guardrails that recommend devcontainer read-configuration up build exec run-user-commands and features commands without running containers or lifecycle hooks"
       ]
+    },
+    {
+      "repo": "kubernetes/examples",
+      "url": "https://github.com/kubernetes/examples",
+      "localPath": "research/external-src/kubernetes-examples",
+      "stars": 6640,
+      "forks": 4704,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T12:36:40Z",
+      "cloneHead": "d6b8cd2",
+      "adoptedPatterns": [
+        "Kubernetes application example manifests with apiVersion kind metadata labels annotations and namespace mapping",
+        "Workload service ingress config storage security policy probe resource autoscaling and observability object coverage",
+        "Documented kubectl workflows for apply wait get logs port-forward describe hpa and cleanup operations",
+        "Static-only Kubernetes readiness guardrails that do not contact clusters, mutate resources, read secrets, port-forward, or stream logs"
+      ]
+    },
+    {
+      "repo": "kubernetes-sigs/kustomize",
+      "url": "https://github.com/kubernetes-sigs/kustomize",
+      "localPath": "research/external-src/kustomize",
+      "stars": 12063,
+      "forks": 2390,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T16:28:44Z",
+      "cloneHead": "313aaced",
+      "adoptedPatterns": [
+        "Kustomize kustomization.yaml resources bases overlays patches components and image override patterns",
+        "ConfigMapGenerator SecretGenerator replacements namespace namePrefix and nameSuffix readiness signals",
+        "Kustomize build and kubectl apply or diff -k workflow recommendations kept static inside RepoTutor"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -4916,6 +4947,25 @@
         "html/devcontainer-readiness.html"
       ],
       "commit": "a3ea1dc"
+    },
+    {
+      "name": "kubernetes readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/kubernetes-readiness-report.json",
+        "markdown/kubernetes-readiness.md",
+        "html/kubernetes-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -5479,7 +5529,16 @@
     "buildDevContainerReadiness": "PASS",
     "testDevContainerReadiness": "PASS",
     "complianceAudit102Checks": "PASS",
-    "devContainerReadinessImplementationPushed": "PASS"
+    "devContainerReadinessImplementationPushed": "PASS",
+    "externalKubernetesExamplesCloneIgnored": "PASS",
+    "externalKustomizeCloneIgnored": "PASS",
+    "kubernetesReadinessRedSmoke": "PASS",
+    "kubernetesReadinessGreenSmoke": "PASS",
+    "fixtureKubernetesReadinessReport": "PASS",
+    "kubernetesReadinessOpenTarget": "PASS",
+    "buildKubernetesReadiness": "PASS",
+    "testKubernetesReadiness": "PASS",
+    "complianceAudit103Checks": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -5909,6 +5968,14 @@
     "buildDevContainerReadiness": "PASS",
     "testDevContainerReadiness": "PASS",
     "auditBriefDevContainerReadiness102": "PASS",
-    "devContainerReadinessImplementationPushed": "PASS"
+    "devContainerReadinessImplementationPushed": "PASS",
+    "externalKubernetesExamplesCloneIgnored": "PASS",
+    "externalKustomizeCloneIgnored": "PASS",
+    "fixtureKubernetesReadinessReport": "PASS",
+    "cliKubernetesReadinessSmoke": "PASS",
+    "cliKubernetesReadinessOpenTargetSmoke": "PASS",
+    "buildKubernetesReadiness": "PASS",
+    "testKubernetesReadiness": "PASS",
+    "auditBriefKubernetesReadiness103": "PASS"
   }
 }
