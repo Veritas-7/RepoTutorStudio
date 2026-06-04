@@ -3716,6 +3716,56 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 55/55 audit checks across 13 generated reports
 
+### Upgrade 158: State Management Readiness Report
+
+- Cloned and inspected `reduxjs/redux-toolkit` under
+  `research/external-src/reduxjs-redux-toolkit` without executing external
+  source. Clone HEAD was `7c49510`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 11,216 stars, 1,266 forks,
+  updated 2026-06-02T21:26:33Z. Compared with `pmndrs/zustand`,
+  `pmndrs/jotai`, and `mobxjs/mobx`; selected Redux Toolkit because it
+  directly models client state-management readiness: `configureStore`,
+  `createSlice`, reducers, actions, selectors, `Provider`, `useSelector`,
+  `useDispatch`, `createAsyncThunk`, `createListenerMiddleware`,
+  `createEntityAdapter`, middleware/devTools, and optional RTK Query. No
+  source code was copied into RepoTutor.
+- Implemented Redux Toolkit-style state-management-readiness report:
+  `StateManagementReadinessReportSchema`,
+  `analysis/state-management-readiness-report.json`,
+  `markdown/state-management-readiness.md`,
+  `html/state-management-readiness.html`, store setups, slice definitions,
+  selector signals, side-effect signals, entity signals, middleware signals,
+  RTK Query signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target state-management-readiness`.
+- Source pattern: Redux Toolkit separates store setup through
+  `configureStore`, generated slice reducers/actions through `createSlice`,
+  typed React-Redux hooks, selectors, async request lifecycles through
+  `createAsyncThunk`, listener middleware, normalized entity adapters,
+  middleware/devTools configuration, and optional RTK Query API-slice cache
+  wiring. RepoTutor maps that to deterministic static state-management
+  readiness and explicitly does not instantiate stores, dispatch actions,
+  mount providers, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-state-management-red-studies.4nPyHI/2026-06-04/local__simple-ts-app__main__e6abe9b6`;
+  old behavior was missing
+  `analysis/state-management-readiness-report.json`,
+  `markdown/state-management-readiness.md`, and
+  `html/state-management-readiness.html`, and
+  `open --target state-management-readiness` exited with
+  `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-state-management-green-studies.Kt67k1/2026-06-04/local__simple-ts-app__main__e6abe9b6`;
+  confirmed `verificationCheckedRequiredArtifacts=174`, store setups 0,
+  slice definitions 0, selector signals 6, side-effect signals 8, entity
+  signals 6, middleware signals 8, RTK Query signals 8, package signals 7,
+  recommended commands 6, risk queue 2, manifest/learning-path entries, and
+  `open --target state-management-readiness` ->
+  `html/state-management-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 56/56 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

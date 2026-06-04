@@ -65,6 +65,7 @@ import type {
   MockingReadinessReport,
   DataFetchingReadinessReport,
   RoutingReadinessReport,
+  StateManagementReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -136,6 +137,7 @@ export interface StudyHtmlInput {
   mockingReadinessReport: MockingReadinessReport;
   dataFetchingReadinessReport: DataFetchingReadinessReport;
   routingReadinessReport: RoutingReadinessReport;
+  stateManagementReadinessReport: StateManagementReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -227,6 +229,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["mocking-readiness.html", "Mocks"],
     ["data-fetching-readiness.html", "Data Fetching"],
     ["routing-readiness.html", "Routing"],
+    ["state-management-readiness.html", "State Management"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -353,6 +356,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Mocking Readiness</h3><p>${escapeHtml(input.mockingReadinessReport.summary)}</p><p>MSW 패턴으로 handlers, setupWorker/setupServer, lifecycle, unhandled request policy, package signals를 정리합니다.</p><a href="mocking-readiness.html">Mocks 열기</a></article>
           <article><h3>Data Fetching Readiness</h3><p>${escapeHtml(input.dataFetchingReadinessReport.summary)}</p><p>TanStack Query 패턴으로 QueryClient, providers, query hooks, cache policy, invalidation, hydration, devtools를 정리합니다.</p><a href="data-fetching-readiness.html">Data Fetching 열기</a></article>
           <article><h3>Routing Readiness</h3><p>${escapeHtml(input.routingReadinessReport.summary)}</p><p>React Router 패턴으로 router mode, route definitions, navigation APIs, data routes, file routes를 정리합니다.</p><a href="routing-readiness.html">Routing 열기</a></article>
+          <article><h3>State Management Readiness</h3><p>${escapeHtml(input.stateManagementReadinessReport.summary)}</p><p>Redux Toolkit 패턴으로 configureStore, slices, selectors, middleware, entity adapters, RTK Query 연결을 정리합니다.</p><a href="state-management-readiness.html">State Management 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -639,6 +643,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Routing Readiness", "routing-readiness.html", `<section class="panel" data-source-pattern="React Router"><h2>Routing Snapshot</h2><p>${escapeHtml(input.routingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.routingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.routingReadinessReport.routingSetups.length}</dd></div><div><dt>routes</dt><dd>${input.routingReadinessReport.routeDefinitions.length}</dd></div><div><dt>navigation</dt><dd>${input.routingReadinessReport.navigationSignals.length}</dd></div><div><dt>data routes</dt><dd>${input.routingReadinessReport.dataRouteSignals.length}</dd></div></dl><p class="muted">RepoTutor records routing readiness only. It does not execute loaders, actions, navigation transitions, dev servers, or browser route flows.</p></section><section class="grid"><article class="routing-readiness-card"><h3>Routing Setups</h3>${routingSetupList(input.routingReadinessReport.routingSetups)}</article><article class="routing-readiness-card"><h3>Route Definitions</h3>${routingDefinitionList(input.routingReadinessReport.routeDefinitions)}</article><article class="routing-readiness-card"><h3>Navigation Signals</h3>${routingSignalList(input.routingReadinessReport.navigationSignals, "signal")}</article><article class="routing-readiness-card"><h3>Data Route Signals</h3>${routingSignalList(input.routingReadinessReport.dataRouteSignals, "signal")}</article></section><section class="grid"><article class="routing-readiness-card"><h3>File Route Signals</h3>${routingSignalList(input.routingReadinessReport.fileRouteSignals, "signal")}</article><article class="routing-readiness-card"><h3>Package Signals</h3>${routingSignalList(input.routingReadinessReport.packageSignals, "signal")}</article><article class="routing-readiness-card"><h3>Recommended Commands</h3>${routingCommandList(input.routingReadinessReport.recommendedCommands)}</article><article class="routing-readiness-card"><h3>Risk Queue</h3>${routingRiskList(input.routingReadinessReport.riskQueue)}</article><article class="routing-readiness-card"><h3>다음 확인 단계</h3>${list(input.routingReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "state-management-readiness.html",
+      title: "State Management Readiness",
+      html: pageShell("State Management Readiness", "state-management-readiness.html", `<section class="panel" data-source-pattern="Redux Toolkit"><h2>State Management Snapshot</h2><p>${escapeHtml(input.stateManagementReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.stateManagementReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>stores</dt><dd>${input.stateManagementReadinessReport.storeSetups.length}</dd></div><div><dt>slices</dt><dd>${input.stateManagementReadinessReport.sliceDefinitions.length}</dd></div><div><dt>selectors</dt><dd>${input.stateManagementReadinessReport.selectorSignals.length}</dd></div><div><dt>side effects</dt><dd>${input.stateManagementReadinessReport.sideEffectSignals.length}</dd></div></dl><p class="muted">RepoTutor records state-management readiness only. It does not instantiate stores, dispatch actions, mount providers, or run the analyzed project's tests.</p></section><section class="grid"><article class="state-management-card"><h3>Store Setups</h3>${stateManagementStoreList(input.stateManagementReadinessReport.storeSetups)}</article><article class="state-management-card"><h3>Slice Definitions</h3>${stateManagementSliceList(input.stateManagementReadinessReport.sliceDefinitions)}</article><article class="state-management-card"><h3>Selector Signals</h3>${stateManagementSignalList(input.stateManagementReadinessReport.selectorSignals, "signal")}</article><article class="state-management-card"><h3>Side Effect Signals</h3>${stateManagementSignalList(input.stateManagementReadinessReport.sideEffectSignals, "signal")}</article></section><section class="grid"><article class="state-management-card"><h3>Entity Signals</h3>${stateManagementSignalList(input.stateManagementReadinessReport.entitySignals, "signal")}</article><article class="state-management-card"><h3>Middleware Signals</h3>${stateManagementSignalList(input.stateManagementReadinessReport.middlewareSignals, "signal")}</article><article class="state-management-card"><h3>RTK Query Signals</h3>${stateManagementSignalList(input.stateManagementReadinessReport.rtkQuerySignals, "signal")}</article><article class="state-management-card"><h3>Package Signals</h3>${stateManagementSignalList(input.stateManagementReadinessReport.packageSignals, "signal")}</article><article class="state-management-card"><h3>Recommended Commands</h3>${stateManagementCommandList(input.stateManagementReadinessReport.recommendedCommands)}</article><article class="state-management-card"><h3>Risk Queue</h3>${stateManagementRiskList(input.stateManagementReadinessReport.riskQueue)}</article><article class="state-management-card"><h3>다음 확인 단계</h3>${list(input.stateManagementReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -804,6 +813,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Mocking Readiness", path: "html/mocking-readiness.html", description: "MSW식 handlers, setupWorker/setupServer, lifecycle, unhandled request policy 준비도를 확인합니다." },
       { label: "Data Fetching Readiness", path: "html/data-fetching-readiness.html", description: "TanStack Query식 QueryClient, hooks, cache, invalidation, hydration 준비도를 확인합니다." },
       { label: "Routing Readiness", path: "html/routing-readiness.html", description: "React Router식 router mode, route definitions, navigation API, data route, file route 준비도를 확인합니다." },
+      { label: "State Management Readiness", path: "html/state-management-readiness.html", description: "Redux Toolkit식 store setup, slices, selectors, side effects, middleware, RTK Query 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1217,6 +1227,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "routing-readiness.html",
       goal: "React Router식 router mode, route definitions, navigation API, data route, file-route convention을 보고 화면 이동 관문을 확인합니다.",
       evidence: `setups ${input.routingReadinessReport.routingSetups.length}개, route definitions ${input.routingReadinessReport.routeDefinitions.length}개`
+    },
+    {
+      title: "State management readiness 확인",
+      href: "state-management-readiness.html",
+      goal: "Redux Toolkit식 configureStore, slices, selectors, side effects, middleware, RTK Query 연결을 보고 클라이언트 상태 관리 관문을 확인합니다.",
+      evidence: `store setups ${input.stateManagementReadinessReport.storeSetups.length}개, slice definitions ${input.stateManagementReadinessReport.sliceDefinitions.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -2669,6 +2685,36 @@ function routingRiskList(items: RoutingReadinessReport["riskQueue"]): string {
 }
 
 function routingHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function stateManagementStoreList(items: StateManagementReadinessReport["storeSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">state-management store setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.storeType)}/${escapeHtml(item.readiness)}]<br>configureStore/provider/typed hooks ${item.hasConfigureStore ? "yes" : "no"}/${item.hasProvider ? "yes" : "no"}/${item.hasTypedHooks ? "yes" : "no"}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(stateManagementHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function stateManagementSliceList(items: StateManagementReadinessReport["sliceDefinitions"]): string {
+  if (items.length === 0) return "<p class=\"muted\">slice definition이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.readiness)}]<br>slices/reducers/actions/selectors ${item.sliceCount}/${item.reducerCount}/${item.actionCount}/${item.selectorCount} · Immer-style ${item.usesImmerStyle ? "yes" : "no"}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(stateManagementHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function stateManagementSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">state-management signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(stateManagementHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function stateManagementCommandList(items: StateManagementReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function stateManagementRiskList(items: StateManagementReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(stateManagementHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function stateManagementHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
