@@ -4447,6 +4447,46 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 198:
   - `cb774b7` infrastructure readiness report
 
+- 2026-06-04: AutoResearch Upgrade 199 candidate selected:
+  `helm/helm`
+  (`https://github.com/helm/helm`; public; Apache-2.0; 29,845 stars; 7,635
+  forks; updated 2026-06-04T12:49:12Z). Compared with
+  `kubernetes-sigs/kustomize`, `argoproj/argo-cd`, `fluxcd/flux2`, and
+  `kubernetes/kubernetes`; selected Helm because it directly models Kubernetes
+  deployment readiness through chart metadata, values, templates, release
+  commands, dependency management, packaging, repositories, test hooks, and
+  safety flags. Cloned ignored external source to
+  `research/external-src/helm-helm` and inspected docs/source hits without
+  executing external source. Clone HEAD was `827a960`; tracked file count for
+  `research/external-src/helm-helm` returned `0`.
+- 2026-06-04: RED deployment-readiness smoke generated
+  `/tmp/repotutor-deploy-red-studies.2HHnxY/2026-06-05/local__simple-ts-app__HEAD__9c5e2546`;
+  old build had `verificationCheckedRequiredArtifacts=294`, was missing
+  `analysis/deployment-readiness-report.json`,
+  `markdown/deployment-readiness.md`, and `html/deployment-readiness.html`, and
+  `open --target deployment-readiness` failed as expected.
+- 2026-06-04: Implemented Helm-style deployment-readiness report:
+  `DeploymentReadinessReportSchema`,
+  `analysis/deployment-readiness-report.json`,
+  `markdown/deployment-readiness.md`, `html/deployment-readiness.html`,
+  deployment setups, chart signals, template signals, value signals, release
+  signals, safety signals, package signals, recommended commands, risk queue,
+  manifest/session verification coverage, learning-path linkage, nav entry, and
+  `open --target deployment-readiness`.
+- 2026-06-04: GREEN deployment-readiness smoke generated
+  `/tmp/repotutor-deploy-green-studies.TFOtPG/2026-06-05/local__simple-ts-app__main__9c5e2546`;
+  confirmed `verificationCheckedRequiredArtifacts=297`, deployment setups 0,
+  chart signals 11, template signals 12, value signals 8, release signals 12,
+  safety signals 9, package signals 7, risk queue 1, all three new artifacts,
+  and `open --target deployment-readiness` ->
+  `html/deployment-readiness.html`.
+- 2026-06-04: Verification for Upgrade 199:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 6/6 tests
+  - `pnpm audit:brief`: PASS, 97/97 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

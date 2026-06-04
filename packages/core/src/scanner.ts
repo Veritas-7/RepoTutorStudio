@@ -111,6 +111,7 @@ import {
   StylingReadinessReport,
   VisualRegressionReadinessReport,
   InfrastructureReadinessReport,
+  DeploymentReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -228,6 +229,7 @@ export interface AnalysisBundle {
   stylingReadinessReport: StylingReadinessReport;
   visualRegressionReadinessReport: VisualRegressionReadinessReport;
   infrastructureReadinessReport: InfrastructureReadinessReport;
+  deploymentReadinessReport: DeploymentReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -345,8 +347,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const stylingReadinessReport = await buildStylingReadinessReport(walk);
   const visualRegressionReadinessReport = await buildVisualRegressionReadinessReport(walk);
   const infrastructureReadinessReport = await buildInfrastructureReadinessReport(walk);
+  const deploymentReadinessReport = await buildDeploymentReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -23323,6 +23326,283 @@ function infrastructureSignalFromSpecs<T extends Record<K, string> & { pattern: 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/infrastructure-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDeploymentReadinessReport(walk: WalkResult): Promise<DeploymentReadinessReport> {
+  const sourceFiles = await deploymentSourceFiles(walk);
+  const deploymentSetups = deploymentSetupFiles(sourceFiles);
+  const chartSignals = deploymentChartSignals(sourceFiles);
+  const templateSignals = deploymentTemplateSignals(sourceFiles);
+  const valueSignals = deploymentValueSignals(sourceFiles);
+  const releaseSignals = deploymentReleaseSignals(sourceFiles);
+  const safetySignals = deploymentSafetySignals(sourceFiles);
+  const packageSignals = deploymentPackageSignals(sourceFiles);
+
+  const hasChart = deploymentSetups.length > 0 || chartSignals.some((item) => ["chart-yaml", "values-yaml"].includes(item.signal) && item.readiness === "ready");
+  const hasTemplates = templateSignals.some((item) => item.readiness === "ready") || deploymentSetups.some((item) => item.templateCount > 0 || item.manifestCount > 0);
+  const hasReleaseWorkflow = releaseSignals.some((item) => ["lint-command", "template-command", "install-command", "upgrade-command"].includes(item.signal) && item.readiness === "ready");
+  const hasSafety = safetySignals.some((item) => ["dry-run", "wait", "rollback-on-failure", "namespace", "kube-context"].includes(item.signal) && item.readiness === "ready");
+  const hasValues = valueSignals.some((item) => item.readiness === "ready") || deploymentSetups.some((item) => item.valuesCount > 0);
+
+  const riskQueue: DeploymentReadinessReport["riskQueue"] = [];
+  if (!hasChart) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a deployment inventory if this project ships Kubernetes resources.",
+      why: "Helm-style review starts from Chart.yaml, values.yaml, templates, and release workflow ownership.",
+      relatedHref: "html/deployment-readiness.html"
+    });
+  }
+  if (hasChart && !hasTemplates) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document rendered manifest templates or Kubernetes YAML entrypoints.",
+      why: "Reviewers need to inspect what Kubernetes resources are rendered before trusting install or upgrade commands.",
+      relatedHref: "html/deployment-readiness.html"
+    });
+  }
+  if (hasChart && !hasValues) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record values files, override flags, and schema validation policy.",
+      why: "Helm releases are often controlled by values overrides; missing value ownership hides runtime differences.",
+      relatedHref: "html/deployment-readiness.html"
+    });
+  }
+  if (hasChart && !hasReleaseWorkflow) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record lint, template, install, and upgrade review commands.",
+      why: "A release path without dry render and upgrade checks is difficult to review safely.",
+      relatedHref: "html/deployment-readiness.html"
+    });
+  }
+  if (hasChart && !hasSafety) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add safe release flags such as dry-run, wait, rollback-on-failure, namespace, or kube-context guidance.",
+      why: "Operational flags define whether a Helm command renders locally, waits for readiness, rolls back, or targets the intended cluster.",
+      relatedHref: "html/deployment-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Helm-style deployment readiness report: setup ${deploymentSetups.length}개, chart signal ${chartSignals.length}개, template signal ${templateSignals.length}개, release signal ${releaseSignals.length}개, safety signal ${safetySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Helm Chart.yaml values.yaml templates helm lint template install upgrade rollback dependency package repo test",
+    deploymentSetups,
+    chartSignals,
+    templateSignals,
+    valueSignals,
+    releaseSignals,
+    safetySignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "helm lint <chart-dir>", purpose: "Check chart metadata, values, templates, and dependency structure without installing." },
+      { command: "helm template <release> <chart-dir> --debug", purpose: "Render Kubernetes manifests for review before contacting a cluster." },
+      { command: "helm install <release> <chart-dir> --dry-run --debug", purpose: "Preview install behavior with release naming and values resolution." },
+      { command: "helm upgrade <release> <chart-dir> --install --wait --rollback-on-failure", purpose: "Review the intended safe upgrade posture before live release." }
+    ],
+    learnerNextSteps: [
+      "Open Deployment Readiness and identify Chart.yaml plus values.yaml first.",
+      "Read template and Kubernetes manifest signals before trusting release commands.",
+      "Compare values override and schema signals to understand how environments differ.",
+      "Review dry-run, wait, rollback, namespace, and kube-context signals before any live deployment."
+    ]
+  };
+}
+
+type DeploymentSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function deploymentSourceFiles(walk: WalkResult): Promise<DeploymentSourceFile[]> {
+  const files: DeploymentSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !deploymentInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath);
+    if (!text) continue;
+    if (!deploymentPathSignal(file.relPath) && !deploymentContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return files;
+}
+
+function deploymentInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return deploymentPathSignal(filePath)
+    || /(^|\/)(README|docs?|deploy|deployment|k8s|kubernetes|helm|charts?|manifests?|overlays?|base|ci|workflows?|scripts?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|Makefile|Taskfile\.ya?ml|justfile)$/i.test(base);
+}
+
+function deploymentPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(Chart\.yaml|values\.ya?ml|Chart\.lock|\.helmignore|values\.schema\.json|kustomization\.ya?ml)$/i.test(base)
+    || /(^|\/)(templates|charts|crds|manifests|k8s|kubernetes|helm|deploy|deployment|overlays|base)(\/|$)/i.test(filePath)
+    || /\.(ya?ml|tpl)$/i.test(filePath) && /(^|\/)(deploy|deployment|k8s|kubernetes|helm|charts?|manifests?)(\/|$)/i.test(filePath);
+}
+
+function deploymentContentSignal(text: string): boolean {
+  return /(Helm|helm\s+(lint|template|install|upgrade|rollback|uninstall|test|status|history|dependency|package|repo)|apiVersion:\s*v[12]|apiVersion:\s+apps\/v1|kind:\s+(Deployment|Service|Ingress|ConfigMap|Secret|ServiceAccount|HorizontalPodAutoscaler|Job|CronJob)|Chart\.yaml|values\.yaml|\.Values|helm\.sh\/hook|argocd|kustomize|kubectl apply|flux\s+reconcile)/i.test(text);
+}
+
+function deploymentSetupFiles(sourceFiles: DeploymentSourceFile[]): DeploymentReadinessReport["deploymentSetups"] {
+  const rows: DeploymentReadinessReport["deploymentSetups"] = [];
+  for (const source of sourceFiles) {
+    const chartMetadataCount = countMatches(source.text, /(^|\n)\s*(apiVersion|name|version|appVersion|type):/g) + (path.basename(source.filePath).toLowerCase() === "chart.yaml" ? 1 : 0);
+    const valuesCount = countMatches(source.text, /(^|\n)\s*values:|\.Values|--values\b|-f\s+|--set\b|--set-string\b|--set-file\b|--set-json\b/g) + (/values\.ya?ml$/i.test(source.filePath) ? 1 : 0);
+    const templateCount = countMatches(source.text, /\{\{[^}]+(\.Values|include|tpl|define|template|toYaml|nindent)/g) + (/\/templates\//i.test(source.filePath) ? 1 : 0);
+    const manifestCount = countMatches(source.text, /(^|\n)\s*kind:\s*(Deployment|Service|Ingress|ConfigMap|Secret|ServiceAccount|HorizontalPodAutoscaler|Job|CronJob|StatefulSet|DaemonSet)\b/g);
+    const dependencyCount = countMatches(source.text, /(^|\n)\s*dependencies:|Chart\.lock|helm\s+dependency|(^|\/)charts\//g);
+    const hookCount = countMatches(source.text, /helm\.sh\/hook|pre-install|post-install|pre-upgrade|post-upgrade|pre-delete|post-delete|test-success|test-failure/g);
+    const releaseWorkflowCount = countMatches(source.text, /\bhelm\s+(lint|template|install|upgrade|rollback|uninstall|test|status|history|dependency|package|repo)\b/g);
+    const totalSignals = chartMetadataCount + valuesCount + templateCount + manifestCount + dependencyCount + hookCount + releaseWorkflowCount;
+    if (totalSignals === 0 && !deploymentPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: deploymentTool(source),
+      chartMetadataCount,
+      valuesCount,
+      templateCount,
+      manifestCount,
+      dependencyCount,
+      hookCount,
+      releaseWorkflowCount,
+      readiness: totalSignals >= 5 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} Helm/Kubernetes deployment signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.chartMetadataCount + b.templateCount + b.manifestCount + b.releaseWorkflowCount;
+    const aScore = a.chartMetadataCount + a.templateCount + a.manifestCount + a.releaseWorkflowCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 50);
+}
+
+function deploymentTool(source: DeploymentSourceFile): DeploymentReadinessReport["deploymentSetups"][number]["tool"] {
+  if (/argocd|argoproj\.io|ApplicationSet/i.test(source.filePath) || /argocd|argoproj\.io|ApplicationSet/i.test(source.text)) return "argo-cd";
+  if (/flux|GitRepository|Kustomization|HelmRelease/i.test(source.filePath) || /fluxcd|HelmRelease|GitRepository/i.test(source.text)) return "flux";
+  if (/skaffold/i.test(source.filePath) || /skaffold/i.test(source.text)) return "skaffold";
+  if (/kustomization\.ya?ml|kustomize/i.test(source.filePath) || /kustomize/i.test(source.text)) return "kustomize";
+  if (/Chart\.yaml|values\.ya?ml|\/templates\/|helm\s+(lint|template|install|upgrade|rollback|uninstall|test|status|history|dependency|package|repo)/i.test(source.filePath) || /Helm|helm\s+(lint|template|install|upgrade|rollback|uninstall|test|status|history|dependency|package|repo)|\.Values/i.test(source.text)) return "helm";
+  if (/kubectl/i.test(source.filePath) || /kubectl\s+(apply|diff|rollout|delete)/i.test(source.text)) return "kubectl";
+  if (/kind:\s+(Deployment|Service|Ingress|ConfigMap|Secret|ServiceAccount|HorizontalPodAutoscaler|Job|CronJob)/i.test(source.text)) return "kubernetes";
+  return "unknown";
+}
+
+function deploymentChartSignals(sourceFiles: DeploymentSourceFile[]): DeploymentReadinessReport["chartSignals"] {
+  const specs: Array<{ signal: DeploymentReadinessReport["chartSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "chart-yaml", pattern: /(^|\/)Chart\.yaml$/i, evidence: "Chart.yaml metadata file evidence was detected." },
+    { signal: "api-version", pattern: /(^|\n)\s*apiVersion:\s*v[12]\b/i, evidence: "chart apiVersion evidence was detected." },
+    { signal: "chart-name", pattern: /(^|\n)\s*name:\s*[-A-Za-z0-9_.]+/i, evidence: "chart name evidence was detected." },
+    { signal: "chart-version", pattern: /(^|\n)\s*version:\s*['\"]?[0-9]/i, evidence: "chart version evidence was detected." },
+    { signal: "app-version", pattern: /(^|\n)\s*appVersion:/i, evidence: "appVersion evidence was detected." },
+    { signal: "chart-type", pattern: /(^|\n)\s*type:\s*(application|library)/i, evidence: "chart type evidence was detected." },
+    { signal: "dependencies", pattern: /(^|\n)\s*dependencies:/i, evidence: "chart dependencies evidence was detected." },
+    { signal: "chart-lock", pattern: /(^|\/)Chart\.lock$/i, evidence: "Chart.lock evidence was detected." },
+    { signal: "helmignore", pattern: /(^|\/)\.helmignore$/i, evidence: ".helmignore evidence was detected." },
+    { signal: "values-yaml", pattern: /(^|\/)values\.ya?ml$/i, evidence: "values.yaml evidence was detected." },
+    { signal: "values-schema", pattern: /(^|\/)values\.schema\.json$/i, evidence: "values schema evidence was detected." }
+  ];
+  return deploymentSignalFromSpecs(sourceFiles, specs, "chart", "signal");
+}
+
+function deploymentTemplateSignals(sourceFiles: DeploymentSourceFile[]): DeploymentReadinessReport["templateSignals"] {
+  const specs: Array<{ signal: DeploymentReadinessReport["templateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "deployment", pattern: /kind:\s*Deployment\b/i, evidence: "Deployment manifest evidence was detected." },
+    { signal: "service", pattern: /kind:\s*Service\b/i, evidence: "Service manifest evidence was detected." },
+    { signal: "ingress", pattern: /kind:\s*Ingress\b/i, evidence: "Ingress manifest evidence was detected." },
+    { signal: "configmap", pattern: /kind:\s*ConfigMap\b/i, evidence: "ConfigMap manifest evidence was detected." },
+    { signal: "secret", pattern: /kind:\s*Secret\b/i, evidence: "Secret manifest evidence was detected." },
+    { signal: "serviceaccount", pattern: /kind:\s*ServiceAccount\b/i, evidence: "ServiceAccount manifest evidence was detected." },
+    { signal: "hpa", pattern: /kind:\s*HorizontalPodAutoscaler\b|autoscaling\/v[0-9]/i, evidence: "HPA manifest evidence was detected." },
+    { signal: "notes", pattern: /templates\/NOTES\.txt|NOTES\.txt/i, evidence: "NOTES template evidence was detected." },
+    { signal: "helpers", pattern: /templates\/_helpers\.tpl|{{-?\s*define\s+"/i, evidence: "helper template evidence was detected." },
+    { signal: "crd", pattern: /(^|\/)crds\/|kind:\s*CustomResourceDefinition\b/i, evidence: "CRD evidence was detected." },
+    { signal: "hooks", pattern: /helm\.sh\/hook|pre-install|post-install|pre-upgrade|post-upgrade/i, evidence: "Helm hook evidence was detected." },
+    { signal: "tests", pattern: /helm\.sh\/hook:\s*test|helm\.sh\/hook:\s*test-success|helm\s+test\b/i, evidence: "Helm test hook or command evidence was detected." }
+  ];
+  return deploymentSignalFromSpecs(sourceFiles, specs, "template", "signal");
+}
+
+function deploymentValueSignals(sourceFiles: DeploymentSourceFile[]): DeploymentReadinessReport["valueSignals"] {
+  const specs: Array<{ signal: DeploymentReadinessReport["valueSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "values-file", pattern: /(^|\/)values\.ya?ml$/i, evidence: "values file evidence was detected." },
+    { signal: "values-override", pattern: /--values\b|-f\s+|override\.ya?ml|values-[A-Za-z0-9_-]+\.ya?ml/i, evidence: "values override evidence was detected." },
+    { signal: "set-flag", pattern: /--set\b/i, evidence: "--set evidence was detected." },
+    { signal: "set-string-flag", pattern: /--set-string\b/i, evidence: "--set-string evidence was detected." },
+    { signal: "set-file-flag", pattern: /--set-file\b/i, evidence: "--set-file evidence was detected." },
+    { signal: "set-json-flag", pattern: /--set-json\b/i, evidence: "--set-json evidence was detected." },
+    { signal: "schema-validation", pattern: /values\.schema\.json|JSON Schema|schema validation/i, evidence: "values schema validation evidence was detected." },
+    { signal: "global-values", pattern: /(^|\n)\s*global:|\.Values\.global/i, evidence: "global values evidence was detected." }
+  ];
+  return deploymentSignalFromSpecs(sourceFiles, specs, "value", "signal");
+}
+
+function deploymentReleaseSignals(sourceFiles: DeploymentSourceFile[]): DeploymentReadinessReport["releaseSignals"] {
+  const specs: Array<{ signal: DeploymentReadinessReport["releaseSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "lint-command", pattern: /\bhelm\s+lint\b/i, evidence: "helm lint evidence was detected." },
+    { signal: "template-command", pattern: /\bhelm\s+template\b/i, evidence: "helm template evidence was detected." },
+    { signal: "install-command", pattern: /\bhelm\s+install\b/i, evidence: "helm install evidence was detected." },
+    { signal: "upgrade-command", pattern: /\bhelm\s+upgrade\b/i, evidence: "helm upgrade evidence was detected." },
+    { signal: "rollback-command", pattern: /\bhelm\s+rollback\b/i, evidence: "helm rollback evidence was detected." },
+    { signal: "uninstall-command", pattern: /\bhelm\s+uninstall\b/i, evidence: "helm uninstall evidence was detected." },
+    { signal: "test-command", pattern: /\bhelm\s+test\b/i, evidence: "helm test evidence was detected." },
+    { signal: "status-command", pattern: /\bhelm\s+status\b/i, evidence: "helm status evidence was detected." },
+    { signal: "history-command", pattern: /\bhelm\s+history\b/i, evidence: "helm history evidence was detected." },
+    { signal: "dependency-command", pattern: /\bhelm\s+dependency\b/i, evidence: "helm dependency evidence was detected." },
+    { signal: "package-command", pattern: /\bhelm\s+package\b/i, evidence: "helm package evidence was detected." },
+    { signal: "repo-command", pattern: /\bhelm\s+repo\b/i, evidence: "helm repo evidence was detected." }
+  ];
+  return deploymentSignalFromSpecs(sourceFiles, specs, "release", "signal");
+}
+
+function deploymentSafetySignals(sourceFiles: DeploymentSourceFile[]): DeploymentReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: DeploymentReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dry-run", pattern: /--dry-run\b|helm\s+template\b/i, evidence: "dry-run or template-render evidence was detected." },
+    { signal: "wait", pattern: /--wait\b/i, evidence: "--wait evidence was detected." },
+    { signal: "rollback-on-failure", pattern: /--rollback-on-failure\b|--atomic\b/i, evidence: "rollback-on-failure evidence was detected." },
+    { signal: "no-hooks", pattern: /--no-hooks\b/i, evidence: "--no-hooks evidence was detected." },
+    { signal: "skip-crds", pattern: /--skip-crds\b/i, evidence: "--skip-crds evidence was detected." },
+    { signal: "disable-openapi-validation", pattern: /--disable-openapi-validation\b/i, evidence: "OpenAPI validation override evidence was detected." },
+    { signal: "namespace", pattern: /--namespace\b|-n\s+|metadata:\s*\n\s*namespace:/i, evidence: "namespace targeting evidence was detected." },
+    { signal: "kube-context", pattern: /--kube-context\b|KUBECONFIG/i, evidence: "cluster context evidence was detected." },
+    { signal: "create-namespace", pattern: /--create-namespace\b/i, evidence: "create namespace evidence was detected." }
+  ];
+  return deploymentSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function deploymentPackageSignals(sourceFiles: DeploymentSourceFile[]): DeploymentReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DeploymentReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "helm", pattern: /Helm|helm\s+(lint|template|install|upgrade|rollback|dependency|package|repo)|Chart\.yaml|values\.yaml/i, evidence: "Helm evidence was detected." },
+    { signal: "kustomize", pattern: /kustomize|kustomization\.ya?ml/i, evidence: "Kustomize evidence was detected." },
+    { signal: "kubectl", pattern: /kubectl\s+(apply|diff|rollout|delete|kustomize)/i, evidence: "kubectl evidence was detected." },
+    { signal: "argo-cd", pattern: /argocd|argoproj\.io|ApplicationSet/i, evidence: "Argo CD evidence was detected." },
+    { signal: "flux", pattern: /fluxcd|flux\s+(reconcile|bootstrap)|HelmRelease|GitRepository/i, evidence: "Flux evidence was detected." },
+    { signal: "skaffold", pattern: /skaffold/i, evidence: "Skaffold evidence was detected." },
+    { signal: "chart-releaser", pattern: /chart-releaser|cr\s+upload|cr\s+index/i, evidence: "chart-releaser evidence was detected." }
+  ];
+  return deploymentSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function deploymentSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DeploymentSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/deployment-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

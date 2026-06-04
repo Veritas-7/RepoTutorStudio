@@ -106,6 +106,7 @@ import type {
   StylingReadinessReport,
   VisualRegressionReadinessReport,
   InfrastructureReadinessReport,
+  DeploymentReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -218,6 +219,7 @@ export interface StudyHtmlInput {
   stylingReadinessReport: StylingReadinessReport;
   visualRegressionReadinessReport: VisualRegressionReadinessReport;
   infrastructureReadinessReport: InfrastructureReadinessReport;
+  deploymentReadinessReport: DeploymentReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -344,6 +346,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["styling-readiness.html", "Styling"],
     ["visual-regression-readiness.html", "Visual Regression"],
     ["infrastructure-readiness.html", "Infrastructure"],
+    ["deployment-readiness.html", "Deployment"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -491,6 +494,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Styling Readiness</h3><p>${escapeHtml(input.stylingReadinessReport.summary)}</p><p>Tailwind CSS 패턴으로 config, directives, utility classes, theme, plugins, build integration 준비도를 정리합니다.</p><a href="styling-readiness.html">Styling 열기</a></article>
           <article><h3>Visual Regression Readiness</h3><p>${escapeHtml(input.visualRegressionReadinessReport.summary)}</p><p>reg-suit 패턴으로 screenshot baselines, diff thresholds, reports, plugins, storage, notification 준비도를 정리합니다.</p><a href="visual-regression-readiness.html">Visual Regression 열기</a></article>
           <article><h3>Infrastructure Readiness</h3><p>${escapeHtml(input.infrastructureReadinessReport.summary)}</p><p>OpenTofu 패턴으로 .tf config, providers, resources, modules, variables, backend/state, plan/apply workflow 준비도를 정리합니다.</p><a href="infrastructure-readiness.html">Infrastructure 열기</a></article>
+          <article><h3>Deployment Readiness</h3><p>${escapeHtml(input.deploymentReadinessReport.summary)}</p><p>Helm 패턴으로 Chart.yaml, values.yaml, templates, release commands, safety flags 준비도를 정리합니다.</p><a href="deployment-readiness.html">Deployment 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -975,6 +979,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Infrastructure Readiness", "infrastructure-readiness.html", `<section class="panel" data-source-pattern="OpenTofu"><h2>Infrastructure Snapshot</h2><p>${escapeHtml(input.infrastructureReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.infrastructureReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.infrastructureReadinessReport.infrastructureSetups.length}</dd></div><div><dt>config</dt><dd>${input.infrastructureReadinessReport.configSignals.length}</dd></div><div><dt>state</dt><dd>${input.infrastructureReadinessReport.stateSignals.length}</dd></div><div><dt>workflow</dt><dd>${input.infrastructureReadinessReport.workflowSignals.length}</dd></div><div><dt>modules</dt><dd>${input.infrastructureReadinessReport.moduleSignals.length}</dd></div><div><dt>policy</dt><dd>${input.infrastructureReadinessReport.policySignals.length}</dd></div></dl><p class="muted">RepoTutor records infrastructure readiness only; it does not run tofu, terraform, terragrunt, cloud provider, backend, state migration, import, plan, apply, destroy, policy, or cost commands.</p></section><section class="grid"><article class="infrastructure-readiness-card"><h3>Infrastructure Setups</h3>${infrastructureReadinessSetupList(input.infrastructureReadinessReport.infrastructureSetups)}</article><article class="infrastructure-readiness-card"><h3>Config Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.configSignals, "signal")}</article><article class="infrastructure-readiness-card"><h3>State Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.stateSignals, "signal")}</article><article class="infrastructure-readiness-card"><h3>Workflow Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.workflowSignals, "signal")}</article></section><section class="grid"><article class="infrastructure-readiness-card"><h3>Module Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.moduleSignals, "signal")}</article><article class="infrastructure-readiness-card"><h3>Variable Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.variableSignals, "signal")}</article><article class="infrastructure-readiness-card"><h3>Policy Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.policySignals, "signal")}</article><article class="infrastructure-readiness-card"><h3>Package Signals</h3>${infrastructureReadinessSignalList(input.infrastructureReadinessReport.packageSignals, "signal")}</article><article class="infrastructure-readiness-card"><h3>Recommended Commands</h3>${infrastructureReadinessCommandList(input.infrastructureReadinessReport.recommendedCommands)}</article><article class="infrastructure-readiness-card"><h3>Risk Queue</h3>${infrastructureReadinessRiskList(input.infrastructureReadinessReport.riskQueue)}</article><article class="infrastructure-readiness-card"><h3>다음 확인 단계</h3>${list(input.infrastructureReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "deployment-readiness.html",
+      title: "Deployment Readiness",
+      html: pageShell("Deployment Readiness", "deployment-readiness.html", `<section class="panel" data-source-pattern="Helm"><h2>Deployment Snapshot</h2><p>${escapeHtml(input.deploymentReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.deploymentReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.deploymentReadinessReport.deploymentSetups.length}</dd></div><div><dt>charts</dt><dd>${input.deploymentReadinessReport.chartSignals.length}</dd></div><div><dt>templates</dt><dd>${input.deploymentReadinessReport.templateSignals.length}</dd></div><div><dt>values</dt><dd>${input.deploymentReadinessReport.valueSignals.length}</dd></div><div><dt>release</dt><dd>${input.deploymentReadinessReport.releaseSignals.length}</dd></div><div><dt>safety</dt><dd>${input.deploymentReadinessReport.safetySignals.length}</dd></div></dl><p class="muted">RepoTutor records deployment readiness only; it does not run Helm, render templates, contact Kubernetes APIs, mutate releases, update repo caches, package charts, push OCI artifacts, or execute hooks.</p></section><section class="grid"><article class="deployment-readiness-card"><h3>Deployment Setups</h3>${deploymentReadinessSetupList(input.deploymentReadinessReport.deploymentSetups)}</article><article class="deployment-readiness-card"><h3>Chart Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.chartSignals, "signal")}</article><article class="deployment-readiness-card"><h3>Template Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.templateSignals, "signal")}</article><article class="deployment-readiness-card"><h3>Value Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.valueSignals, "signal")}</article></section><section class="grid"><article class="deployment-readiness-card"><h3>Release Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.releaseSignals, "signal")}</article><article class="deployment-readiness-card"><h3>Safety Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.safetySignals, "signal")}</article><article class="deployment-readiness-card"><h3>Package Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.packageSignals, "signal")}</article><article class="deployment-readiness-card"><h3>Recommended Commands</h3>${deploymentReadinessCommandList(input.deploymentReadinessReport.recommendedCommands)}</article><article class="deployment-readiness-card"><h3>Risk Queue</h3>${deploymentReadinessRiskList(input.deploymentReadinessReport.riskQueue)}</article><article class="deployment-readiness-card"><h3>다음 확인 단계</h3>${list(input.deploymentReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -1181,6 +1190,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Styling Readiness", path: "html/styling-readiness.html", description: "Tailwind CSS식 config, directive, utility, theme, plugin, build integration 준비도를 확인합니다." },
       { label: "Visual Regression Readiness", path: "html/visual-regression-readiness.html", description: "reg-suit식 actual/expected/diff screenshots, thresholds, reports, plugins, storage, notification 준비도를 확인합니다." },
       { label: "Infrastructure Readiness", path: "html/infrastructure-readiness.html", description: "OpenTofu식 .tf config, provider/resource/module, backend/state, plan/apply workflow 준비도를 확인합니다." },
+      { label: "Deployment Readiness", path: "html/deployment-readiness.html", description: "Helm식 Chart.yaml, values.yaml, templates, release workflow, safety flag 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -1840,6 +1850,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "infrastructure-readiness.html",
       goal: "OpenTofu식 .tf config, provider/resource/module, backend/state, plan/apply/import workflow 흐름을 확인합니다.",
       evidence: `infrastructure setups ${input.infrastructureReadinessReport.infrastructureSetups.length}개, workflow signals ${input.infrastructureReadinessReport.workflowSignals.length}개`
+    },
+    {
+      title: "Deployment readiness 확인",
+      href: "deployment-readiness.html",
+      goal: "Helm식 Chart.yaml, values.yaml, templates, lint/template/install/upgrade workflow와 safety flag 흐름을 확인합니다.",
+      evidence: `deployment setups ${input.deploymentReadinessReport.deploymentSetups.length}개, release signals ${input.deploymentReadinessReport.releaseSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -4332,6 +4348,31 @@ function infrastructureReadinessRiskList(items: InfrastructureReadinessReport["r
 }
 
 function infrastructureReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function deploymentReadinessSetupList(items: DeploymentReadinessReport["deploymentSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">deployment setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)}/${escapeHtml(item.readiness)}]<br>chart/values/template/manifest/dependency/hook/release ${item.chartMetadataCount}/${item.valuesCount}/${item.templateCount}/${item.manifestCount}/${item.dependencyCount}/${item.hookCount}/${item.releaseWorkflowCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(deploymentReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function deploymentReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">deployment signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(deploymentReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function deploymentReadinessCommandList(items: DeploymentReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function deploymentReadinessRiskList(items: DeploymentReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(deploymentReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function deploymentReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

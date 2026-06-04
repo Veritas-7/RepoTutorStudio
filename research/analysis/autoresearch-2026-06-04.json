@@ -1528,6 +1528,22 @@
         "state and plan encryption, terraform_remote_state, key_provider, backend blocks, state locking, tfvars, sensitive variables, validation, provider aliases, and module/provider passing",
         "TFLint, tfsec, Checkov, OPA/Rego, Conftest, Sentinel, Infracost, and Terraform test policy readiness hooks"
       ]
+    },
+    {
+      "repo": "helm/helm",
+      "url": "https://github.com/helm/helm",
+      "localPath": "research/external-src/helm-helm",
+      "stars": 29845,
+      "forks": 7635,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T12:49:12Z",
+      "cloneHead": "827a960",
+      "adoptedPatterns": [
+        "Helm chart structure with Chart.yaml metadata, values.yaml defaults, templates, charts dependencies, CRDs, and .helmignore packaging boundaries",
+        "helm lint, helm template, helm install, helm upgrade, helm rollback, helm dependency, helm package, helm repo, and helm test release workflow signals",
+        "values overrides through --values, -f, --set, --set-string, --set-file, --set-json, global values, and values.schema.json validation",
+        "deployment safety flags including --dry-run, --wait, --rollback-on-failure, --no-hooks, --skip-crds, --disable-openapi-validation, --namespace, --kube-context, and --create-namespace"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -4701,6 +4717,25 @@
         "markdown/infrastructure-readiness.md",
         "html/infrastructure-readiness.html"
       ]
+    },
+    {
+      "name": "deployment readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/deployment-readiness-report.json",
+        "markdown/deployment-readiness.md",
+        "html/deployment-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -5219,7 +5254,13 @@
     "infrastructureReadinessGreenSmoke": "PASS",
     "fixtureInfrastructureReadinessReport": "PASS",
     "infrastructureReadinessOpenTarget": "PASS",
-    "complianceAudit96Checks": "PASS"
+    "complianceAudit96Checks": "PASS",
+    "externalHelmCloneIgnored": "PASS",
+    "deploymentReadinessRedSmoke": "PASS",
+    "deploymentReadinessGreenSmoke": "PASS",
+    "fixtureDeploymentReadinessReport": "PASS",
+    "deploymentReadinessOpenTarget": "PASS",
+    "complianceAudit97Checks": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -5614,6 +5655,12 @@
     "cliInfrastructureReadinessOpenTargetSmoke": "PASS",
     "buildInfrastructureReadiness": "PASS",
     "testInfrastructureReadiness": "PASS",
-    "auditBriefInfrastructureReadiness96": "PASS"
+    "auditBriefInfrastructureReadiness96": "PASS",
+    "fixtureDeploymentReadinessReport": "PASS",
+    "cliDeploymentReadinessSmoke": "PASS",
+    "cliDeploymentReadinessOpenTargetSmoke": "PASS",
+    "buildDeploymentReadiness": "PASS",
+    "testDeploymentReadiness": "PASS",
+    "auditBriefDeploymentReadiness97": "PASS"
   }
 }

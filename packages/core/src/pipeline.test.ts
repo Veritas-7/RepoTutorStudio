@@ -100,6 +100,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "styling-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "visual-regression-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "infrastructure-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "deployment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -198,6 +199,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "styling-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "visual-regression-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "infrastructure-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "deployment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -296,6 +298,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "styling-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "visual-regression-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "infrastructure-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "deployment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -425,6 +428,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/styling-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/visual-regression-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/infrastructure-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/deployment-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -2137,6 +2141,25 @@ describe("RepoTutor core pipeline", () => {
     expect(infrastructureReadinessMarkdown).toContain("Source pattern: OpenTofu");
     expect(infrastructureReadinessMarkdown).toContain("## State Signals");
     expect(infrastructureReadinessMarkdown).toContain("## Workflow Signals");
+    const deploymentReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "deployment-readiness-report.json"), "utf8");
+    expect(deploymentReadinessText).toContain("Helm Chart.yaml values.yaml templates helm lint template install upgrade rollback dependency package repo test");
+    expect(deploymentReadinessText).toContain("\"deploymentSetups\"");
+    expect(deploymentReadinessText).toContain("\"chartSignals\"");
+    expect(deploymentReadinessText).toContain("\"templateSignals\"");
+    expect(deploymentReadinessText).toContain("\"releaseSignals\"");
+    expect(deploymentReadinessText).toContain("\"safetySignals\"");
+    expect(deploymentReadinessText).toContain("Helm");
+    const deploymentReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "deployment-readiness.html"), "utf8");
+    expect(deploymentReadinessHtml).toContain("Deployment Readiness");
+    expect(deploymentReadinessHtml).toContain("deployment-readiness-card");
+    expect(deploymentReadinessHtml).toContain("data-source-pattern=\"Helm\"");
+    expect(deploymentReadinessHtml).toContain("Release Signals");
+    expect(deploymentReadinessHtml).toContain("Safety Signals");
+    const deploymentReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "deployment-readiness.md"), "utf8");
+    expect(deploymentReadinessMarkdown).toContain("# Deployment Readiness");
+    expect(deploymentReadinessMarkdown).toContain("Source pattern: Helm");
+    expect(deploymentReadinessMarkdown).toContain("## Release Signals");
+    expect(deploymentReadinessMarkdown).toContain("## Safety Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -2602,6 +2625,97 @@ describe("RepoTutor core pipeline", () => {
     expect(report.workflowSignals.some((item) => item.signal === "plan-command" && item.readiness === "ready")).toBe(true);
     expect(report.moduleSignals.some((item) => item.signal === "local-module" && item.readiness === "ready")).toBe(true);
     expect(report.variableSignals.some((item) => item.signal === "validation" && item.readiness === "ready")).toBe(true);
+  });
+
+  it("detects Helm deployment readiness in chart files", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-deployment-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-deployment-source-"));
+    const templatesDir = path.join(sourceRoot, "charts", "app", "templates");
+    await fs.mkdir(templatesDir, { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Deployment fixture",
+      "",
+      "Review with helm lint, helm template, helm install --dry-run --debug, helm upgrade --install --wait --rollback-on-failure, helm test, and helm rollback."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "charts", "app", "Chart.yaml"), [
+      "apiVersion: v2",
+      "name: repotutor-app",
+      "version: 0.1.0",
+      "appVersion: \"1.0.0\"",
+      "type: application",
+      "dependencies:",
+      "  - name: redis",
+      "    version: 1.0.0",
+      "    repository: https://example.com/charts"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "charts", "app", "values.yaml"), [
+      "global:",
+      "  imageRegistry: example.test",
+      "image:",
+      "  repository: repotutor/app",
+      "service:",
+      "  port: 8080"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "charts", "app", "values.schema.json"), "{\"type\":\"object\"}\n");
+    await fs.writeFile(path.join(templatesDir, "_helpers.tpl"), "{{- define \"repotutor.name\" -}}repotutor{{- end -}}\n");
+    await fs.writeFile(path.join(templatesDir, "deployment.yaml"), [
+      "apiVersion: apps/v1",
+      "kind: Deployment",
+      "metadata:",
+      "  name: {{ include \"repotutor.name\" . }}",
+      "  namespace: {{ .Release.Namespace }}",
+      "spec:",
+      "  template:",
+      "    spec:",
+      "      containers:",
+      "        - name: app",
+      "          image: {{ .Values.image.repository }}"
+    ].join("\n"));
+    await fs.writeFile(path.join(templatesDir, "service.yaml"), [
+      "apiVersion: v1",
+      "kind: Service",
+      "metadata:",
+      "  name: repotutor",
+      "spec:",
+      "  ports:",
+      "    - port: {{ .Values.service.port }}"
+    ].join("\n"));
+    await fs.writeFile(path.join(templatesDir, "test-connection.yaml"), [
+      "apiVersion: v1",
+      "kind: Pod",
+      "metadata:",
+      "  annotations:",
+      "    helm.sh/hook: test",
+      "spec:",
+      "  containers:",
+      "    - name: smoke",
+      "      image: busybox"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "deployment-readiness-report.json"), "utf8")) as {
+      deploymentSetups: Array<{ filePath: string; chartMetadataCount: number; valuesCount: number; templateCount: number; manifestCount: number; dependencyCount: number; hookCount: number; releaseWorkflowCount: number }>;
+      chartSignals: Array<{ signal: string; readiness: string }>;
+      templateSignals: Array<{ signal: string; readiness: string }>;
+      valueSignals: Array<{ signal: string; readiness: string }>;
+      releaseSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+    };
+    const chartSetup = report.deploymentSetups.find((item) => item.filePath === "charts/app/Chart.yaml");
+    const deploymentTemplate = report.deploymentSetups.find((item) => item.filePath === "charts/app/templates/deployment.yaml");
+    expect(report.deploymentSetups.length).toBeGreaterThan(0);
+    expect(chartSetup?.chartMetadataCount).toBeGreaterThan(0);
+    expect(chartSetup?.dependencyCount).toBeGreaterThan(0);
+    expect(deploymentTemplate?.templateCount).toBeGreaterThan(0);
+    expect(deploymentTemplate?.manifestCount).toBeGreaterThan(0);
+    expect(report.deploymentSetups.some((item) => item.releaseWorkflowCount > 0)).toBe(true);
+    expect(report.chartSignals.some((item) => item.signal === "chart-yaml" && item.readiness === "ready")).toBe(true);
+    expect(report.chartSignals.some((item) => item.signal === "values-schema" && item.readiness === "ready")).toBe(true);
+    expect(report.templateSignals.some((item) => item.signal === "deployment" && item.readiness === "ready")).toBe(true);
+    expect(report.templateSignals.some((item) => item.signal === "tests" && item.readiness === "ready")).toBe(true);
+    expect(report.valueSignals.some((item) => item.signal === "global-values" && item.readiness === "ready")).toBe(true);
+    expect(report.releaseSignals.some((item) => item.signal === "upgrade-command" && item.readiness === "ready")).toBe(true);
+    expect(report.safetySignals.some((item) => item.signal === "rollback-on-failure" && item.readiness === "ready")).toBe(true);
   });
 
   it("compares a new study session against the previous source snapshot", async () => {
