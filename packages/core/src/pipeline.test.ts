@@ -94,6 +94,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "llm-eval-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "llm-observability-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "search-service-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workspace-graph-readiness-report.json"))).resolves.toBeUndefined();
@@ -204,6 +205,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-eval-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-observability-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "vector-db-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "search-service-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rpc-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workspace-graph-readiness.md"))).resolves.toBeUndefined();
@@ -314,6 +316,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-eval-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-observability-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "vector-db-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "search-service-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "server-framework-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rpc-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workspace-graph-readiness.html"))).resolves.toBeUndefined();
@@ -455,6 +458,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/llm-eval-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/llm-observability-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/vector-db-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/search-service-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/server-framework-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rpc-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workspace-graph-readiness.html\"");
@@ -2079,6 +2083,27 @@ describe("RepoTutor core pipeline", () => {
     expect(vectorDbReadinessMarkdown).toContain("Source pattern: Vector DB readiness");
     expect(vectorDbReadinessMarkdown).toContain("## Collection Signals");
     expect(vectorDbReadinessMarkdown).toContain("## Ops Signals");
+    const searchServiceReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "search-service-readiness-report.json"), "utf8");
+    expect(searchServiceReadinessText).toContain("Search service readiness Meilisearch Typesense OpenSearch indexes collections schema mappings fields primary key settings documents add import bulk upsert batch search q query_by filter_by sort_by facet_by ranking rules typo tolerance synonyms stop words distinct geosearch hybrid semantic highlight crop pagination tasks health dumps snapshots aliases replicas cluster analytics API keys hosts nodes");
+    expect(searchServiceReadinessText).toContain("\"searchSetups\"");
+    expect(searchServiceReadinessText).toContain("\"indexSignals\"");
+    expect(searchServiceReadinessText).toContain("\"ingestionSignals\"");
+    expect(searchServiceReadinessText).toContain("\"querySignals\"");
+    expect(searchServiceReadinessText).toContain("\"relevanceSignals\"");
+    expect(searchServiceReadinessText).toContain("\"clientSignals\"");
+    expect(searchServiceReadinessText).toContain("\"opsSignals\"");
+    expect(searchServiceReadinessText).toContain("\"packageSignals\"");
+    const searchServiceReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "search-service-readiness.html"), "utf8");
+    expect(searchServiceReadinessHtml).toContain("Search Service Readiness");
+    expect(searchServiceReadinessHtml).toContain("search-service-readiness-card");
+    expect(searchServiceReadinessHtml).toContain("data-source-pattern=\"Search Service\"");
+    expect(searchServiceReadinessHtml).toContain("Search Setups");
+    expect(searchServiceReadinessHtml).toContain("Query Signals");
+    const searchServiceReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "search-service-readiness.md"), "utf8");
+    expect(searchServiceReadinessMarkdown).toContain("# Search Service Readiness");
+    expect(searchServiceReadinessMarkdown).toContain("Source pattern: Search service readiness");
+    expect(searchServiceReadinessMarkdown).toContain("## Index Signals");
+    expect(searchServiceReadinessMarkdown).toContain("## Ops Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
     expect(serverFrameworkReadinessText).toContain("Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
@@ -2547,6 +2572,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/llm-eval-readiness.html");
     expect(exportManifestText).toContain("html/llm-observability-readiness.html");
     expect(exportManifestText).toContain("html/vector-db-readiness.html");
+    expect(exportManifestText).toContain("html/search-service-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -2675,6 +2701,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("llm-eval-readiness.html");
     expect(learningPathHtml).toContain("llm-observability-readiness.html");
     expect(learningPathHtml).toContain("vector-db-readiness.html");
+    expect(learningPathHtml).toContain("search-service-readiness.html");
     expect(learningPathHtml).toContain("backup-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
@@ -4985,6 +5012,160 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "vector-db-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "vector-db-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects search service readiness patterns without running search services", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-search-service-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-search-service-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "config"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "search"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "search:meili": "node src/search/meili.js",
+        "search:typesense": "node src/search/typesense.js",
+        "search:opensearch": "tsx src/search/opensearch.ts"
+      },
+      dependencies: {
+        "@elastic/elasticsearch": "latest",
+        "@elastic/react-search-ui": "latest",
+        "@opensearch-project/opensearch": "latest",
+        algoliasearch: "latest",
+        "instantsearch.js": "latest",
+        meilisearch: "latest",
+        typesense: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "requirements.txt"), [
+      "meilisearch",
+      "typesense",
+      "opensearch-py",
+      "elasticsearch",
+      "algoliasearch"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "search", "meili.js"), [
+      "import { MeiliSearch } from \"meilisearch\";",
+      "",
+      "const client = new MeiliSearch({ host: process.env.MEILI_HOST, apiKey: process.env.MEILI_MASTER_KEY });",
+      "const index = client.index(\"products\");",
+      "await index.addDocuments([{ id: \"sku-1\", title: \"Desk\", category: \"office\", _geo: { lat: 37.5, lng: 127.0 } }], { primaryKey: \"id\" });",
+      "await index.updateSearchableAttributes([\"title\", \"description\"]);",
+      "await index.updateFilterableAttributes([\"category\", \"brand\", \"_geo\"]);",
+      "await index.updateSortableAttributes([\"price\", \"updated_at\"]);",
+      "await index.updateRankingRules([\"words\", \"typo\", \"proximity\", \"attribute\", \"sort\", \"exactness\"]);",
+      "await index.updateSettings({ typoTolerance: { enabled: true }, pagination: { maxTotalHits: 1000 } });",
+      "await index.updateSynonyms({ desk: [\"table\"] });",
+      "await index.updateStopWords([\"the\", \"a\"]);",
+      "await index.updateDistinctAttribute(\"sku\");",
+      "const result = await index.search(\"desk\", { filter: \"category = office\", facets: [\"brand\"], sort: [\"price:asc\"], limit: 20, offset: 0, attributesToHighlight: [\"title\"], attributesToCrop: [\"description\"], showRankingScore: true });",
+      "await index.deleteDocuments([\"sku-old\"]);",
+      "await client.waitForTask(result.taskUid);",
+      "await client.createDump();",
+      "export const meiliNotes = \"tasks health dumps typo tolerance ranking rules synonyms stop words distinct geosearch semantic hybrid score\";"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "search", "typesense.js"), [
+      "import Typesense from \"typesense\";",
+      "",
+      "const client = new Typesense.Client({",
+      "  nodes: [{ host: process.env.TYPESENSE_HOST, port: 8108, protocol: \"https\" }],",
+      "  apiKey: process.env.TYPESENSE_API_KEY,",
+      "  connectionTimeoutSeconds: 2",
+      "});",
+      "await client.collections().create({",
+      "  name: \"products\",",
+      "  fields: [{ name: \"title\", type: \"string\" }, { name: \"category\", type: \"string\", facet: true }, { name: \"location\", type: \"geopoint\" }, { name: \"price\", type: \"float\" }],",
+      "  default_sorting_field: \"price\"",
+      "});",
+      "await client.collections(\"products\").documents().import([{ id: \"sku-1\", title: \"Desk\", category: \"office\", price: 120 }], { action: \"upsert\", batch_size: 100 });",
+      "const hits = await client.collections(\"products\").documents().search({ q: \"desk\", query_by: \"title,description\", filter_by: \"category:=office\", sort_by: \"price:asc\", facet_by: \"brand\", per_page: 20, page: 1, highlight_fields: \"title\", group_by: \"sku\" });",
+      "await client.collections(\"products\").documents(\"sku-old\").delete();",
+      "await client.aliases().upsert(\"products_read\", { collection_name: \"products\" });",
+      "await client.keys().create({ description: \"scoped API keys\", actions: [\"documents:search\"], collections: [\"products\"] });",
+      "const status = await client.health.retrieve();",
+      "export const typesenseOps = \"synonyms aliases health metrics cluster replica analytics federated search curation scoped API keys semantic hybrid natural language search\";"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "search", "opensearch.ts"), [
+      "import { Client } from \"@opensearch-project/opensearch\";",
+      "",
+      "const client = new Client({ node: process.env.OPENSEARCH_URL, auth: { username: \"admin\", password: process.env.OPENSEARCH_PASSWORD }, requestTimeout: 2000 });",
+      "await client.indices.create({ index: \"products\", body: { settings: { number_of_shards: 3, number_of_replicas: 2 }, mappings: { properties: { title: { type: \"text\" }, category: { type: \"keyword\" }, location: { type: \"geo_point\" }, embedding: { type: \"knn_vector\", dimension: 384 } } } } });",
+      "await client.bulk({ refresh: true, body: [{ index: { _index: \"products\", _id: \"sku-1\" } }, { title: \"Desk\", category: \"office\", location: { lat: 37.5, lon: 127.0 } }] });",
+      "await client.search({ index: \"products\", body: { query: { bool: { must: [{ match: { title: \"desk\" } }], filter: [{ term: { category: \"office\" } }] } }, aggs: { brands: { terms: { field: \"brand\" } } }, highlight: { fields: { title: {} } }, size: 20, from: 0, sort: [{ _score: \"desc\" }, { price: \"asc\" }] } });",
+      "await client.indices.delete({ index: \"old_products\" });",
+      "await client.snapshot.create({ repository: \"s3_backup\", snapshot: \"products_001\" });",
+      "await client.indices.putAlias({ index: \"products\", name: \"products_read\" });",
+      "await client.cluster.health();",
+      "await client.cat.indices({ format: \"json\" });",
+      "export const opensearchNotes = \"semantic hybrid vector knn query_string multi_match bool score snapshot aliases replicas cluster analytics monitoring\";"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "search-service.yaml"), [
+      "meilisearch:",
+      "  api_key_env: MEILI_MASTER_KEY",
+      "  hosts: [https://search.local]",
+      "  tasks: true",
+      "  health: /health",
+      "  dumps: s3://search-dumps",
+      "typesense:",
+      "  nodes: [search-a, search-b]",
+      "  aliases: products_read",
+      "  analytics: true",
+      "  cluster: raft",
+      "opensearch:",
+      "  snapshots: s3_backup",
+      "  replicas: 2",
+      "  index_aliases: products_read",
+      "  timeout: 2000"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "search-service.yml"), [
+      "name: search-service",
+      "on:",
+      "  pull_request:",
+      "jobs:",
+      "  static-check:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - run: echo \"Meilisearch Typesense OpenSearch indexes collections schema mappings documents search filter_by facet_by ranking rules typo tolerance snapshots aliases replicas cluster analytics static only\""
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "search-service-readiness-report.json"), "utf8")) as {
+      searchSetups: Array<{ filePath: string; platform: string; indexCount: number; schemaCount: number; documentCount: number; queryCount: number; opsCount: number }>;
+      indexSignals: Array<{ signal: string; readiness: string }>;
+      ingestionSignals: Array<{ signal: string; readiness: string }>;
+      querySignals: Array<{ signal: string; readiness: string }>;
+      relevanceSignals: Array<{ signal: string; readiness: string }>;
+      clientSignals: Array<{ signal: string; readiness: string }>;
+      opsSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    expect(report.searchSetups.length).toBeGreaterThan(0);
+    expect(report.searchSetups.some((item) => item.platform === "meilisearch")).toBe(true);
+    expect(report.searchSetups.some((item) => item.platform === "typesense")).toBe(true);
+    expect(report.searchSetups.some((item) => item.platform === "opensearch")).toBe(true);
+    const meiliSetup = report.searchSetups.find((item) => item.filePath === "src/search/meili.js");
+    expect(meiliSetup?.indexCount).toBeGreaterThan(0);
+    expect(meiliSetup?.schemaCount).toBeGreaterThan(0);
+    expect(meiliSetup?.documentCount).toBeGreaterThan(0);
+    expect(meiliSetup?.queryCount).toBeGreaterThan(0);
+    expect(meiliSetup?.opsCount).toBeGreaterThan(0);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.indexSignals, ["index", "collection", "schema", "mapping", "fields", "primary-key", "settings"]);
+    expectReady(report.ingestionSignals, ["document", "add", "import", "bulk", "upsert", "batch", "delete", "refresh"]);
+    expectReady(report.querySignals, ["search", "q", "query-by", "match", "bool", "filter", "sort", "facet", "pagination", "highlight", "score"]);
+    expectReady(report.relevanceSignals, ["typo-tolerance", "ranking-rules", "searchable-attributes", "filterable-attributes", "sortable-attributes", "synonyms", "stop-words", "distinct", "geo", "semantic-hybrid"]);
+    expectReady(report.clientSignals, ["meilisearch-client", "typesense-client", "opensearch-client", "host", "api-key", "nodes", "timeout"]);
+    expectReady(report.opsSignals, ["tasks", "health", "dump", "snapshot", "alias", "replica", "cluster", "analytics"]);
+    expectReady(report.packageSignals, ["meilisearch", "typesense", "opensearch", "elasticsearch", "algolia", "instantsearch", "search-ui"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "search-service-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "search-service-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects backup readiness patterns without running backup tools", async () => {

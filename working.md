@@ -4971,6 +4971,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 210:
   - `ab5f49c` vector-db readiness report
 
+- 2026-06-05: AutoResearch Upgrade 211 candidate selected:
+  `meilisearch/meilisearch` (`https://github.com/meilisearch/meilisearch`;
+  public; MIT; 52,931 stars; 2,233 forks; updated
+  2026-06-04T18:42:05Z). Compared with `typesense/typesense`
+  (`https://github.com/typesense/typesense`; public; GPL-3.0; about 25,878
+  stars; 887 forks) and `opensearch-project/OpenSearch`
+  (`https://github.com/opensearch-project/OpenSearch`; public; Apache-2.0;
+  about 12.1k stars; 2.3k forks); selected the three-source search service
+  readiness slice because RepoTutor had static Pagefind search-index reporting
+  but no dedicated Meilisearch/Typesense/OpenSearch index, document, query,
+  relevance, client, package, and operations readiness target. Cloned sparse
+  ignored external sources to `research/external-src/meilisearch`,
+  `research/external-src/typesense`, and `research/external-src/opensearch`
+  and inspected docs/configs/examples without executing external source. Clone
+  HEADs were `ded427c`, `58691ce`, and `db84aa52`; tracked file count for all
+  three ignored source paths returned `0`.
+- 2026-06-05: RED search-service-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-search-service-red-studies.kFhBq7/2026-06-05/local__repotutor-search-service-red-repo.P956ol__local__3f1c05f4`;
+  old behavior had `verificationCheckedRequiredArtifacts=330`, was missing
+  `analysis/search-service-readiness-report.json`,
+  `markdown/search-service-readiness.md`, and
+  `html/search-service-readiness.html`, and
+  `open --target search-service-readiness` failed with
+  `Unsupported open target`.
+- 2026-06-05: Implemented Meilisearch/Typesense/OpenSearch-style
+  search-service-readiness report: `SearchServiceReadinessReportSchema`,
+  `analysis/search-service-readiness-report.json`,
+  `markdown/search-service-readiness.md`,
+  `html/search-service-readiness.html`, search setup detection, index signals,
+  ingestion signals, query signals, relevance signals, client signals, ops
+  signals, package signals, recommended commands, risk queue,
+  manifest/session verification coverage, learning-path linkage, nav entry,
+  CLI help target, and `open --target search-service-readiness`.
+- 2026-06-05: GREEN search-service-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-search-service-green-studies.ubaxd0/2026-06-05/local__repotutor-search-service-green-repo.3YtZCZ__local__cb12f896`;
+  confirmed `verificationCheckedRequiredArtifacts=333`, search setups 6,
+  platforms `meilisearch`, `typesense`, `opensearch`, index ready signals 7,
+  ingestion ready signals 8, query ready signals 11, relevance ready signals
+  10, client ready signals 7, ops ready signals 8, package ready signals 7,
+  risk queue 0, all three new artifacts, and
+  `open --target search-service-readiness` ->
+  `html/search-service-readiness.html`.
+- 2026-06-05: Verification for Upgrade 211:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 18/18 tests
+  - `pnpm audit:brief`: PASS, 109/109 audit checks across 13 reports
+- 2026-06-05: AutoResearch Upgrade 211 implementation commit: pending
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

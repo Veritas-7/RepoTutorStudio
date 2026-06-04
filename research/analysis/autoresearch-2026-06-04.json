@@ -1866,6 +1866,51 @@
         "Embedding function, tenant/database, persistence path, where/where_document, include, and client-server mode signals",
         "Static-only Chroma guardrails that do not start client-server mode, run embedding functions, persist vectors, or query collections"
       ]
+    },
+    {
+      "repo": "meilisearch/meilisearch",
+      "url": "https://github.com/meilisearch/meilisearch",
+      "localPath": "research/external-src/meilisearch",
+      "stars": 52931,
+      "forks": 2233,
+      "license": "MIT",
+      "updatedAt": "2026-06-04T18:42:05Z",
+      "cloneHead": "ded427c",
+      "adoptedPatterns": [
+        "Meilisearch readiness through indexes, primary keys, addDocuments, settings, searchable/filterable/sortable attributes, ranking rules, typo tolerance, synonyms, stop words, distinct, search filters, facets, sort, pagination, highlighting, tasks, and dumps",
+        "Search-service relevance controls that keep query shape, relevance tuning, and operations evidence separate from static Pagefind indexing",
+        "Static-only Meilisearch guardrails that do not start servers, run clients, index/search/delete documents, create dumps, or inspect dashboards"
+      ]
+    },
+    {
+      "repo": "typesense/typesense",
+      "url": "https://github.com/typesense/typesense",
+      "localPath": "research/external-src/typesense",
+      "stars": 25878,
+      "forks": 887,
+      "license": "GPL-3.0",
+      "updatedAt": "2026-05-25T14:50:14+05:30",
+      "cloneHead": "58691ce",
+      "adoptedPatterns": [
+        "Typesense readiness through collections, fields, default_sorting_field, document import/upsert, q, query_by, filter_by, sort_by, facet_by, highlight fields, aliases, scoped API keys, health, cluster, and analytics",
+        "Application search service evidence that distinguishes schema setup, ingestion, query shape, relevance tuning, and operational controls",
+        "Static-only Typesense guardrails that do not run Typesense clients, import documents, query collections, manage aliases, or read API keys"
+      ]
+    },
+    {
+      "repo": "opensearch-project/OpenSearch",
+      "url": "https://github.com/opensearch-project/OpenSearch",
+      "localPath": "research/external-src/opensearch",
+      "stars": 12100,
+      "forks": 2300,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-04T12:05:49-05:00",
+      "cloneHead": "db84aa52",
+      "adoptedPatterns": [
+        "OpenSearch readiness through indices, settings, mappings, properties, bulk refresh, match/bool/filter queries, aggregations, highlights, score sorting, snapshots, aliases, cluster health, and cat indices",
+        "Production search operations evidence through shards, replicas, snapshots, aliases, cluster state, analytics, and monitoring signals",
+        "Static-only OpenSearch guardrails that do not start clusters, run REST clients, index/search/delete data, create snapshots, or inspect live dashboards"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -5274,6 +5319,26 @@
         "html/vector-db-readiness.html"
       ],
       "commit": "ab5f49c"
+    },
+    {
+      "name": "search-service readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/search-service-readiness-report.json",
+        "markdown/search-service-readiness.md",
+        "html/search-service-readiness.html"
+      ],
+      "commit": "pending"
     }
   ],
   "verification": {
@@ -6362,6 +6427,17 @@
     "buildVectorDbReadiness": "PASS",
     "testVectorDbReadiness": "PASS",
     "auditBriefVectorDbReadiness108": "PASS",
-    "vectorDbReadinessImplementationPushed": "PASS"
+    "vectorDbReadinessImplementationPushed": "PASS",
+    "externalMeilisearchCloneIgnored": "PASS",
+    "externalTypesenseCloneIgnored": "PASS",
+    "externalOpenSearchCloneIgnored": "PASS",
+    "searchServiceReadinessRedSmoke": "PASS",
+    "searchServiceReadinessGreenSmoke": "PASS",
+    "fixtureSearchServiceReadinessReport": "PASS",
+    "cliSearchServiceReadinessSmoke": "PASS",
+    "cliSearchServiceReadinessOpenTargetSmoke": "PASS",
+    "buildSearchServiceReadiness": "PASS",
+    "testSearchServiceReadiness": "PASS",
+    "auditBriefSearchServiceReadiness109": "PASS"
   }
 }
