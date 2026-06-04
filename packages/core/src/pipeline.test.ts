@@ -36,6 +36,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "observability-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "performance-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "accessibility-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "storybook-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "design-tokens-report.json"))).resolves.toBeUndefined();
@@ -159,6 +160,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "observability.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "performance.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "accessibility.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "storybook.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "design-tokens.md"))).resolves.toBeUndefined();
@@ -285,6 +287,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "observability.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "performance.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "accessibility.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "storybook.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "design-tokens.html"))).resolves.toBeUndefined();
@@ -438,6 +441,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/observability.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/performance.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/integration-test-environment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/accessibility.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/storybook.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/design-tokens.html\"");
@@ -933,6 +937,26 @@ describe("RepoTutor core pipeline", () => {
     expect(e2eMarkdown).toContain("Source pattern: Playwright");
     expect(e2eMarkdown).toContain("## Browser Projects");
     expect(e2eMarkdown).toContain("## Runtime Targets");
+    const integrationTestEnvironmentText = await fs.readFile(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"), "utf8");
+    expect(integrationTestEnvironmentText).toContain("Testcontainers GenericContainer DockerContainer DockerComposeEnvironment DockerCompose wait strategies exposed ports env lifecycle stop Ryuk resource reaper pytest beforeAll afterAll");
+    expect(integrationTestEnvironmentText).toContain("\"integrationSetups\"");
+    expect(integrationTestEnvironmentText).toContain("\"containerSignals\"");
+    expect(integrationTestEnvironmentText).toContain("\"waitSignals\"");
+    expect(integrationTestEnvironmentText).toContain("\"lifecycleSignals\"");
+    expect(integrationTestEnvironmentText).toContain("\"runtimeSignals\"");
+    expect(integrationTestEnvironmentText).toContain("\"packageSignals\"");
+    expect(integrationTestEnvironmentText).toContain("wait_for_logs");
+    const integrationTestEnvironmentHtml = await fs.readFile(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"), "utf8");
+    expect(integrationTestEnvironmentHtml).toContain("Integration Test Environment Readiness");
+    expect(integrationTestEnvironmentHtml).toContain("integration-test-environment-readiness-card");
+    expect(integrationTestEnvironmentHtml).toContain("data-source-pattern=\"Testcontainers\"");
+    expect(integrationTestEnvironmentHtml).toContain("Wait Signals");
+    expect(integrationTestEnvironmentHtml).toContain("Lifecycle Signals");
+    const integrationTestEnvironmentMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"), "utf8");
+    expect(integrationTestEnvironmentMarkdown).toContain("# Integration Test Environment Readiness");
+    expect(integrationTestEnvironmentMarkdown).toContain("Source pattern: Testcontainers");
+    expect(integrationTestEnvironmentMarkdown).toContain("## Wait Signals");
+    expect(integrationTestEnvironmentMarkdown).toContain("## Runtime Signals");
     const accessibilityText = await fs.readFile(path.join(result.session.outputPaths.analysis, "accessibility-report.json"), "utf8");
     expect(accessibilityText).toContain("axe-core accessibility engine WCAG tags violations passes incomplete inapplicable impact selectors context configure reporter iframes");
     expect(accessibilityText).toContain("\"scanTargets\"");
@@ -2819,6 +2843,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/observability.html");
     expect(exportManifestText).toContain("html/performance.html");
     expect(exportManifestText).toContain("html/e2e.html");
+    expect(exportManifestText).toContain("html/integration-test-environment-readiness.html");
     expect(exportManifestText).toContain("html/accessibility.html");
     expect(exportManifestText).toContain("html/storybook.html");
     expect(exportManifestText).toContain("html/design-tokens.html");
@@ -2966,6 +2991,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("observability.html");
     expect(learningPathHtml).toContain("performance.html");
     expect(learningPathHtml).toContain("e2e.html");
+    expect(learningPathHtml).toContain("integration-test-environment-readiness.html");
     expect(learningPathHtml).toContain("accessibility.html");
     expect(learningPathHtml).toContain("storybook.html");
     expect(learningPathHtml).toContain("design-tokens.html");
@@ -3360,6 +3386,117 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "large-asset-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "large-asset-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "large-asset-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects integration test environment readiness without starting containers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-integration-env-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-integration-env-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "tests", "integration"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        test: "vitest run",
+        "test:integration": "vitest run tests/integration --runInBand"
+      },
+      devDependencies: {
+        testcontainers: "^12.0.0",
+        "@testcontainers/postgresql": "^12.0.0",
+        vitest: "^3.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "tests", "integration", "postgres.test.ts"), [
+      "import { afterAll, beforeAll, describe, expect, it } from \"vitest\";",
+      "import { GenericContainer, Wait, type StartedTestContainer } from \"testcontainers\";",
+      "import { PostgreSqlContainer } from \"@testcontainers/postgresql\";",
+      "",
+      "let redis: StartedTestContainer;",
+      "let postgres: StartedTestContainer;",
+      "",
+      "beforeAll(async () => {",
+      "  redis = await new GenericContainer(\"redis:8\")",
+      "    .withExposedPorts(6379)",
+      "    .withEnvironment({ ALLOW_EMPTY_PASSWORD: \"yes\" })",
+      "    .withWaitStrategy(Wait.forAll([Wait.forListeningPorts(), Wait.forLogMessage(\"Ready to accept connections\")]))",
+      "    .withStartupTimeout(120_000)",
+      "    .start();",
+      "  postgres = await new PostgreSqlContainer(\"postgres:16\")",
+      "    .withDatabase(\"app_test\")",
+      "    .withUsername(\"app\")",
+      "    .withPassword(\"secret\")",
+      "    .start();",
+      "});",
+      "",
+      "afterAll(async () => {",
+      "  await postgres.stop();",
+      "  await redis.stop();",
+      "});",
+      "",
+      "describe(\"integration env\", () => {",
+      "  it(\"uses started services\", () => expect(redis.getMappedPort(6379)).toBeGreaterThan(0));",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "name = \"integration-env-fixture\"",
+      "dependencies = [\"testcontainers[postgres]\", \"pytest\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "conftest.py"), [
+      "import pytest",
+      "from testcontainers.postgres import PostgresContainer",
+      "from testcontainers.core.waiting_utils import wait_for_logs, wait_for_http",
+      "",
+      "@pytest.fixture(scope=\"session\")",
+      "def postgres_container():",
+      "    container = PostgresContainer(\"postgres:16\")",
+      "    container.with_exposed_ports(5432)",
+      "    container.with_env(\"POSTGRES_DB\", \"app_test\")",
+      "    container.start()",
+      "    wait_for_logs(container, \"database system is ready to accept connections\")",
+      "    wait_for_http(\"/health\", port=8080)",
+      "    try:",
+      "        yield container",
+      "    finally:",
+      "        container.stop()"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "integration.yml"), [
+      "name: integration",
+      "on: [push]",
+      "jobs:",
+      "  integration:",
+      "    runs-on: ubuntu-latest",
+      "    env:",
+      "      DOCKER_HOST: unix:///var/run/docker.sock",
+      "      TESTCONTAINERS_RYUK_DISABLED: \"false\"",
+      "      TESTCONTAINERS_TIMEOUT: \"120\"",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: docker compose version",
+      "      - run: npm run test:integration"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "testcontainers.properties"), "testcontainers.reuse.enable=false\n");
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = result.analysis.integrationTestEnvironmentReadinessReport;
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const nodeSetup = report.integrationSetups.find((item) => item.filePath.endsWith("postgres.test.ts"));
+    const pythonSetup = report.integrationSetups.find((item) => item.filePath.endsWith("conftest.py"));
+
+    expect(report.integrationSetups.length).toBeGreaterThan(0);
+    expect(nodeSetup?.ecosystem).toBe("testcontainers-node");
+    expect(nodeSetup?.containerCount).toBeGreaterThan(0);
+    expect(nodeSetup?.hasWaitStrategy).toBe(true);
+    expect(nodeSetup?.hasLifecycleCleanup).toBe(true);
+    expect(pythonSetup?.ecosystem).toBe("testcontainers-python");
+    expect(pythonSetup?.hasLifecycleCleanup).toBe(true);
+    expect(readySignals(report.containerSignals)).toEqual(expect.arrayContaining(["generic-container", "specialized-module", "exposed-ports", "env-vars"]));
+    expect(readySignals(report.waitSignals)).toEqual(expect.arrayContaining(["listening-ports", "log-message", "startup-timeout", "wait-for-logs", "wait-for-http"]));
+    expect(readySignals(report.lifecycleSignals)).toEqual(expect.arrayContaining(["start", "stop", "before-all", "after-all", "ryuk", "reuse"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["docker-host", "compose-binary", "socket", "env-config", "timeout"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["testcontainers", "@testcontainers/*", "testcontainers-python", "pytest", "vitest"]));
+    expect(report.riskQueue.at(-1)?.action).toContain("Run integration tests only in a trusted workspace");
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects mutation testing readiness patterns without executing mutation engines", async () => {

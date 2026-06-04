@@ -47,6 +47,7 @@ import {
   ObservabilityReport,
   PerformanceReport,
   E2eReport,
+  IntegrationTestEnvironmentReadinessReport,
   AccessibilityReport,
   StorybookReport,
   DesignTokensReport,
@@ -189,6 +190,7 @@ export interface AnalysisBundle {
   observabilityReport: ObservabilityReport;
   performanceReport: PerformanceReport;
   e2eReport: E2eReport;
+  integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   accessibilityReport: AccessibilityReport;
   storybookReport: StorybookReport;
   designTokensReport: DesignTokensReport;
@@ -331,6 +333,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const observabilityReport = await buildObservabilityReport(walk, runtimeEnvironmentReport);
   const performanceReport = await buildPerformanceReport(walk, runtimeEnvironmentReport);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
+  const integrationTestEnvironmentReadinessReport = await buildIntegrationTestEnvironmentReadinessReport(walk, runtimeEnvironmentReport);
   const accessibilityReport = await buildAccessibilityReport(walk, e2eReport);
   const storybookReport = await buildStorybookReport(walk);
   const designTokensReport = await buildDesignTokensReport(walk, storybookReport);
@@ -421,7 +424,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, integrationTestEnvironmentReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -5475,6 +5478,280 @@ function e2eRuntimeTargets(
       evidence: `${spec.target} runtime target was not detected in E2E files.`,
       relatedHref: "html/runtime-environment.html"
     };
+  });
+}
+
+async function buildIntegrationTestEnvironmentReadinessReport(
+  walk: WalkResult,
+  runtimeEnvironmentReport: RuntimeEnvironmentReport
+): Promise<IntegrationTestEnvironmentReadinessReport> {
+  const sourceFiles = await integrationTestEnvironmentReadinessSourceFiles(walk);
+  const integrationSetups = integrationTestEnvironmentReadinessSetups(sourceFiles);
+  const containerSignals = integrationTestEnvironmentReadinessContainerSignals(sourceFiles);
+  const waitSignals = integrationTestEnvironmentReadinessWaitSignals(sourceFiles);
+  const lifecycleSignals = integrationTestEnvironmentReadinessLifecycleSignals(sourceFiles);
+  const runtimeSignals = integrationTestEnvironmentReadinessRuntimeSignals(sourceFiles, runtimeEnvironmentReport);
+  const packageSignals = integrationTestEnvironmentReadinessPackageSignals(sourceFiles);
+  const hasPackage = packageSignals.some((item) => ["testcontainers", "@testcontainers/*", "testcontainers-python"].includes(item.signal) && item.readiness === "ready");
+  const hasSetup = integrationSetups.some((item) => item.readiness !== "missing");
+  const hasReadySetup = integrationSetups.some((item) => item.readiness === "ready");
+  const hasContainer = containerSignals.some((item) => ["generic-container", "docker-container", "specialized-module", "docker-compose"].includes(item.signal) && item.readiness === "ready");
+  const hasWait = waitSignals.some((item) => item.readiness === "ready");
+  const hasLifecycle = lifecycleSignals.some((item) => ["stop", "context-manager", "after-all", "global-setup", "resource-reaper", "ryuk"].includes(item.signal) && item.readiness === "ready");
+  const hasRuntime = runtimeSignals.some((item) => ["docker-host", "podman", "compose-binary", "ci-service", "socket"].includes(item.signal) && item.readiness !== "missing");
+
+  const riskQueue: IntegrationTestEnvironmentReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup && !hasContainer) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the integration-test environment strategy before claiming service-level test coverage.",
+      why: "Testcontainers-style readiness starts with a package, container fixture, compose environment, or equivalent local service harness.",
+      relatedHref: "html/integration-test-environment-readiness.html"
+    });
+  }
+  if (hasPackage && !hasContainer) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair Testcontainers packages with concrete container or module fixtures.",
+      why: "A dependency alone does not show which database, broker, object store, or emulator is provisioned for tests.",
+      relatedHref: "html/integration-test-environment-readiness.html"
+    });
+  }
+  if (hasSetup && !hasReadySetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect container startup, readiness waiting, and teardown in the same fixture boundary.",
+      why: "Integration environments are reproducible only when startup, wait strategy, and cleanup are visible together.",
+      relatedHref: "html/integration-test-environment-readiness.html"
+    });
+  }
+  if (hasContainer && !hasWait) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add wait strategies for ports, logs, health checks, HTTP endpoints, or ready commands.",
+      why: "Tests that start immediately after container creation can race service boot and produce flaky failures.",
+      relatedHref: "html/integration-test-environment-readiness.html"
+    });
+  }
+  if (hasContainer && !hasLifecycle) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add explicit cleanup through stop(), context managers, afterAll/finally, or a verified resource reaper.",
+      why: "Containerized integration tests can leak ports, volumes, networks, and processes without teardown evidence.",
+      relatedHref: "html/integration-test-environment-readiness.html"
+    });
+  }
+  if (hasContainer && !hasRuntime) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document Docker/Podman host requirements and CI service availability.",
+      why: "Testcontainers requires a compatible container runtime; CI and local machines need the same assumption recorded.",
+      relatedHref: "html/runtime-environment.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run integration tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor does not start Docker, Podman, Docker Compose, Testcontainers, service modules, resource reapers, or the analyzed project's tests.",
+    relatedHref: "html/integration-test-environment-readiness.html"
+  });
+
+  return {
+    summary: `Testcontainers식 integration test environment readiness report: setup ${integrationSetups.length}개, container signal ${containerSignals.length}개, wait signal ${waitSignals.length}개, lifecycle signal ${lifecycleSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Testcontainers GenericContainer DockerContainer DockerComposeEnvironment DockerCompose wait strategies exposed ports env lifecycle stop Ryuk resource reaper pytest beforeAll afterAll",
+    integrationSetups,
+    containerSignals,
+    waitSignals,
+    lifecycleSignals,
+    runtimeSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"testcontainers|GenericContainer|DockerContainer|DockerComposeEnvironment|DockerCompose\" tests src packages", purpose: "Inventory Testcontainers fixtures, generic containers, compose environments, and service modules." },
+      { command: "rg \"withWaitStrategy|Wait\\.for|wait_for_logs|wait_for_http|wait_container_is_ready|withStartupTimeout\" tests src packages", purpose: "Review readiness waits for ports, logs, HTTP endpoints, health checks, and startup timeout controls." },
+      { command: "rg \"\\.start\\(|\\.stop\\(|beforeAll|afterAll|pytest.fixture|yield|Ryuk|resource reaper|reuse\" tests src packages", purpose: "Trace startup/teardown lifecycle boundaries and cleanup assumptions." },
+      { command: "rg \"DOCKER_HOST|TESTCONTAINERS_|RYUK|podman|docker compose|docker.sock\" .", purpose: "Check container-runtime, CI, resource reaper, and socket configuration." },
+      { command: "npm test -- --runInBand", purpose: "Run local integration tests serially after confirming the workspace may start containers." }
+    ],
+    learnerNextSteps: [
+      "먼저 testcontainers package/import와 실제 GenericContainer 또는 DockerContainer fixture가 같은 테스트 경계에 있는지 확인하세요.",
+      "withWaitStrategy, Wait.for*, wait_for_logs, wait_for_http 같은 ready wait가 없으면 서비스 부팅 race 가능성이 큽니다.",
+      "start와 stop, afterAll/finally, Python context manager/yield fixture, Ryuk/resource reaper 신호를 함께 보세요.",
+      "Docker Desktop, Podman, docker.sock, TESTCONTAINERS_* 환경변수, CI service 설정이 문서화되어 있는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 컨테이너 기동과 테스트 pass/fail은 원본 프로젝트의 안전한 개발/CI 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type IntegrationTestEnvironmentReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function integrationTestEnvironmentReadinessSourceFiles(walk: WalkResult): Promise<IntegrationTestEnvironmentReadinessSourceFile[]> {
+  const files: IntegrationTestEnvironmentReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !integrationTestEnvironmentReadinessInspectablePath(file.relPath)) continue;
+    const pathCandidate = integrationTestEnvironmentReadinessPathSignal(file.relPath);
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!pathCandidate && !integrationTestEnvironmentReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 220) break;
+  }
+  return files;
+}
+
+function integrationTestEnvironmentReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements.*\.txt|poetry\.lock|pnpm-lock\.yaml|package-lock\.json|yarn\.lock|docker-compose\.ya?ml|compose\.ya?ml|testcontainers\.properties)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(ts|tsx|js|jsx|mjs|cjs|py|java|go|json|toml|ya?ml|md|sh)$/i.test(filePath);
+}
+
+function integrationTestEnvironmentReadinessPathSignal(filePath: string): boolean {
+  return /(testcontainers?|integration[-_ ]?tests?|itest|e2e|fixtures?|docker[-_ ]?compose|compose\.ya?ml|containers?|postgres|mysql|redis|kafka|rabbitmq|localstack|toxiproxy|podman|ryuk)/i.test(filePath);
+}
+
+function integrationTestEnvironmentReadinessContentSignal(text: string): boolean {
+  return /\b(testcontainers|@testcontainers|GenericContainer|DockerContainer|DockerComposeEnvironment|DockerCompose|StartedTestContainer|Wait\.for|withWaitStrategy|withExposedPorts|withEnvironment|withBindMounts|withNetwork|wait_for_logs|wait_for_http|wait_container_is_ready|pytest\.fixture|beforeAll|afterAll|Ryuk|resource reaper|TESTCONTAINERS_|DOCKER_HOST|docker\.sock|toxiproxy|podman)\b/i.test(text);
+}
+
+function integrationTestEnvironmentReadinessSetups(sourceFiles: IntegrationTestEnvironmentReadinessSourceFile[]): IntegrationTestEnvironmentReadinessReport["integrationSetups"] {
+  const rows: IntegrationTestEnvironmentReadinessReport["integrationSetups"] = [];
+  for (const source of sourceFiles) {
+    const containerCount = countMatches(source.text, /\b(new\s+)?(GenericContainer|DockerContainer|DockerComposeEnvironment|DockerCompose|StartedTestContainer|[A-Z][A-Za-z0-9]*(Container|Module))\b/gi);
+    const moduleCount = countMatches(source.text, /@testcontainers\/[a-z0-9-]+|from\s+testcontainers\.[a-z0-9_]+\s+import|new\s+[A-Z][A-Za-z0-9]+Container\s*\(/gi);
+    const hasWaitStrategy = /\b(withWaitStrategy|Wait\.for|withStartupTimeout|wait_for_logs|wait_for_http|wait_container_is_ready|waiting_for|wait_for)\b/i.test(source.text);
+    const hasLifecycleCleanup = /\b\.stop\s*\(|afterAll\s*\(|afterEach\s*\(|finally\b|with\s+(GenericContainer|DockerContainer)|yield\s+\w+|Ryuk|resource reaper|ResourceReaper|testcontainers.reuse.enable\b/i.test(source.text);
+    const hasSetupSignal = containerCount + moduleCount > 0 || /testcontainers|docker compose|pytest\.fixture|beforeAll|afterAll/i.test(source.text);
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      ecosystem: integrationTestEnvironmentReadinessEcosystem(source),
+      containerCount,
+      moduleCount,
+      hasWaitStrategy,
+      hasLifecycleCleanup,
+      readiness: containerCount > 0 && hasWaitStrategy && hasLifecycleCleanup ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains containers ${containerCount}, modules ${moduleCount}, wait strategy ${hasWaitStrategy ? "yes" : "no"}, cleanup ${hasLifecycleCleanup ? "yes" : "no"}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function integrationTestEnvironmentReadinessEcosystem(source: IntegrationTestEnvironmentReadinessSourceFile): IntegrationTestEnvironmentReadinessReport["integrationSetups"][number]["ecosystem"] {
+  if (/testcontainers\/|@testcontainers|GenericContainer|DockerComposeEnvironment|StartedTestContainer|\.ts\b|\.js\b/i.test(`${source.filePath}\n${source.text}`)) return "testcontainers-node";
+  if (/testcontainers\.core|testcontainers\.[a-z0-9_]+|DockerContainer|pytest|\.py\b/i.test(`${source.filePath}\n${source.text}`)) return "testcontainers-python";
+  if (/org\.testcontainers|Testcontainers|\.java\b/i.test(`${source.filePath}\n${source.text}`)) return "java";
+  if (/testcontainers-go|\.go\b/i.test(`${source.filePath}\n${source.text}`)) return "go";
+  if (/docker-compose|compose\.ya?ml|DockerCompose/i.test(`${source.filePath}\n${source.text}`)) return "compose";
+  if (/container|integration/i.test(`${source.filePath}\n${source.text}`)) return "custom";
+  return "unknown";
+}
+
+function integrationTestEnvironmentReadinessContainerSignals(sourceFiles: IntegrationTestEnvironmentReadinessSourceFile[]): IntegrationTestEnvironmentReadinessReport["containerSignals"] {
+  const specs: Array<{ signal: IntegrationTestEnvironmentReadinessReport["containerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "generic-container", pattern: /\bGenericContainer\b|new\s+GenericContainer\s*\(/i, evidence: "GenericContainer evidence was detected." },
+    { signal: "docker-container", pattern: /\bDockerContainer\b|with\s+DockerContainer\s*\(/i, evidence: "Python DockerContainer evidence was detected." },
+    { signal: "specialized-module", pattern: /@testcontainers\/[a-z0-9-]+|from\s+testcontainers\.[a-z0-9_]+\s+import\s+\w+Container|new\s+(PostgreSql|Redis|Kafka|RabbitMQ|LocalStack|Mongo|MySql|Minio|Vault|Elasticsearch)\w*Container\s*\(/i, evidence: "specialized service module evidence was detected." },
+    { signal: "docker-compose", pattern: /\bDockerComposeEnvironment\b|\bDockerCompose\b|docker-compose\.ya?ml|compose\.ya?ml/i, evidence: "Docker Compose environment evidence was detected." },
+    { signal: "exposed-ports", pattern: /\bwithExposedPorts\b|\bwith_exposed_ports\b|ports\s*:|exposed_ports/i, evidence: "exposed port mapping evidence was detected." },
+    { signal: "env-vars", pattern: /\bwithEnvironment\b|\bwithEnv\b|\bwith_env\b|environment\s*:|TESTCONTAINERS_|DOCKER_HOST/i, evidence: "container environment evidence was detected." },
+    { signal: "bind-mounts", pattern: /\bwithBindMounts\b|\bwithCopyFilesToContainer\b|\bwith_volume_mapping\b|volumes\s*:|bind mount/i, evidence: "bind mount or volume evidence was detected." },
+    { signal: "network", pattern: /\bwithNetwork\b|\bNetwork\.newNetwork\b|\bnetwork\s*:|networks\s*:|with_network/i, evidence: "container network evidence was detected." },
+    { signal: "image-build", pattern: /\bGenericContainer\.fromDockerfile\b|\bDockerImage\b|\bImageFromDockerfile\b|\bbuild_image\b|Dockerfile/i, evidence: "image build evidence was detected." },
+    { signal: "toxiproxy", pattern: /\bToxiproxy\b|toxiproxy/i, evidence: "Toxiproxy fault-injection container evidence was detected." }
+  ];
+  return integrationTestEnvironmentReadinessSignalFromSpecs(sourceFiles, specs, "container", "signal");
+}
+
+function integrationTestEnvironmentReadinessWaitSignals(sourceFiles: IntegrationTestEnvironmentReadinessSourceFile[]): IntegrationTestEnvironmentReadinessReport["waitSignals"] {
+  const specs: Array<{ signal: IntegrationTestEnvironmentReadinessReport["waitSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "listening-ports", pattern: /Wait\.forListeningPorts|listening ports|wait.*ports/i, evidence: "listening-port wait evidence was detected." },
+    { signal: "log-message", pattern: /Wait\.forLogMessage|wait_for_logs|LogMessageWaitStrategy/i, evidence: "log-message wait evidence was detected." },
+    { signal: "health-check", pattern: /Wait\.forHealthCheck|healthcheck|health check|HealthCheck/i, evidence: "health-check wait evidence was detected." },
+    { signal: "http", pattern: /Wait\.forHttp|HttpWaitStrategy|wait_for_http/i, evidence: "HTTP endpoint wait evidence was detected." },
+    { signal: "successful-command", pattern: /Wait\.forSuccessfulCommand|successful command|exec.*wait/i, evidence: "successful-command wait evidence was detected." },
+    { signal: "one-shot", pattern: /Wait\.forOneShotStartup|one-shot|oneshot/i, evidence: "one-shot startup wait evidence was detected." },
+    { signal: "startup-timeout", pattern: /withStartupTimeout|startup_timeout|timeout\s*=|TESTCONTAINERS_TIMEOUT/i, evidence: "startup timeout evidence was detected." },
+    { signal: "wait-for-logs", pattern: /wait_for_logs/i, evidence: "Python wait_for_logs evidence was detected." },
+    { signal: "wait-for-http", pattern: /wait_for_http/i, evidence: "Python wait_for_http evidence was detected." },
+    { signal: "wait-container-ready", pattern: /wait_container_is_ready|waiting_for\s*\(|wait_for\s*\(/i, evidence: "container ready wait wrapper evidence was detected." }
+  ];
+  return integrationTestEnvironmentReadinessSignalFromSpecs(sourceFiles, specs, "wait", "signal");
+}
+
+function integrationTestEnvironmentReadinessLifecycleSignals(sourceFiles: IntegrationTestEnvironmentReadinessSourceFile[]): IntegrationTestEnvironmentReadinessReport["lifecycleSignals"] {
+  const specs: Array<{ signal: IntegrationTestEnvironmentReadinessReport["lifecycleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "start", pattern: /\.start\s*\(|await\s+new\s+\w+Container|with\s+\w+Container\s*\(/i, evidence: "container start evidence was detected." },
+    { signal: "stop", pattern: /\.stop\s*\(|\.down\s*\(|stop\(\)|compose\.down/i, evidence: "container stop/compose down evidence was detected." },
+    { signal: "context-manager", pattern: /with\s+(GenericContainer|DockerContainer|DockerCompose)\s*\(|__enter__|__exit__/i, evidence: "Python context manager cleanup evidence was detected." },
+    { signal: "before-all", pattern: /\bbeforeAll\s*\(|beforeEach\s*\(|pytest\.fixture/i, evidence: "test setup fixture evidence was detected." },
+    { signal: "after-all", pattern: /\bafterAll\s*\(|afterEach\s*\(|finally\b|yield\s+\w+/i, evidence: "test teardown fixture evidence was detected." },
+    { signal: "global-setup", pattern: /globalSetup|globalTeardown|setupFilesAfterEnv|conftest\.py/i, evidence: "global setup/teardown evidence was detected." },
+    { signal: "ryuk", pattern: /\bRyuk\b|ryuk|TESTCONTAINERS_RYUK/i, evidence: "Ryuk resource reaper evidence was detected." },
+    { signal: "resource-reaper", pattern: /resource reaper|ResourceReaper|Reaper|garbage collection|cleanup/i, evidence: "resource reaper or cleanup evidence was detected." },
+    { signal: "reuse", pattern: /testcontainers\.reuse\.enable|withReuse|reuse\s*[:=]\s*true|TESTCONTAINERS_REUSE/i, evidence: "container reuse control evidence was detected." }
+  ];
+  return integrationTestEnvironmentReadinessSignalFromSpecs(sourceFiles, specs, "lifecycle", "signal");
+}
+
+function integrationTestEnvironmentReadinessRuntimeSignals(
+  sourceFiles: IntegrationTestEnvironmentReadinessSourceFile[],
+  runtimeEnvironmentReport: RuntimeEnvironmentReport
+): IntegrationTestEnvironmentReadinessReport["runtimeSignals"] {
+  const runtimeSignalCount = runtimeEnvironmentReport.setupSignals.length + runtimeEnvironmentReport.containerSignals.length;
+  const specs: Array<{ signal: IntegrationTestEnvironmentReadinessReport["runtimeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "docker-host", pattern: /DOCKER_HOST|Docker Desktop|container runtime|docker daemon/i, evidence: "Docker host/runtime evidence was detected." },
+    { signal: "podman", pattern: /podman|TESTCONTAINERS_RYUK_DISABLED|rootless/i, evidence: "Podman/rootless runtime evidence was detected." },
+    { signal: "compose-binary", pattern: /docker compose|docker-compose|compose command|DockerCompose/i, evidence: "Compose binary evidence was detected." },
+    { signal: "ci-service", pattern: /services\s*:|docker:dind|setup-docker|act.*docker|GitHub Actions|CI\b/i, evidence: "CI container service evidence was detected." },
+    { signal: "socket", pattern: /docker\.sock|var\/run\/docker|DOCKER_SOCKET|unix:\/\/|npipe/i, evidence: "Docker socket evidence was detected." },
+    { signal: "env-config", pattern: /TESTCONTAINERS_|DOCKER_HOST|RYUK|COMPOSE_PROJECT_NAME|\.env/i, evidence: "container test environment variable evidence was detected." },
+    { signal: "timeout", pattern: /TESTCONTAINERS_TIMEOUT|withStartupTimeout|startup_timeout|timeout\s*[:=]/i, evidence: "runtime timeout evidence was detected." },
+    { signal: "cleanup-disable", pattern: /TESTCONTAINERS_RYUK_DISABLED|ryuk\.disabled|cleanup.*false/i, evidence: "cleanup disable override evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    if (match) return { signal: spec.signal, readiness: "ready", evidence: `${match.filePath} ${spec.evidence}`, relatedHref: match.sourceHref };
+    return {
+      signal: spec.signal,
+      readiness: runtimeSignalCount > 0 && ["docker-host", "ci-service", "env-config"].includes(spec.signal) ? "external" : "missing",
+      evidence: `${spec.signal} runtime evidence was not detected in integration-test environment files.`,
+      relatedHref: "html/runtime-environment.html"
+    };
+  });
+}
+
+function integrationTestEnvironmentReadinessPackageSignals(sourceFiles: IntegrationTestEnvironmentReadinessSourceFile[]): IntegrationTestEnvironmentReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: IntegrationTestEnvironmentReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "testcontainers", pattern: /["']testcontainers["']|from\s+["']testcontainers["']|require\(["']testcontainers["']\)/i, evidence: "Node testcontainers package/import evidence was detected." },
+    { signal: "@testcontainers/*", pattern: /@testcontainers\/[a-z0-9-]+/i, evidence: "@testcontainers module package evidence was detected." },
+    { signal: "testcontainers-python", pattern: /name\s*=\s*["']testcontainers["']|testcontainers(\[[^\]]+\])?==|from\s+testcontainers\.|import\s+testcontainers/i, evidence: "Python testcontainers package/import evidence was detected." },
+    { signal: "pytest", pattern: /pytest|pytest\.fixture|conftest\.py/i, evidence: "pytest fixture evidence was detected." },
+    { signal: "vitest", pattern: /vitest|beforeAll|afterAll|describe\s*\(|it\s*\(/i, evidence: "Vitest test lifecycle evidence was detected." },
+    { signal: "jest", pattern: /jest|beforeAll|afterAll|describe\s*\(|test\s*\(/i, evidence: "Jest test lifecycle evidence was detected." }
+  ];
+  return integrationTestEnvironmentReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function integrationTestEnvironmentReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: IntegrationTestEnvironmentReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/integration-test-environment-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
 
