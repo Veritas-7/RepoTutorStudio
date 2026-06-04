@@ -1,6 +1,6 @@
 {
   "iteration": 11,
-  "createdAt": "2026-06-04T22:59:49.414Z",
+  "createdAt": "2026-06-04T23:19:30.071Z",
   "checks": [
     {
       "name": "project setup",
@@ -200,6 +200,13 @@
     },
     {
       "name": "integration test environment readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "chaos engineering readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -64,6 +64,7 @@ const REQUIRED_ARTIFACTS = [
   "analysis/performance-report.json",
   "analysis/e2e-report.json",
   "analysis/integration-test-environment-readiness-report.json",
+  "analysis/chaos-engineering-readiness-report.json",
   "analysis/accessibility-report.json",
   "analysis/storybook-report.json",
   "analysis/design-tokens-report.json",
