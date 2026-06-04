@@ -2074,6 +2074,42 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 140:
   - `0567acb` code quality report
 
+- 2026-06-04: AutoResearch Upgrade 141 candidate selected:
+  `facebook/docusaurus` (`https://github.com/facebook/docusaurus`; public
+  MIT; 65,096 stars; 9,917 forks; updated 2026-06-02T18:49:20Z). Compared
+  with `vuejs/vitepress`, `withastro/starlight`, and `mkdocs/mkdocs`;
+  selected Docusaurus for docs/blog/pages, MDX, `docusaurus.config`,
+  sidebars, themeConfig navbar/footer, i18n, docs versioning, search,
+  build/serve/deploy, and hosted preview patterns. Cloned ignored external
+  source to `research/external-src/facebook-docusaurus` and inspected README,
+  `AGENTS.md`, `website/docusaurus.config.ts`, `website/sidebars.ts`,
+  website docs/blog/page examples, package scripts, workflow/config files, and
+  deploy docs without executing external source.
+- 2026-06-04: RED documentation smoke generated
+  `/tmp/repotutor-docs-red-studies.h7VvU7/2026-06-04/local__simple-ts-app__main__27a15351`;
+  old build was missing `analysis/documentation-report.json`,
+  `markdown/documentation.md`, and `html/documentation.html`, and
+  `open --target documentation` failed as expected.
+- 2026-06-04: Implemented Docusaurus-style documentation readiness report:
+  `DocumentationReportSchema`, `analysis/documentation-report.json`,
+  `markdown/documentation.md`, `html/documentation.html`, site configs,
+  content surfaces, navigation signals, quality signals, localization
+  signals, release signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target documentation`.
+- 2026-06-04: GREEN documentation smoke generated
+  `/tmp/repotutor-docs-green-studies.qnhIhx/2026-06-04/local__simple-ts-app__main__27a15351`;
+  confirmed `verificationCheckedRequiredArtifacts=123`, site configs 0,
+  content surfaces 7, navigation signals 6, quality signals 8, localization
+  signals 5, release signals 7, recommended commands 5, risk queue 1,
+  `documentation-card`, `data-source-pattern="Docusaurus"`,
+  manifest/learning-path entries, and `open --target documentation` ->
+  `html/documentation.html`.
+- 2026-06-04: Verification for Upgrade 141:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 39/39 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

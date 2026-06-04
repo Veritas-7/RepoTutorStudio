@@ -1731,6 +1731,60 @@ export const CodeQualityReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DocumentationReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  siteConfigs: z.array(z.object({
+    filePath: z.string(),
+    configType: z.enum(["docusaurus-config", "package-script", "sidebar", "theme-config", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  contentSurfaces: z.array(z.object({
+    surface: z.enum(["docs", "blog", "pages", "mdx", "static-assets", "versioned-docs", "i18n", "unknown"]),
+    count: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  navigationSignals: z.array(z.object({
+    signal: z.enum(["sidebar", "navbar", "footer", "breadcrumbs", "toc", "edit-url", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  qualitySignals: z.array(z.object({
+    signal: z.enum(["search", "seo", "sitemap", "pwa", "analytics", "theme", "mdx", "typescript", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  localizationSignals: z.array(z.object({
+    signal: z.enum(["i18n-config", "locale-dropdown", "translation-folder", "crowdin", "localized-config", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  releaseSignals: z.array(z.object({
+    signal: z.enum(["build-script", "serve-script", "deploy-script", "github-pages", "netlify", "vercel", "ci-preview", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1973,6 +2027,7 @@ export type ReleaseReadinessReport = z.infer<typeof ReleaseReadinessReportSchema
 export type SecretReadinessReport = z.infer<typeof SecretReadinessReportSchema>;
 export type ContainerReadinessReport = z.infer<typeof ContainerReadinessReportSchema>;
 export type CodeQualityReport = z.infer<typeof CodeQualityReportSchema>;
+export type DocumentationReport = z.infer<typeof DocumentationReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

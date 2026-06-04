@@ -53,6 +53,7 @@ import {
   SecretReadinessReport,
   ContainerReadinessReport,
   CodeQualityReport,
+  DocumentationReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -112,6 +113,7 @@ export interface AnalysisBundle {
   secretReadinessReport: SecretReadinessReport;
   containerReadinessReport: ContainerReadinessReport;
   codeQualityReport: CodeQualityReport;
+  documentationReport: DocumentationReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -171,8 +173,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const secretReadinessReport = await buildSecretReadinessReport(walk);
   const containerReadinessReport = await buildContainerReadinessReport(walk);
   const codeQualityReport = await buildCodeQualityReport(walk);
+  const documentationReport = await buildDocumentationReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -7040,6 +7043,263 @@ function codeQualityLanguageCoverage(walk: WalkResult, toolConfigs: CodeQualityR
       readiness,
       evidence: count === 0 ? `${spec.language} files were not detected.` : hasQualityTool ? `${count} ${spec.language} file(s) can be reviewed against detected quality tooling.` : `${count} ${spec.language} file(s) exist but no code-quality tool config was detected.`,
       relatedHref: "html/code-quality.html"
+    };
+  });
+}
+
+async function buildDocumentationReport(walk: WalkResult): Promise<DocumentationReport> {
+  const sourceFiles = await documentationSourceFiles(walk);
+  const siteConfigs = documentationSiteConfigs(sourceFiles);
+  const contentSurfaces = documentationContentSurfaces(walk, siteConfigs);
+  const navigationSignals = documentationNavigationSignals(sourceFiles);
+  const qualitySignals = documentationQualitySignals(sourceFiles);
+  const localizationSignals = documentationLocalizationSignals(sourceFiles);
+  const releaseSignals = documentationReleaseSignals(sourceFiles);
+  const hasDocContent = contentSurfaces.some((item) => item.count > 0 && ["docs", "blog", "pages", "mdx", "versioned-docs"].includes(item.surface));
+  const hasDocusaurusConfig = siteConfigs.some((item) => item.configType === "docusaurus-config");
+  const hasNavigation = navigationSignals.some((item) => ["sidebar", "navbar", "footer"].includes(item.signal) && item.readiness === "ready");
+  const hasBuild = releaseSignals.some((item) => item.signal === "build-script" && item.readiness === "ready");
+  const hasDeploy = releaseSignals.some((item) => ["deploy-script", "github-pages", "netlify", "vercel", "ci-preview"].includes(item.signal) && item.readiness === "ready");
+  const hasSearch = qualitySignals.some((item) => item.signal === "search" && item.readiness === "ready");
+  const hasSeo = qualitySignals.some((item) => ["seo", "sitemap"].includes(item.signal) && item.readiness === "ready");
+  const hasLocalization = localizationSignals.some((item) => item.readiness === "ready");
+  const hasVersioning = contentSurfaces.some((item) => item.surface === "versioned-docs" && item.count > 0);
+
+  const riskQueue: DocumentationReport["riskQueue"] = [];
+  if (hasDocContent && !hasDocusaurusConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or identify docusaurus.config when this repository is meant to publish a documentation website.",
+      why: "Docusaurus keeps docs, blog, pages, navbar, footer, i18n, and plugin behavior reproducible through a committed site config.",
+      relatedHref: "html/documentation.html"
+    });
+  }
+  if (hasDocContent && !hasNavigation) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Define sidebar, navbar, or footer navigation for the main documentation paths.",
+      why: "Docusaurus documentation is easier to learn when source folders map to visible navigation instead of isolated markdown files.",
+      relatedHref: "html/documentation.html"
+    });
+  }
+  if (hasDocContent && !hasBuild) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a documented build command such as docusaurus build or an equivalent docs build script.",
+      why: "A static documentation report cannot prove the site compiles; learners need a repeatable command for broken links, MDX, and generated routes.",
+      relatedHref: "html/documentation.html"
+    });
+  }
+  if (hasDocContent && !hasDeploy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record how the documentation site is previewed or deployed.",
+      why: "Docusaurus sites often rely on GitHub Pages, Netlify, Vercel, or CI previews, and that path should be visible before publication.",
+      relatedHref: "html/documentation.html"
+    });
+  }
+  if (hasDocContent && !hasSearch) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Decide whether the docs need search and record the chosen search integration.",
+      why: "Public documentation sites usually need a durable search path such as Algolia or local search as content grows.",
+      relatedHref: "html/documentation.html"
+    });
+  }
+  if (hasDocContent && !hasSeo) {
+    riskQueue.push({
+      priority: "low",
+      action: "Check sitemap and SEO metadata before treating the docs site as publication-ready.",
+      why: "A docs site can render locally while still being hard to discover or inspect in search/social previews.",
+      relatedHref: "html/documentation.html"
+    });
+  }
+  if (hasDocContent && !hasLocalization) {
+    riskQueue.push({
+      priority: "low",
+      action: "Mark i18n as intentionally out of scope or add locale configuration when the docs serve multiple languages.",
+      why: "Docusaurus has first-class i18n surfaces; RepoTutor should show whether localization is absent by design or simply missing.",
+      relatedHref: "html/documentation.html"
+    });
+  }
+  if (hasDocContent && !hasVersioning) {
+    riskQueue.push({
+      priority: "low",
+      action: "Decide whether versioned docs are needed for released APIs or product versions.",
+      why: "Docusaurus docs versioning is important when learners must match documentation to a specific release line.",
+      relatedHref: "html/documentation.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run Docusaurus against the original source tree before treating this report as documentation approval.",
+    why: "RepoTutor records static documentation readiness only; it does not run MDX compilation, route generation, link checking, search indexing, or deployment.",
+    relatedHref: "html/documentation.html"
+  });
+
+  return {
+    summary: `Docusaurus식 documentation report: site config ${siteConfigs.length}개, content surface ${contentSurfaces.length}개, navigation signal ${navigationSignals.length}개, release signal ${releaseSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Docusaurus docs blog pages sidebars docusaurus.config themeConfig navbar footer i18n versioning search build deploy",
+    siteConfigs,
+    contentSurfaces,
+    navigationSignals,
+    qualitySignals,
+    localizationSignals,
+    releaseSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npm run build", purpose: "Build the documentation site and catch MDX, routing, and broken-link failures through the project script." },
+      { command: "npm run serve", purpose: "Serve the built documentation locally before sharing the output." },
+      { command: "npm run docusaurus docs:version 1.0", purpose: "Create a versioned docs snapshot when the project publishes version-specific documentation." },
+      { command: "npm run start -- --locale fr", purpose: "Preview a localized documentation build when i18n is enabled." },
+      { command: "npx docusaurus build", purpose: "Run the Docusaurus build directly when no package script wraps it yet." }
+    ],
+    learnerNextSteps: [
+      "Check whether docs, blog, and custom pages are visible through sidebars, navbar, or footer navigation.",
+      "Use build and serve commands on the original source tree before claiming documentation pass/fail status.",
+      "If the repo uses another docs stack, treat Docusaurus signals as a comparison checklist rather than a required dependency.",
+      "Record why i18n, versioning, search, or deploy previews are intentionally omitted when they are out of scope."
+    ]
+  };
+}
+
+type DocumentationSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function documentationSourceFiles(walk: WalkResult): Promise<DocumentationSourceFile[]> {
+  const files: DocumentationSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !documentationInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!documentationPathSignal(file.relPath) && !documentationContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function documentationInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|docusaurus\.config\.[cm]?[jt]s|sidebars\.[cm]?[jt]s|sidebars\.json|README\.md|crowdin\.ya?ml|netlify\.toml|vercel\.json)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(^|\/)(docs|blog|src\/pages|pages|static|public|i18n|versioned_docs|versioned_sidebars)\//i.test(filePath)
+    || /\.(mdx?|[cm]?[jt]sx?|json|ya?ml|toml)$/i.test(filePath);
+}
+
+function documentationPathSignal(filePath: string): boolean {
+  return /(docusaurus|sidebars?|docs\/|blog\/|src\/pages|\/pages\/|i18n\/|versioned_docs|versioned_sidebars|netlify|vercel|deploy|readme)/i.test(filePath);
+}
+
+function documentationContentSignal(text: string): boolean {
+  return /@docusaurus|docusaurus\s+(build|serve|start|deploy|docs:version)|sidebars?|themeConfig|navbar|footer|i18n|locales|algolia|sitemap|MDX|\.mdx|docsVersion|editUrl|GitHub Pages|Netlify|Vercel/i.test(text);
+}
+
+function documentationSiteConfigs(sourceFiles: DocumentationSourceFile[]): DocumentationReport["siteConfigs"] {
+  const rows: DocumentationReport["siteConfigs"] = [];
+  for (const source of sourceFiles) {
+    const base = path.basename(source.filePath).toLowerCase();
+    const push = (configType: DocumentationReport["siteConfigs"][number]["configType"], readiness: DocumentationReport["siteConfigs"][number]["readiness"], evidence: string) => {
+      rows.push({ filePath: source.filePath, configType, readiness, evidence, sourceHref: source.sourceHref });
+    };
+    if (/^docusaurus\.config\.[cm]?[jt]s$/.test(base)) push("docusaurus-config", "ready", `${source.filePath} is a Docusaurus site configuration file.`);
+    if (/^package\.json$/.test(base) && /@docusaurus|docusaurus\s+(start|build|serve|deploy|docs:version)/i.test(source.text)) push("package-script", "ready", `${source.filePath} references Docusaurus dependencies or commands.`);
+    if (/^sidebars(\.[cm]?[jt]s|\.json)$/.test(base)) push("sidebar", "ready", `${source.filePath} defines documentation sidebar navigation.`);
+    if (/themeConfig|navbar|footer|colorMode|prism/i.test(source.text) && /^docusaurus\.config\./i.test(base)) push("theme-config", "ready", `${source.filePath} contains themeConfig navigation or theme settings.`);
+    if (rows.length < 140 && /@docusaurus|themeConfig|sidebars?/i.test(source.text) && !rows.some((item) => item.filePath === source.filePath)) push("unknown", "partial", `${source.filePath} contains Docusaurus-related text.`);
+  }
+  return rows.slice(0, 140);
+}
+
+function documentationContentSurfaces(walk: WalkResult, siteConfigs: DocumentationReport["siteConfigs"]): DocumentationReport["contentSurfaces"] {
+  const hasConfig = siteConfigs.some((item) => ["docusaurus-config", "package-script"].includes(item.configType));
+  const specs: Array<{ surface: DocumentationReport["contentSurfaces"][number]["surface"]; pattern: RegExp; evidence: string }> = [
+    { surface: "docs", pattern: /(^|\/)docs\/.+\.mdx?$/i, evidence: "docs markdown/MDX files were detected." },
+    { surface: "blog", pattern: /(^|\/)blog\/.+\.mdx?$/i, evidence: "blog markdown/MDX files were detected." },
+    { surface: "pages", pattern: /(^|\/)(src\/pages|pages)\/.+\.(mdx?|[jt]sx?)$/i, evidence: "custom pages were detected." },
+    { surface: "mdx", pattern: /\.mdx$/i, evidence: "MDX authoring files were detected." },
+    { surface: "static-assets", pattern: /(^|\/)(static|public)\/.+/i, evidence: "static assets for documentation were detected." },
+    { surface: "versioned-docs", pattern: /(^|\/)(versioned_docs|versioned_sidebars)\//i, evidence: "versioned docs or sidebars were detected." },
+    { surface: "i18n", pattern: /(^|\/)i18n\//i, evidence: "i18n translation folders were detected." }
+  ];
+  return specs.map((spec) => {
+    const count = walk.files.filter((file) => spec.pattern.test(file.relPath)).length;
+    const readiness = count > 0 ? "ready" : hasConfig ? "external" : "missing";
+    return {
+      surface: spec.surface,
+      count,
+      readiness,
+      evidence: count > 0 ? `${count} file(s): ${spec.evidence}` : `${spec.surface} content was not detected.`,
+      relatedHref: "html/documentation.html"
+    };
+  });
+}
+
+function documentationNavigationSignals(sourceFiles: DocumentationSourceFile[]): DocumentationReport["navigationSignals"] {
+  const specs: Array<{ signal: DocumentationReport["navigationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "sidebar", pattern: /sidebars?|sidebarPath|docs:\s*\{[\s\S]*sidebar/i, evidence: "sidebar navigation evidence was detected." },
+    { signal: "navbar", pattern: /navbar|Navbar/i, evidence: "navbar evidence was detected." },
+    { signal: "footer", pattern: /footer/i, evidence: "footer evidence was detected." },
+    { signal: "breadcrumbs", pattern: /breadcrumbs|hideBreadcrumbs/i, evidence: "breadcrumb control evidence was detected." },
+    { signal: "toc", pattern: /tableOfContents|hide_table_of_contents|\btoc\b/i, evidence: "table-of-contents evidence was detected." },
+    { signal: "edit-url", pattern: /editUrl|editCurrentVersion|editLocalizedFiles/i, evidence: "edit URL evidence was detected." }
+  ];
+  return documentationSignalFromSpecs(sourceFiles, specs, "navigation");
+}
+
+function documentationQualitySignals(sourceFiles: DocumentationSourceFile[]): DocumentationReport["qualitySignals"] {
+  const specs: Array<{ signal: DocumentationReport["qualitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "search", pattern: /algolia|localSearch|@easyops-cn\/docusaurus-search-local|search/i, evidence: "search integration evidence was detected." },
+    { signal: "seo", pattern: /title:|tagline|metadata|headTags|onBrokenLinks|favicon/i, evidence: "SEO or site metadata evidence was detected." },
+    { signal: "sitemap", pattern: /sitemap|@docusaurus\/plugin-sitemap/i, evidence: "sitemap evidence was detected." },
+    { signal: "pwa", pattern: /pwa|@docusaurus\/plugin-pwa/i, evidence: "PWA plugin evidence was detected." },
+    { signal: "analytics", pattern: /googleAnalytics|gtag|gtm|analytics|tag-manager/i, evidence: "analytics evidence was detected." },
+    { signal: "theme", pattern: /themeConfig|@docusaurus\/theme|prism|colorMode/i, evidence: "theme customization evidence was detected." },
+    { signal: "mdx", pattern: /MDX|\.mdx|@mdx/i, evidence: "MDX evidence was detected." },
+    { signal: "typescript", pattern: /docusaurus\.config\.ts|sidebars\.ts|tsconfig|typescript/i, evidence: "TypeScript config evidence was detected." }
+  ];
+  return documentationSignalFromSpecs(sourceFiles, specs, "quality");
+}
+
+function documentationLocalizationSignals(sourceFiles: DocumentationSourceFile[]): DocumentationReport["localizationSignals"] {
+  const specs: Array<{ signal: DocumentationReport["localizationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "i18n-config", pattern: /i18n\s*:|locales|defaultLocale/i, evidence: "i18n config evidence was detected." },
+    { signal: "locale-dropdown", pattern: /localeDropdown|type:\s*['"]localeDropdown/i, evidence: "locale dropdown evidence was detected." },
+    { signal: "translation-folder", pattern: /(^|\/)i18n\/|translations|code\.json/i, evidence: "translation folder evidence was detected." },
+    { signal: "crowdin", pattern: /crowdin/i, evidence: "Crowdin localization workflow evidence was detected." },
+    { signal: "localized-config", pattern: /currentLocale|@docusaurus\/Translate|\btranslate\(/i, evidence: "localized config or translation helper evidence was detected." }
+  ];
+  return documentationSignalFromSpecs(sourceFiles, specs, "localization");
+}
+
+function documentationReleaseSignals(sourceFiles: DocumentationSourceFile[]): DocumentationReport["releaseSignals"] {
+  const specs: Array<{ signal: DocumentationReport["releaseSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "build-script", pattern: /"build"\s*:\s*"[^"]*docusaurus\s+build|docusaurus\s+build/i, evidence: "Docusaurus build script evidence was detected." },
+    { signal: "serve-script", pattern: /"serve"\s*:\s*"[^"]*docusaurus\s+serve|docusaurus\s+serve|docusaurus\s+start/i, evidence: "serve/start script evidence was detected." },
+    { signal: "deploy-script", pattern: /"deploy"\s*:\s*"[^"]*docusaurus\s+deploy|docusaurus\s+deploy/i, evidence: "deploy script evidence was detected." },
+    { signal: "github-pages", pattern: /gh-pages|GitHub Pages|GITHUB_TOKEN|peaceiris|actions\/deploy-pages/i, evidence: "GitHub Pages deploy evidence was detected." },
+    { signal: "netlify", pattern: /netlify|deploy-preview/i, evidence: "Netlify deploy or preview evidence was detected." },
+    { signal: "vercel", pattern: /vercel/i, evidence: "Vercel deploy evidence was detected." },
+    { signal: "ci-preview", pattern: /pull_request|preview|artifact|pages:|upload-pages-artifact/i, evidence: "CI preview or artifact evidence was detected." }
+  ];
+  return documentationSignalFromSpecs(sourceFiles, specs, "release");
+}
+
+function documentationSignalFromSpecs<T extends { signal: string; pattern: RegExp; evidence: string }>(
+  sourceFiles: DocumentationSourceFile[],
+  specs: T[],
+  label: string
+): Array<{ signal: T["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/documentation.html"
     };
   });
 }

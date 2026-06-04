@@ -2997,6 +2997,48 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 38/38 audit checks across 13 generated reports
 
+### Upgrade 141: Documentation Readiness Report
+
+- Cloned and inspected `facebook/docusaurus` under
+  `research/external-src/facebook-docusaurus` without executing external
+  source.
+- GitHub metadata: public repo, MIT license, 65,096 stars, 9,917 forks,
+  updated 2026-06-02T18:49:20Z. Compared with `vuejs/vitepress`,
+  `withastro/starlight`, and `mkdocs/mkdocs`; selected Docusaurus because it
+  directly models docs, blog, custom pages, MDX, `docusaurus.config`,
+  sidebars, themeConfig navbar/footer, i18n, docs versioning, search,
+  build/serve/deploy, and hosted preview workflows. No source code was copied
+  into RepoTutor.
+- Added `DocumentationReportSchema` and
+  `analysis/documentation-report.json` with site configs, content surfaces,
+  navigation signals, quality signals, localization signals, release signals,
+  risk queue, recommended commands, and learner next steps.
+- Added `markdown/documentation.md`, `html/documentation.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target documentation`.
+- Source pattern: Docusaurus separates site config, docs/blog/pages content,
+  sidebars/navigation, themeConfig, i18n locales and translation folders,
+  versioned docs, search/SEO/sitemap/PWA/analytics, and build/serve/deploy
+  workflows. RepoTutor maps that to deterministic static documentation
+  readiness and explicitly does not compile MDX, generate routes, check links,
+  index search, or deploy documentation.
+- RED smoke generated
+  `/tmp/repotutor-docs-red-studies.h7VvU7/2026-06-04/local__simple-ts-app__main__27a15351`;
+  old behavior was missing `analysis/documentation-report.json`,
+  `markdown/documentation.md`, and `html/documentation.html`, and
+  `open --target documentation` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-docs-green-studies.qnhIhx/2026-06-04/local__simple-ts-app__main__27a15351`;
+  confirmed `verificationCheckedRequiredArtifacts=123`, site configs 0,
+  content surfaces 7, navigation signals 6, quality signals 8, localization
+  signals 5, release signals 7, recommended commands 5, risk queue 1,
+  `documentation-card`, `data-source-pattern="Docusaurus"`,
+  manifest/learning-path entries, and `open --target documentation` ->
+  `html/documentation.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 39/39 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
