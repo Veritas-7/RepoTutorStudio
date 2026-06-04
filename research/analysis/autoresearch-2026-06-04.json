@@ -1026,6 +1026,24 @@
         "resilience scanning for insuranceLimiter storeClient reject-if-not-ready atomic increment penalty reward delete and block operations",
         "safe static rate-limit readiness that never initializes limiters consumes points mutates stores sleeps for windows emits responses or runs analyzed project tests"
       ]
+    },
+    {
+      "repo": "getsentry/sentry-javascript",
+      "url": "https://github.com/getsentry/sentry-javascript",
+      "localPath": "research/external-src/getsentry-sentry-javascript",
+      "stars": 8662,
+      "forks": 1777,
+      "license": "MIT",
+      "updatedAt": "2026-06-03T19:49:45Z",
+      "adoptedPatterns": [
+        "Sentry SDK setup scanning for Sentry.init DSN early instrumentation files and framework package imports",
+        "capture scanning for captureException captureMessage captureEvent ErrorBoundary reactErrorHandler unhandled errors and breadcrumbs",
+        "context scanning for setUser setTag setContext setExtra withScope component stack release and environment metadata",
+        "filtering scanning for beforeSend beforeBreadcrumb ignoreErrors allowUrls denyUrls sendDefaultPii scrubbers and sample rates",
+        "observability scanning for tracesSampleRate tracesSampler tracePropagationTargets browserTracingIntegration profilesSampleRate replayIntegration and feedbackIntegration",
+        "package scanning for Sentry Browser Node React Next.js Vue plus Rollbar and Bugsnag dependencies",
+        "safe static error-tracking readiness that never initializes SDKs sends events uploads source maps starts tracing or replay collects PII or runs analyzed project tests"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -3610,6 +3628,25 @@
         "markdown/rate-limit-readiness.md",
         "html/rate-limit-readiness.html"
       ]
+    },
+    {
+      "name": "Error tracking readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/error-tracking-readiness-report.json",
+        "markdown/error-tracking-readiness.md",
+        "html/error-tracking-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -4218,6 +4255,12 @@
     "cliRateLimitReadinessOpenTargetSmoke": "PASS",
     "buildRateLimitReadiness": "PASS",
     "testRateLimitReadiness": "PASS",
-    "auditBriefRateLimitReadiness65": "PASS"
+    "auditBriefRateLimitReadiness65": "PASS",
+    "fixtureErrorTrackingReadinessReport": "PASS",
+    "cliErrorTrackingReadinessSmoke": "PASS",
+    "cliErrorTrackingReadinessOpenTargetSmoke": "PASS",
+    "buildErrorTrackingReadiness": "PASS",
+    "testErrorTrackingReadiness": "PASS",
+    "auditBriefErrorTrackingReadiness66": "PASS"
   }
 }

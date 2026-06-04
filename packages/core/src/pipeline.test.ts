@@ -69,6 +69,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rate-limit-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "error-tracking-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -136,6 +137,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "logging-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-flag-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rate-limit-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "error-tracking-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -206,6 +208,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "logging-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-flag-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rate-limit-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "error-tracking-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -306,6 +309,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/logging-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-flag-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rate-limit-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/error-tracking-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -1372,6 +1376,26 @@ describe("RepoTutor core pipeline", () => {
     expect(rateLimitReadinessMarkdown).toContain("Source pattern: rate-limiter-flexible");
     expect(rateLimitReadinessMarkdown).toContain("## Quota Signals");
     expect(rateLimitReadinessMarkdown).toContain("## Store Signals");
+    const errorTrackingReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "error-tracking-readiness-report.json"), "utf8");
+    expect(errorTrackingReadinessText).toContain("Sentry.init dsn captureException captureMessage captureEvent withScope setUser setContext setTag beforeSend ignoreErrors tracesSampleRate tracePropagationTargets replayIntegration ErrorBoundary");
+    expect(errorTrackingReadinessText).toContain("\"errorTrackingSetups\"");
+    expect(errorTrackingReadinessText).toContain("\"captureSignals\"");
+    expect(errorTrackingReadinessText).toContain("\"contextSignals\"");
+    expect(errorTrackingReadinessText).toContain("\"filteringSignals\"");
+    expect(errorTrackingReadinessText).toContain("\"observabilitySignals\"");
+    expect(errorTrackingReadinessText).toContain("\"packageSignals\"");
+    expect(errorTrackingReadinessText).toContain("npx vitest run");
+    const errorTrackingReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "error-tracking-readiness.html"), "utf8");
+    expect(errorTrackingReadinessHtml).toContain("Error Tracking Readiness");
+    expect(errorTrackingReadinessHtml).toContain("error-tracking-readiness-card");
+    expect(errorTrackingReadinessHtml).toContain("data-source-pattern=\"Sentry\"");
+    expect(errorTrackingReadinessHtml).toContain("Error Tracking Setups");
+    expect(errorTrackingReadinessHtml).toContain("Filtering Signals");
+    const errorTrackingReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "error-tracking-readiness.md"), "utf8");
+    expect(errorTrackingReadinessMarkdown).toContain("# Error Tracking Readiness");
+    expect(errorTrackingReadinessMarkdown).toContain("Source pattern: Sentry");
+    expect(errorTrackingReadinessMarkdown).toContain("## Capture Signals");
+    expect(errorTrackingReadinessMarkdown).toContain("## Observability Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -1532,6 +1556,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/logging-readiness.html");
     expect(exportManifestText).toContain("html/feature-flag-readiness.html");
     expect(exportManifestText).toContain("html/rate-limit-readiness.html");
+    expect(exportManifestText).toContain("html/error-tracking-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -1656,6 +1681,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("logging-readiness.html");
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
     expect(learningPathHtml).toContain("rate-limit-readiness.html");
+    expect(learningPathHtml).toContain("error-tracking-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");

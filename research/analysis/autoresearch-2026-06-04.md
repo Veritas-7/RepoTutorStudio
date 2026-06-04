@@ -4179,6 +4179,61 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 65/65 audit checks across 13 generated reports
 
+### Upgrade 168: Error Tracking Readiness Report
+
+- Cloned and inspected `getsentry/sentry-javascript` under
+  `research/external-src/getsentry-sentry-javascript` without executing
+  external source. Clone HEAD was `983fbac`; the clone remains ignored by
+  RepoTutor.
+- GitHub metadata: public repo, MIT license, 8,662 stars, 1,777 forks, updated
+  2026-06-03T19:49:45Z. Compared with
+  `open-telemetry/opentelemetry-js`, `rollbar/rollbar.js`, and
+  `bugsnag/bugsnag-js`; selected Sentry JavaScript because it directly models
+  error-tracking readiness: `Sentry.init`, DSN setup, early instrumentation,
+  `captureException`, `captureMessage`, `captureEvent`, `ErrorBoundary`,
+  `reactErrorHandler`, breadcrumbs, `withScope`, `setUser`, `setContext`,
+  `setTag`, `beforeSend`, `beforeBreadcrumb`, `ignoreErrors`, URL filters,
+  `sendDefaultPii`, `tracesSampleRate`, `tracePropagationTargets`, replay,
+  profiling, and feedback integrations. No source code was copied into
+  RepoTutor.
+- Implemented Sentry-style error-tracking-readiness report:
+  `ErrorTrackingReadinessReportSchema`,
+  `analysis/error-tracking-readiness-report.json`,
+  `markdown/error-tracking-readiness.md`,
+  `html/error-tracking-readiness.html`, error-tracking setups, capture
+  signals, context signals, filtering signals, observability signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, and `open --target
+  error-tracking-readiness`.
+- Source pattern: Sentry separates setup through early `Sentry.init`, DSN,
+  instrument files, and framework SDK packages; event capture through
+  `captureException`, `captureMessage`, `captureEvent`, Error Boundaries,
+  React root error hooks, unhandled errors, and breadcrumbs; event enrichment
+  through scopes, user/tags/context/extras, component stack, release, and
+  environment; filtering through `beforeSend`, `beforeBreadcrumb`,
+  `ignoreErrors`, URL filters, PII controls, scrubbers, and sample rates; and
+  observability through tracing, propagation targets, profiling, replay, and
+  feedback. RepoTutor maps that to deterministic static error-tracking
+  readiness and explicitly does not initialize SDKs, send events, upload source
+  maps, start tracing/replay, collect PII, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-error-tracking-readiness-red-studies.9MpSbM/2026-06-04/local__simple-ts-app__main__9e64e605`;
+  old behavior was missing
+  `analysis/error-tracking-readiness-report.json`,
+  `markdown/error-tracking-readiness.md`, and
+  `html/error-tracking-readiness.html`, and `open --target
+  error-tracking-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-error-tracking-readiness-green-studies.Wzf5W4/2026-06-04/local__simple-ts-app__main__9e64e605`;
+  confirmed `verificationCheckedRequiredArtifacts=204`, error-tracking setups
+  0, capture signals 7, context signals 7, filtering signals 7, observability
+  signals 7, package signals 7, risk queue 2, manifest/learning-path entries,
+  and `open --target error-tracking-readiness` ->
+  `html/error-tracking-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 66/66 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
