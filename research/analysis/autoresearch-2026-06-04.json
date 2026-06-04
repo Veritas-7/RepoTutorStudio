@@ -2141,6 +2141,54 @@
         "Multi-channel notification evidence across Inbox/in-app, email, SMS, push, chat, Slack, Microsoft Teams, Telegram, WhatsApp, templates, delivery logs, retries, analytics, and dashboards",
         "Static-only notification guardrails that do not send notifications, call provider APIs, mutate subscribers/topics/preferences, inspect live dashboards, or verify real delivery"
       ]
+    },
+    {
+      "repo": "orestbida/cookieconsent",
+      "url": "https://github.com/orestbida/cookieconsent",
+      "localPath": "research/external-src/orestbida-cookieconsent",
+      "stars": 5527,
+      "forks": 505,
+      "license": "MIT",
+      "updatedAt": "2026-06-04T06:17:26Z",
+      "defaultBranch": "master",
+      "cloneHead": "8596c79",
+      "adoptedPatterns": [
+        "CookieConsent readiness through banner, modal, accept-all, accept-selected, reject-all, settings, revision, hide-from-bots, categories, autoclear, cookies, localization, and onConsent/onChange APIs",
+        "Consent category evidence for necessary, analytics, marketing, preferences, functional, performance, service mapping, script blocking, storage, and localized consent copy",
+        "Static-only consent guardrails that do not execute CMP scripts, set cookies, mutate storage, call provider APIs, or verify legal compliance"
+      ]
+    },
+    {
+      "repo": "kiprotect/klaro",
+      "url": "https://github.com/kiprotect/klaro",
+      "localPath": "research/external-src/kiprotect-klaro",
+      "stars": 1466,
+      "forks": 293,
+      "license": "GitHub API: Other",
+      "updatedAt": "2026-06-03T19:02:46Z",
+      "defaultBranch": "master",
+      "cloneHead": "db9f1ac",
+      "adoptedPatterns": [
+        "Klaro readiness through privacy manager/CMP setup, ConsentManager, getConsent, klaro.show, services/apps, purposes, multilingual consent copy, and preference surfaces",
+        "Script blocking evidence through data-src, text/plain, data-type, data-name, service names, page script handling, opt-out, and withdrawal controls",
+        "Static-only Klaro guardrails that do not mount a CMP, execute scripts, load third-party vendors, mutate consent state, or call dashboards"
+      ]
+    },
+    {
+      "repo": "InteractiveAdvertisingBureau/iabtcf-es",
+      "url": "https://github.com/InteractiveAdvertisingBureau/iabtcf-es",
+      "localPath": "research/external-src/InteractiveAdvertisingBureau-iabtcf-es",
+      "stars": 151,
+      "forks": 97,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-04-24T19:23:32Z",
+      "defaultBranch": "master",
+      "cloneHead": "839b955",
+      "adoptedPatterns": [
+        "IAB TCF readiness through __tcfapi, TCString, CmpApi, cmpId/cmpVersion, GVL, vendor list, purpose consents, vendor consents, and legitimate interests",
+        "TCF consent-state evidence that distinguishes CMP API presence from vendor/purpose model completeness",
+        "Static-only TCF guardrails that do not call live TCF APIs, load vendor lists from the network, mutate consent strings, or claim legal compliance"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -5689,6 +5737,26 @@
         "html/notification-readiness.html"
       ],
       "commit": "093caab"
+    },
+    {
+      "name": "consent readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/consent-readiness-report.json",
+        "markdown/consent-readiness.md",
+        "html/consent-readiness.html"
+      ],
+      "commit": "f8e2c74"
     }
   ],
   "verification": {
@@ -6900,6 +6968,18 @@
     "buildNotificationReadiness": "PASS",
     "testNotificationReadiness": "PASS",
     "auditBriefNotificationReadiness115": "PASS",
-    "notificationReadinessImplementationPushed": "PASS"
+    "notificationReadinessImplementationPushed": "PASS",
+    "externalCookieconsentCloneIgnored": "PASS",
+    "externalKlaroCloneIgnored": "PASS",
+    "externalIabtcfCloneIgnored": "PASS",
+    "consentReadinessRedSmoke": "PASS",
+    "consentReadinessGreenSmoke": "PASS",
+    "fixtureConsentReadinessReport": "PASS",
+    "cliConsentReadinessSmoke": "PASS",
+    "cliConsentReadinessOpenTargetSmoke": "PASS",
+    "buildConsentReadiness": "PASS",
+    "testConsentReadiness": "PASS",
+    "auditBriefConsentReadiness116": "PASS",
+    "consentReadinessImplementationPushed": "PASS"
   }
 }
