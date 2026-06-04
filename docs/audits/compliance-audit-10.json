@@ -1,6 +1,6 @@
 {
   "iteration": 10,
-  "createdAt": "2026-06-04T18:08:04.853Z",
+  "createdAt": "2026-06-04T18:27:24.851Z",
   "checks": [
     {
       "name": "project setup",
@@ -704,6 +704,13 @@
     },
     {
       "name": "Backup readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "LLM eval readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -91,6 +91,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "graphql-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "cli-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "llm-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "llm-eval-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workspace-graph-readiness-report.json"))).resolves.toBeUndefined();
@@ -198,6 +199,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "graphql-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "cli-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-eval-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rpc-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workspace-graph-readiness.md"))).resolves.toBeUndefined();
@@ -305,6 +307,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "graphql-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "cli-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "llm-eval-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "server-framework-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rpc-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workspace-graph-readiness.html"))).resolves.toBeUndefined();
@@ -443,6 +446,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/graphql-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/cli-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/llm-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/llm-eval-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/server-framework-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rpc-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workspace-graph-readiness.html\"");
@@ -1998,6 +2002,29 @@ describe("RepoTutor core pipeline", () => {
     expect(llmReadinessMarkdown).toContain("Source pattern: LangChain.js");
     expect(llmReadinessMarkdown).toContain("## Model Signals");
     expect(llmReadinessMarkdown).toContain("## Streaming Signals");
+    const llmEvalReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-eval-readiness-report.json"), "utf8");
+    expect(llmEvalReadinessText).toContain("LLM eval readiness promptfoo promptfooconfig providers prompts tests assert llm-rubric redteam plugins strategies OpenAI evals evals registry samples_jsonl modelgraded_spec completion_fns oaieval OpenEvals create_llm_as_judge createLLMAsJudge correctness hallucination feedbackKey score reference_outputs datasets reports");
+    expect(llmEvalReadinessText).toContain("\"evalSetups\"");
+    expect(llmEvalReadinessText).toContain("\"configSignals\"");
+    expect(llmEvalReadinessText).toContain("\"promptSignals\"");
+    expect(llmEvalReadinessText).toContain("\"providerSignals\"");
+    expect(llmEvalReadinessText).toContain("\"testCaseSignals\"");
+    expect(llmEvalReadinessText).toContain("\"judgeSignals\"");
+    expect(llmEvalReadinessText).toContain("\"datasetSignals\"");
+    expect(llmEvalReadinessText).toContain("\"redteamSignals\"");
+    expect(llmEvalReadinessText).toContain("\"workflowSignals\"");
+    expect(llmEvalReadinessText).toContain("\"packageSignals\"");
+    const llmEvalReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "llm-eval-readiness.html"), "utf8");
+    expect(llmEvalReadinessHtml).toContain("LLM Eval Readiness");
+    expect(llmEvalReadinessHtml).toContain("llm-eval-readiness-card");
+    expect(llmEvalReadinessHtml).toContain("data-source-pattern=\"LLM Eval\"");
+    expect(llmEvalReadinessHtml).toContain("Eval Setups");
+    expect(llmEvalReadinessHtml).toContain("Judge Signals");
+    const llmEvalReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "llm-eval-readiness.md"), "utf8");
+    expect(llmEvalReadinessMarkdown).toContain("# LLM Eval Readiness");
+    expect(llmEvalReadinessMarkdown).toContain("Source pattern: LLM eval readiness");
+    expect(llmEvalReadinessMarkdown).toContain("## Config Signals");
+    expect(llmEvalReadinessMarkdown).toContain("## Red-Team Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
     expect(serverFrameworkReadinessText).toContain("Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
@@ -2463,6 +2490,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/kubernetes-readiness.html");
     expect(exportManifestText).toContain("html/gitops-readiness.html");
     expect(exportManifestText).toContain("html/backup-readiness.html");
+    expect(exportManifestText).toContain("html/llm-eval-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -2588,6 +2616,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
     expect(learningPathHtml).toContain("rate-limit-readiness.html");
     expect(learningPathHtml).toContain("error-tracking-readiness.html");
+    expect(learningPathHtml).toContain("llm-eval-readiness.html");
     expect(learningPathHtml).toContain("backup-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
@@ -4356,6 +4385,185 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "gitops-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "gitops-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects LLM eval readiness patterns without running eval tools", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-eval-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-llm-eval-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "datasets"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "evals", "registry", "data", "qa"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "evals", "registry", "evals"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "prompts"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "evals"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        eval: "promptfoo eval -c promptfooconfig.yaml --no-cache -o results/promptfoo.json",
+        redteam: "promptfoo redteam eval -c promptfooconfig.redteam.yaml -o results/redteam.json",
+        "eval:openai": "oaieval gpt-4.1-mini support_eval"
+      },
+      devDependencies: {
+        "@langchain/openai": "latest",
+        deepeval: "latest",
+        langsmith: "latest",
+        openevals: "latest",
+        promptfoo: "latest",
+        ragas: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "name = \"repotutor-llm-eval-fixture\"",
+      "dependencies = [\"promptfoo\", \"openai-evals\", \"openevals\", \"langsmith\", \"deepeval\", \"ragas\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "prompts", "support.txt"), [
+      "Use the support policy and answer {{question}} with {{context}}.",
+      "Include only facts from the provided policy."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "promptfooconfig.yaml"), [
+      "prompts:",
+      "  - file://prompts/support.txt",
+      "  - |",
+      "    messages:",
+      "      - role: system",
+      "        content: \"Answer with the supplied context only.\"",
+      "      - role: user",
+      "        content: \"{{question}}\"",
+      "providers:",
+      "  - openai:gpt-4.1-mini",
+      "tests:",
+      "  - vars:",
+      "      question: \"Can I return a damaged product?\"",
+      "      context: \"Customers can request a refund within 30 days.\"",
+      "    expected: \"refund within 30 days\"",
+      "    assert:",
+      "      - type: contains",
+      "        value: refund",
+      "      - type: llm-rubric",
+      "        value: \"Answer is faithful to the supplied context.\"",
+      "        threshold: 0.8",
+      "dataset:",
+      "  path: file://datasets/eval.csv",
+      "output: results/promptfoo.json",
+      "few_shot_examples:",
+      "  - input: \"What is the policy?\"",
+      "    output: \"Use only supplied policy text.\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "promptfooconfig.redteam.yaml"), [
+      "redteam:",
+      "  purpose: \"Support bot safety coverage mapped to OWASP LLM risks\"",
+      "  plugins:",
+      "    - pii:api-db",
+      "    - prompt-extraction",
+      "    - excessive-agency",
+      "  strategies:",
+      "    - jailbreak",
+      "    - prompt-injection",
+      "  output: results/redteam.json"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "evals", "registry", "evals", "support.yaml"), [
+      "support_eval:",
+      "  id: support.eval",
+      "  metrics: [accuracy]",
+      "  class: evals.elsuite.modelgraded.classify:ModelBasedClassify",
+      "  args:",
+      "    samples_jsonl: evals/registry/data/qa/samples.jsonl",
+      "    eval_type: cot_classify",
+      "    modelgraded_spec: evals/registry/evals/support-modelgraded.yaml",
+      "    completion_fns:",
+      "      - gpt-4.1-mini"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "evals", "registry", "evals", "support-modelgraded.yaml"), [
+      "prompt: |",
+      "  Grade correctness and hallucination risk for the answer.",
+      "choice_scores:",
+      "  pass: 1.0",
+      "  fail: 0.0"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "evals", "registry", "data", "qa", "samples.jsonl"), [
+      JSON.stringify({ input: [{ role: "user", content: "Can I get a refund?" }], ideal: "Customers can request a refund within 30 days." })
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "datasets", "eval.csv"), [
+      "question,reference_output",
+      "\"Can I return a damaged product?\",\"refund within 30 days\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "evals", "judge.ts"), [
+      "import { createLLMAsJudge, CORRECTNESS_PROMPT, HALLUCINATION_PROMPT } from \"openevals\";",
+      "const correctness = createLLMAsJudge({",
+      "  prompt: CORRECTNESS_PROMPT,",
+      "  model: \"openai:gpt-4.1-mini\",",
+      "  feedbackKey: \"score\",",
+      "  continuous: true,",
+      "  choices: [0, 1],",
+      "  few_shot_examples: [{ input: \"refund\", output: \"score: 1\" }]",
+      "});",
+      "const hallucination = createLLMAsJudge({ prompt: HALLUCINATION_PROMPT, feedbackKey: \"hallucination_score\" });",
+      "export async function evaluate(outputs: string, referenceOutputs: string) {",
+      "  const reference_outputs = [referenceOutputs];",
+      "  return [await correctness({ outputs, reference_outputs, referenceOutputs }), await hallucination({ outputs, reference_outputs })];",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "evals.yml"), [
+      "name: evals",
+      "on:",
+      "  pull_request:",
+      "  workflow_dispatch:",
+      "jobs:",
+      "  eval:",
+      "    runs-on: ubuntu-latest",
+      "    env:",
+      "      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}",
+      "      LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}",
+      "    steps:",
+      "      - run: promptfoo eval -c promptfooconfig.yaml --no-cache -o results/promptfoo.json",
+      "      - run: promptfoo redteam eval -c promptfooconfig.redteam.yaml -o results/redteam.json",
+      "      - run: oaieval gpt-4.1-mini support_eval --record_path results/openai-evals.jsonl",
+      "      - run: node -e \"client.evaluate(() => true, { projectName: 'support-eval' })\""
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "llm-eval-readiness-report.json"), "utf8")) as {
+      evalSetups: Array<{ filePath: string; framework: string; promptCount: number; providerCount: number; testCaseCount: number; assertionCount: number; datasetCount: number; judgeCount: number; redteamCount: number; outputCount: number }>;
+      configSignals: Array<{ signal: string; readiness: string }>;
+      promptSignals: Array<{ signal: string; readiness: string }>;
+      providerSignals: Array<{ signal: string; readiness: string }>;
+      testCaseSignals: Array<{ signal: string; readiness: string }>;
+      judgeSignals: Array<{ signal: string; readiness: string }>;
+      datasetSignals: Array<{ signal: string; readiness: string }>;
+      redteamSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    const promptfooSetup = report.evalSetups.find((item) => item.filePath === "promptfooconfig.yaml");
+    expect(report.evalSetups.length).toBeGreaterThan(0);
+    expect(promptfooSetup?.framework).toBe("promptfoo");
+    expect(promptfooSetup?.promptCount).toBeGreaterThan(0);
+    expect(promptfooSetup?.providerCount).toBeGreaterThan(0);
+    expect(promptfooSetup?.testCaseCount).toBeGreaterThan(0);
+    expect(promptfooSetup?.assertionCount).toBeGreaterThan(0);
+    expect(promptfooSetup?.datasetCount).toBeGreaterThan(0);
+    expect(report.evalSetups.some((item) => item.framework === "openai-evals")).toBe(true);
+    expect(report.evalSetups.some((item) => item.framework === "openevals")).toBe(true);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.configSignals, ["promptfoo-config", "eval-registry", "eval-class", "samples-jsonl", "pyproject", "package-script"]);
+    expectReady(report.promptSignals, ["prompt", "prompt-file", "prompt-template", "vars", "messages", "few-shot"]);
+    expectReady(report.providerSignals, ["provider", "model-name", "grader-model", "completion-fn", "api-key-env"]);
+    expectReady(report.testCaseSignals, ["tests", "vars", "assert", "expected", "rubric", "threshold"]);
+    expectReady(report.judgeSignals, ["llm-rubric", "modelgraded-spec", "llm-as-judge", "correctness", "hallucination", "feedback-key", "score"]);
+    expectReady(report.datasetSignals, ["samples-jsonl", "dataset", "csv", "jsonl", "reference-output", "ideal"]);
+    expectReady(report.redteamSignals, ["redteam", "plugins", "strategies", "jailbreak", "prompt-injection", "pii", "owasp"]);
+    expectReady(report.workflowSignals, ["promptfoo-eval", "promptfoo-redteam", "oaieval", "evaluate", "ci", "report-output"]);
+    expectReady(report.packageSignals, ["promptfoo", "openevals", "openai-evals", "langsmith", "deepeval", "ragas"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-eval-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "llm-eval-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects backup readiness patterns without running backup tools", async () => {

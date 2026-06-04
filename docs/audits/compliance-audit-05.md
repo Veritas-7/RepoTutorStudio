@@ -1,6 +1,6 @@
 # Compliance Audit 5
 
-Created: 2026-06-04T18:07:44.229Z
+Created: 2026-06-04T18:27:10.444Z
 
 Status: PASS
 
@@ -605,6 +605,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Backup readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - LLM eval readiness report
 
 - missing files: none
 - missing strings: none

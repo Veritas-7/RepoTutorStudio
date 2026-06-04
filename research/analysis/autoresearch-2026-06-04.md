@@ -6176,6 +6176,58 @@ Local verification:
 - `pnpm audit:brief`: PASS, 105/105 audit checks across 13 generated reports
 - Pushed implementation commit: `5588c88` backup readiness report
 
+### Upgrade 208: LLM Eval Readiness Report
+
+- Cloned and inspected `promptfoo/promptfoo` under
+  `research/external-src/promptfoo`, `openai/evals` under
+  `research/external-src/openai-evals`, and `langchain-ai/openevals` under
+  `research/external-src/openevals` without executing external source. Clone
+  HEADs were `465d610`, `8eac7a7`, and `6ecf9b5`; all three clones remain
+  ignored by RepoTutor.
+- GitHub metadata: `promptfoo/promptfoo` is public, MIT licensed, 21,885
+  stars, 1,938 forks, updated 2026-06-04T18:05:29Z. `openai/evals` is public,
+  license key `other`, 18,605 stars, 2,976 forks, updated
+  2026-06-04T15:39:56Z. `langchain-ai/openevals` is public, MIT licensed,
+  1,068 stars, 97 forks, updated 2026-06-03T23:49:59Z. Selected the
+  three-source slice because together they model promptfoo configs, OpenAI eval
+  registries, sample datasets, modelgraded specs, completion functions,
+  OpenEvals LLM-as-judge prompts, scoring keys, red-team plugins/strategies,
+  and report-output workflows. No source code was copied into RepoTutor.
+- Implemented promptfoo/OpenAI evals/OpenEvals-style llm-eval-readiness report:
+  `LlmEvalReadinessReportSchema`,
+  `analysis/llm-eval-readiness-report.json`,
+  `markdown/llm-eval-readiness.md`, `html/llm-eval-readiness.html`, eval setup
+  detection, config signals, prompt signals, provider signals, test-case
+  signals, judge signals, dataset signals, red-team signals, workflow signals,
+  package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target llm-eval-readiness`.
+- Source pattern: LLM eval readiness separates `promptfooconfig`, `prompts`,
+  `providers`, `tests`, `assert`, `llm-rubric`, `redteam`, `plugins`,
+  `strategies`, jailbreak and prompt-injection coverage, PII/OWASP safety
+  signals, OpenAI `evals/registry`, `samples_jsonl`, `modelgraded_spec`,
+  `completion_fns`, `oaieval`, OpenEvals `create_llm_as_judge`,
+  `createLLMAsJudge`, `CORRECTNESS_PROMPT`, `HALLUCINATION_PROMPT`,
+  `feedbackKey`, `score`, `reference_outputs`, datasets, and report outputs.
+  RepoTutor maps that to deterministic static LLM eval readiness and explicitly
+  does not call providers, run judge models, generate red-team probes, execute
+  datasets, calculate scores, upload reports, or run analyzed-project tests.
+- RED smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-llm-eval-red-studies.K7o234/2026-06-05/local__repotutor-llm-eval-red-repo.nmKD5L__local__7dbc2984`;
+  old behavior had `verificationCheckedRequiredArtifacts=321`, was missing
+  `analysis/llm-eval-readiness-report.json`,
+  `markdown/llm-eval-readiness.md`, and `html/llm-eval-readiness.html`, and
+  `open --target llm-eval-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-llm-eval-green-studies.elfEKv/2026-06-05/local__repotutor-llm-eval-green-repo.08wtn5__local__1e369e02`;
+  confirmed `verificationCheckedRequiredArtifacts=324`, eval setups 9, judge
+  signals 7, red-team signals 7, risk queue 0, all three new artifacts, and
+  `open --target llm-eval-readiness` ->
+  `html/llm-eval-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 15/15 tests
+- `pnpm audit:brief`: PASS, 106/106 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
