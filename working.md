@@ -2447,6 +2447,43 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 150:
   - `218f9ad` lint readiness report
 
+- 2026-06-04: AutoResearch Upgrade 151 candidate selected:
+  `prettier/prettier` (`https://github.com/prettier/prettier`; public MIT;
+  51,899 stars; 4,743 forks; updated 2026-06-04T04:26:21Z). Compared with
+  `dprint/dprint`, `biomejs/biome`, and `standard/standard`; selected
+  Prettier for formatter config discovery, `.prettierignore`, option signals,
+  parser/plugin boundaries, safe `--check`/`--list-different` gates,
+  `--write` risk, cache strategy, `.editorconfig`, file-info, and config-path
+  handoff. Cloned ignored external source to
+  `research/external-src/prettier-prettier` and inspected README, license,
+  package metadata, CLI/config/ignore/plugins docs, and CLI option definitions
+  without executing external source. Tracked-file count for
+  `research/external-src/prettier-prettier` returned `0`.
+- 2026-06-04: RED format-readiness smoke generated
+  `/tmp/repotutor-format-readiness-red-studies.nssQ2F/2026-06-04/local__simple-ts-app__main__dacdd6d6`;
+  old build was missing `analysis/format-readiness-report.json`,
+  `markdown/format-readiness.md`, and `html/format-readiness.html`, and
+  `open --target format-readiness` failed as expected.
+- 2026-06-04: Implemented Prettier-style format readiness report:
+  `FormatReadinessReportSchema`, `analysis/format-readiness-report.json`,
+  `markdown/format-readiness.md`, `html/format-readiness.html`, config files,
+  ignore files, option signals, script signals, scope signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, nav entry, and
+  `open --target format-readiness`.
+- 2026-06-04: GREEN format-readiness smoke generated
+  `/tmp/repotutor-format-readiness-green-studies.UUtaMX/2026-06-04/local__simple-ts-app__main__dacdd6d6`;
+  confirmed `verificationCheckedRequiredArtifacts=153`, config files 0,
+  ignore files 0, option signals 10, script signals 9, scope signals 8,
+  package signals 6, recommended commands 6, risk queue 2,
+  `javascript=ready`, `typescript=ready`, `json=ready`,
+  manifest/learning-path entries, and `open --target format-readiness` ->
+  `html/format-readiness.html`.
+- 2026-06-04: Verification for Upgrade 151:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 49/49 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

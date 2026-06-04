@@ -3410,6 +3410,46 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 48/48 audit checks across 13 generated reports
 
+### Upgrade 151: Format Readiness Report
+
+- Cloned and inspected `prettier/prettier` under
+  `research/external-src/prettier-prettier` without executing external source.
+- GitHub metadata: public repo, MIT license, 51,899 stars, 4,743 forks,
+  updated 2026-06-04T04:26:21Z. Compared with `dprint/dprint`,
+  `biomejs/biome`, and `standard/standard`; selected Prettier because it
+  directly models formatter config discovery, `.prettierignore`, option
+  signals, parser/plugin boundaries, safe `--check`/`--list-different` gates,
+  write-mode risk, cache strategy, `.editorconfig`, file-info, and config-path
+  handoff. No source code was copied into RepoTutor.
+- Implemented Prettier-style format readiness report:
+  `FormatReadinessReportSchema`, `analysis/format-readiness-report.json`,
+  `markdown/format-readiness.md`, `html/format-readiness.html`, config files,
+  ignore files, option signals, script signals, scope signals, package
+  signals, recommended commands, risk queue, manifest/session-verification
+  coverage, learning-path linkage, and `open --target format-readiness`.
+- Source pattern: Prettier separates config files, package metadata,
+  `.editorconfig`, `.prettierignore`/`.gitignore`, parser inference and
+  overrides, plugins, options, `--check`, `--list-different`, `--write`,
+  cache/cache-strategy, `--find-config-path`, and `--file-info`. RepoTutor
+  maps that to deterministic static format readiness and explicitly does not
+  run Prettier, rewrite files, load plugins, or create cache files.
+- RED smoke generated
+  `/tmp/repotutor-format-readiness-red-studies.nssQ2F/2026-06-04/local__simple-ts-app__main__dacdd6d6`;
+  old behavior was missing `analysis/format-readiness-report.json`,
+  `markdown/format-readiness.md`, and `html/format-readiness.html`, and
+  `open --target format-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-format-readiness-green-studies.UUtaMX/2026-06-04/local__simple-ts-app__main__dacdd6d6`;
+  confirmed `verificationCheckedRequiredArtifacts=153`, config files 0,
+  ignore files 0, option signals 10, script signals 9, scope signals 8,
+  package signals 6, recommended commands 6, risk queue 2,
+  `javascript=ready`, `typescript=ready`, `json=ready`,
+  manifest/learning-path entries, and `open --target format-readiness` ->
+  `html/format-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 49/49 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

@@ -2288,6 +2288,65 @@ export const LintReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const FormatReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  configFiles: z.array(z.object({
+    filePath: z.string(),
+    configType: z.enum(["prettier", "editorconfig", "biome", "dprint", "package-json", "unknown"]),
+    optionCount: z.number().int().nonnegative(),
+    overrideCount: z.number().int().nonnegative(),
+    pluginCount: z.number().int().nonnegative(),
+    parserSignal: z.enum(["inferred", "override", "plugin", "missing"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  ignoreFiles: z.array(z.object({
+    filePath: z.string(),
+    patternCount: z.number().int().nonnegative(),
+    generatedSignal: z.boolean(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  optionSignals: z.array(z.object({
+    signal: z.enum(["print-width", "tab-width", "single-quote", "trailing-comma", "semi", "bracket-spacing", "end-of-line", "parser", "overrides", "editorconfig", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scriptSignals: z.array(z.object({
+    signal: z.enum(["format", "format-check", "format-write", "list-different", "cache", "config-path", "ignore-path", "stdin", "ci", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scopeSignals: z.array(z.object({
+    signal: z.enum(["javascript", "typescript", "json", "css", "html", "markdown", "yaml", "graphql", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["prettier", "prettier-plugin", "eslint-config-prettier", "dprint", "biome", "editorconfig", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2540,6 +2599,7 @@ export type GitHooksReport = z.infer<typeof GitHooksReportSchema>;
 export type TaskRunnerReport = z.infer<typeof TaskRunnerReportSchema>;
 export type DependencyUpdateReport = z.infer<typeof DependencyUpdateReportSchema>;
 export type LintReadinessReport = z.infer<typeof LintReadinessReportSchema>;
+export type FormatReadinessReport = z.infer<typeof FormatReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;
