@@ -98,6 +98,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "object-storage-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "realtime-collaboration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workflow-orchestration-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "openapi-client-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workspace-graph-readiness-report.json"))).resolves.toBeUndefined();
@@ -212,6 +213,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "object-storage-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "realtime-collaboration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workflow-orchestration-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "openapi-client-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rpc-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workspace-graph-readiness.md"))).resolves.toBeUndefined();
@@ -326,6 +328,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "object-storage-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "realtime-collaboration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workflow-orchestration-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "openapi-client-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "server-framework-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rpc-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workspace-graph-readiness.html"))).resolves.toBeUndefined();
@@ -471,6 +474,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/object-storage-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/realtime-collaboration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workflow-orchestration-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/openapi-client-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/server-framework-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rpc-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workspace-graph-readiness.html\"");
@@ -2181,6 +2185,25 @@ describe("RepoTutor core pipeline", () => {
     expect(workflowOrchestrationReadinessMarkdown).toContain("Source pattern: Workflow orchestration readiness");
     expect(workflowOrchestrationReadinessMarkdown).toContain("## Execution Signals");
     expect(workflowOrchestrationReadinessMarkdown).toContain("## Flow Signals");
+    const openApiClientReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "openapi-client-readiness-report.json"), "utf8");
+    expect(openApiClientReadinessText).toContain("OpenAPI client readiness openapi-typescript openapi-fetch Orval OpenAPI Generator input spec output schemas client hooks mocks MSW zod mutator axios fetch react-query SWR Angular Vue Svelte Hono MCP generatorName config validate lint snapshots generated diff typecheck templates");
+    expect(openApiClientReadinessText).toContain("\"clientSetups\"");
+    expect(openApiClientReadinessText).toContain("\"specSignals\"");
+    expect(openApiClientReadinessText).toContain("\"generatorSignals\"");
+    expect(openApiClientReadinessText).toContain("\"outputSignals\"");
+    expect(openApiClientReadinessText).toContain("\"runtimeSignals\"");
+    expect(openApiClientReadinessText).toContain("\"qualitySignals\"");
+    expect(openApiClientReadinessText).toContain("\"packageSignals\"");
+    const openApiClientReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "openapi-client-readiness.html"), "utf8");
+    expect(openApiClientReadinessHtml).toContain("OpenAPI Client Readiness");
+    expect(openApiClientReadinessHtml).toContain("openapi-client-readiness-card");
+    expect(openApiClientReadinessHtml).toContain("data-source-pattern=\"OpenAPI Client\"");
+    expect(openApiClientReadinessHtml).toContain("Quality Signals");
+    const openApiClientReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "openapi-client-readiness.md"), "utf8");
+    expect(openApiClientReadinessMarkdown).toContain("# OpenAPI Client Readiness");
+    expect(openApiClientReadinessMarkdown).toContain("Source pattern: OpenAPI client readiness");
+    expect(openApiClientReadinessMarkdown).toContain("## Generator Signals");
+    expect(openApiClientReadinessMarkdown).toContain("## Quality Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
     expect(serverFrameworkReadinessText).toContain("Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
@@ -2653,6 +2676,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/object-storage-readiness.html");
     expect(exportManifestText).toContain("html/realtime-collaboration-readiness.html");
     expect(exportManifestText).toContain("html/workflow-orchestration-readiness.html");
+    expect(exportManifestText).toContain("html/openapi-client-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -2785,6 +2809,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("object-storage-readiness.html");
     expect(learningPathHtml).toContain("realtime-collaboration-readiness.html");
     expect(learningPathHtml).toContain("workflow-orchestration-readiness.html");
+    expect(learningPathHtml).toContain("openapi-client-readiness.html");
     expect(learningPathHtml).toContain("backup-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
@@ -5525,6 +5550,238 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workflow-orchestration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workflow-orchestration-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects OpenAPI client generation readiness patterns without running generators", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-openapi-client-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-openapi-client-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "openapi"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "generated"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "client"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "gen:types": "openapi-typescript ./openapi/petstore.yaml --output src/generated/petstore.d.ts",
+        "gen:orval": "orval --config orval.config.ts --output src/generated",
+        "gen:server": "openapi-generator-cli generate -i ./openapi/admin.yaml -g typescript-fetch -o src/generated/admin",
+        "gen:swagger": "swagger-codegen generate -i ./openapi/admin.yaml -l typescript-angular -o src/generated/angular",
+        "lint:openapi": "redocly lint openapi/petstore.yaml",
+        "validate:openapi": "openapi-generator validate -i openapi/admin.yaml",
+        "test:snapshots": "vitest run src/generated --update-snapshots",
+        typecheck: "tsc --noEmit"
+      },
+      dependencies: {
+        "openapi-fetch": "latest",
+        axios: "latest",
+        "@tanstack/react-query": "latest",
+        swr: "latest",
+        zod: "latest",
+        msw: "latest",
+        hono: "latest"
+      },
+      devDependencies: {
+        "openapi-typescript": "latest",
+        orval: "latest",
+        "@openapitools/openapi-generator-cli": "latest",
+        "openapi-generator-cli": "latest",
+        "swagger-codegen": "latest",
+        "@hey-api/openapi-ts": "latest",
+        "@redocly/cli": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "openapi", "petstore.yaml"), [
+      "openapi: 3.1.0",
+      "info:",
+      "  title: Petstore",
+      "  version: 1.0.0",
+      "paths:",
+      "  /pets:",
+      "    get:",
+      "      operationId: listPets",
+      "      responses:",
+      "        '200':",
+      "          description: ok",
+      "          content:",
+      "            application/json:",
+      "              schema:",
+      "                type: array",
+      "                items:",
+      "                  $ref: '#/components/schemas/Pet'",
+      "    post:",
+      "      operationId: createPet",
+      "      requestBody:",
+      "        content:",
+      "          application/json:",
+      "            schema:",
+      "              $ref: '#/components/schemas/Pet'",
+      "      responses:",
+      "        '201':",
+      "          description: created",
+      "components:",
+      "  schemas:",
+      "    Pet:",
+      "      type: object",
+      "      required: [id, name]",
+      "      properties:",
+      "        id:",
+      "          type: string",
+      "        name:",
+      "          type: string"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "openapi", "admin.yaml"), [
+      "swagger: '2.0'",
+      "info:",
+      "  title: Admin",
+      "  version: 1.0.0",
+      "paths:",
+      "  /admin/users:",
+      "    get:",
+      "      operationId: listAdminUsers",
+      "      responses:",
+      "        '200':",
+      "          description: ok"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "redocly.yaml"), [
+      "apis:",
+      "  petstore:",
+      "    root: ./openapi/petstore.yaml",
+      "  admin:",
+      "    root: ./openapi/admin.yaml",
+      "extends:",
+      "  - recommended"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "orval.config.ts"), [
+      "import { defineConfig } from 'orval';",
+      "export default defineConfig({",
+      "  petstore: {",
+      "    input: { target: './openapi/petstore.yaml', validation: true },",
+      "    output: {",
+      "      target: 'src/generated/petstore.ts',",
+      "      schemas: 'src/generated/schemas',",
+      "      client: 'react-query',",
+      "      mock: true,",
+      "      mode: 'tags-split',",
+      "      override: {",
+      "        mutator: { path: 'src/client/mutator.ts', name: 'customClient' },",
+      "        zod: { generate: true }",
+      "      }",
+      "    }",
+      "  },",
+      "  admin: {",
+      "    input: { target: 'https://example.com/api-docs/openapi.json' },",
+      "    output: { target: 'src/generated/admin.ts', client: 'swr', mock: true }",
+      "  }",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "openapi-generator-config.json"), JSON.stringify({
+      inputSpec: "./openapi/admin.yaml",
+      generatorName: "typescript-nestjs",
+      outputDir: "src/generated/admin-server",
+      additionalProperties: {
+        apiPackage: "admin.api",
+        modelPackage: "admin.models",
+        npmName: "@example/admin-sdk"
+      },
+      globalProperties: {
+        apis: "",
+        models: "",
+        supportingFiles: ""
+      },
+      templateDir: "./templates/openapi"
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".openapi-generator-ignore"), [
+      "# generated output ignore file",
+      "src/generated/admin-server/README.md",
+      "src/generated/admin-server/.openapi-generator/**"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "openapi-client.yml"), [
+      "name: openapi-client",
+      "on: [pull_request, workflow_dispatch]",
+      "jobs:",
+      "  generated-client:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm lint:openapi",
+      "      - run: pnpm gen:types && pnpm gen:orval && pnpm gen:server",
+      "      - run: git diff --exit-code src/generated",
+      "      - run: pnpm test:snapshots",
+      "      - run: pnpm typecheck"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "client", "mutator.ts"), [
+      "export async function customClient(url: string, init: RequestInit = {}) {",
+      "  return fetch(url, { ...init, headers: { ...init.headers, Authorization: 'Bearer test-token' } });",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "generated", "client.ts"), [
+      "// do not edit - generated diff snapshots validate generated output",
+      "import createClient from 'openapi-fetch';",
+      "import axios from 'axios';",
+      "import useSWR from 'swr';",
+      "import { useQuery, useMutation } from '@tanstack/react-query';",
+      "import { http } from 'msw';",
+      "import { z } from 'zod';",
+      "export interface Pet { id: string; name: string }",
+      "export type paths = { '/pets': { get: { responses: { 200: { content: { 'application/json': Pet[] } } } } } };",
+      "export const client = createClient<paths>({ baseUrl: '/api' });",
+      "export const petSchema = z.object({ id: z.string(), name: z.string() });",
+      "export const handlers = [http.get('/pets', () => Response.json([]))];",
+      "export function usePets() { return useQuery({ queryKey: ['pets'], queryFn: () => fetch('/pets').then((r) => r.json()) }); }",
+      "export function useCreatePet() { return useMutation({ mutationFn: (pet: Pet) => axios.post('/pets', pet) }); }",
+      "export function usePetsSWR() { return useSWR('/pets', (url) => fetch(url).then((r) => r.json())); }"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "openapi-client.md"), [
+      "OpenAPI client projects generate TypeScript SDKs, docs, html2 markdown documentation, server stub output, and schema output from multiple specs.",
+      "projects: petstore admin public internal specs: ./openapi/petstore.yaml ./openapi/admin.yaml",
+      "Runtime coverage includes Angular HttpClient, Vue Query, Svelte Query, Hono, MCP Model Context Protocol, native fetch, Axios, React Query, and SWR.",
+      "Security review: review untrusted source specs, code injection risks, custom template review, and templateDir changes before running generators."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "openapi-client-readiness-report.json"), "utf8")) as {
+      clientSetups: Array<{ filePath: string; generator: string; specCount: number; outputCount: number; clientCount: number; typeCount: number; hookCount: number; mockCount: number; validationCount: number; configCount: number; scriptCount: number; packageCount: number }>;
+      specSignals: Array<{ signal: string; readiness: string }>;
+      generatorSignals: Array<{ signal: string; readiness: string }>;
+      outputSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      qualitySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    expect(report.clientSetups.length).toBeGreaterThan(0);
+    expect(report.clientSetups.some((item) => item.generator === "openapi-typescript")).toBe(true);
+    expect(report.clientSetups.some((item) => item.generator === "orval")).toBe(true);
+    expect(report.clientSetups.some((item) => item.generator === "openapi-generator")).toBe(true);
+    const packageSetup = report.clientSetups.find((item) => item.filePath === "package.json");
+    const orvalSetup = report.clientSetups.find((item) => item.filePath === "orval.config.ts");
+    const generatedSetup = report.clientSetups.find((item) => item.filePath === "src/generated/client.ts");
+    expect(packageSetup?.scriptCount).toBeGreaterThan(0);
+    expect(packageSetup?.packageCount).toBeGreaterThan(0);
+    expect(orvalSetup?.specCount).toBeGreaterThan(0);
+    expect(orvalSetup?.outputCount).toBeGreaterThan(0);
+    expect(orvalSetup?.configCount).toBeGreaterThan(0);
+    expect(generatedSetup?.clientCount).toBeGreaterThan(0);
+    expect(generatedSetup?.typeCount).toBeGreaterThan(0);
+    expect(generatedSetup?.hookCount).toBeGreaterThan(0);
+    expect(generatedSetup?.mockCount).toBeGreaterThan(0);
+    expect(generatedSetup?.validationCount).toBeGreaterThan(0);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.specSignals, ["openapi", "swagger", "input-spec", "remote-schema", "multi-spec", "redocly-config", "schema-validation"]);
+    expectReady(report.generatorSignals, ["openapi-typescript", "openapi-fetch", "orval", "openapi-generator", "swagger-codegen", "generator-name", "config-file", "cli-command"]);
+    expectReady(report.outputSignals, ["types", "client-sdk", "hooks", "schemas", "mocks", "zod", "msw", "server-stub", "docs", "split-output"]);
+    expectReady(report.runtimeSignals, ["fetch", "axios", "react-query", "swr", "angular", "vue", "svelte", "hono", "mcp", "custom-mutator"]);
+    expectReady(report.qualitySignals, ["validate-spec", "lint", "snapshots", "generated-diff", "typecheck", "ci", "ignore-file", "templates", "security-review"]);
+    expectReady(report.packageSignals, ["openapi-typescript", "openapi-fetch", "orval", "@openapitools/openapi-generator-cli", "openapi-generator-cli", "swagger-codegen", "@hey-api/openapi-ts"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "openapi-client-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "openapi-client-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects object storage readiness patterns without contacting object storage", async () => {

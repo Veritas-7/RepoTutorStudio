@@ -5165,6 +5165,59 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 214:
   - `c46460a` workflow-orchestration readiness report
 
+- 2026-06-05: AutoResearch Upgrade 215 candidate selected:
+  `openapi-ts/openapi-typescript`
+  (`https://github.com/openapi-ts/openapi-typescript`; OpenAPI schema to
+  TypeScript types and `openapi-fetch`; sparse ignored clone HEAD `0cc7ee7`),
+  compared with `orval-labs/orval` (OpenAPI-driven TypeScript clients, hooks,
+  mocks, zod output; sparse ignored clone HEAD `665f592`) and
+  `OpenAPITools/openapi-generator` (multi-language OpenAPI client/server/doc
+  generation; sparse ignored clone HEAD `2b76ca1`). Current GitHub metadata:
+  `openapi-ts/openapi-typescript` public, MIT, 8,156 stars, 646 forks, updated
+  2026-06-04T18:10:17Z; `orval-labs/orval` public, MIT, 6,059 stars, 623
+  forks, updated 2026-06-04T19:47:55Z; `OpenAPITools/openapi-generator`
+  public, Apache-2.0, 26,326 stars, 7,546 forks, updated
+  2026-06-04T18:13:42Z. All three external source paths remained ignored and
+  `git ls-files` returned `0`.
+- 2026-06-05: RED openapi-client-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-openapi-client-red-studies.ja4CkT/2026-06-05/local__repotutor-openapi-client-red-source.QwNFK2__local__0f6467f7`;
+  old behavior had `verificationCheckedRequiredArtifacts=342`, was missing
+  `analysis/openapi-client-readiness-report.json`,
+  `markdown/openapi-client-readiness.md`, and
+  `html/openapi-client-readiness.html`, and
+  `open --target openapi-client-readiness` failed with
+  `Unsupported open target`.
+- 2026-06-05: Implemented openapi-typescript/Orval/OpenAPI Generator-style
+  openapi-client-readiness report:
+  `OpenApiClientReadinessReportSchema`,
+  `analysis/openapi-client-readiness-report.json`,
+  `markdown/openapi-client-readiness.md`,
+  `html/openapi-client-readiness.html`, client setup detection, spec signals,
+  generator signals, output signals, runtime signals, quality signals, package
+  signals, recommended commands, risk queue, manifest/session verification
+  coverage, learning-path linkage, nav entry, CLI help target, and
+  `open --target openapi-client-readiness`.
+- 2026-06-05: GREEN openapi-client-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-openapi-client-green-studies.26rVWY/2026-06-05/local__repotutor-openapi-client-red-source.QwNFK2__local__f4611a85`;
+  confirmed `verificationCheckedRequiredArtifacts=345`, all three new
+  artifacts, setup count 9, risk queue 0, ready generator signals
+  `openapi-typescript`, `openapi-fetch`, `orval`, `openapi-generator`,
+  `swagger-codegen`, `generator-name`, `config-file`, and `cli-command`, and
+  `open --target openapi-client-readiness` ->
+  `html/openapi-client-readiness.html`. The focused Vitest fixture covered
+  local and remote OpenAPI/Swagger specs, Orval split outputs/hooks/mocks/zod,
+  OpenAPI Generator config/templates/ignore files, generated fetch/Axios/
+  React Query/SWR/MSW runtime samples, CI drift checks, snapshots, typecheck,
+  lint/validate, and security-review wording with risk queue 0.
+- 2026-06-05: Verification for Upgrade 215:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 22/22 tests
+  - `pnpm audit:brief`: PASS, 113/113 audit checks across 13 reports
+- 2026-06-05: AutoResearch Upgrade 215 implementation commit pending:
+  - `PENDING` openapi-client readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
