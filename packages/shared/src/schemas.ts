@@ -5807,6 +5807,94 @@ export const ComposeReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DevContainerReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  devContainerSetups: z.array(z.object({
+    filePath: z.string(),
+    format: z.enum(["devcontainer-json", "devcontainer-lock", "feature-json", "template-json", "dockerfile", "compose-file", "package-script", "workflow", "unknown"]),
+    configCount: z.number().int().nonnegative(),
+    imageBuildCount: z.number().int().nonnegative(),
+    featureCount: z.number().int().nonnegative(),
+    lifecycleCount: z.number().int().nonnegative(),
+    environmentCount: z.number().int().nonnegative(),
+    mountCount: z.number().int().nonnegative(),
+    portCount: z.number().int().nonnegative(),
+    userCount: z.number().int().nonnegative(),
+    customizationCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    lockfileCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["devcontainer-json", "devcontainer-lock", "name", "image", "build", "dockerfile", "docker-compose-file", "service", "workspace-folder", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  featureSignals: z.array(z.object({
+    signal: z.enum(["features", "feature-json", "template-json", "installs-after", "options", "override-feature-install-order", "lockfile", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lifecycleSignals: z.array(z.object({
+    signal: z.enum(["initialize-command", "on-create-command", "update-content-command", "post-create-command", "post-start-command", "post-attach-command", "wait-for", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  environmentSignals: z.array(z.object({
+    signal: z.enum(["container-env", "remote-env", "user-env-probe", "secrets", "remote-user", "container-user", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workspaceSignals: z.array(z.object({
+    signal: z.enum(["workspace-folder", "workspace-mount", "mounts", "forward-ports", "ports-attributes", "other-ports-attributes", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  customizationSignals: z.array(z.object({
+    signal: z.enum(["customizations", "vscode-extensions", "vscode-settings", "codespaces", "dotfiles", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["devcontainer-up", "devcontainer-build", "devcontainer-exec", "read-configuration", "run-user-commands", "features-test", "features-package", "outdated", "upgrade", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["lockfile", "frozen-lockfile", "non-root-user", "cap-add", "security-opt", "privileged", "host-requirements", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["devcontainers-cli", "devcontainer-cli", "devcontainer-feature", "devcontainer-template", "vscode-dev-containers", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -6112,6 +6200,7 @@ export type ServerlessReadinessReport = z.infer<typeof ServerlessReadinessReport
 export type MobileReadinessReport = z.infer<typeof MobileReadinessReportSchema>;
 export type EdgeReadinessReport = z.infer<typeof EdgeReadinessReportSchema>;
 export type ComposeReadinessReport = z.infer<typeof ComposeReadinessReportSchema>;
+export type DevContainerReadinessReport = z.infer<typeof DevContainerReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

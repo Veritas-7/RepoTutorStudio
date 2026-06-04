@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-04T16:53:03.866Z",
+  "createdAt": "2026-06-04T17:10:43.060Z",
   "checks": [
     {
       "name": "project setup",
@@ -676,6 +676,13 @@
     },
     {
       "name": "Compose readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Dev Container readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
