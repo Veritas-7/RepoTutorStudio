@@ -4965,7 +4965,8 @@
         "analysis/kubernetes-readiness-report.json",
         "markdown/kubernetes-readiness.md",
         "html/kubernetes-readiness.html"
-      ]
+      ],
+      "commit": "caa4037"
     }
   ],
   "verification": {
@@ -5538,7 +5539,8 @@
     "kubernetesReadinessOpenTarget": "PASS",
     "buildKubernetesReadiness": "PASS",
     "testKubernetesReadiness": "PASS",
-    "complianceAudit103Checks": "PASS"
+    "complianceAudit103Checks": "PASS",
+    "kubernetesReadinessImplementationPushed": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -5976,6 +5978,7 @@
     "cliKubernetesReadinessOpenTargetSmoke": "PASS",
     "buildKubernetesReadiness": "PASS",
     "testKubernetesReadiness": "PASS",
-    "auditBriefKubernetesReadiness103": "PASS"
+    "auditBriefKubernetesReadiness103": "PASS",
+    "kubernetesReadinessImplementationPushed": "PASS"
   }
 }
