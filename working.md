@@ -2964,6 +2964,42 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 163:
   - `15f1afa` queue readiness report
 
+- 2026-06-04: AutoResearch Upgrade 164 candidate selected:
+  `redis/node-redis` (`https://github.com/redis/node-redis`; public MIT;
+  17,534 stars; 1,957 forks; updated 2026-06-04T07:39:03Z). Compared with
+  `redis/ioredis`, `upstash/redis-js`, and `jaredwray/keyv`; selected
+  Node Redis because it directly models cache readiness: `createClient`,
+  `.connect()`, `get`, `set`, `EX`, `NX`, `expire`, `ttl`, `del`, `mGet`,
+  `mSet`, `scanIterator`, `multi`, `watch`, `clientSideCache`, `RESP`,
+  socket/TLS/reconnect configuration, `isReady`, `isOpen`, Pub/Sub, pool,
+  cluster/sentinel, and telemetry. Cloned ignored external source to
+  `research/external-src/redis-node-redis` and inspected README, license,
+  package metadata, docs, examples, and package source without executing
+  external source. Clone HEAD was `8ce181c`; tracked-file count for
+  `research/external-src/redis-node-redis` returned `0`.
+- 2026-06-04: RED cache-readiness smoke generated
+  `/tmp/repotutor-cache-readiness-red-studies.lHw6Bj/2026-06-04/local__simple-ts-app__main__fcae1d44`;
+  old build was missing `analysis/cache-readiness-report.json`,
+  `markdown/cache-readiness.md`, and `html/cache-readiness.html`, and
+  `open --target cache-readiness` failed as expected.
+- 2026-06-04: Implemented Node Redis-style cache-readiness report:
+  `CacheReadinessReportSchema`, `analysis/cache-readiness-report.json`,
+  `markdown/cache-readiness.md`, `html/cache-readiness.html`, cache setups,
+  operation signals, policy signals, connection signals, advanced signals,
+  package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target cache-readiness`.
+- 2026-06-04: GREEN cache-readiness smoke generated
+  `/tmp/repotutor-cache-readiness-green-studies.RoIWl1/2026-06-04/local__simple-ts-app__main__fcae1d44`;
+  confirmed `verificationCheckedRequiredArtifacts=192`, cache setups 0,
+  operation signals 9, policy signals 9, connection signals 9, advanced
+  signals 9, package signals 7, risk queue 2, manifest/learning-path entries,
+  and `open --target cache-readiness` -> `html/cache-readiness.html`.
+- 2026-06-04: Verification for Upgrade 164:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 62/62 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

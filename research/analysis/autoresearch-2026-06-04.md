@@ -3988,6 +3988,51 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 61/61 audit checks across 13 generated reports
 
+### Upgrade 164: Cache Readiness Report
+
+- Cloned and inspected `redis/node-redis` under
+  `research/external-src/redis-node-redis` without executing external source.
+  Clone HEAD was `8ce181c`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 17,534 stars, 1,957 forks,
+  updated 2026-06-04T07:39:03Z. Compared with `redis/ioredis`,
+  `upstash/redis-js`, and `jaredwray/keyv`; selected Node Redis because it
+  directly models cache readiness: `createClient`, `.connect()`, get/set,
+  TTL/EX/NX policy, key deletion, multi-key reads/writes, scan iterators,
+  transactions, `watch`, client-side caching, RESP/socket/TLS/reconnect
+  configuration, readiness state, Pub/Sub, pools, cluster/sentinel, and
+  telemetry. No source code was copied into RepoTutor.
+- Implemented Node Redis-style cache-readiness report:
+  `CacheReadinessReportSchema`, `analysis/cache-readiness-report.json`,
+  `markdown/cache-readiness.md`, `html/cache-readiness.html`, cache setups,
+  operation signals, policy signals, connection signals, advanced signals,
+  package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target cache-readiness`.
+- Source pattern: Node Redis separates client setup through `createClient` or
+  `createClientPool`, connection and readiness through `.connect()`,
+  `isReady`, `isOpen`, `error`, and `reconnecting`, cache operations through
+  `get`, `set`, `mGet`, `mSet`, `del`, `expire`, `ttl`, and `scanIterator`,
+  policy through `EX`, `PX`, `NX`, invalidation, namespaces, and serialization,
+  and advanced behavior through transactions, `watch`, Pub/Sub,
+  client-side caching, cluster/sentinel, RESP mapping, and telemetry.
+  RepoTutor maps that to deterministic static cache readiness and explicitly
+  does not start Redis, open cache sockets, read or write cache keys,
+  subscribe to channels, flush data, or run the analyzed project's tests.
+- RED smoke generated
+  `/tmp/repotutor-cache-readiness-red-studies.lHw6Bj/2026-06-04/local__simple-ts-app__main__fcae1d44`;
+  old behavior was missing `analysis/cache-readiness-report.json`,
+  `markdown/cache-readiness.md`, and `html/cache-readiness.html`, and
+  `open --target cache-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-cache-readiness-green-studies.RoIWl1/2026-06-04/local__simple-ts-app__main__fcae1d44`;
+  confirmed `verificationCheckedRequiredArtifacts=192`, cache setups 0,
+  operation signals 9, policy signals 9, connection signals 9, advanced
+  signals 9, package signals 7, risk queue 2, manifest/learning-path entries,
+  and `open --target cache-readiness` -> `html/cache-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests
+- `pnpm audit:brief`: PASS, 62/62 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
