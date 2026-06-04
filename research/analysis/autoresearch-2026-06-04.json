@@ -1544,6 +1544,22 @@
         "values overrides through --values, -f, --set, --set-string, --set-file, --set-json, global values, and values.schema.json validation",
         "deployment safety flags including --dry-run, --wait, --rollback-on-failure, --no-hooks, --skip-crds, --disable-openapi-validation, --namespace, --kube-context, and --create-namespace"
       ]
+    },
+    {
+      "repo": "serverless/serverless",
+      "url": "https://github.com/serverless/serverless",
+      "localPath": "research/external-src/serverless-serverless",
+      "stars": 46923,
+      "forks": 5734,
+      "license": "NOASSERTION",
+      "updatedAt": "2026-06-04T02:40:16Z",
+      "adoptedPatterns": [
+        "serverless service configuration",
+        "provider runtime stage and region signals",
+        "function handler and event trigger mapping",
+        "package deploy invoke offline logs workflows",
+        "IAM secrets log retention tracing guardrails"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -4736,6 +4752,25 @@
         "markdown/deployment-readiness.md",
         "html/deployment-readiness.html"
       ]
+    },
+    {
+      "name": "serverless readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/serverless-readiness-report.json",
+        "markdown/serverless-readiness.md",
+        "html/serverless-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -5260,7 +5295,13 @@
     "deploymentReadinessGreenSmoke": "PASS",
     "fixtureDeploymentReadinessReport": "PASS",
     "deploymentReadinessOpenTarget": "PASS",
-    "complianceAudit97Checks": "PASS"
+    "complianceAudit97Checks": "PASS",
+    "externalServerlessCloneIgnored": "PASS",
+    "serverlessReadinessRedSmoke": "PASS",
+    "serverlessReadinessGreenSmoke": "PASS",
+    "fixtureServerlessReadinessReport": "PASS",
+    "serverlessReadinessOpenTarget": "PASS",
+    "complianceAudit98Checks": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -5661,6 +5702,13 @@
     "cliDeploymentReadinessOpenTargetSmoke": "PASS",
     "buildDeploymentReadiness": "PASS",
     "testDeploymentReadiness": "PASS",
-    "auditBriefDeploymentReadiness97": "PASS"
+    "auditBriefDeploymentReadiness97": "PASS",
+    "externalServerlessCloneIgnored": "PASS",
+    "fixtureServerlessReadinessReport": "PASS",
+    "cliServerlessReadinessSmoke": "PASS",
+    "cliServerlessReadinessOpenTargetSmoke": "PASS",
+    "buildServerlessReadiness": "PASS",
+    "testServerlessReadiness": "PASS",
+    "auditBriefServerlessReadiness98": "PASS"
   }
 }

@@ -112,6 +112,7 @@ import {
   VisualRegressionReadinessReport,
   InfrastructureReadinessReport,
   DeploymentReadinessReport,
+  ServerlessReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -230,6 +231,7 @@ export interface AnalysisBundle {
   visualRegressionReadinessReport: VisualRegressionReadinessReport;
   infrastructureReadinessReport: InfrastructureReadinessReport;
   deploymentReadinessReport: DeploymentReadinessReport;
+  serverlessReadinessReport: ServerlessReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -348,8 +350,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const visualRegressionReadinessReport = await buildVisualRegressionReadinessReport(walk);
   const infrastructureReadinessReport = await buildInfrastructureReadinessReport(walk);
   const deploymentReadinessReport = await buildDeploymentReadinessReport(walk);
+  const serverlessReadinessReport = await buildServerlessReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -23603,6 +23606,310 @@ function deploymentSignalFromSpecs<T extends Record<K, string> & { pattern: RegE
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/deployment-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildServerlessReadinessReport(walk: WalkResult): Promise<ServerlessReadinessReport> {
+  const sourceFiles = await serverlessSourceFiles(walk);
+  const serverlessSetups = serverlessSetupFiles(sourceFiles);
+  const configSignals = serverlessConfigSignals(sourceFiles);
+  const functionSignals = serverlessFunctionSignals(sourceFiles);
+  const eventSignals = serverlessEventSignals(sourceFiles);
+  const runtimeSignals = serverlessRuntimeSignals(sourceFiles);
+  const deploymentSignals = serverlessDeploymentSignals(sourceFiles);
+  const safetySignals = serverlessSafetySignals(sourceFiles);
+  const packageSignals = serverlessPackageSignals(sourceFiles);
+
+  const hasConfig = serverlessSetups.length > 0 || configSignals.some((item) => item.readiness === "ready");
+  const hasFunctions = functionSignals.some((item) => item.readiness === "ready") || serverlessSetups.some((item) => item.functionCount > 0);
+  const hasEvents = eventSignals.some((item) => item.readiness === "ready") || serverlessSetups.some((item) => item.eventCount > 0);
+  const hasDeploy = deploymentSignals.some((item) => item.signal === "deploy" && item.readiness === "ready") || serverlessSetups.some((item) => item.commandCount > 0);
+  const hasSafety = safetySignals.some((item) => ["iam-role-statements", "least-privilege", "secrets", "log-retention", "tracing"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: ServerlessReadinessReport["riskQueue"] = [];
+  if (!hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a serverless service inventory if this project owns functions or event triggers.",
+      why: "Serverless Framework-style review starts from serverless.yml, provider/runtime/stage, functions, events, resources, and plugins.",
+      relatedHref: "html/serverless-readiness.html"
+    });
+  }
+  if (hasConfig && !hasFunctions) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document every deployed function handler and its runtime settings.",
+      why: "A serverless service without visible handlers, memory, timeout, and runtime ownership is hard to test or operate.",
+      relatedHref: "html/serverless-readiness.html"
+    });
+  }
+  if (hasConfig && !hasEvents) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record HTTP, schedule, queue, stream, storage, or websocket event triggers.",
+      why: "Learners need trigger evidence to understand how functions are invoked and what external systems call them.",
+      relatedHref: "html/serverless-readiness.html"
+    });
+  }
+  if (hasConfig && !hasDeploy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add repeatable deploy, package, invoke, info, logs, or offline commands.",
+      why: "Serverless deployments are operational workflows; commands make the service reproducible without guessing.",
+      relatedHref: "html/serverless-readiness.html"
+    });
+  }
+  if (hasConfig && !hasSafety) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document IAM, secrets, log retention, tracing, rollback, and pruning guardrails.",
+      why: "Least privilege, secrets boundaries, observability, and cleanup controls keep short-lived functions maintainable.",
+      relatedHref: "html/serverless-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Serverless Framework-style serverless readiness report: setup ${serverlessSetups.length}개, config signal ${configSignals.length}개, function signal ${functionSignals.length}개, event signal ${eventSignals.length}개, deployment signal ${deploymentSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Serverless Framework serverless.yml service provider runtime stage region functions handler events httpApi schedule sqs sns resources package plugins deploy invoke offline logs",
+    serverlessSetups,
+    configSignals,
+    functionSignals,
+    eventSignals,
+    runtimeSignals,
+    deploymentSignals,
+    safetySignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "serverless print --stage <stage>", purpose: "Resolve variables and inspect the final service configuration without deploying." },
+      { command: "serverless package --stage <stage>", purpose: "Build CloudFormation and function artifacts for review before deploy." },
+      { command: "serverless deploy --stage <stage> --verbose", purpose: "Deploy the full service when configuration, resources, or events changed." },
+      { command: "serverless invoke local -f <function>", purpose: "Exercise a function handler locally with controlled event payloads." },
+      { command: "serverless logs -f <function> --stage <stage> --tail", purpose: "Inspect function logs after a deployed smoke test." }
+    ],
+    learnerNextSteps: [
+      "Open Serverless Readiness and identify the serverless service file first.",
+      "Confirm provider, runtime, stage, region, and variable resolution before reading functions.",
+      "Map each function handler to its event triggers and cloud resources.",
+      "Review IAM, secrets, packaging, offline, and logging signals before trusting a deploy path."
+    ]
+  };
+}
+
+type ServerlessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function serverlessSourceFiles(walk: WalkResult): Promise<ServerlessSourceFile[]> {
+  const files: ServerlessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !serverlessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath);
+    if (!text) continue;
+    if (!serverlessPathSignal(file.relPath) && !serverlessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return files;
+}
+
+function serverlessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return serverlessPathSignal(filePath)
+    || /(^|\/)(README|docs?|serverless|lambda|functions?|handlers?|events?|infra|infrastructure|deploy|deployment|scripts?|ci|workflows?|cloudflare|workers?|netlify|vercel|sst)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|Makefile|Taskfile\.ya?ml|justfile|template\.ya?ml|samconfig\.toml)$/i.test(base);
+}
+
+function serverlessPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^serverless\.(ya?ml|json|[cm]?[jt]s)$/i.test(base)
+    || /^sst\.config\.[cm]?[jt]s$/i.test(base)
+    || /^template\.ya?ml$/i.test(base)
+    || /^vercel\.json$/i.test(base)
+    || /^netlify\.toml$/i.test(base)
+    || /^wrangler\.toml$/i.test(base)
+    || /(^|\/)(serverless|lambda|functions|netlify\/functions|api|workers|cloudflare|sst)(\/|$)/i.test(filePath);
+}
+
+function serverlessContentSignal(text: string): boolean {
+  return /(Serverless Framework|serverless\.ya?ml|serverless\s+(print|package|deploy|deploy function|invoke|invoke local|info|logs|remove|offline)|\bsls\s+(print|package|deploy|invoke|info|logs|remove)|(^|\n)\s*service\s*:|(^|\n)\s*functions\s*:|(^|\n)\s*provider\s*:|(^|\n)\s*events\s*:|httpApi\s*:|schedule\s*:|serverless-offline|AWS::Lambda::Function|AWS::ApiGateway|AWS::DynamoDB|sst\.config|netlify functions|vercel functions|wrangler deploy)/im.test(text);
+}
+
+function serverlessSetupFiles(sourceFiles: ServerlessSourceFile[]): ServerlessReadinessReport["serverlessSetups"] {
+  const rows: ServerlessReadinessReport["serverlessSetups"] = [];
+  for (const source of sourceFiles) {
+    const serviceCount = countMatches(source.text, /(^|\n)\s*service\s*:|service\s*=/gi) + (/serverless\.(ya?ml|json|[cm]?[jt]s)$/i.test(source.filePath) ? 1 : 0);
+    const providerCount = countMatches(source.text, /(^|\n)\s*provider\s*:|name:\s*(aws|azure|google|cloudflare)|runtime:\s*|region:\s*|stage:\s*/gi);
+    const functionCount = countMatches(source.text, /(^|\n)\s*functions\s*:|(^|\n)\s{2,}[A-Za-z0-9_-]+\s*:\s*\n\s{4,}handler\s*:|handler:\s*|AWS::Lambda::Function/gi);
+    const eventCount = countMatches(source.text, /(^|\n)\s*events\s*:|httpApi\s*:|http\s*:|schedule\s*:|eventBridge\s*:|sqs\s*:|sns\s*:|s3\s*:|stream\s*:|websocket\s*:|alb\s*:/gi);
+    const environmentCount = countMatches(source.text, /(^|\n)\s*environment\s*:|\$\{env:|\.env|secrets?|SSM|Secrets Manager/gi);
+    const iamCount = countMatches(source.text, /(^|\n)\s*iam\s*:|iamRoleStatements|role\s*:|Effect:\s*Allow|Action:\s*|Resource:\s*|least privilege/gi);
+    const resourceCount = countMatches(source.text, /(^|\n)\s*resources\s*:|AWS::[A-Za-z0-9:]+|CloudFormation|Fn::GetAtt|!GetAtt|!Ref/gi);
+    const packageCount = countMatches(source.text, /(^|\n)\s*package\s*:|patterns\s*:|artifact\s*:|individually\s*:|excludeDevDependencies|serverless\s+package/gi);
+    const pluginCount = countMatches(source.text, /(^|\n)\s*plugins\s*:|serverless-offline|serverless-esbuild|serverless-webpack|serverless-prune-plugin|serverless-domain-manager/gi);
+    const commandCount = countMatches(source.text, /\b(serverless|sls)\s+(print|package|deploy|deploy function|invoke|invoke local|info|logs|remove|offline|doctor)\b/gi);
+    const totalSignals = serviceCount + providerCount + functionCount + eventCount + environmentCount + iamCount + resourceCount + packageCount + pluginCount + commandCount;
+    if (totalSignals === 0 && !serverlessPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework: serverlessFramework(source),
+      serviceCount,
+      providerCount,
+      functionCount,
+      eventCount,
+      environmentCount,
+      iamCount,
+      resourceCount,
+      packageCount,
+      pluginCount,
+      commandCount,
+      readiness: totalSignals >= 6 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} serverless service signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.serviceCount + b.functionCount + b.eventCount + b.commandCount;
+    const aScore = a.serviceCount + a.functionCount + a.eventCount + a.commandCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 50);
+}
+
+function serverlessFramework(source: ServerlessSourceFile): ServerlessReadinessReport["serverlessSetups"][number]["framework"] {
+  if (/serverless\.(ya?ml|json|[cm]?[jt]s)$/i.test(source.filePath) || /Serverless Framework|serverless\s+(print|package|deploy|invoke|info|logs|remove)|"serverless"/i.test(source.text)) return "serverless-framework";
+  if (/template\.ya?ml|samconfig\.toml|AWS::Serverless::Function|sam\s+(build|deploy|package)/i.test(source.filePath) || /AWS::Serverless::Function|sam\s+(build|deploy|package)/i.test(source.text)) return "aws-sam";
+  if (/sst\.config/i.test(source.filePath) || /\bsst\s+(deploy|dev|build)|from ["']sst/i.test(source.text)) return "sst";
+  if (/vercel\.json|\/api\//i.test(source.filePath) || /vercel functions|@vercel\/node|vc\s+deploy/i.test(source.text)) return "vercel-functions";
+  if (/netlify\.toml|netlify\/functions/i.test(source.filePath) || /netlify functions|netlify deploy/i.test(source.text)) return "netlify-functions";
+  if (/wrangler\.toml|cloudflare|workers?/i.test(source.filePath) || /wrangler\s+deploy|cloudflare workers/i.test(source.text)) return "cloudflare-workers";
+  return "unknown";
+}
+
+function serverlessConfigSignals(sourceFiles: ServerlessSourceFile[]): ServerlessReadinessReport["configSignals"] {
+  const specs: Array<{ signal: ServerlessReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "serverless-yml", pattern: /(^|\/)serverless\.(ya?ml|json|[cm]?[jt]s)$/i, evidence: "Serverless service configuration file evidence was detected." },
+    { signal: "service", pattern: /(^|\n)\s*service\s*:/i, evidence: "service declaration evidence was detected." },
+    { signal: "framework-version", pattern: /frameworkVersion\s*:/i, evidence: "frameworkVersion evidence was detected." },
+    { signal: "provider", pattern: /(^|\n)\s*provider\s*:/i, evidence: "provider block evidence was detected." },
+    { signal: "runtime", pattern: /runtime\s*:\s*(nodejs|python|go|java|dotnet|ruby)/i, evidence: "runtime evidence was detected." },
+    { signal: "stage", pattern: /stage\s*:|\$\{sls:stage\}|\$\{opt:stage/i, evidence: "stage evidence was detected." },
+    { signal: "region", pattern: /region\s*:|\$\{aws:region\}|\$\{opt:region/i, evidence: "region evidence was detected." },
+    { signal: "custom", pattern: /(^|\n)\s*custom\s*:/i, evidence: "custom configuration evidence was detected." },
+    { signal: "params", pattern: /(^|\n)\s*params\s*:/i, evidence: "params evidence was detected." },
+    { signal: "variables", pattern: /\$\{(self|env|opt|sls|aws|param|file|ssm|cf):/i, evidence: "variable resolver evidence was detected." }
+  ];
+  return serverlessSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function serverlessFunctionSignals(sourceFiles: ServerlessSourceFile[]): ServerlessReadinessReport["functionSignals"] {
+  const specs: Array<{ signal: ServerlessReadinessReport["functionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "functions", pattern: /(^|\n)\s*functions\s*:/i, evidence: "functions block evidence was detected." },
+    { signal: "handler", pattern: /handler\s*:/i, evidence: "handler evidence was detected." },
+    { signal: "timeout", pattern: /timeout\s*:/i, evidence: "timeout evidence was detected." },
+    { signal: "memory-size", pattern: /memorySize\s*:/i, evidence: "memorySize evidence was detected." },
+    { signal: "layers", pattern: /layers\s*:|AWS::Lambda::LayerVersion/i, evidence: "Lambda layer evidence was detected." },
+    { signal: "url", pattern: /url\s*:\s*(true|\{)|FunctionUrlConfig/i, evidence: "function URL evidence was detected." },
+    { signal: "reserved-concurrency", pattern: /reservedConcurrency\s*:/i, evidence: "reserved concurrency evidence was detected." },
+    { signal: "provisioned-concurrency", pattern: /provisionedConcurrency\s*:/i, evidence: "provisioned concurrency evidence was detected." }
+  ];
+  return serverlessSignalFromSpecs(sourceFiles, specs, "function", "signal");
+}
+
+function serverlessEventSignals(sourceFiles: ServerlessSourceFile[]): ServerlessReadinessReport["eventSignals"] {
+  const specs: Array<{ signal: ServerlessReadinessReport["eventSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "http", pattern: /-\s*http\s*:|http:\s*\{?|apiGateway/i, evidence: "HTTP API Gateway event evidence was detected." },
+    { signal: "http-api", pattern: /httpApi\s*:/i, evidence: "HTTP API event evidence was detected." },
+    { signal: "schedule", pattern: /schedule\s*:|rate\(|cron\(/i, evidence: "scheduled event evidence was detected." },
+    { signal: "event-bridge", pattern: /eventBridge\s*:|EventBridge|AWS::Events::Rule/i, evidence: "EventBridge evidence was detected." },
+    { signal: "sqs", pattern: /sqs\s*:|AWS::SQS::Queue/i, evidence: "SQS event evidence was detected." },
+    { signal: "sns", pattern: /sns\s*:|AWS::SNS::Topic/i, evidence: "SNS event evidence was detected." },
+    { signal: "s3", pattern: /s3\s*:|AWS::S3::Bucket/i, evidence: "S3 event evidence was detected." },
+    { signal: "stream", pattern: /stream\s*:|dynamodb\s*:|kinesis\s*:|AWS::DynamoDB::Stream/i, evidence: "stream event evidence was detected." },
+    { signal: "websocket", pattern: /websocket\s*:|websocketsApi|WebSocket/i, evidence: "websocket event evidence was detected." },
+    { signal: "alb", pattern: /alb\s*:|ApplicationLoadBalancer|AWS::ElasticLoadBalancingV2/i, evidence: "ALB event evidence was detected." }
+  ];
+  return serverlessSignalFromSpecs(sourceFiles, specs, "event", "signal");
+}
+
+function serverlessRuntimeSignals(sourceFiles: ServerlessSourceFile[]): ServerlessReadinessReport["runtimeSignals"] {
+  const specs: Array<{ signal: ServerlessReadinessReport["runtimeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "nodejs", pattern: /runtime\s*:\s*nodejs|nodejs[0-9]/i, evidence: "Node.js runtime evidence was detected." },
+    { signal: "python", pattern: /runtime\s*:\s*python|python3\.[0-9]/i, evidence: "Python runtime evidence was detected." },
+    { signal: "go", pattern: /runtime\s*:\s*go|provided\.al2/i, evidence: "Go/custom runtime evidence was detected." },
+    { signal: "java", pattern: /runtime\s*:\s*java|java[0-9]/i, evidence: "Java runtime evidence was detected." },
+    { signal: "dotnet", pattern: /runtime\s*:\s*dotnet|dotnet[0-9]/i, evidence: ".NET runtime evidence was detected." },
+    { signal: "ruby", pattern: /runtime\s*:\s*ruby|ruby[0-9]/i, evidence: "Ruby runtime evidence was detected." },
+    { signal: "arm64", pattern: /architecture\s*:\s*arm64|arm64/i, evidence: "arm64 architecture evidence was detected." },
+    { signal: "x86-64", pattern: /architecture\s*:\s*x86_64|x86_64/i, evidence: "x86_64 architecture evidence was detected." },
+    { signal: "ephemeral-storage", pattern: /ephemeralStorageSize\s*:|EphemeralStorage/i, evidence: "ephemeral storage evidence was detected." },
+    { signal: "vpc", pattern: /(^|\n)\s*vpc\s*:|securityGroupIds|subnetIds/i, evidence: "VPC evidence was detected." }
+  ];
+  return serverlessSignalFromSpecs(sourceFiles, specs, "runtime", "signal");
+}
+
+function serverlessDeploymentSignals(sourceFiles: ServerlessSourceFile[]): ServerlessReadinessReport["deploymentSignals"] {
+  const specs: Array<{ signal: ServerlessReadinessReport["deploymentSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "deploy", pattern: /\b(serverless|sls)\s+deploy\b/i, evidence: "deploy command evidence was detected." },
+    { signal: "deploy-function", pattern: /\b(serverless|sls)\s+deploy\s+function\b/i, evidence: "deploy function command evidence was detected." },
+    { signal: "package", pattern: /\b(serverless|sls)\s+package\b/i, evidence: "package command evidence was detected." },
+    { signal: "remove", pattern: /\b(serverless|sls)\s+remove\b/i, evidence: "remove command evidence was detected." },
+    { signal: "invoke", pattern: /\b(serverless|sls)\s+invoke\b/i, evidence: "invoke command evidence was detected." },
+    { signal: "invoke-local", pattern: /\b(serverless|sls)\s+invoke\s+local\b/i, evidence: "invoke local command evidence was detected." },
+    { signal: "info", pattern: /\b(serverless|sls)\s+info\b/i, evidence: "info command evidence was detected." },
+    { signal: "logs", pattern: /\b(serverless|sls)\s+logs\b/i, evidence: "logs command evidence was detected." },
+    { signal: "doctor", pattern: /\b(serverless|sls)\s+doctor\b/i, evidence: "doctor command evidence was detected." },
+    { signal: "offline", pattern: /serverless-offline|\b(serverless|sls)\s+offline\b/i, evidence: "offline emulation evidence was detected." }
+  ];
+  return serverlessSignalFromSpecs(sourceFiles, specs, "deployment", "signal");
+}
+
+function serverlessSafetySignals(sourceFiles: ServerlessSourceFile[]): ServerlessReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: ServerlessReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "iam-role-statements", pattern: /iamRoleStatements|(^|\n)\s*iam\s*:|Effect:\s*Allow|Action:\s*|Resource:\s*/i, evidence: "IAM policy evidence was detected." },
+    { signal: "least-privilege", pattern: /least privilege|Resource:\s*(?!['\"]?\*)|Condition:|Fn::GetAtt|!GetAtt/i, evidence: "least-privilege review evidence was detected." },
+    { signal: "environment", pattern: /(^|\n)\s*environment\s*:|\$\{env:/i, evidence: "environment variable evidence was detected." },
+    { signal: "secrets", pattern: /\$\{(ssm|secretsmanager|env):|Secrets Manager|SSM|licenseKey|Doppler|Vault/i, evidence: "secret resolver evidence was detected." },
+    { signal: "deployment-bucket", pattern: /deploymentBucket\s*:|ServerlessDeploymentBucket|bucketName/i, evidence: "deployment bucket evidence was detected." },
+    { signal: "rollback", pattern: /rollback|disableRollback|CloudFormation rollback/i, evidence: "rollback policy evidence was detected." },
+    { signal: "prune", pattern: /serverless-prune-plugin|prune\s*:/i, evidence: "function version pruning evidence was detected." },
+    { signal: "log-retention", pattern: /logRetentionInDays|retentionInDays|LogGroup/i, evidence: "log retention evidence was detected." },
+    { signal: "tracing", pattern: /tracing\s*:|xray|X-Ray|AWS::XRay/i, evidence: "tracing evidence was detected." }
+  ];
+  return serverlessSignalFromSpecs(sourceFiles, specs, "safety", "signal");
+}
+
+function serverlessPackageSignals(sourceFiles: ServerlessSourceFile[]): ServerlessReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ServerlessReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "serverless", pattern: /"serverless"|Serverless Framework|serverless\s+(print|package|deploy|invoke|info|logs|remove)/i, evidence: "Serverless Framework package evidence was detected." },
+    { signal: "serverless-offline", pattern: /serverless-offline/i, evidence: "serverless-offline evidence was detected." },
+    { signal: "serverless-esbuild", pattern: /serverless-esbuild|esbuild\s*:/i, evidence: "serverless-esbuild evidence was detected." },
+    { signal: "serverless-webpack", pattern: /serverless-webpack|webpack\s*:/i, evidence: "serverless-webpack evidence was detected." },
+    { signal: "serverless-prune-plugin", pattern: /serverless-prune-plugin|prune\s*:/i, evidence: "serverless prune evidence was detected." },
+    { signal: "serverless-domain-manager", pattern: /serverless-domain-manager|customDomain/i, evidence: "custom domain manager evidence was detected." },
+    { signal: "aws-sam", pattern: /AWS::Serverless::Function|sam\s+(build|deploy|package)|aws-sam-cli/i, evidence: "AWS SAM evidence was detected." },
+    { signal: "sst", pattern: /\bsst\s+(deploy|dev|build)|sst\.config|from ["']sst/i, evidence: "SST evidence was detected." },
+    { signal: "vercel", pattern: /vercel\.json|vercel\s+deploy|@vercel\/node/i, evidence: "Vercel functions evidence was detected." },
+    { signal: "netlify", pattern: /netlify\.toml|netlify functions|netlify deploy/i, evidence: "Netlify functions evidence was detected." },
+    { signal: "wrangler", pattern: /wrangler\.toml|wrangler\s+deploy|cloudflare workers/i, evidence: "Wrangler/Cloudflare Workers evidence was detected." }
+  ];
+  return serverlessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function serverlessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ServerlessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/serverless-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

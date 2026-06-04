@@ -5502,6 +5502,81 @@ export const DeploymentReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ServerlessReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  serverlessSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["serverless-framework", "aws-sam", "sst", "vercel-functions", "netlify-functions", "cloudflare-workers", "custom", "unknown"]),
+    serviceCount: z.number().int().nonnegative(),
+    providerCount: z.number().int().nonnegative(),
+    functionCount: z.number().int().nonnegative(),
+    eventCount: z.number().int().nonnegative(),
+    environmentCount: z.number().int().nonnegative(),
+    iamCount: z.number().int().nonnegative(),
+    resourceCount: z.number().int().nonnegative(),
+    packageCount: z.number().int().nonnegative(),
+    pluginCount: z.number().int().nonnegative(),
+    commandCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["serverless-yml", "service", "framework-version", "provider", "runtime", "stage", "region", "custom", "params", "variables", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  functionSignals: z.array(z.object({
+    signal: z.enum(["functions", "handler", "timeout", "memory-size", "layers", "url", "reserved-concurrency", "provisioned-concurrency", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  eventSignals: z.array(z.object({
+    signal: z.enum(["http", "http-api", "schedule", "event-bridge", "sqs", "sns", "s3", "stream", "websocket", "alb", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runtimeSignals: z.array(z.object({
+    signal: z.enum(["nodejs", "python", "go", "java", "dotnet", "ruby", "arm64", "x86-64", "ephemeral-storage", "vpc", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  deploymentSignals: z.array(z.object({
+    signal: z.enum(["deploy", "deploy-function", "package", "remove", "invoke", "invoke-local", "info", "logs", "doctor", "offline", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["iam-role-statements", "least-privilege", "environment", "secrets", "deployment-bucket", "rollback", "prune", "log-retention", "tracing", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["serverless", "serverless-offline", "serverless-esbuild", "serverless-webpack", "serverless-prune-plugin", "serverless-domain-manager", "aws-sam", "sst", "vercel", "netlify", "wrangler", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -5803,6 +5878,7 @@ export type StylingReadinessReport = z.infer<typeof StylingReadinessReportSchema
 export type VisualRegressionReadinessReport = z.infer<typeof VisualRegressionReadinessReportSchema>;
 export type InfrastructureReadinessReport = z.infer<typeof InfrastructureReadinessReportSchema>;
 export type DeploymentReadinessReport = z.infer<typeof DeploymentReadinessReportSchema>;
+export type ServerlessReadinessReport = z.infer<typeof ServerlessReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

@@ -107,6 +107,7 @@ import type {
   VisualRegressionReadinessReport,
   InfrastructureReadinessReport,
   DeploymentReadinessReport,
+  ServerlessReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -220,6 +221,7 @@ export interface StudyHtmlInput {
   visualRegressionReadinessReport: VisualRegressionReadinessReport;
   infrastructureReadinessReport: InfrastructureReadinessReport;
   deploymentReadinessReport: DeploymentReadinessReport;
+  serverlessReadinessReport: ServerlessReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -495,6 +497,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Visual Regression Readiness</h3><p>${escapeHtml(input.visualRegressionReadinessReport.summary)}</p><p>reg-suit 패턴으로 screenshot baselines, diff thresholds, reports, plugins, storage, notification 준비도를 정리합니다.</p><a href="visual-regression-readiness.html">Visual Regression 열기</a></article>
           <article><h3>Infrastructure Readiness</h3><p>${escapeHtml(input.infrastructureReadinessReport.summary)}</p><p>OpenTofu 패턴으로 .tf config, providers, resources, modules, variables, backend/state, plan/apply workflow 준비도를 정리합니다.</p><a href="infrastructure-readiness.html">Infrastructure 열기</a></article>
           <article><h3>Deployment Readiness</h3><p>${escapeHtml(input.deploymentReadinessReport.summary)}</p><p>Helm 패턴으로 Chart.yaml, values.yaml, templates, release commands, safety flags 준비도를 정리합니다.</p><a href="deployment-readiness.html">Deployment 열기</a></article>
+          <article><h3>Serverless Readiness</h3><p>${escapeHtml(input.serverlessReadinessReport.summary)}</p><p>Serverless Framework 패턴으로 service, provider, functions, events, resources, packaging, plugins, deploy commands 준비도를 정리합니다.</p><a href="serverless-readiness.html">Serverless 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -982,6 +985,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "deployment-readiness.html",
       title: "Deployment Readiness",
       html: pageShell("Deployment Readiness", "deployment-readiness.html", `<section class="panel" data-source-pattern="Helm"><h2>Deployment Snapshot</h2><p>${escapeHtml(input.deploymentReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.deploymentReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.deploymentReadinessReport.deploymentSetups.length}</dd></div><div><dt>charts</dt><dd>${input.deploymentReadinessReport.chartSignals.length}</dd></div><div><dt>templates</dt><dd>${input.deploymentReadinessReport.templateSignals.length}</dd></div><div><dt>values</dt><dd>${input.deploymentReadinessReport.valueSignals.length}</dd></div><div><dt>release</dt><dd>${input.deploymentReadinessReport.releaseSignals.length}</dd></div><div><dt>safety</dt><dd>${input.deploymentReadinessReport.safetySignals.length}</dd></div></dl><p class="muted">RepoTutor records deployment readiness only; it does not run Helm, render templates, contact Kubernetes APIs, mutate releases, update repo caches, package charts, push OCI artifacts, or execute hooks.</p></section><section class="grid"><article class="deployment-readiness-card"><h3>Deployment Setups</h3>${deploymentReadinessSetupList(input.deploymentReadinessReport.deploymentSetups)}</article><article class="deployment-readiness-card"><h3>Chart Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.chartSignals, "signal")}</article><article class="deployment-readiness-card"><h3>Template Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.templateSignals, "signal")}</article><article class="deployment-readiness-card"><h3>Value Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.valueSignals, "signal")}</article></section><section class="grid"><article class="deployment-readiness-card"><h3>Release Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.releaseSignals, "signal")}</article><article class="deployment-readiness-card"><h3>Safety Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.safetySignals, "signal")}</article><article class="deployment-readiness-card"><h3>Package Signals</h3>${deploymentReadinessSignalList(input.deploymentReadinessReport.packageSignals, "signal")}</article><article class="deployment-readiness-card"><h3>Recommended Commands</h3>${deploymentReadinessCommandList(input.deploymentReadinessReport.recommendedCommands)}</article><article class="deployment-readiness-card"><h3>Risk Queue</h3>${deploymentReadinessRiskList(input.deploymentReadinessReport.riskQueue)}</article><article class="deployment-readiness-card"><h3>다음 확인 단계</h3>${list(input.deploymentReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "serverless-readiness.html",
+      title: "Serverless Readiness",
+      html: pageShell("Serverless Readiness", "serverless-readiness.html", `<section class="panel" data-source-pattern="Serverless Framework"><h2>Serverless Snapshot</h2><p>${escapeHtml(input.serverlessReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.serverlessReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.serverlessReadinessReport.serverlessSetups.length}</dd></div><div><dt>config</dt><dd>${input.serverlessReadinessReport.configSignals.length}</dd></div><div><dt>functions</dt><dd>${input.serverlessReadinessReport.functionSignals.length}</dd></div><div><dt>events</dt><dd>${input.serverlessReadinessReport.eventSignals.length}</dd></div><div><dt>deployment</dt><dd>${input.serverlessReadinessReport.deploymentSignals.length}</dd></div><div><dt>safety</dt><dd>${input.serverlessReadinessReport.safetySignals.length}</dd></div></dl><p class="muted">RepoTutor records serverless readiness only; it does not run Serverless Framework, SAM, SST, Vercel, Netlify, Wrangler, package artifacts, deploy functions, invoke cloud resources, tail logs, mutate IAM, or remove stacks.</p></section><section class="grid"><article class="serverless-readiness-card"><h3>Serverless Setups</h3>${serverlessReadinessSetupList(input.serverlessReadinessReport.serverlessSetups)}</article><article class="serverless-readiness-card"><h3>Config Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.configSignals, "signal")}</article><article class="serverless-readiness-card"><h3>Function Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.functionSignals, "signal")}</article><article class="serverless-readiness-card"><h3>Event Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.eventSignals, "signal")}</article></section><section class="grid"><article class="serverless-readiness-card"><h3>Runtime Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.runtimeSignals, "signal")}</article><article class="serverless-readiness-card"><h3>Deployment Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.deploymentSignals, "signal")}</article><article class="serverless-readiness-card"><h3>Safety Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.safetySignals, "signal")}</article><article class="serverless-readiness-card"><h3>Package Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.packageSignals, "signal")}</article><article class="serverless-readiness-card"><h3>Recommended Commands</h3>${serverlessReadinessCommandList(input.serverlessReadinessReport.recommendedCommands)}</article><article class="serverless-readiness-card"><h3>Risk Queue</h3>${serverlessReadinessRiskList(input.serverlessReadinessReport.riskQueue)}</article><article class="serverless-readiness-card"><h3>다음 확인 단계</h3>${list(input.serverlessReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "context-pack.html",
@@ -1856,6 +1864,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "deployment-readiness.html",
       goal: "Helm식 Chart.yaml, values.yaml, templates, lint/template/install/upgrade workflow와 safety flag 흐름을 확인합니다.",
       evidence: `deployment setups ${input.deploymentReadinessReport.deploymentSetups.length}개, release signals ${input.deploymentReadinessReport.releaseSignals.length}개`
+    },
+    {
+      title: "Serverless readiness 확인",
+      href: "serverless-readiness.html",
+      goal: "Serverless Framework식 service, provider, functions, events, package/deploy workflow와 IAM/secrets guardrail 흐름을 확인합니다.",
+      evidence: `serverless setups ${input.serverlessReadinessReport.serverlessSetups.length}개, event signals ${input.serverlessReadinessReport.eventSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -4373,6 +4387,31 @@ function deploymentReadinessRiskList(items: DeploymentReadinessReport["riskQueue
 }
 
 function deploymentReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function serverlessReadinessSetupList(items: ServerlessReadinessReport["serverlessSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">serverless setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>service/provider/function/event/env/IAM/resource/package/plugin/command ${item.serviceCount}/${item.providerCount}/${item.functionCount}/${item.eventCount}/${item.environmentCount}/${item.iamCount}/${item.resourceCount}/${item.packageCount}/${item.pluginCount}/${item.commandCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(serverlessReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function serverlessReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">serverless signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(serverlessReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function serverlessReadinessCommandList(items: ServerlessReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function serverlessReadinessRiskList(items: ServerlessReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(serverlessReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function serverlessReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
