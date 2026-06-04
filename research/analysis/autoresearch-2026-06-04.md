@@ -5601,6 +5601,50 @@ Local verification:
 - `pnpm test`: PASS, 4/4 tests
 - `pnpm audit:brief`: PASS, 93/93 audit checks across 13 generated reports
 
+### Upgrade 196: Styling Readiness Report
+
+- Cloned and inspected `tailwindlabs/tailwindcss` under
+  `research/external-src/tailwindlabs-tailwindcss` without executing external
+  source. Clone HEAD was `ad66939`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 95,232 stars, 5,286 forks, updated
+  2026-06-04T14:27:21Z. Compared with `unocss/unocss`, `sass/sass`, and
+  `twbs/bootstrap`; selected Tailwind CSS because design token readiness was
+  already represented, while Tailwind directly models CSS entry directives,
+  utility candidates, content scanning, theme extension, plugins, and build
+  integration boundaries. No source code was copied into RepoTutor.
+- Implemented Tailwind CSS-style styling-readiness report:
+  `StylingReadinessReportSchema`,
+  `analysis/styling-readiness-report.json`,
+  `markdown/styling-readiness.md`, `html/styling-readiness.html`, styling
+  setups, config signals, directive signals, class signals, theme signals,
+  integration signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target styling-readiness`.
+- Source pattern: Tailwind CSS separates `@import "tailwindcss"`, `@theme`,
+  `@utility`, `@variant`, `@source`, `@config`, `@plugin`, `@apply`,
+  content/safelist scanning, dark mode, prefix, important, candidate utility
+  extraction, PostCSS/Vite/Webpack/CLI integrations, and package plugins.
+  RepoTutor maps that to deterministic static styling readiness and explicitly
+  does not compile Tailwind, scan class candidates, run PostCSS/Vite plugins,
+  update caches, or validate final CSS size.
+- RED smoke generated
+  `/tmp/repotutor-styling-red-studies.vmu3oq/2026-06-05/local__simple-ts-app__HEAD__85b51db6`;
+  old behavior had `verificationCheckedRequiredArtifacts=285`, was missing
+  `analysis/styling-readiness-report.json`,
+  `markdown/styling-readiness.md`, and `html/styling-readiness.html`, and
+  `open --target styling-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-styling-green-studies.fWnFPC/2026-06-05/local__simple-ts-app__main__85b51db6`;
+  confirmed `verificationCheckedRequiredArtifacts=288`, styling setups 0,
+  config signals 9, directive signals 10, class signals 9, theme signals 9,
+  integration signals 9, package signals 9, risk queue 2, all three new
+  artifacts, and `open --target styling-readiness` ->
+  `html/styling-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 4/4 tests after a retry; the first run overlapped with
+  audit and hit Vitest's 5s timeout on the fixture test.
+- `pnpm audit:brief`: PASS, 94/94 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

@@ -97,6 +97,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "scaffolding-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "scheduler-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "build-tool-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "styling-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -192,6 +193,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "scaffolding-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "scheduler-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "build-tool-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "styling-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -287,6 +289,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "scaffolding-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "scheduler-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "build-tool-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "styling-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -413,6 +416,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/scaffolding-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/scheduler-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/build-tool-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/styling-readiness.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -2071,6 +2075,24 @@ describe("RepoTutor core pipeline", () => {
     expect(buildToolReadinessMarkdown).toContain("Source pattern: Vite");
     expect(buildToolReadinessMarkdown).toContain("## Plugin Signals");
     expect(buildToolReadinessMarkdown).toContain("## Dependency Optimization Signals");
+    const stylingReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "styling-readiness-report.json"), "utf8");
+    expect(stylingReadinessText).toContain("Tailwind CSS @import tailwindcss @theme @utility @variant @source @config @plugin @apply content safelist darkMode prefix important");
+    expect(stylingReadinessText).toContain("\"stylingSetups\"");
+    expect(stylingReadinessText).toContain("\"directiveSignals\"");
+    expect(stylingReadinessText).toContain("\"classSignals\"");
+    expect(stylingReadinessText).toContain("\"integrationSignals\"");
+    expect(stylingReadinessText).toContain("Tailwind CSS");
+    const stylingReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "styling-readiness.html"), "utf8");
+    expect(stylingReadinessHtml).toContain("Styling Readiness");
+    expect(stylingReadinessHtml).toContain("styling-readiness-card");
+    expect(stylingReadinessHtml).toContain("data-source-pattern=\"Tailwind CSS\"");
+    expect(stylingReadinessHtml).toContain("Directive Signals");
+    expect(stylingReadinessHtml).toContain("Integration Signals");
+    const stylingReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "styling-readiness.md"), "utf8");
+    expect(stylingReadinessMarkdown).toContain("# Styling Readiness");
+    expect(stylingReadinessMarkdown).toContain("Source pattern: Tailwind CSS");
+    expect(stylingReadinessMarkdown).toContain("## Directive Signals");
+    expect(stylingReadinessMarkdown).toContain("## Integration Signals");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");

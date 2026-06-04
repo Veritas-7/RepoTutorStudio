@@ -108,6 +108,7 @@ import {
   ScaffoldingReadinessReport,
   SchedulerReadinessReport,
   BuildToolReadinessReport,
+  StylingReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -222,6 +223,7 @@ export interface AnalysisBundle {
   scaffoldingReadinessReport: ScaffoldingReadinessReport;
   schedulerReadinessReport: SchedulerReadinessReport;
   buildToolReadinessReport: BuildToolReadinessReport;
+  stylingReadinessReport: StylingReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -336,8 +338,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const scaffoldingReadinessReport = await buildScaffoldingReadinessReport(walk);
   const schedulerReadinessReport = await buildSchedulerReadinessReport(walk);
   const buildToolReadinessReport = await buildBuildToolReadinessReport(walk);
+  const stylingReadinessReport = await buildStylingReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -22453,6 +22456,286 @@ function buildToolSignalFromSpecs<T extends Record<K, string> & { pattern: RegEx
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/build-tool-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildStylingReadinessReport(walk: WalkResult): Promise<StylingReadinessReport> {
+  const sourceFiles = await stylingSourceFiles(walk);
+  const stylingSetups = stylingSetupFiles(sourceFiles);
+  const configSignals = stylingConfigSignals(sourceFiles);
+  const directiveSignals = stylingDirectiveSignals(sourceFiles);
+  const classSignals = stylingClassSignals(sourceFiles);
+  const themeSignals = stylingThemeSignals(sourceFiles);
+  const integrationSignals = stylingIntegrationSignals(sourceFiles);
+  const packageSignals = stylingPackageSignals(sourceFiles);
+
+  const hasStyling = stylingSetups.length > 0 || packageSignals.some((item) => item.readiness === "ready");
+  const hasContent = configSignals.some((item) => item.signal === "content-globs" && item.readiness === "ready") || directiveSignals.some((item) => item.signal === "source-directive" && item.readiness === "ready") || stylingSetups.some((item) => item.contentScanCount > 0);
+  const hasEntry = directiveSignals.some((item) => ["import-tailwind", "tailwind-directive"].includes(item.signal) && item.readiness === "ready") || integrationSignals.some((item) => item.signal === "css-entry" && item.readiness === "ready");
+  const hasTheme = themeSignals.some((item) => item.readiness === "ready") || stylingSetups.some((item) => item.themeCount > 0);
+  const hasIntegration = integrationSignals.some((item) => item.readiness === "ready") || stylingSetups.some((item) => item.buildIntegrationCount > 0);
+
+  const riskQueue: StylingReadinessReport["riskQueue"] = [];
+  if (!hasStyling) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the styling framework before claiming utility CSS readiness.",
+      why: "Styling readiness starts with Tailwind, UnoCSS, Bootstrap, Sass, PostCSS, CSS modules, or an explicit stylesheet entrypoint.",
+      relatedHref: "html/styling-readiness.html"
+    });
+  }
+  if (hasStyling && !hasEntry) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace the CSS entrypoint that imports Tailwind or declares Tailwind directives.",
+      why: "Without a CSS entrypoint, learners cannot connect class usage to generated styles.",
+      relatedHref: "html/styling-readiness.html"
+    });
+  }
+  if (hasStyling && !hasContent) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record content globs, @source directives, safelist policy, and ignored file behavior.",
+      why: "Utility CSS output depends on class candidate scanning; missing content boundaries create missing or bloated CSS.",
+      relatedHref: "html/styling-readiness.html"
+    });
+  }
+  if (hasStyling && !hasTheme) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document theme tokens, CSS custom properties, colors, spacing, typography, and breakpoint ownership.",
+      why: "Tailwind-style systems often encode design decisions in theme variables rather than component files.",
+      relatedHref: "html/styling-readiness.html"
+    });
+  }
+  if (hasStyling && !hasIntegration) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Trace PostCSS, Vite, webpack, CLI, watch, and build-script integration.",
+      why: "A styling setup is incomplete if learners cannot see how CSS is compiled in development and production.",
+      relatedHref: "html/styling-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify generated CSS in the original runtime before treating this report as styling approval.",
+    why: "RepoTutor records styling readiness only; it does not compile Tailwind, scan class candidates, run PostCSS/Vite plugins, update caches, or validate final CSS size.",
+    relatedHref: "html/styling-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Tailwind-style styling readiness report: setup ${stylingSetups.length}개, config signal ${configSignals.length}개, directive signal ${directiveSignals.length}개, theme signal ${themeSignals.length}개, integration signal ${integrationSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Tailwind CSS @import tailwindcss @theme @utility @variant @source @config @plugin @apply content safelist darkMode prefix important",
+    stylingSetups,
+    configSignals,
+    directiveSignals,
+    classSignals,
+    themeSignals,
+    integrationSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"tailwind.config|@import \\\\\\\"tailwindcss\\\\\\\"|@tailwind|@theme|@source|@config|@plugin|@apply\" .", purpose: "Find Tailwind config files, CSS entrypoints, and directive usage." },
+      { command: "rg \"content:|safelist|darkMode|prefix|important|presets|corePlugins\" tailwind.config.* package.json .", purpose: "Review candidate scanning and global config policy." },
+      { command: "rg \"className=|class=|tw:|dark:|group-|peer-|hover:|md:|\\\\[[^\\\\]]+\\\\]\" src app pages components .", purpose: "Trace utility class usage, variants, prefixes, and arbitrary values." },
+      { command: "rg \"@tailwindcss/postcss|@tailwindcss/vite|@tailwindcss/cli|postcss.config|vite.config|webpack.config|tailwindcss -i|tailwindcss --watch\" .", purpose: "Check CSS build integration without compiling CSS." }
+    ],
+    learnerNextSteps: [
+      "먼저 tailwind.config, package scripts, CSS entrypoint를 찾아 styling entrypoint를 확인하세요.",
+      "content globs, @source, safelist, ignored file policy로 class candidate scanning 범위를 분리하세요.",
+      "@import tailwindcss, @tailwind, @theme, @utility, @variant, @config, @plugin, @apply, @layer directive를 확인하세요.",
+      "className/class 속성에서 responsive/state/dark/group/peer/important/arbitrary value utility 사용을 추적하세요.",
+      "theme variables, colors, spacing, typography, breakpoints, design-token bridge를 확인하세요.",
+      "PostCSS, Vite, webpack, CLI, watch, build script integration을 확인해 개발/프로덕션 CSS 생성 경로를 나누세요.",
+      "이 리포트는 정적 readiness입니다. Tailwind compile, candidate scan, plugin execution, CSS size validation은 원본 런타임에서 별도 검증하세요."
+    ]
+  };
+}
+
+type StylingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function stylingSourceFiles(walk: WalkResult): Promise<StylingSourceFile[]> {
+  const files: StylingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !stylingInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!stylingPathSignal(file.relPath) && !stylingContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function stylingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return stylingPathSignal(filePath)
+    || /^(package\.json|tailwind\.config\.[cm]?[jt]s|postcss\.config\.[cm]?[jt]s|vite\.config\.[cm]?[jt]s|webpack\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(css|scss|sass|less|pcss|postcss|js|cjs|mjs|ts|tsx|jsx|json|md|mdx|html)$/i.test(filePath);
+}
+
+function stylingPathSignal(filePath: string): boolean {
+  return /(^|\/)(tailwind\.config\.[cm]?[jt]s|postcss\.config\.[cm]?[jt]s|package\.json)$/i.test(filePath)
+    || /(^|\/)(styles?|css|scss|sass|components?|pages?|app|src|theme|themes)(\/|$)/i.test(filePath);
+}
+
+function stylingContentSignal(text: string): boolean {
+  return /(tailwindcss|@tailwindcss|@import\s+["']tailwindcss["']|@tailwind|@theme|@utility|@variant|@source|@config|@plugin|@apply|content\s*:|safelist|darkMode|className=|class=|hover:|focus:|dark:|group-|peer-|postcss|\.module\.css)/i.test(text);
+}
+
+function stylingSetupFiles(sourceFiles: StylingSourceFile[]): StylingReadinessReport["stylingSetups"] {
+  const rows: StylingReadinessReport["stylingSetups"] = [];
+  for (const source of sourceFiles) {
+    const configCount = countMatches(source.text, /tailwind\.config|content\s*:|safelist|darkMode|prefix\s*:|important\s*:|presets\s*:|corePlugins|theme\s*:/gi) + (/tailwind\.config/i.test(source.filePath) ? 1 : 0);
+    const directiveCount = countMatches(source.text, /@import\s+["']tailwindcss["']|@tailwind|@theme|@utility|@variant|@source|@config|@plugin|@apply|@layer/gi);
+    const utilityCount = countMatches(source.text, /\b(?:className|class)\s*=|(?:hover|focus|active|disabled|dark|group-hover|peer-focus|sm|md|lg|xl|2xl):|(?:bg|text|p|m|w|h|grid|flex|rounded|shadow|border|font|leading|tracking|container)-[A-Za-z0-9_[\]().:/%-]+/gi);
+    const themeCount = countMatches(source.text, /@theme|theme\s*:|theme\(|--(?:color|spacing|font|breakpoint|container|radius|shadow)-|colors\s*:|spacing\s*:|fontSize\s*:|screens\s*:/gi);
+    const variantCount = countMatches(source.text, /@variant|addVariant|matchVariant|(?:hover|focus|active|disabled|dark|group|peer|sm|md|lg|xl|2xl):/gi);
+    const contentScanCount = countMatches(source.text, /content\s*:|@source|safelist|extractRawCandidates|Scanner|candidate|ignored content|class candidates/gi);
+    const pluginCount = countMatches(source.text, /plugins\s*:|@plugin|plugin\(|addUtilities|matchUtilities|addComponents|addBase|@tailwindcss\/(forms|typography|container-queries|postcss|vite|cli)/gi);
+    const buildIntegrationCount = countMatches(source.text, /@tailwindcss\/postcss|@tailwindcss\/vite|@tailwindcss\/cli|postcss\.config|vite\.config|webpack\.config|tailwindcss\s+(-i|--input|--watch)|lightningcss|build:css|css:build/gi);
+    const hasSignal = configCount + directiveCount + utilityCount + themeCount + variantCount + contentScanCount + pluginCount + buildIntegrationCount > 0;
+    if (!hasSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework: stylingFramework(source),
+      configCount,
+      directiveCount,
+      utilityCount,
+      themeCount,
+      variantCount,
+      contentScanCount,
+      pluginCount,
+      buildIntegrationCount,
+      readiness: (directiveCount > 0 || configCount > 0) && (utilityCount > 0 || contentScanCount > 0 || buildIntegrationCount > 0) ? "ready" : hasSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains config ${configCount}, directives ${directiveCount}, utilities ${utilityCount}, theme ${themeCount}, variants ${variantCount}, content scan ${contentScanCount}, plugins ${pluginCount}, build integration ${buildIntegrationCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function stylingFramework(source: StylingSourceFile): StylingReadinessReport["stylingSetups"][number]["framework"] {
+  if (/tailwind\.config|tailwindcss|@tailwindcss|@tailwind|@theme|@utility|@source/i.test(source.filePath) || /tailwindcss|@tailwindcss|@tailwind|@theme|@utility|@source/i.test(source.text)) return "tailwind";
+  if (/unocss|uno\.config/i.test(source.filePath) || /unocss|uno\.config|presetUno/i.test(source.text)) return "unocss";
+  if (/bootstrap/i.test(source.filePath) || /bootstrap|btn-|navbar|container-fluid/i.test(source.text)) return "bootstrap";
+  if (/\.(scss|sass)$/i.test(source.filePath) || /@use|@forward|@mixin|@include|\$[a-z0-9_-]+:/i.test(source.text)) return "sass";
+  if (/postcss/i.test(source.filePath) || /postcss|autoprefixer|postcss-preset-env/i.test(source.text)) return "postcss";
+  if (/\.module\.css/i.test(source.filePath)) return "css-modules";
+  if (/\.(css|pcss|less)$/i.test(source.filePath) || /className=|class=|style=|stylesheet/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function stylingConfigSignals(sourceFiles: StylingSourceFile[]): StylingReadinessReport["configSignals"] {
+  const specs: Array<{ signal: StylingReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "config-file", pattern: /tailwind\.config\.[cm]?[jt]s|uno\.config\.[cm]?[jt]s|postcss\.config\.[cm]?[jt]s/i, evidence: "styling config file evidence was detected." },
+    { signal: "tailwind-config", pattern: /tailwind\.config|Config\s+from\s+['"]tailwindcss|defineConfig\s*\(/i, evidence: "Tailwind config evidence was detected." },
+    { signal: "content-globs", pattern: /content\s*:\s*(\[[\s\S]{0,600}\]|{[\s\S]{0,600}})|files\s*:/i, evidence: "content glob evidence was detected." },
+    { signal: "safelist", pattern: /safelist|blocklist/i, evidence: "safelist/blocklist evidence was detected." },
+    { signal: "dark-mode", pattern: /darkMode|dark:/i, evidence: "dark mode evidence was detected." },
+    { signal: "prefix", pattern: /prefix\s*:|prefix\(|tw:/i, evidence: "prefix evidence was detected." },
+    { signal: "important", pattern: /important\s*:|!important|!\w/i, evidence: "important modifier evidence was detected." },
+    { signal: "presets", pattern: /presets\s*:/i, evidence: "presets evidence was detected." },
+    { signal: "core-plugins", pattern: /corePlugins\s*:/i, evidence: "core plugin policy evidence was detected." }
+  ];
+  return stylingSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function stylingDirectiveSignals(sourceFiles: StylingSourceFile[]): StylingReadinessReport["directiveSignals"] {
+  const specs: Array<{ signal: StylingReadinessReport["directiveSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "import-tailwind", pattern: /@import\s+["']tailwindcss["']/i, evidence: "@import tailwindcss evidence was detected." },
+    { signal: "tailwind-directive", pattern: /@tailwind\s+(base|components|utilities|screens|variants)/i, evidence: "@tailwind directive evidence was detected." },
+    { signal: "theme-directive", pattern: /@theme\b/i, evidence: "@theme evidence was detected." },
+    { signal: "utility-directive", pattern: /@utility\b/i, evidence: "@utility evidence was detected." },
+    { signal: "variant-directive", pattern: /@variant\b|@custom-variant/i, evidence: "variant directive evidence was detected." },
+    { signal: "source-directive", pattern: /@source\b/i, evidence: "@source evidence was detected." },
+    { signal: "config-directive", pattern: /@config\b/i, evidence: "@config evidence was detected." },
+    { signal: "plugin-directive", pattern: /@plugin\b/i, evidence: "@plugin evidence was detected." },
+    { signal: "apply-directive", pattern: /@apply\b/i, evidence: "@apply evidence was detected." },
+    { signal: "layer-directive", pattern: /@layer\b/i, evidence: "@layer evidence was detected." }
+  ];
+  return stylingSignalFromSpecs(sourceFiles, specs, "directive", "signal");
+}
+
+function stylingClassSignals(sourceFiles: StylingSourceFile[]): StylingReadinessReport["classSignals"] {
+  const specs: Array<{ signal: StylingReadinessReport["classSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "utility-class", pattern: /(?:className|class)\s*=|(?:bg|text|p|m|w|h|grid|flex|rounded|shadow|border|font)-[A-Za-z0-9_[\]().:/%-]+/i, evidence: "utility class evidence was detected." },
+    { signal: "arbitrary-value", pattern: /\[[^\]]+\]|[a-z-]+-\[[^\]]+\]/i, evidence: "arbitrary value evidence was detected." },
+    { signal: "variant-prefix", pattern: /(?:hover|focus|active|disabled|visited|checked|first|last|odd|even):/i, evidence: "state variant evidence was detected." },
+    { signal: "responsive-prefix", pattern: /(?:sm|md|lg|xl|2xl):/i, evidence: "responsive prefix evidence was detected." },
+    { signal: "state-prefix", pattern: /(?:aria-|data-|supports-|motion-safe|motion-reduce):/i, evidence: "state/data prefix evidence was detected." },
+    { signal: "group-peer", pattern: /group-|peer-|group:|peer:/i, evidence: "group/peer evidence was detected." },
+    { signal: "dark-class", pattern: /dark:/i, evidence: "dark class evidence was detected." },
+    { signal: "important-modifier", pattern: /![A-Za-z0-9_-]+:|![A-Za-z0-9_-]+|!important/i, evidence: "important modifier evidence was detected." },
+    { signal: "prefix-usage", pattern: /\btw:/i, evidence: "prefixed utility evidence was detected." }
+  ];
+  return stylingSignalFromSpecs(sourceFiles, specs, "class", "signal");
+}
+
+function stylingThemeSignals(sourceFiles: StylingSourceFile[]): StylingReadinessReport["themeSignals"] {
+  const specs: Array<{ signal: StylingReadinessReport["themeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "css-theme-vars", pattern: /@theme|--(?:color|spacing|font|breakpoint|container|radius|shadow)-/i, evidence: "CSS theme variable evidence was detected." },
+    { signal: "colors", pattern: /colors\s*:|--color-|text-[A-Za-z]+|bg-[A-Za-z]+/i, evidence: "color theme evidence was detected." },
+    { signal: "spacing", pattern: /spacing\s*:|--spacing|p-[0-9]|m-[0-9]|gap-[0-9]/i, evidence: "spacing theme evidence was detected." },
+    { signal: "typography", pattern: /fontSize|fontFamily|lineHeight|letterSpacing|@tailwindcss\/typography|prose/i, evidence: "typography evidence was detected." },
+    { signal: "breakpoints", pattern: /screens\s*:|--breakpoint-|(?:sm|md|lg|xl|2xl):/i, evidence: "breakpoint evidence was detected." },
+    { signal: "container", pattern: /container\s*:|@container|container-/i, evidence: "container evidence was detected." },
+    { signal: "custom-property", pattern: /--[a-z0-9-]+\s*:/i, evidence: "custom property evidence was detected." },
+    { signal: "theme-function", pattern: /theme\(|--theme\(/i, evidence: "theme function evidence was detected." },
+    { signal: "design-token-bridge", pattern: /tokens?|style-dictionary|design-token|var\(--/i, evidence: "design token bridge evidence was detected." }
+  ];
+  return stylingSignalFromSpecs(sourceFiles, specs, "theme", "signal");
+}
+
+function stylingIntegrationSignals(sourceFiles: StylingSourceFile[]): StylingReadinessReport["integrationSignals"] {
+  const specs: Array<{ signal: StylingReadinessReport["integrationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "postcss-plugin", pattern: /@tailwindcss\/postcss|postcss\.config|tailwindcss\s*:\s*\{|plugins\s*:\s*\{[\s\S]{0,200}tailwindcss/i, evidence: "PostCSS plugin evidence was detected." },
+    { signal: "vite-plugin", pattern: /@tailwindcss\/vite|tailwindcss\(\)|vite\.config/i, evidence: "Vite plugin evidence was detected." },
+    { signal: "webpack-loader", pattern: /@tailwindcss\/webpack|postcss-loader|webpack\.config/i, evidence: "webpack loader evidence was detected." },
+    { signal: "cli-command", pattern: /tailwindcss\s+(-i|--input|build|init)|@tailwindcss\/cli/i, evidence: "Tailwind CLI evidence was detected." },
+    { signal: "watch-mode", pattern: /--watch|tailwindcss\s+.*-w|watch:css|dev:css/i, evidence: "watch mode evidence was detected." },
+    { signal: "build-script", pattern: /build:css|css:build|tailwindcss\s+.*(-o|--output)|postcss\s+/i, evidence: "CSS build script evidence was detected." },
+    { signal: "css-entry", pattern: /@import\s+["']tailwindcss["']|@tailwind|\.css['"]|import\s+['"][^'"]+\.css['"]/i, evidence: "CSS entrypoint evidence was detected." },
+    { signal: "import-css", pattern: /import\s+['"][^'"]+\.(css|scss|sass|pcss)['"]|@import\s+['"][^'"]+['"]/i, evidence: "CSS import evidence was detected." },
+    { signal: "lightning-css", pattern: /lightningcss|Lightning CSS/i, evidence: "Lightning CSS evidence was detected." }
+  ];
+  return stylingSignalFromSpecs(sourceFiles, specs, "integration", "signal");
+}
+
+function stylingPackageSignals(sourceFiles: StylingSourceFile[]): StylingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: StylingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tailwindcss", pattern: /"tailwindcss"|from ['"]tailwindcss|@import\s+["']tailwindcss["']/i, evidence: "tailwindcss evidence was detected." },
+    { signal: "@tailwindcss/postcss", pattern: /@tailwindcss\/postcss/i, evidence: "@tailwindcss/postcss evidence was detected." },
+    { signal: "@tailwindcss/vite", pattern: /@tailwindcss\/vite/i, evidence: "@tailwindcss/vite evidence was detected." },
+    { signal: "@tailwindcss/cli", pattern: /@tailwindcss\/cli/i, evidence: "@tailwindcss/cli evidence was detected." },
+    { signal: "@tailwindcss/forms", pattern: /@tailwindcss\/forms/i, evidence: "@tailwindcss/forms evidence was detected." },
+    { signal: "@tailwindcss/typography", pattern: /@tailwindcss\/typography/i, evidence: "@tailwindcss/typography evidence was detected." },
+    { signal: "@tailwindcss/oxide", pattern: /@tailwindcss\/oxide|Scanner/i, evidence: "@tailwindcss/oxide evidence was detected." },
+    { signal: "unocss", pattern: /"unocss"|@unocss|uno\.config/i, evidence: "UnoCSS evidence was detected." },
+    { signal: "bootstrap", pattern: /"bootstrap"|from ['"]bootstrap|bootstrap\/dist|btn-|navbar/i, evidence: "Bootstrap evidence was detected." }
+  ];
+  return stylingSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function stylingSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: StylingSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/styling-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

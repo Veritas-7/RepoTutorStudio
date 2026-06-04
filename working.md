@@ -4314,6 +4314,48 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 195:
   - `7defefd` build tool readiness report
 
+- 2026-06-04: AutoResearch Upgrade 196 candidate selected:
+  `tailwindlabs/tailwindcss`
+  (`https://github.com/tailwindlabs/tailwindcss`; public; MIT; 95,232 stars;
+  5,286 forks; updated 2026-06-04T14:27:21Z). Compared with
+  `unocss/unocss`, `sass/sass`, and `twbs/bootstrap`; selected Tailwind CSS
+  because existing RepoTutor reports already cover design tokens, while
+  Tailwind directly models styling pipeline readiness: CSS entry directives,
+  utility class candidates, content scanning, theme extension, plugins, and
+  build integration. Cloned ignored external source to
+  `research/external-src/tailwindlabs-tailwindcss` and inspected
+  docs/source/test/codemod hits without executing external source. Clone HEAD
+  was `ad66939`; tracked file count for
+  `research/external-src/tailwindlabs-tailwindcss` returned `0`.
+- 2026-06-04: RED styling-readiness smoke generated
+  `/tmp/repotutor-styling-red-studies.vmu3oq/2026-06-05/local__simple-ts-app__HEAD__85b51db6`;
+  old build had `verificationCheckedRequiredArtifacts=285`, was missing
+  `analysis/styling-readiness-report.json`,
+  `markdown/styling-readiness.md`, and `html/styling-readiness.html`, and
+  `open --target styling-readiness` failed as expected.
+- 2026-06-04: Implemented Tailwind CSS-style styling-readiness report:
+  `StylingReadinessReportSchema`,
+  `analysis/styling-readiness-report.json`,
+  `markdown/styling-readiness.md`, `html/styling-readiness.html`, styling
+  setups, config signals, directive signals, class signals, theme signals,
+  integration signals, package signals, recommended commands, risk queue,
+  manifest/session verification coverage, learning-path linkage, nav entry, and
+  `open --target styling-readiness`.
+- 2026-06-04: GREEN styling-readiness smoke generated
+  `/tmp/repotutor-styling-green-studies.fWnFPC/2026-06-05/local__simple-ts-app__main__85b51db6`;
+  confirmed `verificationCheckedRequiredArtifacts=288`, styling setups 0,
+  config signals 9, directive signals 10, class signals 9, theme signals 9,
+  integration signals 9, package signals 9, risk queue 2, all three new
+  artifacts, and `open --target styling-readiness` ->
+  `html/styling-readiness.html`.
+- 2026-06-04: Verification for Upgrade 196:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests after a retry; the first concurrent
+    test+audit run hit Vitest's 5s fixture-test timeout.
+  - `pnpm audit:brief`: PASS, 94/94 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
