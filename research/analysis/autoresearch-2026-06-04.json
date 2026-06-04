@@ -574,6 +574,22 @@
         "trusted registries and label schema policy",
         "SARIF/JUnit/code-quality CI reporting"
       ]
+    },
+    {
+      "repo": "biomejs/biome",
+      "url": "https://github.com/biomejs/biome",
+      "localPath": "research/external-src/biomejs-biome",
+      "stars": 24817,
+      "forks": 1014,
+      "license": "Apache-2.0 OR MIT",
+      "updatedAt": "2026-06-03T22:12:06Z",
+      "adoptedPatterns": [
+        "unified formatter linter check and ci commands",
+        "biome.json config for formatter linter assist files and vcs",
+        "organize imports and source action assist readiness",
+        "editor LSP diagnostics and package script integration",
+        "safe write workflows and CI-oriented code quality gates"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2626,6 +2642,25 @@
         "markdown/container-readiness.md",
         "html/container-readiness.html"
       ]
+    },
+    {
+      "name": "Code quality report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/code-quality-report.json",
+        "markdown/code-quality.md",
+        "html/code-quality.html"
+      ]
     }
   ],
   "verification": {
@@ -2964,6 +2999,12 @@
     "cliContainerReadinessOpenTargetSmoke": "PASS",
     "buildContainerReadiness": "PASS",
     "testContainerReadiness": "PASS",
-    "auditBriefContainerReadiness37": "PASS"
+    "auditBriefContainerReadiness37": "PASS",
+    "fixtureCodeQualityReport": "PASS",
+    "cliCodeQualitySmoke": "PASS",
+    "cliCodeQualityOpenTargetSmoke": "PASS",
+    "buildCodeQuality": "PASS",
+    "testCodeQuality": "PASS",
+    "auditBriefCodeQuality38": "PASS"
   }
 }

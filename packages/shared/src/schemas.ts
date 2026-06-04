@@ -1677,6 +1677,60 @@ export const ContainerReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CodeQualityReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  toolConfigs: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["biome-config", "eslint-config", "prettier-config", "package-script", "editor-config", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  formatterSignals: z.array(z.object({
+    signal: z.enum(["formatter-enabled", "format-command", "write-mode", "language-support", "line-width", "indent-style", "prettier-compat", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  linterSignals: z.array(z.object({
+    signal: z.enum(["linter-enabled", "rule-groups", "custom-rules", "recommended-rules", "safe-fixes", "unsafe-fixes", "dependency-rule", "import-cycle-rule", "promise-rule", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  assistSignals: z.array(z.object({
+    signal: z.enum(["assist-enabled", "organize-imports", "sorted-keys", "plugins", "vcs-ignore", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["biome-ci", "biome-check", "github-action", "gitlab-ci", "pre-commit", "package-script", "editor-lsp", "reporter", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  languageCoverage: z.array(z.object({
+    language: z.enum(["javascript", "typescript", "jsx", "json", "css", "graphql", "html", "markdown", "unknown"]),
+    fileCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1918,6 +1972,7 @@ export type I18nReport = z.infer<typeof I18nReportSchema>;
 export type ReleaseReadinessReport = z.infer<typeof ReleaseReadinessReportSchema>;
 export type SecretReadinessReport = z.infer<typeof SecretReadinessReportSchema>;
 export type ContainerReadinessReport = z.infer<typeof ContainerReadinessReportSchema>;
+export type CodeQualityReport = z.infer<typeof CodeQualityReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

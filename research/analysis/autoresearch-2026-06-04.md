@@ -2957,6 +2957,46 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 37/37 audit checks across 13 generated reports
 
+### Upgrade 140: Code Quality Report
+
+- Cloned and inspected `biomejs/biome` under
+  `research/external-src/biomejs-biome` without executing external source.
+- GitHub metadata: public repo, Apache-2.0/MIT dual license, 24,817 stars,
+  1,014 forks, updated 2026-06-03T22:12:06Z. Compared with `eslint/eslint`,
+  `prettier/prettier`, and `oxc-project/oxc`; selected Biome because it
+  directly models a unified formatter, linter, `check`, `ci`, config,
+  assist/source-action, diagnostics, editor/LSP, and safe write workflow.
+  No source code was copied into RepoTutor.
+- Added `CodeQualityReportSchema` and `analysis/code-quality-report.json`
+  with tool configs, formatter signals, linter signals, assist signals,
+  CI/editor signals, language coverage, risk queue, recommended commands, and
+  learner next steps.
+- Added `markdown/code-quality.md`, `html/code-quality.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target code-quality`.
+- Source pattern: Biome unifies formatter, linter, `check`, and `ci`;
+  supports `biome.json` config for files, formatter, linter, assist, and VCS
+  ignore behavior; provides organize-imports/source actions, diagnostics,
+  editor/LSP usage, safe `--write` workflows, and CI quality gates. RepoTutor
+  maps that to deterministic static code-quality readiness and explicitly does
+  not execute Biome, ESLint, Prettier, editor LSPs, or unsafe fixes.
+- RED smoke generated
+  `/tmp/repotutor-code-quality-red-studies.99eopw/2026-06-04/local__simple-ts-app__main__80547f82`;
+  old behavior was missing `analysis/code-quality-report.json`,
+  `markdown/code-quality.md`, and `html/code-quality.html`, and
+  `open --target code-quality` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-code-quality-green-studies.jk8kVy/2026-06-04/local__simple-ts-app__main__80547f82`;
+  confirmed `verificationCheckedRequiredArtifacts=120`, tool configs 0,
+  formatter signals 7, linter signals 9, assist signals 5, CI/editor signals
+  8, language coverage 8, recommended commands 5, risk queue 7,
+  `code-quality-card`, `data-source-pattern="Biome"`,
+  manifest/learning-path entries, and `open --target code-quality` ->
+  `html/code-quality.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 38/38 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
