@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-04T19:18:16.923Z",
+  "createdAt": "2026-06-04T19:36:49.736Z",
   "checks": [
     {
       "name": "project setup",
@@ -732,6 +732,13 @@
     },
     {
       "name": "Search service readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Object storage readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

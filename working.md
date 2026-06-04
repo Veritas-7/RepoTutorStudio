@@ -5022,6 +5022,49 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 211:
   - `b569062` search-service readiness report
 
+- 2026-06-05: AutoResearch Upgrade 212 candidate selected:
+  `minio/minio` (`https://github.com/minio/minio`; S3-compatible object
+  storage; sparse ignored clone HEAD `7aac2a2`), compared with
+  `aws/aws-sdk-js-v3` (S3 client, multipart upload, presigning; sparse ignored
+  clone HEAD `f5235bb`) and `supabase/storage` (Supabase Storage HTTP/TUS/S3
+  service; sparse ignored clone HEAD `d2e814b`). Selected object-storage
+  readiness because RepoTutor had file-upload and edge R2 signals, but no
+  dedicated bucket/object lifecycle, signed URL, policy, lifecycle,
+  replication, encryption, package, and operations readiness target. All three
+  external source paths remained ignored and `git ls-files` returned `0`.
+- 2026-06-05: RED object-storage-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-object-storage-red-studies.xAgooE/2026-06-05/local__repotutor-object-storage-red-repo.MzfWOq__local__9b9f9553`;
+  old behavior had `verificationCheckedRequiredArtifacts=333`, was missing
+  `analysis/object-storage-readiness-report.json`,
+  `markdown/object-storage-readiness.md`, and
+  `html/object-storage-readiness.html`, and
+  `open --target object-storage-readiness` failed with
+  `Unsupported open target`.
+- 2026-06-05: Implemented S3/MinIO/R2/Supabase Storage-style
+  object-storage-readiness report: `ObjectStorageReadinessReportSchema`,
+  `analysis/object-storage-readiness-report.json`,
+  `markdown/object-storage-readiness.md`,
+  `html/object-storage-readiness.html`, storage setup detection, bucket
+  signals, client signals, object lifecycle signals, access signals,
+  reliability signals, security signals, ops signals, package signals,
+  recommended commands, risk queue, manifest/session verification coverage,
+  learning-path linkage, nav entry, CLI help target, and
+  `open --target object-storage-readiness`.
+- 2026-06-05: GREEN object-storage-readiness smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-object-storage-green-studies.simple/2026-06-05/local__repotutor-object-storage-red-repo.MzfWOq__local__5714ca81`;
+  confirmed `verificationCheckedRequiredArtifacts=336`, storage setups 2,
+  platforms `r2` and `s3`, all three new artifacts, and
+  `open --target object-storage-readiness` ->
+  `html/object-storage-readiness.html`. The focused Vitest fixture covered
+  S3/MinIO/R2/Supabase Storage plus GCS/Azure package signals with risk queue
+  0.
+- 2026-06-05: Verification for Upgrade 212:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 19/19 tests
+  - `pnpm audit:brief`: PASS, 110/110 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

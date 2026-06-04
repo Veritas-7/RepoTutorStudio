@@ -2,7 +2,7 @@ import type {
   AnalysisBundle,
 } from "./scanner.js";
 import type { StudySessionVerificationResult } from "./session-verifier.js";
-import type { AnalyticsReadinessReport, BackupReadinessReport, BrowserCompatibilityReadinessReport, BuildToolReadinessReport, CacheReadinessReport, ChartVisualizationReadinessReport, CliReadinessReport, ComposeReadinessReport, DateTimeReadinessReport, DeploymentReadinessReport, DevContainerReadinessReport, DiagramRenderingReadinessReport, EdgeReadinessReport, EmailReadinessReport, EnvValidationReadinessReport, ErrorTrackingReadinessReport, FeatureFlagReadinessReport, FileUploadReadinessReport, GitOpsReadinessReport, GraphqlReadinessReport, HttpClientReadinessReport, IdGenerationReadinessReport, ImageProcessingReadinessReport, InfrastructureReadinessReport, KubernetesReadinessReport, LinkIntegrityReadinessReport, LlmEvalReadinessReport, LlmObservabilityReadinessReport, LlmReadinessReport, LoggingReadinessReport, MobileReadinessReport, PaymentReadinessReport, PdfGenerationReadinessReport, PwaReadinessReport, QueueReadinessReport, Quiz, RateLimitReadinessReport, RpcReadinessReport, ScaffoldingReadinessReport, SchedulerReadinessReport, SchemaValidationReadinessReport, SearchServiceReadinessReport, SecurityHeadersReadinessReport, SeoMetadataReadinessReport, ServerFrameworkReadinessReport, ServerlessReadinessReport, SpreadsheetReadinessReport, StylingReadinessReport, StudySession, VectorDbReadinessReport, VisualRegressionReadinessReport, WebSocketReadinessReport, WorkspaceGraphReadinessReport, WrongNote } from "@repotutor/shared";
+import type { AnalyticsReadinessReport, BackupReadinessReport, BrowserCompatibilityReadinessReport, BuildToolReadinessReport, CacheReadinessReport, ChartVisualizationReadinessReport, CliReadinessReport, ComposeReadinessReport, DateTimeReadinessReport, DeploymentReadinessReport, DevContainerReadinessReport, DiagramRenderingReadinessReport, EdgeReadinessReport, EmailReadinessReport, EnvValidationReadinessReport, ErrorTrackingReadinessReport, FeatureFlagReadinessReport, FileUploadReadinessReport, GitOpsReadinessReport, GraphqlReadinessReport, HttpClientReadinessReport, IdGenerationReadinessReport, ImageProcessingReadinessReport, InfrastructureReadinessReport, KubernetesReadinessReport, LinkIntegrityReadinessReport, LlmEvalReadinessReport, LlmObservabilityReadinessReport, LlmReadinessReport, LoggingReadinessReport, MobileReadinessReport, ObjectStorageReadinessReport, PaymentReadinessReport, PdfGenerationReadinessReport, PwaReadinessReport, QueueReadinessReport, Quiz, RateLimitReadinessReport, RpcReadinessReport, ScaffoldingReadinessReport, SchedulerReadinessReport, SchemaValidationReadinessReport, SearchServiceReadinessReport, SecurityHeadersReadinessReport, SeoMetadataReadinessReport, ServerFrameworkReadinessReport, ServerlessReadinessReport, SpreadsheetReadinessReport, StylingReadinessReport, StudySession, VectorDbReadinessReport, VisualRegressionReadinessReport, WebSocketReadinessReport, WorkspaceGraphReadinessReport, WrongNote } from "@repotutor/shared";
 
 export function markdownFiles(session: StudySession, analysis: AnalysisBundle, quiz: Quiz, wrongNotes: WrongNote[]): Record<string, string> {
   return {
@@ -141,6 +141,60 @@ ${analysis.searchServiceReadinessReport.riskQueue.map((item) => `- ${item.priori
 ## 다음 확인 단계
 
 ${bulletsOrNone(analysis.searchServiceReadinessReport.learnerNextSteps)}
+`,
+    "object-storage-readiness.md": `# Object Storage Readiness
+
+${analysis.objectStorageReadinessReport.summary}
+
+Source pattern: ${analysis.objectStorageReadinessReport.sourcePattern}
+
+## Storage Setups
+
+${objectStorageReadinessSetupMarkdown(analysis.objectStorageReadinessReport.storageSetups)}
+
+## Bucket Signals
+
+${objectStorageReadinessSignalMarkdown(analysis.objectStorageReadinessReport.bucketSignals, "signal")}
+
+## Client Signals
+
+${objectStorageReadinessSignalMarkdown(analysis.objectStorageReadinessReport.clientSignals, "signal")}
+
+## Object Signals
+
+${objectStorageReadinessSignalMarkdown(analysis.objectStorageReadinessReport.objectSignals, "signal")}
+
+## Access Signals
+
+${objectStorageReadinessSignalMarkdown(analysis.objectStorageReadinessReport.accessSignals, "signal")}
+
+## Reliability Signals
+
+${objectStorageReadinessSignalMarkdown(analysis.objectStorageReadinessReport.reliabilitySignals, "signal")}
+
+## Security Signals
+
+${objectStorageReadinessSignalMarkdown(analysis.objectStorageReadinessReport.securitySignals, "signal")}
+
+## Ops Signals
+
+${objectStorageReadinessSignalMarkdown(analysis.objectStorageReadinessReport.opsSignals, "signal")}
+
+## Package Signals
+
+${objectStorageReadinessSignalMarkdown(analysis.objectStorageReadinessReport.packageSignals, "signal")}
+
+## Recommended Commands
+
+${analysis.objectStorageReadinessReport.recommendedCommands.map((item) => `- \`${item.command}\`: ${item.purpose}`).join("\n")}
+
+## Risk Queue
+
+${analysis.objectStorageReadinessReport.riskQueue.map((item) => `- ${item.priority}: ${item.action}\n  - Why: ${item.why}\n  - Related: [${item.relatedHref}](../${item.relatedHref})`).join("\n") || "- 없음"}
+
+## 다음 확인 단계
+
+${bulletsOrNone(analysis.objectStorageReadinessReport.learnerNextSteps)}
 `,
     "server-framework-readiness.md": `# Server Framework Readiness\n\n${analysis.serverFrameworkReadinessReport.summary}\n\nSource pattern: ${analysis.serverFrameworkReadinessReport.sourcePattern}\n\n## Server Setups\n\n${serverFrameworkReadinessSetupMarkdown(analysis.serverFrameworkReadinessReport.serverSetups)}\n\n## Route Signals\n\n${serverFrameworkReadinessSignalMarkdown(analysis.serverFrameworkReadinessReport.routeSignals, "signal")}\n\n## Schema Signals\n\n${serverFrameworkReadinessSignalMarkdown(analysis.serverFrameworkReadinessReport.schemaSignals, "signal")}\n\n## Plugin Signals\n\n${serverFrameworkReadinessSignalMarkdown(analysis.serverFrameworkReadinessReport.pluginSignals, "signal")}\n\n## Lifecycle Signals\n\n${serverFrameworkReadinessSignalMarkdown(analysis.serverFrameworkReadinessReport.lifecycleSignals, "signal")}\n\n## Runtime Signals\n\n${serverFrameworkReadinessSignalMarkdown(analysis.serverFrameworkReadinessReport.runtimeSignals, "signal")}\n\n## Error Signals\n\n${serverFrameworkReadinessSignalMarkdown(analysis.serverFrameworkReadinessReport.errorSignals, "signal")}\n\n## Test Signals\n\n${serverFrameworkReadinessSignalMarkdown(analysis.serverFrameworkReadinessReport.testSignals, "signal")}\n\n## Package Signals\n\n${serverFrameworkReadinessSignalMarkdown(analysis.serverFrameworkReadinessReport.packageSignals, "signal")}\n\n## Recommended Commands\n\n${analysis.serverFrameworkReadinessReport.recommendedCommands.map((item) => `- \`${item.command}\`: ${item.purpose}`).join("\n")}\n\n## Risk Queue\n\n${analysis.serverFrameworkReadinessReport.riskQueue.map((item) => `- ${item.priority}: ${item.action}\n  - Why: ${item.why}\n  - Related: [${item.relatedHref}](../${item.relatedHref})`).join("\n") || "- 없음"}\n\n## 다음 확인 단계\n\n${bulletsOrNone(analysis.serverFrameworkReadinessReport.learnerNextSteps)}\n`,
     "rpc-readiness.md": `# RPC Readiness\n\n${analysis.rpcReadinessReport.summary}\n\nSource pattern: ${analysis.rpcReadinessReport.sourcePattern}\n\n## RPC Setups\n\n${rpcReadinessSetupMarkdown(analysis.rpcReadinessReport.rpcSetups)}\n\n## Router Signals\n\n${rpcReadinessSignalMarkdown(analysis.rpcReadinessReport.routerSignals, "signal")}\n\n## Procedure Signals\n\n${rpcReadinessSignalMarkdown(analysis.rpcReadinessReport.procedureSignals, "signal")}\n\n## Validation Signals\n\n${rpcReadinessSignalMarkdown(analysis.rpcReadinessReport.validationSignals, "signal")}\n\n## Context Signals\n\n${rpcReadinessSignalMarkdown(analysis.rpcReadinessReport.contextSignals, "signal")}\n\n## Client Signals\n\n${rpcReadinessSignalMarkdown(analysis.rpcReadinessReport.clientSignals, "signal")}\n\n## Adapter Signals\n\n${rpcReadinessSignalMarkdown(analysis.rpcReadinessReport.adapterSignals, "signal")}\n\n## Error Signals\n\n${rpcReadinessSignalMarkdown(analysis.rpcReadinessReport.errorSignals, "signal")}\n\n## Caller Signals\n\n${rpcReadinessSignalMarkdown(analysis.rpcReadinessReport.callerSignals, "signal")}\n\n## Package Signals\n\n${rpcReadinessSignalMarkdown(analysis.rpcReadinessReport.packageSignals, "signal")}\n\n## Recommended Commands\n\n${analysis.rpcReadinessReport.recommendedCommands.map((item) => `- \`${item.command}\`: ${item.purpose}`).join("\n")}\n\n## Risk Queue\n\n${analysis.rpcReadinessReport.riskQueue.map((item) => `- ${item.priority}: ${item.action}\n  - Why: ${item.why}\n  - Related: [${item.relatedHref}](../${item.relatedHref})`).join("\n") || "- 없음"}\n\n## 다음 확인 단계\n\n${bulletsOrNone(analysis.rpcReadinessReport.learnerNextSteps)}\n`,
@@ -1381,6 +1435,17 @@ function searchServiceReadinessSignalMarkdown<T extends string>(items: Array<Rec
   if (items.length === 0) return "- 없음";
   return items.map((item) => `- ${item[labelKey]} [${item.readiness}]: ${item.evidence} ([related](../${item.relatedHref}))`).join("\n");
 }
+
+function objectStorageReadinessSetupMarkdown(items: ObjectStorageReadinessReport["storageSetups"]): string {
+  if (items.length === 0) return "- 없음";
+  return items.map((item) => `- ${item.filePath} [${item.platform}/${item.readiness}]\n  - Bucket/client/upload/download/list/delete/presign/metadata/policy/lifecycle/replication/encryption/ops: ${item.bucketCount}/${item.clientCount}/${item.uploadCount}/${item.downloadCount}/${item.listCount}/${item.deleteCount}/${item.presignCount}/${item.metadataCount}/${item.policyCount}/${item.lifecycleCount}/${item.replicationCount}/${item.encryptionCount}/${item.opsCount}\n  - Evidence: ${item.evidence}\n  - Source: [${item.sourceHref}](../${item.sourceHref})`).join("\n");
+}
+
+function objectStorageReadinessSignalMarkdown<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "- 없음";
+  return items.map((item) => `- ${item[labelKey]} [${item.readiness}]: ${item.evidence} ([related](../${item.relatedHref}))`).join("\n");
+}
+
 function serverFrameworkReadinessSetupMarkdown(items: ServerFrameworkReadinessReport["serverSetups"]): string {
   if (items.length === 0) return "- 없음";
   return items.map((item) => `- ${item.filePath} [${item.framework}/${item.readiness}]\n  - Route/schema/plugin/hook/decorator/error/runtime/test: ${item.routeCount}/${item.schemaCount}/${item.pluginCount}/${item.hookCount}/${item.decoratorCount}/${item.errorCount}/${item.listenCount}/${item.testCount}\n  - Evidence: ${item.evidence}\n  - Source: [${item.sourceHref}](../${item.sourceHref})`).join("\n");

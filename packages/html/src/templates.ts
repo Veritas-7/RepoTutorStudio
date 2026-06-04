@@ -101,6 +101,7 @@ import type {
   LlmObservabilityReadinessReport,
   VectorDbReadinessReport,
   SearchServiceReadinessReport,
+  ObjectStorageReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -226,6 +227,7 @@ export interface StudyHtmlInput {
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
   vectorDbReadinessReport: VectorDbReadinessReport;
   searchServiceReadinessReport: SearchServiceReadinessReport;
+  objectStorageReadinessReport: ObjectStorageReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -365,6 +367,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["llm-observability-readiness.html", "LLM Observability"],
     ["vector-db-readiness.html", "Vector DB"],
     ["search-service-readiness.html", "Search Service"],
+    ["object-storage-readiness.html", "Object Storage"],
     ["server-framework-readiness.html", "Server Framework"],
     ["rpc-readiness.html", "RPC"],
     ["workspace-graph-readiness.html", "Workspace Graph"],
@@ -517,6 +520,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>LLM Observability Readiness</h3><p>${escapeHtml(input.llmObservabilityReadinessReport.summary)}</p><p>Langfuse/Phoenix/Helicone 패턴으로 trace, session, token/cost, feedback, gateway 준비도를 정리합니다.</p><a href="llm-observability-readiness.html">LLM Observability 열기</a></article>
           <article><h3>Vector DB Readiness</h3><p>${escapeHtml(input.vectorDbReadinessReport.summary)}</p><p>Qdrant/Weaviate/Chroma 패턴으로 collection, embedding, ingestion, query, index, ops 준비도를 정리합니다.</p><a href="vector-db-readiness.html">Vector DB 열기</a></article>
           <article><h3>Search Service Readiness</h3><p>${escapeHtml(input.searchServiceReadinessReport.summary)}</p><p>Meilisearch/Typesense/OpenSearch 패턴으로 index, document, query, relevance, ops 준비도를 정리합니다.</p><a href="search-service-readiness.html">Search Service 열기</a></article>
+          <article><h3>Object Storage Readiness</h3><p>${escapeHtml(input.objectStorageReadinessReport.summary)}</p><p>S3/MinIO/R2/Supabase Storage 패턴으로 bucket, object lifecycle, access, reliability, security, ops 준비도를 정리합니다.</p><a href="object-storage-readiness.html">Object Storage 열기</a></article>
           <article><h3>Server Framework Readiness</h3><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p>Fastify 패턴으로 routes, schemas, plugins, hooks, decorators, errors, runtime, tests 준비도를 정리합니다.</p><a href="server-framework-readiness.html">Server Framework 열기</a></article>
           <article><h3>RPC Readiness</h3><p>${escapeHtml(input.rpcReadinessReport.summary)}</p><p>tRPC 패턴으로 routers, procedures, validation, context, clients, adapters, errors 준비도를 정리합니다.</p><a href="rpc-readiness.html">RPC 열기</a></article>
           <article><h3>Workspace Graph Readiness</h3><p>${escapeHtml(input.workspaceGraphReadinessReport.summary)}</p><p>Nx 패턴으로 project graph, targets, affected, boundaries, plugins 준비도를 정리합니다.</p><a href="workspace-graph-readiness.html">Workspace Graph 열기</a></article>
@@ -994,6 +998,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Search Service Readiness", "search-service-readiness.html", `<section class="panel" data-source-pattern="Search Service"><h2>Search Service Snapshot</h2><p>${escapeHtml(input.searchServiceReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.searchServiceReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.searchServiceReadinessReport.searchSetups.length}</dd></div><div><dt>indexes</dt><dd>${input.searchServiceReadinessReport.indexSignals.length}</dd></div><div><dt>queries</dt><dd>${input.searchServiceReadinessReport.querySignals.length}</dd></div><div><dt>relevance</dt><dd>${input.searchServiceReadinessReport.relevanceSignals.length}</dd></div><div><dt>ops</dt><dd>${input.searchServiceReadinessReport.opsSignals.length}</dd></div></dl><p class="muted">RepoTutor records search service readiness only; it does not start search servers, run clients, index/search/delete documents, create snapshots/dumps, or inspect live dashboards.</p></section><section class="grid"><article class="search-service-readiness-card"><h3>Search Setups</h3>${searchServiceReadinessSetupList(input.searchServiceReadinessReport.searchSetups)}</article><article class="search-service-readiness-card"><h3>Index Signals</h3>${searchServiceReadinessSignalList(input.searchServiceReadinessReport.indexSignals, "signal")}</article><article class="search-service-readiness-card"><h3>Client Signals</h3>${searchServiceReadinessSignalList(input.searchServiceReadinessReport.clientSignals, "signal")}</article><article class="search-service-readiness-card"><h3>Ingestion Signals</h3>${searchServiceReadinessSignalList(input.searchServiceReadinessReport.ingestionSignals, "signal")}</article></section><section class="grid"><article class="search-service-readiness-card"><h3>Query Signals</h3>${searchServiceReadinessSignalList(input.searchServiceReadinessReport.querySignals, "signal")}</article><article class="search-service-readiness-card"><h3>Relevance Signals</h3>${searchServiceReadinessSignalList(input.searchServiceReadinessReport.relevanceSignals, "signal")}</article><article class="search-service-readiness-card"><h3>Ops Signals</h3>${searchServiceReadinessSignalList(input.searchServiceReadinessReport.opsSignals, "signal")}</article><article class="search-service-readiness-card"><h3>Package Signals</h3>${searchServiceReadinessSignalList(input.searchServiceReadinessReport.packageSignals, "signal")}</article><article class="search-service-readiness-card"><h3>Recommended Commands</h3>${searchServiceReadinessCommandList(input.searchServiceReadinessReport.recommendedCommands)}</article><article class="search-service-readiness-card"><h3>Risk Queue</h3>${searchServiceReadinessRiskList(input.searchServiceReadinessReport.riskQueue)}</article><article class="search-service-readiness-card"><h3>다음 확인 단계</h3>${list(input.searchServiceReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "object-storage-readiness.html",
+      title: "Object Storage Readiness",
+      html: pageShell("Object Storage Readiness", "object-storage-readiness.html", `<section class="panel" data-source-pattern="Object Storage"><h2>Object Storage Snapshot</h2><p>${escapeHtml(input.objectStorageReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.objectStorageReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.objectStorageReadinessReport.storageSetups.length}</dd></div><div><dt>buckets</dt><dd>${input.objectStorageReadinessReport.bucketSignals.length}</dd></div><div><dt>objects</dt><dd>${input.objectStorageReadinessReport.objectSignals.length}</dd></div><div><dt>access</dt><dd>${input.objectStorageReadinessReport.accessSignals.length}</dd></div><div><dt>ops</dt><dd>${input.objectStorageReadinessReport.opsSignals.length}</dd></div></dl><p class="muted">RepoTutor records object storage readiness only; it does not create buckets, upload/download/list/delete/copy objects, sign URLs, read credentials, contact storage endpoints, mutate policies, or inspect live dashboards.</p></section><section class="grid"><article class="object-storage-readiness-card"><h3>Storage Setups</h3>${objectStorageReadinessSetupList(input.objectStorageReadinessReport.storageSetups)}</article><article class="object-storage-readiness-card"><h3>Bucket Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.bucketSignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Client Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.clientSignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Object Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.objectSignals, "signal")}</article></section><section class="grid"><article class="object-storage-readiness-card"><h3>Access Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.accessSignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Reliability Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.reliabilitySignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Security Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.securitySignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Ops Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.opsSignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Package Signals</h3>${objectStorageReadinessSignalList(input.objectStorageReadinessReport.packageSignals, "signal")}</article><article class="object-storage-readiness-card"><h3>Recommended Commands</h3>${objectStorageReadinessCommandList(input.objectStorageReadinessReport.recommendedCommands)}</article><article class="object-storage-readiness-card"><h3>Risk Queue</h3>${objectStorageReadinessRiskList(input.objectStorageReadinessReport.riskQueue)}</article><article class="object-storage-readiness-card"><h3>다음 확인 단계</h3>${list(input.objectStorageReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "server-framework-readiness.html",
       title: "Server Framework Readiness",
       html: pageShell("Server Framework Readiness", "server-framework-readiness.html", `<section class="panel" data-source-pattern="Fastify"><h2>Server Framework Snapshot</h2><p>${escapeHtml(input.serverFrameworkReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.serverFrameworkReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.serverFrameworkReadinessReport.serverSetups.length}</dd></div><div><dt>routes</dt><dd>${input.serverFrameworkReadinessReport.routeSignals.length}</dd></div><div><dt>schemas</dt><dd>${input.serverFrameworkReadinessReport.schemaSignals.length}</dd></div><div><dt>plugins</dt><dd>${input.serverFrameworkReadinessReport.pluginSignals.length}</dd></div></dl><p class="muted">RepoTutor records server framework readiness only; it does not start listeners, execute handlers, send HTTP requests, run plugins, compile schemas, or mutate runtime state.</p></section><section class="grid"><article class="server-framework-readiness-card"><h3>Server Setups</h3>${serverFrameworkReadinessSetupList(input.serverFrameworkReadinessReport.serverSetups)}</article><article class="server-framework-readiness-card"><h3>Route Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.routeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Schema Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.schemaSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Plugin Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.pluginSignals, "signal")}</article></section><section class="grid"><article class="server-framework-readiness-card"><h3>Lifecycle Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.lifecycleSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Runtime Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.runtimeSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Error Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.errorSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Test Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.testSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Package Signals</h3>${serverFrameworkReadinessSignalList(input.serverFrameworkReadinessReport.packageSignals, "signal")}</article><article class="server-framework-readiness-card"><h3>Recommended Commands</h3>${serverFrameworkReadinessCommandList(input.serverFrameworkReadinessReport.recommendedCommands)}</article><article class="server-framework-readiness-card"><h3>Risk Queue</h3>${serverFrameworkReadinessRiskList(input.serverFrameworkReadinessReport.riskQueue)}</article><article class="server-framework-readiness-card"><h3>다음 확인 단계</h3>${list(input.serverFrameworkReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1285,6 +1294,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "LLM Observability Readiness", path: "html/llm-observability-readiness.html", description: "Langfuse/Phoenix/Helicone식 trace, session, token/cost, feedback, gateway 준비도를 확인합니다." },
       { label: "Vector DB Readiness", path: "html/vector-db-readiness.html", description: "Qdrant/Weaviate/Chroma식 collection, embedding, ingestion, query, index, ops 준비도를 확인합니다." },
       { label: "Search Service Readiness", path: "html/search-service-readiness.html", description: "Meilisearch/Typesense/OpenSearch식 index, document, query, relevance, ops 준비도를 확인합니다." },
+      { label: "Object Storage Readiness", path: "html/object-storage-readiness.html", description: "S3/MinIO/R2/Supabase Storage식 bucket, object lifecycle, access, reliability, security, ops 준비도를 확인합니다." },
       { label: "Server Framework Readiness", path: "html/server-framework-readiness.html", description: "Fastify식 route, schema, plugin, hook, runtime, test 준비도를 확인합니다." },
       { label: "RPC Readiness", path: "html/rpc-readiness.html", description: "tRPC식 router, procedure, validation, context, client, adapter 준비도를 확인합니다." },
       { label: "Workspace Graph Readiness", path: "html/workspace-graph-readiness.html", description: "Nx식 project graph, target, affected, boundary, plugin 준비도를 확인합니다." },
@@ -1924,6 +1934,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "search-service-readiness.html",
       goal: "Meilisearch/Typesense/OpenSearch식 index, document ingestion, query, relevance tuning, ops 흐름을 보고 search service contract를 확인합니다.",
       evidence: `search service setups ${input.searchServiceReadinessReport.searchSetups.length}개, query signals ${input.searchServiceReadinessReport.querySignals.length}개`
+    },
+    {
+      title: "Object storage readiness 확인",
+      href: "object-storage-readiness.html",
+      goal: "S3/MinIO/R2/Supabase Storage식 bucket, object lifecycle, access, reliability, security, ops 흐름을 보고 object storage contract를 확인합니다.",
+      evidence: `object storage setups ${input.objectStorageReadinessReport.storageSetups.length}개, object signals ${input.objectStorageReadinessReport.objectSignals.length}개`
     },
     {
       title: "Server framework readiness 확인",
@@ -4402,6 +4418,32 @@ function searchServiceReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
+
+function objectStorageReadinessSetupList(items: ObjectStorageReadinessReport["storageSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">object storage setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)}/${escapeHtml(item.readiness)}]<br>bucket/client/upload/download/list/delete/presign/metadata/policy/lifecycle/replication/encryption/ops ${item.bucketCount}/${item.clientCount}/${item.uploadCount}/${item.downloadCount}/${item.listCount}/${item.deleteCount}/${item.presignCount}/${item.metadataCount}/${item.policyCount}/${item.lifecycleCount}/${item.replicationCount}/${item.encryptionCount}/${item.opsCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(objectStorageReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function objectStorageReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">object storage signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(objectStorageReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function objectStorageReadinessCommandList(items: ObjectStorageReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function objectStorageReadinessRiskList(items: ObjectStorageReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(objectStorageReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function objectStorageReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
 function serverFrameworkReadinessSetupList(items: ServerFrameworkReadinessReport["serverSetups"]): string {
   if (items.length === 0) return "<p class=\"muted\">server framework setup이 없습니다.</p>";
   return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>route/schema/plugin/hook/decorator/error/runtime/test ${item.routeCount}/${item.schemaCount}/${item.pluginCount}/${item.hookCount}/${item.decoratorCount}/${item.errorCount}/${item.listenCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(serverFrameworkReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;

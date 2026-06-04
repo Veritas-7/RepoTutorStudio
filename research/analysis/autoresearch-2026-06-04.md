@@ -6403,6 +6403,63 @@ Local verification:
 - `pnpm audit:brief`: PASS, 109/109 audit checks across 13 generated reports
 - Pushed implementation commit: `b569062` search-service readiness report
 
+### Upgrade 212: Object Storage Readiness Report
+
+- Cloned and inspected `minio/minio` under `research/external-src/minio`,
+  `aws/aws-sdk-js-v3` under `research/external-src/aws-sdk-js-v3`, and
+  `supabase/storage` under `research/external-src/supabase-storage` without
+  executing external source. Clone HEADs were `7aac2a2`, `f5235bb`, and
+  `d2e814b`; all three clones remain ignored by RepoTutor and tracked file
+  count returned `0`.
+- Selected the three-source slice because together they model S3-compatible
+  object storage, buckets/regions/endpoints/path-style clients, PutObject,
+  GetObject, ListObjects, DeleteObject, CopyObject, multipart upload,
+  metadata/tags, signed URLs, presigned browser upload, policies, ACL, CORS,
+  RLS/RBAC, versioning, lifecycle, retention, object lock, replication,
+  checksums/ETags, SSE/KMS encryption, event notifications, queues, CDN/cache,
+  health, metrics, backup, restore, and migration. No source code was copied
+  into RepoTutor.
+- Implemented S3/MinIO/R2/Supabase Storage-style
+  object-storage-readiness report:
+  `ObjectStorageReadinessReportSchema`,
+  `analysis/object-storage-readiness-report.json`,
+  `markdown/object-storage-readiness.md`,
+  `html/object-storage-readiness.html`, storage setup detection, bucket
+  signals, client signals, object lifecycle signals, access signals,
+  reliability signals, security signals, ops signals, package signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, nav entry, and
+  `open --target object-storage-readiness`.
+- Source pattern: object storage readiness separates S3, MinIO, R2, Supabase
+  Storage, buckets, regions, endpoints, path-style, credentials, PutObject,
+  GetObject, ListObjects, DeleteObject, CopyObject, multipart upload, upload,
+  download, metadata, tags, presigned/signed URLs, policy, ACL, CORS, RLS/RBAC,
+  versioning, lifecycle, retention, object lock, replication, checksum, ETag,
+  SSE/KMS encryption, event notifications, queues, CDN/cache, health, metrics,
+  backup, restore, and migration. RepoTutor maps that to deterministic static
+  object-storage readiness and explicitly does not create buckets,
+  upload/download/list/delete/copy objects, sign URLs, read credentials, contact
+  storage endpoints, mutate policies, or inspect live dashboards.
+- RED smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-object-storage-red-studies.xAgooE/2026-06-05/local__repotutor-object-storage-red-repo.MzfWOq__local__9b9f9553`;
+  old behavior had `verificationCheckedRequiredArtifacts=333`, was missing
+  `analysis/object-storage-readiness-report.json`,
+  `markdown/object-storage-readiness.md`, and
+  `html/object-storage-readiness.html`, and
+  `open --target object-storage-readiness` exited with
+  `Unsupported open target`.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-object-storage-green-studies.simple/2026-06-05/local__repotutor-object-storage-red-repo.MzfWOq__local__5714ca81`;
+  confirmed `verificationCheckedRequiredArtifacts=336`, storage setups 2,
+  platforms `r2` and `s3`, all three new artifacts, and
+  `open --target object-storage-readiness` ->
+  `html/object-storage-readiness.html`. The focused fixture in
+  `packages/core/src/pipeline.test.ts` covers S3/MinIO/R2/Supabase Storage plus
+  GCS/Azure package signals with risk queue 0.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 19/19 tests
+- `pnpm audit:brief`: PASS, 110/110 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

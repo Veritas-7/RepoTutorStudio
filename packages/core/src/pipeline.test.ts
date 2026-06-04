@@ -95,6 +95,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "llm-observability-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "vector-db-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "search-service-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "object-storage-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "rpc-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "workspace-graph-readiness-report.json"))).resolves.toBeUndefined();
@@ -206,6 +207,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "llm-observability-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "vector-db-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "search-service-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "object-storage-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "server-framework-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "rpc-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "workspace-graph-readiness.md"))).resolves.toBeUndefined();
@@ -317,6 +319,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "llm-observability-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "vector-db-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "search-service-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "object-storage-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "server-framework-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "rpc-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "workspace-graph-readiness.html"))).resolves.toBeUndefined();
@@ -459,6 +462,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/llm-observability-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/vector-db-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/search-service-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/object-storage-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/server-framework-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/rpc-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/workspace-graph-readiness.html\"");
@@ -2104,6 +2108,28 @@ describe("RepoTutor core pipeline", () => {
     expect(searchServiceReadinessMarkdown).toContain("Source pattern: Search service readiness");
     expect(searchServiceReadinessMarkdown).toContain("## Index Signals");
     expect(searchServiceReadinessMarkdown).toContain("## Ops Signals");
+    const objectStorageReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "object-storage-readiness-report.json"), "utf8");
+    expect(objectStorageReadinessText).toContain("Object storage readiness S3 MinIO R2 Supabase Storage buckets regions endpoints path-style credentials PutObject GetObject ListObjects DeleteObject CopyObject multipart upload download metadata tags presigned URL signed URL policy ACL CORS RLS RBAC versioning lifecycle retention object lock replication checksum ETag SSE KMS encryption event notifications queues CDN cache health metrics backup restore migration");
+    expect(objectStorageReadinessText).toContain("\"storageSetups\"");
+    expect(objectStorageReadinessText).toContain("\"bucketSignals\"");
+    expect(objectStorageReadinessText).toContain("\"clientSignals\"");
+    expect(objectStorageReadinessText).toContain("\"objectSignals\"");
+    expect(objectStorageReadinessText).toContain("\"accessSignals\"");
+    expect(objectStorageReadinessText).toContain("\"reliabilitySignals\"");
+    expect(objectStorageReadinessText).toContain("\"securitySignals\"");
+    expect(objectStorageReadinessText).toContain("\"opsSignals\"");
+    expect(objectStorageReadinessText).toContain("\"packageSignals\"");
+    const objectStorageReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "object-storage-readiness.html"), "utf8");
+    expect(objectStorageReadinessHtml).toContain("Object Storage Readiness");
+    expect(objectStorageReadinessHtml).toContain("object-storage-readiness-card");
+    expect(objectStorageReadinessHtml).toContain("data-source-pattern=\"Object Storage\"");
+    expect(objectStorageReadinessHtml).toContain("Storage Setups");
+    expect(objectStorageReadinessHtml).toContain("Object Signals");
+    const objectStorageReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "object-storage-readiness.md"), "utf8");
+    expect(objectStorageReadinessMarkdown).toContain("# Object Storage Readiness");
+    expect(objectStorageReadinessMarkdown).toContain("Source pattern: Object storage readiness");
+    expect(objectStorageReadinessMarkdown).toContain("## Bucket Signals");
+    expect(objectStorageReadinessMarkdown).toContain("## Ops Signals");
     const serverFrameworkReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "server-framework-readiness-report.json"), "utf8");
     expect(serverFrameworkReadinessText).toContain("Fastify fastify route get post schema register plugin addHook decorate setErrorHandler listen inject logger");
     expect(serverFrameworkReadinessText).toContain("\"serverSetups\"");
@@ -2573,6 +2599,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/llm-observability-readiness.html");
     expect(exportManifestText).toContain("html/vector-db-readiness.html");
     expect(exportManifestText).toContain("html/search-service-readiness.html");
+    expect(exportManifestText).toContain("html/object-storage-readiness.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -2702,6 +2729,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("llm-observability-readiness.html");
     expect(learningPathHtml).toContain("vector-db-readiness.html");
     expect(learningPathHtml).toContain("search-service-readiness.html");
+    expect(learningPathHtml).toContain("object-storage-readiness.html");
     expect(learningPathHtml).toContain("backup-readiness.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
@@ -5166,6 +5194,177 @@ describe("RepoTutor core pipeline", () => {
     expect(report.riskQueue).toHaveLength(0);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "search-service-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "search-service-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects object storage readiness patterns without contacting object storage", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-object-storage-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-object-storage-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "storage"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "config"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "storage:scan": "tsx src/storage/s3.ts"
+      },
+      dependencies: {
+        "@aws-sdk/client-s3": "latest",
+        "@aws-sdk/lib-storage": "latest",
+        "@aws-sdk/s3-presigned-post": "latest",
+        "@aws-sdk/s3-request-presigner": "latest",
+        "@azure/storage-blob": "latest",
+        "@google-cloud/storage": "latest",
+        "@supabase/supabase-js": "latest",
+        minio: "latest",
+        wrangler: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "requirements.txt"), [
+      "boto3",
+      "minio",
+      "google-cloud-storage",
+      "azure-storage-blob",
+      "supabase"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "storage", "s3.ts"), [
+      "import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command, DeleteObjectCommand, CopyObjectCommand, PutBucketPolicyCommand, PutBucketCorsCommand } from \"@aws-sdk/client-s3\";",
+      "import { Upload } from \"@aws-sdk/lib-storage\";",
+      "import { getSignedUrl } from \"@aws-sdk/s3-request-presigner\";",
+      "import { createPresignedPost } from \"@aws-sdk/s3-presigned-post\";",
+      "",
+      "const client = new S3Client({",
+      "  region: process.env.AWS_REGION,",
+      "  endpoint: process.env.S3_ENDPOINT,",
+      "  forcePathStyle: true,",
+      "  credentials: { accessKeyId: process.env.AWS_ACCESS_KEY_ID!, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY! },",
+      "  requestHandler: { requestTimeout: 2000 },",
+      "  maxAttempts: 3",
+      "});",
+      "const Bucket = process.env.UPLOAD_BUCKET || \"app-private-bucket\";",
+      "await client.send(new PutObjectCommand({ Bucket, Key: \"avatars/u1.png\", Body: \"demo\", Metadata: { owner: \"u1\" }, Tagging: \"purpose=avatar\", ContentType: \"image/png\", CacheControl: \"public, max-age=60\", ACL: \"private\", ServerSideEncryption: \"aws:kms\", SSEKMSKeyId: process.env.KMS_KEY_ID, ChecksumSHA256: \"abc\", ContentMD5: \"abc\" }));",
+      "await new Upload({ client, params: { Bucket, Key: \"multipart/video.mp4\", Body: \"demo\", Metadata: { kind: \"multipart\" } } }).done();",
+      "await client.send(new GetObjectCommand({ Bucket, Key: \"avatars/u1.png\" }));",
+      "await client.send(new ListObjectsV2Command({ Bucket, Prefix: \"avatars/\" }));",
+      "await client.send(new CopyObjectCommand({ Bucket, CopySource: `${Bucket}/avatars/u1.png`, Key: \"archive/u1.png\" }));",
+      "await client.send(new DeleteObjectCommand({ Bucket, Key: \"old/u1.png\" }));",
+      "const signedUrl = await getSignedUrl(client, new GetObjectCommand({ Bucket, Key: \"avatars/u1.png\" }));",
+      "await createPresignedPost(client, { Bucket, Key: \"browser/${filename}\", Conditions: [{ acl: \"private\" }], Fields: { ContentType: \"image/png\" } });",
+      "await client.send(new PutBucketPolicyCommand({ Bucket, Policy: JSON.stringify({ Statement: [{ Effect: \"Allow\", Principal: \"*\", Action: [\"s3:GetObject\", \"s3:PutObject\", \"s3:ListBucket\"], Resource: [\"arn:aws:s3:::app-private-bucket/*\"] }] }) }));",
+      "await client.send(new PutBucketCorsCommand({ Bucket, CORSConfiguration: { CORSRules: [{ AllowedMethods: [\"GET\", \"PUT\"], AllowedOrigins: [\"https://app.example.com\"] }] } }));",
+      "export const s3Readiness = \"S3-compatible versioning lifecycle retention object lock replication checksum ETag retry least-privilege encryption SSE KMS virus scan malware scan health metrics backup restore migration event notification queue CDN cache public private RBAC IAM\";"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "storage", "minio.js"), [
+      "import Minio from \"minio\";",
+      "",
+      "const minio = new Minio.Client({ endPoint: process.env.MINIO_ENDPOINT, port: 9000, useSSL: true, accessKey: process.env.MINIO_ACCESS_KEY, secretKey: process.env.MINIO_SECRET_KEY });",
+      "await minio.makeBucket(\"media\", \"us-east-1\");",
+      "await minio.putObject(\"media\", \"uploads/u1.txt\", \"demo\", { contentType: \"text/plain\", metadata: \"owner=u1\" });",
+      "await minio.getObject(\"media\", \"uploads/u1.txt\");",
+      "minio.listObjectsV2(\"media\", \"uploads/\", true);",
+      "await minio.removeObject(\"media\", \"old/u1.txt\");",
+      "await minio.presignedGetObject(\"media\", \"uploads/u1.txt\", 60);",
+      "await minio.setBucketPolicy(\"media\", JSON.stringify({ Statement: [{ Effect: \"Allow\", Action: [\"s3:GetObject\"] }] }));",
+      "await minio.setBucketNotification(\"media\", { QueueConfigurations: [{ Events: [\"s3:ObjectCreated:*\"], QueueArn: \"arn:sqs:storage-events\" }] });",
+      "await minio.bucketExists(\"media\");",
+      "await minio.statObject(\"media\", \"uploads/u1.txt\");",
+      "export const minioOps = \"health metrics backup restore migration event notification queue mirror cache retention replication\";"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "storage", "supabase.ts"), [
+      "import { createClient } from \"@supabase/supabase-js\";",
+      "",
+      "const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);",
+      "await supabase.storage.createBucket(\"avatars\", { public: false, fileSizeLimit: 1024 * 1024 });",
+      "await supabase.storage.from(\"avatars\").upload(\"users/u1.png\", new Blob(), { cacheControl: \"3600\", contentType: \"image/png\", upsert: true });",
+      "await supabase.storage.from(\"avatars\").download(\"users/u1.png\");",
+      "await supabase.storage.from(\"avatars\").list(\"users\", { limit: 100, offset: 0 });",
+      "await supabase.storage.from(\"avatars\").remove([\"users/old.png\"]);",
+      "await supabase.storage.from(\"avatars\").createSignedUrl(\"users/u1.png\", 60);",
+      "supabase.storage.from(\"avatars\").getPublicUrl(\"users/u1.png\");",
+      "export const supabasePolicies = \"RLS row level security create policy storage.objects auth.uid RBAC public URL private bucket policy CORS CDN cache\";"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "object-storage.yaml"), [
+      "storage:",
+      "  storageS3Bucket: app-private-bucket",
+      "  storageS3Endpoint: https://minio.local",
+      "  storageS3ForcePathStyle: true",
+      "  storageS3Region: us-east-1",
+      "  storageS3ClientTimeout: 2000",
+      "  versioning: enabled",
+      "  lifecycle: expire-temp-after-7-days",
+      "  retention: governance",
+      "  object_lock: enabled",
+      "  replication: cross-region",
+      "  checksum: sha256",
+      "  encryption: SSE KMS",
+      "  event_notifications:",
+      "    queue: storage-events",
+      "  backup: daily mirror",
+      "  restore: tested",
+      "  migration: s3-to-r2",
+      "  metrics: prometheus",
+      "  health: headBucket",
+      "  cdn_cache: cache-control"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "wrangler.toml"), [
+      "name = \"storage-fixture\"",
+      "r2_buckets = [{ binding = \"ASSETS\", bucket_name = \"assets-private\" }]",
+      "queues.producers = [{ binding = \"STORAGE_EVENTS\", queue = \"storage-events\" }]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "object-storage.yml"), [
+      "name: object-storage",
+      "on:",
+      "  pull_request:",
+      "jobs:",
+      "  static-check:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - run: echo \"Object storage readiness S3 MinIO R2 Supabase Storage buckets regions endpoints path-style credentials PutObject GetObject ListObjects DeleteObject CopyObject multipart upload download metadata tags presigned URL signed URL policy ACL CORS RLS RBAC versioning lifecycle retention object lock replication checksum ETag SSE KMS encryption event notifications queues CDN cache health metrics backup restore migration static only\""
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "object-storage-readiness-report.json"), "utf8")) as {
+      storageSetups: Array<{ filePath: string; platform: string; bucketCount: number; clientCount: number; uploadCount: number; downloadCount: number; listCount: number; deleteCount: number; presignCount: number; opsCount: number }>;
+      bucketSignals: Array<{ signal: string; readiness: string }>;
+      clientSignals: Array<{ signal: string; readiness: string }>;
+      objectSignals: Array<{ signal: string; readiness: string }>;
+      accessSignals: Array<{ signal: string; readiness: string }>;
+      reliabilitySignals: Array<{ signal: string; readiness: string }>;
+      securitySignals: Array<{ signal: string; readiness: string }>;
+      opsSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: unknown[];
+    };
+    expect(report.storageSetups.length).toBeGreaterThan(0);
+    expect(report.storageSetups.some((item) => item.platform === "s3")).toBe(true);
+    expect(report.storageSetups.some((item) => item.platform === "minio")).toBe(true);
+    expect(report.storageSetups.some((item) => item.platform === "supabase-storage")).toBe(true);
+    expect(report.storageSetups.some((item) => item.platform === "r2")).toBe(true);
+    const s3Setup = report.storageSetups.find((item) => item.filePath === "src/storage/s3.ts");
+    expect(s3Setup?.bucketCount).toBeGreaterThan(0);
+    expect(s3Setup?.clientCount).toBeGreaterThan(0);
+    expect(s3Setup?.uploadCount).toBeGreaterThan(0);
+    expect(s3Setup?.downloadCount).toBeGreaterThan(0);
+    expect(s3Setup?.listCount).toBeGreaterThan(0);
+    expect(s3Setup?.deleteCount).toBeGreaterThan(0);
+    expect(s3Setup?.presignCount).toBeGreaterThan(0);
+    expect(s3Setup?.opsCount).toBeGreaterThan(0);
+
+    const expectReady = (items: Array<{ signal: string; readiness: string }>, signals: string[]) => {
+      for (const signal of signals) {
+        expect(items.some((item) => item.signal === signal && item.readiness === "ready")).toBe(true);
+      }
+    };
+    expectReady(report.bucketSignals, ["bucket", "region", "endpoint", "path-style", "public-private", "namespace"]);
+    expectReady(report.clientSignals, ["s3-client", "minio-client", "r2-client", "gcs-client", "azure-blob-client", "supabase-storage-client", "credentials", "timeout"]);
+    expectReady(report.objectSignals, ["put-object", "upload", "multipart", "get-object", "download", "list-objects", "delete-object", "copy-object", "metadata"]);
+    expectReady(report.accessSignals, ["signed-url", "presigned-post", "public-url", "policy", "acl", "cors", "rbac", "rls"]);
+    expectReady(report.reliabilitySignals, ["versioning", "lifecycle", "retention", "object-lock", "replication", "checksum", "etag", "retry"]);
+    expectReady(report.securitySignals, ["sse", "kms", "encryption", "secret-key", "least-privilege", "scan"]);
+    expectReady(report.opsSignals, ["health", "metrics", "backup", "restore", "migration", "event-notification", "queue", "cdn-cache"]);
+    expectReady(report.packageSignals, ["aws-sdk-s3", "lib-storage", "minio", "supabase-storage", "gcs", "azure-blob", "r2", "s3-compatible"]);
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "object-storage-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "object-storage-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects backup readiness patterns without running backup tools", async () => {
