@@ -54,6 +54,7 @@ import {
   ContainerReadinessReport,
   CodeQualityReport,
   DocumentationReport,
+  DatabaseReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -114,6 +115,7 @@ export interface AnalysisBundle {
   containerReadinessReport: ContainerReadinessReport;
   codeQualityReport: CodeQualityReport;
   documentationReport: DocumentationReport;
+  databaseReadinessReport: DatabaseReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -174,8 +176,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const containerReadinessReport = await buildContainerReadinessReport(walk);
   const codeQualityReport = await buildCodeQualityReport(walk);
   const documentationReport = await buildDocumentationReport(walk);
+  const databaseReadinessReport = await buildDatabaseReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -7302,6 +7305,270 @@ function documentationSignalFromSpecs<T extends { signal: string; pattern: RegEx
       relatedHref: match?.sourceHref ?? "html/documentation.html"
     };
   });
+}
+
+async function buildDatabaseReadinessReport(walk: WalkResult): Promise<DatabaseReadinessReport> {
+  const sourceFiles = await databaseSourceFiles(walk);
+  const schemaFiles = databaseSchemaFiles(sourceFiles);
+  const datasourceSignals = databaseDatasourceSignals(schemaFiles, sourceFiles);
+  const migrationSignals = databaseMigrationSignals(sourceFiles);
+  const clientSignals = databaseClientSignals(sourceFiles);
+  const configSignals = databaseConfigSignals(sourceFiles);
+  const modelSignals = databaseModelSignals(sourceFiles);
+  const hasPrismaText = sourceFiles.length > 0;
+  const hasSchema = schemaFiles.length > 0;
+  const hasPrismaPackage = configSignals.some((item) => item.signal === "package-script" && item.readiness === "ready");
+  const hasMigration = migrationSignals.some((item) => ["migrations-folder", "migration-sql", "migrate-dev", "migrate-deploy"].includes(item.signal) && item.readiness === "ready");
+  const hasGenerate = clientSignals.some((item) => item.signal === "client-generation" && item.readiness === "ready");
+  const hasDatabaseUrl = configSignals.some((item) => item.signal === "database-url" && item.readiness === "ready");
+  const hasSeed = configSignals.some((item) => item.signal === "seed" && item.readiness === "ready");
+  const hasClientUse = clientSignals.some((item) => item.signal === "prisma-client" && item.readiness === "ready");
+
+  const riskQueue: DatabaseReadinessReport["riskQueue"] = [];
+  if (hasPrismaPackage && !hasSchema) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or locate a Prisma schema file before treating the database layer as documented.",
+      why: "Prisma readiness starts with schema.prisma or an explicit schema path; package scripts alone do not show datasource, generator, or model shape.",
+      relatedHref: "html/database-readiness.html"
+    });
+  }
+  if (hasSchema && !hasDatabaseUrl) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document the datasource URL boundary through prisma.config, DATABASE_URL, or an env example.",
+      why: "Prisma CLI commands and generated clients need a reproducible datasource configuration before learners can run validate, generate, or migrate safely.",
+      relatedHref: "html/database-readiness.html"
+    });
+  }
+  if (hasSchema && !hasGenerate) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a Prisma Client generation command or explain how generation is triggered.",
+      why: "The schema is not enough for application code; Prisma Client generation connects models to type-safe query code.",
+      relatedHref: "html/database-readiness.html"
+    });
+  }
+  if (hasSchema && !hasMigration) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Choose a migration path such as migrate dev/deploy or document intentional db push usage.",
+      why: "Prisma distinguishes declarative migrations from db push prototyping; RepoTutor should show which path protects database drift.",
+      relatedHref: "html/database-readiness.html"
+    });
+  }
+  if (hasSchema && !hasClientUse) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Point learners to the runtime code that imports PrismaClient or a generated client output.",
+      why: "Schema and migrations explain structure, but application learning needs to see where queries enter the runtime.",
+      relatedHref: "html/database-readiness.html"
+    });
+  }
+  if (hasSchema && !hasSeed) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add a seed command or sample data note when local learning depends on database content.",
+      why: "A generated client can connect successfully while the learner still has no realistic data to inspect.",
+      relatedHref: "html/database-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: hasPrismaText ? "Run Prisma commands on the original source tree before treating this report as database approval." : "If this repository later adds a database layer, rerun RepoTutor to populate Prisma readiness.",
+    why: "RepoTutor records static database readiness only; it does not connect to databases, run migrations, introspect schemas, generate clients, or seed data.",
+    relatedHref: "html/database-readiness.html"
+  });
+
+  return {
+    summary: `Prisma식 database readiness report: schema ${schemaFiles.length}개, datasource signal ${datasourceSignals.length}개, migration signal ${migrationSignals.length}개, client signal ${clientSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Prisma schema datasource generator model migrate generate db push seed PrismaClient DATABASE_URL driver adapter migrations",
+    schemaFiles,
+    datasourceSignals,
+    migrationSignals,
+    clientSignals,
+    configSignals,
+    modelSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx prisma validate", purpose: "Validate Prisma schema syntax and datasource/generator configuration." },
+      { command: "npx prisma format", purpose: "Format schema.prisma so models, relations, and attributes are easier to inspect." },
+      { command: "npx prisma generate", purpose: "Generate Prisma Client from the schema before checking runtime query code." },
+      { command: "npx prisma migrate dev", purpose: "Create and apply a development migration against a safe local database." },
+      { command: "npx prisma migrate deploy", purpose: "Apply committed migrations in deployment or CI environments." },
+      { command: "npx prisma db seed", purpose: "Load seed data when local learning or tests need realistic rows." },
+      { command: "npx prisma studio", purpose: "Open a database GUI for manual inspection after the datasource is safe." }
+    ],
+    learnerNextSteps: [
+      "Start with schema.prisma: confirm datasource provider, generator output, model count, IDs, relations, and indexes.",
+      "Separate prototype db push workflows from committed migration workflows before changing shared databases.",
+      "Trace PrismaClient imports or generated client output to see where application code begins database queries.",
+      "RepoTutor does not run Prisma commands, connect to databases, or generate clients; run the recommended commands on the original source tree."
+    ]
+  };
+}
+
+type DatabaseSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function databaseSourceFiles(walk: WalkResult): Promise<DatabaseSourceFile[]> {
+  const files: DatabaseSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !databaseInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!databasePathSignal(file.relPath) && !databaseContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function databaseInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(schema\.prisma|prisma\.config\.[cm]?[jt]s|package\.json|docker-compose\.ya?ml|compose\.ya?ml|\.env\.example|\.env\.sample|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(^|\/)(prisma|migrations|db|database|seed|seeds)\//i.test(filePath)
+    || /\.(prisma|sql|[cm]?[jt]sx?|json|ya?ml|md)$/i.test(filePath);
+}
+
+function databasePathSignal(filePath: string): boolean {
+  return /(schema\.prisma|prisma\.config|prisma\/|migrations\/|migration\.sql|seed|database|db\/|docker-compose|compose\.ya?ml|\.env\.example|\.env\.sample)/i.test(filePath);
+}
+
+function databaseContentSignal(text: string): boolean {
+  return /PrismaClient|@prisma\/client|\bprisma\s+(validate|format|generate|migrate|db|studio)\b|schema\.prisma|datasource\s+\w+|generator\s+\w+|DATABASE_URL|provider\s*=|prisma\/config|defineConfig|migrations|seed/i.test(text);
+}
+
+function databaseSchemaFiles(sourceFiles: DatabaseSourceFile[]): DatabaseReadinessReport["schemaFiles"] {
+  return sourceFiles
+    .filter((source) => path.basename(source.filePath).toLowerCase() === "schema.prisma")
+    .slice(0, 120)
+    .map((source) => {
+      const datasourceCount = countMatches(source.text, /\bdatasource\s+\w+\s*\{/g);
+      const generatorCount = countMatches(source.text, /\bgenerator\s+\w+\s*\{/g);
+      const modelCount = countMatches(source.text, /\bmodel\s+\w+\s*\{/g);
+      const provider = normalizeDatabaseProvider(firstMatch(source.text, /provider\s*=\s*"([^"]+)"/i));
+      return {
+        filePath: source.filePath,
+        provider,
+        datasourceCount,
+        generatorCount,
+        modelCount,
+        readiness: datasourceCount > 0 && generatorCount > 0 && modelCount > 0 ? "ready" : datasourceCount > 0 || generatorCount > 0 || modelCount > 0 ? "partial" : "missing",
+        evidence: `${source.filePath} has ${datasourceCount} datasource block(s), ${generatorCount} generator block(s), and ${modelCount} model block(s).`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function databaseDatasourceSignals(schemaFiles: DatabaseReadinessReport["schemaFiles"], sourceFiles: DatabaseSourceFile[]): DatabaseReadinessReport["datasourceSignals"] {
+  const providers: DatabaseReadinessReport["datasourceSignals"][number]["provider"][] = ["postgresql", "mysql", "sqlite", "sqlserver", "mongodb", "cockroachdb", "mariadb"];
+  return providers.map((provider) => {
+    const schema = schemaFiles.find((item) => item.provider === provider);
+    const source = sourceFiles.find((item) => new RegExp(`provider\\s*=\\s*[\"']${provider}[\"']|${provider}`, "i").test(item.text));
+    return {
+      provider,
+      readiness: schema ? "ready" : source ? "partial" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: schema ? `${schema.filePath} declares datasource provider ${provider}.` : source ? `${source.filePath} references ${provider}.` : `${provider} datasource evidence was not detected.`,
+      relatedHref: schema?.sourceHref ?? source?.sourceHref ?? "html/database-readiness.html"
+    };
+  });
+}
+
+function databaseMigrationSignals(sourceFiles: DatabaseSourceFile[]): DatabaseReadinessReport["migrationSignals"] {
+  const specs: Array<{ signal: DatabaseReadinessReport["migrationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "migrations-folder", pattern: /(^|\/)migrations\/|migrations\s*:/i, evidence: "migrations folder or configured migration path evidence was detected." },
+    { signal: "migration-sql", pattern: /migration\.sql|CREATE TABLE|ALTER TABLE|DROP TABLE/i, evidence: "SQL migration file evidence was detected." },
+    { signal: "migration-lock", pattern: /migration_lock\.toml/i, evidence: "Prisma migration lock evidence was detected." },
+    { signal: "migrate-dev", pattern: /prisma\s+migrate\s+dev|migrate dev/i, evidence: "development migration command evidence was detected." },
+    { signal: "migrate-deploy", pattern: /prisma\s+migrate\s+deploy|migrate deploy/i, evidence: "deployment migration command evidence was detected." },
+    { signal: "db-push", pattern: /prisma\s+db\s+push|db push/i, evidence: "db push workflow evidence was detected." },
+    { signal: "introspection", pattern: /prisma\s+db\s+pull|introspect|introspection/i, evidence: "database introspection evidence was detected." },
+    { signal: "schema-drift", pattern: /schema drift|drift detected|database is out of sync|migrate diff/i, evidence: "schema drift detection evidence was detected." }
+  ];
+  return databaseSignalFromSpecs(sourceFiles, specs, "migration");
+}
+
+function databaseClientSignals(sourceFiles: DatabaseSourceFile[]): DatabaseReadinessReport["clientSignals"] {
+  const specs: Array<{ signal: DatabaseReadinessReport["clientSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "prisma-client", pattern: /PrismaClient|@prisma\/client|generated\/(?:prisma\/)?client/i, evidence: "PrismaClient runtime usage evidence was detected." },
+    { signal: "client-generation", pattern: /prisma\s+generate|generator\s+client|generate"/i, evidence: "Prisma Client generation evidence was detected." },
+    { signal: "custom-output", pattern: /output\s*=|generated\/client|generated\/prisma/i, evidence: "custom generated client output evidence was detected." },
+    { signal: "prisma-client-js", pattern: /prisma-client-js|provider\s*=\s*"prisma-client-js"/i, evidence: "traditional prisma-client-js generator evidence was detected." },
+    { signal: "driver-adapter", pattern: /adapter|@prisma\/adapter-|PrismaPg|driver adapter/i, evidence: "driver adapter evidence was detected." },
+    { signal: "typed-query", pattern: /typedSql|typed-sql|queryRaw|executeRaw/i, evidence: "typed/raw query surface evidence was detected." },
+    { signal: "studio", pattern: /prisma\s+studio|Prisma Studio|studio"/i, evidence: "Prisma Studio evidence was detected." }
+  ];
+  return databaseSignalFromSpecs(sourceFiles, specs, "client");
+}
+
+function databaseConfigSignals(sourceFiles: DatabaseSourceFile[]): DatabaseReadinessReport["configSignals"] {
+  const specs: Array<{ signal: DatabaseReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "prisma-config", pattern: /prisma\.config\.[cm]?[jt]s|defineConfig|prisma\/config/i, evidence: "prisma.config evidence was detected." },
+    { signal: "database-url", pattern: /DATABASE_URL|datasource:\s*\{|env\(['"]DATABASE_URL|url\s*:\s*env/i, evidence: "database URL boundary evidence was detected." },
+    { signal: "dotenv", pattern: /dotenv|@dotenvx|\.env/i, evidence: "dotenv loading or env example evidence was detected." },
+    { signal: "seed", pattern: /prisma\s+db\s+seed|"seed"\s*:|seed\.([cm]?[jt]s|ts|js)|seed-data/i, evidence: "seed workflow evidence was detected." },
+    { signal: "package-script", pattern: /"prisma"\s*:|"dbpush"\s*:|"generate"\s*:\s*"[^"]*prisma|@prisma\/client|\bprisma\b/i, evidence: "package Prisma dependency or script evidence was detected." },
+    { signal: "docker-compose", pattern: /docker-compose|compose\.ya?ml|postgres:|mysql:|mariadb:|mongo:/i, evidence: "local database service evidence was detected." },
+    { signal: "env-example", pattern: /\.env\.example|\.env\.sample|DATABASE_URL=/i, evidence: "env example evidence was detected." }
+  ];
+  return databaseSignalFromSpecs(sourceFiles, specs, "config");
+}
+
+function databaseModelSignals(sourceFiles: DatabaseSourceFile[]): DatabaseReadinessReport["modelSignals"] {
+  const specs: Array<{ signal: DatabaseReadinessReport["modelSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "model", pattern: /\bmodel\s+\w+\s*\{/i, evidence: "model block evidence was detected." },
+    { signal: "relation", pattern: /@relation|\w+\s+\w+\[\]/i, evidence: "relation evidence was detected." },
+    { signal: "id", pattern: /@id|@@id/i, evidence: "primary key evidence was detected." },
+    { signal: "unique", pattern: /@unique|@@unique/i, evidence: "unique constraint evidence was detected." },
+    { signal: "index", pattern: /@@index|@@fulltext|@@map/i, evidence: "index or mapped model evidence was detected." },
+    { signal: "enum", pattern: /\benum\s+\w+\s*\{/i, evidence: "enum evidence was detected." },
+    { signal: "native-type", pattern: /@db\./i, evidence: "native database type evidence was detected." },
+    { signal: "default", pattern: /@default\(/i, evidence: "default value evidence was detected." },
+    { signal: "map", pattern: /@map|@@map/i, evidence: "database mapping evidence was detected." }
+  ];
+  return databaseSignalFromSpecs(sourceFiles, specs, "model");
+}
+
+function databaseSignalFromSpecs<T extends { signal: string; pattern: RegExp; evidence: string }>(
+  sourceFiles: DatabaseSourceFile[],
+  specs: T[],
+  label: string
+): Array<{ signal: T["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/database-readiness.html"
+    };
+  });
+}
+
+function normalizeDatabaseProvider(value: string | null): DatabaseReadinessReport["schemaFiles"][number]["provider"] {
+  const normalized = value?.toLowerCase();
+  if (normalized === "postgresql" || normalized === "postgres") return "postgresql";
+  if (normalized === "mysql") return "mysql";
+  if (normalized === "sqlite") return "sqlite";
+  if (normalized === "sqlserver" || normalized === "mssql") return "sqlserver";
+  if (normalized === "mongodb" || normalized === "mongo") return "mongodb";
+  if (normalized === "cockroachdb") return "cockroachdb";
+  if (normalized === "mariadb") return "mariadb";
+  return "unknown";
+}
+
+function firstMatch(text: string, pattern: RegExp): string | null {
+  const match = text.match(pattern);
+  return match?.[1] ?? null;
+}
+
+function countMatches(text: string, pattern: RegExp): number {
+  return [...text.matchAll(pattern)].length;
 }
 
 function advisoryEcosystemForPackage(packageType: string, fallback: string): string {

@@ -2112,6 +2112,41 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 141:
   - `c8dd6e4` documentation readiness report
 
+- 2026-06-04: AutoResearch Upgrade 142 candidate selected:
+  `prisma/prisma` (`https://github.com/prisma/prisma`; public Apache-2.0;
+  46,060 stars; 2,234 forks; updated 2026-06-03T16:29:53Z). Compared with
+  `drizzle-team/drizzle-orm`, `typeorm/typeorm`, and `sequelize/sequelize`;
+  selected Prisma for schema.prisma, datasource/generator/model blocks,
+  `prisma.config`, migrations, generate/db push workflows, Prisma Client,
+  driver adapters, `DATABASE_URL`, seed scripts, and local database services.
+  Cloned ignored external source to `research/external-src/prisma-prisma` and
+  inspected README, `AGENTS.md`, schema/config fixtures, package scripts,
+  migration fixtures, seed utilities, and docker compose files without
+  executing external source.
+- 2026-06-04: RED database readiness smoke generated
+  `/tmp/repotutor-database-red-studies.I6noIN/2026-06-04/local__simple-ts-app__main__3afacc02`;
+  old build was missing `analysis/database-readiness-report.json`,
+  `markdown/database-readiness.md`, and `html/database-readiness.html`, and
+  `open --target database-readiness` failed as expected.
+- 2026-06-04: Implemented Prisma-style database readiness report:
+  `DatabaseReadinessReportSchema`, `analysis/database-readiness-report.json`,
+  `markdown/database-readiness.md`, `html/database-readiness.html`, schema
+  files, datasource signals, migration signals, client signals, config
+  signals, model signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target database-readiness`.
+- 2026-06-04: GREEN database readiness smoke generated
+  `/tmp/repotutor-database-green-studies.XJ1CF2/2026-06-04/local__simple-ts-app__main__3afacc02`;
+  confirmed `verificationCheckedRequiredArtifacts=126`, schema files 0,
+  datasource signals 7, migration signals 8, client signals 7, config signals
+  7, model signals 9, recommended commands 7, risk queue 1, `database-card`,
+  `data-source-pattern="Prisma"`, manifest/learning-path entries, and
+  `open --target database-readiness` -> `html/database-readiness.html`.
+- 2026-06-04: Verification for Upgrade 142:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 40/40 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
