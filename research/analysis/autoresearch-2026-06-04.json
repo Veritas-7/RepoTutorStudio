@@ -5651,7 +5651,7 @@
         "markdown/webhook-readiness.md",
         "html/webhook-readiness.html"
       ],
-      "commit": "PENDING"
+      "commit": "fc7869b"
     }
   ],
   "verification": {
@@ -6283,7 +6283,7 @@
     "buildWebhookReadiness": "PASS",
     "testWebhookReadiness": "PASS",
     "auditBriefWebhookReadiness114": "PASS",
-    "webhookReadinessImplementationPushed": "PENDING"
+    "webhookReadinessImplementationPushed": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -6843,6 +6843,6 @@
     "buildWebhookReadiness": "PASS",
     "testWebhookReadiness": "PASS",
     "auditBriefWebhookReadiness114": "PASS",
-    "webhookReadinessImplementationPushed": "PENDING"
+    "webhookReadinessImplementationPushed": "PASS"
   }
 }
