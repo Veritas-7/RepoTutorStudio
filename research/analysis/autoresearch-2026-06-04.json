@@ -526,6 +526,22 @@
         "IntlProvider locale/messages runtime boundary and ECMA-402 polyfill locale data requirements",
         "eslint-plugin-formatjs rules for translator descriptions message IDs invalid ICU and vendor constraints"
       ]
+    },
+    {
+      "repo": "semantic-release/semantic-release",
+      "url": "https://github.com/semantic-release/semantic-release",
+      "localPath": "research/external-src/semantic-release-semantic-release",
+      "stars": 23742,
+      "forks": 1804,
+      "license": "MIT",
+      "updatedAt": "2026-06-04T02:41:15Z",
+      "adoptedPatterns": [
+        "release configuration through package release key .releaserc release.config and CLI flags",
+        "branch and channel model for main maintenance next next-major beta and alpha releases",
+        "semantic versioning from conventional commits through commit analyzer and release notes generator",
+        "plugin lifecycle steps verifyConditions analyzeCommits verifyRelease generateNotes prepare publish addChannel success fail",
+        "CI-only publishing with full git history scoped tokens OIDC trusted publishing npm provenance and dry-run review"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2515,6 +2531,28 @@
         "I18nReportSchema",
         "FormatJS React Intl ICU messages extract compile verify IntlProvider polyfills locale data ESLint TMS"
       ]
+    },
+    {
+      "name": "Release readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/release-readiness-report.json",
+        "markdown/release-readiness.md",
+        "html/release-readiness.html",
+        "open --target release-readiness",
+        "ReleaseReadinessReportSchema",
+        "semantic-release branches tagFormat plugins verifyConditions analyzeCommits generateNotes prepare publish CI OIDC provenance"
+      ]
     }
   ],
   "verification": {
@@ -2835,6 +2873,12 @@
     "cliI18nOpenTargetSmoke": "PASS",
     "buildI18n": "PASS",
     "testI18n": "PASS",
-    "auditBriefI18n34": "PASS"
+    "auditBriefI18n34": "PASS",
+    "fixtureReleaseReadinessReport": "PASS",
+    "cliReleaseReadinessSmoke": "PASS",
+    "cliReleaseReadinessOpenTargetSmoke": "PASS",
+    "buildReleaseReadiness": "PASS",
+    "testReleaseReadiness": "PASS",
+    "auditBriefReleaseReadiness35": "PASS"
   }
 }

@@ -44,6 +44,7 @@ import type {
   StorybookReport,
   DesignTokensReport,
   I18nReport,
+  ReleaseReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -94,6 +95,7 @@ export interface StudyHtmlInput {
   storybookReport: StorybookReport;
   designTokensReport: DesignTokensReport;
   i18nReport: I18nReport;
+  releaseReadinessReport: ReleaseReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -164,6 +166,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["storybook.html", "Storybook"],
     ["design-tokens.html", "Design Tokens"],
     ["i18n.html", "I18n"],
+    ["release-readiness.html", "Release"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -269,6 +272,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Storybook Readiness</h3><p>${escapeHtml(input.storybookReport.summary)}</p><p>Storybook 패턴으로 CSF stories, args, decorators, play functions, addons, publish/test signals를 정리합니다.</p><a href="storybook.html">Storybook 열기</a></article>
           <article><h3>Design Tokens Readiness</h3><p>${escapeHtml(input.designTokensReport.summary)}</p><p>Style Dictionary 패턴으로 token source, platform target, transform, usage, governance signals를 정리합니다.</p><a href="design-tokens.html">Design Tokens 열기</a></article>
           <article><h3>I18n Readiness</h3><p>${escapeHtml(input.i18nReport.summary)}</p><p>FormatJS 패턴으로 message source, locale asset, runtime, extraction, ICU, QA signals를 정리합니다.</p><a href="i18n.html">I18n 열기</a></article>
+          <article><h3>Release Readiness</h3><p>${escapeHtml(input.releaseReadinessReport.summary)}</p><p>semantic-release 패턴으로 config, branches, plugin steps, CI, auth, publish targets를 정리합니다.</p><a href="release-readiness.html">Release 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -450,6 +454,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("I18n Readiness", "i18n.html", `<section class="panel" data-source-pattern="FormatJS"><h2>I18n Snapshot</h2><p>${escapeHtml(input.i18nReport.summary)}</p><p class="muted">${escapeHtml(input.i18nReport.sourcePattern)}</p><dl class="meta"><div><dt>messages</dt><dd>${input.i18nReport.messageSources.length}</dd></div><div><dt>locales</dt><dd>${input.i18nReport.localeAssets.length}</dd></div><div><dt>runtime</dt><dd>${input.i18nReport.runtimeSignals.length}</dd></div><div><dt>QA</dt><dd>${input.i18nReport.qaSignals.length}</dd></div></dl><p class="muted">RepoTutor records FormatJS readiness only. It does not extract, compile, or verify ICU catalogs.</p></section><section class="grid"><article class="i18n-card"><h3>Message Sources</h3>${i18nMessageSourceList(input.i18nReport.messageSources)}</article><article class="i18n-card"><h3>Locale Assets</h3>${i18nLocaleAssetList(input.i18nReport.localeAssets)}</article><article class="i18n-card"><h3>Runtime Signals</h3>${i18nSignalList(input.i18nReport.runtimeSignals)}</article><article class="i18n-card"><h3>Extraction Signals</h3>${i18nSignalList(input.i18nReport.extractionSignals)}</article></section><section class="grid"><article class="i18n-card"><h3>ICU Signals</h3>${i18nSignalList(input.i18nReport.icuSignals)}</article><article class="i18n-card"><h3>QA Signals</h3>${i18nSignalList(input.i18nReport.qaSignals)}</article><article class="i18n-card"><h3>Recommended Commands</h3>${i18nCommandList(input.i18nReport.recommendedCommands)}</article><article class="i18n-card"><h3>Risk Queue</h3>${i18nRiskList(input.i18nReport.riskQueue)}</article><article class="i18n-card"><h3>다음 확인 단계</h3>${list(input.i18nReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "release-readiness.html",
+      title: "Release Readiness",
+      html: pageShell("Release Readiness", "release-readiness.html", `<section class="panel" data-source-pattern="semantic-release"><h2>Release Snapshot</h2><p>${escapeHtml(input.releaseReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.releaseReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>configs</dt><dd>${input.releaseReadinessReport.releaseConfigs.length}</dd></div><div><dt>channels</dt><dd>${input.releaseReadinessReport.branchChannels.length}</dd></div><div><dt>CI</dt><dd>${input.releaseReadinessReport.ciSignals.length}</dd></div><div><dt>publish</dt><dd>${input.releaseReadinessReport.publishTargets.length}</dd></div></dl><p class="muted">RepoTutor records semantic-release readiness only. It does not create tags, publish packages, or verify live credentials.</p></section><section class="grid"><article class="release-card"><h3>Release Configs</h3>${releaseConfigList(input.releaseReadinessReport.releaseConfigs)}</article><article class="release-card"><h3>Branch Channels</h3>${releaseSignalList(input.releaseReadinessReport.branchChannels, "channel")}</article><article class="release-card"><h3>Version Signals</h3>${releaseSignalList(input.releaseReadinessReport.versionSignals, "signal")}</article><article class="release-card"><h3>CI Signals</h3>${releaseSignalList(input.releaseReadinessReport.ciSignals, "signal")}</article></section><section class="grid"><article class="release-card"><h3>Publish Targets</h3>${releaseSignalList(input.releaseReadinessReport.publishTargets, "target")}</article><article class="release-card"><h3>Auth Signals</h3>${releaseSignalList(input.releaseReadinessReport.authSignals, "signal")}</article><article class="release-card"><h3>Plugin Steps</h3>${releaseSignalList(input.releaseReadinessReport.pluginSteps, "step")}</article><article class="release-card"><h3>Recommended Commands</h3>${releaseCommandList(input.releaseReadinessReport.recommendedCommands)}</article><article class="release-card"><h3>Risk Queue</h3>${releaseRiskList(input.releaseReadinessReport.riskQueue)}</article><article class="release-card"><h3>다음 확인 단계</h3>${list(input.releaseReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -594,6 +603,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Storybook Readiness", path: "html/storybook.html", description: "Storybook식 CSF story, args, addon, test/publish signal 준비도를 확인합니다." },
       { label: "Design Tokens Readiness", path: "html/design-tokens.html", description: "Style Dictionary식 token source, platform, transform, usage 준비도를 확인합니다." },
       { label: "I18n Readiness", path: "html/i18n.html", description: "FormatJS식 message source, locale asset, extraction, ICU, QA 준비도를 확인합니다." },
+      { label: "Release Readiness", path: "html/release-readiness.html", description: "semantic-release식 config, branch, plugin, CI, auth, publish target 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -881,6 +891,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "i18n.html",
       goal: "FormatJS식 message source, locale catalog, runtime provider, extraction/verification 준비도를 확인합니다.",
       evidence: `message sources ${input.i18nReport.messageSources.length}개, locale assets ${input.i18nReport.localeAssets.length}개`
+    },
+    {
+      title: "Release 준비도 확인",
+      href: "release-readiness.html",
+      goal: "semantic-release식 config, branch/channel, plugin step, CI, auth, publish target 준비도를 확인합니다.",
+      evidence: `configs ${input.releaseReadinessReport.releaseConfigs.length}개, CI signals ${input.releaseReadinessReport.ciSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -1733,6 +1749,31 @@ function i18nRiskList(items: I18nReport["riskQueue"]): string {
 }
 
 function i18nHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function releaseConfigList(items: ReleaseReadinessReport["releaseConfigs"]): string {
+  if (items.length === 0) return "<p class=\"muted\">release config가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.configType)} / ${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(releaseHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function releaseSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">release signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(releaseHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function releaseCommandList(items: ReleaseReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function releaseRiskList(items: ReleaseReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(releaseHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function releaseHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
