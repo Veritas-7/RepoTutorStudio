@@ -5145,7 +5145,8 @@
         "analysis/llm-eval-readiness-report.json",
         "markdown/llm-eval-readiness.md",
         "html/llm-eval-readiness.html"
-      ]
+      ],
+      "commit": "3cb0e04"
     }
   ],
   "verification": {
@@ -6213,6 +6214,7 @@
     "cliLlmEvalReadinessOpenTargetSmoke": "PASS",
     "buildLlmEvalReadiness": "PASS",
     "testLlmEvalReadiness": "PASS",
-    "auditBriefLlmEvalReadiness106": "PASS"
+    "auditBriefLlmEvalReadiness106": "PASS",
+    "llmEvalReadinessImplementationPushed": "PASS"
   }
 }
