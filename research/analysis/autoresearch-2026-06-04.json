@@ -718,6 +718,22 @@
         "globalEnv globalPassThroughEnv passThroughEnv and env cache boundary scanning",
         "turbo run dry summarize filter daemon status prune command handoff"
       ]
+    },
+    {
+      "repo": "renovatebot/renovate",
+      "url": "https://github.com/renovatebot/renovate",
+      "localPath": "research/external-src/renovatebot-renovate",
+      "stars": 21684,
+      "forks": 3089,
+      "license": "AGPL-3.0-only",
+      "updatedAt": "2026-06-04T05:03:37Z",
+      "adoptedPatterns": [
+        "dependency update config presets extends and packageRules inventory",
+        "automerge schedule dependencyDashboard and approval policy scanning",
+        "enabled managers package-file discovery and private registry hostRules",
+        "PR concurrency rate limits rangeStrategy configMigration grouping and rebase policy",
+        "renovate-config-validator dry-run print-config lookup and scoped repo command handoff"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2941,6 +2957,25 @@
         "markdown/task-runner.md",
         "html/task-runner.html"
       ]
+    },
+    {
+      "name": "Dependency updates readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/dependency-update-report.json",
+        "markdown/dependency-updates.md",
+        "html/dependency-updates.html"
+      ]
     }
   ],
   "verification": {
@@ -3232,7 +3267,13 @@
     "cliTaskRunnerOpenTargetSmoke": "PASS",
     "buildTaskRunner": "PASS",
     "testTaskRunner": "PASS",
-    "auditBriefTaskRunner46": "PASS"
+    "auditBriefTaskRunner46": "PASS",
+    "fixtureDependencyUpdateReport": "PASS",
+    "cliDependencyUpdatesSmoke": "PASS",
+    "cliDependencyUpdatesOpenTargetSmoke": "PASS",
+    "buildDependencyUpdates": "PASS",
+    "testDependencyUpdates": "PASS",
+    "auditBriefDependencyUpdates47": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -3369,6 +3410,12 @@
     "cliTaskRunnerOpenTargetSmoke": "PASS",
     "buildTaskRunner": "PASS",
     "testTaskRunner": "PASS",
-    "auditBriefTaskRunner46": "PASS"
+    "auditBriefTaskRunner46": "PASS",
+    "fixtureDependencyUpdateReport": "PASS",
+    "cliDependencyUpdatesSmoke": "PASS",
+    "cliDependencyUpdatesOpenTargetSmoke": "PASS",
+    "buildDependencyUpdates": "PASS",
+    "testDependencyUpdates": "PASS",
+    "auditBriefDependencyUpdates47": "PASS"
   }
 }

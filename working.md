@@ -2369,6 +2369,44 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 148:
   - `29e858d` task runner readiness report
 
+- 2026-06-04: AutoResearch Upgrade 149 candidate selected:
+  `renovatebot/renovate` (`https://github.com/renovatebot/renovate`; public;
+  AGPL-3.0-only from repo license file; 21,684 stars; 3,089 forks; updated
+  2026-06-04T05:03:37Z). Compared with `dependabot/dependabot-core`,
+  `renovatebot/github-action`, and `googleapis/release-please`; selected
+  Renovate for dependency-update config, presets, `packageRules`, automerge,
+  schedules, dependency dashboard approval, manager/package-file discovery,
+  registry/private package policy, rate limits, range strategy, and config
+  migration. Cloned ignored external source to
+  `research/external-src/renovatebot-renovate` and inspected README, license,
+  package metadata, `renovate.json`, config docs, config validator, and
+  examples without executing external source. Tracked-file count for
+  `research/external-src/renovatebot-renovate` returned `0`.
+- 2026-06-04: RED dependency-updates readiness smoke generated
+  `/tmp/repotutor-dependency-updates-red-studies.AFZpPj/2026-06-04/local__simple-ts-app__main__95221a2c`;
+  old build was missing `analysis/dependency-update-report.json`,
+  `markdown/dependency-updates.md`, and `html/dependency-updates.html`, and
+  `open --target dependency-updates` failed as expected.
+- 2026-06-04: Implemented Renovate-style dependency-updates readiness report:
+  `DependencyUpdateReportSchema`, `analysis/dependency-update-report.json`,
+  `markdown/dependency-updates.md`, `html/dependency-updates.html`, config
+  files, manager signals, policy signals, workflow signals, registry signals,
+  package file signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  and `open --target dependency-updates`.
+- 2026-06-04: GREEN dependency-updates readiness smoke generated
+  `/tmp/repotutor-dependency-updates-green-studies.7fSpWZ/2026-06-04/local__simple-ts-app__main__95221a2c`;
+  confirmed `verificationCheckedRequiredArtifacts=147`, config files 0,
+  manager signals 9, policy signals 11, workflow signals 8, registry signals
+  5, package file signals 12, recommended commands 6, risk queue 2,
+  `package-json=ready`, `npm=ready`, `dependency-update-card`,
+  `data-source-pattern="Renovate"`, manifest/learning-path entries, and
+  `open --target dependency-updates` -> `html/dependency-updates.html`.
+- 2026-06-04: Verification for Upgrade 149:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 47/47 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

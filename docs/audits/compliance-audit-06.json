@@ -1,6 +1,6 @@
 {
   "iteration": 6,
-  "createdAt": "2026-06-04T05:03:48.175Z",
+  "createdAt": "2026-06-04T05:14:17.718Z",
   "checks": [
     {
       "name": "project setup",
@@ -291,6 +291,13 @@
     },
     {
       "name": "task runner readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "dependency updates readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
