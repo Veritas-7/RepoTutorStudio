@@ -108,6 +108,7 @@ import type {
   InfrastructureReadinessReport,
   DeploymentReadinessReport,
   ServerlessReadinessReport,
+  MobileReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -222,6 +223,7 @@ export interface StudyHtmlInput {
   infrastructureReadinessReport: InfrastructureReadinessReport;
   deploymentReadinessReport: DeploymentReadinessReport;
   serverlessReadinessReport: ServerlessReadinessReport;
+  mobileReadinessReport: MobileReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -498,6 +500,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Infrastructure Readiness</h3><p>${escapeHtml(input.infrastructureReadinessReport.summary)}</p><p>OpenTofu 패턴으로 .tf config, providers, resources, modules, variables, backend/state, plan/apply workflow 준비도를 정리합니다.</p><a href="infrastructure-readiness.html">Infrastructure 열기</a></article>
           <article><h3>Deployment Readiness</h3><p>${escapeHtml(input.deploymentReadinessReport.summary)}</p><p>Helm 패턴으로 Chart.yaml, values.yaml, templates, release commands, safety flags 준비도를 정리합니다.</p><a href="deployment-readiness.html">Deployment 열기</a></article>
           <article><h3>Serverless Readiness</h3><p>${escapeHtml(input.serverlessReadinessReport.summary)}</p><p>Serverless Framework 패턴으로 service, provider, functions, events, resources, packaging, plugins, deploy commands 준비도를 정리합니다.</p><a href="serverless-readiness.html">Serverless 열기</a></article>
+          <article><h3>Mobile Readiness</h3><p>${escapeHtml(input.mobileReadinessReport.summary)}</p><p>Expo 패턴으로 app config, platform identifiers, navigation, EAS build, OTA updates, assets, packages 준비도를 정리합니다.</p><a href="mobile-readiness.html">Mobile 열기</a></article>
           <article><h3>세션 검증</h3><p>생성 산출물, HTML 무결성, 소스 근거 링크 검증 결과를 확인합니다.</p><p><a href="session-verification.html">검증 리포트 열기</a></p></article>
           <article><h3>컴포넌트 그래프</h3><p>노드 ${graphSummary.totalNodes}개 · 관계 ${graphSummary.totalEdges}개</p><p>핵심 허브: ${graphSummary.topConnectedNodes.slice(0, 3).map((node) => escapeHtml(node.label)).join(", ") || "없음"}</p><a href="component-graph.html">그래프 열기</a></article>
           <article><h3>증분 분석</h3><p>${escapeHtml(input.incrementalReport.summary)}</p><p>${escapeHtml(coverageDelta.summary)}</p><a href="incremental.html">증분 리포트 열기</a></article>
@@ -990,6 +993,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "serverless-readiness.html",
       title: "Serverless Readiness",
       html: pageShell("Serverless Readiness", "serverless-readiness.html", `<section class="panel" data-source-pattern="Serverless Framework"><h2>Serverless Snapshot</h2><p>${escapeHtml(input.serverlessReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.serverlessReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.serverlessReadinessReport.serverlessSetups.length}</dd></div><div><dt>config</dt><dd>${input.serverlessReadinessReport.configSignals.length}</dd></div><div><dt>functions</dt><dd>${input.serverlessReadinessReport.functionSignals.length}</dd></div><div><dt>events</dt><dd>${input.serverlessReadinessReport.eventSignals.length}</dd></div><div><dt>deployment</dt><dd>${input.serverlessReadinessReport.deploymentSignals.length}</dd></div><div><dt>safety</dt><dd>${input.serverlessReadinessReport.safetySignals.length}</dd></div></dl><p class="muted">RepoTutor records serverless readiness only; it does not run Serverless Framework, SAM, SST, Vercel, Netlify, Wrangler, package artifacts, deploy functions, invoke cloud resources, tail logs, mutate IAM, or remove stacks.</p></section><section class="grid"><article class="serverless-readiness-card"><h3>Serverless Setups</h3>${serverlessReadinessSetupList(input.serverlessReadinessReport.serverlessSetups)}</article><article class="serverless-readiness-card"><h3>Config Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.configSignals, "signal")}</article><article class="serverless-readiness-card"><h3>Function Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.functionSignals, "signal")}</article><article class="serverless-readiness-card"><h3>Event Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.eventSignals, "signal")}</article></section><section class="grid"><article class="serverless-readiness-card"><h3>Runtime Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.runtimeSignals, "signal")}</article><article class="serverless-readiness-card"><h3>Deployment Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.deploymentSignals, "signal")}</article><article class="serverless-readiness-card"><h3>Safety Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.safetySignals, "signal")}</article><article class="serverless-readiness-card"><h3>Package Signals</h3>${serverlessReadinessSignalList(input.serverlessReadinessReport.packageSignals, "signal")}</article><article class="serverless-readiness-card"><h3>Recommended Commands</h3>${serverlessReadinessCommandList(input.serverlessReadinessReport.recommendedCommands)}</article><article class="serverless-readiness-card"><h3>Risk Queue</h3>${serverlessReadinessRiskList(input.serverlessReadinessReport.riskQueue)}</article><article class="serverless-readiness-card"><h3>다음 확인 단계</h3>${list(input.serverlessReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "mobile-readiness.html",
+      title: "Mobile Readiness",
+      html: pageShell("Mobile Readiness", "mobile-readiness.html", `<section class="panel" data-source-pattern="Expo"><h2>Mobile Snapshot</h2><p>${escapeHtml(input.mobileReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.mobileReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.mobileReadinessReport.mobileSetups.length}</dd></div><div><dt>config</dt><dd>${input.mobileReadinessReport.configSignals.length}</dd></div><div><dt>platform</dt><dd>${input.mobileReadinessReport.platformSignals.length}</dd></div><div><dt>navigation</dt><dd>${input.mobileReadinessReport.navigationSignals.length}</dd></div><div><dt>build</dt><dd>${input.mobileReadinessReport.buildSignals.length}</dd></div><div><dt>updates</dt><dd>${input.mobileReadinessReport.updateSignals.length}</dd></div></dl><p class="muted">RepoTutor records mobile readiness only; it does not run Expo, EAS, Metro, emulators, native builds, prebuild, OTA update publishing, credentials, signing, store submission, or device installation.</p></section><section class="grid"><article class="mobile-readiness-card"><h3>Mobile Setups</h3>${mobileReadinessSetupList(input.mobileReadinessReport.mobileSetups)}</article><article class="mobile-readiness-card"><h3>Config Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.configSignals, "signal")}</article><article class="mobile-readiness-card"><h3>Platform Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.platformSignals, "signal")}</article><article class="mobile-readiness-card"><h3>Navigation Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.navigationSignals, "signal")}</article></section><section class="grid"><article class="mobile-readiness-card"><h3>Build Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.buildSignals, "signal")}</article><article class="mobile-readiness-card"><h3>Update Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.updateSignals, "signal")}</article><article class="mobile-readiness-card"><h3>Asset Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.assetSignals, "signal")}</article><article class="mobile-readiness-card"><h3>Package Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.packageSignals, "signal")}</article><article class="mobile-readiness-card"><h3>Recommended Commands</h3>${mobileReadinessCommandList(input.mobileReadinessReport.recommendedCommands)}</article><article class="mobile-readiness-card"><h3>Risk Queue</h3>${mobileReadinessRiskList(input.mobileReadinessReport.riskQueue)}</article><article class="mobile-readiness-card"><h3>다음 확인 단계</h3>${list(input.mobileReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "context-pack.html",
@@ -1870,6 +1878,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "serverless-readiness.html",
       goal: "Serverless Framework식 service, provider, functions, events, package/deploy workflow와 IAM/secrets guardrail 흐름을 확인합니다.",
       evidence: `serverless setups ${input.serverlessReadinessReport.serverlessSetups.length}개, event signals ${input.serverlessReadinessReport.eventSignals.length}개`
+    },
+    {
+      title: "Mobile readiness 확인",
+      href: "mobile-readiness.html",
+      goal: "Expo식 app config, platform identifier, navigation, EAS build, OTA update, asset 흐름을 확인합니다.",
+      evidence: `mobile setups ${input.mobileReadinessReport.mobileSetups.length}개, build signals ${input.mobileReadinessReport.buildSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -4412,6 +4426,31 @@ function serverlessReadinessRiskList(items: ServerlessReadinessReport["riskQueue
 }
 
 function serverlessReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function mobileReadinessSetupList(items: MobileReadinessReport["mobileSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">mobile setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>config/platform/navigation/build/update/assets/permissions/commands/packages ${item.appConfigCount}/${item.platformCount}/${item.navigationCount}/${item.buildProfileCount}/${item.updateCount}/${item.assetCount}/${item.permissionCount}/${item.commandCount}/${item.packageCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(mobileReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function mobileReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">mobile signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(mobileReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function mobileReadinessCommandList(items: MobileReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function mobileReadinessRiskList(items: MobileReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(mobileReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function mobileReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

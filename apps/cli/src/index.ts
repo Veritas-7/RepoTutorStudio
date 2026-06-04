@@ -1854,6 +1854,7 @@ function openTargetEntries(): Array<{ target: string; fileName: string }> {
     { target: "infrastructure-readiness", fileName: "infrastructure-readiness.html" },
     { target: "deployment-readiness", fileName: "deployment-readiness.html" },
     { target: "serverless-readiness", fileName: "serverless-readiness.html" },
+    { target: "mobile-readiness", fileName: "mobile-readiness.html" },
     { target: "context-pack", fileName: "context-pack.html" },
     { target: "mcp-handoff", fileName: "mcp-handoff.html" },
     { target: "agent-memory", fileName: "agent-memory.html" },

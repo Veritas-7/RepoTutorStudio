@@ -5832,6 +5832,51 @@ Local verification:
 - `pnpm test`: PASS, 7/7 tests
 - `pnpm audit:brief`: PASS, 98/98 audit checks across 13 generated reports
 
+### Upgrade 201: Mobile Readiness Report
+
+- Cloned sparse and inspected `expo/expo` under
+  `research/external-src/expo-expo` without executing external source. Clone
+  HEAD was `27d742c`; the clone remains ignored by RepoTutor.
+- GitHub metadata: public repo, MIT license, 49,870 stars, 12,607 forks,
+  updated 2026-06-04T15:24:02Z. Compared with `facebook/react-native`,
+  `cloudflare/workers-sdk`, and `vercel/edge-runtime`; selected Expo because it
+  directly models mobile app readiness through `app.json`, `app.config`,
+  `eas.json`, Expo Router, platform identifiers, native folders, EAS build,
+  OTA updates, assets, permissions, and package/tooling signals. No source code
+  was copied into RepoTutor.
+- Implemented Expo/React Native-style mobile-readiness report:
+  `MobileReadinessReportSchema`, `analysis/mobile-readiness-report.json`,
+  `markdown/mobile-readiness.md`, `html/mobile-readiness.html`, mobile setups,
+  config signals, platform signals, navigation signals, build signals, update
+  signals, asset signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target mobile-readiness`.
+- Source pattern: Expo separates app configuration, dynamic config, EAS
+  profiles, Expo Router entry points, iOS bundle IDs, Android package IDs,
+  native folders, permissions, development client, EAS build/submit workflows,
+  `expo run:ios`, `expo run:android`, OTA update `runtimeVersion`, update URL,
+  branches/channels, icon/adaptive icon/splash/favicons, Metro/web support, and
+  package dependencies. RepoTutor maps that to deterministic static mobile
+  readiness and explicitly does not run Expo, EAS, Metro, emulators, native
+  builds, prebuild, OTA update publishing, credentials, signing, store
+  submission, or device installation.
+- RED smoke generated
+  `/tmp/repotutor-mobile-red-studies.BVpqQq/2026-06-05/local__repotutor-mobile-red-repo.RXVHwE__local__e2c6e90f`;
+  old behavior had `verificationCheckedRequiredArtifacts=300`, was missing
+  `analysis/mobile-readiness-report.json`, `markdown/mobile-readiness.md`, and
+  `html/mobile-readiness.html`, and `open --target mobile-readiness` exited
+  with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-mobile-green-studies.xPywfA/2026-06-05/local__repotutor-mobile-green-repo.ZK3Ajc__local__2fbf6b9c`;
+  confirmed `verificationCheckedRequiredArtifacts=303`, mobile setups 7,
+  config signals 9, platform signals 8, navigation signals 6, build signals 9,
+  update signals 8, asset signals 7, package signals 8, risk queue 0, all
+  three new artifacts, and `open --target mobile-readiness` ->
+  `html/mobile-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 8/8 tests
+- `pnpm audit:brief`: PASS, 99/99 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
