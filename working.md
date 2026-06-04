@@ -5019,7 +5019,8 @@ to a private repository, and preserve resumable state in this file.
   - GREEN current smoke: PASS
   - `pnpm test`: PASS, 18/18 tests
   - `pnpm audit:brief`: PASS, 109/109 audit checks across 13 reports
-- 2026-06-05: AutoResearch Upgrade 211 implementation commit: pending
+- 2026-06-05: Pushed AutoResearch Upgrade 211:
+  - `b569062` search-service readiness report
 
 ## Next Actions
 
