@@ -5081,6 +5081,67 @@ export const ScaffoldingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SchedulerReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  schedulerSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["node-cron", "cron", "bree", "agenda", "bullmq-repeatable", "github-actions", "vercel-cron", "custom", "unknown"]),
+    scheduleCount: z.number().int().nonnegative(),
+    cronExpressionCount: z.number().int().nonnegative(),
+    taskCount: z.number().int().nonnegative(),
+    timezoneCount: z.number().int().nonnegative(),
+    lifecycleCount: z.number().int().nonnegative(),
+    overlapControlCount: z.number().int().nonnegative(),
+    retryCount: z.number().int().nonnegative(),
+    errorCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  scheduleSignals: z.array(z.object({
+    signal: z.enum(["cron-expression", "seconds-field", "interval", "fixed-date", "timezone", "validated-expression", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  taskSignals: z.array(z.object({
+    signal: z.enum(["inline-task", "background-task", "async-task", "named-task", "task-context", "manual-execute", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lifecycleSignals: z.array(z.object({
+    signal: z.enum(["start", "stop", "destroy", "create-task", "scheduled-false", "run-on-init", "registry", "events", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reliabilitySignals: z.array(z.object({
+    signal: z.enum(["no-overlap", "max-executions", "retry", "lock", "idempotency", "error-handler", "logging", "graceful-shutdown", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["node-cron", "cron", "bree", "agenda", "bullmq", "toad-scheduler", "github-actions-cron", "vercel-cron", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -5376,6 +5437,7 @@ export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadi
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;
 export type ScaffoldingReadinessReport = z.infer<typeof ScaffoldingReadinessReportSchema>;
+export type SchedulerReadinessReport = z.infer<typeof SchedulerReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

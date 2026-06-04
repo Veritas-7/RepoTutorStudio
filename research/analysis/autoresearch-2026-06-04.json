@@ -1448,6 +1448,22 @@
         "Generator actions including add, addMany, modify, append, dynamic actions, custom action types, and transforms",
         "Handlebars template files, template directories, helpers, partials, loadable plop packs, skipIfExists, force, and abortOnFail safety controls"
       ]
+    },
+    {
+      "repo": "node-cron/node-cron",
+      "url": "https://github.com/node-cron/node-cron",
+      "localPath": "research/external-src/node-cron-node-cron",
+      "stars": 3261,
+      "forks": 281,
+      "license": "ISC",
+      "updatedAt": "2026-06-03T19:59:29Z",
+      "cloneHead": "c76f95e",
+      "adoptedPatterns": [
+        "cron schedule entrypoint through schedule, createTask, validate, ScheduledTask, and TaskContext",
+        "schedule expression readiness including seconds field, timezone, validated expressions, and interval/date alternatives",
+        "task readiness across inline tasks, background task paths, async functions, named tasks, task context, and manual execute",
+        "lifecycle and reliability controls including start, stop, destroy, scheduled false, events, noOverlap, maxExecutions, retry, locks, idempotency, error handling, logging, and graceful shutdown"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -4526,6 +4542,25 @@
         "markdown/scaffolding-readiness.md",
         "html/scaffolding-readiness.html"
       ]
+    },
+    {
+      "name": "scheduler readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/scheduler-readiness-report.json",
+        "markdown/scheduler-readiness.md",
+        "html/scheduler-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -5014,7 +5049,13 @@
     "scaffoldingReadinessGreenSmoke": "PASS",
     "fixtureScaffoldingReadinessReport": "PASS",
     "scaffoldingReadinessOpenTarget": "PASS",
-    "complianceAudit91Checks": "PASS"
+    "complianceAudit91Checks": "PASS",
+    "externalNodeCronCloneIgnored": "PASS",
+    "schedulerReadinessRedSmoke": "PASS",
+    "schedulerReadinessGreenSmoke": "PASS",
+    "fixtureSchedulerReadinessReport": "PASS",
+    "schedulerReadinessOpenTarget": "PASS",
+    "complianceAudit92Checks": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -5379,6 +5420,12 @@
     "cliScaffoldingReadinessOpenTargetSmoke": "PASS",
     "buildScaffoldingReadiness": "PASS",
     "testScaffoldingReadiness": "PASS",
-    "auditBriefScaffoldingReadiness91": "PASS"
+    "auditBriefScaffoldingReadiness91": "PASS",
+    "fixtureSchedulerReadinessReport": "PASS",
+    "cliSchedulerReadinessSmoke": "PASS",
+    "cliSchedulerReadinessOpenTargetSmoke": "PASS",
+    "buildSchedulerReadiness": "PASS",
+    "testSchedulerReadiness": "PASS",
+    "auditBriefSchedulerReadiness92": "PASS"
   }
 }

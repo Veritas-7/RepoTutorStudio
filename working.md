@@ -4228,6 +4228,45 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 193:
   - `0b7a41b` scaffolding readiness report
 
+- 2026-06-04: AutoResearch Upgrade 194 candidate selected:
+  `node-cron/node-cron`
+  (`https://github.com/node-cron/node-cron`; public; ISC; 3,261 stars; 281
+  forks; updated 2026-06-03T19:59:29Z). Compared with
+  `kelektiv/node-cron`, `agenda/agenda`, and `breejs/bree`; selected
+  `node-cron/node-cron` because it directly models scheduler ownership:
+  cron expressions, `schedule`, `createTask`, timezone handling, no-overlap
+  execution, max execution count, task lifecycle, validation, and task context.
+  Cloned ignored external source to `research/external-src/node-cron-node-cron`
+  and inspected docs/source/test hits without executing external source. Clone
+  HEAD was `c76f95e`; tracked file count for
+  `research/external-src/node-cron-node-cron` returned `0`.
+- 2026-06-04: RED scheduler-readiness smoke generated
+  `/tmp/repotutor-scheduler-red-studies.JH3h5Y/2026-06-04/local__simple-ts-app__HEAD__50370079`;
+  old build had `verificationCheckedRequiredArtifacts=279`, was missing
+  `analysis/scheduler-readiness-report.json`,
+  `markdown/scheduler-readiness.md`, and `html/scheduler-readiness.html`, and
+  `open --target scheduler-readiness` failed as expected.
+- 2026-06-04: Implemented node-cron-style scheduler-readiness report:
+  `SchedulerReadinessReportSchema`,
+  `analysis/scheduler-readiness-report.json`,
+  `markdown/scheduler-readiness.md`, `html/scheduler-readiness.html`,
+  scheduler setups, schedule signals, task signals, lifecycle signals,
+  reliability signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target scheduler-readiness`.
+- 2026-06-04: GREEN scheduler-readiness smoke generated
+  `/tmp/repotutor-scheduler-green-studies.nbYr6k/2026-06-04/local__simple-ts-app__main__50370079`;
+  confirmed `verificationCheckedRequiredArtifacts=282`, scheduler setups 0,
+  schedule signals 6, task signals 6, lifecycle signals 8, reliability signals
+  8, package signals 8, risk queue 2, all three new artifacts, and
+  `open --target scheduler-readiness` -> `html/scheduler-readiness.html`.
+- 2026-06-04: Verification for Upgrade 194:
+  - `pnpm build`: PASS
+  - RED old-head smoke: PASS
+  - GREEN current smoke: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 92/92 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

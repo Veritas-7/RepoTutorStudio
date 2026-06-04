@@ -106,6 +106,7 @@ import {
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
   ScaffoldingReadinessReport,
+  SchedulerReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -218,6 +219,7 @@ export interface AnalysisBundle {
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
   scaffoldingReadinessReport: ScaffoldingReadinessReport;
+  schedulerReadinessReport: SchedulerReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -330,8 +332,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
   const scaffoldingReadinessReport = await buildScaffoldingReadinessReport(walk);
+  const schedulerReadinessReport = await buildSchedulerReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -21873,6 +21876,257 @@ function scaffoldingSignalFromSpecs<T extends Record<K, string> & { pattern: Reg
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/scaffolding-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildSchedulerReadinessReport(walk: WalkResult): Promise<SchedulerReadinessReport> {
+  const sourceFiles = await schedulerSourceFiles(walk);
+  const schedulerSetups = schedulerSetupFiles(sourceFiles);
+  const scheduleSignals = schedulerScheduleSignals(sourceFiles);
+  const taskSignals = schedulerTaskSignals(sourceFiles);
+  const lifecycleSignals = schedulerLifecycleSignals(sourceFiles);
+  const reliabilitySignals = schedulerReliabilitySignals(sourceFiles);
+  const packageSignals = schedulerPackageSignals(sourceFiles);
+
+  const hasScheduler = schedulerSetups.length > 0 || packageSignals.some((item) => item.readiness === "ready");
+  const hasSchedule = scheduleSignals.some((item) => item.readiness === "ready") || schedulerSetups.some((item) => item.scheduleCount > 0 || item.cronExpressionCount > 0);
+  const hasTask = taskSignals.some((item) => item.readiness === "ready") || schedulerSetups.some((item) => item.taskCount > 0);
+  const hasLifecycle = lifecycleSignals.some((item) => item.readiness === "ready") || schedulerSetups.some((item) => item.lifecycleCount > 0);
+  const hasReliability = reliabilitySignals.some((item) => item.readiness === "ready") || schedulerSetups.some((item) => item.overlapControlCount + item.retryCount + item.errorCount > 0);
+
+  const riskQueue: SchedulerReadinessReport["riskQueue"] = [];
+  if (!hasScheduler) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document scheduled task tooling before claiming cron readiness.",
+      why: "Scheduler readiness starts with a discoverable cron package, scheduled workflow, platform cron config, or custom scheduler entrypoint.",
+      relatedHref: "html/scheduler-readiness.html"
+    });
+  }
+  if (hasScheduler && !hasSchedule) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record cron expressions, intervals, fixed-date triggers, timezone, and validation strategy.",
+      why: "Learners need to know when jobs run and whether the schedule expression is validated before deployment.",
+      relatedHref: "html/scheduler-readiness.html"
+    });
+  }
+  if (hasSchedule && !hasTask) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace inline callbacks, background task files, async work, task context, and manual execution paths.",
+      why: "A schedule without a task body does not explain the side effect, runtime boundary, or rebuild order.",
+      relatedHref: "html/scheduler-readiness.html"
+    });
+  }
+  if (hasTask && !hasLifecycle) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document start, stop, destroy, createTask, registry, events, and shutdown behavior.",
+      why: "Scheduled tasks need lifecycle ownership so dev servers, workers, tests, and shutdown paths do not leak timers.",
+      relatedHref: "html/scheduler-readiness.html"
+    });
+  }
+  if (hasTask && !hasReliability) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add overlap, max execution, retry, lock, idempotency, logging, or error handling controls.",
+      why: "Cron jobs often fail through duplicate execution, long-running tasks, missing retries, or silent errors.",
+      relatedHref: "html/scheduler-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify schedules in the original runtime before treating this report as operational approval.",
+    why: "RepoTutor records scheduler readiness only; it does not start timers, wait for cron ticks, execute jobs, acquire locks, retry failures, or validate platform cron delivery.",
+    relatedHref: "html/scheduler-readiness.html"
+  });
+
+  return {
+    summary: `node-cron-style scheduler readiness report: setup ${schedulerSetups.length}개, schedule signal ${scheduleSignals.length}개, task signal ${taskSignals.length}개, reliability signal ${reliabilitySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "node-cron schedule createTask cron expression timezone noOverlap maxExecutions start stop destroy execute validate ScheduledTask",
+    schedulerSetups,
+    scheduleSignals,
+    taskSignals,
+    lifecycleSignals,
+    reliabilitySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"node-cron|cron\\.schedule|schedule\\(|createTask|CronJob|Bree|Agenda|repeatable|cron:\" .", purpose: "Find scheduler packages, cron entrypoints, platform cron configs, and repeatable jobs." },
+      { command: "rg \"['\\\"](\\\\*|[0-9/,*-]+) [0-9/,*-]+ [0-9/,*-]+ [0-9/,*-]+ [0-9/,*-]+|timezone|timeZone|validate\\(\" .", purpose: "Trace cron expressions, timezone settings, and validation calls." },
+      { command: "rg \"start\\(|stop\\(|destroy\\(|execute\\(|createTask|scheduled:\\s*false|runOnInit|registry|on\\(\" .", purpose: "Review task lifecycle, manual execution, event hooks, and registry ownership." },
+      { command: "rg \"noOverlap|maxExecutions|retry|backoff|lock|mutex|idempotent|catch\\(|logger|shutdown|SIGTERM\" .", purpose: "Check overlap, retry, lock, idempotency, error, logging, and shutdown controls." }
+    ],
+    learnerNextSteps: [
+      "먼저 node-cron, cron, Bree, Agenda, BullMQ repeatable job, GitHub Actions schedule, Vercel cron 신호를 찾아 scheduler entrypoint를 확인하세요.",
+      "cron expression, seconds field, interval/fixed-date trigger, timezone, validate() 신호로 실행 시간을 분리하세요.",
+      "inline callback, background task file, async task, task context, manual execute 신호로 실제 side effect가 어디 있는지 찾으세요.",
+      "start, stop, destroy, createTask, scheduled:false, runOnInit, registry, events 신호로 lifecycle ownership을 확인하세요.",
+      "noOverlap, maxExecutions, retry/backoff, lock, idempotency, catch/logger, graceful shutdown 신호로 운영 안정성을 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 timer tick, task execution, lock acquisition, retry behavior, platform cron delivery는 원본 런타임에서 별도 검증하세요."
+    ]
+  };
+}
+
+type SchedulerSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function schedulerSourceFiles(walk: WalkResult): Promise<SchedulerSourceFile[]> {
+  const files: SchedulerSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !schedulerInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!schedulerPathSignal(file.relPath) && !schedulerContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function schedulerInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return schedulerPathSignal(filePath)
+    || /^(package\.json|cron\.[cm]?[jt]s|scheduler\.[cm]?[jt]s|schedule\.[cm]?[jt]s|jobs?\.[cm]?[jt]s|worker\.[cm]?[jt]s|vercel\.json)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|json|ya?ml|toml|md|mdx)$/i.test(filePath);
+}
+
+function schedulerPathSignal(filePath: string): boolean {
+  return /(^|\/)(cron|crons|scheduler|schedulers|schedule|schedules|scheduled|jobs?|workers?|tasks?|background|agenda|bree|vercel\.json|package\.json|\.github\/workflows)(\/|$|\.|-|_)/i.test(filePath);
+}
+
+function schedulerContentSignal(text: string): boolean {
+  return /(node-cron|cron\.schedule|schedule\s*\(|createTask\s*\(|CronJob|cronTime|Bree|Agenda|repeatable|repeatStrategy|noOverlap|maxExecutions|timezone|timeZone|ScheduledTask|TaskContext|runOnInit|scheduled\s*:\s*false|on:\s*\[\s*cron|cron:\s*['"])/i.test(text);
+}
+
+function schedulerSetupFiles(sourceFiles: SchedulerSourceFile[]): SchedulerReadinessReport["schedulerSetups"] {
+  const rows: SchedulerReadinessReport["schedulerSetups"] = [];
+  for (const source of sourceFiles) {
+    const scheduleCount = countMatches(source.text, /cron\.schedule|schedule\s*\(|createTask\s*\(|new\s+CronJob|new\s+Bree|new\s+Agenda|repeatable|cron:\s*['"]|on:\s*\[\s*cron/gi);
+    const cronExpressionCount = countMatches(source.text, /['"](?:\*|[0-9/,*-]+)\s+[0-9/,*-]+\s+[0-9/,*-]+\s+[0-9/,*-]+\s+[0-9/,*-]+(?:\s+[0-9/,*-]+)?['"]/gi);
+    const taskCount = countMatches(source.text, /=>\s*\{|function\s*\(|async\s*\(|TaskFn|TaskContext|background task|taskPath|execute\s*\(|process\.env|worker/gi);
+    const timezoneCount = countMatches(source.text, /timezone|timeZone|LocalizedTime|Intl\.DateTimeFormat|America\/|Europe\/|Asia\//gi);
+    const lifecycleCount = countMatches(source.text, /start\s*\(|stop\s*\(|destroy\s*\(|createTask\s*\(|scheduled\s*:\s*false|runOnInit|registry|on\s*\(|off\s*\(|once\s*\(/gi);
+    const overlapControlCount = countMatches(source.text, /noOverlap|lock|mutex|maxExecutions|skip.*overlap|prevent.*overlap/gi);
+    const retryCount = countMatches(source.text, /retry|retries|backoff|attempts|repeatStrategy/gi);
+    const errorCount = countMatches(source.text, /catch\s*\(|onFail|error|logger|throw new Error|failed|SIGTERM|shutdown/gi);
+    const hasSignal = scheduleCount + cronExpressionCount + taskCount + timezoneCount + lifecycleCount + overlapControlCount + retryCount + errorCount > 0;
+    if (!hasSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework: schedulerFramework(source),
+      scheduleCount,
+      cronExpressionCount,
+      taskCount,
+      timezoneCount,
+      lifecycleCount,
+      overlapControlCount,
+      retryCount,
+      errorCount,
+      readiness: scheduleCount > 0 && taskCount > 0 && (lifecycleCount > 0 || overlapControlCount > 0 || errorCount > 0) ? "ready" : hasSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains schedules ${scheduleCount}, cron expressions ${cronExpressionCount}, tasks ${taskCount}, timezones ${timezoneCount}, lifecycle ${lifecycleCount}, overlap controls ${overlapControlCount}, retries ${retryCount}, errors ${errorCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function schedulerFramework(source: SchedulerSourceFile): SchedulerReadinessReport["schedulerSetups"][number]["framework"] {
+  if (/node-cron|cron\.schedule|createTask|ScheduledTask|noOverlap|maxExecutions/i.test(source.text)) return "node-cron";
+  if (/from ['"]cron|require\(['"]cron|new\s+CronJob|CronTime/i.test(source.text)) return "cron";
+  if (/new\s+Bree|from ['"]bree|require\(['"]bree/i.test(source.text)) return "bree";
+  if (/new\s+Agenda|from ['"]agenda|require\(['"]agenda/i.test(source.text)) return "agenda";
+  if (/repeatable|repeatStrategy|Queue\b|BullMQ/i.test(source.text)) return "bullmq-repeatable";
+  if (/on:\s*\[\s*cron|schedule:/i.test(source.text) && /\.github\/workflows/.test(source.filePath)) return "github-actions";
+  if (/vercel\.json|crons\s*:|path\s*:|schedule\s*:/i.test(source.text) && /vercel\.json$/i.test(source.filePath)) return "vercel-cron";
+  if (/cron|schedule|scheduler|job/i.test(source.filePath) || /cron expression|scheduled task/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function schedulerScheduleSignals(sourceFiles: SchedulerSourceFile[]): SchedulerReadinessReport["scheduleSignals"] {
+  const specs: Array<{ signal: SchedulerReadinessReport["scheduleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "cron-expression", pattern: /['"](?:\*|[0-9/,*-]+)\s+[0-9/,*-]+\s+[0-9/,*-]+\s+[0-9/,*-]+\s+[0-9/,*-]+(?:\s+[0-9/,*-]+)?['"]|cron expression/i, evidence: "cron expression evidence was detected." },
+    { signal: "seconds-field", pattern: /['"][0-9*,/-]+\s+[0-9*,/-]+\s+[0-9*,/-]+\s+[0-9*,/-]+\s+[0-9*,/-]+\s+[0-9*,/-]+['"]|validate-second/i, evidence: "six-field cron or seconds validation evidence was detected." },
+    { signal: "interval", pattern: /setInterval|every\s*:|interval|repeat\.every|later\.parse\.text/i, evidence: "interval schedule evidence was detected." },
+    { signal: "fixed-date", pattern: /runAt|Date\s*\(|at\s*:|fixed date|once/i, evidence: "fixed-date schedule evidence was detected." },
+    { signal: "timezone", pattern: /timezone|timeZone|LocalizedTime|America\/|Europe\/|Asia\//i, evidence: "timezone evidence was detected." },
+    { signal: "validated-expression", pattern: /validate\s*\(|validateCron|cron-parser|pattern-validation/i, evidence: "schedule validation evidence was detected." }
+  ];
+  return schedulerSignalFromSpecs(sourceFiles, specs, "schedule", "signal");
+}
+
+function schedulerTaskSignals(sourceFiles: SchedulerSourceFile[]): SchedulerReadinessReport["taskSignals"] {
+  const specs: Array<{ signal: SchedulerReadinessReport["taskSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "inline-task", pattern: /schedule\s*\([^,]+,\s*(async\s*)?(\([^)]*\)|function)|createTask\s*\([^,]+,\s*(async\s*)?(\([^)]*\)|function)/i, evidence: "inline task callback evidence was detected." },
+    { signal: "background-task", pattern: /BackgroundScheduledTask|taskPath|background task|['"][.\/][^'"]+\.(js|mjs|cjs|ts)['"]/i, evidence: "background task file evidence was detected." },
+    { signal: "async-task", pattern: /async\s*\(|Promise|await\s+/i, evidence: "async task evidence was detected." },
+    { signal: "named-task", pattern: /name\s*:|jobName|taskId|id\s*:/i, evidence: "named task evidence was detected." },
+    { signal: "task-context", pattern: /TaskContext|context|execution|triggeredAt|dateLocalIso/i, evidence: "task context evidence was detected." },
+    { signal: "manual-execute", pattern: /\.execute\s*\(|execute\s*\(\)/i, evidence: "manual execute evidence was detected." }
+  ];
+  return schedulerSignalFromSpecs(sourceFiles, specs, "task", "signal");
+}
+
+function schedulerLifecycleSignals(sourceFiles: SchedulerSourceFile[]): SchedulerReadinessReport["lifecycleSignals"] {
+  const specs: Array<{ signal: SchedulerReadinessReport["lifecycleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "start", pattern: /\.start\s*\(|start\s*\(\)/i, evidence: "start lifecycle evidence was detected." },
+    { signal: "stop", pattern: /\.stop\s*\(|stop\s*\(\)/i, evidence: "stop lifecycle evidence was detected." },
+    { signal: "destroy", pattern: /\.destroy\s*\(|destroy\s*\(\)/i, evidence: "destroy lifecycle evidence was detected." },
+    { signal: "create-task", pattern: /createTask\s*\(/i, evidence: "createTask evidence was detected." },
+    { signal: "scheduled-false", pattern: /scheduled\s*:\s*false/i, evidence: "manual start scheduled:false evidence was detected." },
+    { signal: "run-on-init", pattern: /runOnInit|runOnStartup|immediate/i, evidence: "run-on-init evidence was detected." },
+    { signal: "registry", pattern: /registry|taskRegistry|Map<string,\s*ScheduledTask>|getTasks/i, evidence: "task registry evidence was detected." },
+    { signal: "events", pattern: /\.on\s*\(|\.off\s*\(|\.once\s*\(|TaskEvent|onFail|onFinished/i, evidence: "task event evidence was detected." }
+  ];
+  return schedulerSignalFromSpecs(sourceFiles, specs, "lifecycle", "signal");
+}
+
+function schedulerReliabilitySignals(sourceFiles: SchedulerSourceFile[]): SchedulerReadinessReport["reliabilitySignals"] {
+  const specs: Array<{ signal: SchedulerReadinessReport["reliabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "no-overlap", pattern: /noOverlap|overlap/i, evidence: "no-overlap evidence was detected." },
+    { signal: "max-executions", pattern: /maxExecutions|runCount/i, evidence: "max executions evidence was detected." },
+    { signal: "retry", pattern: /retry|retries|backoff|attempts|repeatStrategy/i, evidence: "retry/backoff evidence was detected." },
+    { signal: "lock", pattern: /lock|mutex|semaphore|advisory lock|redis.*setnx/i, evidence: "lock evidence was detected." },
+    { signal: "idempotency", pattern: /idempotent|dedupe|deduplicate|once/i, evidence: "idempotency evidence was detected." },
+    { signal: "error-handler", pattern: /catch\s*\(|onFail|error|failed|uncaughtException/i, evidence: "error handling evidence was detected." },
+    { signal: "logging", pattern: /logger|log\.|console\.(log|error|warn)/i, evidence: "logging evidence was detected." },
+    { signal: "graceful-shutdown", pattern: /SIGTERM|SIGINT|shutdown|beforeExit|process\.on/i, evidence: "graceful shutdown evidence was detected." }
+  ];
+  return schedulerSignalFromSpecs(sourceFiles, specs, "reliability", "signal");
+}
+
+function schedulerPackageSignals(sourceFiles: SchedulerSourceFile[]): SchedulerReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: SchedulerReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "node-cron", pattern: /"node-cron"|from ['"]node-cron|require\(['"]node-cron|cron\.schedule/i, evidence: "node-cron evidence was detected." },
+    { signal: "cron", pattern: /"cron"|from ['"]cron|require\(['"]cron|CronJob/i, evidence: "cron package evidence was detected." },
+    { signal: "bree", pattern: /"bree"|from ['"]bree|require\(['"]bree|new\s+Bree/i, evidence: "Bree evidence was detected." },
+    { signal: "agenda", pattern: /"agenda"|from ['"]agenda|require\(['"]agenda|new\s+Agenda/i, evidence: "Agenda evidence was detected." },
+    { signal: "bullmq", pattern: /"bullmq"|from ['"]bullmq|repeatable|repeatStrategy/i, evidence: "BullMQ repeatable job evidence was detected." },
+    { signal: "toad-scheduler", pattern: /toad-scheduler|SimpleIntervalJob|AsyncTask/i, evidence: "toad-scheduler evidence was detected." },
+    { signal: "github-actions-cron", pattern: /on:\s*\[\s*cron|schedule:\s*\n\s*-\s*cron/i, evidence: "GitHub Actions cron evidence was detected." },
+    { signal: "vercel-cron", pattern: /"crons"\s*:|vercel\.json|schedule\s*:/i, evidence: "Vercel cron evidence was detected." }
+  ];
+  return schedulerSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function schedulerSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: SchedulerSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/scheduler-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
