@@ -1,6 +1,6 @@
 {
   "iteration": 6,
-  "createdAt": "2026-06-03T23:51:46.491Z",
+  "createdAt": "2026-06-04T00:00:09.095Z",
   "checks": [
     {
       "name": "project setup",
@@ -109,6 +109,13 @@
     },
     {
       "name": "software bill of materials report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "security readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

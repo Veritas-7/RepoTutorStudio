@@ -303,6 +303,22 @@
         "artifact relationships",
         "CycloneDX SPDX and Syft JSON output readiness notes"
       ]
+    },
+    {
+      "repo": "aquasecurity/trivy",
+      "url": "https://github.com/aquasecurity/trivy",
+      "localPath": "research/external-src/aquasecurity-trivy",
+      "stars": 35386,
+      "forks": 415,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-03T21:09:55Z",
+      "adoptedPatterns": [
+        "security targets separated from scanners",
+        "vulnerability secret misconfiguration license and SBOM scanner coverage",
+        "filesystem git repository container Kubernetes and SBOM readiness",
+        "severity-oriented action queue",
+        "recommended scanner commands without executing external tooling"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2006,6 +2022,28 @@
         "SbomReportSchema",
         "Syft SBOM source descriptor artifacts packages file metadata relationships CycloneDX SPDX output formats"
       ]
+    },
+    {
+      "name": "Security readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/core/src/markdown.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "packages/core/src/pipeline.test.ts",
+        "scripts/compliance-audit.mjs"
+      ],
+      "newArtifacts": [
+        "analysis/security-readiness-report.json",
+        "markdown/security-readiness.md",
+        "html/security-readiness.html",
+        "open --target security-readiness",
+        "SecurityReadinessReportSchema",
+        "Trivy targets scanners vulnerability secret misconfiguration license SBOM severity security readiness"
+      ]
     }
   ],
   "verification": {
@@ -2237,7 +2275,13 @@
     "cliSbomOpenTargetSmoke": "PASS",
     "buildSbom": "PASS",
     "testSbom": "PASS",
-    "auditBriefSbom13": "PASS"
+    "auditBriefSbom13": "PASS",
+    "fixtureSecurityReadinessReport": "PASS",
+    "cliSecurityReadinessSmoke": "PASS",
+    "cliSecurityReadinessOpenTargetSmoke": "PASS",
+    "buildSecurityReadiness": "PASS",
+    "testSecurityReadiness": "PASS",
+    "auditBriefSecurityReadiness13": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"

@@ -30,6 +30,7 @@ import type {
   ProjectActivityReport,
   LicenseRightsReport,
   SbomReport,
+  SecurityReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -66,6 +67,7 @@ export interface StudyHtmlInput {
   projectActivityReport: ProjectActivityReport;
   licenseRightsReport: LicenseRightsReport;
   sbomReport: SbomReport;
+  securityReadinessReport: SecurityReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -122,6 +124,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["project-activity.html", "Project Activity"],
     ["license-rights.html", "License Rights"],
     ["sbom.html", "SBOM"],
+    ["security-readiness.html", "Security Readiness"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -213,6 +216,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Project Activity</h3><p>${escapeHtml(input.projectActivityReport.summary)}</p><p>Repowise 패턴으로 snapshot-only activity, hotspot, dead-code, decision queue를 묶습니다.</p><a href="project-activity.html">Project Activity 열기</a></article>
           <article><h3>License Rights</h3><p>${escapeHtml(input.licenseRightsReport.summary)}</p><p>Licensee 패턴으로 license file, package metadata, README 참조를 분리합니다.</p><a href="license-rights.html">License Rights 열기</a></article>
           <article><h3>SBOM</h3><p>${escapeHtml(input.sbomReport.summary)}</p><p>Syft 패턴으로 source descriptor, package artifacts, file artifacts, relationships를 inventory로 묶습니다.</p><a href="sbom.html">SBOM 열기</a></article>
+          <article><h3>Security Readiness</h3><p>${escapeHtml(input.securityReadinessReport.summary)}</p><p>Trivy 패턴으로 targets, scanners, security signals, action queue를 분리합니다.</p><a href="security-readiness.html">Security Readiness 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -322,6 +326,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "sbom.html",
       title: "SBOM",
       html: pageShell("SBOM", "sbom.html", `<section class="panel" data-source-pattern="Syft"><h2>SBOM Snapshot</h2><p>${escapeHtml(input.sbomReport.summary)}</p><p class="muted">${escapeHtml(input.sbomReport.sourcePattern)}</p><dl class="meta"><div><dt>manifests</dt><dd>${input.sbomReport.packageManifests.length}</dd></div><div><dt>packages</dt><dd>${input.sbomReport.packageArtifacts.length}</dd></div><div><dt>files</dt><dd>${input.sbomReport.fileArtifacts.length}</dd></div><div><dt>relationships</dt><dd>${input.sbomReport.relationships.length}</dd></div></dl><p>Descriptor: ${escapeHtml(input.sbomReport.sourceDescriptor.descriptorName)} v${escapeHtml(input.sbomReport.sourceDescriptor.descriptorVersion)} · commit ${escapeHtml(input.sbomReport.sourceDescriptor.commitHash?.slice(0, 12) ?? "unknown")}</p></section><section class="grid"><article class="sbom-card"><h3>Package Manifests</h3>${sbomManifestList(input.sbomReport.packageManifests)}</article><article class="sbom-card"><h3>Output Formats</h3>${sbomOutputFormatList(input.sbomReport.outputFormats)}</article><article class="sbom-card"><h3>Review Warnings</h3>${sbomWarningList(input.sbomReport.reviewWarnings)}</article><article class="sbom-card"><h3>다음 확인 단계</h3>${list(input.sbomReport.learnerNextSteps)}</article></section><section class="cards sbom-package-cards">${sbomPackageCards(input.sbomReport.packageArtifacts)}</section><section class="cards sbom-file-cards">${sbomFileCards(input.sbomReport.fileArtifacts)}</section><section class="panel"><h2>Relationships</h2>${sbomRelationshipList(input.sbomReport.relationships)}</section>`, input)
+    },
+    {
+      name: "security-readiness.html",
+      title: "Security Readiness",
+      html: pageShell("Security Readiness", "security-readiness.html", `<section class="panel" data-source-pattern="Trivy"><h2>Security Readiness Snapshot</h2><p>${escapeHtml(input.securityReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.securityReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>targets</dt><dd>${input.securityReadinessReport.scannerTargets.length}</dd></div><div><dt>scanners</dt><dd>${input.securityReadinessReport.scannerCoverage.length}</dd></div><div><dt>signals</dt><dd>${input.securityReadinessReport.securitySignals.length}</dd></div><div><dt>actions</dt><dd>${input.securityReadinessReport.actionQueue.length}</dd></div></dl></section><section class="grid"><article class="security-readiness-card"><h3>Scanner Targets</h3>${securityTargetList(input.securityReadinessReport.scannerTargets)}</article><article class="security-readiness-card"><h3>Scanner Coverage</h3>${securityCoverageList(input.securityReadinessReport.scannerCoverage)}</article><article class="security-readiness-card"><h3>Action Queue</h3>${securityActionList(input.securityReadinessReport.actionQueue)}</article><article class="security-readiness-card"><h3>Recommended Commands</h3>${securityCommandList(input.securityReadinessReport.recommendedCommands)}</article></section><section class="cards security-signal-cards">${securitySignalCards(input.securityReadinessReport.securitySignals)}</section><section class="panel"><h2>다음 확인 단계</h2>${list(input.securityReadinessReport.learnerNextSteps)}</section>`, input)
     },
     {
       name: "context-pack.html",
@@ -454,6 +463,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Project Activity", path: "html/project-activity.html", description: "Repowise식 activity snapshot, hotspot, dead-code, decision review queue를 확인합니다." },
       { label: "License Rights", path: "html/license-rights.html", description: "Licensee식 license file, package metadata, README license reference 검토 상태를 확인합니다." },
       { label: "SBOM", path: "html/sbom.html", description: "Syft식 package artifact, file artifact, relationship inventory를 확인합니다." },
+      { label: "Security Readiness", path: "html/security-readiness.html", description: "Trivy식 scan target, scanner coverage, security signal, action queue를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -657,6 +667,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "sbom.html",
       goal: "Syft식 source descriptor, package artifact, file artifact, relationship inventory로 배포 전 구성요소를 확인합니다.",
       evidence: `package artifacts ${input.sbomReport.packageArtifacts.length}개, relationships ${input.sbomReport.relationships.length}개`
+    },
+    {
+      title: "보안 스캔 준비 상태 확인",
+      href: "security-readiness.html",
+      goal: "Trivy식 target/scanner readiness를 보고 실제 스캐너 실행 전에 lockfile, license, IaC, secret-scan 범위 누락을 확인합니다.",
+      evidence: `scanner coverage ${input.securityReadinessReport.scannerCoverage.length}개, action queue ${input.securityReadinessReport.actionQueue.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -946,6 +962,36 @@ function sbomFileCards(items: SbomReport["fileArtifacts"]): string {
 function sbomRelationshipList(items: SbomReport["relationships"]): string {
   if (items.length === 0) return "<p class=\"muted\">relationship이 없습니다.</p>";
   return `<ul>${items.slice(0, 100).map((item) => `<li><code>${escapeHtml(item.from)}</code> --${escapeHtml(item.relationshipType)}--&gt; <code>${escapeHtml(item.to)}</code> <a class="source-link" href="../${escapeHtml(item.evidenceHref)}">evidence</a></li>`).join("")}</ul>`;
+}
+
+function securityTargetList(items: SecurityReadinessReport["scannerTargets"]): string {
+  if (items.length === 0) return "<p class=\"muted\">scanner target이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.target)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function securityCoverageList(items: SecurityReadinessReport["scannerCoverage"]): string {
+  if (items.length === 0) return "<p class=\"muted\">scanner coverage가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.scanner)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function securityActionList(items: SecurityReadinessReport["actionQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">action queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br>${escapeHtml(item.why)}<br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function securityCommandList(items: SecurityReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function securitySignalCards(items: SecurityReadinessReport["securitySignals"]): string {
+  if (items.length === 0) return "<article class=\"security-readiness-card\"><h3>Security signal이 없습니다.</h3><p>지원되는 manifest, lockfile, container, IaC, license, SBOM 신호가 감지되지 않았습니다.</p></article>";
+  return items.slice(0, 100).map((item) => `<article class="security-readiness-card"><h3>${escapeHtml(item.filePath)}</h3><p class="muted">${escapeHtml(item.kind)} · ${escapeHtml(item.severity)}</p><p>${escapeHtml(item.message)}</p><a class="source-link" href="${escapeHtml(securitySignalHref(item.sourceHref))}">근거 열기</a></article>`).join("");
+}
+
+function securitySignalHref(href: string): string {
+  if (href.startsWith("html/")) return htmlPageHref(href);
+  return `../${href}`;
 }
 
 function contextPackCards(files: ContextPackReport["topFiles"]): string {
