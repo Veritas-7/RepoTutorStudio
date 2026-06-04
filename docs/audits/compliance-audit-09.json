@@ -1,6 +1,6 @@
 {
   "iteration": 9,
-  "createdAt": "2026-06-04T22:27:41.146Z",
+  "createdAt": "2026-06-04T22:45:03.801Z",
   "checks": [
     {
       "name": "project setup",
@@ -102,6 +102,13 @@
     },
     {
       "name": "code ownership readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "large asset readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

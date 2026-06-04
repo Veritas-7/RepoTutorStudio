@@ -23,6 +23,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "learning-journal-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "project-activity-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-ownership-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "large-asset-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "license-rights-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "sbom-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "security-readiness-report.json"))).resolves.toBeUndefined();
@@ -145,6 +146,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "learning-journal.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "project-activity.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-ownership-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "large-asset-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "license-rights.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "sbom.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "security-readiness.md"))).resolves.toBeUndefined();
@@ -270,6 +272,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "learning-journal.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "project-activity.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "code-ownership-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "large-asset-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "license-rights.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "sbom.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "security-readiness.html"))).resolves.toBeUndefined();
@@ -422,6 +425,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/learning-journal.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/project-activity.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/code-ownership-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/large-asset-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/license-rights.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/sbom.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/security-readiness.html\"");
@@ -665,6 +669,26 @@ describe("RepoTutor core pipeline", () => {
     expect(codeOwnershipMarkdown).toContain("Source pattern: CODEOWNERS");
     expect(codeOwnershipMarkdown).toContain("## CODEOWNERS Files");
     expect(codeOwnershipMarkdown).toContain("## Review Signals");
+    const largeAssetText = await fs.readFile(path.join(result.session.outputPaths.analysis, "large-asset-readiness-report.json"), "utf8");
+    expect(largeAssetText).toContain("Git LFS DVC large file data versioning .gitattributes filter=lfs pointer oid sha256 lockable migrate track status fsck prune dvc.yaml dvc.lock outs deps metrics params remote cache push pull status repro");
+    expect(largeAssetText).toContain("\"assetSetups\"");
+    expect(largeAssetText).toContain("\"lfsSignals\"");
+    expect(largeAssetText).toContain("\"dvcSignals\"");
+    expect(largeAssetText).toContain("\"submoduleSignals\"");
+    expect(largeAssetText).toContain("\"workflowSignals\"");
+    expect(largeAssetText).toContain("\"packageSignals\"");
+    expect(largeAssetText).toContain("git lfs fsck --pointers BASE..HEAD");
+    const largeAssetHtml = await fs.readFile(path.join(result.session.outputPaths.html, "large-asset-readiness.html"), "utf8");
+    expect(largeAssetHtml).toContain("Large Asset Readiness");
+    expect(largeAssetHtml).toContain("large-asset-readiness-card");
+    expect(largeAssetHtml).toContain("data-source-pattern=\"Git LFS DVC\"");
+    expect(largeAssetHtml).toContain("Asset Setups");
+    expect(largeAssetHtml).toContain("DVC Signals");
+    const largeAssetMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "large-asset-readiness.md"), "utf8");
+    expect(largeAssetMarkdown).toContain("# Large Asset Readiness");
+    expect(largeAssetMarkdown).toContain("Source pattern: Git LFS DVC");
+    expect(largeAssetMarkdown).toContain("## Asset Setups");
+    expect(largeAssetMarkdown).toContain("## DVC Signals");
     const licenseRightsText = await fs.readFile(path.join(result.session.outputPaths.analysis, "license-rights-report.json"), "utf8");
     expect(licenseRightsText).toContain("Licensee license file detection filename score SPDX confidence matched_files package metadata README references human compliance review");
     expect(licenseRightsText).toContain("\"detectedProjectLicense\"");
@@ -2782,6 +2806,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/learning-journal.html");
     expect(exportManifestText).toContain("html/project-activity.html");
     expect(exportManifestText).toContain("html/code-ownership-readiness.html");
+    expect(exportManifestText).toContain("html/large-asset-readiness.html");
     expect(exportManifestText).toContain("html/license-rights.html");
     expect(exportManifestText).toContain("html/sbom.html");
     expect(exportManifestText).toContain("html/security-readiness.html");
@@ -2928,6 +2953,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("learning-journal.html");
     expect(learningPathHtml).toContain("project-activity.html");
     expect(learningPathHtml).toContain("code-ownership-readiness.html");
+    expect(learningPathHtml).toContain("large-asset-readiness.html");
     expect(learningPathHtml).toContain("license-rights.html");
     expect(learningPathHtml).toContain("sbom.html");
     expect(learningPathHtml).toContain("security-readiness.html");
@@ -3188,6 +3214,152 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-ownership-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-ownership-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "code-ownership-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects large asset readiness patterns without running Git LFS or DVC", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-large-asset-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-large-asset-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".dvc"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "data"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "models"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "scripts"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, ".gitattributes"), [
+      "*.psd filter=lfs diff=lfs merge=lfs -text lockable",
+      "*.zip filter=lfs diff=lfs merge=lfs -text",
+      "models/*.onnx filter=lfs diff=lfs merge=lfs -text"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "models", "model-lfs-pointer.txt"), [
+      "version https://git-lfs.github.com/spec/v1",
+      "oid sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "size 123456"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".dvc", "config"), [
+      "[core]",
+      "    remote = storage",
+      "['remote \"storage\"']",
+      "    url = s3://repotutor-fixture-bucket/path",
+      "[cache]",
+      "    dir = .dvc/cache"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".dvcignore"), "tmp/**\n");
+    await fs.writeFile(path.join(sourceRoot, "dvc.yaml"), [
+      "stages:",
+      "  featurize:",
+      "    cmd: python scripts/featurize.py",
+      "    deps:",
+      "      - data/raw",
+      "      - scripts/featurize.py",
+      "    outs:",
+      "      - data/features",
+      "    metrics:",
+      "      - metrics.json",
+      "    params:",
+      "      - train.epochs"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "dvc.lock"), [
+      "schema: '2.0'",
+      "stages:",
+      "  featurize:",
+      "    cmd: python scripts/featurize.py",
+      "    deps:",
+      "      - path: data/raw",
+      "        md5: abc123",
+      "    outs:",
+      "      - path: data/features",
+      "        md5: def456"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "data", "raw.dvc"), [
+      "outs:",
+      "- path: data/raw",
+      "  md5: abc123",
+      "  size: 123"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".gitmodules"), [
+      "[submodule \"assets/vendor\"]",
+      "  path = assets/vendor",
+      "  url = https://example.com/vendor-assets.git"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "assets.yml"), [
+      "name: assets",
+      "on: [push]",
+      "jobs:",
+      "  assets:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "        with:",
+      "          lfs: true",
+      "          submodules: recursive",
+      "      - uses: actions/cache@v4",
+      "        with:",
+      "          path: .dvc/cache",
+      "          key: dvc-cache",
+      "      - run: git lfs pull && git lfs status --json && git lfs fsck --pointers HEAD",
+      "      - run: dvc doctor && dvc status && dvc pull && dvc repro && dvc push"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "scripts", "assets.sh"), [
+      "git lfs install --local --skip-smudge",
+      "git lfs track \"*.psd\"",
+      "git lfs fetch",
+      "git lfs push origin main",
+      "git lfs migrate info --everything --pointers=ignore --top=100",
+      "git lfs prune",
+      "git lfs locks",
+      "git submodule update --init --recursive",
+      "dvc status",
+      "dvc pull",
+      "dvc push",
+      "dvc repro"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Large asset fixture",
+      "",
+      "Git LFS patterns are case-sensitive; use bracketed case patterns when needed.",
+      "Contributors run git lfs pull, git lfs locks, and dvc pull before model work.",
+      "DVC remote storage uses dvc-s3 and the default remote configured in .dvc/config."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "assets:lfs": "git lfs status --json && git lfs fsck --pointers HEAD",
+        "assets:dvc": "dvc status && dvc repro && dvc push"
+      },
+      devDependencies: {
+        "git-lfs": "^3.0.0",
+        dvc: "^3.0.0",
+        "dvc-s3": "^3.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "scripts", "featurize.py"), "print('feature fixture')\n");
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = result.analysis.largeAssetReadinessReport;
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const attributesSetup = report.assetSetups.find((item) => item.filePath === ".gitattributes");
+    const dvcConfigSetup = report.assetSetups.find((item) => item.filePath === ".dvc/config");
+    const dvcYamlSetup = report.assetSetups.find((item) => item.filePath === "dvc.yaml");
+    const submoduleSetup = report.assetSetups.find((item) => item.filePath === ".gitmodules");
+
+    expect(report.assetSetups.length).toBeGreaterThan(0);
+    expect(attributesSetup?.tool).toBe("git-lfs");
+    expect(attributesSetup?.patternCount).toBeGreaterThan(0);
+    expect(attributesSetup?.lockableCount).toBeGreaterThan(0);
+    expect(dvcConfigSetup?.tool).toBe("dvc");
+    expect(dvcConfigSetup?.remoteCount).toBeGreaterThan(0);
+    expect(dvcConfigSetup?.cacheCount).toBeGreaterThan(0);
+    expect(dvcYamlSetup?.outCount).toBeGreaterThan(0);
+    expect(dvcYamlSetup?.depCount).toBeGreaterThan(0);
+    expect(dvcYamlSetup?.metricCount).toBeGreaterThan(0);
+    expect(submoduleSetup?.tool).toBe("git-submodule");
+    expect(readySignals(report.lfsSignals)).toEqual(expect.arrayContaining(["gitattributes", "filter-lfs", "diff-merge-lfs", "pointer-file", "oid-sha256", "track-command", "install-command", "status-command", "pull-push-fetch", "fsck", "migrate", "prune", "lockable", "locks", "skip-smudge", "case-sensitive-patterns"]));
+    expect(readySignals(report.dvcSignals)).toEqual(expect.arrayContaining(["dvc-yaml", "dvc-lock", "dvc-file", "outs", "deps", "metrics", "params", "remote-config", "default-remote", "cache", "push", "pull", "status", "repro", "dvcignore", "optional-remote-deps"]));
+    expect(readySignals(report.submoduleSignals)).toEqual(expect.arrayContaining(["gitmodules", "submodule-url", "submodule-path", "recursive-clone"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["ci-fetch", "ci-pull", "ci-push", "artifact-cache", "checkout-lfs", "dvc-repro", "dvc-doctor"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["git-lfs", "dvc", "dvc-s3", "custom"]));
+    expect(report.riskQueue).toHaveLength(0);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "large-asset-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "large-asset-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "large-asset-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects mutation testing readiness patterns without executing mutation engines", async () => {

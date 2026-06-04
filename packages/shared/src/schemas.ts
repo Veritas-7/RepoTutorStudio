@@ -735,6 +735,69 @@ export const CodeOwnershipReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const LargeAssetReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  assetSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["git-lfs", "dvc", "git-submodule", "custom", "unknown"]),
+    setupType: z.enum(["gitattributes", "lfs-pointer", "dvc-file", "dvc-pipeline", "dvc-config", "gitmodules", "documentation", "script", "unknown"]),
+    patternCount: z.number().int().nonnegative(),
+    pointerCount: z.number().int().nonnegative(),
+    outCount: z.number().int().nonnegative(),
+    depCount: z.number().int().nonnegative(),
+    metricCount: z.number().int().nonnegative(),
+    remoteCount: z.number().int().nonnegative(),
+    cacheCount: z.number().int().nonnegative(),
+    lockableCount: z.number().int().nonnegative(),
+    commandCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  lfsSignals: z.array(z.object({
+    signal: z.enum(["gitattributes", "filter-lfs", "diff-merge-lfs", "pointer-file", "oid-sha256", "track-command", "install-command", "status-command", "pull-push-fetch", "fsck", "migrate", "prune", "lockable", "locks", "skip-smudge", "case-sensitive-patterns", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dvcSignals: z.array(z.object({
+    signal: z.enum(["dvc-yaml", "dvc-lock", "dvc-file", "outs", "deps", "metrics", "params", "remote-config", "default-remote", "cache", "push", "pull", "status", "repro", "run-cache", "dvcignore", "optional-remote-deps", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  submoduleSignals: z.array(z.object({
+    signal: z.enum(["gitmodules", "submodule-url", "submodule-path", "recursive-clone", "lfs-submodule", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["ci-fetch", "ci-pull", "ci-push", "artifact-cache", "pre-push-hook", "checkout-lfs", "dvc-repro", "dvc-doctor", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["git-lfs", "dvc", "dvc-s3", "dvc-azure", "dvc-gdrive", "dvc-gs", "dvc-oss", "dvc-ssh", "custom", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LicenseRightsReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7477,6 +7540,7 @@ export type SearchIndexReport = z.infer<typeof SearchIndexReportSchema>;
 export type LearningJournalReport = z.infer<typeof LearningJournalReportSchema>;
 export type ProjectActivityReport = z.infer<typeof ProjectActivityReportSchema>;
 export type CodeOwnershipReadinessReport = z.infer<typeof CodeOwnershipReadinessReportSchema>;
+export type LargeAssetReadinessReport = z.infer<typeof LargeAssetReadinessReportSchema>;
 export type LicenseRightsReport = z.infer<typeof LicenseRightsReportSchema>;
 export type SbomReport = z.infer<typeof SbomReportSchema>;
 export type SecurityReadinessReport = z.infer<typeof SecurityReadinessReportSchema>;

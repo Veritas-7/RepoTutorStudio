@@ -1,6 +1,6 @@
 # Compliance Audit 5
 
-Created: 2026-06-04T22:27:25.709Z
+Created: 2026-06-04T22:44:49.047Z
 
 Status: PASS
 
@@ -89,6 +89,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - code ownership readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - large asset readiness report
 
 - missing files: none
 - missing strings: none
