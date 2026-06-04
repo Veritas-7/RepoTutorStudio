@@ -1,6 +1,6 @@
 {
   "iteration": 11,
-  "createdAt": "2026-06-04T00:11:42.205Z",
+  "createdAt": "2026-06-04T00:24:09.233Z",
   "checks": [
     {
       "name": "project setup",
@@ -123,6 +123,13 @@
     },
     {
       "name": "project scorecard report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "provenance readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

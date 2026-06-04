@@ -26,6 +26,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "sbom-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "security-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "scorecard-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "provenance-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "context-pack-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mcp-handoff-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "agent-memory-report.json"))).resolves.toBeUndefined();
@@ -50,6 +51,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "sbom.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "security-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "scorecard.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "provenance.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "context-pack.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mcp-handoff.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "agent-memory.md"))).resolves.toBeUndefined();
@@ -77,6 +79,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "sbom.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "security-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "scorecard.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "provenance.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "context-pack.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mcp-handoff.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "agent-memory.html"))).resolves.toBeUndefined();
@@ -134,6 +137,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/sbom.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/security-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/scorecard.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/provenance.html\"");
     const coverageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "coverage.html"), "utf8");
     expect(coverageHtml).toContain("소스 근거 파일");
     expect(coverageHtml).toContain("근거 비율");
@@ -336,6 +340,27 @@ describe("RepoTutor core pipeline", () => {
     expect(scorecardMarkdown).toContain("Source pattern: OpenSSF Scorecard");
     expect(scorecardMarkdown).toContain("## Category Scores");
     expect(scorecardMarkdown).toContain("## Structured Results");
+    const provenanceText = await fs.readFile(path.join(result.session.outputPaths.analysis, "provenance-report.json"), "utf8");
+    expect(provenanceText).toContain("Cosign signature bundle attestation transparency log trusted root certificate identity verification");
+    expect(provenanceText).toContain("\"artifactSignals\"");
+    expect(provenanceText).toContain("\"signatureSignals\"");
+    expect(provenanceText).toContain("\"attestationSignals\"");
+    expect(provenanceText).toContain("\"identityRequirements\"");
+    expect(provenanceText).toContain("\"verificationCommands\"");
+    expect(provenanceText).toContain("\"riskQueue\"");
+    expect(provenanceText).toContain("cosign verify-blob");
+    expect(provenanceText).toContain("expected certificate identity");
+    const provenanceHtml = await fs.readFile(path.join(result.session.outputPaths.html, "provenance.html"), "utf8");
+    expect(provenanceHtml).toContain("Provenance Readiness");
+    expect(provenanceHtml).toContain("provenance-card");
+    expect(provenanceHtml).toContain("data-source-pattern=\"Cosign\"");
+    expect(provenanceHtml).toContain("Provenance Snapshot");
+    expect(provenanceHtml).toContain("Verification Commands");
+    const provenanceMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "provenance.md"), "utf8");
+    expect(provenanceMarkdown).toContain("# Provenance Readiness");
+    expect(provenanceMarkdown).toContain("Source pattern: Cosign");
+    expect(provenanceMarkdown).toContain("## Signature Material");
+    expect(provenanceMarkdown).toContain("## Identity Requirements");
     const contextPackText = await fs.readFile(path.join(result.session.outputPaths.analysis, "context-pack-report.json"), "utf8");
     expect(contextPackText).toContain("Repomix token counting git-aware ignore AI-friendly context pack");
     expect(contextPackText).toContain("\"budgetProfiles\"");
@@ -453,6 +478,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/sbom.html");
     expect(exportManifestText).toContain("html/security-readiness.html");
     expect(exportManifestText).toContain("html/scorecard.html");
+    expect(exportManifestText).toContain("html/provenance.html");
     expect(exportManifestText).toContain("html/context-pack.html");
     expect(exportManifestText).toContain("html/mcp-handoff.html");
     expect(exportManifestText).toContain("html/agent-memory.html");
@@ -534,6 +560,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("sbom.html");
     expect(learningPathHtml).toContain("security-readiness.html");
     expect(learningPathHtml).toContain("scorecard.html");
+    expect(learningPathHtml).toContain("provenance.html");
     expect(learningPathHtml).toContain("context-pack.html");
     expect(learningPathHtml).toContain("mcp-handoff.html");
     expect(learningPathHtml).toContain("agent-memory.html");

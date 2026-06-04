@@ -2397,6 +2397,39 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 13/13 audit reports
 
+### Upgrade 125: Provenance Readiness Report
+
+- Cloned and inspected `sigstore/cosign` under
+  `research/external-src/sigstore-cosign` without executing external source.
+- GitHub metadata: public repo, Apache-2.0 license, 5,997 stars, 745 forks,
+  updated 2026-06-03T21:10:07Z. No source code was copied into RepoTutor.
+- Added `ProvenanceReportSchema` and `analysis/provenance-report.json` with
+  Cosign-style artifact signals, signature material, attestation predicates,
+  identity requirements, verification commands, risk queue, and learner next
+  steps.
+- Added `markdown/provenance.md`, `html/provenance.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target provenance`.
+- Source pattern: Cosign verification centers on signed artifact digests,
+  detached signatures or Sigstore bundles, certificate identity, OIDC issuer,
+  trusted root, transparency log proof, and optional attestations. RepoTutor
+  maps that to a deterministic static readiness report and explicitly does not
+  verify signatures, query Rekor, or validate certificates.
+- RED smoke generated
+  `/tmp/repotutor-provenance-red-studies.U4FSZk/2026-06-04/local__simple-ts-app__main__d11526e6`;
+  old behavior was missing `analysis/provenance-report.json`,
+  `markdown/provenance.md`, and `html/provenance.html`.
+- GREEN smoke generated
+  `/tmp/repotutor-provenance-green-studies.kLwDTm/2026-06-04/local__simple-ts-app__main__d11526e6`;
+  confirmed `verificationCheckedRequiredArtifacts=75`, artifact signals 6,
+  signature material 6, attestations 5, identity requirements 5, risk queue 5,
+  verification commands 4, `provenance-card`, `data-source-pattern="Cosign"`,
+  manifest/learning path entries, and `open --target provenance` ->
+  `html/provenance.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 13/13 audit reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

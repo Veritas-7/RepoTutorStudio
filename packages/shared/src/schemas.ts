@@ -852,6 +852,47 @@ export const ScorecardReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ProvenanceReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  artifactSignals: z.array(z.object({
+    artifact: z.string(),
+    artifactType: z.enum(["source-snapshot", "package", "container", "sbom", "release", "blob"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  signatureSignals: z.array(z.object({
+    material: z.enum(["signature", "bundle", "certificate", "public-key", "trusted-root", "transparency-log"]),
+    readiness: z.enum(["present", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  attestationSignals: z.array(z.object({
+    predicateType: z.enum(["slsaprovenance", "spdx", "cyclonedx", "vuln", "custom"]),
+    readiness: z.enum(["available", "partial", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  identityRequirements: z.array(z.object({
+    requirement: z.string(),
+    status: z.enum(["known", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  verificationCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1078,6 +1119,7 @@ export type LicenseRightsReport = z.infer<typeof LicenseRightsReportSchema>;
 export type SbomReport = z.infer<typeof SbomReportSchema>;
 export type SecurityReadinessReport = z.infer<typeof SecurityReadinessReportSchema>;
 export type ScorecardReport = z.infer<typeof ScorecardReportSchema>;
+export type ProvenanceReport = z.infer<typeof ProvenanceReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

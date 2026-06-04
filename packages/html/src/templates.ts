@@ -32,6 +32,7 @@ import type {
   SbomReport,
   SecurityReadinessReport,
   ScorecardReport,
+  ProvenanceReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -70,6 +71,7 @@ export interface StudyHtmlInput {
   sbomReport: SbomReport;
   securityReadinessReport: SecurityReadinessReport;
   scorecardReport: ScorecardReport;
+  provenanceReport: ProvenanceReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -128,6 +130,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["sbom.html", "SBOM"],
     ["security-readiness.html", "Security Readiness"],
     ["scorecard.html", "Project Scorecard"],
+    ["provenance.html", "Provenance Readiness"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -221,6 +224,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>SBOM</h3><p>${escapeHtml(input.sbomReport.summary)}</p><p>Syft 패턴으로 source descriptor, package artifacts, file artifacts, relationships를 inventory로 묶습니다.</p><a href="sbom.html">SBOM 열기</a></article>
           <article><h3>Security Readiness</h3><p>${escapeHtml(input.securityReadinessReport.summary)}</p><p>Trivy 패턴으로 targets, scanners, security signals, action queue를 분리합니다.</p><a href="security-readiness.html">Security Readiness 열기</a></article>
           <article><h3>Project Scorecard</h3><p>${escapeHtml(input.scorecardReport.summary)}</p><p>OpenSSF Scorecard 패턴으로 checks, risk, policy findings, remediation queue를 정리합니다.</p><a href="scorecard.html">Project Scorecard 열기</a></article>
+          <article><h3>Provenance Readiness</h3><p>${escapeHtml(input.provenanceReport.summary)}</p><p>Cosign 패턴으로 signature material, bundle, attestation, identity requirement를 정리합니다.</p><a href="provenance.html">Provenance Readiness 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -340,6 +344,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "scorecard.html",
       title: "Project Scorecard",
       html: pageShell("Project Scorecard", "scorecard.html", `<section class="panel" data-source-pattern="OpenSSF Scorecard"><h2>Scorecard Snapshot</h2><p>${escapeHtml(input.scorecardReport.summary)}</p><p class="muted">${escapeHtml(input.scorecardReport.sourcePattern)}</p><dl class="meta"><div><dt>aggregate</dt><dd>${input.scorecardReport.aggregateScore}/10</dd></div><div><dt>checks</dt><dd>${input.scorecardReport.checks.length}</dd></div><div><dt>policies</dt><dd>${input.scorecardReport.policyFindings.length}</dd></div><div><dt>risk queue</dt><dd>${input.scorecardReport.riskQueue.length}</dd></div></dl></section><section class="grid"><article class="scorecard-card"><h3>Category Scores</h3>${scorecardCategoryList(input.scorecardReport.categoryScores)}</article><article class="scorecard-card"><h3>Policy Findings</h3>${scorecardPolicyList(input.scorecardReport.policyFindings)}</article><article class="scorecard-card"><h3>Risk Queue</h3>${scorecardRiskList(input.scorecardReport.riskQueue)}</article><article class="scorecard-card"><h3>Structured Results</h3>${scorecardStructuredList(input.scorecardReport.structuredResults)}</article></section><section class="cards scorecard-check-cards">${scorecardCheckCards(input.scorecardReport.checks)}</section><section class="panel"><h2>다음 확인 단계</h2>${list(input.scorecardReport.learnerNextSteps)}</section>`, input)
+    },
+    {
+      name: "provenance.html",
+      title: "Provenance Readiness",
+      html: pageShell("Provenance Readiness", "provenance.html", `<section class="panel" data-source-pattern="Cosign"><h2>Provenance Snapshot</h2><p>${escapeHtml(input.provenanceReport.summary)}</p><p class="muted">${escapeHtml(input.provenanceReport.sourcePattern)}</p><dl class="meta"><div><dt>artifacts</dt><dd>${input.provenanceReport.artifactSignals.length}</dd></div><div><dt>signatures</dt><dd>${input.provenanceReport.signatureSignals.length}</dd></div><div><dt>attestations</dt><dd>${input.provenanceReport.attestationSignals.length}</dd></div><div><dt>identity</dt><dd>${input.provenanceReport.identityRequirements.length}</dd></div></dl></section><section class="grid"><article class="provenance-card"><h3>Artifact Signals</h3>${provenanceArtifactList(input.provenanceReport.artifactSignals)}</article><article class="provenance-card"><h3>Signature Material</h3>${provenanceSignatureList(input.provenanceReport.signatureSignals)}</article><article class="provenance-card"><h3>Identity Requirements</h3>${provenanceIdentityList(input.provenanceReport.identityRequirements)}</article><article class="provenance-card"><h3>Risk Queue</h3>${provenanceRiskList(input.provenanceReport.riskQueue)}</article></section><section class="cards provenance-attestation-cards">${provenanceAttestationCards(input.provenanceReport.attestationSignals)}</section><section class="panel"><h2>Verification Commands</h2>${provenanceCommandList(input.provenanceReport.verificationCommands)}</section><section class="panel"><h2>다음 확인 단계</h2>${list(input.provenanceReport.learnerNextSteps)}</section>`, input)
     },
     {
       name: "context-pack.html",
@@ -474,6 +483,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "SBOM", path: "html/sbom.html", description: "Syft식 package artifact, file artifact, relationship inventory를 확인합니다." },
       { label: "Security Readiness", path: "html/security-readiness.html", description: "Trivy식 scan target, scanner coverage, security signal, action queue를 확인합니다." },
       { label: "Project Scorecard", path: "html/scorecard.html", description: "OpenSSF Scorecard식 check, risk, policy finding, remediation queue를 확인합니다." },
+      { label: "Provenance Readiness", path: "html/provenance.html", description: "Cosign식 signature material, bundle, attestation, identity requirement를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -689,6 +699,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "scorecard.html",
       goal: "OpenSSF Scorecard식 checks, policy findings, remediation queue를 보고 provider-only unknown과 정적 실패를 분리합니다.",
       evidence: `aggregate ${input.scorecardReport.aggregateScore}/10, checks ${input.scorecardReport.checks.length}개`
+    },
+    {
+      title: "Provenance 서명 준비도 확인",
+      href: "provenance.html",
+      goal: "Cosign식 signature bundle, attestation, certificate identity, OIDC issuer 요구사항을 release 전에 분리해 확인합니다.",
+      evidence: `signature material ${input.provenanceReport.signatureSignals.length}개, risk queue ${input.provenanceReport.riskQueue.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -1033,6 +1049,36 @@ function scorecardRiskList(items: ScorecardReport["riskQueue"]): string {
 function scorecardStructuredList(items: ScorecardReport["structuredResults"]): string {
   if (items.length === 0) return "<p class=\"muted\">structured result가 없습니다.</p>";
   return `<ul>${items.slice(0, 30).map((item) => `<li><strong>${escapeHtml(item.checkName)}</strong> [${escapeHtml(item.outcome)}]<br>${escapeHtml(item.probe)}<br><span class="muted">${escapeHtml(item.evidence)}</span></li>`).join("")}</ul>`;
+}
+
+function provenanceArtifactList(items: ProvenanceReport["artifactSignals"]): string {
+  if (items.length === 0) return "<p class=\"muted\">artifact signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.artifact)}</strong> [${escapeHtml(item.artifactType)} / ${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function provenanceSignatureList(items: ProvenanceReport["signatureSignals"]): string {
+  if (items.length === 0) return "<p class=\"muted\">signature material이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.material)}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function provenanceIdentityList(items: ProvenanceReport["identityRequirements"]): string {
+  if (items.length === 0) return "<p class=\"muted\">identity requirement가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.requirement)}</strong> [${escapeHtml(item.status)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function provenanceRiskList(items: ProvenanceReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function provenanceAttestationCards(items: ProvenanceReport["attestationSignals"]): string {
+  if (items.length === 0) return "<article class=\"provenance-card\"><h3>Attestation signal이 없습니다.</h3><p>지원되는 predicate 또는 DSSE envelope 신호가 감지되지 않았습니다.</p></article>";
+  return items.map((item) => `<article class="provenance-card" data-provenance-readiness="${escapeHtml(item.readiness)}"><h3>${escapeHtml(item.predicateType)}</h3><p class="muted">${escapeHtml(item.readiness)}</p><p>${escapeHtml(item.evidence)}</p><a href="${escapeHtml(htmlPageHref(item.relatedHref))}">관련 페이지 열기</a></article>`).join("");
+}
+
+function provenanceCommandList(items: ProvenanceReport["verificationCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">verification command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
 }
 
 function contextPackCards(files: ContextPackReport["topFiles"]): string {

@@ -335,6 +335,21 @@
         "remediation queue from failed and unknown checks",
         "structured results for machine-readable follow-up"
       ]
+    },
+    {
+      "repo": "sigstore/cosign",
+      "url": "https://github.com/sigstore/cosign",
+      "localPath": "research/external-src/sigstore-cosign",
+      "stars": 5997,
+      "forks": 745,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-03T21:10:07Z",
+      "adoptedPatterns": [
+        "signature and bundle readiness material inventory",
+        "certificate identity and OIDC issuer verification requirements",
+        "attestation predicate and subject-verification readiness",
+        "digest-pinned artifact verification command handoff"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2329,5 +2344,13 @@
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
-  ]
+  ],
+  "validationStatuses": {
+    "fixtureProvenanceReport": "PASS",
+    "cliProvenanceSmoke": "PASS",
+    "cliProvenanceOpenTargetSmoke": "PASS",
+    "buildProvenance": "PASS",
+    "testProvenance": "PASS",
+    "auditBriefProvenance13": "PASS"
+  }
 }
