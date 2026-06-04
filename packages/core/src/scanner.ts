@@ -51,6 +51,7 @@ import {
   I18nReport,
   ReleaseReadinessReport,
   SecretReadinessReport,
+  ContainerReadinessReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -108,6 +109,7 @@ export interface AnalysisBundle {
   i18nReport: I18nReport;
   releaseReadinessReport: ReleaseReadinessReport;
   secretReadinessReport: SecretReadinessReport;
+  containerReadinessReport: ContainerReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -165,8 +167,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const i18nReport = await buildI18nReport(walk);
   const releaseReadinessReport = await buildReleaseReadinessReport(walk);
   const secretReadinessReport = await buildSecretReadinessReport(walk);
+  const containerReadinessReport = await buildContainerReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -6485,6 +6488,310 @@ function secretReadinessFromSpecs<T extends string>(
     evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} ${label} evidence was not detected.`,
     relatedHref: match?.sourceHref ?? "html/secret-readiness.html"
   };
+}
+
+async function buildContainerReadinessReport(walk: WalkResult): Promise<ContainerReadinessReport> {
+  const sourceFiles = await containerSourceFiles(walk);
+  const dockerfiles = containerDockerfiles(sourceFiles);
+  const composeFiles = containerComposeFiles(sourceFiles);
+  const configSignals = containerConfigSignals(sourceFiles);
+  const instructionRisks = containerInstructionRisks(dockerfiles, configSignals);
+  const labelPolicy = containerLabelPolicy(dockerfiles, configSignals, sourceFiles);
+  const integrationSignals = containerIntegrationSignals(sourceFiles);
+  const dockerfileRows = dockerfiles.map(({ text: _text, ...row }) => row);
+  const hasDockerfile = dockerfiles.length > 0;
+  const hasConfig = configSignals.some((item) => item.signal === "hadolint-config");
+  const hasRegistryPolicy = configSignals.some((item) => item.signal === "trusted-registries");
+  const hasLabelSchema = configSignals.some((item) => item.signal === "label-schema");
+  const hasIntegration = integrationSignals.some((item) => ["pre-commit", "github-action", "gitlab-ci", "circleci", "jenkins"].includes(item.signal) && item.readiness === "ready");
+  const hasMachineReport = integrationSignals.some((item) => ["sarif", "junit", "code-quality-report"].includes(item.signal) && item.readiness === "ready");
+  const observedRisks = instructionRisks.filter((item) => item.readiness === "partial");
+
+  const riskQueue: ContainerReadinessReport["riskQueue"] = [];
+  if (!hasDockerfile) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add a Dockerfile only if this project is meant to build container images.",
+      why: "Container readiness is irrelevant for libraries without images, but runtime apps should make image build assumptions visible.",
+      relatedHref: "html/container-readiness.html"
+    });
+  }
+  if (hasDockerfile && !hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add .hadolint.yaml to document failure thresholds, ignored rules, registries, and label policy.",
+      why: "Hadolint supports project-level config; undocumented CLI flags make Dockerfile quality gates hard to reproduce.",
+      relatedHref: "html/container-readiness.html"
+    });
+  }
+  if (hasDockerfile && !hasIntegration) {
+    riskQueue.push({
+      priority: "high",
+      action: "Run Hadolint in pre-commit or CI before container builds are published.",
+      why: "Dockerfile linting is most useful before image build and release steps, not after a broken image reaches users.",
+      relatedHref: "html/container-readiness.html"
+    });
+  }
+  if (hasDockerfile && !hasRegistryPolicy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Declare trustedRegistries or a trusted registry CLI policy.",
+      why: "Hadolint can warn when FROM images come from registries outside the allowed list.",
+      relatedHref: "html/container-readiness.html"
+    });
+  }
+  if (hasDockerfile && !hasLabelSchema) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Define an image label schema for version, source, license, and documentation labels.",
+      why: "Labels make built images traceable; Hadolint can enforce label formats such as semver, hash, url, email, and SPDX.",
+      relatedHref: "html/container-readiness.html"
+    });
+  }
+  if (observedRisks.length > 0) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review observed Dockerfile risk patterns before building images.",
+      why: `${observedRisks.length} Hadolint-style rule pattern(s) were detected in copied Dockerfile text.`,
+      relatedHref: "html/container-readiness.html"
+    });
+  }
+  if (hasDockerfile && !hasMachineReport) {
+    riskQueue.push({
+      priority: "low",
+      action: "Emit SARIF, JUnit, or code-quality output for Dockerfile lint findings.",
+      why: "Machine-readable lint reports can be attached to CI artifacts and code scanning systems.",
+      relatedHref: "html/container-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run Hadolint against the original source tree before treating this report as lint approval.",
+    why: "RepoTutor records static readiness patterns only; it does not parse the Dockerfile AST, execute ShellCheck, build images, or verify registry access.",
+    relatedHref: "html/container-readiness.html"
+  });
+
+  return {
+    summary: `Hadolint식 container readiness report: Dockerfile ${dockerfiles.length}개, Compose file ${composeFiles.length}개, config signal ${configSignals.length}개, instruction check ${instructionRisks.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Hadolint Dockerfile AST ShellCheck rules config ignored rules severity overrides trusted registries labels SARIF JUnit CI pre-commit",
+    dockerfiles: dockerfileRows,
+    composeFiles,
+    configSignals,
+    instructionRisks,
+    labelPolicy,
+    integrationSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "hadolint Dockerfile", purpose: "Lint the default Dockerfile with Hadolint best-practice and ShellCheck-backed rules." },
+      { command: "hadolint --config .hadolint.yaml Dockerfile", purpose: "Run with project-specific ignored rules, severity overrides, trusted registries, and label schema." },
+      { command: "hadolint --format sarif Dockerfile > hadolint.sarif", purpose: "Write SARIF output for code scanning or CI artifact review." },
+      { command: "hadolint --failure-threshold warning Dockerfile", purpose: "Fail only when findings meet the configured minimum severity." },
+      { command: "docker run --rm -i hadolint/hadolint < Dockerfile", purpose: "Run Hadolint via its container image without installing a local binary." }
+    ],
+    learnerNextSteps: [
+      "Dockerfile이 없다면 이 프로젝트가 container image를 배포해야 하는지부터 확인하세요.",
+      "FROM image tag, USER, package pinning, COPY/ADD, HEALTHCHECK, pipefail은 beginner가 image 품질을 이해하기 좋은 첫 점검 항목입니다.",
+      ".hadolint.yaml의 ignored rule은 예외 사유가 좁고 문서화되어 있는지 확인하세요.",
+      "RepoTutor는 Docker build나 registry 검증을 하지 않으므로 실제 배포 전 원본 repo에서 Hadolint를 실행하세요."
+    ]
+  };
+}
+
+type ContainerSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+type ContainerDockerfile = ContainerReadinessReport["dockerfiles"][number] & {
+  text: string;
+};
+
+async function containerSourceFiles(walk: WalkResult): Promise<ContainerSourceFile[]> {
+  const files: ContainerSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !containerInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!containerPathSignal(file.relPath) && !containerContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 220) break;
+  }
+  return files;
+}
+
+function containerInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(Dockerfile|Containerfile|docker-compose\.ya?ml|compose\.ya?ml|\.hadolint\.ya?ml|hadolint\.ya?ml|\.pre-commit-config\.ya?ml|README\.md|SECURITY\.md)$/i.test(base)
+    || /\.dockerfile$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(ya?ml|json|md|sh)$/i.test(filePath);
+}
+
+function containerPathSignal(filePath: string): boolean {
+  return /(Dockerfile|Containerfile|docker-compose|compose\.ya?ml|hadolint|container|image|pre-commit|workflow|gitlab-ci|circleci|jenkins)/i.test(filePath);
+}
+
+function containerContentSignal(text: string): boolean {
+  return /\b(FROM|RUN|COPY|ADD|USER|HEALTHCHECK|ENTRYPOINT|CMD|LABEL)\b|hadolint|Dockerfile|trustedRegistries|failure-threshold|label-schema|strict-labels|disable-ignore-pragma|gitlab_codeclimate|sarif|junit/i.test(text);
+}
+
+function containerDockerfiles(sourceFiles: ContainerSourceFile[]): ContainerDockerfile[] {
+  return sourceFiles
+    .filter((source) => /(^|\/)(Dockerfile|Containerfile)(\.[^/]*)?$|\.dockerfile$/i.test(source.filePath))
+    .map((source) => {
+      const baseImages = [...source.text.matchAll(/^FROM\s+(?:--platform=\S+\s+)?([^\s#]+)(?:\s+AS\s+\S+)?/gim)].map((match) => match[1] ?? "").filter(Boolean);
+      const instructionKinds = [...new Set([...source.text.matchAll(/^\s*([A-Z][A-Z0-9_-]+)\b/gm)].map((match) => match[1] ?? "").filter(Boolean))];
+      return {
+        filePath: source.filePath,
+        stageCount: baseImages.length,
+        baseImages,
+        instructionKinds,
+        readiness: baseImages.length > 0 ? "ready" : "partial",
+        evidence: baseImages.length > 0 ? `${source.filePath} defines ${baseImages.length} FROM stage(s).` : `${source.filePath} is Dockerfile-like but no FROM instruction was detected.`,
+        sourceHref: source.sourceHref,
+        text: source.text
+      };
+    });
+}
+
+function containerComposeFiles(sourceFiles: ContainerSourceFile[]): ContainerReadinessReport["composeFiles"] {
+  return sourceFiles
+    .filter((source) => /(^|\/)(docker-compose|compose)\.ya?ml$/i.test(source.filePath))
+    .map((source) => {
+      const servicesBlock = source.text.match(/(?:^|\n)services:\s*\n([\s\S]*?)(?:\n\S|\s*$)/i)?.[1] ?? "";
+      const serviceCount = [...servicesBlock.matchAll(/^\s{2,}([A-Za-z0-9_.-]+):\s*(?:#.*)?$/gm)].length;
+      return {
+        filePath: source.filePath,
+        serviceCount,
+        readiness: serviceCount > 0 ? "ready" : "partial",
+        evidence: serviceCount > 0 ? `${source.filePath} declares ${serviceCount} Compose service(s).` : `${source.filePath} is compose-like but service count could not be inferred statically.`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function containerConfigSignals(sourceFiles: ContainerSourceFile[]): ContainerReadinessReport["configSignals"] {
+  const rows: ContainerReadinessReport["configSignals"] = [];
+  for (const source of sourceFiles) {
+    for (const signal of containerConfigSignalTypes(source.filePath, source.text)) {
+      rows.push({
+        filePath: source.filePath,
+        signal,
+        readiness: signal === "unknown" ? "partial" : "ready",
+        evidence: containerConfigEvidence(source.filePath, signal),
+        sourceHref: source.sourceHref
+      });
+    }
+  }
+  return rows.slice(0, 140);
+}
+
+function containerConfigSignalTypes(filePath: string, text: string): ContainerReadinessReport["configSignals"][number]["signal"][] {
+  const signals = new Set<ContainerReadinessReport["configSignals"][number]["signal"]>();
+  if (/\.hadolint\.ya?ml$|hadolint\.ya?ml$/i.test(filePath) || /hadolint\s+--config|HADOLINT_/i.test(text)) signals.add("hadolint-config");
+  if (/ignored:\s*\[|ignored:\s*\n|--ignore\s+DL|HADOLINT_IGNORE|#\s*hadolint\s+(global\s+)?ignore=/i.test(text)) signals.add("ignored-rules");
+  if (/override:\s*\n|--(error|warning|info|style)\s+DL|HADOLINT_OVERRIDE_/i.test(text)) signals.add("severity-override");
+  if (/failure-threshold|HADOLINT_FAILURE_THRESHOLD/i.test(text)) signals.add("failure-threshold");
+  if (/trustedRegistries|trusted-registry|HADOLINT_TRUSTED_REGISTRIES/i.test(text)) signals.add("trusted-registries");
+  if (/label-schema|require-label|HADOLINT_REQUIRE_LABELS/i.test(text)) signals.add("label-schema");
+  if (/strict-labels|HADOLINT_STRICT_LABELS/i.test(text)) signals.add("strict-labels");
+  if (/disable-ignore-pragma|HADOLINT_DISABLE_IGNORE_PRAGMA/i.test(text)) signals.add("disable-ignore-pragma");
+  if (/--format\s+(json|checkstyle|codeclimate|gitlab_codeclimate|gnu|codacy|sonarqube|sarif|junit)|HADOLINT_FORMAT|format:\s*(json|sarif|junit|codeclimate|gitlab_codeclimate)/i.test(text)) signals.add("output-format");
+  if (signals.size === 0 && /hadolint/i.test(text)) signals.add("unknown");
+  return [...signals];
+}
+
+function containerConfigEvidence(filePath: string, signal: ContainerReadinessReport["configSignals"][number]["signal"]): string {
+  if (signal === "hadolint-config") return `${filePath} provides or references Hadolint configuration.`;
+  if (signal === "ignored-rules") return `${filePath} references Hadolint ignored rules or inline/global ignores.`;
+  if (signal === "severity-override") return `${filePath} references Hadolint severity overrides.`;
+  if (signal === "failure-threshold") return `${filePath} references failure threshold behavior.`;
+  if (signal === "trusted-registries") return `${filePath} references trusted registry policy.`;
+  if (signal === "label-schema") return `${filePath} references image label schema policy.`;
+  if (signal === "strict-labels") return `${filePath} references strict label enforcement.`;
+  if (signal === "disable-ignore-pragma") return `${filePath} disables inline ignore pragmas.`;
+  if (signal === "output-format") return `${filePath} references machine-readable Hadolint output format.`;
+  return `${filePath} contains Hadolint-related configuration evidence.`;
+}
+
+function containerInstructionRisks(dockerfiles: ContainerDockerfile[], configSignals: ContainerReadinessReport["configSignals"]): ContainerReadinessReport["instructionRisks"] {
+  const allText = dockerfiles.map((item) => item.text).join("\n");
+  const allDockerfiles = dockerfiles.map((item) => item.filePath).join(", ") || "Dockerfile";
+  const hasDockerfile = dockerfiles.length > 0;
+  const hasTrustedRegistry = configSignals.some((item) => item.signal === "trusted-registries");
+  const specs: Array<{ rule: ContainerReadinessReport["instructionRisks"][number]["rule"]; severity: ContainerReadinessReport["instructionRisks"][number]["severity"]; pattern: RegExp; missingEvidence: string; hitEvidence: string }> = [
+    { rule: "DL3002", severity: "warning", pattern: /(^|\n)\s*USER\s+root\b/i, missingEvidence: "No explicit USER root instruction was detected.", hitEvidence: "USER root pattern was detected." },
+    { rule: "DL3006", severity: "warning", pattern: /^FROM\s+(?:--platform=\S+\s+)?(?:[^\s:@]+\/)?[^\s:@]+(?:\s|$)/gim, missingEvidence: "All detected FROM images appear to include a tag, digest, or alias-only reference.", hitEvidence: "FROM image without explicit tag or digest may be present." },
+    { rule: "DL3007", severity: "warning", pattern: /^FROM\s+.*:latest\b/gim, missingEvidence: "No FROM latest tag was detected.", hitEvidence: "FROM latest tag was detected." },
+    { rule: "DL3008", severity: "warning", pattern: /RUN\s+.*apt-get\s+.*install(?![^&;\n]*=)[^|\n]*/i, missingEvidence: "No obvious unpinned apt-get install pattern was detected.", hitEvidence: "apt-get install without visible version pin may be present." },
+    { rule: "DL3013", severity: "warning", pattern: /RUN\s+.*(?:pip|pip3|python\s+-m\s+pip)\s+install(?![^&;\n]*(==|~=|>=|<=|!=|<|>|-r|--requirement|\.[\s;&|]|\.whl|\.tar\.gz))[^|\n]*/i, missingEvidence: "No obvious unpinned pip install pattern was detected.", hitEvidence: "pip install without visible version pin or requirements file may be present." },
+    { rule: "DL3016", severity: "warning", pattern: /RUN\s+.*npm\s+install\s+(?!(-g\s+)?[^&;\n]*@)[A-Za-z0-9@/_-]+/i, missingEvidence: "No obvious unpinned npm install pattern was detected.", hitEvidence: "npm install without visible version pin may be present." },
+    { rule: "DL3018", severity: "warning", pattern: /RUN\s+.*apk\s+add(?![^&;\n]*=)[^|\n]*/i, missingEvidence: "No obvious unpinned apk add pattern was detected.", hitEvidence: "apk add without visible version pin may be present." },
+    { rule: "DL3020", severity: "error", pattern: /^ADD\s+(?!.*\.(tar|tgz|tar\.gz|zip)\b)/gim, missingEvidence: "No ADD-for-plain-copy pattern was detected.", hitEvidence: "ADD is used where COPY may be clearer." },
+    { rule: "DL3025", severity: "warning", pattern: /^(CMD|ENTRYPOINT)\s+(?!\[)/gim, missingEvidence: "CMD/ENTRYPOINT instructions appear to use JSON notation when present.", hitEvidence: "Shell-form CMD or ENTRYPOINT was detected." },
+    { rule: "DL3026", severity: "error", pattern: /^FROM\s+(?!scratch\b|[A-Za-z0-9_.-]+(?:\s+AS\s+\S+)?$)/gim, missingEvidence: hasTrustedRegistry ? "Trusted registry policy is configured." : "No trusted registry policy was found for FROM image validation.", hitEvidence: "FROM image registry should be checked against trustedRegistries." },
+    { rule: "DL3042", severity: "warning", pattern: /RUN\s+.*(?:pip|pip3|python\s+-m\s+pip)\s+install(?![^&;\n]*--no-cache-dir)/i, missingEvidence: "No pip install without --no-cache-dir was detected.", hitEvidence: "pip install without --no-cache-dir may cache packages in the image layer." },
+    { rule: "DL3057", severity: "info", pattern: /^HEALTHCHECK\b/gim, missingEvidence: "HEALTHCHECK was not detected.", hitEvidence: "HEALTHCHECK instruction was detected." },
+    { rule: "DL3059", severity: "info", pattern: /^RUN\b[\s\S]*\n\s*RUN\b/i, missingEvidence: "Multiple consecutive RUN instructions were not detected.", hitEvidence: "Multiple consecutive RUN instructions may be present." },
+    { rule: "DL4006", severity: "warning", pattern: /^RUN\s+.*\|.*$/gim, missingEvidence: "RUN pipelines were not detected.", hitEvidence: "RUN pipeline detected; SHELL pipefail should be reviewed." },
+    { rule: "SC", severity: "external", pattern: /^RUN\s+.*(\$\(|`|&&|\|\||;)/gim, missingEvidence: "No complex shell RUN instruction was detected.", hitEvidence: "Complex RUN shell text exists; Hadolint delegates Bash checks to ShellCheck." }
+  ];
+
+  return specs.map((spec) => {
+    const matched = hasDockerfile && spec.pattern.test(allText);
+    spec.pattern.lastIndex = 0;
+    const readiness = !hasDockerfile ? "missing" : matched ? "partial" : spec.rule === "DL3026" && !hasTrustedRegistry ? "external" : spec.rule === "DL3057" && !matched ? "external" : "ready";
+    return {
+      rule: spec.rule,
+      severity: spec.severity,
+      readiness,
+      evidence: !hasDockerfile ? "No Dockerfile target was detected." : matched ? `${allDockerfiles}: ${spec.hitEvidence}` : spec.missingEvidence,
+      relatedHref: matched ? dockerfiles[0]?.sourceHref ?? "html/container-readiness.html" : "html/container-readiness.html"
+    };
+  });
+}
+
+function containerLabelPolicy(dockerfiles: ContainerDockerfile[], configSignals: ContainerReadinessReport["configSignals"], sourceFiles: ContainerSourceFile[]): ContainerReadinessReport["labelPolicy"] {
+  const allText = dockerfiles.map((item) => item.text).join("\n");
+  const labelSchemaFiles = configSignals.filter((item) => item.signal === "label-schema");
+  const labelSchemaSources = sourceFiles.filter((source) => labelSchemaFiles.some((item) => item.filePath === source.filePath));
+  const hasDockerfile = dockerfiles.length > 0;
+  const labels: ContainerReadinessReport["labelPolicy"][number]["label"][] = ["author", "contact", "created", "version", "documentation", "git-revision", "license"];
+  return labels.map((label) => {
+    const labelPattern = new RegExp(`(?:LABEL\\s+[^\\n]*\\b${label}\\b|label-schema:[\\s\\S]*\\b${label}\\b|${label}:\\s*(?:text|email|rfc3339|semver|url|hash|spdx))`, "i");
+    const matchedDockerfile = labelPattern.test(allText);
+    const matchedConfig = labelSchemaSources.find((source) => labelPattern.test(source.text));
+    return {
+      label,
+      readiness: matchedDockerfile || matchedConfig ? "ready" : hasDockerfile ? "external" : "missing",
+      evidence: matchedDockerfile ? `Dockerfile LABEL or schema evidence includes ${label}.` : matchedConfig ? `Hadolint label-schema config should be checked for ${label}.` : `${label} image label policy was not detected.`,
+      relatedHref: matchedDockerfile ? dockerfiles[0]?.sourceHref ?? "html/container-readiness.html" : matchedConfig?.sourceHref ?? "html/container-readiness.html"
+    };
+  });
+}
+
+function containerIntegrationSignals(sourceFiles: ContainerSourceFile[]): ContainerReadinessReport["integrationSignals"] {
+  const specs: Array<{ signal: ContainerReadinessReport["integrationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "pre-commit", pattern: /pre-commit|hadolint-docker|types:\s*\["?dockerfile/i, evidence: "pre-commit Hadolint hook evidence was detected." },
+    { signal: "github-action", pattern: /hadolint-action|uses:\s*hadolint|hadolint\/hadolint-action/i, evidence: "GitHub Actions Hadolint evidence was detected." },
+    { signal: "gitlab-ci", pattern: /gitlab_codeclimate|\.gitlab-ci|reports:\s*codequality/i, evidence: "GitLab code quality integration evidence was detected." },
+    { signal: "circleci", pattern: /circleci|docker\/hadolint|ignore-rules|trusted-registries/i, evidence: "CircleCI Hadolint integration evidence was detected." },
+    { signal: "jenkins", pattern: /Jenkinsfile|jenkins|archiveArtifacts|recordIssues/i, evidence: "Jenkins Hadolint integration evidence was detected." },
+    { signal: "editor", pattern: /vscode-hadolint|Hadolint extension|editor integration/i, evidence: "editor integration evidence was detected." },
+    { signal: "code-quality-report", pattern: /gitlab_codeclimate|codeclimate|sonarqube|codacy|checkstyle/i, evidence: "code quality report format evidence was detected." },
+    { signal: "sarif", pattern: /--format\s+sarif|format:\s*sarif|HADOLINT_FORMAT=sarif/i, evidence: "SARIF report evidence was detected." },
+    { signal: "junit", pattern: /--format\s+junit|format:\s*junit|HADOLINT_FORMAT=junit/i, evidence: "JUnit report evidence was detected." }
+  ];
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec.signal} integration evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/container-readiness.html"
+    };
+  });
 }
 
 function advisoryEcosystemForPackage(packageType: string, fallback: string): string {

@@ -558,6 +558,22 @@
         "redacted JSON CSV JUnit SARIF and template report outputs",
         "pre-commit staged scan and CI prevention workflow"
       ]
+    },
+    {
+      "repo": "hadolint/hadolint",
+      "url": "https://github.com/hadolint/hadolint",
+      "localPath": "research/external-src/hadolint-hadolint",
+      "stars": 12185,
+      "forks": 495,
+      "license": "GPL-3.0",
+      "updatedAt": "2026-06-01T09:57:49Z",
+      "adoptedPatterns": [
+        "Dockerfile AST best-practice linting",
+        "ShellCheck-backed RUN instruction review",
+        "project .hadolint.yaml config discovery",
+        "trusted registries and label schema policy",
+        "SARIF/JUnit/code-quality CI reporting"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2591,6 +2607,25 @@
         "SecretReadinessReportSchema",
         "Gitleaks git dir stdin baseline config rules allowlists redaction report formats pre-commit staged secret scanning"
       ]
+    },
+    {
+      "name": "Container readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/container-readiness-report.json",
+        "markdown/container-readiness.md",
+        "html/container-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -2923,6 +2958,12 @@
     "cliSecretReadinessOpenTargetSmoke": "PASS",
     "buildSecretReadiness": "PASS",
     "testSecretReadiness": "PASS",
-    "auditBriefSecretReadiness36": "PASS"
+    "auditBriefSecretReadiness36": "PASS",
+    "fixtureContainerReadinessReport": "PASS",
+    "cliContainerReadinessSmoke": "PASS",
+    "cliContainerReadinessOpenTargetSmoke": "PASS",
+    "buildContainerReadiness": "PASS",
+    "testContainerReadiness": "PASS",
+    "auditBriefContainerReadiness37": "PASS"
   }
 }

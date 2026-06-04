@@ -1619,6 +1619,64 @@ export const SecretReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ContainerReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  dockerfiles: z.array(z.object({
+    filePath: z.string(),
+    stageCount: z.number().int().nonnegative(),
+    baseImages: z.array(z.string()),
+    instructionKinds: z.array(z.string()),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  composeFiles: z.array(z.object({
+    filePath: z.string(),
+    serviceCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    filePath: z.string(),
+    signal: z.enum(["hadolint-config", "ignored-rules", "severity-override", "failure-threshold", "trusted-registries", "label-schema", "strict-labels", "disable-ignore-pragma", "output-format", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  instructionRisks: z.array(z.object({
+    rule: z.enum(["DL3002", "DL3006", "DL3007", "DL3008", "DL3013", "DL3016", "DL3018", "DL3020", "DL3025", "DL3026", "DL3042", "DL3057", "DL3059", "DL4006", "SC", "unknown"]),
+    severity: z.enum(["error", "warning", "info", "style", "external"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  labelPolicy: z.array(z.object({
+    label: z.enum(["author", "contact", "created", "version", "documentation", "git-revision", "license", "custom"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  integrationSignals: z.array(z.object({
+    signal: z.enum(["pre-commit", "github-action", "gitlab-ci", "circleci", "jenkins", "editor", "code-quality-report", "sarif", "junit"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -1859,6 +1917,7 @@ export type DesignTokensReport = z.infer<typeof DesignTokensReportSchema>;
 export type I18nReport = z.infer<typeof I18nReportSchema>;
 export type ReleaseReadinessReport = z.infer<typeof ReleaseReadinessReportSchema>;
 export type SecretReadinessReport = z.infer<typeof SecretReadinessReportSchema>;
+export type ContainerReadinessReport = z.infer<typeof ContainerReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

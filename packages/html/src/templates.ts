@@ -46,6 +46,7 @@ import type {
   I18nReport,
   ReleaseReadinessReport,
   SecretReadinessReport,
+  ContainerReadinessReport,
   StudySession,
   CoverageReport,
   ComponentGraphReport,
@@ -98,6 +99,7 @@ export interface StudyHtmlInput {
   i18nReport: I18nReport;
   releaseReadinessReport: ReleaseReadinessReport;
   secretReadinessReport: SecretReadinessReport;
+  containerReadinessReport: ContainerReadinessReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -170,6 +172,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["i18n.html", "I18n"],
     ["release-readiness.html", "Release"],
     ["secret-readiness.html", "Secrets"],
+    ["container-readiness.html", "Containers"],
     ["context-pack.html", "Context Pack"],
     ["mcp-handoff.html", "MCP Handoff"],
     ["agent-memory.html", "Agent Memory"],
@@ -277,6 +280,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>I18n Readiness</h3><p>${escapeHtml(input.i18nReport.summary)}</p><p>FormatJS 패턴으로 message source, locale asset, runtime, extraction, ICU, QA signals를 정리합니다.</p><a href="i18n.html">I18n 열기</a></article>
           <article><h3>Release Readiness</h3><p>${escapeHtml(input.releaseReadinessReport.summary)}</p><p>semantic-release 패턴으로 config, branches, plugin steps, CI, auth, publish targets를 정리합니다.</p><a href="release-readiness.html">Release 열기</a></article>
           <article><h3>Secret Readiness</h3><p>${escapeHtml(input.secretReadinessReport.summary)}</p><p>Gitleaks 패턴으로 scan targets, secret surfaces, config, reports, prevention signals를 정리합니다.</p><a href="secret-readiness.html">Secrets 열기</a></article>
+          <article><h3>Container Readiness</h3><p>${escapeHtml(input.containerReadinessReport.summary)}</p><p>Hadolint 패턴으로 Dockerfile, Compose, config, instruction risk, labels, CI signals를 정리합니다.</p><a href="container-readiness.html">Containers 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -468,6 +472,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Secret Readiness", "secret-readiness.html", `<section class="panel" data-source-pattern="Gitleaks"><h2>Secret Snapshot</h2><p>${escapeHtml(input.secretReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.secretReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>targets</dt><dd>${input.secretReadinessReport.scanTargets.length}</dd></div><div><dt>surfaces</dt><dd>${input.secretReadinessReport.secretSurfaces.length}</dd></div><div><dt>configs</dt><dd>${input.secretReadinessReport.configSignals.length}</dd></div><div><dt>prevention</dt><dd>${input.secretReadinessReport.preventionSignals.length}</dd></div></dl><p class="muted">RepoTutor records Gitleaks readiness only. It does not scan excluded secret-like content or traverse full git history.</p></section><section class="grid"><article class="secret-card"><h3>Scan Targets</h3>${secretSignalList(input.secretReadinessReport.scanTargets, "target")}</article><article class="secret-card"><h3>Secret Surfaces</h3>${secretSurfaceList(input.secretReadinessReport.secretSurfaces)}</article><article class="secret-card"><h3>Config Signals</h3>${secretConfigList(input.secretReadinessReport.configSignals)}</article><article class="secret-card"><h3>Reporting Signals</h3>${secretSignalList(input.secretReadinessReport.reportingSignals, "signal")}</article></section><section class="grid"><article class="secret-card"><h3>Prevention Signals</h3>${secretSignalList(input.secretReadinessReport.preventionSignals, "signal")}</article><article class="secret-card"><h3>Advanced Signals</h3>${secretSignalList(input.secretReadinessReport.advancedSignals, "signal")}</article><article class="secret-card"><h3>Recommended Commands</h3>${secretCommandList(input.secretReadinessReport.recommendedCommands)}</article><article class="secret-card"><h3>Risk Queue</h3>${secretRiskList(input.secretReadinessReport.riskQueue)}</article><article class="secret-card"><h3>다음 확인 단계</h3>${list(input.secretReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "container-readiness.html",
+      title: "Container Readiness",
+      html: pageShell("Container Readiness", "container-readiness.html", `<section class="panel" data-source-pattern="Hadolint"><h2>Container Snapshot</h2><p>${escapeHtml(input.containerReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.containerReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>dockerfiles</dt><dd>${input.containerReadinessReport.dockerfiles.length}</dd></div><div><dt>compose</dt><dd>${input.containerReadinessReport.composeFiles.length}</dd></div><div><dt>configs</dt><dd>${input.containerReadinessReport.configSignals.length}</dd></div><div><dt>integrations</dt><dd>${input.containerReadinessReport.integrationSignals.length}</dd></div></dl><p class="muted">RepoTutor records Hadolint readiness only. It does not build images, parse the Dockerfile AST, execute ShellCheck, or verify registries.</p></section><section class="grid"><article class="container-card"><h3>Dockerfiles</h3>${containerDockerfileList(input.containerReadinessReport.dockerfiles)}</article><article class="container-card"><h3>Compose Files</h3>${containerComposeList(input.containerReadinessReport.composeFiles)}</article><article class="container-card"><h3>Config Signals</h3>${containerConfigList(input.containerReadinessReport.configSignals)}</article><article class="container-card"><h3>Instruction Risks</h3>${containerSignalList(input.containerReadinessReport.instructionRisks, "rule")}</article></section><section class="grid"><article class="container-card"><h3>Label Policy</h3>${containerSignalList(input.containerReadinessReport.labelPolicy, "label")}</article><article class="container-card"><h3>Integration Signals</h3>${containerSignalList(input.containerReadinessReport.integrationSignals, "signal")}</article><article class="container-card"><h3>Recommended Commands</h3>${containerCommandList(input.containerReadinessReport.recommendedCommands)}</article><article class="container-card"><h3>Risk Queue</h3>${containerRiskList(input.containerReadinessReport.riskQueue)}</article><article class="container-card"><h3>다음 확인 단계</h3>${list(input.containerReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "context-pack.html",
       title: "Context Pack",
       html: pageShell("Context Pack", "context-pack.html", `<section class="panel" data-source-pattern="Repomix"><h2>LLM Context Pack 예산</h2><p>${escapeHtml(input.contextPackReport.summary)}</p><p class="muted">${escapeHtml(input.contextPackReport.sourcePattern)}</p><dl class="meta"><div><dt>파일</dt><dd>${input.contextPackReport.totalIncludedFiles}</dd></div><div><dt>bytes</dt><dd>${input.contextPackReport.totalIncludedBytes}</dd></div><div><dt>tokens</dt><dd>${input.contextPackReport.totalEstimatedTokens}</dd></div><div><dt>excluded</dt><dd>${input.contextPackReport.excludedFromPack.length}</dd></div></dl></section><section class="grid"><article class="context-pack-card"><h3>Token Budget</h3>${list(input.contextPackReport.budgetProfiles.map((profile) => `${profile.name}: ${profile.fits ? "fits" : `overflow ${profile.overflowTokens}`} / ${profile.tokenLimit}`))}</article><article class="context-pack-card"><h3>Split Output Plan</h3>${contextSplitPlanList(input.contextPackReport.splitPlans)}</article><article class="context-pack-card"><h3>Directory Token Tree</h3>${list(input.contextPackReport.directoryTokenTree.map((item) => `${item.directory}: ${item.estimatedTokens} tokens · ${item.fileCount} files`))}</article><article class="context-pack-card"><h3>Security Notes</h3>${list(input.contextPackReport.securityNotes)}</article><article class="context-pack-card"><h3>다음 확인 단계</h3>${list(input.contextPackReport.learnerNextSteps)}</article></section><section class="panel"><h2>Pack 제외 항목</h2>${list(input.contextPackReport.excludedFromPack)}</section><section class="cards context-pack-cards">${contextPackCards(input.contextPackReport.topFiles)}</section>`, input)
@@ -614,6 +623,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "I18n Readiness", path: "html/i18n.html", description: "FormatJS식 message source, locale asset, extraction, ICU, QA 준비도를 확인합니다." },
       { label: "Release Readiness", path: "html/release-readiness.html", description: "semantic-release식 config, branch, plugin, CI, auth, publish target 준비도를 확인합니다." },
       { label: "Secret Readiness", path: "html/secret-readiness.html", description: "Gitleaks식 scan target, secret surface, config, report, prevention 준비도를 확인합니다." },
+      { label: "Container Readiness", path: "html/container-readiness.html", description: "Hadolint식 Dockerfile, Compose, config, instruction, label, CI 준비도를 확인합니다." },
       { label: "Context Pack", path: "html/context-pack.html", description: "LLM context pack token budget과 제외 항목을 확인합니다." },
       { label: "MCP Handoff", path: "html/mcp-handoff.html", description: "AI/MCP 도구에 넘길 tool, prompt, safety note를 확인합니다." },
       { label: "Agent Memory", path: "html/agent-memory.html", description: "새 AI 세션이 먼저 읽을 persistent memory note와 context navigation rule을 확인합니다." },
@@ -913,6 +923,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "secret-readiness.html",
       goal: "Gitleaks식 git/dir scan, config, allowlist, report, prevention 준비도를 확인합니다.",
       evidence: `secret surfaces ${input.secretReadinessReport.secretSurfaces.length}개, prevention signals ${input.secretReadinessReport.preventionSignals.length}개`
+    },
+    {
+      title: "Container 준비도 확인",
+      href: "container-readiness.html",
+      goal: "Hadolint식 Dockerfile, Compose, config, instruction risk, label, CI/report 준비도를 확인합니다.",
+      evidence: `Dockerfile ${input.containerReadinessReport.dockerfiles.length}개, config signals ${input.containerReadinessReport.configSignals.length}개`
     },
     {
       title: "LLM Context Pack 예산 확인",
@@ -1820,6 +1836,41 @@ function secretRiskList(items: SecretReadinessReport["riskQueue"]): string {
 }
 
 function secretHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function containerDockerfileList(items: ContainerReadinessReport["dockerfiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">Dockerfile target이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.readiness)}]<br>Stages ${item.stageCount} · base ${escapeHtml(item.baseImages.join(", ") || "none")}<br>Instructions ${escapeHtml(item.instructionKinds.join(", ") || "none")}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(containerHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function containerComposeList(items: ContainerReadinessReport["composeFiles"]): string {
+  if (items.length === 0) return "<p class=\"muted\">Compose file이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.readiness)}]: ${item.serviceCount} service(s)<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(containerHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function containerConfigList(items: ContainerReadinessReport["configSignals"]): string {
+  if (items.length === 0) return "<p class=\"muted\">container config signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.signal)} / ${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(containerHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function containerSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">container readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(containerHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function containerCommandList(items: ContainerReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function containerRiskList(items: ContainerReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(containerHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function containerHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
