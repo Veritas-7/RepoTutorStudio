@@ -6857,6 +6857,68 @@ Local verification:
 - `gitleaks protect --staged --redact --no-banner`: PASS
 - Pushed implementation commit: `b1c7fcf` secret management readiness report
 
+### Upgrade 220: Authorization Readiness Report
+
+- Cloned and inspected `openfga/openfga` under
+  `research/external-src/openfga-openfga`,
+  `apache/casbin-node-casbin` under
+  `research/external-src/apache-casbin-node-casbin`, `stalniy/casl` under
+  `research/external-src/stalniy-casl`, and `osohq/oso` under
+  `research/external-src/osohq-oso` without executing external source. Clone
+  HEADs were `4f00251`, `406c459`, `d234fc7`, and `7292df0`; all four clones
+  remain ignored by RepoTutor and tracked file count returned `0`.
+- GitHub metadata: `openfga/openfga` is public, Apache-2.0 licensed, 5,244
+  stars, 409 forks, updated 2026-06-04T21:23:34Z.
+  `apache/casbin-node-casbin` is public, Apache-2.0 licensed, 2,903 stars, 231
+  forks, updated 2026-06-03T20:40:55Z. `stalniy/casl` is public, MIT licensed,
+  6,948 stars, 303 forks, updated 2026-06-04T19:18:05Z. `osohq/oso` is public,
+  Apache-2.0 licensed, 3,497 stars, 191 forks, updated
+  2026-06-01T16:39:50Z. Selected the four-source slice because together they
+  model Zanzibar/ReBAC relationship tuples, Casbin RBAC/ABAC/ACL policy files,
+  CASL UI/API ability checks, and actor-action-resource policy semantics. No
+  source code was copied into RepoTutor.
+- Implemented OpenFGA/Casbin/CASL/Oso/OPA-style authorization-readiness report:
+  `AuthorizationReadinessReportSchema`,
+  `analysis/authorization-readiness-report.json`,
+  `markdown/authorization-readiness.md`, `html/authorization-readiness.html`,
+  authorization setup detection, model signals, enforcement signals, identity
+  signals, resource signals, governance signals, test signals, package signals,
+  recommended commands, risk queue, manifest/session-verification coverage,
+  learning-path linkage, nav entry, CLI target support, and dedicated
+  compliance audit coverage.
+- Source pattern: authorization readiness separates RBAC, ABAC, ReBAC, ACL,
+  relationship tuple, policy file, subject-object-action, and resource-action
+  model evidence; guard, middleware, can-check, authorize-call,
+  deny-by-default, route, resolver, and UI ability enforcement evidence;
+  user/role/group/tenant/organization/service-account/owner/anonymous identity
+  boundaries; document/project/repository/tenant/record/field/collection
+  resource boundaries; governance signals for least privilege, separation of
+  duties, audit logs, permission review, policy versioning, migration, decision
+  logs, and break-glass flows; and authorization test evidence. RepoTutor maps
+  that to deterministic static readiness and explicitly does not execute
+  OpenFGA, Casbin, CASL, Oso, OPA, policy engines, APIs, CLIs, or live
+  permission checks.
+- RED smoke old behavior at `f2ece8c6` had
+  `verificationCheckedRequiredArtifacts=357`, was missing
+  `analysis/authorization-readiness-report.json`,
+  `markdown/authorization-readiness.md`, and
+  `html/authorization-readiness.html`, and
+  `open --target authorization-readiness` was unsupported.
+- GREEN smoke generated
+  `/tmp/repotutor-authorization-readiness-green-studies.15684/2026-06-05/local__simple-ts-app__main__f2ece8c6`;
+  confirmed `verificationCheckedRequiredArtifacts=360`, all three new
+  artifacts, `verificationOk=true`, focused fixture risk queue 0, all
+  model/enforcement/identity/resource/governance/test/package signals ready,
+  and `open --target authorization-readiness` ->
+  `html/authorization-readiness.html`.
+- `pnpm build`: PASS
+- focused authorization Vitest: PASS, 1/1 selected test
+- `pnpm test`: PASS, 27/27 tests
+- `pnpm audit:brief`: PASS, 118/118 audit checks across 13 generated reports
+- `git diff --check`: PASS
+- `gitleaks protect --staged --redact --no-banner`: PASS
+- Pushed implementation commit: `a4a01d8` authorization readiness report
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
