@@ -622,6 +622,22 @@
         "Prisma Client generation custom output driver adapter and runtime import signals",
         "seed scripts dotenv DATABASE_URL local database service and Studio inspection readiness"
       ]
+    },
+    {
+      "repo": "github/docs",
+      "url": "https://github.com/github/docs",
+      "localPath": "research/external-src/github-docs",
+      "stars": 20395,
+      "forks": 67331,
+      "license": "CC-BY-4.0",
+      "updatedAt": "2026-06-04T00:02:00Z",
+      "adoptedPatterns": [
+        "GitHub Actions workflow YAML under .github/workflows",
+        "workflow trigger events including push pull_request workflow_dispatch schedule repository_dispatch and workflow_call",
+        "jobs runs-on steps uses run needs strategy matrix services containers and timeout controls",
+        "explicit GITHUB_TOKEN permissions OIDC id-token environments secrets and action pinning review",
+        "dependency cache workflow artifacts concurrency deployments environments and package publish readiness"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2731,6 +2747,25 @@
         "markdown/database-readiness.md",
         "html/database-readiness.html"
       ]
+    },
+    {
+      "name": "CI/CD readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/ci-cd-report.json",
+        "markdown/ci-cd.md",
+        "html/ci-cd.html"
+      ]
     }
   ],
   "verification": {
@@ -2986,7 +3021,13 @@
     "cliDatabaseReadinessOpenTargetSmoke": "PASS",
     "buildDatabaseReadiness": "PASS",
     "testDatabaseReadiness": "PASS",
-    "auditBriefDatabaseReadiness40": "PASS"
+    "auditBriefDatabaseReadiness40": "PASS",
+    "fixtureCiCdReport": "PASS",
+    "cliCiCdSmoke": "PASS",
+    "cliCiCdOpenTargetSmoke": "PASS",
+    "buildCiCd": "PASS",
+    "testCiCd": "PASS",
+    "auditBriefCiCd41": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -3087,6 +3128,12 @@
     "cliCodeQualityOpenTargetSmoke": "PASS",
     "buildCodeQuality": "PASS",
     "testCodeQuality": "PASS",
-    "auditBriefCodeQuality38": "PASS"
+    "auditBriefCodeQuality38": "PASS",
+    "fixtureCiCdReport": "PASS",
+    "cliCiCdSmoke": "PASS",
+    "cliCiCdOpenTargetSmoke": "PASS",
+    "buildCiCd": "PASS",
+    "testCiCd": "PASS",
+    "auditBriefCiCd41": "PASS"
   }
 }

@@ -1841,6 +1841,61 @@ export const DatabaseReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CiCdReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  workflowFiles: z.array(z.object({
+    filePath: z.string(),
+    workflowName: z.string().nullable(),
+    triggerCount: z.number().int().nonnegative(),
+    jobCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  triggerSignals: z.array(z.object({
+    trigger: z.enum(["push", "pull_request", "workflow_dispatch", "schedule", "repository_dispatch", "workflow_call", "release", "deployment", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  jobSignals: z.array(z.object({
+    signal: z.enum(["jobs", "runs-on", "steps", "uses", "run", "needs", "matrix", "services", "container", "defaults", "timeout-minutes", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  securitySignals: z.array(z.object({
+    signal: z.enum(["permissions", "contents-read", "id-token-write", "secrets", "environment", "pinned-actions", "pull-request-target", "oidc", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  deliverySignals: z.array(z.object({
+    signal: z.enum(["cache", "artifact-upload", "artifact-download", "concurrency", "environment-protection", "deployment", "release", "package-publish", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  platformSignals: z.array(z.object({
+    signal: z.enum(["github-hosted-runner", "self-hosted-runner", "linux", "macos", "windows", "node-setup", "python-setup", "docker-build", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2085,6 +2140,7 @@ export type ContainerReadinessReport = z.infer<typeof ContainerReadinessReportSc
 export type CodeQualityReport = z.infer<typeof CodeQualityReportSchema>;
 export type DocumentationReport = z.infer<typeof DocumentationReportSchema>;
 export type DatabaseReadinessReport = z.infer<typeof DatabaseReadinessReportSchema>;
+export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

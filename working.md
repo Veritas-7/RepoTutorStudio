@@ -2149,6 +2149,37 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 142:
   - `17c6b5f` database readiness report
 
+- 2026-06-04: AutoResearch Upgrade 143 candidate selected:
+  `github/docs` (`https://github.com/github/docs`; public CC-BY-4.0; 20,395
+  stars; 67,331 forks; updated 2026-06-04T00:02:00Z). Compared with
+  `actions/starter-workflows`, `nektos/act`, and
+  `step-security/harden-runner`; selected GitHub Docs for official GitHub
+  Actions workflow syntax, trigger events, jobs, permissions, `GITHUB_TOKEN`,
+  OIDC, cache/artifact, concurrency, environments, and deployment guidance.
+  Cloned sparse ignored external source to `research/external-src/github-docs`
+  and inspected Actions docs/reusables without executing external source.
+- 2026-06-04: RED CI/CD readiness smoke generated
+  `/tmp/repotutor-cicd-red-studies.kYsdLH/2026-06-04/local__simple-ts-app__main__c83f7d20`;
+  old build was missing `analysis/ci-cd-report.json`, `markdown/ci-cd.md`,
+  and `html/ci-cd.html`, and `open --target ci-cd` failed as expected.
+- 2026-06-04: Implemented GitHub Actions-style CI/CD readiness report:
+  `CiCdReportSchema`, `analysis/ci-cd-report.json`, `markdown/ci-cd.md`,
+  `html/ci-cd.html`, workflow files, trigger signals, job signals, security
+  signals, delivery signals, platform signals, recommended commands, risk
+  queue, manifest/session-verification coverage, learning-path linkage, and
+  `open --target ci-cd`.
+- 2026-06-04: GREEN CI/CD readiness smoke generated
+  `/tmp/repotutor-cicd-green-studies.S3BdhY/2026-06-04/local__simple-ts-app__main__c83f7d20`;
+  confirmed `verificationCheckedRequiredArtifacts=129`, workflow files 0,
+  trigger signals 8, job signals 11, security signals 8, delivery signals 8,
+  platform signals 8, recommended commands 6, risk queue 2, `ci-cd-card`,
+  `data-source-pattern="GitHub Actions"`, manifest/learning-path entries, and
+  `open --target ci-cd` -> `html/ci-cd.html`.
+- 2026-06-04: Verification for Upgrade 143:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 41/41 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

@@ -55,6 +55,7 @@ import {
   CodeQualityReport,
   DocumentationReport,
   DatabaseReadinessReport,
+  CiCdReport,
   SourceType,
   RepoMap,
   htmlAnchor
@@ -116,6 +117,7 @@ export interface AnalysisBundle {
   codeQualityReport: CodeQualityReport;
   documentationReport: DocumentationReport;
   databaseReadinessReport: DatabaseReadinessReport;
+  ciCdReport: CiCdReport;
   componentGraphReport: ComponentGraphReport;
   sourceSnapshotReport: SourceSnapshotReport;
   incrementalReport: IncrementalReport;
@@ -177,8 +179,9 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const codeQualityReport = await buildCodeQualityReport(walk);
   const documentationReport = await buildDocumentationReport(walk);
   const databaseReadinessReport = await buildDatabaseReadinessReport(walk);
+  const ciCdReport = await buildCiCdReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -7560,6 +7563,302 @@ function normalizeDatabaseProvider(value: string | null): DatabaseReadinessRepor
   if (normalized === "cockroachdb") return "cockroachdb";
   if (normalized === "mariadb") return "mariadb";
   return "unknown";
+}
+
+async function buildCiCdReport(walk: WalkResult): Promise<CiCdReport> {
+  const sourceFiles = await ciCdSourceFiles(walk);
+  const workflowFiles = ciCdWorkflowFiles(sourceFiles);
+  const triggerSignals = ciCdTriggerSignals(sourceFiles);
+  const jobSignals = ciCdJobSignals(sourceFiles);
+  const securitySignals = ciCdSecuritySignals(sourceFiles, workflowFiles);
+  const deliverySignals = ciCdDeliverySignals(sourceFiles);
+  const platformSignals = ciCdPlatformSignals(sourceFiles);
+  const hasWorkflow = workflowFiles.length > 0;
+  const hasPushOrPr = triggerSignals.some((item) => ["push", "pull_request"].includes(item.trigger) && item.readiness === "ready");
+  const hasManualOrSchedule = triggerSignals.some((item) => ["workflow_dispatch", "schedule"].includes(item.trigger) && item.readiness === "ready");
+  const hasJobs = jobSignals.some((item) => item.signal === "jobs" && item.readiness === "ready")
+    && jobSignals.some((item) => item.signal === "runs-on" && item.readiness === "ready");
+  const hasPermissions = securitySignals.some((item) => item.signal === "permissions" && item.readiness === "ready");
+  const hasDeployment = deliverySignals.some((item) => ["deployment", "release", "package-publish"].includes(item.signal) && item.readiness === "ready");
+  const hasEnvironment = securitySignals.some((item) => item.signal === "environment" && item.readiness === "ready")
+    || deliverySignals.some((item) => item.signal === "environment-protection" && item.readiness === "ready");
+  const hasConcurrency = deliverySignals.some((item) => item.signal === "concurrency" && item.readiness === "ready");
+  const hasCacheOrArtifacts = deliverySignals.some((item) => ["cache", "artifact-upload", "artifact-download"].includes(item.signal) && item.readiness === "ready");
+  const usesSecrets = securitySignals.some((item) => item.signal === "secrets" && item.readiness === "ready");
+  const hasOidc = securitySignals.some((item) => ["id-token-write", "oidc"].includes(item.signal) && item.readiness === "ready");
+  const hasPullRequestTarget = securitySignals.some((item) => item.signal === "pull-request-target" && item.readiness === "partial");
+
+  const riskQueue: CiCdReport["riskQueue"] = [];
+  if (!hasWorkflow) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add at least one GitHub Actions workflow under .github/workflows before claiming CI/CD readiness.",
+      why: "GitHub Actions workflow syntax requires YAML files in .github/workflows; package scripts alone do not prove automation.",
+      relatedHref: "html/ci-cd.html"
+    });
+  }
+  if (hasWorkflow && !hasPushOrPr) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trigger CI on push or pull_request events.",
+      why: "GitHub's CI guidance centers on building and testing code when commits or pull requests enter the shared repository.",
+      relatedHref: "html/ci-cd.html"
+    });
+  }
+  if (hasWorkflow && !hasJobs) {
+    riskQueue.push({
+      priority: "high",
+      action: "Declare jobs with runs-on targets and executable steps.",
+      why: "Workflow files are only useful when they define jobs that can run on GitHub-hosted or self-hosted runners.",
+      relatedHref: "html/ci-cd.html"
+    });
+  }
+  if (hasWorkflow && !hasPermissions) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Set explicit workflow or job permissions for GITHUB_TOKEN.",
+      why: "GitHub recommends setting the token permissions needed by the workflow instead of relying on broad defaults.",
+      relatedHref: "html/ci-cd.html"
+    });
+  }
+  if (hasDeployment && !hasEnvironment) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Use environments or deployment protection rules for deploy jobs.",
+      why: "GitHub deployments and environments can require approval, restrict branches, and scope environment secrets before rollout.",
+      relatedHref: "html/ci-cd.html"
+    });
+  }
+  if (hasDeployment && !hasConcurrency) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add concurrency groups around deployment workflows.",
+      why: "GitHub Actions concurrency prevents overlapping deployments to the same target environment.",
+      relatedHref: "html/ci-cd.html"
+    });
+  }
+  if (usesSecrets && !hasOidc) {
+    riskQueue.push({
+      priority: "low",
+      action: "Prefer OIDC for cloud deployment credentials where the provider supports it.",
+      why: "GitHub's OIDC guidance reduces long-lived cloud secrets and requires explicit trust conditions.",
+      relatedHref: "html/ci-cd.html"
+    });
+  }
+  if (hasWorkflow && !hasCacheOrArtifacts) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add cache or artifact steps when build outputs, test reports, screenshots, or dependency downloads matter.",
+      why: "GitHub Actions distinguishes dependency caching from workflow artifacts that persist data after jobs finish.",
+      relatedHref: "html/ci-cd.html"
+    });
+  }
+  if (hasPullRequestTarget) {
+    riskQueue.push({
+      priority: "high",
+      action: "Review pull_request_target workflows for untrusted code checkout and secret exposure.",
+      why: "pull_request_target can run with privileged repository context and needs stricter review than ordinary pull_request CI.",
+      relatedHref: "html/ci-cd.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: hasWorkflow ? "Run workflow validation and a safe branch CI run before treating this report as CI/CD approval." : "If this repository later adds GitHub Actions, rerun RepoTutor to populate CI/CD readiness.",
+    why: "RepoTutor records static GitHub Actions readiness only; it does not execute workflows, validate YAML semantics, or call GitHub APIs.",
+    relatedHref: "html/ci-cd.html"
+  });
+
+  return {
+    summary: `GitHub Actions식 CI/CD readiness report: workflow ${workflowFiles.length}개, trigger signal ${triggerSignals.length}개, job signal ${jobSignals.length}개, delivery signal ${deliverySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "GitHub Actions workflow syntax events jobs permissions GITHUB_TOKEN OIDC cache artifacts concurrency environments deployments",
+    workflowFiles,
+    triggerSignals,
+    jobSignals,
+    securitySignals,
+    deliverySignals,
+    platformSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "gh workflow list", purpose: "List workflows visible to GitHub for the repository." },
+      { command: "gh workflow view <workflow.yml>", purpose: "Inspect workflow metadata and dispatchability from GitHub's view." },
+      { command: "gh run list --workflow <workflow.yml> --limit 10", purpose: "Check recent run status before trusting the static report." },
+      { command: "act -n", purpose: "Dry-run GitHub Actions locally where nektos/act supports the workflow shape." },
+      { command: "npx actionlint", purpose: "Validate workflow YAML syntax, expressions, and common GitHub Actions mistakes." },
+      { command: "gh run watch", purpose: "Watch a live workflow run after pushing to a safe branch." }
+    ],
+    learnerNextSteps: [
+      "Start with .github/workflows: identify trigger events, job names, runner labels, and the order imposed by needs.",
+      "Separate CI jobs that build/test pull requests from CD jobs that deploy or publish artifacts.",
+      "Review permissions, secrets, OIDC, environments, and concurrency before treating deploy jobs as safe.",
+      "RepoTutor does not execute GitHub Actions or validate YAML semantics; run actionlint and a safe branch workflow before approval."
+    ]
+  };
+}
+
+type CiCdSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function ciCdSourceFiles(walk: WalkResult): Promise<CiCdSourceFile[]> {
+  const files: CiCdSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !ciCdInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!ciCdPathSignal(file.relPath) && !ciCdContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function ciCdInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /^\.github\/actions\//i.test(filePath)
+    || /^(package\.json|pnpm-workspace\.yaml|turbo\.json|nx\.json|README\.md|action\.ya?ml)$/i.test(base)
+    || /(ci|cd|deploy|workflow|release|pipeline|build|test|publish)/i.test(filePath)
+    || /\.(ya?ml|json|md|[cm]?[jt]sx?|sh)$/i.test(filePath);
+}
+
+function ciCdPathSignal(filePath: string): boolean {
+  return /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(github\/actions|workflow|ci|cd|deploy|release|pipeline|publish|action\.ya?ml)/i.test(filePath);
+}
+
+function ciCdContentSignal(text: string): boolean {
+  return /GitHub Actions|\.github\/workflows|workflow_dispatch|pull_request|repository_dispatch|GITHUB_TOKEN|id-token|actions\/checkout|actions\/cache|upload-artifact|download-artifact|runs-on|concurrency|environment:|gh workflow|actionlint/i.test(text);
+}
+
+function ciCdWorkflowFiles(sourceFiles: CiCdSourceFile[]): CiCdReport["workflowFiles"] {
+  return sourceFiles
+    .filter((source) => /^\.github\/workflows\/.+\.ya?ml$/i.test(source.filePath))
+    .slice(0, 120)
+    .map((source) => {
+      const workflowName = firstMatch(source.text, /^\s*name\s*:\s*(.+)$/im)?.replace(/^["']|["']$/g, "").trim() ?? null;
+      const triggerCount = ciCdTriggerCount(source.text);
+      const jobCount = ciCdJobCount(source.text);
+      return {
+        filePath: source.filePath,
+        workflowName,
+        triggerCount,
+        jobCount,
+        readiness: triggerCount > 0 && jobCount > 0 ? "ready" : triggerCount > 0 || jobCount > 0 ? "partial" : "missing",
+        evidence: `${source.filePath} has ${triggerCount} trigger signal(s) and ${jobCount} job candidate(s).`,
+        sourceHref: source.sourceHref
+      };
+    });
+}
+
+function ciCdTriggerCount(text: string): number {
+  const triggers = ["push", "pull_request", "workflow_dispatch", "schedule", "repository_dispatch", "workflow_call", "release", "deployment"];
+  return triggers.filter((trigger) => new RegExp(`(^|\\n)\\s*${trigger}\\s*:|\\bon\\s*:\\s*\\[[^\\]]*${trigger}|\\bon\\s*:\\s*${trigger}\\b`, "i").test(text)).length;
+}
+
+function ciCdJobCount(text: string): number {
+  const jobsBlock = text.match(/^jobs\s*:\s*([\s\S]*)/im)?.[1] ?? "";
+  const matches = [...jobsBlock.matchAll(/^\s{2}[A-Za-z0-9_-]+\s*:\s*(?:\n|$)/gm)];
+  return matches.length;
+}
+
+function ciCdTriggerSignals(sourceFiles: CiCdSourceFile[]): CiCdReport["triggerSignals"] {
+  const specs: Array<{ trigger: CiCdReport["triggerSignals"][number]["trigger"]; pattern: RegExp; evidence: string }> = [
+    { trigger: "push", pattern: /(^|\n)\s*push\s*:|\bon\s*:\s*\[[^\]]*push|\bon\s*:\s*push\b/i, evidence: "push trigger evidence was detected." },
+    { trigger: "pull_request", pattern: /(^|\n)\s*pull_request\s*:|\bon\s*:\s*\[[^\]]*pull_request|\bon\s*:\s*pull_request\b/i, evidence: "pull_request trigger evidence was detected." },
+    { trigger: "workflow_dispatch", pattern: /workflow_dispatch/i, evidence: "manual workflow_dispatch trigger evidence was detected." },
+    { trigger: "schedule", pattern: /(^|\n)\s*schedule\s*:|\bcron\s*:/i, evidence: "scheduled trigger evidence was detected." },
+    { trigger: "repository_dispatch", pattern: /repository_dispatch/i, evidence: "repository_dispatch trigger evidence was detected." },
+    { trigger: "workflow_call", pattern: /workflow_call/i, evidence: "reusable workflow_call trigger evidence was detected." },
+    { trigger: "release", pattern: /(^|\n)\s*release\s*:|\bon\s*:\s*\[[^\]]*release|\bon\s*:\s*release\b/i, evidence: "release trigger evidence was detected." },
+    { trigger: "deployment", pattern: /(^|\n)\s*deployment(_status)?\s*:|\bon\s*:\s*\[[^\]]*deployment/i, evidence: "deployment trigger evidence was detected." }
+  ];
+  return ciCdSignalFromSpecs(sourceFiles, specs, "trigger", "trigger");
+}
+
+function ciCdJobSignals(sourceFiles: CiCdSourceFile[]): CiCdReport["jobSignals"] {
+  const specs: Array<{ signal: CiCdReport["jobSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "jobs", pattern: /(^|\n)\s*jobs\s*:/i, evidence: "jobs block evidence was detected." },
+    { signal: "runs-on", pattern: /(^|\n)\s*runs-on\s*:/i, evidence: "runner selection evidence was detected." },
+    { signal: "steps", pattern: /(^|\n)\s*steps\s*:/i, evidence: "job steps evidence was detected." },
+    { signal: "uses", pattern: /(^|\n)\s*uses\s*:/i, evidence: "action or reusable workflow usage evidence was detected." },
+    { signal: "run", pattern: /(^|\n)\s*run\s*:/i, evidence: "shell command step evidence was detected." },
+    { signal: "needs", pattern: /(^|\n)\s*needs\s*:/i, evidence: "job dependency ordering evidence was detected." },
+    { signal: "matrix", pattern: /strategy\s*:|matrix\s*:/i, evidence: "matrix strategy evidence was detected." },
+    { signal: "services", pattern: /(^|\n)\s*services\s*:/i, evidence: "service container evidence was detected." },
+    { signal: "container", pattern: /(^|\n)\s*container\s*:/i, evidence: "job container evidence was detected." },
+    { signal: "defaults", pattern: /(^|\n)\s*defaults\s*:/i, evidence: "workflow/job defaults evidence was detected." },
+    { signal: "timeout-minutes", pattern: /timeout-minutes\s*:/i, evidence: "timeout control evidence was detected." }
+  ];
+  return ciCdSignalFromSpecs(sourceFiles, specs, "job", "signal");
+}
+
+function ciCdSecuritySignals(sourceFiles: CiCdSourceFile[], workflowFiles: CiCdReport["workflowFiles"]): CiCdReport["securitySignals"] {
+  const specs: Array<{ signal: CiCdReport["securitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "permissions", pattern: /(^|\n)\s*permissions\s*:/i, evidence: "explicit GITHUB_TOKEN permissions evidence was detected." },
+    { signal: "contents-read", pattern: /contents\s*:\s*read/i, evidence: "contents: read permission evidence was detected." },
+    { signal: "id-token-write", pattern: /id-token\s*:\s*write/i, evidence: "OIDC id-token: write permission evidence was detected." },
+    { signal: "secrets", pattern: /secrets\.|secrets\s*:|GITHUB_TOKEN|GH_TOKEN/i, evidence: "secrets or GITHUB_TOKEN usage evidence was detected." },
+    { signal: "environment", pattern: /(^|\n)\s*environment\s*:/i, evidence: "environment-scoped job evidence was detected." },
+    { signal: "pull-request-target", pattern: /pull_request_target/i, evidence: "privileged pull_request_target trigger evidence was detected." },
+    { signal: "oidc", pattern: /OIDC|OpenID Connect|id-token|aws-actions\/configure-aws-credentials|azure\/login|google-github-actions\/auth/i, evidence: "OIDC authentication evidence was detected." }
+  ];
+  const rows = ciCdSignalFromSpecs(sourceFiles, specs, "security", "signal") as CiCdReport["securitySignals"];
+  const usesLines = sourceFiles.flatMap((source) => [...source.text.matchAll(/^\s*uses\s*:\s*([^\s#]+)/gim)].map((match) => ({ source, value: match[1] })));
+  const pinnedCount = usesLines.filter((item) => /@[0-9a-f]{40}$/i.test(item.value)).length;
+  rows.push({
+    signal: "pinned-actions",
+    readiness: usesLines.length === 0 ? (workflowFiles.length > 0 ? "external" : "missing") : pinnedCount === usesLines.length ? "ready" : "partial",
+    evidence: usesLines.length === 0 ? "action pinning evidence was not detected." : `${pinnedCount}/${usesLines.length} uses references appear pinned to full commit SHAs.`,
+    relatedHref: usesLines[0]?.source.sourceHref ?? "html/ci-cd.html"
+  });
+  return rows.map((item) => item.signal === "pull-request-target" && item.readiness === "ready" ? { ...item, readiness: "partial" } : item);
+}
+
+function ciCdDeliverySignals(sourceFiles: CiCdSourceFile[]): CiCdReport["deliverySignals"] {
+  const specs: Array<{ signal: CiCdReport["deliverySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "cache", pattern: /actions\/cache|cache-dependency-path|setup-node[\s\S]{0,200}cache\s*:|dependency caching/i, evidence: "dependency cache evidence was detected." },
+    { signal: "artifact-upload", pattern: /actions\/upload-artifact|upload-artifact/i, evidence: "artifact upload evidence was detected." },
+    { signal: "artifact-download", pattern: /actions\/download-artifact|download-artifact/i, evidence: "artifact download evidence was detected." },
+    { signal: "concurrency", pattern: /(^|\n)\s*concurrency\s*:/i, evidence: "workflow or job concurrency evidence was detected." },
+    { signal: "environment-protection", pattern: /environment\s*:|required reviewers|deployment protection/i, evidence: "environment or deployment protection evidence was detected." },
+    { signal: "deployment", pattern: /deploy|deployment|environment\s*:/i, evidence: "deployment workflow evidence was detected." },
+    { signal: "release", pattern: /release|gh release|semantic-release|release-please|changesets/i, evidence: "release workflow evidence was detected." },
+    { signal: "package-publish", pattern: /npm publish|pnpm publish|docker\/build-push-action|ghcr\.io|packages:\s*write|publish/i, evidence: "package publish evidence was detected." }
+  ];
+  return ciCdSignalFromSpecs(sourceFiles, specs, "delivery", "signal");
+}
+
+function ciCdPlatformSignals(sourceFiles: CiCdSourceFile[]): CiCdReport["platformSignals"] {
+  const specs: Array<{ signal: CiCdReport["platformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-hosted-runner", pattern: /ubuntu-latest|macos-latest|windows-latest/i, evidence: "GitHub-hosted runner label evidence was detected." },
+    { signal: "self-hosted-runner", pattern: /self-hosted/i, evidence: "self-hosted runner label evidence was detected." },
+    { signal: "linux", pattern: /ubuntu-|linux/i, evidence: "Linux runner evidence was detected." },
+    { signal: "macos", pattern: /macos-/i, evidence: "macOS runner evidence was detected." },
+    { signal: "windows", pattern: /windows-/i, evidence: "Windows runner evidence was detected." },
+    { signal: "node-setup", pattern: /actions\/setup-node|node-version|pnpm\/action-setup|npm ci|pnpm install/i, evidence: "Node setup evidence was detected." },
+    { signal: "python-setup", pattern: /actions\/setup-python|python-version|pip install|uv sync/i, evidence: "Python setup evidence was detected." },
+    { signal: "docker-build", pattern: /docker\/build-push-action|docker build|buildx|Dockerfile/i, evidence: "Docker build evidence was detected." }
+  ];
+  return ciCdSignalFromSpecs(sourceFiles, specs, "platform", "signal");
+}
+
+function ciCdSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: CiCdSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.text) || spec.pattern.test(source.filePath));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/ci-cd.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
 }
 
 function firstMatch(text: string, pattern: RegExp): string | null {

@@ -3079,6 +3079,45 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 40/40 audit checks across 13 generated reports
 
+### Upgrade 143: CI/CD Readiness Report
+
+- Cloned and inspected `github/docs` under
+  `research/external-src/github-docs` without executing external source.
+- GitHub metadata: public repo, CC-BY-4.0 license, 20,395 stars, 67,331
+  forks, updated 2026-06-04T00:02:00Z. Compared with
+  `actions/starter-workflows`, `nektos/act`, and
+  `step-security/harden-runner`; selected `github/docs` because it is the
+  official Actions documentation source for workflow syntax, events, jobs,
+  permissions, GITHUB_TOKEN, OIDC, cache/artifacts, concurrency,
+  environments, and deployments. No source code was copied into RepoTutor.
+- Added `CiCdReportSchema` and `analysis/ci-cd-report.json` with workflow
+  files, trigger signals, job signals, security signals, delivery signals,
+  platform signals, risk queue, recommended commands, and learner next steps.
+- Added `markdown/ci-cd.md`, `html/ci-cd.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target ci-cd`.
+- Source pattern: GitHub Actions separates workflow YAML placement under
+  `.github/workflows`, trigger events, jobs/runners/steps, permissions and
+  token boundaries, artifact/cache persistence, concurrency, and protected
+  deployment environments. RepoTutor maps that to deterministic static CI/CD
+  readiness and explicitly does not execute workflows, validate YAML
+  semantics, or call GitHub APIs.
+- RED smoke generated
+  `/tmp/repotutor-cicd-red-studies.kYsdLH/2026-06-04/local__simple-ts-app__main__c83f7d20`;
+  old behavior was missing `analysis/ci-cd-report.json`,
+  `markdown/ci-cd.md`, and `html/ci-cd.html`, and
+  `open --target ci-cd` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-cicd-green-studies.S3BdhY/2026-06-04/local__simple-ts-app__main__c83f7d20`;
+  confirmed `verificationCheckedRequiredArtifacts=129`, workflow files 0,
+  trigger signals 8, job signals 11, security signals 8, delivery signals 8,
+  platform signals 8, recommended commands 6, risk queue 2, `ci-cd-card`,
+  `data-source-pattern="GitHub Actions"`, manifest/learning-path entries,
+  and `open --target ci-cd` -> `html/ci-cd.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 41/41 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
