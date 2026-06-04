@@ -5045,6 +5045,82 @@ export const VectorDbReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SearchServiceReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  searchSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["meilisearch", "typesense", "opensearch", "elasticsearch", "algolia", "lunr", "custom", "unknown"]),
+    indexCount: z.number().int().nonnegative(),
+    schemaCount: z.number().int().nonnegative(),
+    documentCount: z.number().int().nonnegative(),
+    queryCount: z.number().int().nonnegative(),
+    filterCount: z.number().int().nonnegative(),
+    facetCount: z.number().int().nonnegative(),
+    rankingCount: z.number().int().nonnegative(),
+    typoCount: z.number().int().nonnegative(),
+    synonymCount: z.number().int().nonnegative(),
+    geoCount: z.number().int().nonnegative(),
+    opsCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  indexSignals: z.array(z.object({
+    signal: z.enum(["index", "collection", "schema", "mapping", "fields", "primary-key", "settings", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ingestionSignals: z.array(z.object({
+    signal: z.enum(["document", "add", "import", "bulk", "upsert", "batch", "delete", "refresh", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  querySignals: z.array(z.object({
+    signal: z.enum(["search", "q", "query-by", "match", "bool", "filter", "sort", "facet", "pagination", "highlight", "score", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  relevanceSignals: z.array(z.object({
+    signal: z.enum(["typo-tolerance", "ranking-rules", "searchable-attributes", "filterable-attributes", "sortable-attributes", "synonyms", "stop-words", "distinct", "geo", "semantic-hybrid", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  clientSignals: z.array(z.object({
+    signal: z.enum(["meilisearch-client", "typesense-client", "opensearch-client", "host", "api-key", "nodes", "timeout", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  opsSignals: z.array(z.object({
+    signal: z.enum(["tasks", "health", "dump", "snapshot", "alias", "replica", "cluster", "analytics", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["meilisearch", "typesense", "opensearch", "elasticsearch", "algolia", "instantsearch", "search-ui", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ServerFrameworkReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -6685,6 +6761,7 @@ export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
 export type VectorDbReadinessReport = z.infer<typeof VectorDbReadinessReportSchema>;
+export type SearchServiceReadinessReport = z.infer<typeof SearchServiceReadinessReportSchema>;
 export type ServerFrameworkReadinessReport = z.infer<typeof ServerFrameworkReadinessReportSchema>;
 export type RpcReadinessReport = z.infer<typeof RpcReadinessReportSchema>;
 export type WorkspaceGraphReadinessReport = z.infer<typeof WorkspaceGraphReadinessReportSchema>;

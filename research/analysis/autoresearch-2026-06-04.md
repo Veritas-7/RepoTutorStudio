@@ -6343,6 +6343,66 @@ Local verification:
 - `pnpm audit:brief`: PASS, 108/108 audit checks across 13 generated reports
 - Pushed implementation commit: `ab5f49c` vector-db readiness report
 
+### Upgrade 211: Search Service Readiness Report
+
+- Cloned and inspected `meilisearch/meilisearch` under
+  `research/external-src/meilisearch`, `typesense/typesense` under
+  `research/external-src/typesense`, and `opensearch-project/OpenSearch` under
+  `research/external-src/opensearch` without executing external source. Clone
+  HEADs were `ded427c`, `58691ce`, and `db84aa52`; all three clones remain
+  ignored by RepoTutor.
+- GitHub metadata: `meilisearch/meilisearch` is public, MIT licensed, 52,931
+  stars, 2,233 forks, updated 2026-06-04T18:42:05Z. `typesense/typesense` is
+  public, GPL-3.0 licensed, about 25,878 stars and 887 forks.
+  `opensearch-project/OpenSearch` is public, Apache-2.0 licensed, about 12.1k
+  stars and 2.3k forks. Selected the three-source slice because together they
+  model search indexes/collections, schema/mappings/fields, primary keys,
+  document add/import/bulk/upsert flows, q/query_by/match/bool filters, sort,
+  facets, highlighting, typo tolerance, ranking rules, synonyms, stop words,
+  distinct/geo/semantic-hybrid relevance controls, tasks, health, dumps,
+  snapshots, aliases, replicas, cluster, analytics, API keys, hosts, and nodes.
+  No source code was copied into RepoTutor.
+- Implemented Meilisearch/Typesense/OpenSearch-style
+  search-service-readiness report:
+  `SearchServiceReadinessReportSchema`,
+  `analysis/search-service-readiness-report.json`,
+  `markdown/search-service-readiness.md`,
+  `html/search-service-readiness.html`, search setup detection, index signals,
+  ingestion signals, query signals, relevance signals, client signals, ops
+  signals, package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry, and
+  `open --target search-service-readiness`.
+- Source pattern: search service readiness separates Meilisearch, Typesense,
+  OpenSearch, indexes, collections, schema, mappings, fields, primary keys,
+  settings, documents, add/import/bulk/upsert/batch/delete/refresh flows,
+  search, q, query_by, filter_by, sort_by, facet_by, match/bool filters,
+  pagination, highlighting, score, ranking rules, typo tolerance, synonyms,
+  stop words, distinct, geosearch, semantic/hybrid search, tasks, health,
+  dumps, snapshots, aliases, replicas, cluster, analytics, API keys, hosts, and
+  nodes. RepoTutor maps that to deterministic static search-service readiness
+  and explicitly does not start search servers, run clients, index/search/delete
+  documents, create snapshots/dumps, or inspect live dashboards.
+- RED smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-search-service-red-studies.kFhBq7/2026-06-05/local__repotutor-search-service-red-repo.P956ol__local__3f1c05f4`;
+  old behavior had `verificationCheckedRequiredArtifacts=330`, was missing
+  `analysis/search-service-readiness-report.json`,
+  `markdown/search-service-readiness.md`, and
+  `html/search-service-readiness.html`, and
+  `open --target search-service-readiness` exited with
+  `Unsupported open target`.
+- GREEN smoke generated
+  `/var/folders/1n/7vk05dld54v11w5snxcg4wxr0000gn/T/repotutor-search-service-green-studies.ubaxd0/2026-06-05/local__repotutor-search-service-green-repo.3YtZCZ__local__cb12f896`;
+  confirmed `verificationCheckedRequiredArtifacts=333`, search setups 6,
+  platforms `meilisearch`, `typesense`, `opensearch`, index signals 7,
+  ingestion signals 8, query signals 11, relevance signals 10, client signals
+  7, ops signals 8, package signals 7, risk queue 0, all three new artifacts,
+  and `open --target search-service-readiness` ->
+  `html/search-service-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS, 18/18 tests
+- `pnpm audit:brief`: PASS, 109/109 audit checks across 13 generated reports
+- Implementation commit: pending
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.

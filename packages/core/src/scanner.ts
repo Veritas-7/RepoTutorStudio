@@ -105,6 +105,7 @@ import {
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
   VectorDbReadinessReport,
+  SearchServiceReadinessReport,
   ServerFrameworkReadinessReport,
   RpcReadinessReport,
   WorkspaceGraphReadinessReport,
@@ -234,6 +235,7 @@ export interface AnalysisBundle {
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
   vectorDbReadinessReport: VectorDbReadinessReport;
+  searchServiceReadinessReport: SearchServiceReadinessReport;
   serverFrameworkReadinessReport: ServerFrameworkReadinessReport;
   rpcReadinessReport: RpcReadinessReport;
   workspaceGraphReadinessReport: WorkspaceGraphReadinessReport;
@@ -363,6 +365,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const llmEvalReadinessReport = await buildLlmEvalReadinessReport(walk);
   const llmObservabilityReadinessReport = await buildLlmObservabilityReadinessReport(walk);
   const vectorDbReadinessReport = await buildVectorDbReadinessReport(walk);
+  const searchServiceReadinessReport = await buildSearchServiceReadinessReport(walk);
   const serverFrameworkReadinessReport = await buildServerFrameworkReadinessReport(walk);
   const rpcReadinessReport = await buildRpcReadinessReport(walk);
   const workspaceGraphReadinessReport = await buildWorkspaceGraphReadinessReport(walk);
@@ -382,7 +385,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, observabilityReport, performanceReport, e2eReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -21643,6 +21646,258 @@ function vectorDbSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/vector-db-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildSearchServiceReadinessReport(walk: WalkResult): Promise<SearchServiceReadinessReport> {
+  const sourceFiles = await searchServiceSourceFiles(walk);
+  const searchSetups = searchServiceSetups(sourceFiles);
+  const indexSignals = searchServiceIndexSignals(sourceFiles);
+  const ingestionSignals = searchServiceIngestionSignals(sourceFiles);
+  const querySignals = searchServiceQuerySignals(sourceFiles);
+  const relevanceSignals = searchServiceRelevanceSignals(sourceFiles);
+  const clientSignals = searchServiceClientSignals(sourceFiles);
+  const opsSignals = searchServiceOpsSignals(sourceFiles);
+  const packageSignals = searchServicePackageSignals(sourceFiles);
+  const hasClient = searchSetups.length > 0 || packageSignals.some((item) => item.readiness === "ready");
+  const hasIndex = indexSignals.some((item) => item.readiness === "ready") || searchSetups.some((item) => item.indexCount > 0 || item.schemaCount > 0);
+  const hasIngestion = ingestionSignals.some((item) => item.readiness === "ready") || searchSetups.some((item) => item.documentCount > 0);
+  const hasQuery = querySignals.some((item) => item.readiness === "ready") || searchSetups.some((item) => item.queryCount > 0);
+  const hasRelevance = relevanceSignals.some((item) => item.readiness === "ready") || searchSetups.some((item) => item.rankingCount > 0 || item.typoCount > 0 || item.synonymCount > 0);
+  const hasOps = opsSignals.some((item) => item.readiness === "ready") || searchSetups.some((item) => item.opsCount > 0);
+  const riskQueue: SearchServiceReadinessReport["riskQueue"] = [];
+  if (!hasClient) riskQueue.push({ priority: "high", action: "Add a visible Meilisearch, Typesense, OpenSearch, Elasticsearch, Algolia, or local search client boundary.", why: "Search-service readiness starts with a concrete engine/client boundary, not only a static Pagefind index.", relatedHref: "html/search-service-readiness.html" });
+  if (hasClient && !hasIndex) riskQueue.push({ priority: "high", action: "Record index, collection, schema, mapping, field, primary key, or settings setup.", why: "Search quality is not reproducible unless the indexed data shape is visible.", relatedHref: "html/search-service-readiness.html" });
+  if (hasIndex && !hasIngestion) riskQueue.push({ priority: "medium", action: "Add document add/import/bulk/upsert/batch/delete/refresh ingestion evidence.", why: "Learners need to see how records become searchable documents.", relatedHref: "html/search-service-readiness.html" });
+  if (hasIngestion && !hasQuery) riskQueue.push({ priority: "medium", action: "Add search query evidence with q/query_by/match/bool/filter/sort/facet/pagination/highlight.", why: "Indexing without query shape does not explain the user-facing search contract.", relatedHref: "html/search-service-readiness.html" });
+  if (hasQuery && !hasRelevance) riskQueue.push({ priority: "low", action: "Add relevance controls such as typo tolerance, ranking rules, searchable/filterable/sortable attributes, synonyms, stop words, distinct, geo, or semantic/hybrid search.", why: "Search-service behavior depends heavily on relevance tuning, not only query execution.", relatedHref: "html/search-service-readiness.html" });
+  if (hasQuery && !hasOps) riskQueue.push({ priority: "low", action: "Document tasks, health, dumps, snapshots, aliases, replicas, cluster settings, or analytics.", why: "Production search indexes are operational state and need recovery, scaling, and monitoring evidence.", relatedHref: "html/search-service-readiness.html" });
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Search service readiness report: setup ${searchSetups.length}개, index signal ${indexSignals.length}개, query signal ${querySignals.length}개, relevance signal ${relevanceSignals.length}개, ops signal ${opsSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Search service readiness Meilisearch Typesense OpenSearch indexes collections schema mappings fields primary key settings documents add import bulk upsert batch search q query_by filter_by sort_by facet_by ranking rules typo tolerance synonyms stop words distinct geosearch hybrid semantic highlight crop pagination tasks health dumps snapshots aliases replicas cluster analytics API keys hosts nodes",
+    searchSetups,
+    indexSignals,
+    ingestionSignals,
+    querySignals,
+    relevanceSignals,
+    clientSignals,
+    opsSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"MeiliSearch|meilisearch|Typesense|@opensearch-project|OpenSearch|Elasticsearch|algoliasearch\" .", purpose: "Find search engine client boundaries and packages." },
+      { command: "rg \"index\\(|collections\\.create|indices\\.create|mappings|fields|primaryKey|primary_key|settings\" .", purpose: "Map index, collection, schema, mapping, field, primary key, and settings setup." },
+      { command: "rg \"addDocuments|documents\\.create|documents\\.import|bulk|upsert|batch|refresh|delete\" .", purpose: "Review document ingestion paths without writing to a search service." },
+      { command: "rg \"search\\(|query_by|filter_by|sort_by|facet_by|match|bool|highlight|limit|offset|per_page\" .", purpose: "Trace user-facing query shape, filters, facets, sort, pagination, and highlighting." },
+      { command: "rg \"rankingRules|typo|synonyms|stopWords|distinct|geo|hybrid|semantic|tasks|snapshot|dump|alias|replica|cluster|analytics\" .", purpose: "Check relevance tuning and search operations evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 Meilisearch, Typesense, OpenSearch, Elasticsearch, Algolia, 또는 local search 중 어떤 engine이 client boundary인지 확인하세요.",
+      "index/collection/schema/mapping/fields/primary key/settings는 검색 결과 재현성의 핵심입니다.",
+      "add/import/bulk/upsert/batch/delete/refresh는 데이터가 searchable document로 들어가는 방식을 보여줍니다.",
+      "q/query_by/match/bool/filter/sort/facet/pagination/highlight/score는 사용자 search contract를 설명합니다.",
+      "typo tolerance, ranking rules, synonyms, stop words, distinct, geo, semantic/hybrid search는 relevance tuning 근거입니다.",
+      "이 리포트는 정적 readiness입니다. RepoTutor는 search server를 시작하거나, clients를 실행하거나, documents를 index/search/delete/snapshot하지 않습니다."
+    ]
+  };
+}
+
+type SearchServiceSourceFile = { filePath: string; text: string; sourceHref: string };
+
+async function searchServiceSourceFiles(walk: WalkResult): Promise<SearchServiceSourceFile[]> {
+  const files: SearchServiceSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !searchServiceInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!searchServicePathSignal(file.relPath) && !searchServiceContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 220) break;
+  }
+  return files;
+}
+
+function searchServiceInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return searchServicePathSignal(filePath)
+    || /(^|\/)(README|docs?|search|indexes?|indices|collections?|schemas?|mappings?|opensearch|elasticsearch|meili|typesense|algolia|config|workflows?|scripts?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|pyproject\.toml|requirements\.txt|setup\.py|docker-compose\.ya?ml|compose\.ya?ml)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|py|json|jsonl|csv|md|mdx|ya?ml|toml|txt)$/i.test(filePath);
+}
+
+function searchServicePathSignal(filePath: string): boolean {
+  return /(^|\/)(meilisearch|meili|typesense|opensearch|elasticsearch|elastic|algolia|instantsearch|search|indexes?|indices|collections?)(\/|\.|-|_|$)/i.test(filePath)
+    || /\.github\/workflows\/.*(search|meili|typesense|opensearch|elastic|algolia).*\.(ya?ml)$/i.test(filePath);
+}
+
+function searchServiceContentSignal(text: string): boolean {
+  return /(MeiliSearch|meilisearch|Typesense|@opensearch-project\/opensearch|OpenSearch|Elasticsearch|algoliasearch|instantsearch|indices\.create|collections\.create|addDocuments|documents\.create|documents\.import|bulk|query_by|filter_by|sort_by|facet_by|rankingRules|ranking rules|typo tolerance|synonyms|stopWords|highlight|geosearch|semantic search|hybrid search|snapshot|dump|tasks|replicas?|cluster)/i.test(text);
+}
+
+function searchServiceSetups(sourceFiles: SearchServiceSourceFile[]): SearchServiceReadinessReport["searchSetups"] {
+  const rows: SearchServiceReadinessReport["searchSetups"] = [];
+  for (const source of sourceFiles) {
+    const indexCount = countMatches(source.text, /index\(|client\.index|indices\.create|createIndex|collections\.create|collection_name|indexName|index_name/gi);
+    const schemaCount = countMatches(source.text, /schema|mappings|properties|fields|settings|primaryKey|primary_key|default_sorting_field|searchableAttributes|filterableAttributes|sortableAttributes/gi);
+    const documentCount = countMatches(source.text, /addDocuments|documents\.create|documents\.import|add_documents|bulk|upsert|batch|refresh|delete|documents\s*=/gi);
+    const queryCount = countMatches(source.text, /search\(|\.search|query_by|filter_by|sort_by|facet_by|match|bool|query|q\s*:|highlight|pagination|per_page|limit|offset|size|from/gi);
+    const filterCount = countMatches(source.text, /filter|filter_by|where|term|range|facet|facet_by|facets|aggs|aggregations/gi);
+    const facetCount = countMatches(source.text, /facet|facet_by|facets|aggregations|aggs|terms/gi);
+    const rankingCount = countMatches(source.text, /rankingRules|ranking rules|ranking|searchableAttributes|sortableAttributes|filterableAttributes|customRanking|score|boost|curation|merchandizing/gi);
+    const typoCount = countMatches(source.text, /typo|typo tolerance|prefix|fuzzy|edit distance|spellcheck/gi);
+    const synonymCount = countMatches(source.text, /synonym|synonyms|stopWords|stop words|stop-words/gi);
+    const geoCount = countMatches(source.text, /geo|geosearch|_geo|lat|lng|longitude|latitude|bounding box/gi);
+    const opsCount = countMatches(source.text, /task|tasks|health|dump|snapshot|alias|replica|replicas|cluster|analytics|monitoring|metrics|api key|API_KEY|master key|nodes/gi);
+    const totalSignals = indexCount + schemaCount + documentCount + queryCount + filterCount + facetCount + rankingCount + typoCount + synonymCount + geoCount + opsCount;
+    if (totalSignals === 0 && !searchServicePathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: searchServicePlatform(source),
+      indexCount,
+      schemaCount,
+      documentCount,
+      queryCount,
+      filterCount,
+      facetCount,
+      rankingCount,
+      typoCount,
+      synonymCount,
+      geoCount,
+      opsCount,
+      readiness: indexCount > 0 && documentCount > 0 && queryCount > 0 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} search service signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => (b.indexCount + b.documentCount + b.queryCount + b.rankingCount + b.opsCount) - (a.indexCount + a.documentCount + a.queryCount + a.rankingCount + a.opsCount) || a.filePath.localeCompare(b.filePath)).slice(0, 90);
+}
+
+function searchServicePlatform(source: SearchServiceSourceFile): SearchServiceReadinessReport["searchSetups"][number]["platform"] {
+  if (/meilisearch|MeiliSearch|meili/i.test(source.filePath) || /meilisearch|MeiliSearch|meili/i.test(source.text)) return "meilisearch";
+  if (/typesense/i.test(source.filePath) || /Typesense|typesense/i.test(source.text)) return "typesense";
+  if (/opensearch/i.test(source.filePath) || /OpenSearch|@opensearch-project/i.test(source.text)) return "opensearch";
+  if (/elasticsearch|elastic/i.test(source.text)) return "elasticsearch";
+  if (/algolia|algoliasearch/i.test(source.text)) return "algolia";
+  if (/lunr|FlexSearch|MiniSearch/i.test(source.text)) return "lunr";
+  if (/search|index|query/i.test(source.filePath) || /search|index|query/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function searchServiceIndexSignals(sourceFiles: SearchServiceSourceFile[]): SearchServiceReadinessReport["indexSignals"] {
+  const specs: Array<{ signal: SearchServiceReadinessReport["indexSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "index", pattern: /index\(|client\.index|indices\.create|createIndex|indexName|index_name/i, evidence: "index evidence was detected." },
+    { signal: "collection", pattern: /collections\.create|collection_name|client\.collections|collections\(/i, evidence: "collection evidence was detected." },
+    { signal: "schema", pattern: /schema|fields|default_sorting_field|properties/i, evidence: "schema evidence was detected." },
+    { signal: "mapping", pattern: /mappings|properties|type:\s*['\"]?(text|keyword)|indices\.putMapping/i, evidence: "mapping evidence was detected." },
+    { signal: "fields", pattern: /fields|query_by|searchableAttributes|filterableAttributes|sortableAttributes|attributesForFaceting/i, evidence: "field evidence was detected." },
+    { signal: "primary-key", pattern: /primaryKey|primary_key|primary key|document id|id:/i, evidence: "primary key evidence was detected." },
+    { signal: "settings", pattern: /settings|number_of_shards|number_of_replicas|rankingRules|typoTolerance|synonyms|stopWords/i, evidence: "settings evidence was detected." }
+  ];
+  return searchServiceSignalFromSpecs(sourceFiles, specs, "index", "signal");
+}
+
+function searchServiceIngestionSignals(sourceFiles: SearchServiceSourceFile[]): SearchServiceReadinessReport["ingestionSignals"] {
+  const specs: Array<{ signal: SearchServiceReadinessReport["ingestionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "document", pattern: /documents|document|record|records|hits|source/i, evidence: "document evidence was detected." },
+    { signal: "add", pattern: /addDocuments|add_documents|documents\.create|addObject|saveObjects/i, evidence: "add document evidence was detected." },
+    { signal: "import", pattern: /documents\.import|import\(|import_documents|jsonl|csv/i, evidence: "import evidence was detected." },
+    { signal: "bulk", pattern: /bulk|_bulk|bulkIndex|bulk indexing/i, evidence: "bulk ingestion evidence was detected." },
+    { signal: "upsert", pattern: /upsert|action:\s*['\"]upsert|updateDocuments|partialUpdateObject/i, evidence: "upsert/update evidence was detected." },
+    { signal: "batch", pattern: /batch|batch_size|batchSize|chunks?|chunk_size/i, evidence: "batch evidence was detected." },
+    { signal: "delete", pattern: /deleteDocuments|documents\.delete|deleteObject|indices\.delete|deleteIndex|drop collection/i, evidence: "delete evidence was detected." },
+    { signal: "refresh", pattern: /refresh|waitForTask|wait_task|wait_for_task|commit|flush/i, evidence: "refresh/task wait evidence was detected." }
+  ];
+  return searchServiceSignalFromSpecs(sourceFiles, specs, "ingestion", "signal");
+}
+
+function searchServiceQuerySignals(sourceFiles: SearchServiceSourceFile[]): SearchServiceReadinessReport["querySignals"] {
+  const specs: Array<{ signal: SearchServiceReadinessReport["querySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "search", pattern: /\.search\(|search\(|client\.search|multiSearch|msearch/i, evidence: "search evidence was detected." },
+    { signal: "q", pattern: /\bq\s*:|q['\"]?\s*[:=]|query\s*:|searchTerm/i, evidence: "query text evidence was detected." },
+    { signal: "query-by", pattern: /query_by|queryBy|attributesToSearchOn|searchableAttributes/i, evidence: "query-by/searchable fields evidence was detected." },
+    { signal: "match", pattern: /match|multi_match|match_phrase|query_string/i, evidence: "match query evidence was detected." },
+    { signal: "bool", pattern: /bool|must|should|must_not|minimum_should_match/i, evidence: "bool query evidence was detected." },
+    { signal: "filter", pattern: /filter|filter_by|filters|where|term|range/i, evidence: "filter evidence was detected." },
+    { signal: "sort", pattern: /sort|sort_by|order_by|ranking|default_sorting_field/i, evidence: "sort evidence was detected." },
+    { signal: "facet", pattern: /facet|facet_by|facets|aggs|aggregations|terms/i, evidence: "facet evidence was detected." },
+    { signal: "pagination", pattern: /limit|offset|page|per_page|perPage|size|from|hitsPerPage/i, evidence: "pagination evidence was detected." },
+    { signal: "highlight", pattern: /highlight|attributesToHighlight|attributes_to_highlight|crop|snippet/i, evidence: "highlight/crop evidence was detected." },
+    { signal: "score", pattern: /score|_score|rankingScore|sort_score|explain/i, evidence: "score evidence was detected." }
+  ];
+  return searchServiceSignalFromSpecs(sourceFiles, specs, "query", "signal");
+}
+
+function searchServiceRelevanceSignals(sourceFiles: SearchServiceSourceFile[]): SearchServiceReadinessReport["relevanceSignals"] {
+  const specs: Array<{ signal: SearchServiceReadinessReport["relevanceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "typo-tolerance", pattern: /typo|typoTolerance|num_typos|fuzzy|spellcheck|prefix/i, evidence: "typo/fuzzy evidence was detected." },
+    { signal: "ranking-rules", pattern: /rankingRules|ranking rules|customRanking|boost|curation|merchandizing/i, evidence: "ranking evidence was detected." },
+    { signal: "searchable-attributes", pattern: /searchableAttributes|query_by|attributesToSearchOn|searchable fields/i, evidence: "searchable attributes evidence was detected." },
+    { signal: "filterable-attributes", pattern: /filterableAttributes|filter_by|attributesForFaceting|facetable|facet:\s*true/i, evidence: "filterable/facetable evidence was detected." },
+    { signal: "sortable-attributes", pattern: /sortableAttributes|sort_by|default_sorting_field|sortable/i, evidence: "sortable attributes evidence was detected." },
+    { signal: "synonyms", pattern: /synonym|synonyms/i, evidence: "synonym evidence was detected." },
+    { signal: "stop-words", pattern: /stopWords|stop words|stop-words|stopwords/i, evidence: "stop-word evidence was detected." },
+    { signal: "distinct", pattern: /distinct|distinctAttribute|group_by|grouping|collapse/i, evidence: "distinct/grouping evidence was detected." },
+    { signal: "geo", pattern: /geo|geosearch|_geo|lat|lng|longitude|latitude|aroundLatLng|bounding/i, evidence: "geo search evidence was detected." },
+    { signal: "semantic-hybrid", pattern: /semantic|hybrid|vector|embedding|natural language|conversational|RAG/i, evidence: "semantic/hybrid evidence was detected." }
+  ];
+  return searchServiceSignalFromSpecs(sourceFiles, specs, "relevance", "signal");
+}
+
+function searchServiceClientSignals(sourceFiles: SearchServiceSourceFile[]): SearchServiceReadinessReport["clientSignals"] {
+  const specs: Array<{ signal: SearchServiceReadinessReport["clientSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "meilisearch-client", pattern: /MeiliSearch|meilisearch|meili/i, evidence: "Meilisearch client evidence was detected." },
+    { signal: "typesense-client", pattern: /Typesense|typesense/i, evidence: "Typesense client evidence was detected." },
+    { signal: "opensearch-client", pattern: /@opensearch-project\/opensearch|OpenSearch|opensearch/i, evidence: "OpenSearch client evidence was detected." },
+    { signal: "host", pattern: /host|hosts|node:|nodes:|MEILI_HOST|TYPESENSE_HOST|OPENSEARCH_URL|ELASTICSEARCH_URL/i, evidence: "host/node evidence was detected." },
+    { signal: "api-key", pattern: /apiKey|api_key|API_KEY|MASTER_KEY|MEILI_MASTER_KEY|TYPESENSE_API_KEY|Authorization|x-typesense-api-key/i, evidence: "API key evidence was detected." },
+    { signal: "nodes", pattern: /nodes|node:|cluster|peering|replica/i, evidence: "node/cluster evidence was detected." },
+    { signal: "timeout", pattern: /timeout|connectionTimeoutSeconds|requestTimeout|maxRetries|retry/i, evidence: "timeout/retry evidence was detected." }
+  ];
+  return searchServiceSignalFromSpecs(sourceFiles, specs, "client", "signal");
+}
+
+function searchServiceOpsSignals(sourceFiles: SearchServiceSourceFile[]): SearchServiceReadinessReport["opsSignals"] {
+  const specs: Array<{ signal: SearchServiceReadinessReport["opsSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tasks", pattern: /task|tasks|waitForTask|wait_task|asynchronous/i, evidence: "task evidence was detected." },
+    { signal: "health", pattern: /health|healthz|ready|status/i, evidence: "health evidence was detected." },
+    { signal: "dump", pattern: /dump|dumps|export/i, evidence: "dump/export evidence was detected." },
+    { signal: "snapshot", pattern: /snapshot|snapshots|backup|restore/i, evidence: "snapshot evidence was detected." },
+    { signal: "alias", pattern: /alias|aliases|swapIndexes|index alias/i, evidence: "alias evidence was detected." },
+    { signal: "replica", pattern: /replica|replicas|number_of_replicas|replication/i, evidence: "replica evidence was detected." },
+    { signal: "cluster", pattern: /cluster|nodes|shards|sharding|peering|raft/i, evidence: "cluster evidence was detected." },
+    { signal: "analytics", pattern: /analytics|click|conversion|metrics|monitoring|search_clicks/i, evidence: "analytics/metrics evidence was detected." }
+  ];
+  return searchServiceSignalFromSpecs(sourceFiles, specs, "ops", "signal");
+}
+
+function searchServicePackageSignals(sourceFiles: SearchServiceSourceFile[]): SearchServiceReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: SearchServiceReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "meilisearch", pattern: /"meilisearch"|meilisearch|MeiliSearch/i, evidence: "Meilisearch package evidence was detected." },
+    { signal: "typesense", pattern: /"typesense"|typesense|Typesense/i, evidence: "Typesense package evidence was detected." },
+    { signal: "opensearch", pattern: /@opensearch-project\/opensearch|opensearch/i, evidence: "OpenSearch package evidence was detected." },
+    { signal: "elasticsearch", pattern: /@elastic\/elasticsearch|elasticsearch/i, evidence: "Elasticsearch package evidence was detected." },
+    { signal: "algolia", pattern: /algoliasearch|algolia/i, evidence: "Algolia package evidence was detected." },
+    { signal: "instantsearch", pattern: /instantsearch|react-instantsearch|typesense-instantsearch-adapter/i, evidence: "InstantSearch package evidence was detected." },
+    { signal: "search-ui", pattern: /@elastic\/react-search-ui|search-ui|autocomplete-js|docsearch/i, evidence: "search UI package evidence was detected." }
+  ];
+  return searchServiceSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function searchServiceSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: SearchServiceSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/search-service-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

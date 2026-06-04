@@ -1,6 +1,6 @@
 {
   "iteration": 10,
-  "createdAt": "2026-06-04T19:00:51.053Z",
+  "createdAt": "2026-06-04T19:18:07.925Z",
   "checks": [
     {
       "name": "project setup",
@@ -725,6 +725,13 @@
     },
     {
       "name": "Vector DB readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Search service readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
