@@ -654,6 +654,22 @@
         "v8 istanbul coverage provider include exclude threshold and reporter readiness",
         "jsdom happy-dom browser mode projects workspace typecheck watch UI reporter and sharding signals"
       ]
+    },
+    {
+      "repo": "microsoft/TypeScript",
+      "url": "https://github.com/microsoft/TypeScript",
+      "localPath": "research/external-src/microsoft-typescript",
+      "stars": 109062,
+      "forks": 13430,
+      "license": "Apache-2.0",
+      "updatedAt": "2026-06-02T18:17:24Z",
+      "adoptedPatterns": [
+        "compilerOptions strict flag family noImplicitAny strictNullChecks and recommended strictness",
+        "project references composite incremental and tsBuildInfoFile build readiness",
+        "moduleResolution baseUrl paths typeRoots types and lib lookup readiness",
+        "declaration declarationMap emitDeclarationOnly declarationDir noEmit and noEmitOnError review",
+        "tsc noEmit build showConfig watch extendedDiagnostics and traceResolution command handoff"
+      ]
     }
   ],
   "upgradesApplied": [
@@ -2801,6 +2817,25 @@
         "markdown/unit-tests.md",
         "html/unit-tests.html"
       ]
+    },
+    {
+      "name": "Typecheck readiness report",
+      "filesChanged": [
+        "packages/shared/src/schemas.ts",
+        "packages/core/src/scanner.ts",
+        "packages/core/src/pipeline.ts",
+        "packages/core/src/markdown.ts",
+        "packages/core/src/session-verifier.ts",
+        "packages/html/src/templates.ts",
+        "apps/cli/src/index.ts",
+        "scripts/compliance-audit.mjs",
+        "packages/core/src/pipeline.test.ts"
+      ],
+      "newArtifacts": [
+        "analysis/typecheck-readiness-report.json",
+        "markdown/typecheck-readiness.md",
+        "html/typecheck-readiness.html"
+      ]
     }
   ],
   "verification": {
@@ -3068,7 +3103,13 @@
     "cliUnitTestsOpenTargetSmoke": "PASS",
     "buildUnitTests": "PASS",
     "testUnitTests": "PASS",
-    "auditBriefUnitTests42": "PASS"
+    "auditBriefUnitTests42": "PASS",
+    "fixtureTypecheckReadinessReport": "PASS",
+    "cliTypecheckReadinessSmoke": "PASS",
+    "cliTypecheckReadinessOpenTargetSmoke": "PASS",
+    "buildTypecheckReadiness": "PASS",
+    "testTypecheckReadiness": "PASS",
+    "auditBriefTypecheckReadiness43": "PASS"
   },
   "candidateBacklog": [
     "continue source-backed usability upgrades"
@@ -3181,6 +3222,12 @@
     "cliUnitTestsOpenTargetSmoke": "PASS",
     "buildUnitTests": "PASS",
     "testUnitTests": "PASS",
-    "auditBriefUnitTests42": "PASS"
+    "auditBriefUnitTests42": "PASS",
+    "fixtureTypecheckReadinessReport": "PASS",
+    "cliTypecheckReadinessSmoke": "PASS",
+    "cliTypecheckReadinessOpenTargetSmoke": "PASS",
+    "buildTypecheckReadiness": "PASS",
+    "testTypecheckReadiness": "PASS",
+    "auditBriefTypecheckReadiness43": "PASS"
   }
 }

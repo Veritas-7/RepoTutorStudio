@@ -1958,6 +1958,61 @@ export const UnitTestReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const TypecheckReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  tsconfigFiles: z.array(z.object({
+    filePath: z.string(),
+    compilerOptionsCount: z.number().int().nonnegative(),
+    referencesCount: z.number().int().nonnegative(),
+    includeCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  compilerOptionSignals: z.array(z.object({
+    signal: z.enum(["strict", "noImplicitAny", "strictNullChecks", "noUncheckedIndexedAccess", "exactOptionalPropertyTypes", "noEmit", "noEmitOnError", "skipLibCheck", "isolatedModules", "moduleDetection", "jsx", "target", "module", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  projectSignals: z.array(z.object({
+    signal: z.enum(["references", "composite", "incremental", "tsBuildInfoFile", "include", "exclude", "files", "rootDir", "outDir", "extends", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  moduleResolutionSignals: z.array(z.object({
+    signal: z.enum(["moduleResolution", "baseUrl", "paths", "typeRoots", "types", "lib", "allowImportingTsExtensions", "rewriteRelativeImportExtensions", "esModuleInterop", "resolveJsonModule", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  declarationSignals: z.array(z.object({
+    signal: z.enum(["declaration", "declarationMap", "emitDeclarationOnly", "declarationDir", "sourceMap", "noEmit", "composite-declaration", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scriptSignals: z.array(z.object({
+    signal: z.enum(["tsc", "typecheck-script", "build-script", "noEmit-command", "project-build", "watch", "generated-types", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ComponentGraphReportSchema = z.object({
   nodes: z.array(z.object({
     id: z.string(),
@@ -2204,6 +2259,7 @@ export type DocumentationReport = z.infer<typeof DocumentationReportSchema>;
 export type DatabaseReadinessReport = z.infer<typeof DatabaseReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
+export type TypecheckReadinessReport = z.infer<typeof TypecheckReadinessReportSchema>;
 export type ComponentGraphReport = z.infer<typeof ComponentGraphReportSchema>;
 export type SourceSnapshotReport = z.infer<typeof SourceSnapshotReportSchema>;
 export type IncrementalReport = z.infer<typeof IncrementalReportSchema>;

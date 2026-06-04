@@ -2219,6 +2219,43 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-04: Pushed AutoResearch Upgrade 144:
   - `bc92f69` unit test readiness report
 
+- 2026-06-04: AutoResearch Upgrade 145 candidate selected:
+  `microsoft/TypeScript` (`https://github.com/microsoft/TypeScript`; public
+  Apache-2.0; 109,062 stars; 13,430 forks; updated
+  2026-06-02T18:17:24Z). Compared with `tsconfig/bases`,
+  `typescript-eslint/typescript-eslint`, and `mattpocock/ts-reset`; selected
+  TypeScript for authoritative compilerOptions, strict flags, project
+  references, moduleResolution, declaration emit, tsconfig root options, and
+  `tsc` project/build commands. Cloned ignored external source to
+  `research/external-src/microsoft-typescript` and inspected README,
+  package scripts, compiler option declarations, compiler types, and config
+  fixtures without executing external source.
+- 2026-06-04: RED typecheck readiness smoke generated
+  `/tmp/repotutor-typecheck-red-studies.Mn1sce/2026-06-04/local__simple-ts-app__main__7dbe8c24`;
+  old build was missing `analysis/typecheck-readiness-report.json`,
+  `markdown/typecheck-readiness.md`, and `html/typecheck-readiness.html`, and
+  `open --target typecheck-readiness` failed as expected.
+- 2026-06-04: Implemented TypeScript-style typecheck readiness report:
+  `TypecheckReadinessReportSchema`,
+  `analysis/typecheck-readiness-report.json`,
+  `markdown/typecheck-readiness.md`, `html/typecheck-readiness.html`,
+  tsconfig files, compiler option signals, project signals, module resolution
+  signals, declaration signals, script signals, recommended commands, risk
+  queue, manifest/session-verification coverage, learning-path linkage, and
+  `open --target typecheck-readiness`.
+- 2026-06-04: GREEN typecheck readiness smoke generated
+  `/tmp/repotutor-typecheck-green-studies.6zrl4P/2026-06-04/local__simple-ts-app__main__7dbe8c24`;
+  confirmed `verificationCheckedRequiredArtifacts=135`, tsconfig files 0,
+  compiler option signals 13, project signals 10, module resolution signals
+  10, declaration signals 7, script signals 7, recommended commands 6, risk
+  queue 3, `typecheck-card`, `data-source-pattern="TypeScript"`,
+  manifest/learning-path entries, and `open --target typecheck-readiness` ->
+  `html/typecheck-readiness.html`.
+- 2026-06-04: Verification for Upgrade 145:
+  - `pnpm build`: PASS
+  - `pnpm test`: PASS, 4/4 tests
+  - `pnpm audit:brief`: PASS, 43/43 audit checks across 13 reports
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.

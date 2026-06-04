@@ -3159,6 +3159,49 @@ Local verification:
 - `pnpm test`: PASS
 - `pnpm audit:brief`: PASS, 42/42 audit checks across 13 generated reports
 
+### Upgrade 145: Typecheck Readiness Report
+
+- Cloned and inspected `microsoft/TypeScript` under
+  `research/external-src/microsoft-typescript` without executing external
+  source.
+- GitHub metadata: public repo, Apache-2.0 license, 109,062 stars, 13,430
+  forks, updated 2026-06-02T18:17:24Z. Compared with `tsconfig/bases`,
+  `typescript-eslint/typescript-eslint`, and `mattpocock/ts-reset`; selected
+  TypeScript because it is the authoritative source for compilerOptions,
+  strict flags, project references, moduleResolution, declaration emit,
+  tsconfig root options, and `tsc` project/build commands. No source code was
+  copied into RepoTutor.
+- Added `TypecheckReadinessReportSchema` and
+  `analysis/typecheck-readiness-report.json` with tsconfig files, compiler
+  option signals, project signals, module resolution signals, declaration
+  signals, script signals, risk queue, recommended commands, and learner next
+  steps.
+- Added `markdown/typecheck-readiness.md`, `html/typecheck-readiness.html`,
+  manifest/session-verification coverage, learning-path linkage, and
+  `open --target typecheck-readiness`.
+- Source pattern: TypeScript separates `compilerOptions`, `strict` and strict
+  subflags, project references, `composite`, incremental build info,
+  declaration emit, `noEmit`, moduleResolution, paths/types lookup, and `tsc`
+  run/build/showConfig/traceResolution commands. RepoTutor maps that to
+  deterministic static typecheck readiness and explicitly does not execute
+  `tsc`, resolve modules, emit declarations, or inspect real diagnostics.
+- RED smoke generated
+  `/tmp/repotutor-typecheck-red-studies.Mn1sce/2026-06-04/local__simple-ts-app__main__7dbe8c24`;
+  old behavior was missing `analysis/typecheck-readiness-report.json`,
+  `markdown/typecheck-readiness.md`, and `html/typecheck-readiness.html`, and
+  `open --target typecheck-readiness` exited with `Unsupported open target`.
+- GREEN smoke generated
+  `/tmp/repotutor-typecheck-green-studies.6zrl4P/2026-06-04/local__simple-ts-app__main__7dbe8c24`;
+  confirmed `verificationCheckedRequiredArtifacts=135`, tsconfig files 0,
+  compiler option signals 13, project signals 10, module resolution signals
+  10, declaration signals 7, script signals 7, recommended commands 6, risk
+  queue 3, `typecheck-card`, `data-source-pattern="TypeScript"`,
+  manifest/learning-path entries, and `open --target typecheck-readiness` ->
+  `html/typecheck-readiness.html`.
+- `pnpm build`: PASS
+- `pnpm test`: PASS
+- `pnpm audit:brief`: PASS, 43/43 audit checks across 13 generated reports
+
 ## Deferred Candidate Backlog
 
 1. Continue source-backed usability upgrades.
