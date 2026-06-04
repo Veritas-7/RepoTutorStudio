@@ -5584,6 +5584,53 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 223:
   - `016654b` large asset readiness report
 
+- 2026-06-05: AutoResearch Upgrade 224 candidate selected:
+  `testcontainers/testcontainers-node`
+  (`https://github.com/testcontainers/testcontainers-node`; MIT, public,
+  2,544 stars, 262 forks, updated 2026-06-04T15:39:46Z, ignored clone HEAD
+  `a75cb39`) with comparison source `testcontainers/testcontainers-python`
+  (`https://github.com/testcontainers/testcontainers-python`; Apache-2.0,
+  public, 2,227 stars, 374 forks, updated 2026-06-04T15:39:52Z, ignored clone
+  HEAD `be4c857`). Static source inspection only; `git ls-files` for both
+  external source paths returned `0`, and `git status --ignored=matching`
+  showed the clones only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Testcontainers-style
+  integration-test-environment-readiness report:
+  `IntegrationTestEnvironmentReadinessReportSchema`,
+  `analysis/integration-test-environment-readiness-report.json`,
+  `markdown/integration-test-environment-readiness.md`,
+  `html/integration-test-environment-readiness.html`, Testcontainers Node and
+  Python package/import detection, GenericContainer/DockerContainer/
+  DockerComposeEnvironment/DockerCompose and specialized module signals,
+  wait strategy signals, lifecycle cleanup signals, runtime/CI/env signals,
+  package signals, recommended commands, risk queue,
+  manifest/session-verification coverage, learning-path linkage, nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target integration-test-environment-readiness`.
+- 2026-06-05: RED/GREEN integration-test-environment-readiness smoke recorded:
+  old behavior at `9c503a7` had no
+  `IntegrationTestEnvironmentReadinessReportSchema` and no
+  `integration-test-environment-readiness` CLI target
+  (`RED missing-count=2 expected=2`). GREEN focused fixture detected
+  Testcontainers Node and Python setups, GenericContainer, specialized module,
+  exposed port/env signals, listening-port/log/startup-timeout/wait_for_logs/
+  wait_for_http signals, start/stop/beforeAll/afterAll/Ryuk/reuse lifecycle
+  signals, Docker host/compose/socket/env/timeout runtime signals, package
+  signals, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 224:
+  - RED baseline smoke: PASS
+  - `pnpm typecheck`: PASS
+  - `pnpm build`: PASS
+  - focused integration-test-environment Vitest command: PASS, pipeline file
+    31/31 tests
+  - full pipeline Vitest: PASS, 31/31 tests
+  - `pnpm test`: PASS, 31/31 tests
+  - `pnpm audit:brief`: PASS, 122/122 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 224:
+  - `39c3d6d` integration test environment readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
