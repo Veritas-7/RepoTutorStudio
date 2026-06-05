@@ -74,6 +74,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-migration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-orm-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-transformation-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-quality-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-lineage-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-catalog-readiness-report.json"))).resolves.toBeUndefined();
@@ -254,6 +255,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-migration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-orm-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-transformation-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-quality-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-lineage-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-catalog-readiness.md"))).resolves.toBeUndefined();
@@ -437,6 +439,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-migration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-orm-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-transformation-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-quality-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-lineage-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-catalog-readiness.html"))).resolves.toBeUndefined();
@@ -644,6 +647,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/database-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/database-migration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/database-orm-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/data-transformation-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-quality-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-lineage-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-catalog-readiness.html\"");
@@ -1938,6 +1942,29 @@ describe("RepoTutor core pipeline", () => {
     expect(databaseOrmMarkdown).toContain("Source pattern: Database ORM readiness");
     expect(databaseOrmMarkdown).toContain("## ORM Setups");
     expect(databaseOrmMarkdown).toContain("## Transaction Signals");
+    const dataTransformationText = await fs.readFile(path.join(result.session.outputPaths.analysis, "data-transformation-readiness-report.json"), "utf8");
+    expect(dataTransformationText).toContain("Data transformation readiness dbt SQLMesh Dataform");
+    expect(dataTransformationText).toContain("\"transformationSetups\"");
+    expect(dataTransformationText).toContain("\"toolSignals\"");
+    expect(dataTransformationText).toContain("\"modelSignals\"");
+    expect(dataTransformationText).toContain("\"dependencySignals\"");
+    expect(dataTransformationText).toContain("\"incrementalitySignals\"");
+    expect(dataTransformationText).toContain("\"environmentSignals\"");
+    expect(dataTransformationText).toContain("\"artifactSignals\"");
+    expect(dataTransformationText).toContain("\"workflowSignals\"");
+    expect(dataTransformationText).toContain("\"packageSignals\"");
+    expect(dataTransformationText).toContain("RepoTutor records data transformation readiness only");
+    const dataTransformationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-transformation-readiness.html"), "utf8");
+    expect(dataTransformationHtml).toContain("Data Transformation Readiness");
+    expect(dataTransformationHtml).toContain("data-transformation-readiness-card");
+    expect(dataTransformationHtml).toContain("data-source-pattern=\"DataTransformation\"");
+    expect(dataTransformationHtml).toContain("Transformation Setups");
+    expect(dataTransformationHtml).toContain("Incrementality Signals");
+    const dataTransformationMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-transformation-readiness.md"), "utf8");
+    expect(dataTransformationMarkdown).toContain("# Data Transformation Readiness");
+    expect(dataTransformationMarkdown).toContain("Source pattern: Data transformation readiness");
+    expect(dataTransformationMarkdown).toContain("## Transformation Setups");
+    expect(dataTransformationMarkdown).toContain("## Workflow Signals");
     const ciCdText = await fs.readFile(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"), "utf8");
     expect(ciCdText).toContain("GitHub Actions workflow syntax events jobs permissions GITHUB_TOKEN OIDC cache artifacts concurrency environments deployments");
     expect(ciCdText).toContain("\"workflowFiles\"");
@@ -3966,6 +3993,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/database-readiness.html");
     expect(exportManifestText).toContain("html/database-migration-readiness.html");
     expect(exportManifestText).toContain("html/database-orm-readiness.html");
+    expect(exportManifestText).toContain("html/data-transformation-readiness.html");
     expect(exportManifestText).toContain("html/data-quality-readiness.html");
     expect(exportManifestText).toContain("html/data-lineage-readiness.html");
     expect(exportManifestText).toContain("html/data-catalog-readiness.html");
@@ -4168,6 +4196,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("database-readiness.html");
     expect(learningPathHtml).toContain("database-migration-readiness.html");
     expect(learningPathHtml).toContain("database-orm-readiness.html");
+    expect(learningPathHtml).toContain("data-transformation-readiness.html");
     expect(learningPathHtml).toContain("data-quality-readiness.html");
     expect(learningPathHtml).toContain("data-lineage-readiness.html");
     expect(learningPathHtml).toContain("data-catalog-readiness.html");
@@ -9409,6 +9438,257 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-orm-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-orm-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-orm-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects data transformation readiness without compiling SQL or mutating warehouses", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-transform-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-transform-source-"));
+    await fs.mkdir(path.join(sourceRoot, "models", "staging"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "models", "marts"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "macros"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "seeds"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "snapshots"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "sqlmesh", "models"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "sqlmesh", "audits"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "definitions"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "target"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "dbt:build": "dbt build --select state:modified+ --defer --state target/prod",
+        "sqlmesh:plan": "sqlmesh plan prod --auto-apply",
+        "dataform:compile": "dataform compile --json"
+      },
+      dependencies: {
+        "dbt-core": "1.10.0",
+        "dbt-snowflake": "1.10.0",
+        sqlmesh: "0.200.0",
+        "@dataform/core": "3.0.0",
+        "@dataform/cli": "3.0.0",
+        sqlglot: "26.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "dbt_project.yml"), [
+      "name: analytics_transform",
+      "profile: analytics_profile",
+      "model-paths: [models]",
+      "seed-paths: [seeds]",
+      "snapshot-paths: [snapshots]",
+      "macro-paths: [macros]",
+      "models:",
+      "  analytics_transform:",
+      "    marts:",
+      "      +materialized: incremental",
+      "vars:",
+      "  warehouse: snowflake"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "models", "staging", "stg_orders.sql"), [
+      "{{ config(materialized='incremental', unique_key='order_id', tags=['daily'], meta={'owner':'analytics'}) }}",
+      "select order_id, customer_id, amount, updated_at",
+      "from {{ source('raw', 'orders') }}",
+      "{% if is_incremental() %}",
+      "where updated_at > (select max(updated_at) from {{ this }})",
+      "{% endif %}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "models", "staging", "schema.yml"), [
+      "version: 2",
+      "sources:",
+      "  - name: raw",
+      "    tables:",
+      "      - name: orders",
+      "models:",
+      "  - name: stg_orders",
+      "    tests:",
+      "      - not_null",
+      "    columns:",
+      "      - name: order_id",
+      "        tests:",
+      "          - unique",
+      "      - name: customer_id",
+      "        tests:",
+      "          - relationships:",
+      "              to: ref('dim_customers')",
+      "              field: customer_id"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "macros", "generate_schema_name.sql"), [
+      "{% macro generate_schema_name(custom_schema_name, node) %}",
+      "  {{ target.schema }}_{{ custom_schema_name }}",
+      "{% endmacro %}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "seeds", "country_codes.csv"), "country_code,country_name\nUS,United States\n");
+    await fs.writeFile(path.join(sourceRoot, "snapshots", "orders_snapshot.sql"), [
+      "{% snapshot orders_snapshot %}",
+      "{{ config(target_schema='snapshots', unique_key='order_id', strategy='timestamp', updated_at='updated_at') }}",
+      "select * from {{ source('raw', 'orders') }}",
+      "{% endsnapshot %}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "selectors.yml"), [
+      "selectors:",
+      "  - name: changed",
+      "    definition: state:modified+"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "sqlmesh", "models", "orders.sql"), [
+      "MODEL (",
+      "  name analytics.orders,",
+      "  kind INCREMENTAL_BY_TIME_RANGE (",
+      "    time_column ds",
+      "  ),",
+      "  cron '@daily',",
+      "  grain order_id,",
+      "  owner analytics,",
+      "  tags ['daily']",
+      ");",
+      "SELECT * FROM raw.orders"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "sqlmesh", "models", "customers.py"), [
+      "from sqlmesh import model",
+      "@model(name='analytics.customers', kind='SCD_TYPE_2')",
+      "def execute(context, **kwargs):",
+      "    return context.fetchdf('select * from raw.customers')"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "sqlmesh", "audits", "order_amount.sql"), [
+      "AUDIT (name assert_positive_amount);",
+      "SELECT * FROM analytics.orders WHERE amount < 0;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "sqlmesh", "config.yaml"), [
+      "gateways:",
+      "  snowflake:",
+      "    connection:",
+      "      type: snowflake",
+      "default_gateway: snowflake",
+      "model_defaults:",
+      "  dialect: snowflake",
+      "plan:",
+      "  environment: dev",
+      "state_connection:",
+      "  type: duckdb"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "workflow_settings.yaml"), [
+      "defaultProject: analytics-project",
+      "defaultDataset: analytics",
+      "defaultAssertionDataset: analytics_assertions",
+      "dataformCoreVersion: 3.0.0"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "dataform.json"), JSON.stringify({ warehouse: "bigquery", defaultSchema: "analytics" }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "definitions", "orders.sqlx"), [
+      "config {",
+      "  type: \"incremental\",",
+      "  uniqueKey: [\"order_id\"],",
+      "  protected: true,",
+      "  hermetic: true,",
+      "  tags: [\"daily\"],",
+      "  dependencies: [\"raw_orders\"]",
+      "}",
+      "pre_operations { select 1; }",
+      "post_operations { select 1; }",
+      "select * from ${ref(\"raw_orders\")}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "definitions", "raw_orders.js"), "declare({ schema: 'raw', name: 'orders' });\n");
+    await fs.writeFile(path.join(sourceRoot, "definitions", "assert_orders.sqlx"), [
+      "config { type: \"assertion\" }",
+      "select * from ${ref(\"orders\")} where amount < 0"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "target", "manifest.json"), JSON.stringify({ nodes: {}, sources: {}, compiled_code: "select 1" }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "target", "run_results.json"), JSON.stringify({ results: [], elapsed_time: 0 }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "compiled_graph.json"), JSON.stringify({ compiled_graph: { tables: ["orders"] } }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "data-transformation.yml"), [
+      "name: Data transformation",
+      "on: [pull_request]",
+      "jobs:",
+      "  transform:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: dbt build --select state:modified+ --defer --state target/prod",
+      "      - run: dbt compile",
+      "      - run: dbt ls --output json",
+      "      - run: sqlmesh plan prod --auto-apply",
+      "      - run: sqlmesh test",
+      "      - run: dataform compile --json",
+      "      - run: dataform run",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: transformation artifacts",
+      "          path: |",
+      "            target/manifest.json",
+      "            target/run_results.json",
+      "            sqlmesh-plan.json",
+      "            dataform-compiled-graph.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "data-transformation-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      transformationSetups: Array<{ tool: string; projectCount: number; modelCount: number; sourceCount: number; macroCount: number; testCount: number; incrementalCount: number; environmentCount: number; artifactCount: number; workflowCount: number }>;
+      toolSignals: Array<{ signal: string; readiness: string }>;
+      modelSignals: Array<{ signal: string; readiness: string }>;
+      dependencySignals: Array<{ signal: string; readiness: string }>;
+      incrementalitySignals: Array<{ signal: string; readiness: string }>;
+      environmentSignals: Array<{ signal: string; readiness: string }>;
+      artifactSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (tool: string) => report.transformationSetups
+      .filter((item) => item.tool === tool)
+      .reduce((totals, item) => ({
+        projectCount: totals.projectCount + item.projectCount,
+        modelCount: totals.modelCount + item.modelCount,
+        sourceCount: totals.sourceCount + item.sourceCount,
+        macroCount: totals.macroCount + item.macroCount,
+        testCount: totals.testCount + item.testCount,
+        incrementalCount: totals.incrementalCount + item.incrementalCount,
+        environmentCount: totals.environmentCount + item.environmentCount,
+        artifactCount: totals.artifactCount + item.artifactCount,
+        workflowCount: totals.workflowCount + item.workflowCount
+      }), { projectCount: 0, modelCount: 0, sourceCount: 0, macroCount: 0, testCount: 0, incrementalCount: 0, environmentCount: 0, artifactCount: 0, workflowCount: 0 });
+
+    expect(report.sourcePattern).toBe("Data transformation readiness dbt SQLMesh Dataform dbt_project.yml models seeds snapshots macros ref source materialized incremental state defer sqlmesh MODEL AUDIT plan environment snapshot dataform workflow_settings definitions publish declare assert compile run");
+    expect(setupTotals("dbt").projectCount).toBeGreaterThan(0);
+    expect(setupTotals("dbt").modelCount).toBeGreaterThan(0);
+    expect(setupTotals("dbt").sourceCount).toBeGreaterThan(0);
+    expect(setupTotals("dbt").macroCount).toBeGreaterThan(0);
+    expect(setupTotals("dbt").incrementalCount).toBeGreaterThan(0);
+    expect(setupTotals("sqlmesh").modelCount).toBeGreaterThan(0);
+    expect(setupTotals("sqlmesh").testCount).toBeGreaterThan(0);
+    expect(setupTotals("sqlmesh").environmentCount).toBeGreaterThan(0);
+    expect(setupTotals("sqlmesh").incrementalCount).toBeGreaterThan(0);
+    expect(setupTotals("dataform").projectCount).toBeGreaterThan(0);
+    expect(setupTotals("dataform").modelCount).toBeGreaterThan(0);
+    expect(setupTotals("dataform").sourceCount).toBeGreaterThan(0);
+    expect(setupTotals("dataform").testCount).toBeGreaterThan(0);
+    expect(setupTotals("dataform").incrementalCount).toBeGreaterThan(0);
+    expect(report.transformationSetups.some((item) => item.artifactCount > 0)).toBe(true);
+    expect(report.transformationSetups.some((item) => item.workflowCount > 0)).toBe(true);
+    expect(readySignals(report.toolSignals)).toEqual(expect.arrayContaining(["dbt", "sqlmesh", "dataform"]));
+    expect(readySignals(report.modelSignals)).toEqual(expect.arrayContaining(["dbt-model", "sqlmesh-model", "dataform-table", "sql-model", "python-model", "seed", "snapshot"]));
+    expect(readySignals(report.dependencySignals)).toEqual(expect.arrayContaining(["ref", "source", "dependency", "declaration", "owner", "tag", "grain", "cron"]));
+    expect(readySignals(report.incrementalitySignals)).toEqual(expect.arrayContaining(["materialized-incremental", "unique-key", "incremental-by-time-range", "scd-type-2", "pre-post-ops", "state-modified", "defer"]));
+    expect(readySignals(report.environmentSignals)).toEqual(expect.arrayContaining(["target-profile", "sqlmesh-environment", "virtual-environment", "dataform-workflow-settings", "warehouse-engine"]));
+    expect(readySignals(report.artifactSignals)).toEqual(expect.arrayContaining(["manifest", "run-results", "compiled-graph", "snapshot", "state-sync", "compiled-sql"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["github-actions", "dbt-build", "dbt-compile", "dbt-ls", "sqlmesh-plan", "sqlmesh-test", "dataform-compile", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["dbt-core", "sqlmesh", "dataform-core", "dataform-cli", "sqlglot", "dbt-adapter"]));
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"dbt_project.yml|models:|seeds:|snapshots:|macros:|ref\\(|source\\(\" .",
+      "rg \"sqlmesh|MODEL \\(|model_kind|AUDIT \\(|sqlmesh plan|sqlmesh run|environment|snapshot\" .",
+      "rg \"workflow_settings.yaml|dataform.json|definitions/|publish\\(|declare\\(|assert\\(|ref\\(|resolve\\(\" .",
+      "rg \"dbt build|dbt compile|dbt ls|sqlmesh plan|sqlmesh test|dataform compile|dataform run|upload-artifact\" .github ."
+    ]));
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records data transformation readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-transformation-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-transformation-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-transformation-readiness.html"))).resolves.toBeUndefined();
+    const dataTransformationMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-transformation-readiness.md"), "utf8");
+    expect(dataTransformationMarkdown).toContain("Transformation Setups");
+    expect(dataTransformationMarkdown).toContain("Incrementality Signals");
+    expect(dataTransformationMarkdown).toContain("Workflow Signals");
+    const dataTransformationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-transformation-readiness.html"), "utf8");
+    expect(dataTransformationHtml).toContain("data-transformation-readiness-card");
+    expect(dataTransformationHtml).toContain("data-source-pattern=\"DataTransformation\"");
+    expect(dataTransformationHtml).toContain("RepoTutor records data transformation readiness only");
   });
 
   it("detects data quality readiness without running warehouse checks", async () => {

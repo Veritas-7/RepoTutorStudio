@@ -76,6 +76,7 @@ import type {
   DatabaseReadinessReport,
   DatabaseMigrationReadinessReport,
   DatabaseOrmReadinessReport,
+  DataTransformationReadinessReport,
   DataQualityReadinessReport,
   DataLineageReadinessReport,
   DataCatalogReadinessReport,
@@ -274,6 +275,7 @@ export interface StudyHtmlInput {
   databaseReadinessReport: DatabaseReadinessReport;
   databaseMigrationReadinessReport: DatabaseMigrationReadinessReport;
   databaseOrmReadinessReport: DatabaseOrmReadinessReport;
+  dataTransformationReadinessReport: DataTransformationReadinessReport;
   dataQualityReadinessReport: DataQualityReadinessReport;
   dataLineageReadinessReport: DataLineageReadinessReport;
   dataCatalogReadinessReport: DataCatalogReadinessReport;
@@ -487,6 +489,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["database-readiness.html", "Database"],
     ["database-migration-readiness.html", "DB Migrations"],
     ["database-orm-readiness.html", "DB ORM"],
+    ["data-transformation-readiness.html", "Data Transform"],
     ["data-quality-readiness.html", "Data Quality"],
     ["data-lineage-readiness.html", "Data Lineage"],
     ["data-catalog-readiness.html", "Data Catalog"],
@@ -708,6 +711,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Database Readiness</h3><p>${escapeHtml(input.databaseReadinessReport.summary)}</p><p>Prisma 패턴으로 schema, datasource, migrations, generated client, seed, env 준비도를 정리합니다.</p><a href="database-readiness.html">Database 열기</a></article>
           <article><h3>Database Migration Readiness</h3><p>${escapeHtml(input.databaseMigrationReadinessReport.summary)}</p><p>Flyway/Liquibase/Alembic 패턴으로 versioned migrations, changelog, revision, rollback, validation, CI 준비도를 정리합니다.</p><a href="database-migration-readiness.html">DB Migrations 열기</a></article>
           <article><h3>Database ORM Readiness</h3><p>${escapeHtml(input.databaseOrmReadinessReport.summary)}</p><p>TypeORM/Sequelize/SQLAlchemy 패턴으로 entity/model, relation, repository/session, transaction, loading, config 준비도를 정리합니다.</p><a href="database-orm-readiness.html">DB ORM 열기</a></article>
+          <article><h3>Data Transformation Readiness</h3><p>${escapeHtml(input.dataTransformationReadinessReport.summary)}</p><p>dbt, SQLMesh, Dataform 패턴으로 model, dependency, incrementality, environment, artifact, workflow 준비도를 정리합니다.</p><a href="data-transformation-readiness.html">Data Transform 열기</a></article>
           <article><h3>Data Quality Readiness</h3><p>${escapeHtml(input.dataQualityReadinessReport.summary)}</p><p>Great Expectations, SodaCL, dbt data_tests 패턴으로 expectation, freshness, failed rows, artifact 준비도를 정리합니다.</p><a href="data-quality-readiness.html">Data Quality 열기</a></article>
           <article><h3>Data Lineage Readiness</h3><p>${escapeHtml(input.dataLineageReadinessReport.summary)}</p><p>OpenLineage, Marquez, dbt artifact 패턴으로 event, dataset edge, facet, column lineage, storage 준비도를 정리합니다.</p><a href="data-lineage-readiness.html">Data Lineage 열기</a></article>
           <article><h3>Data Catalog Readiness</h3><p>${escapeHtml(input.dataCatalogReadinessReport.summary)}</p><p>OpenMetadata, DataHub, Amundsen 패턴으로 ingestion, entity, governance, search, lineage 준비도를 정리합니다.</p><a href="data-catalog-readiness.html">Data Catalog 열기</a></article>
@@ -1142,6 +1146,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "database-orm-readiness.html",
       title: "Database ORM Readiness",
       html: pageShell("Database ORM Readiness", "database-orm-readiness.html", `<section class="panel" data-source-pattern="Database ORM"><h2>Database ORM Snapshot</h2><p>${escapeHtml(input.databaseOrmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.databaseOrmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.databaseOrmReadinessReport.ormSetups.length}</dd></div><div><dt>entities</dt><dd>${input.databaseOrmReadinessReport.entitySignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>relations</dt><dd>${input.databaseOrmReadinessReport.relationSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>transactions</dt><dd>${input.databaseOrmReadinessReport.transactionSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records database ORM readiness only; it does not connect to databases, instantiate engines, synchronize schemas, run migrations, or execute ORM queries.</p></section><section class="grid"><article class="database-orm-readiness-card"><h3>ORM Setups</h3>${databaseOrmReadinessSetupList(input.databaseOrmReadinessReport.ormSetups)}</article><article class="database-orm-readiness-card"><h3>Entity Signals</h3>${databaseOrmReadinessSignalList(input.databaseOrmReadinessReport.entitySignals, "signal")}</article><article class="database-orm-readiness-card"><h3>Relation Signals</h3>${databaseOrmReadinessSignalList(input.databaseOrmReadinessReport.relationSignals, "signal")}</article><article class="database-orm-readiness-card"><h3>Repository Signals</h3>${databaseOrmReadinessSignalList(input.databaseOrmReadinessReport.repositorySignals, "signal")}</article></section><section class="grid"><article class="database-orm-readiness-card"><h3>Transaction Signals</h3>${databaseOrmReadinessSignalList(input.databaseOrmReadinessReport.transactionSignals, "signal")}</article><article class="database-orm-readiness-card"><h3>Loading Signals</h3>${databaseOrmReadinessSignalList(input.databaseOrmReadinessReport.loadingSignals, "signal")}</article><article class="database-orm-readiness-card"><h3>Config Signals</h3>${databaseOrmReadinessSignalList(input.databaseOrmReadinessReport.configSignals, "signal")}</article><article class="database-orm-readiness-card"><h3>CI Signals</h3>${databaseOrmReadinessSignalList(input.databaseOrmReadinessReport.ciSignals, "signal")}</article><article class="database-orm-readiness-card"><h3>Package Signals</h3>${databaseOrmReadinessSignalList(input.databaseOrmReadinessReport.packageSignals, "signal")}</article><article class="database-orm-readiness-card"><h3>Recommended Commands</h3>${databaseOrmReadinessCommandList(input.databaseOrmReadinessReport.recommendedCommands)}</article><article class="database-orm-readiness-card"><h3>Risk Queue</h3>${databaseOrmReadinessRiskList(input.databaseOrmReadinessReport.riskQueue)}</article><article class="database-orm-readiness-card"><h3>다음 확인 단계</h3>${list(input.databaseOrmReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "data-transformation-readiness.html",
+      title: "Data Transformation Readiness",
+      html: pageShell("Data Transformation Readiness", "data-transformation-readiness.html", `<section class="panel" data-source-pattern="DataTransformation"><h2>Data Transformation Snapshot</h2><p>${escapeHtml(input.dataTransformationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dataTransformationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dataTransformationReadinessReport.transformationSetups.length}</dd></div><div><dt>tools</dt><dd>${input.dataTransformationReadinessReport.toolSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>models</dt><dd>${input.dataTransformationReadinessReport.modelSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>incremental</dt><dd>${input.dataTransformationReadinessReport.incrementalitySignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>workflows</dt><dd>${input.dataTransformationReadinessReport.workflowSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records data transformation readiness only; it does not run dbt, SQLMesh, Dataform, compile SQL, query warehouses, apply plans, invoke workflows, or mutate datasets.</p></section><section class="grid"><article class="data-transformation-readiness-card"><h3>Transformation Setups</h3>${dataTransformationReadinessSetupList(input.dataTransformationReadinessReport.transformationSetups)}</article><article class="data-transformation-readiness-card"><h3>Tool Signals</h3>${dataTransformationReadinessSignalList(input.dataTransformationReadinessReport.toolSignals, "signal")}</article><article class="data-transformation-readiness-card"><h3>Model Signals</h3>${dataTransformationReadinessSignalList(input.dataTransformationReadinessReport.modelSignals, "signal")}</article><article class="data-transformation-readiness-card"><h3>Dependency Signals</h3>${dataTransformationReadinessSignalList(input.dataTransformationReadinessReport.dependencySignals, "signal")}</article></section><section class="grid"><article class="data-transformation-readiness-card"><h3>Incrementality Signals</h3>${dataTransformationReadinessSignalList(input.dataTransformationReadinessReport.incrementalitySignals, "signal")}</article><article class="data-transformation-readiness-card"><h3>Environment Signals</h3>${dataTransformationReadinessSignalList(input.dataTransformationReadinessReport.environmentSignals, "signal")}</article><article class="data-transformation-readiness-card"><h3>Artifact Signals</h3>${dataTransformationReadinessSignalList(input.dataTransformationReadinessReport.artifactSignals, "signal")}</article><article class="data-transformation-readiness-card"><h3>Workflow Signals</h3>${dataTransformationReadinessSignalList(input.dataTransformationReadinessReport.workflowSignals, "signal")}</article><article class="data-transformation-readiness-card"><h3>Package Signals</h3>${dataTransformationReadinessSignalList(input.dataTransformationReadinessReport.packageSignals, "signal")}</article><article class="data-transformation-readiness-card"><h3>Recommended Commands</h3>${dataTransformationReadinessCommandList(input.dataTransformationReadinessReport.recommendedCommands)}</article><article class="data-transformation-readiness-card"><h3>Risk Queue</h3>${dataTransformationReadinessRiskList(input.dataTransformationReadinessReport.riskQueue)}</article><article class="data-transformation-readiness-card"><h3>다음 확인 단계</h3>${list(input.dataTransformationReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "data-quality-readiness.html",
@@ -1864,6 +1873,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Database Readiness", path: "html/database-readiness.html", description: "Prisma식 schema, datasource, migration, generated client, seed/env 준비도를 확인합니다." },
       { label: "Database Migration Readiness", path: "html/database-migration-readiness.html", description: "Flyway/Liquibase/Alembic식 versioned migration, changelog, revision, rollback, validation 준비도를 확인합니다." },
       { label: "Database ORM Readiness", path: "html/database-orm-readiness.html", description: "TypeORM/Sequelize/SQLAlchemy식 entity/model, relation, repository/session, transaction 준비도를 확인합니다." },
+      { label: "Data Transformation Readiness", path: "html/data-transformation-readiness.html", description: "dbt/SQLMesh/Dataform식 model, dependency, incrementality, environment, artifact, workflow 준비도를 확인합니다." },
       { label: "Data Quality Readiness", path: "html/data-quality-readiness.html", description: "Great Expectations/SodaCL/dbt식 expectation, freshness, failed-row, artifact 준비도를 확인합니다." },
       { label: "Data Lineage Readiness", path: "html/data-lineage-readiness.html", description: "OpenLineage/Marquez/dbt식 event, dataset edge, facet, column lineage, artifact 준비도를 확인합니다." },
       { label: "Data Catalog Readiness", path: "html/data-catalog-readiness.html", description: "OpenMetadata/DataHub/Amundsen식 ingestion, entity, governance, search, lineage 준비도를 확인합니다." },
@@ -2382,6 +2392,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "database-orm-readiness.html",
       goal: "TypeORM, Sequelize, SQLAlchemy식 entity/model, relation, repository/session, transaction, loading 준비도를 확인합니다.",
       evidence: `setups ${input.databaseOrmReadinessReport.ormSetups.length}개, transaction signals ${input.databaseOrmReadinessReport.transactionSignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Data transformation readiness 확인",
+      href: "data-transformation-readiness.html",
+      goal: "dbt, SQLMesh, Dataform식 model, dependency, incrementality, environment, artifact, workflow 준비도를 확인합니다.",
+      evidence: `setups ${input.dataTransformationReadinessReport.transformationSetups.length}개, model signals ${input.dataTransformationReadinessReport.modelSignals.filter((item) => item.readiness === "ready").length}개, workflow signals ${input.dataTransformationReadinessReport.workflowSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Data quality readiness 확인",
@@ -4491,6 +4507,34 @@ function databaseOrmReadinessRiskList(items: DatabaseOrmReadinessReport["riskQue
 }
 
 function databaseOrmReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function dataTransformationReadinessSetupList(items: DataTransformationReadinessReport["transformationSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">data transformation setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)} / ${escapeHtml(item.readiness)}]<br>project ${item.projectCount}, model ${item.modelCount}, source ${item.sourceCount}, macro ${item.macroCount}, test ${item.testCount}<br>incremental ${item.incrementalCount}, environment ${item.environmentCount}, artifact ${item.artifactCount}, workflow ${item.workflowCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dataTransformationReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function dataTransformationReadinessSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">data transformation readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dataTransformationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dataTransformationReadinessCommandList(items: DataTransformationReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function dataTransformationReadinessRiskList(items: DataTransformationReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(dataTransformationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dataTransformationReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

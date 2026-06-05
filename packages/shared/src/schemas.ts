@@ -4093,6 +4093,86 @@ export const DatabaseOrmReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DataTransformationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  transformationSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["dbt", "sqlmesh", "dataform", "custom", "unknown"]),
+    projectCount: z.number().int().nonnegative(),
+    modelCount: z.number().int().nonnegative(),
+    sourceCount: z.number().int().nonnegative(),
+    macroCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    incrementalCount: z.number().int().nonnegative(),
+    environmentCount: z.number().int().nonnegative(),
+    artifactCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  toolSignals: z.array(z.object({
+    signal: z.enum(["dbt", "sqlmesh", "dataform", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  modelSignals: z.array(z.object({
+    signal: z.enum(["dbt-model", "sqlmesh-model", "dataform-table", "sql-model", "python-model", "seed", "snapshot", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dependencySignals: z.array(z.object({
+    signal: z.enum(["ref", "source", "dependency", "declaration", "owner", "tag", "grain", "cron", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  incrementalitySignals: z.array(z.object({
+    signal: z.enum(["materialized-incremental", "unique-key", "incremental-by-time-range", "scd-type-2", "pre-post-ops", "state-modified", "defer", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  environmentSignals: z.array(z.object({
+    signal: z.enum(["target-profile", "sqlmesh-environment", "virtual-environment", "dataform-workflow-settings", "warehouse-engine", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  artifactSignals: z.array(z.object({
+    signal: z.enum(["manifest", "run-results", "compiled-graph", "catalog", "snapshot", "state-sync", "compiled-sql", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "dbt-build", "dbt-compile", "dbt-ls", "sqlmesh-plan", "sqlmesh-test", "dataform-compile", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["dbt-core", "sqlmesh", "dataform-core", "dataform-cli", "sqlglot", "dbt-adapter", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const DataQualityReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -12269,6 +12349,7 @@ export type DocumentationReport = z.infer<typeof DocumentationReportSchema>;
 export type DatabaseReadinessReport = z.infer<typeof DatabaseReadinessReportSchema>;
 export type DatabaseMigrationReadinessReport = z.infer<typeof DatabaseMigrationReadinessReportSchema>;
 export type DatabaseOrmReadinessReport = z.infer<typeof DatabaseOrmReadinessReportSchema>;
+export type DataTransformationReadinessReport = z.infer<typeof DataTransformationReadinessReportSchema>;
 export type DataQualityReadinessReport = z.infer<typeof DataQualityReadinessReportSchema>;
 export type DataLineageReadinessReport = z.infer<typeof DataLineageReadinessReportSchema>;
 export type DataCatalogReadinessReport = z.infer<typeof DataCatalogReadinessReportSchema>;

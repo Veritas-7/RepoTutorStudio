@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-05T15:36:27.318Z",
+  "createdAt": "2026-06-05T15:59:02.899Z",
   "checks": [
     {
       "name": "project setup",
@@ -459,6 +459,13 @@
     },
     {
       "name": "database ORM readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "data transformation readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
