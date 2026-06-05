@@ -9792,6 +9792,70 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 299:
   - `0ed49fc` toast snackbar readiness report
 
+- 2026-06-06: AutoResearch Upgrade 300 candidate selected:
+  tabs/accordion/disclosure readiness from existing ignored
+  `radix-ui/primitives` clone (`https://github.com/radix-ui/primitives.git`;
+  ignored clone HEAD `65db6fb91c16b636f05afe51e735f066a17031c3`), existing
+  ignored `tailwindlabs/headlessui` clone
+  (`https://github.com/tailwindlabs/headlessui.git`; ignored clone HEAD
+  `eea57cf46fd6767ed1059012f7073b88eb159fba`), and existing ignored
+  `ariakit/ariakit` clone (`https://github.com/ariakit/ariakit.git`; ignored
+  clone HEAD `eb5a29ed20dce2c5aa63c38591efb43a5d0ef754`). Static source
+  inspection only; no external source was executed. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Radix Tabs/Accordion/Collapsible, Headless UI
+  Tab/Disclosure, and Ariakit Tab/Disclosure readiness report:
+  `TabsAccordionReadinessReportSchema`,
+  `analysis/tabs-accordion-readiness-report.json`,
+  `markdown/tabs-accordion-readiness.md`,
+  `html/tabs-accordion-readiness.html`, static setup detection, framework,
+  structure, state, interaction, accessibility, orientation, test, and package
+  signals, Radix root/list/trigger/content/item/header/collapsible evidence,
+  Headless UI tab group/list/panels/panel/disclosure button/panel evidence,
+  Ariakit provider/list/tab/panel/disclosure/content/store evidence,
+  controlled/default value, selected index/id, open/defaultOpen, onChange,
+  data-state, force/static mount, unmount-on-hide, keyboard/orientation/manual
+  activation, roles/ARIA/focus evidence, static-only tabs/accordion/disclosure
+  guardrail, recommended inspection commands, manifest and session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/list-target
+  coverage, dedicated audit coverage, and `open --target
+  tabs-accordion-readiness`.
+- 2026-06-06: RED/GREEN tabs/accordion/disclosure readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/tabs-accordion-readiness-report.json` did not exist. GREEN fixture
+  detected Radix Tabs/Accordion/Collapsible, Headless UI Tab/Disclosure, and
+  Ariakit Tab/Disclosure signals; root, list, trigger, content, item, panel,
+  provider, disclosure button/panel, controlled/default state, selected index/id,
+  open state, data-state, force mount, unmount-on-hide, keyboard navigation,
+  arrow/Home/End/Tab evidence, manual/automatic activation, roving focus,
+  disabled item, tablist/tab/tabpanel roles, aria-selected, aria-controls,
+  aria-expanded, aria-orientation, aria-label, focus management, horizontal and
+  vertical orientation, collapsible/multiple evidence, Vitest, Playwright,
+  Testing Library, role/keyboard/attribute tests, artifact upload, packages,
+  recommended command, static-only guardrail, and all three new artifacts without
+  switching tabs, expanding panels, moving focus, dispatching events, or running
+  analyzed project tests.
+- 2026-06-06: Verification for Upgrade 300:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused tabs/accordion readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 107/107 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 198/198 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~83.67 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 300:
+  - `8d7ec14` tabs accordion readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
