@@ -100,6 +100,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "stream-processing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "pipeline-orchestration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "service-mesh-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "ingress-controller-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"))).resolves.toBeUndefined();
@@ -256,6 +257,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "stream-processing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "pipeline-orchestration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "service-mesh-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "ingress-controller-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "cache-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "logging-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-flag-readiness.md"))).resolves.toBeUndefined();
@@ -415,6 +417,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "stream-processing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "pipeline-orchestration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "service-mesh-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "ingress-controller-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "cache-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "logging-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-flag-readiness.html"))).resolves.toBeUndefined();
@@ -601,6 +604,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/stream-processing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/pipeline-orchestration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/service-mesh-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/ingress-controller-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/cache-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/logging-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-flag-readiness.html\"");
@@ -2162,6 +2166,34 @@ describe("RepoTutor core pipeline", () => {
     expect(serviceMeshReadinessMarkdown).toContain("## Mesh Signals");
     expect(serviceMeshReadinessMarkdown).toContain("## Traffic Signals");
     expect(serviceMeshReadinessMarkdown).toContain("## Security Signals");
+    const ingressControllerReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "ingress-controller-readiness-report.json"), "utf8");
+    expect(ingressControllerReadinessText).toContain("Ingress controller readiness ingress-nginx Traefik Envoy Gateway IngressClass IngressRoute Middleware GatewayClass Gateway HTTPRoute GRPCRoute BackendTrafficPolicy SecurityPolicy ClientTrafficPolicy TLSOption TLSStore LoadBalancer NodePort admission webhook cert-manager Prometheus access logs rate limit CI");
+    expect(ingressControllerReadinessText).toContain("\"ingressControllerSetups\"");
+    expect(ingressControllerReadinessText).toContain("\"controllerSignals\"");
+    expect(ingressControllerReadinessText).toContain("\"ingressClassSignals\"");
+    expect(ingressControllerReadinessText).toContain("\"routeSignals\"");
+    expect(ingressControllerReadinessText).toContain("\"serviceExposureSignals\"");
+    expect(ingressControllerReadinessText).toContain("\"tlsSignals\"");
+    expect(ingressControllerReadinessText).toContain("\"middlewareSignals\"");
+    expect(ingressControllerReadinessText).toContain("\"policySignals\"");
+    expect(ingressControllerReadinessText).toContain("\"loadBalancingSignals\"");
+    expect(ingressControllerReadinessText).toContain("\"observabilitySignals\"");
+    expect(ingressControllerReadinessText).toContain("\"admissionSignals\"");
+    expect(ingressControllerReadinessText).toContain("\"ciSignals\"");
+    expect(ingressControllerReadinessText).toContain("\"packageSignals\"");
+    const ingressControllerReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "ingress-controller-readiness.html"), "utf8");
+    expect(ingressControllerReadinessHtml).toContain("Ingress Controller Readiness");
+    expect(ingressControllerReadinessHtml).toContain("ingress-controller-readiness-card");
+    expect(ingressControllerReadinessHtml).toContain("data-source-pattern=\"IngressController\"");
+    expect(ingressControllerReadinessHtml).toContain("Route Signals");
+    expect(ingressControllerReadinessHtml).toContain("TLS Signals");
+    expect(ingressControllerReadinessHtml).toContain("Admission Signals");
+    const ingressControllerReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "ingress-controller-readiness.md"), "utf8");
+    expect(ingressControllerReadinessMarkdown).toContain("# Ingress Controller Readiness");
+    expect(ingressControllerReadinessMarkdown).toContain("Source pattern: Ingress controller readiness");
+    expect(ingressControllerReadinessMarkdown).toContain("## Controller Signals");
+    expect(ingressControllerReadinessMarkdown).toContain("## Route Signals");
+    expect(ingressControllerReadinessMarkdown).toContain("## Admission Signals");
     const cacheReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"), "utf8");
     expect(cacheReadinessText).toContain("Node Redis createClient connect get set EX NX expire ttl del mGet mSet scanIterator multi watch clientSideCache RESP socket reconnect isReady");
     expect(cacheReadinessText).toContain("\"cacheSetups\"");
@@ -3461,6 +3493,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/stream-processing-readiness.html");
     expect(exportManifestText).toContain("html/pipeline-orchestration-readiness.html");
     expect(exportManifestText).toContain("html/service-mesh-readiness.html");
+    expect(exportManifestText).toContain("html/ingress-controller-readiness.html");
     expect(exportManifestText).toContain("html/cache-readiness.html");
     expect(exportManifestText).toContain("html/logging-readiness.html");
     expect(exportManifestText).toContain("html/feature-flag-readiness.html");
@@ -3639,6 +3672,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("stream-processing-readiness.html");
     expect(learningPathHtml).toContain("pipeline-orchestration-readiness.html");
     expect(learningPathHtml).toContain("service-mesh-readiness.html");
+    expect(learningPathHtml).toContain("ingress-controller-readiness.html");
     expect(learningPathHtml).toContain("cache-readiness.html");
     expect(learningPathHtml).toContain("logging-readiness.html");
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
@@ -8755,6 +8789,399 @@ describe("RepoTutor core pipeline", () => {
     const serviceMeshHtml = await fs.readFile(path.join(result.session.outputPaths.html, "service-mesh-readiness.html"), "utf8");
     expect(serviceMeshHtml).toContain("service-mesh-readiness-card");
     expect(serviceMeshHtml).toContain("data-source-pattern=\"ServiceMesh\"");
+  });
+
+  it("detects ingress controller readiness without running ingress controllers or cluster commands", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-ingress-controller-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-ingress-controller-source-"));
+    await fs.mkdir(path.join(sourceRoot, "ingress-nginx"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "traefik"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "envoy-gateway"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "charts", "ingress"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "ingress-nginx": "^1.13.0",
+        traefik: "^3.6.0",
+        "envoy-gateway": "^1.6.0",
+        "gateway-api": "^1.3.0",
+        "cert-manager": "^1.16.0"
+      },
+      scripts: {
+        "ingress:render": "helm template ingress ./charts/ingress",
+        "ingress:validate": "kubeconform -summary manifests && kubectl apply --dry-run=server -f manifests",
+        "ingress:lint": "kubectl ingress-nginx lint --all-namespaces --verbose",
+        "ingress:smoke": "pnpm route-smoke curl Ingress HTTPRoute IngressRoute"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "charts", "ingress", "Chart.yaml"), [
+      "apiVersion: v2",
+      "name: ingress-controller-readiness",
+      "description: Helm chart for ingress-nginx Traefik Envoy Gateway Gateway API cert-manager readiness",
+      "type: application",
+      "version: 0.1.0",
+      "dependencies:",
+      "  - name: ingress-nginx",
+      "    repository: https://kubernetes.github.io/ingress-nginx",
+      "    version: 4.13.0",
+      "  - name: traefik",
+      "    repository: https://traefik.github.io/charts",
+      "    version: 36.3.0",
+      "  - name: envoy-gateway",
+      "    repository: oci://docker.io/envoyproxy",
+      "    version: 1.6.0",
+      "  - name: cert-manager",
+      "    repository: https://charts.jetstack.io",
+      "    version: 1.16.0"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "ingress-nginx", "app-ingress.yaml"), [
+      "apiVersion: networking.k8s.io/v1",
+      "kind: IngressClass",
+      "metadata:",
+      "  name: nginx",
+      "  annotations:",
+      "    ingressclass.kubernetes.io/is-default-class: \"true\"",
+      "    kubernetes.io/ingress.class: nginx",
+      "spec:",
+      "  controller: k8s.io/ingress-nginx",
+      "  parametersRef:",
+      "    apiGroup: k8s.nginx.org",
+      "    kind: IngressClassParameters",
+      "    name: nginx-params",
+      "# controllerClass default-class class-annotation parametersRef NGINX Ingress custom ingress controller",
+      "---",
+      "apiVersion: v1",
+      "kind: Service",
+      "metadata:",
+      "  name: ingress-nginx-controller",
+      "  annotations:",
+      "    external-dns.alpha.kubernetes.io/hostname: app.example.com",
+      "    service.beta.kubernetes.io/aws-load-balancer-type: nlb",
+      "spec:",
+      "  type: LoadBalancer",
+      "  loadBalancerIP: 203.0.113.10",
+      "  externalIPs: [203.0.113.11]",
+      "  ports:",
+      "    - port: 443",
+      "      nodePort: 30443",
+      "---",
+      "apiVersion: v1",
+      "kind: Service",
+      "metadata:",
+      "  name: ingress-nginx-nodeport",
+      "spec:",
+      "  type: NodePort",
+      "  ports:",
+      "    - port: 80",
+      "      nodePort: 30080",
+      "---",
+      "apiVersion: networking.k8s.io/v1",
+      "kind: Ingress",
+      "metadata:",
+      "  name: app",
+      "  annotations:",
+      "    nginx.ingress.kubernetes.io/rewrite-target: /",
+      "    nginx.ingress.kubernetes.io/proxy-body-size: 8m",
+      "    nginx.ingress.kubernetes.io/auth-url: https://auth.example.com/verify",
+      "    nginx.ingress.kubernetes.io/enable-cors: \"true\"",
+      "    nginx.ingress.kubernetes.io/limit-rps: \"20\"",
+      "    nginx.ingress.kubernetes.io/limit-connections: \"4\"",
+      "    nginx.ingress.kubernetes.io/configuration-snippet: modsecurity on;",
+      "    nginx.ingress.kubernetes.io/canary: \"true\"",
+      "    nginx.ingress.kubernetes.io/canary-weight: \"10\"",
+      "    nginx.ingress.kubernetes.io/backend-protocol: HTTPS",
+      "    external-dns.alpha.kubernetes.io/hostname: app.example.com",
+      "    cert-manager.io/cluster-issuer: letsencrypt-prod",
+      "    nginx.ingress.kubernetes.io/enable-modsecurity: \"true\"",
+      "spec:",
+      "  ingressClassName: nginx",
+      "  rules:",
+      "    - host: app.example.com",
+      "      http:",
+      "        paths:",
+      "          - path: /",
+      "            pathType: Prefix",
+      "            backend:",
+      "              service:",
+      "                name: app",
+      "                port: { number: 8443 }",
+      "  tls:",
+      "    - secretName: app-tls-secret",
+      "      hosts: [app.example.com]",
+      "status:",
+      "  loadBalancer:",
+      "    ingress:",
+      "      - ip: 203.0.113.10",
+      "---",
+      "apiVersion: admissionregistration.k8s.io/v1",
+      "kind: ValidatingWebhookConfiguration",
+      "metadata:",
+      "  name: ingress-nginx-admission",
+      "---",
+      "apiVersion: apiextensions.k8s.io/v1",
+      "kind: CustomResourceDefinition",
+      "metadata:",
+      "  name: ingressclassparameters.k8s.nginx.org",
+      "# kube-webhook-certgen admission controller validating webhook CustomResourceDefinition CRD",
+      "# status update status publisher publish-status-address status.loadBalancer LoadBalancer Ingress",
+      "# kubectl ingress-nginx lint ingress lint kubectl ingress-nginx backends certs conf ingresses logs",
+      "# metrics Prometheus access logs tracing events dashboard WAF web application firewall ModSecurity",
+      "# retry timeout healthCheck sticky affinity circuitBreaker weight: canary backend TLS backendProtocol: HTTPS"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "traefik", "route.yaml"), [
+      "apiVersion: networking.k8s.io/v1",
+      "kind: IngressClass",
+      "metadata:",
+      "  name: traefik",
+      "spec:",
+      "  controller: traefik.io/ingress-controller",
+      "---",
+      "apiVersion: traefik.io/v1alpha1",
+      "kind: IngressRoute",
+      "metadata:",
+      "  name: app",
+      "spec:",
+      "  entryPoints: [websecure]",
+      "  routes:",
+      "    - match: Host(`app.example.com`) && PathPrefix(`/api`)",
+      "      kind: Rule",
+      "      middlewares:",
+      "        - name: auth-chain",
+      "      services:",
+      "        - name: app-weighted",
+      "          port: 80",
+      "          weight: 90",
+      "  tls:",
+      "    secretName: app-traefik-tls",
+      "    options:",
+      "      name: modern-tls",
+      "    store:",
+      "      name: default",
+      "---",
+      "apiVersion: traefik.io/v1alpha1",
+      "kind: Middleware",
+      "metadata:",
+      "  name: auth-chain",
+      "spec:",
+      "  forwardAuth:",
+      "    address: https://auth.example.com",
+      "  basicAuth:",
+      "    secret: basic-auth",
+      "  headers:",
+      "    accessControlAllowMethods: [GET, POST, OPTIONS]",
+      "    customRequestHeaders:",
+      "      X-Forwarded-Proto: https",
+      "  rateLimit:",
+      "    average: 20",
+      "  stripPrefix:",
+      "    prefixes: [/api]",
+      "  ipAllowList:",
+      "    sourceRange: [10.0.0.0/8]",
+      "---",
+      "apiVersion: traefik.io/v1alpha1",
+      "kind: TraefikService",
+      "metadata:",
+      "  name: app-weighted",
+      "spec:",
+      "  weighted:",
+      "    services:",
+      "      - name: app-v1",
+      "        weight: 90",
+      "      - name: app-v2",
+      "        weight: 10",
+      "    sticky:",
+      "      cookie:",
+      "        name: sticky-session",
+      "  healthCheck:",
+      "    path: /healthz",
+      "---",
+      "apiVersion: traefik.io/v1alpha1",
+      "kind: TLSOption",
+      "metadata: { name: modern-tls }",
+      "---",
+      "apiVersion: traefik.io/v1alpha1",
+      "kind: TLSStore",
+      "metadata: { name: default }",
+      "---",
+      "apiVersion: traefik.io/v1alpha1",
+      "kind: ServersTransport",
+      "metadata: { name: app-backend-tls }",
+      "# certificatesResolvers ACME Let's Encrypt tlsChallenge httpChallenge acme.json",
+      "# CORS headers forwardAuth basicAuth rateLimit IPAllowList retry timeout circuitBreaker dashboard accesslog access logs",
+      "# prometheus metrics tracing OpenTelemetry events PassiveHealthCheck service.serverstransport backend TLS"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "envoy-gateway", "gateway.yaml"), [
+      "apiVersion: gateway.networking.k8s.io/v1",
+      "kind: GatewayClass",
+      "metadata:",
+      "  name: envoy-gateway-class",
+      "spec:",
+      "  controllerName: gateway.envoyproxy.io/gatewayclass-controller",
+      "  parametersRef:",
+      "    group: gateway.envoyproxy.io",
+      "    kind: EnvoyProxy",
+      "    name: edge-proxy",
+      "---",
+      "apiVersion: gateway.networking.k8s.io/v1",
+      "kind: Gateway",
+      "metadata: { name: edge-gateway }",
+      "spec:",
+      "  gatewayClassName: envoy-gateway-class",
+      "  listeners:",
+      "    - name: https",
+      "      protocol: HTTPS",
+      "      port: 443",
+      "      tls:",
+      "        certificateRefs:",
+      "          - name: edge-tls-secret",
+      "---",
+      "apiVersion: gateway.networking.k8s.io/v1",
+      "kind: HTTPRoute",
+      "metadata: { name: app-http-route }",
+      "spec:",
+      "  hostnames: [app.example.com]",
+      "  rules:",
+      "    - matches:",
+      "        - path: { type: PathPrefix, value: / }",
+      "      backendRefs:",
+      "        - name: app",
+      "          port: 80",
+      "          weight: 90",
+      "---",
+      "apiVersion: gateway.networking.k8s.io/v1",
+      "kind: GRPCRoute",
+      "metadata: { name: app-grpc-route }",
+      "---",
+      "apiVersion: gateway.networking.k8s.io/v1alpha2",
+      "kind: TCPRoute",
+      "metadata: { name: app-tcp-route }",
+      "---",
+      "apiVersion: gateway.envoyproxy.io/v1alpha1",
+      "kind: BackendTrafficPolicy",
+      "metadata: { name: app-backend-traffic }",
+      "spec:",
+      "  rateLimit: { global: { rules: [] } }",
+      "  retry: { numRetries: 3 }",
+      "  timeout: { http: { requestTimeout: 10s } }",
+      "---",
+      "apiVersion: gateway.envoyproxy.io/v1alpha1",
+      "kind: ClientTrafficPolicy",
+      "metadata: { name: app-client-traffic }",
+      "---",
+      "apiVersion: gateway.envoyproxy.io/v1alpha1",
+      "kind: SecurityPolicy",
+      "metadata: { name: app-security }",
+      "spec:",
+      "  oidc:",
+      "    provider: { issuer: https://issuer.example.com }",
+      "  jwt:",
+      "    providers: [{ name: jwt-provider }]",
+      "---",
+      "apiVersion: gateway.envoyproxy.io/v1alpha1",
+      "kind: EnvoyPatchPolicy",
+      "metadata: { name: app-patch }",
+      "---",
+      "apiVersion: gateway.envoyproxy.io/v1alpha1",
+      "kind: ExtensionPolicy",
+      "metadata: { name: app-extension }",
+      "---",
+      "apiVersion: gateway.envoyproxy.io/v1alpha1",
+      "kind: EnvoyProxy",
+      "metadata: { name: edge-proxy }",
+      "---",
+      "apiVersion: gateway.networking.k8s.io/v1alpha3",
+      "kind: BackendTLSPolicy",
+      "metadata: { name: app-backend-tls }",
+      "---",
+      "apiVersion: cert-manager.io/v1",
+      "kind: ClusterIssuer",
+      "metadata: { name: letsencrypt-prod }",
+      "spec:",
+      "  acme:",
+      "    server: https://acme-v02.api.letsencrypt.org/directory",
+      "# Envoy Gateway Gateway API xDS Prometheus access logs tracing metrics dashboard events",
+      "# LoadBalancer NodePort external-dns cert-manager ClusterIssuer ACME",
+      "# OIDC JWT OAuth Authorization authPolicy IPAllowList allowlist denylist WAF",
+      "# healthCheck PassiveHealthCheck circuitBreaker Consecutive5xx sticky sessionAffinity canary"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "ingress-controller-readiness.yml"), [
+      "name: ingress controller smoke",
+      "on: [push]",
+      "jobs:",
+      "  ingress-controller:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: helm template ingress ./charts/ingress && helm lint ./charts/ingress",
+      "      - run: kubeconform -summary manifests && kubectl apply --dry-run=server -f manifests",
+      "      - run: ingress-lint manifests && kubectl ingress-nginx lint --all-namespaces --verbose && gateway lint manifests",
+      "      - run: pnpm route-smoke curl Ingress HTTPRoute IngressRoute && pnpm gateway-smoke",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          path: |",
+      "            ingress-controller-report.json",
+      "            ingress-analysis.json",
+      "            route-smoke.json",
+      "            gateway-smoke.json",
+      "            admission-report.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "ingress-controller-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      ingressControllerSetups: Array<{ controller: string; controllerCount: number; ingressClassCount: number; routeCount: number; serviceExposureCount: number; tlsCount: number; middlewareCount: number; policyCount: number; loadBalancingCount: number; observabilityCount: number; admissionCount: number; ciCount: number }>;
+      controllerSignals: Array<{ signal: string; readiness: string }>;
+      ingressClassSignals: Array<{ signal: string; readiness: string }>;
+      routeSignals: Array<{ signal: string; readiness: string }>;
+      serviceExposureSignals: Array<{ signal: string; readiness: string }>;
+      tlsSignals: Array<{ signal: string; readiness: string }>;
+      middlewareSignals: Array<{ signal: string; readiness: string }>;
+      policySignals: Array<{ signal: string; readiness: string }>;
+      loadBalancingSignals: Array<{ signal: string; readiness: string }>;
+      observabilitySignals: Array<{ signal: string; readiness: string }>;
+      admissionSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("Ingress controller readiness ingress-nginx Traefik Envoy Gateway IngressClass IngressRoute Middleware GatewayClass Gateway HTTPRoute GRPCRoute BackendTrafficPolicy SecurityPolicy ClientTrafficPolicy TLSOption TLSStore LoadBalancer NodePort admission webhook cert-manager Prometheus access logs rate limit CI");
+    expect(report.ingressControllerSetups.length).toBeGreaterThan(0);
+    expect(report.ingressControllerSetups.map((item) => item.controller)).toEqual(expect.arrayContaining(["ingress-nginx", "traefik", "envoy-gateway"]));
+    expect(report.ingressControllerSetups.some((item) => item.controllerCount > 0 && item.ingressClassCount > 0 && item.routeCount > 0 && item.serviceExposureCount > 0 && item.tlsCount > 0)).toBe(true);
+    expect(report.ingressControllerSetups.some((item) => item.middlewareCount > 0 && item.policyCount > 0 && item.loadBalancingCount > 0 && item.observabilityCount > 0 && item.admissionCount > 0 && item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.controllerSignals)).toEqual(expect.arrayContaining(["ingress-nginx", "traefik", "envoy-gateway", "gateway-api", "nginx", "custom"]));
+    expect(readySignals(report.ingressClassSignals)).toEqual(expect.arrayContaining(["ingress-class", "controller-class", "gateway-class", "default-class", "class-annotation", "parameters-ref"]));
+    expect(readySignals(report.routeSignals)).toEqual(expect.arrayContaining(["kubernetes-ingress", "ingress-rule", "path-rule", "ingressroute", "httproute", "grpcroute", "tcproute", "tls-route"]));
+    expect(readySignals(report.serviceExposureSignals)).toEqual(expect.arrayContaining(["loadbalancer-service", "nodeport-service", "external-ip", "external-dns", "ingress-status", "load-balancer-ip"]));
+    expect(readySignals(report.tlsSignals)).toEqual(expect.arrayContaining(["tls-secret", "cert-manager", "cluster-issuer", "acme", "tls-option", "tls-store", "backend-tls"]));
+    expect(readySignals(report.middlewareSignals)).toEqual(expect.arrayContaining(["traefik-middleware", "rewrite-target", "headers", "forward-auth", "rate-limit", "cors", "modsecurity", "waf"]));
+    expect(readySignals(report.policySignals)).toEqual(expect.arrayContaining(["backend-traffic-policy", "client-traffic-policy", "security-policy", "envoy-patch-policy", "extension-policy", "ip-allowlist", "auth-policy"]));
+    expect(readySignals(report.loadBalancingSignals)).toEqual(expect.arrayContaining(["service-weight", "sticky-session", "health-check", "circuit-breaker", "retry", "timeout", "canary"]));
+    expect(readySignals(report.observabilitySignals)).toEqual(expect.arrayContaining(["metrics", "prometheus", "access-logs", "tracing", "dashboard", "events", "kubectl-plugin"]));
+    expect(readySignals(report.admissionSignals)).toEqual(expect.arrayContaining(["validating-webhook", "admission-controller", "webhook-certgen", "crd", "status-update", "lint"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "helm-template", "kubeconform", "kubectl-dry-run", "ingress-lint", "route-smoke", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["ingress-nginx", "traefik", "envoy-gateway", "gateway-api", "helm-chart", "cert-manager"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"IngressClass|kind: Ingress|ingressClassName|nginx.ingress.kubernetes.io|ingress-nginx\" .",
+      "rg \"IngressRoute|Middleware|TraefikService|TLSOption|TLSStore|ServersTransport|entryPoints|certificatesResolvers\" .",
+      "rg \"GatewayClass|Gateway|HTTPRoute|GRPCRoute|BackendTrafficPolicy|ClientTrafficPolicy|SecurityPolicy|EnvoyProxy\" .",
+      "rg \"LoadBalancer|NodePort|external-dns|cert-manager|ClusterIssuer|ACME|Prometheus|access logs|rateLimit|modsecurity\" .",
+      "rg \"helm template|kubeconform|kubectl.*dry-run|ingress lint|route-smoke|upload-artifact\" .github ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "ingress-controller-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "ingress-controller-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "ingress-controller-readiness.html"))).resolves.toBeUndefined();
+    const ingressControllerMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "ingress-controller-readiness.md"), "utf8");
+    expect(ingressControllerMarkdown).toContain("Controller Signals");
+    expect(ingressControllerMarkdown).toContain("Route Signals");
+    expect(ingressControllerMarkdown).toContain("Admission Signals");
+    const ingressControllerHtml = await fs.readFile(path.join(result.session.outputPaths.html, "ingress-controller-readiness.html"), "utf8");
+    expect(ingressControllerHtml).toContain("ingress-controller-readiness-card");
+    expect(ingressControllerHtml).toContain("data-source-pattern=\"IngressController\"");
   });
 
   it("detects feature store readiness without running feature store backends", async () => {
