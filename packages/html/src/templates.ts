@@ -161,6 +161,7 @@ import type {
   AnimationReadinessReport,
   DragAndDropReadinessReport,
   RichTextEditorReadinessReport,
+  CommandPaletteReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
@@ -369,6 +370,7 @@ export interface StudyHtmlInput {
   animationReadinessReport: AnimationReadinessReport;
   dragAndDropReadinessReport: DragAndDropReadinessReport;
   richTextEditorReadinessReport: RichTextEditorReadinessReport;
+  commandPaletteReadinessReport: CommandPaletteReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -576,6 +578,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["animation-readiness.html", "Animation"],
     ["drag-and-drop-readiness.html", "Drag and Drop"],
     ["rich-text-editor-readiness.html", "Rich Text Editor"],
+    ["command-palette-readiness.html", "Command Palette"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1598,6 +1601,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "rich-text-editor-readiness.html",
       title: "Rich Text Editor Readiness",
       html: pageShell("Rich Text Editor Readiness", "rich-text-editor-readiness.html", `<section class="panel" data-source-pattern="Rich Text Editor"><h2>Rich Text Editor Snapshot</h2><p>${escapeHtml(input.richTextEditorReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.richTextEditorReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.richTextEditorReadinessReport.richTextEditorSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.richTextEditorReadinessReport.frameworkSignals.length}</dd></div><div><dt>commands</dt><dd>${input.richTextEditorReadinessReport.commandSignals.length}</dd></div><div><dt>tests</dt><dd>${input.richTextEditorReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records rich text editor readiness only; it does not mount Tiptap, ProseMirror, Lexical, or contenteditable editors, dispatch keyboard/input/composition events, mutate documents, execute commands, sync Yjs state, serialize live documents, or run analyzed project tests.</p></section><section class="grid"><article class="rich-text-editor-readiness-card"><h3>Rich Text Editor Setups</h3>${richTextEditorReadinessSetupList(input.richTextEditorReadinessReport.richTextEditorSetups)}</article><article class="rich-text-editor-readiness-card"><h3>Framework Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.frameworkSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Schema Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.schemaSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Render Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.renderSignals, "signal")}</article></section><section class="grid"><article class="rich-text-editor-readiness-card"><h3>Command Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.commandSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>State Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.stateSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Extension Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.extensionSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Collaboration Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.collaborationSignals, "signal")}</article></section><section class="grid"><article class="rich-text-editor-readiness-card"><h3>Accessibility Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.accessibilitySignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Test Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.testSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Package Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.packageSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Recommended Commands</h3>${richTextEditorReadinessCommandList(input.richTextEditorReadinessReport.recommendedCommands)}</article><article class="rich-text-editor-readiness-card"><h3>Risk Queue</h3>${richTextEditorReadinessRiskList(input.richTextEditorReadinessReport.riskQueue)}</article><article class="rich-text-editor-readiness-card"><h3>다음 확인 단계</h3>${list(input.richTextEditorReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "command-palette-readiness.html",
+      title: "Command Palette Readiness",
+      html: pageShell("Command Palette Readiness", "command-palette-readiness.html", `<section class="panel" data-source-pattern="Command Palette"><h2>Command Palette Snapshot</h2><p>${escapeHtml(input.commandPaletteReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.commandPaletteReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.commandPaletteReadinessReport.commandPaletteSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.commandPaletteReadinessReport.frameworkSignals.length}</dd></div><div><dt>keyboard</dt><dd>${input.commandPaletteReadinessReport.keyboardSignals.length}</dd></div><div><dt>tests</dt><dd>${input.commandPaletteReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records command palette readiness only; it does not open dialogs, dispatch keyboard events, focus inputs, run fuzzy search, fetch autocomplete sources, mutate selected state, navigate URLs, call Algolia services, render portals, or run analyzed project tests.</p></section><section class="grid"><article class="command-palette-readiness-card"><h3>Command Palette Setups</h3>${commandPaletteReadinessSetupList(input.commandPaletteReadinessReport.commandPaletteSetups)}</article><article class="command-palette-readiness-card"><h3>Framework Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.frameworkSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Input Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.inputSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Result Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.resultSignals, "signal")}</article></section><section class="grid"><article class="command-palette-readiness-card"><h3>Selection Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.selectionSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Filter Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.filterSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>State Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.stateSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Plugin Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.pluginSignals, "signal")}</article></section><section class="grid"><article class="command-palette-readiness-card"><h3>Accessibility Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.accessibilitySignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Keyboard Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.keyboardSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Test Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.testSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Package Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.packageSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Recommended Commands</h3>${commandPaletteReadinessCommandList(input.commandPaletteReadinessReport.recommendedCommands)}</article><article class="command-palette-readiness-card"><h3>Risk Queue</h3>${commandPaletteReadinessRiskList(input.commandPaletteReadinessReport.riskQueue)}</article><article class="command-palette-readiness-card"><h3>다음 확인 단계</h3>${list(input.commandPaletteReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "llm-readiness.html",
@@ -7307,6 +7315,31 @@ function richTextEditorReadinessRiskList(items: RichTextEditorReadinessReport["r
 }
 
 function richTextEditorReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function commandPaletteReadinessSetupList(items: CommandPaletteReadinessReport["commandPaletteSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">command palette setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)}/${escapeHtml(item.readiness)}]<br>input/result/selection/filter/state/plugin/accessibility/keyboard/test ${item.inputCount}/${item.resultCount}/${item.selectionCount}/${item.filterCount}/${item.stateCount}/${item.pluginCount}/${item.accessibilityCount}/${item.keyboardCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(commandPaletteReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function commandPaletteReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">command palette signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(commandPaletteReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function commandPaletteReadinessCommandList(items: CommandPaletteReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function commandPaletteReadinessRiskList(items: CommandPaletteReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(commandPaletteReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function commandPaletteReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

@@ -10219,6 +10219,104 @@ export const RichTextEditorReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CommandPaletteReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  commandPaletteSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["cmdk", "algolia-autocomplete", "downshift", "custom", "unknown"]),
+    inputCount: z.number().int().nonnegative(),
+    resultCount: z.number().int().nonnegative(),
+    selectionCount: z.number().int().nonnegative(),
+    filterCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    pluginCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    keyboardCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["cmdk", "algolia-autocomplete", "downshift", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  inputSignals: z.array(z.object({
+    signal: z.enum(["command-input", "get-input-props", "placeholder", "open-on-focus", "search-input", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resultSignals: z.array(z.object({
+    signal: z.enum(["command-list", "command-item", "command-group", "get-sources", "get-items", "get-menu-props", "get-item-props", "empty-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  selectionSignals: z.array(z.object({
+    signal: z.enum(["on-select", "selected-item", "highlighted-index", "set-query", "value", "item-url", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  filterSignals: z.array(z.object({
+    signal: z.enum(["filter", "keywords", "should-filter", "query", "state-reducer", "source-id", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["search", "input-value", "is-open", "on-state-change", "refresh-update", "open-change", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  pluginSignals: z.array(z.object({
+    signal: z.enum(["recent-searches", "query-suggestions", "plugins", "insights", "templates", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["combobox", "listbox", "option", "aria-activedescendant", "aria-expanded", "aria-controls", "aria-autocomplete", "aria-label", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  keyboardSignals: z.array(z.object({
+    signal: z.enum(["arrow-down", "arrow-up", "enter", "escape", "meta-k", "ime-guard", "keyboard-handler", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "keyboard-test", "role-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["cmdk", "@algolia/autocomplete-js", "@algolia/autocomplete-core", "@algolia/autocomplete-plugin-recent-searches", "@algolia/autocomplete-plugin-query-suggestions", "downshift", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -13273,6 +13371,7 @@ export type StateMachineReadinessReport = z.infer<typeof StateMachineReadinessRe
 export type AnimationReadinessReport = z.infer<typeof AnimationReadinessReportSchema>;
 export type DragAndDropReadinessReport = z.infer<typeof DragAndDropReadinessReportSchema>;
 export type RichTextEditorReadinessReport = z.infer<typeof RichTextEditorReadinessReportSchema>;
+export type CommandPaletteReadinessReport = z.infer<typeof CommandPaletteReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

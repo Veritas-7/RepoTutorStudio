@@ -170,6 +170,7 @@ import {
   AnimationReadinessReport,
   DragAndDropReadinessReport,
   RichTextEditorReadinessReport,
+  CommandPaletteReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
@@ -379,6 +380,7 @@ export interface AnalysisBundle {
   animationReadinessReport: AnimationReadinessReport;
   dragAndDropReadinessReport: DragAndDropReadinessReport;
   richTextEditorReadinessReport: RichTextEditorReadinessReport;
+  commandPaletteReadinessReport: CommandPaletteReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -588,6 +590,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const animationReadinessReport = await buildAnimationReadinessReport(walk);
   const dragAndDropReadinessReport = await buildDragAndDropReadinessReport(walk);
   const richTextEditorReadinessReport = await buildRichTextEditorReadinessReport(walk);
+  const commandPaletteReadinessReport = await buildCommandPaletteReadinessReport(walk);
   const llmReadinessReport = await buildLlmReadinessReport(walk);
   const llmEvalReadinessReport = await buildLlmEvalReadinessReport(walk);
   const llmObservabilityReadinessReport = await buildLlmObservabilityReadinessReport(walk);
@@ -622,7 +625,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, dragAndDropReadinessReport, richTextEditorReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, dragAndDropReadinessReport, richTextEditorReadinessReport, commandPaletteReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -41977,6 +41980,349 @@ function richTextEditorReadinessSignalFromSpecs<T extends Record<K, string> & { 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/rich-text-editor-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildCommandPaletteReadinessReport(walk: WalkResult): Promise<CommandPaletteReadinessReport> {
+  const sourceFiles = await commandPaletteReadinessSourceFiles(walk);
+  const commandPaletteSetups = commandPaletteReadinessSetups(sourceFiles);
+  const frameworkSignals = commandPaletteReadinessFrameworkSignals(sourceFiles);
+  const inputSignals = commandPaletteReadinessInputSignals(sourceFiles);
+  const resultSignals = commandPaletteReadinessResultSignals(sourceFiles);
+  const selectionSignals = commandPaletteReadinessSelectionSignals(sourceFiles);
+  const filterSignals = commandPaletteReadinessFilterSignals(sourceFiles);
+  const stateSignals = commandPaletteReadinessStateSignals(sourceFiles);
+  const pluginSignals = commandPaletteReadinessPluginSignals(sourceFiles);
+  const accessibilitySignals = commandPaletteReadinessAccessibilitySignals(sourceFiles);
+  const keyboardSignals = commandPaletteReadinessKeyboardSignals(sourceFiles);
+  const testSignals = commandPaletteReadinessTestSignals(sourceFiles);
+  const packageSignals = commandPaletteReadinessPackageSignals(sourceFiles);
+
+  const hasFramework = frameworkSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasInput = inputSignals.some((item) => item.readiness === "ready") || commandPaletteSetups.some((item) => item.inputCount > 0);
+  const hasResults = resultSignals.some((item) => item.readiness === "ready") || commandPaletteSetups.some((item) => item.resultCount > 0);
+  const hasSelection = selectionSignals.some((item) => item.readiness === "ready") || commandPaletteSetups.some((item) => item.selectionCount > 0);
+  const hasFiltering = filterSignals.some((item) => item.readiness === "ready") || commandPaletteSetups.some((item) => item.filterCount > 0);
+  const hasAccessibility = accessibilitySignals.some((item) => item.readiness === "ready") || commandPaletteSetups.some((item) => item.accessibilityCount > 0);
+  const hasKeyboard = keyboardSignals.some((item) => item.readiness === "ready") || commandPaletteSetups.some((item) => item.keyboardCount > 0);
+  const hasTests = testSignals.some((item) => item.readiness === "ready") || commandPaletteSetups.some((item) => item.testCount > 0);
+
+  const riskQueue: CommandPaletteReadinessReport["riskQueue"] = [];
+  if (!hasFramework && !hasInput) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document a command palette or autocomplete boundary such as cmdk, Algolia Autocomplete, Downshift, or a custom combobox adapter.",
+      why: "Command palette readiness starts with a visible input, command dialog, autocomplete root, or combobox boundary learners can inspect.",
+      relatedHref: "html/command-palette-readiness.html"
+    });
+  }
+  if (hasInput && !hasResults) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace the result source, item renderer, menu/list, group, empty state, or option getter for the palette.",
+      why: "A command input without visible result semantics does not show how users discover and compare possible commands.",
+      relatedHref: "html/command-palette-readiness.html"
+    });
+  }
+  if (hasResults && !hasSelection) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document onSelect, selectedItem, highlightedIndex, setQuery, value, or URL handoff behavior.",
+      why: "Learners need to see how highlighted results become navigation, actions, or query state changes.",
+      relatedHref: "html/command-palette-readiness.html"
+    });
+  }
+  if (hasInput && !hasFiltering) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add filter, keywords, query, sourceId, stateReducer, or source ranking evidence.",
+      why: "Command palettes are search interfaces; filtering and ranking rules should be inspectable before readiness is claimed.",
+      relatedHref: "html/command-palette-readiness.html"
+    });
+  }
+  if (hasInput && (!hasAccessibility || !hasKeyboard)) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add combobox/listbox/option roles, aria-activedescendant, aria-expanded, aria-controls, and keyboard handling evidence.",
+      why: "Palettes and autocomplete menus are keyboard-first UI and can regress badly without explicit ARIA and keyboard contracts.",
+      relatedHref: "html/command-palette-readiness.html"
+    });
+  }
+  if (hasInput && !hasTests) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add deterministic tests for Meta-K opening, Arrow navigation, Enter selection, Escape close, and role-based queries.",
+      why: "Palette regressions usually surface in focus, keyboard, and option-selection transitions, so static code alone is not enough.",
+      relatedHref: "html/command-palette-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify live palette behavior with trusted local browser or original project tests outside RepoTutor.",
+    why: "RepoTutor records command palette readiness only; it does not open dialogs, dispatch keyboard events, focus inputs, run fuzzy search, fetch autocomplete sources, mutate selected state, navigate URLs, call Algolia services, render portals, or run analyzed project tests.",
+    relatedHref: "html/command-palette-readiness.html"
+  });
+
+  return {
+    summary: `cmdk/Algolia Autocomplete/Downshift-style command palette readiness report: setup ${commandPaletteSetups.length}개, framework signal ${frameworkSignals.length}개, keyboard signal ${keyboardSignals.length}개, test signal ${testSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Command palette readiness cmdk Command.Input Command.Item Algolia autocomplete getSources Downshift useCombobox keyboard aria tests",
+    commandPaletteSetups,
+    frameworkSignals,
+    inputSignals,
+    resultSignals,
+    selectionSignals,
+    filterSignals,
+    stateSignals,
+    pluginSignals,
+    accessibilitySignals,
+    keyboardSignals,
+    testSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"Command.Dialog|Command.Input|Command.List|Command.Item|useCommandState|onValueChange|onSelect\" src app packages test", purpose: "Find cmdk command palette roots, inputs, lists, items, selected state, and selection handlers." },
+      { command: "rg \"autocomplete\\(|createAutocomplete|getSources|getItems|getInputProps|getItemProps|getMenuProps|setQuery|refresh\\(\\)|update\\(\" src app packages test", purpose: "Find Algolia Autocomplete setup, sources, prop getters, query mutations, and refresh/update paths." },
+      { command: "rg \"useCombobox|Downshift|getInputProps|getMenuProps|getItemProps|getToggleButtonProps|highlightedIndex|selectedItem|stateReducer\" src app packages test", purpose: "Find Downshift combobox state, prop getters, highlighted item, selected item, and reducer hooks." },
+      { command: "rg \"role=.*combobox|role=.*listbox|role=.*option|aria-activedescendant|aria-expanded|aria-controls|aria-autocomplete\" src app packages test", purpose: "Review ARIA combobox/listbox/option semantics and active descendant wiring." },
+      { command: "rg \"ArrowDown|ArrowUp|Enter|Escape|metaKey|keyCode === 229|userEvent\\.keyboard|fireEvent\\.keyDown\" src app packages test", purpose: "Review keyboard navigation, selection, close behavior, Meta-K shortcut, and IME guards." },
+      { command: "pnpm test", purpose: "Run trusted local tests that cover palette opening, keyboard navigation, filtering, selection, and accessibility flows." }
+    ],
+    learnerNextSteps: [
+      "먼저 cmdk, Algolia Autocomplete, Downshift, custom combobox 중 어떤 palette boundary가 있는지 찾으세요.",
+      "Command.Input, getInputProps, placeholder, openOnFocus 같은 input 신호부터 보면 검색 진입점이 보입니다.",
+      "Command.List, Command.Item, getSources, getItems, getMenuProps, getItemProps는 결과 목록과 item rendering 경계를 설명합니다.",
+      "onSelect, selectedItem, highlightedIndex, setQuery, value는 사용자의 선택이 action, navigation, query state로 바뀌는 경로입니다.",
+      "filter, keywords, shouldFilter, query, stateReducer는 검색어가 결과 ranking과 filtering으로 들어가는 규칙입니다.",
+      "role=combobox/listbox/option, aria-activedescendant, aria-expanded, aria-controls와 Arrow/Enter/Escape/Meta-K 테스트를 같이 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 focus trap, portal, IME composition, remote source latency, navigation side effect는 원본 프로젝트 테스트나 수동 검증에서 확인하세요."
+    ]
+  };
+}
+
+type CommandPaletteReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function commandPaletteReadinessSourceFiles(walk: WalkResult): Promise<CommandPaletteReadinessSourceFile[]> {
+  const files: CommandPaletteReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !commandPaletteReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!commandPaletteReadinessPathSignal(file.relPath) && !commandPaletteReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function commandPaletteReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return commandPaletteReadinessPathSignal(filePath)
+    || /^(package\.json|pnpm-lock\.yaml|yarn\.lock|package-lock\.json|playwright\.config\.[cm]?[jt]s|cypress\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|astro|json|md|mdx|ya?ml)$/i.test(filePath);
+}
+
+function commandPaletteReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(command|commands|palette|autocomplete|combobox|search|quick[-_ ]?open|launcher|cmdk|downshift|tests?|e2e)(\/|\.|-|_|$)|package\.json$|workflow/i.test(filePath);
+}
+
+function commandPaletteReadinessContentSignal(text: string): boolean {
+  return /(cmdk|Command\.Dialog|Command\.Input|Command\.List|Command\.Item|useCommandState|@algolia\/autocomplete|autocomplete\s*\(|createAutocomplete|getSources|getInputProps|getItemProps|getMenuProps|useCombobox|Downshift|stateChangeTypes|highlightedIndex|selectedItem|aria-activedescendant|role\s*=\s*["']combobox|fireEvent\.keyDown|userEvent\.keyboard)/i.test(text);
+}
+
+function commandPaletteReadinessSetups(sourceFiles: CommandPaletteReadinessSourceFile[]): CommandPaletteReadinessReport["commandPaletteSetups"] {
+  const rows: CommandPaletteReadinessReport["commandPaletteSetups"] = [];
+  for (const source of sourceFiles) {
+    const inputCount = countMatches(source.text, /(Command\.Input|onValueChange|getInputProps|inputElement|placeholder|openOnFocus|search\s*=|search,|inputValue|autocomplete\s*\(|createAutocomplete|combobox)/gi);
+    const resultCount = countMatches(source.text, /(Command\.List|Command\.Item|Command\.Group|Command\.Empty|getSources|getItems|getItemUrl|getMenuProps|getItemProps|templates\s*:|noResults|listbox|option)/gi);
+    const selectionCount = countMatches(source.text, /(onSelect|selectedItem|highlightedIndex|setQuery|value\s*=|value:|getItemUrl|InputKeyDownEnter|aria-selected)/gi);
+    const filterCount = countMatches(source.text, /(filter\s*=|filter:|keywords|shouldFilter|query\s*=>|query\s*\}|query\s*\)|sourceId|stateReducer|rank|fuzzy)/gi);
+    const stateCount = countMatches(source.text, /(useCommandState|open\s*=|onOpenChange|setOpen|search|inputValue|isOpen|onStateChange|onInputValueChange|onSelectedItemChange|refresh\s*\(|update\s*\()/gi);
+    const pluginCount = countMatches(source.text, /(createLocalStorageRecentSearchesPlugin|recentSearchesPlugin|createQuerySuggestionsPlugin|querySuggestionsPlugin|plugins\s*:|insights|templates\s*:)/gi);
+    const accessibilityCount = countMatches(source.text, /(role\s*=\s*["']combobox|role:\s*["']combobox|role\s*=\s*["']listbox|role\s*=\s*["']option|["']role["']\s*,\s*["']combobox|["']role["']\s*,\s*["']listbox|["']role["']\s*,\s*["']option|aria-activedescendant|aria-expanded|aria-controls|aria-autocomplete|aria-label|aria-selected)/gi);
+    const keyboardCount = countMatches(source.text, /(ArrowDown|ArrowUp|Enter|Escape|metaKey|Meta|Mod-k|keyCode\s*===\s*229|KeyboardEvent|keydown|userEvent\.keyboard|fireEvent\.keyDown)/gi);
+    const testCount = countMatches(source.text, /(vitest|playwright|cypress|describe\s*\(|it\s*\(|expect\s*\(|testing-library|getByRole|queryAllByRole|userEvent\.keyboard|fireEvent\.keyDown|upload-artifact|command-palette-traces)/gi);
+    const hasSetupSignal = inputCount + resultCount + selectionCount + filterCount + stateCount + pluginCount + accessibilityCount + keyboardCount + testCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: commandPaletteReadinessPlatform(source),
+      inputCount,
+      resultCount,
+      selectionCount,
+      filterCount,
+      stateCount,
+      pluginCount,
+      accessibilityCount,
+      keyboardCount,
+      testCount,
+      readiness: inputCount > 0 && resultCount > 0 && selectionCount > 0 && stateCount > 0 && (accessibilityCount + keyboardCount + testCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains input ${inputCount}, results ${resultCount}, selection ${selectionCount}, filtering ${filterCount}, state ${stateCount}, plugins ${pluginCount}, accessibility ${accessibilityCount}, keyboard ${keyboardCount}, tests ${testCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function commandPaletteReadinessPlatform(source: CommandPaletteReadinessSourceFile): CommandPaletteReadinessReport["commandPaletteSetups"][number]["platform"] {
+  if (/cmdk|Command\.Dialog|Command\.Input|Command\.List|Command\.Item|useCommandState/i.test(source.text)) return "cmdk";
+  if (/@algolia\/autocomplete|autocomplete\s*\(|createAutocomplete|getSources|getPanelProps/i.test(source.text)) return "algolia-autocomplete";
+  if (/downshift|useCombobox|Downshift|stateChangeTypes|getToggleButtonProps/i.test(source.text)) return "downshift";
+  if (/command|palette|autocomplete|combobox|launcher|quick[-_ ]?open/i.test(source.text) || commandPaletteReadinessPathSignal(source.filePath)) return "custom";
+  return "unknown";
+}
+
+function commandPaletteReadinessFrameworkSignals(sourceFiles: CommandPaletteReadinessSourceFile[]): CommandPaletteReadinessReport["frameworkSignals"] {
+  const specs: Array<{ signal: CommandPaletteReadinessReport["frameworkSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "cmdk", pattern: /cmdk|Command\.Dialog|Command\.Input|Command\.List|Command\.Item|useCommandState/i, evidence: "cmdk evidence was detected." },
+    { signal: "algolia-autocomplete", pattern: /@algolia\/autocomplete|autocomplete\s*\(|createAutocomplete|getSources/i, evidence: "Algolia Autocomplete evidence was detected." },
+    { signal: "downshift", pattern: /downshift|useCombobox|Downshift|stateChangeTypes/i, evidence: "Downshift evidence was detected." },
+    { signal: "custom", pattern: /command[-_ ]?palette|quick[-_ ]?open|combobox|launcher|autocomplete/i, evidence: "custom palette evidence was detected." }
+  ];
+  return commandPaletteReadinessSignalFromSpecs(sourceFiles, specs, "framework", "signal");
+}
+
+function commandPaletteReadinessInputSignals(sourceFiles: CommandPaletteReadinessSourceFile[]): CommandPaletteReadinessReport["inputSignals"] {
+  const specs: Array<{ signal: CommandPaletteReadinessReport["inputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "command-input", pattern: /Command\.Input/i, evidence: "Command.Input evidence was detected." },
+    { signal: "get-input-props", pattern: /getInputProps/i, evidence: "getInputProps evidence was detected." },
+    { signal: "placeholder", pattern: /placeholder/i, evidence: "placeholder evidence was detected." },
+    { signal: "open-on-focus", pattern: /openOnFocus/i, evidence: "openOnFocus evidence was detected." },
+    { signal: "search-input", pattern: /search|inputValue|autocomplete\s*\(|combobox/i, evidence: "search input evidence was detected." }
+  ];
+  return commandPaletteReadinessSignalFromSpecs(sourceFiles, specs, "input", "signal");
+}
+
+function commandPaletteReadinessResultSignals(sourceFiles: CommandPaletteReadinessSourceFile[]): CommandPaletteReadinessReport["resultSignals"] {
+  const specs: Array<{ signal: CommandPaletteReadinessReport["resultSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "command-list", pattern: /Command\.List/i, evidence: "Command.List evidence was detected." },
+    { signal: "command-item", pattern: /Command\.Item/i, evidence: "Command.Item evidence was detected." },
+    { signal: "command-group", pattern: /Command\.Group/i, evidence: "Command.Group evidence was detected." },
+    { signal: "get-sources", pattern: /getSources/i, evidence: "getSources evidence was detected." },
+    { signal: "get-items", pattern: /getItems/i, evidence: "getItems evidence was detected." },
+    { signal: "get-menu-props", pattern: /getMenuProps/i, evidence: "getMenuProps evidence was detected." },
+    { signal: "get-item-props", pattern: /getItemProps/i, evidence: "getItemProps evidence was detected." },
+    { signal: "empty-state", pattern: /Command\.Empty|noResults|renderNoResults/i, evidence: "empty/no-results evidence was detected." }
+  ];
+  return commandPaletteReadinessSignalFromSpecs(sourceFiles, specs, "result", "signal");
+}
+
+function commandPaletteReadinessSelectionSignals(sourceFiles: CommandPaletteReadinessSourceFile[]): CommandPaletteReadinessReport["selectionSignals"] {
+  const specs: Array<{ signal: CommandPaletteReadinessReport["selectionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "on-select", pattern: /onSelect/i, evidence: "onSelect evidence was detected." },
+    { signal: "selected-item", pattern: /selectedItem|onSelectedItemChange/i, evidence: "selected item evidence was detected." },
+    { signal: "highlighted-index", pattern: /highlightedIndex/i, evidence: "highlighted index evidence was detected." },
+    { signal: "set-query", pattern: /setQuery/i, evidence: "setQuery evidence was detected." },
+    { signal: "value", pattern: /\bvalue\s*=|\bvalue\s*:|state\.value/i, evidence: "value evidence was detected." },
+    { signal: "item-url", pattern: /getItemUrl|item\.url|redirectUrl/i, evidence: "item URL evidence was detected." }
+  ];
+  return commandPaletteReadinessSignalFromSpecs(sourceFiles, specs, "selection", "signal");
+}
+
+function commandPaletteReadinessFilterSignals(sourceFiles: CommandPaletteReadinessSourceFile[]): CommandPaletteReadinessReport["filterSignals"] {
+  const specs: Array<{ signal: CommandPaletteReadinessReport["filterSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "filter", pattern: /\bfilter\s*=|\bfilter\s*:/i, evidence: "filter evidence was detected." },
+    { signal: "keywords", pattern: /keywords/i, evidence: "keywords evidence was detected." },
+    { signal: "should-filter", pattern: /shouldFilter/i, evidence: "shouldFilter evidence was detected." },
+    { signal: "query", pattern: /\bquery\b/i, evidence: "query evidence was detected." },
+    { signal: "state-reducer", pattern: /stateReducer/i, evidence: "stateReducer evidence was detected." },
+    { signal: "source-id", pattern: /sourceId/i, evidence: "sourceId evidence was detected." }
+  ];
+  return commandPaletteReadinessSignalFromSpecs(sourceFiles, specs, "filter", "signal");
+}
+
+function commandPaletteReadinessStateSignals(sourceFiles: CommandPaletteReadinessSourceFile[]): CommandPaletteReadinessReport["stateSignals"] {
+  const specs: Array<{ signal: CommandPaletteReadinessReport["stateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "search", pattern: /\bsearch\b|setSearch/i, evidence: "search state evidence was detected." },
+    { signal: "input-value", pattern: /inputValue|onInputValueChange/i, evidence: "input value evidence was detected." },
+    { signal: "is-open", pattern: /isOpen|\bopen\b|setOpen/i, evidence: "open state evidence was detected." },
+    { signal: "on-state-change", pattern: /onStateChange/i, evidence: "onStateChange evidence was detected." },
+    { signal: "refresh-update", pattern: /refresh\s*\(|update\s*\(/i, evidence: "refresh/update evidence was detected." },
+    { signal: "open-change", pattern: /onOpenChange/i, evidence: "open-change evidence was detected." }
+  ];
+  return commandPaletteReadinessSignalFromSpecs(sourceFiles, specs, "state", "signal");
+}
+
+function commandPaletteReadinessPluginSignals(sourceFiles: CommandPaletteReadinessSourceFile[]): CommandPaletteReadinessReport["pluginSignals"] {
+  const specs: Array<{ signal: CommandPaletteReadinessReport["pluginSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "recent-searches", pattern: /createLocalStorageRecentSearchesPlugin|recentSearchesPlugin|recent-searches/i, evidence: "recent searches plugin evidence was detected." },
+    { signal: "query-suggestions", pattern: /createQuerySuggestionsPlugin|querySuggestionsPlugin|query[-_ ]?suggestions/i, evidence: "query suggestions plugin evidence was detected." },
+    { signal: "plugins", pattern: /\bplugins\s*:/i, evidence: "plugins array evidence was detected." },
+    { signal: "insights", pattern: /\binsights\b/i, evidence: "insights evidence was detected." },
+    { signal: "templates", pattern: /\btemplates\s*:/i, evidence: "templates evidence was detected." }
+  ];
+  return commandPaletteReadinessSignalFromSpecs(sourceFiles, specs, "plugin", "signal");
+}
+
+function commandPaletteReadinessAccessibilitySignals(sourceFiles: CommandPaletteReadinessSourceFile[]): CommandPaletteReadinessReport["accessibilitySignals"] {
+  const specs: Array<{ signal: CommandPaletteReadinessReport["accessibilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "combobox", pattern: /role\s*=\s*["']combobox|role:\s*["']combobox|role="combobox"|["']role["']\s*,\s*["']combobox/i, evidence: "combobox role evidence was detected." },
+    { signal: "listbox", pattern: /role\s*=\s*["']listbox|role="listbox"|["']role["']\s*,\s*["']listbox/i, evidence: "listbox role evidence was detected." },
+    { signal: "option", pattern: /role\s*=\s*["']option|role="option"|["']role["']\s*,\s*["']option/i, evidence: "option role evidence was detected." },
+    { signal: "aria-activedescendant", pattern: /aria-activedescendant/i, evidence: "aria-activedescendant evidence was detected." },
+    { signal: "aria-expanded", pattern: /aria-expanded/i, evidence: "aria-expanded evidence was detected." },
+    { signal: "aria-controls", pattern: /aria-controls/i, evidence: "aria-controls evidence was detected." },
+    { signal: "aria-autocomplete", pattern: /aria-autocomplete/i, evidence: "aria-autocomplete evidence was detected." },
+    { signal: "aria-label", pattern: /aria-label/i, evidence: "aria-label evidence was detected." }
+  ];
+  return commandPaletteReadinessSignalFromSpecs(sourceFiles, specs, "accessibility", "signal");
+}
+
+function commandPaletteReadinessKeyboardSignals(sourceFiles: CommandPaletteReadinessSourceFile[]): CommandPaletteReadinessReport["keyboardSignals"] {
+  const specs: Array<{ signal: CommandPaletteReadinessReport["keyboardSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "arrow-down", pattern: /ArrowDown/i, evidence: "ArrowDown evidence was detected." },
+    { signal: "arrow-up", pattern: /ArrowUp/i, evidence: "ArrowUp evidence was detected." },
+    { signal: "enter", pattern: /Enter|InputKeyDownEnter/i, evidence: "Enter evidence was detected." },
+    { signal: "escape", pattern: /Escape/i, evidence: "Escape evidence was detected." },
+    { signal: "meta-k", pattern: /metaKey|Meta>\}k|Mod-k|Command\+K/i, evidence: "Meta-K evidence was detected." },
+    { signal: "ime-guard", pattern: /keyCode\s*===\s*229|isComposing/i, evidence: "IME guard evidence was detected." },
+    { signal: "keyboard-handler", pattern: /KeyboardEvent|keydown|userEvent\.keyboard|fireEvent\.keyDown/i, evidence: "keyboard handler evidence was detected." }
+  ];
+  return commandPaletteReadinessSignalFromSpecs(sourceFiles, specs, "keyboard", "signal");
+}
+
+function commandPaletteReadinessTestSignals(sourceFiles: CommandPaletteReadinessSourceFile[]): CommandPaletteReadinessReport["testSignals"] {
+  const specs: Array<{ signal: CommandPaletteReadinessReport["testSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vitest", pattern: /vitest|from ["']vitest["']/i, evidence: "Vitest evidence was detected." },
+    { signal: "playwright", pattern: /playwright|npx playwright/i, evidence: "Playwright evidence was detected." },
+    { signal: "cypress", pattern: /cypress/i, evidence: "Cypress evidence was detected." },
+    { signal: "testing-library", pattern: /testing-library|getByRole|queryAllByRole/i, evidence: "Testing Library evidence was detected." },
+    { signal: "keyboard-test", pattern: /userEvent\.keyboard|fireEvent\.keyDown|ArrowDown|ArrowUp|Enter|Escape/i, evidence: "keyboard test evidence was detected." },
+    { signal: "role-test", pattern: /getByRole|queryAllByRole|role\s*=\s*["']combobox|role="combobox"/i, evidence: "role-based test evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|command-palette-traces|palette-traces|screenshot|trace/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return commandPaletteReadinessSignalFromSpecs(sourceFiles, specs, "test", "signal");
+}
+
+function commandPaletteReadinessPackageSignals(sourceFiles: CommandPaletteReadinessSourceFile[]): CommandPaletteReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: CommandPaletteReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "cmdk", pattern: /["@']cmdk["@']|from ["']cmdk["']/i, evidence: "cmdk package evidence was detected." },
+    { signal: "@algolia/autocomplete-js", pattern: /["@']@algolia\/autocomplete-js["@']|from ["']@algolia\/autocomplete-js["']/i, evidence: "@algolia/autocomplete-js evidence was detected." },
+    { signal: "@algolia/autocomplete-core", pattern: /["@']@algolia\/autocomplete-core["@']|from ["']@algolia\/autocomplete-core["']/i, evidence: "@algolia/autocomplete-core evidence was detected." },
+    { signal: "@algolia/autocomplete-plugin-recent-searches", pattern: /["@']@algolia\/autocomplete-plugin-recent-searches["@']|from ["']@algolia\/autocomplete-plugin-recent-searches["']/i, evidence: "Algolia recent searches plugin evidence was detected." },
+    { signal: "@algolia/autocomplete-plugin-query-suggestions", pattern: /["@']@algolia\/autocomplete-plugin-query-suggestions["@']|from ["']@algolia\/autocomplete-plugin-query-suggestions["']/i, evidence: "Algolia query suggestions plugin evidence was detected." },
+    { signal: "downshift", pattern: /["@']downshift["@']|from ["']downshift["']/i, evidence: "Downshift package evidence was detected." }
+  ];
+  return commandPaletteReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function commandPaletteReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: CommandPaletteReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/command-palette-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

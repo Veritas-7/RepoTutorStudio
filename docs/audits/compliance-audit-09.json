@@ -1,6 +1,6 @@
 {
   "iteration": 9,
-  "createdAt": "2026-06-05T18:41:56.145Z",
+  "createdAt": "2026-06-05T19:00:27.091Z",
   "checks": [
     {
       "name": "project setup",
@@ -1054,6 +1054,13 @@
     },
     {
       "name": "Rich text editor readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Command palette readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
