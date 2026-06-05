@@ -6579,6 +6579,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 244:
   - `40720a3` data catalog readiness report
 
+- 2026-06-05: AutoResearch Upgrade 245 candidate selected:
+  feature store readiness from `feast-dev/feast`
+  (`https://github.com/feast-dev/feast`; ignored clone HEAD `276b6df`),
+  `feathr-ai/feathr`
+  (`https://github.com/feathr-ai/feathr`; ignored clone HEAD `45e44af`),
+  and `logicalclocks/hopsworks`
+  (`https://github.com/logicalclocks/hopsworks`; ignored clone HEAD
+  `2b1cb50`). Static source inspection only; `git ls-files` for all three
+  external source paths returned `0`, and `git status --ignored=matching`
+  showed the clones only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Feast/Feathr/Hopsworks-style
+  feature-store-readiness report: `FeatureStoreReadinessReportSchema`,
+  `analysis/feature-store-readiness-report.json`,
+  `markdown/feature-store-readiness.md`,
+  `html/feature-store-readiness.html`, static feature store setup detection,
+  entity/view/service/anchor/derived-feature/group/schema/transform definition
+  signals, batch/stream/request/push/source/timestamp/TTL source signals,
+  offline/online store, registry, provider, Redis/Spark/Snowflake/BigQuery
+  storage signals, historical/online/point-in-time/training-dataset/join/entity
+  retrieval signals, materialization/scheduled/streaming/sink/feature-server
+  signals, CI and package signals, static-only risk queue, recommended
+  inspection commands, manifest/session-verification coverage, learning-path
+  linkage, HTML page/nav entry, CLI help/list-target coverage, dedicated audit
+  coverage, and `open --target feature-store-readiness`.
+- 2026-06-05: RED/GREEN feature-store-readiness smoke recorded:
+  old behavior at `8f1ad5b` had no `FeatureStoreReadinessReportSchema` and no
+  `feature-store-readiness` CLI target (`schema-missing`, `cli-missing`).
+  GREEN fixture detected Feast `FeatureStore`, `Entity`, `FeatureView`,
+  `StreamFeatureView`, `OnDemandFeatureView`, `FeatureService`, `Field`,
+  `RequestSource`, `PushSource`, `offline_store`, `online_store`, registry,
+  provider, Redis/Spark/Snowflake/BigQuery, historical and online retrieval,
+  point-in-time training dataset, Feathr `FeatureAnchor`, `DerivedFeature`,
+  `RedisSink`, `MaterializationSettings`, `FeatureJoinJob`, `FeatureGenJob`,
+  `FeathrRegistry`, Hopsworks `FeatureGroup`, `Feature View`,
+  `TrainingDataset`, feature store CI apply/materialize/test/artifact commands,
+  package signals, recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 245:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused feature-store-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 52/52 tests
+  - `pnpm test`: PASS, 52/52 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 143/143 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 245:
+  - `6dbcb3b` feature store readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
