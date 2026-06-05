@@ -152,6 +152,7 @@ import {
   PdfGenerationReadinessReport,
   SpreadsheetReadinessReport,
   ChartVisualizationReadinessReport,
+  NotebookReadinessReport,
   DiagramRenderingReadinessReport,
   LinkIntegrityReadinessReport,
   SeoMetadataReadinessReport,
@@ -353,6 +354,7 @@ export interface AnalysisBundle {
   pdfGenerationReadinessReport: PdfGenerationReadinessReport;
   spreadsheetReadinessReport: SpreadsheetReadinessReport;
   chartVisualizationReadinessReport: ChartVisualizationReadinessReport;
+  notebookReadinessReport: NotebookReadinessReport;
   diagramRenderingReadinessReport: DiagramRenderingReadinessReport;
   linkIntegrityReadinessReport: LinkIntegrityReadinessReport;
   seoMetadataReadinessReport: SeoMetadataReadinessReport;
@@ -554,6 +556,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const pdfGenerationReadinessReport = await buildPdfGenerationReadinessReport(walk);
   const spreadsheetReadinessReport = await buildSpreadsheetReadinessReport(walk);
   const chartVisualizationReadinessReport = await buildChartVisualizationReadinessReport(walk);
+  const notebookReadinessReport = await buildNotebookReadinessReport(walk);
   const diagramRenderingReadinessReport = await buildDiagramRenderingReadinessReport(walk);
   const linkIntegrityReadinessReport = await buildLinkIntegrityReadinessReport(walk);
   const seoMetadataReadinessReport = await buildSeoMetadataReadinessReport(walk);
@@ -598,7 +601,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -36674,6 +36677,345 @@ function chartVisualizationReadinessSignalFromSpecs<T extends Record<K, string> 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/chart-visualization-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildNotebookReadinessReport(walk: WalkResult): Promise<NotebookReadinessReport> {
+  const sourceFiles = await notebookReadinessSourceFiles(walk);
+  const notebookSetups = notebookReadinessSetups(sourceFiles);
+  const platformSignals = notebookReadinessPlatformSignals(sourceFiles);
+  const fileSignals = notebookReadinessFileSignals(sourceFiles);
+  const kernelSignals = notebookReadinessKernelSignals(sourceFiles);
+  const executionSignals = notebookReadinessExecutionSignals(sourceFiles);
+  const dependencySignals = notebookReadinessDependencySignals(sourceFiles);
+  const interactivitySignals = notebookReadinessInteractivitySignals(sourceFiles);
+  const exportSignals = notebookReadinessExportSignals(sourceFiles);
+  const reproducibilitySignals = notebookReadinessReproducibilitySignals(sourceFiles);
+  const workflowSignals = notebookReadinessWorkflowSignals(sourceFiles);
+  const packageSignals = notebookReadinessPackageSignals(sourceFiles);
+
+  const hasPlatform = platformSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasNotebook = notebookSetups.some((item) => item.readiness !== "missing") || fileSignals.some((item) => item.readiness === "ready");
+  const hasKernel = kernelSignals.some((item) => item.readiness === "ready") || notebookSetups.some((item) => item.kernelCount > 0);
+  const hasExecution = executionSignals.some((item) => item.readiness === "ready") || notebookSetups.some((item) => item.executionCount > 0);
+  const hasReproducibility = reproducibilitySignals.some((item) => item.readiness === "ready") || notebookSetups.some((item) => item.reproducibilityCount > 0);
+  const hasExport = exportSignals.some((item) => item.readiness === "ready") || notebookSetups.some((item) => item.exportCount > 0);
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready") || notebookSetups.some((item) => item.workflowCount > 0);
+
+  const riskQueue: NotebookReadinessReport["riskQueue"] = [];
+  if (!hasPlatform && !hasNotebook) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the notebook strategy before claiming literate computing readiness.",
+      why: "Notebook readiness starts with visible Jupyter, marimo, Quarto, Jupytext, or notebook-like source files.",
+      relatedHref: "html/notebook-readiness.html"
+    });
+  }
+  if (hasNotebook && !hasKernel) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record kernelspec, language_info, Quarto jupyter engine, Python/R kernel, or runtime environment evidence.",
+      why: "Notebook cells are hard to reproduce when the intended execution kernel is invisible.",
+      relatedHref: "html/notebook-readiness.html"
+    });
+  }
+  if (hasNotebook && !hasExecution) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document execute counts, nbconvert execution, Papermill parameters, Quarto execute config, or marimo run behavior.",
+      why: "Learners need to know whether notebook outputs are executed, parameterized, cached, or only hand-authored.",
+      relatedHref: "html/notebook-readiness.html"
+    });
+  }
+  if (hasNotebook && !hasReproducibility) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add Jupytext, Binder, freeze/cache, parameters, committed outputs, or deterministic-cell evidence.",
+      why: "Notebook projects are fragile when code, outputs, and environment assumptions cannot be replayed.",
+      relatedHref: "html/notebook-readiness.html"
+    });
+  }
+  if (hasNotebook && !hasExport) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record whether HTML/PDF export, nbconvert, marimo export, Quarto render, or artifact upload is intentionally used or absent.",
+      why: "Notebook learning artifacts often need shareable rendered outputs in addition to editable source.",
+      relatedHref: "html/notebook-readiness.html"
+    });
+  }
+  if (hasNotebook && !hasWorkflow) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add CI or local workflow evidence for notebook execution, parameter runs, rendering, export, and artifact retention.",
+      why: "Notebook readiness is stronger when execution and rendering can be repeated outside a local editor session.",
+      relatedHref: "html/notebook-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run notebook execution and rendering commands only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor records notebook readiness only; it does not execute notebooks, start Jupyter servers, run kernels, render Quarto, launch marimo, install packages, or open Binder sessions.",
+    relatedHref: "html/notebook-readiness.html"
+  });
+
+  return {
+    summary: `Notebook readiness report: setup ${notebookSetups.length}개, platform signal ${platformSignals.length}개, execution signal ${executionSignals.length}개, reproducibility signal ${reproducibilitySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Notebook readiness Jupyter ipynb nbformat kernelspec nbconvert papermill jupytext Binder marimo @app.cell mo.ui mo.md Quarto qmd render execute freeze cache outputs widgets exports",
+    notebookSetups,
+    platformSignals,
+    fileSignals,
+    kernelSignals,
+    executionSignals,
+    dependencySignals,
+    interactivitySignals,
+    exportSignals,
+    reproducibilitySignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"ipynb|nbformat|kernelspec|language_info|jupytext|Binder|mybinder\" .", purpose: "Inventory Jupyter notebook files, kernels, metadata, text pairing, and Binder launch evidence." },
+      { command: "rg \"nbconvert|papermill|execute_count|parameters|outputs\" .", purpose: "Review notebook execution, parameterization, and output reproducibility surfaces." },
+      { command: "rg \"marimo|@app.cell|mo.ui|mo.md|app.run|marimo export\" .", purpose: "Map marimo reactive notebook cells, UI controls, markdown, app runtime, and export surfaces." },
+      { command: "rg \"quarto|_quarto.yml|qmd|quarto render|execute:|freeze:|cache:|jupyter:\" .", purpose: "Map Quarto projects, QMD inputs, execution config, freeze/cache, kernels, and render workflows." },
+      { command: "rg \"upload-artifact|html|pdf|notebook-html|notebook-pdf\" .github .", purpose: "Check shareable notebook export artifacts and CI retention." }
+    ],
+    learnerNextSteps: [
+      "먼저 `.ipynb`, marimo `.py`, Quarto `.qmd`, `_quarto.yml`, Jupytext pairing 파일을 찾으세요.",
+      "kernelspec, language_info, jupyter engine, Python/R kernel 신호로 실행 환경을 확인하세요.",
+      "nbconvert, Papermill, Quarto execute/freeze/cache, marimo run 신호로 실행과 재현 방식을 구분하세요.",
+      "ipywidgets, display, plot output, mo.ui, mo.md, Quarto widget 신호로 interactive notebook 표면을 확인하세요.",
+      "HTML/PDF export, artifact upload, Binder, outputs, parameters, Jupytext 신호로 공유와 재현성 경로를 점검하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 notebook 실행, kernel 시작, Quarto render, marimo launch, package install은 안전한 환경에서 별도로 검증하세요."
+    ]
+  };
+}
+
+type NotebookReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function notebookReadinessSourceFiles(walk: WalkResult): Promise<NotebookReadinessSourceFile[]> {
+  const files: NotebookReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !notebookReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!notebookReadinessPathSignal(file.relPath) && !notebookReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function notebookReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return notebookReadinessPathSignal(filePath)
+    || /^(_quarto\.ya?ml|jupytext\.toml|requirements\.txt|environment\.ya?ml|pyproject\.toml|package\.json|Dockerfile|runtime\.txt|postBuild|apt\.txt)$/i.test(base)
+    || /\.(ipynb|qmd|py|r|jl|md|mdx|json|ya?ml|toml|txt)$/i.test(filePath);
+}
+
+function notebookReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(notebooks?|jupyter|ipynb|jupytext|binder|\.binder|marimo|quarto|qmd|reports?|analysis)(\/|\.|-|_|$)|(^|\/)_quarto\.ya?ml$|\.github\/workflows/i.test(filePath);
+}
+
+function notebookReadinessContentSignal(text: string): boolean {
+  return /nbformat|kernelspec|language_info|jupyter|nbconvert|papermill|jupytext|Binder|mybinder|@app\.cell|marimo|mo\.ui|mo\.md|quarto|\.qmd|execute:|freeze:|cache:|ipywidgets|IPython\.display/i.test(text);
+}
+
+function notebookReadinessSetups(sourceFiles: NotebookReadinessSourceFile[]): NotebookReadinessReport["notebookSetups"] {
+  const rows: NotebookReadinessReport["notebookSetups"] = [];
+  for (const source of sourceFiles) {
+    const ipynbCellCount = countMatches(source.text, /"cell_type"\s*:/gi);
+    const qmdCellCount = countMatches(source.text, /```\{(?:python|r|julia|bash|ojs)/gi);
+    const marimoCellCount = countMatches(source.text, /@app\.cell|app\.cell/gi);
+    const cellCount = ipynbCellCount + qmdCellCount + marimoCellCount;
+    const codeCellCount = countMatches(source.text, /"cell_type"\s*:\s*"code"|```\{(?:python|r|julia|bash|ojs)|@app\.cell|app\.cell/gi);
+    const markdownCellCount = countMatches(source.text, /"cell_type"\s*:\s*"markdown"|mo\.md|markdown|# /gi);
+    const outputCount = countMatches(source.text, /"outputs"\s*:|"output_type"\s*:|execute_result|display_data|stream|to html|to pdf|export html|format:\s*html/gi);
+    const kernelCount = countMatches(source.text, /kernelspec|language_info|jupyter:|ipykernel|python3|IRkernel|engine:\s*jupyter/gi);
+    const executionCount = countMatches(source.text, /execution_count|nbconvert\s+--execute|papermill|execute:|quarto render|app\.run|marimo run|cell-order|run:/gi);
+    const dependencyCount = countMatches(source.text, /notebook|jupyterlab|nbconvert|nbformat|papermill|jupytext|marimo|quarto|ipywidgets|dependencies/gi);
+    const interactivityCount = countMatches(source.text, /ipywidgets|widgets\.|IPython\.display|display\(|mo\.ui|mo\.md|plot\(|altair|plotly|bokeh|observable|ojs/gi);
+    const exportCount = countMatches(source.text, /nbconvert|--to html|--to pdf|export html|export pdf|quarto render|format:\s*(html|pdf)|upload-artifact|artifact/gi);
+    const reproducibilityCount = countMatches(source.text, /jupytext|Binder|mybinder|freeze:|cache:|parameters|outputs|execution_count|deterministic|environment\.ya?ml|requirements\.txt/gi);
+    const workflowCount = countMatches(source.text, /\.github\/workflows|github[-_ ]?actions|uses:\s*actions\/|nbconvert|papermill|quarto render|marimo export|upload-artifact/gi)
+      + (source.filePath.includes(".github/workflows") ? 1 : 0);
+    const hasSetupSignal = cellCount + codeCellCount + outputCount + kernelCount + executionCount + dependencyCount + interactivityCount + exportCount + reproducibilityCount + workflowCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: notebookReadinessPlatform(source),
+      cellCount,
+      codeCellCount,
+      markdownCellCount,
+      outputCount,
+      kernelCount,
+      executionCount,
+      dependencyCount,
+      interactivityCount,
+      exportCount,
+      reproducibilityCount,
+      workflowCount,
+      readiness: (cellCount > 0 || notebookReadinessPathSignal(source.filePath)) && (kernelCount > 0 || executionCount > 0 || exportCount > 0) && (reproducibilityCount > 0 || dependencyCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains cells ${cellCount}, code ${codeCellCount}, markdown ${markdownCellCount}, outputs ${outputCount}, kernels ${kernelCount}, execution ${executionCount}, dependencies ${dependencyCount}, interactivity ${interactivityCount}, exports ${exportCount}, reproducibility ${reproducibilityCount}, workflow ${workflowCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function notebookReadinessPlatform(source: NotebookReadinessSourceFile): NotebookReadinessReport["notebookSetups"][number]["platform"] {
+  if (/\.ipynb$/i.test(source.filePath) || /nbformat|kernelspec/i.test(source.text)) return "jupyter";
+  if (/marimo/i.test(source.filePath) || /@app\.cell|marimo|mo\.ui|mo\.md|app\.run/i.test(source.text)) return "marimo";
+  if (/\.qmd$/i.test(source.filePath) || /_quarto\.ya?ml$/i.test(source.filePath) || /quarto|execute:|freeze:|cache:|jupyter:/i.test(source.text)) return "quarto";
+  if (/jupytext|# %%/i.test(source.text)) return "jupytext";
+  if (/jupyter|nbconvert|papermill/i.test(source.text)) return "jupyter";
+  if (/notebook|literate|cell/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function notebookReadinessPlatformSignals(sourceFiles: NotebookReadinessSourceFile[]): NotebookReadinessReport["platformSignals"] {
+  const specs: Array<{ signal: NotebookReadinessReport["platformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "jupyter", pattern: /\.ipynb$|nbformat|kernelspec|jupyter|nbconvert|papermill/i, evidence: "Jupyter notebook evidence was detected." },
+    { signal: "marimo", pattern: /marimo|@app\.cell|mo\.ui|mo\.md|app\.run/i, evidence: "marimo notebook evidence was detected." },
+    { signal: "quarto", pattern: /\.qmd$|_quarto\.ya?ml|quarto|execute:|freeze:|cache:/i, evidence: "Quarto notebook/report evidence was detected." },
+    { signal: "jupytext", pattern: /jupytext|# %%|py:percent/i, evidence: "Jupytext paired-notebook evidence was detected." },
+    { signal: "custom", pattern: /literate computing|notebook report|interactive notebook/i, evidence: "custom notebook evidence was detected." }
+  ];
+  return notebookReadinessSignalFromSpecs(sourceFiles, specs, "platform", "signal");
+}
+
+function notebookReadinessFileSignals(sourceFiles: NotebookReadinessSourceFile[]): NotebookReadinessReport["fileSignals"] {
+  const specs: Array<{ signal: NotebookReadinessReport["fileSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ipynb", pattern: /\.ipynb$|nbformat/i, evidence: "ipynb file evidence was detected." },
+    { signal: "py-percent", pattern: /# %%|py:percent|formats:\s*ipynb,py/i, evidence: "percent-format paired notebook evidence was detected." },
+    { signal: "marimo-py", pattern: /marimo.*\.py$|@app\.cell|marimo\.App/i, evidence: "marimo Python notebook evidence was detected." },
+    { signal: "qmd", pattern: /\.qmd$|```\{python|```\{r/i, evidence: "QMD notebook/report evidence was detected." },
+    { signal: "quarto-project", pattern: /_quarto\.ya?ml|project:\s*\n|quarto/i, evidence: "Quarto project evidence was detected." },
+    { signal: "binder", pattern: /Binder|mybinder|(^|\/)(binder|\.binder)(\/|$)|runtime\.txt|postBuild/i, evidence: "Binder launch/environment evidence was detected." }
+  ];
+  return notebookReadinessSignalFromSpecs(sourceFiles, specs, "file", "signal");
+}
+
+function notebookReadinessKernelSignals(sourceFiles: NotebookReadinessSourceFile[]): NotebookReadinessReport["kernelSignals"] {
+  const specs: Array<{ signal: NotebookReadinessReport["kernelSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kernelspec", pattern: /kernelspec/i, evidence: "kernelspec metadata evidence was detected." },
+    { signal: "language-info", pattern: /language_info|language-info/i, evidence: "language info evidence was detected." },
+    { signal: "jupyter-kernel", pattern: /jupyter:|ipykernel|kernel_name|kernelName|python3/i, evidence: "Jupyter kernel evidence was detected." },
+    { signal: "quarto-jupyter", pattern: /jupyter:\s*python|engine:\s*jupyter|execute:/i, evidence: "Quarto Jupyter execution evidence was detected." },
+    { signal: "python-kernel", pattern: /python3|ipykernel|language_info[\s\S]{0,120}python/i, evidence: "Python kernel evidence was detected." },
+    { signal: "r-kernel", pattern: /IRkernel|jupyter:\s*r|```\{r\}/i, evidence: "R kernel evidence was detected." }
+  ];
+  return notebookReadinessSignalFromSpecs(sourceFiles, specs, "kernel", "signal");
+}
+
+function notebookReadinessExecutionSignals(sourceFiles: NotebookReadinessSourceFile[]): NotebookReadinessReport["executionSignals"] {
+  const specs: Array<{ signal: NotebookReadinessReport["executionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "execute-count", pattern: /execution_count/i, evidence: "notebook execution-count evidence was detected." },
+    { signal: "nbconvert-execute", pattern: /nbconvert[\s\S]{0,120}--execute|--execute[\s\S]{0,120}nbconvert/i, evidence: "nbconvert execute evidence was detected." },
+    { signal: "papermill", pattern: /papermill|parameters/i, evidence: "Papermill or parameter execution evidence was detected." },
+    { signal: "quarto-execute", pattern: /execute:|quarto render|freeze:|cache:/i, evidence: "Quarto execute/render evidence was detected." },
+    { signal: "marimo-run", pattern: /app\.run|marimo run|marimo edit/i, evidence: "marimo run/edit evidence was detected." },
+    { signal: "cell-order", pattern: /cell[-_ ]?order|deterministic|reactive/i, evidence: "cell-order or reactive execution evidence was detected." }
+  ];
+  return notebookReadinessSignalFromSpecs(sourceFiles, specs, "execution", "signal");
+}
+
+function notebookReadinessDependencySignals(sourceFiles: NotebookReadinessSourceFile[]): NotebookReadinessReport["dependencySignals"] {
+  const specs: Array<{ signal: NotebookReadinessReport["dependencySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "notebook", pattern: /"notebook"|notebook\s*[<=>~]|notebook,/i, evidence: "notebook dependency evidence was detected." },
+    { signal: "jupyterlab", pattern: /"jupyterlab"|jupyterlab\s*[<=>~]|jupyterlab,/i, evidence: "JupyterLab dependency evidence was detected." },
+    { signal: "nbconvert", pattern: /"nbconvert"|nbconvert\s*[<=>~]|nbconvert,/i, evidence: "nbconvert dependency evidence was detected." },
+    { signal: "nbformat", pattern: /"nbformat"|nbformat\s*[<=>~]|nbformat,/i, evidence: "nbformat dependency evidence was detected." },
+    { signal: "papermill", pattern: /"papermill"|papermill\s*[<=>~]|papermill,/i, evidence: "Papermill dependency evidence was detected." },
+    { signal: "jupytext", pattern: /"jupytext"|jupytext\s*[<=>~]|jupytext,/i, evidence: "Jupytext dependency evidence was detected." },
+    { signal: "marimo", pattern: /"marimo"|marimo\s*[<=>~]|marimo,/i, evidence: "marimo dependency evidence was detected." },
+    { signal: "quarto", pattern: /"quarto"|quarto\s*[<=>~]|quarto,/i, evidence: "Quarto dependency evidence was detected." },
+    { signal: "ipywidgets", pattern: /"ipywidgets"|ipywidgets|widgets\./i, evidence: "ipywidgets dependency/import evidence was detected." }
+  ];
+  return notebookReadinessSignalFromSpecs(sourceFiles, specs, "dependency", "signal");
+}
+
+function notebookReadinessInteractivitySignals(sourceFiles: NotebookReadinessSourceFile[]): NotebookReadinessReport["interactivitySignals"] {
+  const specs: Array<{ signal: NotebookReadinessReport["interactivitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ipywidgets", pattern: /ipywidgets|widgets\./i, evidence: "ipywidgets evidence was detected." },
+    { signal: "display", pattern: /IPython\.display|display\(/i, evidence: "display output evidence was detected." },
+    { signal: "plot-output", pattern: /plot\(|altair|plotly|bokeh|matplotlib|seaborn|hvplot/i, evidence: "plot output evidence was detected." },
+    { signal: "marimo-ui", pattern: /mo\.ui|marimo\.ui/i, evidence: "marimo UI evidence was detected." },
+    { signal: "marimo-markdown", pattern: /mo\.md|marimo\.md/i, evidence: "marimo markdown evidence was detected." },
+    { signal: "quarto-widget", pattern: /ojs|observable|htmlwidgets|shiny|widget/i, evidence: "Quarto widget evidence was detected." }
+  ];
+  return notebookReadinessSignalFromSpecs(sourceFiles, specs, "interactivity", "signal");
+}
+
+function notebookReadinessExportSignals(sourceFiles: NotebookReadinessSourceFile[]): NotebookReadinessReport["exportSignals"] {
+  const specs: Array<{ signal: NotebookReadinessReport["exportSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "html-export", pattern: /--to html|format:\s*html|export html|html-export|notebook-html/i, evidence: "HTML export evidence was detected." },
+    { signal: "pdf-export", pattern: /--to pdf|format:\s*pdf|export pdf|notebook-pdf/i, evidence: "PDF export evidence was detected." },
+    { signal: "nbconvert", pattern: /nbconvert/i, evidence: "nbconvert export evidence was detected." },
+    { signal: "marimo-export", pattern: /marimo export|export html[\s\S]{0,80}marimo/i, evidence: "marimo export evidence was detected." },
+    { signal: "quarto-render", pattern: /quarto render|format:\s*(html|pdf)|_quarto\.ya?ml/i, evidence: "Quarto render evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|actions\/upload-artifact|artifact/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return notebookReadinessSignalFromSpecs(sourceFiles, specs, "export", "signal");
+}
+
+function notebookReadinessReproducibilitySignals(sourceFiles: NotebookReadinessSourceFile[]): NotebookReadinessReport["reproducibilitySignals"] {
+  const specs: Array<{ signal: NotebookReadinessReport["reproducibilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "jupytext", pattern: /jupytext|formats:\s*ipynb,py|py:percent|# %%/i, evidence: "Jupytext pairing evidence was detected." },
+    { signal: "binder", pattern: /Binder|mybinder|(^|\/)(binder|\.binder)(\/|$)|runtime\.txt|postBuild/i, evidence: "Binder reproducibility evidence was detected." },
+    { signal: "freeze", pattern: /freeze:\s*(auto|true)|quarto freeze/i, evidence: "freeze evidence was detected." },
+    { signal: "cache", pattern: /cache:\s*true|cache:|\.quarto|jupyter-cache/i, evidence: "cache evidence was detected." },
+    { signal: "parameters", pattern: /parameters|papermill|tags:\s*\[?parameters/i, evidence: "parameter evidence was detected." },
+    { signal: "outputs", pattern: /"outputs"\s*:|output_type|execute_result|display_data/i, evidence: "committed output evidence was detected." },
+    { signal: "deterministic-cells", pattern: /deterministic|reactive|cell[-_ ]?order|no hidden state/i, evidence: "deterministic cell evidence was detected." }
+  ];
+  return notebookReadinessSignalFromSpecs(sourceFiles, specs, "reproducibility", "signal");
+}
+
+function notebookReadinessWorkflowSignals(sourceFiles: NotebookReadinessSourceFile[]): NotebookReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: NotebookReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|uses:\s*actions\/|runs-on:/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "nbconvert", pattern: /nbconvert/i, evidence: "nbconvert workflow evidence was detected." },
+    { signal: "papermill", pattern: /papermill/i, evidence: "Papermill workflow evidence was detected." },
+    { signal: "marimo-export", pattern: /marimo export/i, evidence: "marimo export workflow evidence was detected." },
+    { signal: "quarto-render", pattern: /quarto render/i, evidence: "Quarto render workflow evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|artifact/i, evidence: "artifact upload workflow evidence was detected." }
+  ];
+  return notebookReadinessSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function notebookReadinessPackageSignals(sourceFiles: NotebookReadinessSourceFile[]): NotebookReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: NotebookReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "notebook", pattern: /"notebook"|notebook\s*[<=>~]|notebook,/i, evidence: "notebook package evidence was detected." },
+    { signal: "jupyterlab", pattern: /"jupyterlab"|jupyterlab\s*[<=>~]|jupyterlab,/i, evidence: "JupyterLab package evidence was detected." },
+    { signal: "nbconvert", pattern: /"nbconvert"|nbconvert\s*[<=>~]|nbconvert,/i, evidence: "nbconvert package evidence was detected." },
+    { signal: "nbformat", pattern: /"nbformat"|nbformat\s*[<=>~]|nbformat,/i, evidence: "nbformat package evidence was detected." },
+    { signal: "papermill", pattern: /"papermill"|papermill\s*[<=>~]|papermill,/i, evidence: "Papermill package evidence was detected." },
+    { signal: "jupytext", pattern: /"jupytext"|jupytext\s*[<=>~]|jupytext,/i, evidence: "Jupytext package evidence was detected." },
+    { signal: "marimo", pattern: /"marimo"|marimo\s*[<=>~]|marimo,/i, evidence: "marimo package evidence was detected." },
+    { signal: "quarto", pattern: /"quarto"|quarto\s*[<=>~]|quarto,/i, evidence: "Quarto package evidence was detected." }
+  ];
+  return notebookReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function notebookReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: NotebookReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/notebook-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

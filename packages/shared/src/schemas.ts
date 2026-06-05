@@ -8791,6 +8791,100 @@ export const ChartVisualizationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const NotebookReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  notebookSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["jupyter", "marimo", "quarto", "jupytext", "custom", "unknown"]),
+    cellCount: z.number().int().nonnegative(),
+    codeCellCount: z.number().int().nonnegative(),
+    markdownCellCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    kernelCount: z.number().int().nonnegative(),
+    executionCount: z.number().int().nonnegative(),
+    dependencyCount: z.number().int().nonnegative(),
+    interactivityCount: z.number().int().nonnegative(),
+    exportCount: z.number().int().nonnegative(),
+    reproducibilityCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  platformSignals: z.array(z.object({
+    signal: z.enum(["jupyter", "marimo", "quarto", "jupytext", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  fileSignals: z.array(z.object({
+    signal: z.enum(["ipynb", "py-percent", "marimo-py", "qmd", "quarto-project", "binder", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  kernelSignals: z.array(z.object({
+    signal: z.enum(["kernelspec", "language-info", "jupyter-kernel", "quarto-jupyter", "python-kernel", "r-kernel", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  executionSignals: z.array(z.object({
+    signal: z.enum(["execute-count", "nbconvert-execute", "papermill", "quarto-execute", "marimo-run", "cell-order", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dependencySignals: z.array(z.object({
+    signal: z.enum(["notebook", "jupyterlab", "nbconvert", "nbformat", "papermill", "jupytext", "marimo", "quarto", "ipywidgets", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactivitySignals: z.array(z.object({
+    signal: z.enum(["ipywidgets", "display", "plot-output", "marimo-ui", "marimo-markdown", "quarto-widget", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  exportSignals: z.array(z.object({
+    signal: z.enum(["html-export", "pdf-export", "nbconvert", "marimo-export", "quarto-render", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reproducibilitySignals: z.array(z.object({
+    signal: z.enum(["jupytext", "binder", "freeze", "cache", "parameters", "outputs", "deterministic-cells", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "nbconvert", "papermill", "marimo-export", "quarto-render", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["notebook", "jupyterlab", "nbconvert", "nbformat", "papermill", "jupytext", "marimo", "quarto", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const DiagramRenderingReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -12509,6 +12603,7 @@ export type WebSocketReadinessReport = z.infer<typeof WebSocketReadinessReportSc
 export type PdfGenerationReadinessReport = z.infer<typeof PdfGenerationReadinessReportSchema>;
 export type SpreadsheetReadinessReport = z.infer<typeof SpreadsheetReadinessReportSchema>;
 export type ChartVisualizationReadinessReport = z.infer<typeof ChartVisualizationReadinessReportSchema>;
+export type NotebookReadinessReport = z.infer<typeof NotebookReadinessReportSchema>;
 export type DiagramRenderingReadinessReport = z.infer<typeof DiagramRenderingReadinessReportSchema>;
 export type LinkIntegrityReadinessReport = z.infer<typeof LinkIntegrityReadinessReportSchema>;
 export type SeoMetadataReadinessReport = z.infer<typeof SeoMetadataReadinessReportSchema>;
