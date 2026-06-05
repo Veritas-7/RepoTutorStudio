@@ -51,6 +51,7 @@ import type {
   TestReportingReadinessReport,
   SnapshotReadinessReport,
   PropertyBasedTestingReadinessReport,
+  TestDataReadinessReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
   AccessibilityReport,
@@ -202,6 +203,7 @@ export interface StudyHtmlInput {
   testReportingReadinessReport: TestReportingReadinessReport;
   snapshotReadinessReport: SnapshotReadinessReport;
   propertyBasedTestingReadinessReport: PropertyBasedTestingReadinessReport;
+  testDataReadinessReport: TestDataReadinessReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
   accessibilityReport: AccessibilityReport;
@@ -373,6 +375,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["test-reporting-readiness.html", "Test Reporting"],
     ["snapshot-readiness.html", "Snapshots"],
     ["property-based-testing-readiness.html", "Property Tests"],
+    ["test-data-readiness.html", "Test Data"],
     ["chaos-engineering-readiness.html", "Chaos Engineering"],
     ["accessibility.html", "Accessibility"],
     ["storybook.html", "Storybook"],
@@ -562,6 +565,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Test Reporting Readiness</h3><p>${escapeHtml(input.testReportingReadinessReport.summary)}</p><p>CTRF/Allure/JUnit/GitHub Actions 패턴으로 report format, annotations, summaries, artifacts 준비도를 정리합니다.</p><a href="test-reporting-readiness.html">Test Reporting 열기</a></article>
           <article><h3>Snapshot Readiness</h3><p>${escapeHtml(input.snapshotReadinessReport.summary)}</p><p>Jest/Vitest/Playwright 패턴으로 text, inline, file, visual, ARIA snapshots, update policy, serializers, baselines 준비도를 정리합니다.</p><a href="snapshot-readiness.html">Snapshots 열기</a></article>
           <article><h3>Property-Based Testing Readiness</h3><p>${escapeHtml(input.propertyBasedTestingReadinessReport.summary)}</p><p>fast-check/Hypothesis/jqwik 패턴으로 generator, shrink, seed, counterexample, stateful, CI 준비도를 정리합니다.</p><a href="property-based-testing-readiness.html">Property Tests 열기</a></article>
+          <article><h3>Test Data Readiness</h3><p>${escapeHtml(input.testDataReadinessReport.summary)}</p><p>Factory Bot/factory_boy/Faker 패턴으로 factories, traits, associations, sequences, seeds, lint, CI 준비도를 정리합니다.</p><a href="test-data-readiness.html">Test Data 열기</a></article>
           <article><h3>Chaos Engineering Readiness</h3><p>${escapeHtml(input.chaosEngineeringReadinessReport.summary)}</p><p>Chaos Mesh, LitmusChaos, Toxiproxy 패턴으로 experiment, fault, scope, probe/steady-state, observability 준비도를 정리합니다.</p><a href="chaos-engineering-readiness.html">Chaos Engineering 열기</a></article>
           <article><h3>Accessibility Readiness</h3><p>${escapeHtml(input.accessibilityReport.summary)}</p><p>axe-core 패턴으로 scan targets, WCAG/category tags, result buckets, impact, context controls를 정리합니다.</p><a href="accessibility.html">Accessibility 열기</a></article>
           <article><h3>Storybook Readiness</h3><p>${escapeHtml(input.storybookReport.summary)}</p><p>Storybook 패턴으로 CSF stories, args, decorators, play functions, addons, publish/test signals를 정리합니다.</p><a href="storybook.html">Storybook 열기</a></article>
@@ -841,6 +845,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "property-based-testing-readiness.html",
       title: "Property-Based Testing Readiness",
       html: pageShell("Property-Based Testing Readiness", "property-based-testing-readiness.html", `<section class="panel" data-source-pattern="Property-Based Testing"><h2>Property-Based Testing Snapshot</h2><p>${escapeHtml(input.propertyBasedTestingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.propertyBasedTestingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.propertyBasedTestingReadinessReport.propertySetups.length}</dd></div><div><dt>generators</dt><dd>${input.propertyBasedTestingReadinessReport.generatorSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>replay</dt><dd>${input.propertyBasedTestingReadinessReport.reproductionSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>stateful</dt><dd>${input.propertyBasedTestingReadinessReport.statefulSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records property-based testing readiness only; it does not generate inputs, shrink failures, replay seeds, or execute fast-check, Hypothesis, jqwik, QuickCheck, or proptest.</p></section><section class="grid"><article class="property-based-testing-readiness-card"><h3>Property Setups</h3>${propertyBasedTestingSetupList(input.propertyBasedTestingReadinessReport.propertySetups)}</article><article class="property-based-testing-readiness-card"><h3>Generator Signals</h3>${propertyBasedTestingSignalList(input.propertyBasedTestingReadinessReport.generatorSignals, "signal")}</article><article class="property-based-testing-readiness-card"><h3>Runner Signals</h3>${propertyBasedTestingSignalList(input.propertyBasedTestingReadinessReport.runnerSignals, "signal")}</article><article class="property-based-testing-readiness-card"><h3>Reproduction Signals</h3>${propertyBasedTestingSignalList(input.propertyBasedTestingReadinessReport.reproductionSignals, "signal")}</article></section><section class="grid"><article class="property-based-testing-readiness-card"><h3>Stateful Signals</h3>${propertyBasedTestingSignalList(input.propertyBasedTestingReadinessReport.statefulSignals, "signal")}</article><article class="property-based-testing-readiness-card"><h3>CI Signals</h3>${propertyBasedTestingSignalList(input.propertyBasedTestingReadinessReport.ciSignals, "signal")}</article><article class="property-based-testing-readiness-card"><h3>Package Signals</h3>${propertyBasedTestingSignalList(input.propertyBasedTestingReadinessReport.packageSignals, "signal")}</article><article class="property-based-testing-readiness-card"><h3>Recommended Commands</h3>${propertyBasedTestingCommandList(input.propertyBasedTestingReadinessReport.recommendedCommands)}</article><article class="property-based-testing-readiness-card"><h3>Risk Queue</h3>${propertyBasedTestingRiskList(input.propertyBasedTestingReadinessReport.riskQueue)}</article><article class="property-based-testing-readiness-card"><h3>다음 확인 단계</h3>${list(input.propertyBasedTestingReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "test-data-readiness.html",
+      title: "Test Data Readiness",
+      html: pageShell("Test Data Readiness", "test-data-readiness.html", `<section class="panel" data-source-pattern="Test Data"><h2>Test Data Snapshot</h2><p>${escapeHtml(input.testDataReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.testDataReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.testDataReadinessReport.dataSetups.length}</dd></div><div><dt>factories</dt><dd>${input.testDataReadinessReport.factorySignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>generation</dt><dd>${input.testDataReadinessReport.generationSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>replay</dt><dd>${input.testDataReadinessReport.reproducibilitySignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records test data readiness only; it does not create records, reset databases, seed Faker, lint factories, run Rails, run pytest, or execute project test suites.</p></section><section class="grid"><article class="test-data-readiness-card"><h3>Data Setups</h3>${testDataReadinessSetupList(input.testDataReadinessReport.dataSetups)}</article><article class="test-data-readiness-card"><h3>Factory Signals</h3>${testDataReadinessSignalList(input.testDataReadinessReport.factorySignals, "signal")}</article><article class="test-data-readiness-card"><h3>Relationship Signals</h3>${testDataReadinessSignalList(input.testDataReadinessReport.relationshipSignals, "signal")}</article><article class="test-data-readiness-card"><h3>Generation Signals</h3>${testDataReadinessSignalList(input.testDataReadinessReport.generationSignals, "signal")}</article></section><section class="grid"><article class="test-data-readiness-card"><h3>Reproducibility Signals</h3>${testDataReadinessSignalList(input.testDataReadinessReport.reproducibilitySignals, "signal")}</article><article class="test-data-readiness-card"><h3>Lifecycle Signals</h3>${testDataReadinessSignalList(input.testDataReadinessReport.lifecycleSignals, "signal")}</article><article class="test-data-readiness-card"><h3>CI Signals</h3>${testDataReadinessSignalList(input.testDataReadinessReport.ciSignals, "signal")}</article><article class="test-data-readiness-card"><h3>Package Signals</h3>${testDataReadinessSignalList(input.testDataReadinessReport.packageSignals, "signal")}</article><article class="test-data-readiness-card"><h3>Recommended Commands</h3>${testDataReadinessCommandList(input.testDataReadinessReport.recommendedCommands)}</article><article class="test-data-readiness-card"><h3>Risk Queue</h3>${testDataReadinessRiskList(input.testDataReadinessReport.riskQueue)}</article><article class="test-data-readiness-card"><h3>다음 확인 단계</h3>${list(input.testDataReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "integration-test-environment-readiness.html",
@@ -1464,6 +1473,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Test Reporting Readiness", path: "html/test-reporting-readiness.html", description: "CTRF/Allure/JUnit/GitHub Actions식 report format, annotations, summaries, artifacts 준비도를 확인합니다." },
       { label: "Snapshot Readiness", path: "html/snapshot-readiness.html", description: "Jest/Vitest/Playwright식 snapshot assertion, update policy, serializer, baseline 준비도를 확인합니다." },
       { label: "Property-Based Testing Readiness", path: "html/property-based-testing-readiness.html", description: "fast-check/Hypothesis/jqwik식 generator, shrink, seed, counterexample, stateful, CI 준비도를 확인합니다." },
+      { label: "Test Data Readiness", path: "html/test-data-readiness.html", description: "Factory Bot/factory_boy/Faker식 factory, trait, association, sequence, seed, lint 준비도를 확인합니다." },
       { label: "Integration Test Environment Readiness", path: "html/integration-test-environment-readiness.html", description: "Testcontainers식 container fixture, wait strategy, lifecycle cleanup, runtime 준비도를 확인합니다." },
       { label: "Chaos Engineering Readiness", path: "html/chaos-engineering-readiness.html", description: "Chaos Mesh, LitmusChaos, Toxiproxy식 fault, scope, probe, cleanup 준비도를 확인합니다." },
       { label: "Accessibility Readiness", path: "html/accessibility.html", description: "axe-core식 scan target, WCAG/category tag, result bucket, impact 준비도를 확인합니다." },
@@ -1878,6 +1888,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "property-based-testing-readiness.html",
       goal: "fast-check, Hypothesis, jqwik식 generator, shrink, seed, counterexample, stateful/model-based test 준비도를 확인합니다.",
       evidence: `setups ${input.propertyBasedTestingReadinessReport.propertySetups.length}개, generator signals ${input.propertyBasedTestingReadinessReport.generatorSignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Test data 준비도 확인",
+      href: "test-data-readiness.html",
+      goal: "Factory Bot, factory_boy, Faker식 factory, trait, association, sequence, seed, lint 준비도를 확인합니다.",
+      evidence: `setups ${input.testDataReadinessReport.dataSetups.length}개, factory signals ${input.testDataReadinessReport.factorySignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Integration test environment 준비도 확인",
@@ -3432,6 +3448,34 @@ function propertyBasedTestingRiskList(items: PropertyBasedTestingReadinessReport
 }
 
 function propertyBasedTestingHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function testDataReadinessSetupList(items: TestDataReadinessReport["dataSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">test data setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.ecosystem)} / ${escapeHtml(item.readiness)}]<br>factories ${item.factoryCount}, traits ${item.traitCount}, associations ${item.associationCount}, sequences ${item.sequenceCount}, faker ${item.fakerCount}<br>overrides ${item.overrideCount}, persistence ${item.persistenceCount}, seeds ${item.seedCount}, lint ${item.lintCount}, CI ${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(testDataReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function testDataReadinessSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">test data readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(testDataReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function testDataReadinessCommandList(items: TestDataReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function testDataReadinessRiskList(items: TestDataReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(testDataReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function testDataReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
