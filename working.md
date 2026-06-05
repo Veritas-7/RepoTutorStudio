@@ -7846,6 +7846,69 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 266:
   - `20b7c52` threat model readiness report
 
+- 2026-06-05: AutoResearch Upgrade 267 candidate selected:
+  dependency review readiness from `actions/dependency-review-action`
+  (`https://github.com/actions/dependency-review-action`; ignored clone HEAD
+  `dcd589ca9f7a6ded22e224ca2e288beb6bf9846b`),
+  `dependabot/dependabot-core`
+  (`https://github.com/dependabot/dependabot-core`; ignored clone HEAD
+  `78f73b712be9f59ef1bc4afb9a9a19589ffd3c87`), and
+  `google/osv-scanner`
+  (`https://github.com/google/osv-scanner`; ignored clone HEAD
+  `90d048540c2bcd48083efa4a8a7d58782f6517dd`). Static source inspection only;
+  `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Dependency Review Action/Dependabot/OSV Scanner-style
+  dependency review readiness report: `DependencyReviewReadinessReportSchema`,
+  `analysis/dependency-review-readiness-report.json`,
+  `markdown/dependency-review-readiness.md`,
+  `html/dependency-review-readiness.html`, static dependency-review setup
+  detection, review/vulnerability/license/package-policy/CI/scorecard/output/
+  package signals, `actions/dependency-review-action@v5` coverage,
+  `fail-on-severity`, `vulnerability-check`, `license-check`,
+  `allow-licenses`, `deny-licenses`, `allow-dependencies-licenses`,
+  `deny-packages`, `base-ref`, `head-ref`, snapshot warning, PR summary, and
+  OpenSSF scorecard coverage, Dependabot ecosystem/directory/group/ignore/
+  allow/registry/security-update coverage, OSV Scanner lockfile/license/
+  offline/min-severity/ignore-dev/output/remediation coverage, static-only
+  GitHub API/OSV/registry/action/remediation guardrail, recommended inspection
+  commands, manifest/session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit coverage,
+  and `open --target dependency-review-readiness`.
+- 2026-06-05: RED/GREEN dependency review readiness smoke recorded:
+  pre-implementation gap check had no `DependencyReviewReportSchema`, no
+  `DependencyReviewReadiness`, and no `dependency-review-readiness` target
+  (`dependency_review_precise_gap_exit=1`). GREEN fixture detected Dependency
+  Review Action, Dependabot, OSV Scanner, package-script setup, dependency
+  graph, dependency submission, base/head comparison, snapshot warning, PR
+  summary, pull_request, fail-on-severity, vulnerability-check, lockfile scan,
+  min severity, ignore-dev, offline database, license-check, allow/deny
+  licenses, dependency-specific license exceptions, license scan, SPDX, denied
+  package, allowlist, ignore, groups, security updates, ecosystem directory,
+  registries, GitHub Actions permissions, artifact upload, scheduled run,
+  OpenSSF scorecard controls, JSON/SARIF/HTML/Markdown output, recommended
+  commands, static-only external-service guardrail, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 267:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS after rerunning core once
+    because the first parallel run read stale HTML declarations
+  - `pnpm -w typecheck`: PASS
+  - focused dependency review readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - full pipeline Vitest: PASS, 74/74 tests
+  - `pnpm test`: PASS, 74/74 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 165/165 audit checks across 13 reports,
+    `dependencyReviewOk: true`
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~77.74 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 267:
+  - `6113291` dependency review readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
