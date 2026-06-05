@@ -134,6 +134,7 @@ import {
   DeploymentReadinessReport,
   ServerlessReadinessReport,
   MobileReadinessReport,
+  DesktopReadinessReport,
   EdgeReadinessReport,
   ComposeReadinessReport,
   DevContainerReadinessReport,
@@ -280,6 +281,7 @@ export interface AnalysisBundle {
   deploymentReadinessReport: DeploymentReadinessReport;
   serverlessReadinessReport: ServerlessReadinessReport;
   mobileReadinessReport: MobileReadinessReport;
+  desktopReadinessReport: DesktopReadinessReport;
   edgeReadinessReport: EdgeReadinessReport;
   composeReadinessReport: ComposeReadinessReport;
   devContainerReadinessReport: DevContainerReadinessReport;
@@ -426,6 +428,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const deploymentReadinessReport = await buildDeploymentReadinessReport(walk);
   const serverlessReadinessReport = await buildServerlessReadinessReport(walk);
   const mobileReadinessReport = await buildMobileReadinessReport(walk);
+  const desktopReadinessReport = await buildDesktopReadinessReport(walk);
   const edgeReadinessReport = await buildEdgeReadinessReport(walk);
   const composeReadinessReport = await buildComposeReadinessReport(walk);
   const devContainerReadinessReport = await buildDevContainerReadinessReport(walk);
@@ -433,7 +436,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -5188,7 +5191,10 @@ function consumerContractReadinessSignalFromSpecs<T extends Record<K, string> & 
   labelKey: K
 ): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
   return specs.map((spec) => {
-    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(source.filePath) || spec.pattern.test(source.text) || spec.pattern.test(haystack);
+    });
     return {
       [labelKey]: spec[labelKey],
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
@@ -30017,6 +30023,304 @@ function mobileSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/mobile-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDesktopReadinessReport(walk: WalkResult): Promise<DesktopReadinessReport> {
+  const sourceFiles = await desktopSourceFiles(walk);
+  const desktopSetups = desktopSetupFiles(sourceFiles);
+  const frameworkSignals = desktopFrameworkSignals(sourceFiles);
+  const configSignals = desktopConfigSignals(sourceFiles);
+  const runtimeSignals = desktopRuntimeSignals(sourceFiles);
+  const permissionSignals = desktopPermissionSignals(sourceFiles);
+  const bundleSignals = desktopBundleSignals(sourceFiles);
+  const releaseSignals = desktopReleaseSignals(sourceFiles);
+  const packageSignals = desktopPackageSignals(sourceFiles);
+
+  const hasFramework = frameworkSignals.some((item) => item.readiness === "ready");
+  const hasConfig = desktopSetups.length > 0 || configSignals.some((item) => item.readiness === "ready");
+  const hasRuntime = runtimeSignals.some((item) => ["window", "ipc", "tray", "menu"].includes(item.signal) && item.readiness === "ready");
+  const hasPermissions = permissionSignals.some((item) => ["tauri-capabilities", "permissions", "csp", "allowlist", "entitlements", "sandbox"].includes(item.signal) && item.readiness === "ready");
+  const hasBundle = bundleSignals.some((item) => ["bundle-targets", "icons", "macos", "windows", "linux", "dmg", "nsis", "appimage", "msi"].includes(item.signal) && item.readiness === "ready");
+  const hasRelease = releaseSignals.some((item) => ["updater", "signing", "notarization", "ci-build", "artifact-upload"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: DesktopReadinessReport["riskQueue"] = [];
+  if (!hasFramework) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document the desktop runtime framework before treating this project as desktop-ready.",
+      why: "Tauri, Electron, Wails, or another webview runtime determines the config files, IPC boundary, packaging flow, and release surface.",
+      relatedHref: "html/desktop-readiness.html"
+    });
+  }
+  if (hasFramework && !hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record the desktop app configuration entrypoint.",
+      why: "Desktop review starts from tauri.conf.json, wails.json, electron-builder/Forge config, package main, or Cargo manifest evidence.",
+      relatedHref: "html/desktop-readiness.html"
+    });
+  }
+  if (hasConfig && !hasRuntime) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document window, tray, menu, dialog, protocol, and IPC entrypoints.",
+      why: "Learners need the native shell map before they can understand webview lifecycle and host/frontend boundaries.",
+      relatedHref: "html/desktop-readiness.html"
+    });
+  }
+  if (hasConfig && !hasPermissions) {
+    riskQueue.push({
+      priority: "high",
+      action: "Review desktop permissions, capabilities, CSP, entitlements, sandbox, and shell/file scopes.",
+      why: "Desktop apps cross a stronger native boundary than ordinary web apps; permissive IPC, shell, file, or global bridge settings can become release blockers.",
+      relatedHref: "html/desktop-readiness.html"
+    });
+  }
+  if (hasConfig && !hasBundle) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add repeatable bundle target, icon, resource, and platform packaging evidence.",
+      why: "Desktop releases need explicit macOS, Windows, and Linux package decisions instead of only a dev server command.",
+      relatedHref: "html/desktop-readiness.html"
+    });
+  }
+  if (hasBundle && !hasRelease) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document updater, signing, notarization, CI build, and artifact upload policy before distribution.",
+      why: "Tauri and Electron release failures often happen in updater metadata, code signing, notarization, or missing uploaded artifacts after local builds pass.",
+      relatedHref: "html/desktop-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Tauri/Electron/Wails desktop readiness report: setup ${desktopSetups.length}개, framework signal ${frameworkSignals.length}개, config signal ${configSignals.length}개, runtime signal ${runtimeSignals.length}개, release signal ${releaseSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Tauri tauri.conf.json capabilities permissions bundle updater createUpdaterArtifacts signing notarization Electron electron-builder electron-forge autoUpdater Wails wails.json wails build desktop app packaging",
+    desktopSetups,
+    frameworkSignals,
+    configSignals,
+    runtimeSignals,
+    permissionSignals,
+    bundleSignals,
+    releaseSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "pnpm tauri info", purpose: "Tauri CLI, Rust toolchain, platform dependency, and app config health를 확인합니다." },
+      { command: "pnpm tauri build --bundles app,dmg,nsis,msi,appimage", purpose: "Trusted workspace에서 desktop bundle target별 빌드를 검증합니다." },
+      { command: "pnpm electron-builder --mac --win --linux", purpose: "Electron Builder packaging, signing, updater artifact 설정을 검증합니다." },
+      { command: "wails build -platform darwin/universal,windows/amd64,linux/amd64", purpose: "Wails desktop target별 native bundle 생성을 검증합니다." },
+      { command: "rg \"tauri.conf|capabilities|electron-builder|electron-forge|wails.json|updater|autoUpdater|notarize|codesign|entitlements\" .", purpose: "Desktop config, release, signing, permission evidence를 정적으로 찾습니다." }
+    ],
+    learnerNextSteps: [
+      "Open Desktop Readiness and identify whether the project is Tauri, Electron, Wails, or another webview runtime.",
+      "Start from tauri.conf.json, wails.json, electron-builder/Forge config, package main, or Cargo manifest before reading native code.",
+      "Map native windows, tray/menu/dialog/protocol hooks, and IPC commands to frontend entrypoints.",
+      "Review permissions, capabilities, CSP, entitlements, updater metadata, signing, notarization, and artifact upload before trusting a desktop release."
+    ]
+  };
+}
+
+type DesktopSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function desktopSourceFiles(walk: WalkResult): Promise<DesktopSourceFile[]> {
+  const files: DesktopSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !desktopInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath);
+    if (!text) continue;
+    if (!desktopPathSignal(file.relPath) && !desktopContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return files;
+}
+
+function desktopInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return desktopPathSignal(filePath)
+    || /(^|\/)(README|docs?|desktop|src-tauri|electron|wails|native|app|main|preload|commands?|capabilities|permissions|bundle|installer|installers?|release|releases?|sign|signing|notar|notarization|entitlements|scripts?|ci|workflows?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|Cargo\.toml|tauri\.conf\.(json|json5)|wails\.json|electron-builder\.(ya?ml|json|js|cjs|mjs|ts)|forge\.config\.[cm]?[jt]s|electron\.vite\.config\.[cm]?[jt]s|entitlements\.plist)$/i.test(base);
+}
+
+function desktopPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(tauri\.conf\.(json|json5)|wails\.json|electron-builder\.(ya?ml|json|js|cjs|mjs|ts)|forge\.config\.[cm]?[jt]s|electron\.vite\.config\.[cm]?[jt]s|entitlements\.plist)$/i.test(base)
+    || /(^|\/)(src-tauri|electron|desktop|capabilities|permissions)(\/|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/.*\.(ya?ml)$/i.test(filePath);
+}
+
+function desktopContentSignal(text: string): boolean {
+  return /(tauri\.conf|@tauri-apps\/api|@tauri-apps\/cli|tauri::Builder|tauri::command|capabilities|createUpdaterArtifacts|TAURI_SIGNING|electron-builder|electron-forge|electron\.app|BrowserWindow|ipcMain|contextBridge|autoUpdater|electron-notarize|@electron\/notarize|wails\.json|wails\s+(dev|build)|github\.com\/wailsapp\/wails|Neutralino|WebView2|notariz|codesign|entitlements|hardenedRuntime)/i.test(text);
+}
+
+function desktopSetupFiles(sourceFiles: DesktopSourceFile[]): DesktopReadinessReport["desktopSetups"] {
+  const rows: DesktopReadinessReport["desktopSetups"] = [];
+  for (const source of sourceFiles) {
+    const configCount = countMatches(source.text, /tauri\.conf|wails\.json|electron-builder|electron-forge|forge\.config|package\.json|"main"\s*:|Cargo\.toml|frontendDist|devUrl|identifier/gi) + (/^(tauri\.conf\.(json|json5)|wails\.json|electron-builder\.(ya?ml|json|js|cjs|mjs|ts)|forge\.config\.[cm]?[jt]s|Cargo\.toml|package\.json)$/i.test(path.basename(source.filePath)) ? 1 : 0);
+    const windowCount = countMatches(source.text, /window|BrowserWindow|WebviewWindow|WindowBuilder|tauri::Window|CreateWindow|frameless|transparent|decorations|resizable|alwaysOnTop|multiwindow|multi-window/gi);
+    const commandCount = countMatches(source.text, /tauri::command|invoke\(|ipcMain|ipcRenderer|contextBridge|preload|WailsBind|runtime\.Events|frontend:|backend:/gi);
+    const permissionCount = countMatches(source.text, /capabilities|permissions|allowlist|csp|Content-Security-Policy|entitlements|sandbox|shell\.open|fs:|path:|withGlobalTauri|__TAURI__/gi) + (/\/capabilities\//i.test(source.filePath) ? 1 : 0);
+    const bundleCount = countMatches(source.text, /bundle|targets?|icons?|resources?|macOS|darwin|windows|linux|dmg|nsis|msi|appimage|deb|rpm|AppImage/gi);
+    const updaterCount = countMatches(source.text, /updater|autoUpdater|createUpdaterArtifacts|latest\.json|pubkey|signature|TAURI_SIGNING_PRIVATE_KEY/gi);
+    const signingCount = countMatches(source.text, /signing|codesign|notariz|hardenedRuntime|entitlements|certificate|APPLE_ID|APPLE_TEAM_ID|TAURI_SIGNING/gi);
+    const platformCount = countMatches(source.text, /macOS|darwin|windows|linux|win32|nsis|msi|dmg|appimage|deb|rpm|universal|x64|arm64/gi);
+    const packageCount = countMatches(source.text, /@tauri-apps\/(api|cli|plugin)|"tauri"|"electron"|"electron-builder"|"electron-forge"|"@electron\/notarize"|"wails"|github\.com\/wailsapp\/wails/gi);
+    const totalSignals = configCount + windowCount + commandCount + permissionCount + bundleCount + updaterCount + signingCount + platformCount + packageCount;
+    if (totalSignals === 0 && !desktopPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework: desktopFramework(source),
+      configCount,
+      windowCount,
+      commandCount,
+      permissionCount,
+      bundleCount,
+      updaterCount,
+      signingCount,
+      platformCount,
+      packageCount,
+      readiness: totalSignals >= 7 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} desktop app signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.configCount + b.commandCount + b.permissionCount + b.bundleCount + b.updaterCount + b.signingCount;
+    const aScore = a.configCount + a.commandCount + a.permissionCount + a.bundleCount + a.updaterCount + a.signingCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 60);
+}
+
+function desktopFramework(source: DesktopSourceFile): DesktopReadinessReport["desktopSetups"][number]["framework"] {
+  if (/tauri\.conf|src-tauri|@tauri-apps|tauri::Builder|tauri::command|createUpdaterArtifacts/i.test(source.filePath) || /tauri\.conf|@tauri-apps|tauri::Builder|tauri::command|createUpdaterArtifacts/i.test(source.text)) return "tauri";
+  if (/electron|BrowserWindow|ipcMain|contextBridge|electron-builder|electron-forge|autoUpdater/i.test(source.filePath) || /electron|BrowserWindow|ipcMain|contextBridge|electron-builder|electron-forge|autoUpdater/i.test(source.text)) return "electron";
+  if (/wails\.json|wails|github\.com\/wailsapp\/wails/i.test(source.filePath) || /wails\.json|wails\s+(build|dev)|github\.com\/wailsapp\/wails/i.test(source.text)) return "wails";
+  if (/neutralino|Neutralino/i.test(source.filePath) || /neutralino|Neutralino/i.test(source.text)) return "neutralino";
+  if (/webview|WebView2|WKWebView/i.test(source.filePath) || /webview|WebView2|WKWebView/i.test(source.text)) return "desktop-webview";
+  return "unknown";
+}
+
+function desktopFrameworkSignals(sourceFiles: DesktopSourceFile[]): DesktopReadinessReport["frameworkSignals"] {
+  const specs: Array<{ signal: DesktopReadinessReport["frameworkSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tauri", pattern: /tauri\.conf|src-tauri|@tauri-apps|tauri::Builder|tauri::command/i, evidence: "Tauri framework evidence was detected." },
+    { signal: "electron", pattern: /electron|BrowserWindow|ipcMain|contextBridge/i, evidence: "Electron framework evidence was detected." },
+    { signal: "wails", pattern: /wails\.json|wails\s+(build|dev)|github\.com\/wailsapp\/wails/i, evidence: "Wails framework evidence was detected." },
+    { signal: "neutralino", pattern: /neutralino|Neutralino/i, evidence: "Neutralino framework evidence was detected." },
+    { signal: "webview", pattern: /WebView2|WKWebView|webview/i, evidence: "desktop webview evidence was detected." }
+  ];
+  return desktopSignalFromSpecs(sourceFiles, specs, "framework", "signal");
+}
+
+function desktopConfigSignals(sourceFiles: DesktopSourceFile[]): DesktopReadinessReport["configSignals"] {
+  const specs: Array<{ signal: DesktopReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tauri-conf", pattern: /(^|\/)tauri\.conf\.(json|json5)$|tauri\.conf/i, evidence: "Tauri config evidence was detected." },
+    { signal: "wails-json", pattern: /(^|\/)wails\.json$|"wails"/i, evidence: "Wails config evidence was detected." },
+    { signal: "electron-builder", pattern: /electron-builder|(^|\/)electron-builder\.(ya?ml|json|js|cjs|mjs|ts)$/i, evidence: "electron-builder config evidence was detected." },
+    { signal: "forge-config", pattern: /electron-forge|(^|\/)forge\.config\.[cm]?[jt]s$/i, evidence: "Electron Forge config evidence was detected." },
+    { signal: "package-main", pattern: /"main"\s*:|app\.whenReady|BrowserWindow/i, evidence: "package main or Electron main entry evidence was detected." },
+    { signal: "cargo-manifest", pattern: /(^|\/)Cargo\.toml$|\[package\]|tauri-build/i, evidence: "Cargo manifest evidence was detected." },
+    { signal: "frontend-dist", pattern: /frontendDist|distDir|webDir|frontend:build|beforeBuildCommand/i, evidence: "frontend distribution evidence was detected." },
+    { signal: "dev-url", pattern: /devUrl|frontend:dev|beforeDevCommand|localhost:\d+/i, evidence: "desktop dev URL evidence was detected." },
+    { signal: "identifier", pattern: /identifier|bundleIdentifier|appId|com\.[A-Za-z0-9_.-]+/i, evidence: "desktop app identifier evidence was detected." }
+  ];
+  return desktopSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function desktopRuntimeSignals(sourceFiles: DesktopSourceFile[]): DesktopReadinessReport["runtimeSignals"] {
+  const specs: Array<{ signal: DesktopReadinessReport["runtimeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "window", pattern: /BrowserWindow|WebviewWindow|WindowBuilder|tauri::Window|window\s*:/i, evidence: "desktop window evidence was detected." },
+    { signal: "multi-window", pattern: /multiwindow|multi-window|WebviewWindow::new|create_window|new BrowserWindow/i, evidence: "multi-window evidence was detected." },
+    { signal: "tray", pattern: /SystemTray|tray|TrayIcon|Menu::new/i, evidence: "system tray evidence was detected." },
+    { signal: "menu", pattern: /Menu|Submenu|menuBar|applicationMenu|setApplicationMenu/i, evidence: "native menu evidence was detected." },
+    { signal: "dialog", pattern: /dialog|open_file|save_file|showOpenDialog|showSaveDialog/i, evidence: "native dialog evidence was detected." },
+    { signal: "deep-link", pattern: /deep[-_ ]?link|single-instance|open-url|protocol/i, evidence: "deep link evidence was detected." },
+    { signal: "file-association", pattern: /fileAssociations|file-associations|CFBundleDocumentTypes|documentTypes/i, evidence: "file association evidence was detected." },
+    { signal: "custom-protocol", pattern: /customProtocol|protocol\.register|assetProtocol|wails:\/\/|tauri:\/\/|registerUriSchemeProtocol/i, evidence: "custom protocol evidence was detected." },
+    { signal: "ipc", pattern: /tauri::command|invoke\(|ipcMain|ipcRenderer|contextBridge|preload|runtime\.Events|WailsBind/i, evidence: "IPC/command boundary evidence was detected." }
+  ];
+  return desktopSignalFromSpecs(sourceFiles, specs, "runtime", "signal");
+}
+
+function desktopPermissionSignals(sourceFiles: DesktopSourceFile[]): DesktopReadinessReport["permissionSignals"] {
+  const specs: Array<{ signal: DesktopReadinessReport["permissionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tauri-capabilities", pattern: /capabilities|capability|default\.json|permissions\/.*\.toml/i, evidence: "Tauri capability evidence was detected." },
+    { signal: "permissions", pattern: /permissions|allow\(|deny\(|permission/i, evidence: "permission evidence was detected." },
+    { signal: "csp", pattern: /csp|Content-Security-Policy|default-src|script-src/i, evidence: "CSP evidence was detected." },
+    { signal: "allowlist", pattern: /allowlist|allowlist\s*:/i, evidence: "Tauri allowlist evidence was detected." },
+    { signal: "entitlements", pattern: /entitlements|com\.apple\.security|Entitlements\.plist/i, evidence: "macOS entitlement evidence was detected." },
+    { signal: "sandbox", pattern: /sandbox|app-sandbox|com\.apple\.security\.app-sandbox/i, evidence: "desktop sandbox evidence was detected." },
+    { signal: "shell-open", pattern: /shell\.open|opener|openPath|openUrl|ShellExecute|openExternal/i, evidence: "shell/open external evidence was detected." },
+    { signal: "fs-scope", pattern: /fs:|scope|readFile|writeFile|BaseDirectory|path:allow/i, evidence: "file-system scope evidence was detected." },
+    { signal: "global-tauri", pattern: /withGlobalTauri|__TAURI__/i, evidence: "global Tauri bridge evidence was detected." }
+  ];
+  return desktopSignalFromSpecs(sourceFiles, specs, "permission", "signal");
+}
+
+function desktopBundleSignals(sourceFiles: DesktopSourceFile[]): DesktopReadinessReport["bundleSignals"] {
+  const specs: Array<{ signal: DesktopReadinessReport["bundleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "bundle-targets", pattern: /bundle|targets?|bundles?|package\s*:|makers\s*:/i, evidence: "bundle target evidence was detected." },
+    { signal: "icons", pattern: /icons?|icon\.(icns|ico|png)|\.icns|\.ico/i, evidence: "desktop icon evidence was detected." },
+    { signal: "resources", pattern: /resources?|extraResources|externalBin|assetDir/i, evidence: "bundled resource evidence was detected." },
+    { signal: "macos", pattern: /macOS|darwin|osx|app bundle|\.app/i, evidence: "macOS bundle evidence was detected." },
+    { signal: "windows", pattern: /windows|win32|win-|\.exe|nsis|msi/i, evidence: "Windows bundle evidence was detected." },
+    { signal: "linux", pattern: /linux|AppImage|deb|rpm|\.desktop/i, evidence: "Linux bundle evidence was detected." },
+    { signal: "dmg", pattern: /\bdmg\b|\.dmg/i, evidence: "DMG evidence was detected." },
+    { signal: "nsis", pattern: /\bnsis\b|Nullsoft/i, evidence: "NSIS installer evidence was detected." },
+    { signal: "appimage", pattern: /AppImage|appimage/i, evidence: "AppImage evidence was detected." },
+    { signal: "msi", pattern: /\bmsi\b|WiX/i, evidence: "MSI installer evidence was detected." }
+  ];
+  return desktopSignalFromSpecs(sourceFiles, specs, "bundle", "signal");
+}
+
+function desktopReleaseSignals(sourceFiles: DesktopSourceFile[]): DesktopReadinessReport["releaseSignals"] {
+  const specs: Array<{ signal: DesktopReadinessReport["releaseSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "updater", pattern: /updater|autoUpdater|checkForUpdates|latest\.json/i, evidence: "desktop updater evidence was detected." },
+    { signal: "updater-artifacts", pattern: /createUpdaterArtifacts|\.sig|signature|pubkey|TAURI_SIGNING_PRIVATE_KEY/i, evidence: "updater artifact/signature evidence was detected." },
+    { signal: "signing", pattern: /signing|codesign|certificate|CSC_LINK|TAURI_SIGNING|APPLE_CERTIFICATE/i, evidence: "code-signing evidence was detected." },
+    { signal: "notarization", pattern: /notariz|notarytool|@electron\/notarize|electron-notarize|APPLE_ID|APPLE_TEAM_ID/i, evidence: "notarization evidence was detected." },
+    { signal: "hardened-runtime", pattern: /hardenedRuntime|hardened runtime|com\.apple\.security\.cs/i, evidence: "hardened runtime evidence was detected." },
+    { signal: "ci-build", pattern: /(^|\/)\.github\/workflows\/[^/]+\.ya?ml[\s\S]*(tauri|electron|wails|desktop|notariz|codesign)|CI[\s\S]*(tauri|electron|wails)/i, evidence: "desktop CI build evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|actions\/upload-release-asset|gh release upload|softprops\/action-gh-release/i, evidence: "release artifact upload evidence was detected." },
+    { signal: "release-draft", pattern: /draft release|release draft|generate release|create-release|action-gh-release/i, evidence: "release drafting evidence was detected." },
+    { signal: "version-sync", pattern: /version\s*:|"version"\s*:|package\.json|Cargo\.toml|tauri\.conf|wails\.json/i, evidence: "version metadata evidence was detected." }
+  ];
+  return desktopSignalFromSpecs(sourceFiles, specs, "release", "signal");
+}
+
+function desktopPackageSignals(sourceFiles: DesktopSourceFile[]): DesktopReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DesktopReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tauri-cli", pattern: /@tauri-apps\/cli|cargo tauri|tauri\s+(dev|build|info)/i, evidence: "Tauri CLI evidence was detected." },
+    { signal: "tauri-api", pattern: /@tauri-apps\/api|window\.__TAURI__|from ['\"]@tauri-apps/i, evidence: "Tauri API evidence was detected." },
+    { signal: "tauri-plugin", pattern: /@tauri-apps\/plugin-|tauri-plugin-|plugin:|\.plugin\(/i, evidence: "Tauri plugin evidence was detected." },
+    { signal: "electron", pattern: /"electron"|from ['\"]electron['\"]|require\(['\"]electron['\"]\)/i, evidence: "Electron package evidence was detected." },
+    { signal: "electron-builder", pattern: /"electron-builder"|electron-builder/i, evidence: "electron-builder package evidence was detected." },
+    { signal: "electron-forge", pattern: /"@electron-forge|electron-forge|forge\.config/i, evidence: "Electron Forge package evidence was detected." },
+    { signal: "electron-notarize", pattern: /"@electron\/notarize"|"electron-notarize"|@electron\/notarize|electron-notarize/i, evidence: "Electron notarize package evidence was detected." },
+    { signal: "wails", pattern: /github\.com\/wailsapp\/wails|wails\.json|wails\s+(build|dev)/i, evidence: "Wails package evidence was detected." },
+    { signal: "wails-cli", pattern: /wails\s+(doctor|dev|build|generate)|wails\.io\/docs/i, evidence: "Wails CLI evidence was detected." }
+  ];
+  return desktopSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function desktopSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DesktopSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/desktop-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

@@ -129,6 +129,7 @@ import type {
   DeploymentReadinessReport,
   ServerlessReadinessReport,
   MobileReadinessReport,
+  DesktopReadinessReport,
   EdgeReadinessReport,
   ComposeReadinessReport,
   DevContainerReadinessReport,
@@ -270,6 +271,7 @@ export interface StudyHtmlInput {
   deploymentReadinessReport: DeploymentReadinessReport;
   serverlessReadinessReport: ServerlessReadinessReport;
   mobileReadinessReport: MobileReadinessReport;
+  desktopReadinessReport: DesktopReadinessReport;
   edgeReadinessReport: EdgeReadinessReport;
   composeReadinessReport: ComposeReadinessReport;
   devContainerReadinessReport: DevContainerReadinessReport;
@@ -590,6 +592,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Deployment Readiness</h3><p>${escapeHtml(input.deploymentReadinessReport.summary)}</p><p>Helm 패턴으로 Chart.yaml, values.yaml, templates, release commands, safety flags 준비도를 정리합니다.</p><a href="deployment-readiness.html">Deployment 열기</a></article>
           <article><h3>Serverless Readiness</h3><p>${escapeHtml(input.serverlessReadinessReport.summary)}</p><p>Serverless Framework 패턴으로 service, provider, functions, events, resources, packaging, plugins, deploy commands 준비도를 정리합니다.</p><a href="serverless-readiness.html">Serverless 열기</a></article>
           <article><h3>Mobile Readiness</h3><p>${escapeHtml(input.mobileReadinessReport.summary)}</p><p>Expo 패턴으로 app config, platform identifiers, navigation, EAS build, OTA updates, assets, packages 준비도를 정리합니다.</p><a href="mobile-readiness.html">Mobile 열기</a></article>
+          <article><h3>Desktop Readiness</h3><p>${escapeHtml(input.desktopReadinessReport.summary)}</p><p>Tauri/Electron/Wails 패턴으로 config, windows, IPC, permissions, bundle, updater, signing 준비도를 정리합니다.</p><a href="desktop-readiness.html">Desktop 열기</a></article>
           <article><h3>Edge Readiness</h3><p>${escapeHtml(input.edgeReadinessReport.summary)}</p><p>Cloudflare Workers 패턴으로 Wrangler config, module handlers, bindings, routes, dev/deploy/tail workflow 준비도를 정리합니다.</p><a href="edge-readiness.html">Edge 열기</a></article>
           <article><h3>Compose Readiness</h3><p>${escapeHtml(input.composeReadinessReport.summary)}</p><p>Docker Compose 패턴으로 compose files, services, dependencies, resources, safety, local workflow 준비도를 정리합니다.</p><a href="compose-readiness.html">Compose 열기</a></article>
           <article><h3>Dev Container Readiness</h3><p>${escapeHtml(input.devContainerReadinessReport.summary)}</p><p>Dev Containers 패턴으로 devcontainer.json, features, lifecycle hooks, mounts, ports, customizations, CLI workflow 준비도를 정리합니다.</p><a href="devcontainer-readiness.html">Dev Container 열기</a></article>
@@ -1193,6 +1196,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "mobile-readiness.html",
       title: "Mobile Readiness",
       html: pageShell("Mobile Readiness", "mobile-readiness.html", `<section class="panel" data-source-pattern="Expo"><h2>Mobile Snapshot</h2><p>${escapeHtml(input.mobileReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.mobileReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.mobileReadinessReport.mobileSetups.length}</dd></div><div><dt>config</dt><dd>${input.mobileReadinessReport.configSignals.length}</dd></div><div><dt>platform</dt><dd>${input.mobileReadinessReport.platformSignals.length}</dd></div><div><dt>navigation</dt><dd>${input.mobileReadinessReport.navigationSignals.length}</dd></div><div><dt>build</dt><dd>${input.mobileReadinessReport.buildSignals.length}</dd></div><div><dt>updates</dt><dd>${input.mobileReadinessReport.updateSignals.length}</dd></div></dl><p class="muted">RepoTutor records mobile readiness only; it does not run Expo, EAS, Metro, emulators, native builds, prebuild, OTA update publishing, credentials, signing, store submission, or device installation.</p></section><section class="grid"><article class="mobile-readiness-card"><h3>Mobile Setups</h3>${mobileReadinessSetupList(input.mobileReadinessReport.mobileSetups)}</article><article class="mobile-readiness-card"><h3>Config Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.configSignals, "signal")}</article><article class="mobile-readiness-card"><h3>Platform Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.platformSignals, "signal")}</article><article class="mobile-readiness-card"><h3>Navigation Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.navigationSignals, "signal")}</article></section><section class="grid"><article class="mobile-readiness-card"><h3>Build Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.buildSignals, "signal")}</article><article class="mobile-readiness-card"><h3>Update Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.updateSignals, "signal")}</article><article class="mobile-readiness-card"><h3>Asset Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.assetSignals, "signal")}</article><article class="mobile-readiness-card"><h3>Package Signals</h3>${mobileReadinessSignalList(input.mobileReadinessReport.packageSignals, "signal")}</article><article class="mobile-readiness-card"><h3>Recommended Commands</h3>${mobileReadinessCommandList(input.mobileReadinessReport.recommendedCommands)}</article><article class="mobile-readiness-card"><h3>Risk Queue</h3>${mobileReadinessRiskList(input.mobileReadinessReport.riskQueue)}</article><article class="mobile-readiness-card"><h3>다음 확인 단계</h3>${list(input.mobileReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "desktop-readiness.html",
+      title: "Desktop Readiness",
+      html: pageShell("Desktop Readiness", "desktop-readiness.html", `<section class="panel" data-source-pattern="Tauri"><h2>Desktop Snapshot</h2><p>${escapeHtml(input.desktopReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.desktopReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.desktopReadinessReport.desktopSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.desktopReadinessReport.frameworkSignals.length}</dd></div><div><dt>config</dt><dd>${input.desktopReadinessReport.configSignals.length}</dd></div><div><dt>runtime</dt><dd>${input.desktopReadinessReport.runtimeSignals.length}</dd></div><div><dt>permissions</dt><dd>${input.desktopReadinessReport.permissionSignals.length}</dd></div><div><dt>release</dt><dd>${input.desktopReadinessReport.releaseSignals.length}</dd></div></dl><p class="muted">RepoTutor records desktop readiness only; it does not run Tauri, Electron, Wails, native builds, packaging, code signing, notarization, updater publishing, installer creation, or artifact upload.</p></section><section class="grid"><article class="desktop-readiness-card"><h3>Desktop Setups</h3>${desktopReadinessSetupList(input.desktopReadinessReport.desktopSetups)}</article><article class="desktop-readiness-card"><h3>Framework Signals</h3>${desktopReadinessSignalList(input.desktopReadinessReport.frameworkSignals, "signal")}</article><article class="desktop-readiness-card"><h3>Config Signals</h3>${desktopReadinessSignalList(input.desktopReadinessReport.configSignals, "signal")}</article><article class="desktop-readiness-card"><h3>Runtime Signals</h3>${desktopReadinessSignalList(input.desktopReadinessReport.runtimeSignals, "signal")}</article></section><section class="grid"><article class="desktop-readiness-card"><h3>Permission Signals</h3>${desktopReadinessSignalList(input.desktopReadinessReport.permissionSignals, "signal")}</article><article class="desktop-readiness-card"><h3>Bundle Signals</h3>${desktopReadinessSignalList(input.desktopReadinessReport.bundleSignals, "signal")}</article><article class="desktop-readiness-card"><h3>Release Signals</h3>${desktopReadinessSignalList(input.desktopReadinessReport.releaseSignals, "signal")}</article><article class="desktop-readiness-card"><h3>Package Signals</h3>${desktopReadinessSignalList(input.desktopReadinessReport.packageSignals, "signal")}</article><article class="desktop-readiness-card"><h3>Recommended Commands</h3>${desktopReadinessCommandList(input.desktopReadinessReport.recommendedCommands)}</article><article class="desktop-readiness-card"><h3>Risk Queue</h3>${desktopReadinessRiskList(input.desktopReadinessReport.riskQueue)}</article><article class="desktop-readiness-card"><h3>다음 확인 단계</h3>${list(input.desktopReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "edge-readiness.html",
@@ -2255,6 +2263,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "mobile-readiness.html",
       goal: "Expo식 app config, platform identifier, navigation, EAS build, OTA update, asset 흐름을 확인합니다.",
       evidence: `mobile setups ${input.mobileReadinessReport.mobileSetups.length}개, build signals ${input.mobileReadinessReport.buildSignals.length}개`
+    },
+    {
+      title: "Desktop readiness 확인",
+      href: "desktop-readiness.html",
+      goal: "Tauri/Electron/Wails식 config, window, IPC, permission, bundle, updater, signing release 흐름을 확인합니다.",
+      evidence: `desktop setups ${input.desktopReadinessReport.desktopSetups.length}개, release signals ${input.desktopReadinessReport.releaseSignals.length}개`
     },
     {
       title: "Edge readiness 확인",
@@ -5371,6 +5385,31 @@ function mobileReadinessRiskList(items: MobileReadinessReport["riskQueue"]): str
 }
 
 function mobileReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function desktopReadinessSetupList(items: DesktopReadinessReport["desktopSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">desktop setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>config/window/commands/permissions/bundle/updater/signing/platform/packages ${item.configCount}/${item.windowCount}/${item.commandCount}/${item.permissionCount}/${item.bundleCount}/${item.updaterCount}/${item.signingCount}/${item.platformCount}/${item.packageCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(desktopReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function desktopReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">desktop signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(desktopReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function desktopReadinessCommandList(items: DesktopReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function desktopReadinessRiskList(items: DesktopReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(desktopReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function desktopReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
