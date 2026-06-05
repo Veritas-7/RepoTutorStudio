@@ -102,6 +102,7 @@ import type {
   PaymentReadinessReport,
   EmailReadinessReport,
   QueueReadinessReport,
+  EventStreamReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -268,6 +269,7 @@ export interface StudyHtmlInput {
   paymentReadinessReport: PaymentReadinessReport;
   emailReadinessReport: EmailReadinessReport;
   queueReadinessReport: QueueReadinessReport;
+  eventStreamReadinessReport: EventStreamReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -1157,6 +1159,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Queue Readiness", "queue-readiness.html", `<section class="panel" data-source-pattern="BullMQ"><h2>Queue Snapshot</h2><p>${escapeHtml(input.queueReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.queueReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.queueReadinessReport.queueSetups.length}</dd></div><div><dt>producers</dt><dd>${input.queueReadinessReport.producerSignals.length}</dd></div><div><dt>workers</dt><dd>${input.queueReadinessReport.workerSignals.length}</dd></div><div><dt>reliability</dt><dd>${input.queueReadinessReport.reliabilitySignals.length}</dd></div></dl><p class="muted">RepoTutor records queue readiness only. It does not start Redis, enqueue jobs, run workers, process queues, retry failed jobs, or run the analyzed project's tests.</p></section><section class="grid"><article class="queue-readiness-card"><h3>Queue Setups</h3>${queueReadinessSetupList(input.queueReadinessReport.queueSetups)}</article><article class="queue-readiness-card"><h3>Producer Signals</h3>${queueReadinessSignalList(input.queueReadinessReport.producerSignals, "signal")}</article><article class="queue-readiness-card"><h3>Worker Signals</h3>${queueReadinessSignalList(input.queueReadinessReport.workerSignals, "signal")}</article><article class="queue-readiness-card"><h3>Reliability Signals</h3>${queueReadinessSignalList(input.queueReadinessReport.reliabilitySignals, "signal")}</article></section><section class="grid"><article class="queue-readiness-card"><h3>Connection Signals</h3>${queueReadinessSignalList(input.queueReadinessReport.connectionSignals, "signal")}</article><article class="queue-readiness-card"><h3>Package Signals</h3>${queueReadinessSignalList(input.queueReadinessReport.packageSignals, "signal")}</article><article class="queue-readiness-card"><h3>Recommended Commands</h3>${queueReadinessCommandList(input.queueReadinessReport.recommendedCommands)}</article><article class="queue-readiness-card"><h3>Risk Queue</h3>${queueReadinessRiskList(input.queueReadinessReport.riskQueue)}</article><article class="queue-readiness-card"><h3>다음 확인 단계</h3>${list(input.queueReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "event-stream-readiness.html",
+      title: "Event Stream Readiness",
+      html: pageShell("Event Stream Readiness", "event-stream-readiness.html", `<section class="panel" data-source-pattern="EventStream"><h2>Event Stream Snapshot</h2><p>${escapeHtml(input.eventStreamReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.eventStreamReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.eventStreamReadinessReport.eventStreamSetups.length}</dd></div><div><dt>platforms</dt><dd>${input.eventStreamReadinessReport.platformSignals.length}</dd></div><div><dt>topics</dt><dd>${input.eventStreamReadinessReport.topicSignals.length}</dd></div><div><dt>reliability</dt><dd>${input.eventStreamReadinessReport.reliabilitySignals.length}</dd></div></dl><p class="muted">RepoTutor records event stream readiness only. It does not run Kafka, Redpanda, Pulsar, brokers, clients, schema registries, topic creation, producer/consumer jobs, security handshakes, or CI commands.</p></section><section class="grid"><article class="event-stream-readiness-card"><h3>Event Stream Setups</h3>${eventStreamReadinessSetupList(input.eventStreamReadinessReport.eventStreamSetups)}</article><article class="event-stream-readiness-card"><h3>Platform Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.platformSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Broker Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.brokerSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Topic Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.topicSignals, "signal")}</article></section><section class="grid"><article class="event-stream-readiness-card"><h3>Producer Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.producerSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Consumer Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.consumerSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Schema Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.schemaSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Reliability Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.reliabilitySignals, "signal")}</article></section><section class="grid"><article class="event-stream-readiness-card"><h3>Security Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.securitySignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Ops Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.opsSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>CI Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.ciSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Package Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.packageSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Recommended Commands</h3>${eventStreamReadinessCommandList(input.eventStreamReadinessReport.recommendedCommands)}</article><article class="event-stream-readiness-card"><h3>Risk Queue</h3>${eventStreamReadinessRiskList(input.eventStreamReadinessReport.riskQueue)}</article><article class="event-stream-readiness-card"><h3>다음 확인 단계</h3>${list(input.eventStreamReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "cache-readiness.html",
       title: "Cache Readiness",
       html: pageShell("Cache Readiness", "cache-readiness.html", `<section class="panel" data-source-pattern="Node Redis"><h2>Cache Snapshot</h2><p>${escapeHtml(input.cacheReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.cacheReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.cacheReadinessReport.cacheSetups.length}</dd></div><div><dt>operations</dt><dd>${input.cacheReadinessReport.operationSignals.length}</dd></div><div><dt>policy</dt><dd>${input.cacheReadinessReport.policySignals.length}</dd></div><div><dt>connection</dt><dd>${input.cacheReadinessReport.connectionSignals.length}</dd></div></dl><p class="muted">RepoTutor records cache readiness only. It does not start Redis, open cache sockets, read or write cache keys, subscribe to channels, flush data, or run the analyzed project's tests.</p></section><section class="grid"><article class="cache-readiness-card"><h3>Cache Setups</h3>${cacheReadinessSetupList(input.cacheReadinessReport.cacheSetups)}</article><article class="cache-readiness-card"><h3>Operation Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.operationSignals, "signal")}</article><article class="cache-readiness-card"><h3>Policy Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.policySignals, "signal")}</article><article class="cache-readiness-card"><h3>Connection Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.connectionSignals, "signal")}</article></section><section class="grid"><article class="cache-readiness-card"><h3>Advanced Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.advancedSignals, "signal")}</article><article class="cache-readiness-card"><h3>Package Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.packageSignals, "signal")}</article><article class="cache-readiness-card"><h3>Recommended Commands</h3>${cacheReadinessCommandList(input.cacheReadinessReport.recommendedCommands)}</article><article class="cache-readiness-card"><h3>Risk Queue</h3>${cacheReadinessRiskList(input.cacheReadinessReport.riskQueue)}</article><article class="cache-readiness-card"><h3>다음 확인 단계</h3>${list(input.cacheReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1649,6 +1656,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Payment Readiness", path: "html/payment-readiness.html", description: "Stripe식 server client, checkout, PaymentIntent, webhooks, billing lifecycle, env secret 준비도를 확인합니다." },
       { label: "Email Readiness", path: "html/email-readiness.html", description: "Resend식 provider client, send payload, templates, domains, webhooks, env secret 준비도를 확인합니다." },
       { label: "Queue Readiness", path: "html/queue-readiness.html", description: "BullMQ식 Queue, Worker, QueueEvents, FlowProducer, Redis connection, retry 준비도를 확인합니다." },
+      { label: "Event Stream Readiness", path: "html/event-stream-readiness.html", description: "Kafka/Redpanda/Pulsar식 broker, topic, producer/consumer, schema registry, DLQ, security, CI 준비도를 확인합니다." },
       { label: "Cache Readiness", path: "html/cache-readiness.html", description: "Node Redis식 client setup, get/set, TTL, invalidation, connection, advanced Redis 준비도를 확인합니다." },
       { label: "Logging Readiness", path: "html/logging-readiness.html", description: "Pino식 logger setup, level, context binding, redaction, transport 준비도를 확인합니다." },
       { label: "Feature Flag Readiness", path: "html/feature-flag-readiness.html", description: "OpenFeature식 provider, evaluation, targeting context, hooks, tracking 준비도를 확인합니다." },
@@ -2333,6 +2341,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "queue-readiness.html",
       goal: "BullMQ식 Queue, Worker, QueueEvents, FlowProducer, Redis connection, retry/backoff 흐름을 보고 background job 관문을 확인합니다.",
       evidence: `queue setups ${input.queueReadinessReport.queueSetups.length}개, producer signals ${input.queueReadinessReport.producerSignals.length}개`
+    },
+    {
+      title: "Event stream readiness 확인",
+      href: "event-stream-readiness.html",
+      goal: "Kafka/Redpanda/Pulsar식 broker, topic, producer/consumer, schema registry, DLQ, security, CI 흐름을 보고 streaming platform 관문을 확인합니다.",
+      evidence: `event stream setups ${input.eventStreamReadinessReport.eventStreamSetups.length}개, platform signals ${input.eventStreamReadinessReport.platformSignals.length}개`
     },
     {
       title: "Cache readiness 확인",
@@ -5149,6 +5163,31 @@ function queueReadinessRiskList(items: QueueReadinessReport["riskQueue"]): strin
 }
 
 function queueReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function eventStreamReadinessSetupList(items: EventStreamReadinessReport["eventStreamSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">event stream setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)}/${escapeHtml(item.readiness)}]<br>broker/topic/producer/consumer/group/offset/schema/reliability/security/ops/CI ${item.brokerCount}/${item.topicCount}/${item.producerCount}/${item.consumerCount}/${item.groupCount}/${item.offsetCount}/${item.schemaCount}/${item.reliabilityCount}/${item.securityCount}/${item.opsCount}/${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(eventStreamReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function eventStreamReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">event stream signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(eventStreamReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function eventStreamReadinessCommandList(items: EventStreamReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function eventStreamReadinessRiskList(items: EventStreamReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(eventStreamReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function eventStreamReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
