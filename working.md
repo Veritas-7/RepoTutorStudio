@@ -6849,6 +6849,65 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 249:
   - `0eaf90d` model serving readiness report
 
+- 2026-06-05: AutoResearch Upgrade 250 candidate selected:
+  model training readiness from `Lightning-AI/pytorch-lightning`
+  (`https://github.com/Lightning-AI/pytorch-lightning`; ignored clone HEAD
+  `35e56ef`), `huggingface/accelerate`
+  (`https://github.com/huggingface/accelerate`; ignored clone HEAD
+  `8d07967`), and `ray-project/ray`
+  (`https://github.com/ray-project/ray`; ignored clone HEAD `8a2c20a`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Lightning/Accelerate/Ray Train-style
+  model-training-readiness report:
+  `ModelTrainingReadinessReportSchema`,
+  `analysis/model-training-readiness-report.json`,
+  `markdown/model-training-readiness.md`,
+  `html/model-training-readiness.html`, static model training setup
+  detection, trainer/train-loop/fit/training-step/validation-step/optimizer/
+  scheduler/gradient-accumulation loop signals, dataloader/datamodule/
+  dataset-shard/prepare-dataloader/batch-size/validation-loader data signals,
+  DDP/FSDP/DeepSpeed/torchrun/accelerate-launch/Ray Train/multi-GPU/
+  multi-node distributed signals, GPU/TPU/XLA/mixed precision/bf16/fp16/
+  device-placement accelerator signals, checkpoint/resume/save-state/
+  load-state/artifact-storage/best-model checkpoint signals, callback,
+  observability, config, CI and package signals, static-only risk queue,
+  recommended inspection commands, manifest/session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target model-training-readiness`.
+- 2026-06-05: RED/GREEN model-training-readiness smoke recorded:
+  old behavior at `e8bc1d9` had no
+  `ModelTrainingReadinessReportSchema` and no `model-training-readiness` CLI
+  target (`schema-missing`, `cli-missing`). GREEN fixture detected Lightning
+  `LightningModule`, `LightningDataModule`, `Trainer`, `training_step`,
+  `validation_step`, `configure_optimizers`, `ModelCheckpoint`,
+  `EarlyStopping`, `LearningRateMonitor`, `ModelSummary`, `TQDMProgressBar`,
+  TensorBoard/W&B/MLflow loggers, DDP, multi-node, GPU, bf16, resume and
+  best-model paths; Accelerate `Accelerator`, `accelerator.prepare`,
+  `accelerator.backward`, gradient accumulation, mixed precision, device
+  placement, `ProjectConfiguration`, `save_state`, `load_state`, and
+  `accelerate launch`; Ray `TorchTrainer`, `ScalingConfig`, `RunConfig`,
+  `CheckpointConfig`, `Checkpoint`, `train_loop_per_worker`, dataset shard,
+  `ray.train.report`, resume checkpoint, Ray DDP/FSDP/DeepSpeed strategies,
+  Ray report callback, CI training smoke, distributed smoke, checkpoint
+  assertion, artifact upload, package signals, recommended commands, and all
+  three new artifacts.
+- 2026-06-05: Verification for Upgrade 250:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused model-training-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 57/57 tests
+  - `pnpm test`: PASS, 57/57 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 148/148 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~85.84 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 250:
+  - `8e731dd` model training readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
