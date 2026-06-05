@@ -45,6 +45,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-reporting-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "snapshot-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "property-based-testing-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-data-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "chaos-engineering-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "accessibility-report.json"))).resolves.toBeUndefined();
@@ -182,6 +183,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-reporting-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "snapshot-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "property-based-testing-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-data-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "chaos-engineering-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "accessibility.md"))).resolves.toBeUndefined();
@@ -322,6 +324,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "test-reporting-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "snapshot-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "property-based-testing-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "test-data-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "chaos-engineering-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "accessibility.html"))).resolves.toBeUndefined();
@@ -489,6 +492,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/test-reporting-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/snapshot-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/property-based-testing-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/test-data-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/integration-test-environment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/chaos-engineering-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/accessibility.html\"");
@@ -1179,6 +1183,27 @@ describe("RepoTutor core pipeline", () => {
     expect(propertyBasedTestingMarkdown).toContain("Source pattern: Property-based testing");
     expect(propertyBasedTestingMarkdown).toContain("## Stateful Signals");
     expect(propertyBasedTestingMarkdown).toContain("## Package Signals");
+    const testDataText = await fs.readFile(path.join(result.session.outputPaths.analysis, "test-data-readiness-report.json"), "utf8");
+    expect(testDataText).toContain("Test data Factory Bot factory_boy Faker factories traits associations sequences seeds fixtures deterministic lint CI");
+    expect(testDataText).toContain("\"dataSetups\"");
+    expect(testDataText).toContain("\"factorySignals\"");
+    expect(testDataText).toContain("\"relationshipSignals\"");
+    expect(testDataText).toContain("\"generationSignals\"");
+    expect(testDataText).toContain("\"reproducibilitySignals\"");
+    expect(testDataText).toContain("\"lifecycleSignals\"");
+    expect(testDataText).toContain("\"packageSignals\"");
+    expect(testDataText).toContain("bundle exec rails runner 'FactoryBot.lint'");
+    const testDataHtml = await fs.readFile(path.join(result.session.outputPaths.html, "test-data-readiness.html"), "utf8");
+    expect(testDataHtml).toContain("Test Data Readiness");
+    expect(testDataHtml).toContain("test-data-readiness-card");
+    expect(testDataHtml).toContain("data-source-pattern=\"Test Data\"");
+    expect(testDataHtml).toContain("Generation Signals");
+    expect(testDataHtml).toContain("Reproducibility Signals");
+    const testDataMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "test-data-readiness.md"), "utf8");
+    expect(testDataMarkdown).toContain("# Test Data Readiness");
+    expect(testDataMarkdown).toContain("Source pattern: Test data");
+    expect(testDataMarkdown).toContain("## Lifecycle Signals");
+    expect(testDataMarkdown).toContain("## Package Signals");
     const integrationTestEnvironmentText = await fs.readFile(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"), "utf8");
     expect(integrationTestEnvironmentText).toContain("Testcontainers GenericContainer DockerContainer DockerComposeEnvironment DockerCompose wait strategies exposed ports env lifecycle stop Ryuk resource reaper pytest beforeAll afterAll");
     expect(integrationTestEnvironmentText).toContain("\"integrationSetups\"");
@@ -3164,6 +3189,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/test-reporting-readiness.html");
     expect(exportManifestText).toContain("html/snapshot-readiness.html");
     expect(exportManifestText).toContain("html/property-based-testing-readiness.html");
+    expect(exportManifestText).toContain("html/test-data-readiness.html");
     expect(exportManifestText).toContain("html/integration-test-environment-readiness.html");
     expect(exportManifestText).toContain("html/chaos-engineering-readiness.html");
     expect(exportManifestText).toContain("html/accessibility.html");
@@ -3323,6 +3349,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("test-reporting-readiness.html");
     expect(learningPathHtml).toContain("snapshot-readiness.html");
     expect(learningPathHtml).toContain("property-based-testing-readiness.html");
+    expect(learningPathHtml).toContain("test-data-readiness.html");
     expect(learningPathHtml).toContain("integration-test-environment-readiness.html");
     expect(learningPathHtml).toContain("chaos-engineering-readiness.html");
     expect(learningPathHtml).toContain("accessibility.html");
@@ -6085,6 +6112,166 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "property-based-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "property-based-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "property-based-testing-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects test data readiness without running factory toolchains", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-test-data-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-test-data-source-"));
+    await fs.mkdir(path.join(sourceRoot, "spec", "factories"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "tests"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test", "fixtures"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "Gemfile"), [
+      "source 'https://rubygems.org'",
+      "gem 'factory_bot'",
+      "gem 'factory_bot_rails'",
+      "gem 'database_cleaner-active_record'"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "test-data-demo",
+      version: "1.0.0",
+      scripts: {
+        test: "vitest run",
+        "test:data": "node src/faker-data.ts",
+        seed: "prisma db seed"
+      },
+      dependencies: {
+        "@faker-js/faker": "^9.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "dependencies = ['factory_boy', 'faker', 'pytest']"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "spec", "factories", "users.rb"), [
+      "FactoryBot.define do",
+      "  sequence(:email) { |n| \"person#{n}@example.com\" }",
+      "  factory :user do",
+      "    email",
+      "    transient do",
+      "      posts_count { 2 }",
+      "    end",
+      "    trait :admin do",
+      "      role { 'admin' }",
+      "    end",
+      "    association :account",
+      "    after(:create) do |user, evaluator|",
+      "      create_list(:post, evaluator.posts_count, user: user)",
+      "    end",
+      "  end",
+      "end",
+      "FactoryBot.lint",
+      "FactoryBot.rewind_sequences",
+      "FactoryBot.build_stubbed(:user)",
+      "FactoryBot.attributes_for(:user)",
+      "FactoryBot.create(:user, :admin)"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "factories.py"), [
+      "import factory",
+      "from faker import Faker",
+      "from factory import fuzzy",
+      "",
+      "fake = Faker('en_US')",
+      "Faker.seed(123)",
+      "factory.random.reseed_random(123)",
+      "",
+      "class AccountFactory(factory.Factory):",
+      "    class Meta:",
+      "        model = dict",
+      "    id = factory.Sequence(lambda n: n)",
+      "",
+      "class UserFactory(factory.Factory):",
+      "    class Meta:",
+      "        model = dict",
+      "    class Params:",
+      "        admin = factory.Trait(role='admin')",
+      "    account = factory.SubFactory(AccountFactory)",
+      "    name = factory.Faker('name')",
+      "    email = factory.LazyAttribute(lambda obj: fake.email())",
+      "    score = fuzzy.FuzzyInteger(1, 10)",
+      "    @factory.post_generation",
+      "    def groups(self, create, extracted, **kwargs):",
+      "        return extracted",
+      "",
+      "UserFactory.build()",
+      "UserFactory.create_batch(2)",
+      "UserFactory.reset_sequence()"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "faker-data.ts"), [
+      "import { faker, Faker, en, ko, generateMersenne32Randomizer } from '@faker-js/faker';",
+      "faker.seed(123);",
+      "faker.setDefaultRefDate(new Date('2020-01-01'));",
+      "const randomizer = generateMersenne32Randomizer();",
+      "const localFaker = new Faker({ locale: [ko, en], randomizer });",
+      "export const user = {",
+      "  name: faker.person.fullName(),",
+      "  email: faker.internet.email(),",
+      "  createdAt: faker.date.past(),",
+      "  localeName: localFaker.person.firstName(),",
+      "  tag: faker.helpers.arrayElement(['red', 'blue'])",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "fixtures", "users.yml"), [
+      "admin:",
+      "  id: 1",
+      "  email: admin@example.com"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "test-data.yml"), [
+      "name: test-data",
+      "on:",
+      "  pull_request:",
+      "jobs:",
+      "  factory:",
+      "    runs-on: ubuntu-latest",
+      "    strategy:",
+      "      matrix:",
+      "        worker: [1, 2]",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: bundle exec rails runner 'FactoryBot.lint'",
+      "      - run: pytest -q tests/factories.py --maxfail=1",
+      "      - run: rails db:seed",
+      "      - run: bundle exec rake db:test:prepare",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: factory-report",
+      "          path: reports/testdata"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "test-data-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      dataSetups: Array<{ filePath: string; ecosystem: string; factoryCount: number; sequenceCount: number; fakerCount: number; seedCount: number; lintCount: number; readiness: string }>;
+      factorySignals: Array<{ signal: string; readiness: string }>;
+      relationshipSignals: Array<{ signal: string; readiness: string }>;
+      generationSignals: Array<{ signal: string; readiness: string }>;
+      reproducibilitySignals: Array<{ signal: string; readiness: string }>;
+      lifecycleSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("Test data Factory Bot factory_boy Faker factories traits associations sequences seeds fixtures deterministic lint CI");
+    expect(report.dataSetups.some((item) => item.ecosystem === "factory-bot" && item.readiness === "ready" && item.factoryCount > 0 && item.sequenceCount > 0 && item.lintCount > 0)).toBe(true);
+    expect(report.dataSetups.some((item) => item.ecosystem === "factory-boy" && item.factoryCount > 0 && item.fakerCount > 0 && item.seedCount > 0)).toBe(true);
+    expect(report.dataSetups.some((item) => item.ecosystem === "faker-js" && item.fakerCount > 0 && item.seedCount > 0)).toBe(true);
+    expect(readySignals(report.factorySignals)).toEqual(expect.arrayContaining(["factory-bot-define", "factory-boy-class", "fixture-files", "seed-scripts"]));
+    expect(readySignals(report.relationshipSignals)).toEqual(expect.arrayContaining(["traits", "associations", "subfactory", "transient", "post-generation", "callbacks"]));
+    expect(readySignals(report.generationSignals)).toEqual(expect.arrayContaining(["sequence", "lazy-attribute", "faker-js", "faker-python", "fuzzy", "locale", "unique"]));
+    expect(readySignals(report.reproducibilitySignals)).toEqual(expect.arrayContaining(["faker-seed", "sequence-reset", "factory-lint", "fixed-ref-date", "deterministic-fixtures", "database-cleaner"]));
+    expect(readySignals(report.lifecycleSignals)).toEqual(expect.arrayContaining(["build", "create", "attributes-for", "build-stubbed", "create-batch", "fixture-load", "db-seed"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "factory-lint", "seed-script", "test-data-artifact", "database-reset", "parallel-workers"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["factory_bot", "factory_bot_rails", "factory_boy", "faker", "@faker-js/faker", "database_cleaner"]));
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "bundle exec rails runner 'FactoryBot.lint'",
+      "pytest -q tests/factories.py tests --maxfail=1"
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-data-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-data-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "test-data-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {

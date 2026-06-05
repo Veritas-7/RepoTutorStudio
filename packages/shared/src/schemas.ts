@@ -2061,6 +2061,81 @@ export const PropertyBasedTestingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const TestDataReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  dataSetups: z.array(z.object({
+    filePath: z.string(),
+    ecosystem: z.enum(["factory-bot", "factory-boy", "faker-js", "faker-python", "fixtures", "seeds", "custom", "unknown"]),
+    factoryCount: z.number().int().nonnegative(),
+    traitCount: z.number().int().nonnegative(),
+    associationCount: z.number().int().nonnegative(),
+    sequenceCount: z.number().int().nonnegative(),
+    fakerCount: z.number().int().nonnegative(),
+    overrideCount: z.number().int().nonnegative(),
+    persistenceCount: z.number().int().nonnegative(),
+    seedCount: z.number().int().nonnegative(),
+    lintCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  factorySignals: z.array(z.object({
+    signal: z.enum(["factory-bot-define", "factory-boy-class", "factory-girl", "fixture-files", "seed-scripts", "custom-builders", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  relationshipSignals: z.array(z.object({
+    signal: z.enum(["traits", "associations", "subfactory", "transient", "post-generation", "callbacks", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  generationSignals: z.array(z.object({
+    signal: z.enum(["sequence", "lazy-attribute", "faker-js", "faker-python", "fuzzy", "locale", "unique", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reproducibilitySignals: z.array(z.object({
+    signal: z.enum(["faker-seed", "sequence-reset", "factory-lint", "fixed-ref-date", "deterministic-fixtures", "database-cleaner", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lifecycleSignals: z.array(z.object({
+    signal: z.enum(["build", "create", "attributes-for", "build-stubbed", "build-batch", "create-batch", "fixture-load", "db-seed", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "factory-lint", "seed-script", "test-data-artifact", "database-reset", "parallel-workers", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["factory_bot", "factory_bot_rails", "factory_boy", "faker", "@faker-js/faker", "database_cleaner", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const IntegrationTestEnvironmentReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -8548,6 +8623,7 @@ export type TestImpactReadinessReport = z.infer<typeof TestImpactReadinessReport
 export type TestReportingReadinessReport = z.infer<typeof TestReportingReadinessReportSchema>;
 export type SnapshotReadinessReport = z.infer<typeof SnapshotReadinessReportSchema>;
 export type PropertyBasedTestingReadinessReport = z.infer<typeof PropertyBasedTestingReadinessReportSchema>;
+export type TestDataReadinessReport = z.infer<typeof TestDataReadinessReportSchema>;
 export type IntegrationTestEnvironmentReadinessReport = z.infer<typeof IntegrationTestEnvironmentReadinessReportSchema>;
 export type ChaosEngineeringReadinessReport = z.infer<typeof ChaosEngineeringReadinessReportSchema>;
 export type AccessibilityReport = z.infer<typeof AccessibilityReportSchema>;

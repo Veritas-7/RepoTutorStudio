@@ -56,6 +56,7 @@ import {
   TestReportingReadinessReport,
   SnapshotReadinessReport,
   PropertyBasedTestingReadinessReport,
+  TestDataReadinessReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
   AccessibilityReport,
@@ -212,6 +213,7 @@ export interface AnalysisBundle {
   testReportingReadinessReport: TestReportingReadinessReport;
   snapshotReadinessReport: SnapshotReadinessReport;
   propertyBasedTestingReadinessReport: PropertyBasedTestingReadinessReport;
+  testDataReadinessReport: TestDataReadinessReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
   accessibilityReport: AccessibilityReport;
@@ -368,6 +370,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const testReportingReadinessReport = await buildTestReportingReadinessReport(walk);
   const snapshotReadinessReport = await buildSnapshotReadinessReport(walk);
   const propertyBasedTestingReadinessReport = await buildPropertyBasedTestingReadinessReport(walk);
+  const testDataReadinessReport = await buildTestDataReadinessReport(walk);
   const integrationTestEnvironmentReadinessReport = await buildIntegrationTestEnvironmentReadinessReport(walk, runtimeEnvironmentReport);
   const chaosEngineeringReadinessReport = await buildChaosEngineeringReadinessReport(walk);
   const accessibilityReport = await buildAccessibilityReport(walk, e2eReport);
@@ -463,7 +466,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -8133,6 +8136,284 @@ function propertyBasedTestingSignalFromSpecs<T extends Record<K, string> & { pat
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/property-based-testing-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildTestDataReadinessReport(walk: WalkResult): Promise<TestDataReadinessReport> {
+  const sourceFiles = await testDataReadinessSourceFiles(walk);
+  const dataSetups = testDataReadinessSetupRows(sourceFiles);
+  const factorySignals = testDataReadinessFactorySignals(sourceFiles);
+  const relationshipSignals = testDataReadinessRelationshipSignals(sourceFiles);
+  const generationSignals = testDataReadinessGenerationSignals(sourceFiles);
+  const reproducibilitySignals = testDataReadinessReproducibilitySignals(sourceFiles);
+  const lifecycleSignals = testDataReadinessLifecycleSignals(sourceFiles);
+  const ciSignals = testDataReadinessCiSignals(sourceFiles);
+  const packageSignals = testDataReadinessPackageSignals(sourceFiles);
+  const hasFactory = dataSetups.some((item) => item.factoryCount > 0 || item.readiness === "ready");
+  const hasGeneration = generationSignals.some((item) => item.readiness === "ready");
+  const hasReproducibility = reproducibilitySignals.some((item) => item.readiness === "ready");
+  const hasLifecycle = lifecycleSignals.some((item) => item.readiness === "ready");
+  const hasCi = ciSignals.some((item) => ["github-actions", "factory-lint", "seed-script"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: TestDataReadinessReport["riskQueue"] = [];
+  if (!hasFactory && !hasGeneration) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document a factory, fixture, seed, or deterministic data builder before relying on synthetic test data.",
+      why: "Factory Bot, factory_boy, and Faker-style setups need a visible source of generated examples.",
+      relatedHref: "html/test-data-readiness.html"
+    });
+  }
+  if (hasFactory && !hasLifecycle) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record whether factories build in memory, persist rows, expose attributes, or load fixtures.",
+      why: "A factory definition alone does not explain whether tests touch the database or only construct objects.",
+      relatedHref: "html/test-data-readiness.html"
+    });
+  }
+  if ((hasFactory || hasGeneration) && !hasReproducibility) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add deterministic seed, sequence reset, factory lint, or fixture stability policy.",
+      why: "Randomized or sequenced test data can hide flaky failures unless replay and validation signals are visible.",
+      relatedHref: "html/test-data-readiness.html"
+    });
+  }
+  if ((hasFactory || hasGeneration) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Wire factory lint, seed loading, or fixture checks into CI.",
+      why: "Test data contracts drift when factory validity is only checked manually.",
+      relatedHref: "html/test-data-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the original project tests or factory lint command before treating this as operational test data evidence.",
+    why: "RepoTutor records static readiness only; it does not create records, reset databases, seed Faker, or validate factories at runtime.",
+    relatedHref: "html/test-data-readiness.html"
+  });
+
+  return {
+    summary: `Test data readiness report: setup ${dataSetups.length}개, factory signal ${factorySignals.filter((item) => item.readiness === "ready").length}개, generation signal ${generationSignals.filter((item) => item.readiness === "ready").length}개, reproducibility signal ${reproducibilitySignals.filter((item) => item.readiness === "ready").length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Test data Factory Bot factory_boy Faker factories traits associations sequences seeds fixtures deterministic lint CI",
+    dataSetups,
+    factorySignals,
+    relationshipSignals,
+    generationSignals,
+    reproducibilitySignals,
+    lifecycleSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "bundle exec rails runner 'FactoryBot.lint'", purpose: "Validate Ruby Factory Bot definitions in a trusted Rails app." },
+      { command: "pytest -q tests/factories.py tests --maxfail=1", purpose: "Run Python factory_boy fixtures and dependent tests in a trusted checkout." },
+      { command: "node -e \"const { faker } = require('@faker-js/faker'); faker.seed(123); console.log(faker.person.firstName())\"", purpose: "Smoke-check deterministic Faker seeding in a trusted JavaScript project." },
+      { command: "rg \"FactoryBot\\.define|factory\\.Factory|@faker-js/faker|faker\\.seed|FactoryBot\\.lint|factory_boy\" .", purpose: "Locate static factory, Faker, seed, and lint evidence." }
+    ],
+    learnerNextSteps: [
+      "factory definition, trait, association, sequence가 같은 테스트 데이터 경계 안에 있는지 먼저 확인하세요.",
+      "build/create/attributes_for/build_stubbed/create_batch 같은 lifecycle 신호로 DB write 여부를 분리하세요.",
+      "Faker seed, sequence reset, fixed reference date, deterministic fixture path가 있는지 확인하세요.",
+      "FactoryBot.lint, pytest factory smoke, seed script, database reset 같은 CI 검증은 원본 프로젝트에서 직접 실행해야 합니다."
+    ]
+  };
+}
+
+type TestDataReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function testDataReadinessSourceFiles(walk: WalkResult): Promise<TestDataReadinessSourceFile[]> {
+  const files: TestDataReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !testDataReadinessInspectablePath(file.relPath)) continue;
+    const pathCandidate = testDataReadinessPathSignal(file.relPath);
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!pathCandidate && !testDataReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 180) break;
+  }
+  return files;
+}
+
+function testDataReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|Gemfile|Gemfile\.lock|pyproject\.toml|requirements.*\.txt|setup\.cfg|tox\.ini|pytest\.ini|README\.md|seeds\.rb|database\.ya?ml)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(^|\/)(spec\/factories|test\/factories|tests?\/factories|factories|fixtures?|seeds?|testdata|test-data|support|conftest)(\/|\.|$)/i.test(filePath)
+    || /\.(rb|py|js|ts|jsx|tsx|ya?ml|json|toml|md)$/i.test(filePath);
+}
+
+function testDataReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(factories|factory|fixtures?|seeds?|testdata|test-data|factory_bot|factory_boy|faker)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function testDataReadinessContentSignal(text: string): boolean {
+  return /(FactoryBot\.define|factory_bot|factory_bot_rails|factory_boy|factory\.Factory|factory\.django\.DjangoModelFactory|factory\.alchemy\.SQLAlchemyModelFactory|SubFactory|RelatedFactory|LazyAttribute|factory\.Sequence|@faker-js\/faker|faker\.seed|setDefaultRefDate|FactoryBot\.lint|create_list|build_stubbed|attributes_for|sequence\(|trait\s*:|association\s*:|db:seed|seed\.rb|fixtures?)/i.test(text);
+}
+
+function testDataReadinessSetupRows(sourceFiles: TestDataReadinessSourceFile[]): TestDataReadinessReport["dataSetups"] {
+  const rows: TestDataReadinessReport["dataSetups"] = [];
+  for (const source of sourceFiles) {
+    const factoryCount = countMatches(source.text, /FactoryBot\.define|factory\s*:|class\s+\w+Factory\(|class\s+\w+Factory\b|factory\.Factory|DjangoModelFactory|SQLAlchemyModelFactory|FactoryBot\.(build|create|attributes_for|build_stubbed)|\b(factory|Factory)\(/g);
+    const traitCount = countMatches(source.text, /trait\s*:|trait\s*\(|traits_for_enum|class\s+Params\b|factory\.Trait|Trait\(/g);
+    const associationCount = countMatches(source.text, /association\s*:|association\s*\(|SubFactory|RelatedFactory|RelatedFactoryList|has_many|belongs_to|foreign_key|factory:\s*:|\w+__\w+/g);
+    const sequenceCount = countMatches(source.text, /sequence\s*:|sequence\s*\(|factory\.Sequence|LazyAttributeSequence|reset_sequence|rewind_sequences|generate_list/g);
+    const fakerCount = countMatches(source.text, /@faker-js\/faker|from ['"]@faker-js\/faker|require\(['"]@faker-js\/faker|faker\.|Faker\(|factory\.Faker|Fuzzy(Text|Choice|Integer|Decimal|Float|Date|DateTime)/g);
+    const overrideCount = countMatches(source.text, /transient|overrides?|attributes_for|initialize_with|to_create|skip_create|Params\b|post_generation|after\(:|before\(:|callback/g);
+    const persistenceCount = countMatches(source.text, /create_list|create_batch|FactoryBot\.create|\.create\(|build_stubbed|attributes_for|db:seed|seed\.rb|fixture_file_upload|fixtures\s*:/g);
+    const seedCount = countMatches(source.text, /faker\.seed|seed\s*\(|setDefaultRefDate|generateMersenne32Randomizer|rewind_sequences|reset_sequence|factory\.random|reseed_random|random\.reseed|db:seed|seed\.rb/gi);
+    const lintCount = countMatches(source.text, /FactoryBot\.lint|factory lint|lint factories|factory_lint|linting factories/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|GitHub Actions|pull_request|CI\s*[:=]|runs-on|matrix|bundle exec|pytest|rails db:seed|FactoryBot\.lint|npm test|pnpm test/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = factoryCount + traitCount + associationCount + sequenceCount + fakerCount + overrideCount + persistenceCount + seedCount + lintCount + ciCount;
+    if (totalSignals === 0 && !testDataReadinessPathSignal(source.filePath)) continue;
+    const readiness = factoryCount > 0 && (sequenceCount > 0 || fakerCount > 0) && (seedCount > 0 || lintCount > 0)
+      ? "ready"
+      : totalSignals > 0
+        ? "partial"
+        : "missing";
+    rows.push({
+      filePath: source.filePath,
+      ecosystem: testDataReadinessEcosystem(source.filePath, source.text),
+      factoryCount,
+      traitCount,
+      associationCount,
+      sequenceCount,
+      fakerCount,
+      overrideCount,
+      persistenceCount,
+      seedCount,
+      lintCount,
+      ciCount,
+      readiness,
+      evidence: `${source.filePath} contains ${totalSignals} test data readiness signal(s).`,
+      sourceHref: source.sourceHref
+    });
+  }
+  const order = { ready: 0, partial: 1, missing: 2 };
+  return rows.sort((a, b) => order[a.readiness] - order[b.readiness] || a.filePath.localeCompare(b.filePath)).slice(0, 90);
+}
+
+function testDataReadinessEcosystem(filePath: string, text: string): TestDataReadinessReport["dataSetups"][number]["ecosystem"] {
+  if (/FactoryBot|factory_bot|factory_bot_rails|spec\/factories/i.test(text) || /spec\/factories|factory_bot/i.test(filePath)) return "factory-bot";
+  if (/factory_boy|factory\.Factory|DjangoModelFactory|SQLAlchemyModelFactory|SubFactory/i.test(text) || /factory_boy|factories\.py/i.test(filePath)) return "factory-boy";
+  if (/@faker-js\/faker|from ['"]@faker-js\/faker|require\(['"]@faker-js\/faker|faker\.seed|setDefaultRefDate/i.test(text)) return "faker-js";
+  if (/factory\.Faker|from faker import Faker|Faker\(/i.test(text)) return "faker-python";
+  if (/seed\.rb|db:seed|seeds?\//i.test(text) || /seeds?\//i.test(filePath)) return "seeds";
+  if (/fixtures?\//i.test(filePath) || /fixtures?/i.test(text)) return "fixtures";
+  return testDataReadinessContentSignal(text) ? "custom" : "unknown";
+}
+
+function testDataReadinessFactorySignals(sourceFiles: TestDataReadinessSourceFile[]): TestDataReadinessReport["factorySignals"] {
+  const specs: Array<{ signal: TestDataReadinessReport["factorySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "factory-bot-define", pattern: /FactoryBot\.define|factory\s*:/i, evidence: "Factory Bot definition evidence was detected." },
+    { signal: "factory-boy-class", pattern: /class\s+\w+Factory\b|factory\.Factory|DjangoModelFactory|SQLAlchemyModelFactory/i, evidence: "factory_boy factory class evidence was detected." },
+    { signal: "factory-girl", pattern: /factory_girl|FactoryGirl/i, evidence: "legacy factory_girl evidence was detected." },
+    { signal: "fixture-files", pattern: /(^|\/)fixtures?\//i, evidence: "fixture file evidence was detected." },
+    { signal: "seed-scripts", pattern: /seed\.rb|db:seed|seed-data|seed script/i, evidence: "seed script evidence was detected." },
+    { signal: "custom-builders", pattern: /build[A-Z]\w*Fixture|make[A-Z]\w*Fixture|create[A-Z]\w*Fixture|testDataBuilder|mother object|ObjectMother/i, evidence: "custom test data builder evidence was detected." }
+  ];
+  return testDataReadinessSignalFromSpecs(sourceFiles, specs, "factory", "signal");
+}
+
+function testDataReadinessRelationshipSignals(sourceFiles: TestDataReadinessSourceFile[]): TestDataReadinessReport["relationshipSignals"] {
+  const specs: Array<{ signal: TestDataReadinessReport["relationshipSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "traits", pattern: /trait\s*:|trait\s*\(|factory\.Trait|traits_for_enum|class\s+Params\b/i, evidence: "trait evidence was detected." },
+    { signal: "associations", pattern: /association\s*:|association\s*\(|belongs_to|has_many|factory:\s*:|foreign_key/i, evidence: "association evidence was detected." },
+    { signal: "subfactory", pattern: /SubFactory|RelatedFactory|RelatedFactoryList|\w+__\w+/i, evidence: "factory_boy nested factory evidence was detected." },
+    { signal: "transient", pattern: /transient|TransientAttribute|class\s+Params\b/i, evidence: "transient parameter evidence was detected." },
+    { signal: "post-generation", pattern: /post_generation|after\(:create\)|after\(:build\)|after\(:stub\)|before\(:create\)/i, evidence: "post-generation/callback evidence was detected." },
+    { signal: "callbacks", pattern: /callback|after\(:|before\(:|skip_callback|to_create|initialize_with/i, evidence: "factory callback evidence was detected." }
+  ];
+  return testDataReadinessSignalFromSpecs(sourceFiles, specs, "relationship", "signal");
+}
+
+function testDataReadinessGenerationSignals(sourceFiles: TestDataReadinessSourceFile[]): TestDataReadinessReport["generationSignals"] {
+  const specs: Array<{ signal: TestDataReadinessReport["generationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "sequence", pattern: /sequence\s*:|sequence\s*\(|factory\.Sequence|LazyAttributeSequence|generate_list/i, evidence: "sequence evidence was detected." },
+    { signal: "lazy-attribute", pattern: /LazyAttribute|lazy_attribute|factory\.lazy_attribute|lazy_fixture/i, evidence: "lazy attribute evidence was detected." },
+    { signal: "faker-js", pattern: /@faker-js\/faker|from ['"]@faker-js\/faker|faker\.(person|internet|number|date|helpers|seed)/i, evidence: "Faker JS evidence was detected." },
+    { signal: "faker-python", pattern: /factory\.Faker|from faker import Faker|Faker\(/i, evidence: "Python Faker evidence was detected." },
+    { signal: "fuzzy", pattern: /factory\.fuzzy|Fuzzy(Text|Choice|Integer|Decimal|Float|Date|DateTime)/i, evidence: "factory_boy fuzzy generator evidence was detected." },
+    { signal: "locale", pattern: /locale|faker[A-Z]{2}|new Faker\(|faker\.(setLocale|locale)|en_US|ko_KR/i, evidence: "locale-specific faker evidence was detected." },
+    { signal: "unique", pattern: /unique|uniqueness|sequence.*email|generate_unique|faker\.helpers\.unique|faker\.internet\.email/i, evidence: "unique value generation evidence was detected." }
+  ];
+  return testDataReadinessSignalFromSpecs(sourceFiles, specs, "generation", "signal");
+}
+
+function testDataReadinessReproducibilitySignals(sourceFiles: TestDataReadinessSourceFile[]): TestDataReadinessReport["reproducibilitySignals"] {
+  const specs: Array<{ signal: TestDataReadinessReport["reproducibilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "faker-seed", pattern: /faker\.seed|Faker\.seed|seed_instance|reseed_random|factory\.random|random\.reseed/i, evidence: "faker seed evidence was detected." },
+    { signal: "sequence-reset", pattern: /rewind_sequences|reset_sequence|sequence reset|FactoryBot\.rewind_sequences/i, evidence: "sequence reset evidence was detected." },
+    { signal: "factory-lint", pattern: /FactoryBot\.lint|lint factories|factory lint|factory_lint/i, evidence: "factory lint evidence was detected." },
+    { signal: "fixed-ref-date", pattern: /setDefaultRefDate|defaultRefDate|freeze_time|travel_to|timecop/i, evidence: "fixed reference date evidence was detected." },
+    { signal: "deterministic-fixtures", pattern: /fixtures?\/|fixture_file_upload|snapshot fixture|golden|testdata/i, evidence: "deterministic fixture evidence was detected." },
+    { signal: "database-cleaner", pattern: /database_cleaner|DatabaseCleaner|transactional_fixtures|use_transactional_tests|truncate/i, evidence: "database cleaner/reset evidence was detected." }
+  ];
+  return testDataReadinessSignalFromSpecs(sourceFiles, specs, "reproducibility", "signal");
+}
+
+function testDataReadinessLifecycleSignals(sourceFiles: TestDataReadinessSourceFile[]): TestDataReadinessReport["lifecycleSignals"] {
+  const specs: Array<{ signal: TestDataReadinessReport["lifecycleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "build", pattern: /FactoryBot\.build|\bbuild\(:|\w+Factory\.build\(|\.build\(/i, evidence: "build lifecycle evidence was detected." },
+    { signal: "create", pattern: /FactoryBot\.create|\bcreate\(:|\w+Factory\.create\(|\.create\(/i, evidence: "create lifecycle evidence was detected." },
+    { signal: "attributes-for", pattern: /attributes_for|FactoryBot\.attributes_for/i, evidence: "attributes_for lifecycle evidence was detected." },
+    { signal: "build-stubbed", pattern: /build_stubbed|FactoryBot\.build_stubbed/i, evidence: "build_stubbed evidence was detected." },
+    { signal: "build-batch", pattern: /build_list|build_pair|build_batch/i, evidence: "batch build evidence was detected." },
+    { signal: "create-batch", pattern: /create_list|create_pair|create_batch/i, evidence: "batch create evidence was detected." },
+    { signal: "fixture-load", pattern: /(^|\/)fixtures?\/|fixtures\s*:|load_fixture|fixture_file_upload|pytest\.fixture|@pytest\.fixture/i, evidence: "fixture loading evidence was detected." },
+    { signal: "db-seed", pattern: /db:seed|rails db:seed|prisma db seed|seed\.rb|seed script/i, evidence: "database seed lifecycle evidence was detected." }
+  ];
+  return testDataReadinessSignalFromSpecs(sourceFiles, specs, "lifecycle", "signal");
+}
+
+function testDataReadinessCiSignals(sourceFiles: TestDataReadinessSourceFile[]): TestDataReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: TestDataReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /^\.github\/workflows\/|GitHub Actions|actions\/checkout/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "factory-lint", pattern: /FactoryBot\.lint|factory lint|lint factories/i, evidence: "CI factory lint evidence was detected." },
+    { signal: "seed-script", pattern: /db:seed|rails db:seed|prisma db seed|seed script|seed\.rb/i, evidence: "CI seed script evidence was detected." },
+    { signal: "test-data-artifact", pattern: /upload-artifact|fixtures artifact|seed artifact|testdata artifact|factory report/i, evidence: "test data artifact evidence was detected." },
+    { signal: "database-reset", pattern: /database_cleaner|db:test:prepare|db:reset|migrate|truncate|transactional/i, evidence: "database reset evidence was detected." },
+    { signal: "parallel-workers", pattern: /parallel_tests|knapsack|matrix|worker|pytest-xdist|CI_NODE_INDEX/i, evidence: "parallel worker test data evidence was detected." }
+  ];
+  return testDataReadinessSignalFromSpecs(sourceFiles, specs, "ci", "signal");
+}
+
+function testDataReadinessPackageSignals(sourceFiles: TestDataReadinessSourceFile[]): TestDataReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: TestDataReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "factory_bot", pattern: /factory_bot\b/i, evidence: "factory_bot package evidence was detected." },
+    { signal: "factory_bot_rails", pattern: /factory_bot_rails\b/i, evidence: "factory_bot_rails package evidence was detected." },
+    { signal: "factory_boy", pattern: /factory_boy\b/i, evidence: "factory_boy package evidence was detected." },
+    { signal: "faker", pattern: /(^|[^@-])faker\b|Faker\(/i, evidence: "Faker package evidence was detected." },
+    { signal: "@faker-js/faker", pattern: /@faker-js\/faker/i, evidence: "@faker-js/faker package evidence was detected." },
+    { signal: "database_cleaner", pattern: /database_cleaner|DatabaseCleaner/i, evidence: "database_cleaner package evidence was detected." }
+  ];
+  return testDataReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function testDataReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: TestDataReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(source.filePath) || spec.pattern.test(source.text) || spec.pattern.test(haystack);
+    });
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/test-data-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
