@@ -8423,6 +8423,67 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 276:
   - `1a329ca` cost readiness report
 
+- 2026-06-05: AutoResearch Upgrade 277 candidate selected:
+  progressive delivery readiness from `argoproj/argo-rollouts`
+  (`https://github.com/argoproj/argo-rollouts.git`; ignored clone HEAD
+  `0519236a5001f537fca742df47b57dfbf9531306`),
+  `fluxcd/flagger`
+  (`https://github.com/fluxcd/flagger.git`; ignored clone HEAD
+  `83bab6839d5decd624541bac2dc6b2c56c177b9b`), and
+  `spinnaker/kayenta`
+  (`https://github.com/spinnaker/kayenta.git`; ignored clone HEAD
+  `5310ab7da1fe42d96b5597f79d0bcd93e21c8f24`). Static source inspection
+  only; `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Argo Rollouts/Flagger/Kayenta-style progressive
+  delivery readiness report:
+  `ProgressiveDeliveryReadinessReportSchema`,
+  `analysis/progressive-delivery-readiness-report.json`,
+  `markdown/progressive-delivery-readiness.md`,
+  `html/progressive-delivery-readiness.html`, static rollout setup detection,
+  strategy, traffic, analysis, safety, notification, workflow, and package
+  signals, Rollout/Canary/AnalysisTemplate/MetricTemplate/Kayenta judge
+  detection, canary, blue-green, experiment, setWeight, stepWeight, maxWeight,
+  service mesh, ingress, Gateway API, Prometheus, Datadog, webhook, threshold,
+  score threshold, manual promotion, abort-on-failure, pause, rollback,
+  failure threshold, Slack/MS Teams/webhook alert provider, kubectl plugin,
+  promote/abort/retry command, Helm/GitHub Actions/artifact upload workflow
+  coverage, static-only progressive delivery guardrail, recommended inspection
+  commands, manifest and session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit coverage,
+  and `open --target progressive-delivery-readiness`.
+- 2026-06-05: RED/GREEN progressive delivery readiness smoke recorded:
+  pre-implementation precise gap checks had no
+  `ProgressiveDeliveryReadinessReportSchema`, no
+  `progressiveDeliveryReadinessReport`, and no
+  `progressive-delivery-readiness` target. GREEN fixture detected Argo
+  Rollouts, Flagger, Kayenta, workflow, and package setup rows; rollout,
+  canary, blue-green, canary-step, experiment, and traffic-routing strategy
+  signals; setWeight, stepWeight, maxWeight, service mesh, ingress,
+  traffic-split, and Gateway API traffic signals; analysis template, metric
+  template, Kayenta judge, Prometheus, Datadog, webhook, threshold range, and
+  score-threshold analysis signals; promotion, abort, pause, rollback,
+  failure-threshold, notification, workflow, package, recommended command,
+  static-only guardrail, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 277:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused progressive delivery readiness Vitest command: PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - full pipeline Vitest: PASS, 84/84 tests
+  - `pnpm test`: PASS, 84/84 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 175/175 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~84.78 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 277:
+  - `dabc2b4` progressive delivery readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
