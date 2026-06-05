@@ -122,6 +122,7 @@ import {
   EmailReadinessReport,
   QueueReadinessReport,
   EventStreamReadinessReport,
+  DataConnectorReadinessReport,
   SchemaRegistryReadinessReport,
   StreamProcessingReadinessReport,
   PipelineOrchestrationReadinessReport,
@@ -319,6 +320,7 @@ export interface AnalysisBundle {
   emailReadinessReport: EmailReadinessReport;
   queueReadinessReport: QueueReadinessReport;
   eventStreamReadinessReport: EventStreamReadinessReport;
+  dataConnectorReadinessReport: DataConnectorReadinessReport;
   schemaRegistryReadinessReport: SchemaRegistryReadinessReport;
   streamProcessingReadinessReport: StreamProcessingReadinessReport;
   pipelineOrchestrationReadinessReport: PipelineOrchestrationReadinessReport;
@@ -516,6 +518,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const emailReadinessReport = await buildEmailReadinessReport(walk);
   const queueReadinessReport = await buildQueueReadinessReport(walk);
   const eventStreamReadinessReport = await buildEventStreamReadinessReport(walk);
+  const dataConnectorReadinessReport = await buildDataConnectorReadinessReport(walk);
   const schemaRegistryReadinessReport = await buildSchemaRegistryReadinessReport(walk);
   const streamProcessingReadinessReport = await buildStreamProcessingReadinessReport(walk);
   const pipelineOrchestrationReadinessReport = await buildPipelineOrchestrationReadinessReport(walk);
@@ -586,7 +589,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -27782,6 +27785,321 @@ function eventStreamReadinessSignalFromSpecs<T extends Record<K, string> & { pat
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/event-stream-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDataConnectorReadinessReport(walk: WalkResult): Promise<DataConnectorReadinessReport> {
+  const sourceFiles = await dataConnectorReadinessSourceFiles(walk);
+  const connectorSetups = dataConnectorReadinessSetups(sourceFiles);
+  const platformSignals = dataConnectorReadinessPlatformSignals(sourceFiles);
+  const connectorKindSignals = dataConnectorReadinessKindSignals(sourceFiles);
+  const configSignals = dataConnectorReadinessConfigSignals(sourceFiles);
+  const stateSignals = dataConnectorReadinessStateSignals(sourceFiles);
+  const transformSignals = dataConnectorReadinessTransformSignals(sourceFiles);
+  const opsSignals = dataConnectorReadinessOpsSignals(sourceFiles);
+  const workflowSignals = dataConnectorReadinessWorkflowSignals(sourceFiles);
+  const packageSignals = dataConnectorReadinessPackageSignals(sourceFiles);
+
+  const hasPlatform = platformSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasConnector = connectorKindSignals.some((item) => item.readiness === "ready") || connectorSetups.some((item) => item.sourceCount + item.sinkCount > 0);
+  const hasConfig = configSignals.some((item) => item.readiness === "ready") || connectorSetups.some((item) => item.configCount > 0);
+  const hasState = stateSignals.some((item) => item.readiness === "ready") || connectorSetups.some((item) => item.offsetCount + item.stateCount > 0);
+  const hasOps = opsSignals.some((item) => item.readiness === "ready") || connectorSetups.some((item) => item.errorCount + item.apiCount > 0);
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready") || connectorSetups.some((item) => item.workflowCount > 0);
+  const hasTransform = transformSignals.some((item) => item.readiness === "ready") || connectorSetups.some((item) => item.transformCount > 0);
+
+  const riskQueue: DataConnectorReadinessReport["riskQueue"] = [];
+  if (!hasPlatform && !hasConnector) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a concrete Kafka Connect, Debezium, Airbyte, or custom connector surface before claiming data connector readiness.",
+      why: "Connector readiness starts from an owned source/sink connector, CDC connector, Airbyte connection, or embedded connector engine.",
+      relatedHref: "html/data-connector-readiness.html"
+    });
+  }
+  if (hasConnector && !hasConfig) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document connector class, tasks, plugin path, source/destination definitions, or CDC include lists.",
+      why: "Operators need the connector identity and configuration boundary before reviewing runtime behavior.",
+      relatedHref: "html/data-connector-readiness.html"
+    });
+  }
+  if (hasConnector && !hasState) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add offset, state, cursor, incremental sync, checkpoint, or storage-topic evidence.",
+      why: "Connectors are replay systems; without state evidence, restart and backfill behavior is ambiguous.",
+      relatedHref: "html/data-connector-readiness.html"
+    });
+  }
+  if (hasConnector && !hasOps) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add REST/status/task/error handling evidence for connector operations.",
+      why: "Connector failures are usually observed through REST status, task state, DLQ, retry, and tolerance settings.",
+      relatedHref: "html/data-connector-readiness.html"
+    });
+  }
+  if (hasConnector && !hasWorkflow) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add repeatable commands or CI artifacts for connector validation.",
+      why: "Static connector readiness is stronger when worker startup, API calls, or sync checks are recorded as reproducible commands.",
+      relatedHref: "html/data-connector-readiness.html"
+    });
+  }
+  if ((hasConnector || hasConfig) && !hasTransform) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document whether transforms, predicates, normalization, or dbt are intentionally used or absent.",
+      why: "Connectors often reshape records; learners should know whether topic routing, masking, flattening, or normalization is part of the contract.",
+      relatedHref: "html/data-connector-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run connector commands only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor records data connector readiness only; it does not start Kafka Connect, deploy Debezium, call Airbyte APIs, create connectors, reset offsets, run syncs, or move data.",
+    relatedHref: "html/data-connector-readiness.html"
+  });
+
+  return {
+    summary: `Data connector readiness report: setup ${connectorSetups.length}개, platform signal ${platformSignals.length}개, config signal ${configSignals.length}개, ops signal ${opsSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Data connector readiness Debezium Kafka Connect Airbyte SourceConnector SinkConnector connector.class tasks.max plugin.path transforms predicates offset.storage.topic status.storage.topic CDC snapshot schema history sync catalog state",
+    connectorSetups,
+    platformSignals,
+    connectorKindSignals,
+    configSignals,
+    stateSignals,
+    transformSignals,
+    opsSignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"connector.class|tasks.max|plugin.path|connect-distributed|connect-standalone|/connectors\" .", purpose: "Find Kafka Connect worker, connector class, task, plugin, and REST management surfaces." },
+      { command: "rg \"Debezium|snapshot.mode|schema.history|slot.name|publication.name|topic.prefix|database.include.list|table.include.list\" .", purpose: "Review Debezium CDC snapshot, schema history, replication slot/publication, topic prefix, and include-list configuration." },
+      { command: "rg \"Airbyte|sourceId|destinationId|connectionId|configuredCatalog|syncMode|cursor|state|checkpoint\" .", purpose: "Inventory Airbyte sources, destinations, connections, catalogs, sync modes, cursors, and state handling." },
+      { command: "rg \"transforms\\\\.|predicates\\\\.|RegexRouter|MaskField|ExtractField|HoistField|Flatten|normalization|dbt\" .", purpose: "Check single-message transforms, predicates, topic routing, masking, flattening, and normalization contracts." },
+      { command: "rg \"errors.deadletterqueue|errors.tolerance|offset.storage|status.storage|config.storage|restart|pause|resume|tasks/.*/status|upload-artifact\" .github .", purpose: "Check connector error handling, storage topics, restart/pause/resume operations, task status, and retained artifacts." }
+    ],
+    learnerNextSteps: [
+      "먼저 Kafka Connect, Debezium, Airbyte 중 어떤 connector runtime이 있는지 확인하고 source/sink/CDC/ELT 경계를 표시하세요.",
+      "connector.class, tasks.max, plugin.path, source/destination definition, include list 같은 config ownership을 runtime별로 묶으세요.",
+      "offset.storage, config.storage, status.storage, Airbyte state, cursor, checkpoint가 어디에 저장되는지 확인해 restart/replay 동작을 설명하세요.",
+      "transforms, predicates, RegexRouter, MaskField, Flatten, normalization, dbt가 record shape을 바꾸는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 connector 생성, offset reset, Debezium deployment, Airbyte sync 실행은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type DataConnectorReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function dataConnectorReadinessSourceFiles(walk: WalkResult): Promise<DataConnectorReadinessSourceFile[]> {
+  const files: DataConnectorReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !dataConnectorReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!dataConnectorReadinessPathSignal(file.relPath) && !dataConnectorReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function dataConnectorReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return dataConnectorReadinessPathSignal(filePath)
+    || /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|build\.gradle|settings\.gradle|pom\.xml|docker-compose\.ya?ml|compose\.ya?ml|Dockerfile|connect[-_].*\.properties|.*connector.*\.properties|.*connector.*\.json|airbyte.*\.json|catalog\.json|configured_catalog\.json|\.env\.example|\.env\.sample)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|java|kt|scala|py|go|rs|json|md|mdx|ya?ml|toml|properties|conf|env|sql)$/i.test(filePath);
+}
+
+function dataConnectorReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(connectors?|kafka[-_]?connect|debezium|airbyte|cdc|change[-_]?data|elt|etl|replication|source[-_]?connector|sink[-_]?connector|catalog|sync|normalization|transforms?|predicates?)(\/|\.|-|_|$)|\.github\/workflows|docker-compose|compose\.ya?ml/i.test(filePath);
+}
+
+function dataConnectorReadinessContentSignal(text: string): boolean {
+  return /\b(Kafka Connect|connect-distributed|connect-standalone|connector\.class|tasks\.max|plugin\.path|SourceConnector|SinkConnector|offset\.storage|config\.storage|status\.storage|transforms\.|predicates\.|errors\.deadletterqueue|Debezium|snapshot\.mode|schema\.history|slot\.name|publication\.name|topic\.prefix|database\.include\.list|table\.include\.list|Airbyte|sourceId|destinationId|connectionId|configuredCatalog|syncMode|cursor|checkpoint|AirbyteStateMessage|normalization|dbt)\b/i.test(text);
+}
+
+function dataConnectorReadinessSetups(sourceFiles: DataConnectorReadinessSourceFile[]): DataConnectorReadinessReport["connectorSetups"] {
+  const rows: DataConnectorReadinessReport["connectorSetups"] = [];
+  for (const source of sourceFiles) {
+    const sourceCount = countMatches(source.text, /\bSourceConnector\b|FileStreamSource|source connector|sourceDefinition|sourceId|sourceType|source\.|Debezium|CDC|change events?|read\s*\(/gi);
+    const sinkCount = countMatches(source.text, /\bSinkConnector\b|FileStreamSink|sink connector|destinationDefinition|destinationId|destinationType|destination\.|write\s*\(|topics(\.regex)?\b/gi);
+    const workerCount = countMatches(source.text, /connect-standalone|connect-distributed|standalone mode|distributed mode|worker configuration|bootstrap\.servers|group\.id|plugin\.path|listeners=/gi);
+    const configCount = countMatches(source.text, /connector\.class|tasks\.max|plugin\.path|key\.converter|value\.converter|topics\.regex|snapshot\.mode|schema\.history|topic\.prefix|database\.include\.list|table\.include\.list|slot\.name|publication\.name|sourceDefinition|destinationDefinition|connectionId|configuredCatalog/gi);
+    const offsetCount = countMatches(source.text, /offset\.storage(\.topic|\.file\.filename)?|offsets? endpoint|\/offsets|offset reset|commit offsets?|checkpoint_target_interval_seconds|checkpoint/gi);
+    const stateCount = countMatches(source.text, /status\.storage\.topic|config\.storage\.topic|AirbyteStateMessage|state message|cursor|incremental|syncMode|state|checkpoint/gi);
+    const transformCount = countMatches(source.text, /transforms\.|predicates\.|RegexRouter|MaskField|ExtractField|HoistField|Flatten|InsertField|TimestampRouter|normalization|dbt/gi);
+    const errorCount = countMatches(source.text, /errors\.deadletterqueue|dead[-_ ]?letter|errors\.tolerance|retry|failed status|FAILED|pause|resume|restart|tolerance|DLQ/gi);
+    const apiCount = countMatches(source.text, /\/connectors|GET \/connectors|POST \/connectors|PUT \/connectors|PATCH \/connectors|DELETE \/connectors|\/status|\/tasks|Airbyte API|\/api\/public\/v1|sources\?|connections\?|jobs\?/gi);
+    const workflowCount = countMatches(source.text, /\.github\/workflows|github[-_ ]?actions|connect-standalone|connect-distributed|curl .*\/connectors|airbyte api|Airflow|Dagster|Kestra|docker compose|docker-compose|upload-artifact/gi);
+    const hasSetupSignal = sourceCount + sinkCount + workerCount + configCount + offsetCount + stateCount + transformCount + errorCount + apiCount + workflowCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: dataConnectorReadinessPlatform(source),
+      sourceCount,
+      sinkCount,
+      workerCount,
+      configCount,
+      offsetCount,
+      stateCount,
+      transformCount,
+      errorCount,
+      apiCount,
+      workflowCount,
+      readiness: (sourceCount + sinkCount > 0) && configCount > 0 && (offsetCount + stateCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains source ${sourceCount}, sink ${sinkCount}, worker ${workerCount}, config ${configCount}, offset ${offsetCount}, state ${stateCount}, transform ${transformCount}, error ${errorCount}, API ${apiCount}, workflow ${workflowCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function dataConnectorReadinessPlatform(source: DataConnectorReadinessSourceFile): DataConnectorReadinessReport["connectorSetups"][number]["platform"] {
+  if (/Airbyte|airbyte/i.test(source.filePath) || /Airbyte|sourceId|destinationId|connectionId|configuredCatalog|AirbyteStateMessage|syncMode/i.test(source.text)) return "airbyte";
+  if (/Debezium|debezium/i.test(source.filePath) || /Debezium|snapshot\.mode|schema\.history|topic\.prefix|slot\.name|publication\.name/i.test(source.text)) return "debezium";
+  if (/kafka[-_]?connect|connectors?/i.test(source.filePath) || /Kafka Connect|connect-distributed|connect-standalone|connector\.class|SourceConnector|SinkConnector/i.test(source.text)) return "kafka-connect";
+  if (/connector|CDC|ELT|ETL|data movement/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function dataConnectorReadinessPlatformSignals(sourceFiles: DataConnectorReadinessSourceFile[]): DataConnectorReadinessReport["platformSignals"] {
+  const specs: Array<{ signal: DataConnectorReadinessReport["platformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kafka-connect", pattern: /Kafka Connect|connect-distributed|connect-standalone|org\.apache\.kafka\.connect|connector\.class/i, evidence: "Kafka Connect evidence was detected." },
+    { signal: "debezium", pattern: /Debezium|io\.debezium|snapshot\.mode|schema\.history|topic\.prefix/i, evidence: "Debezium CDC evidence was detected." },
+    { signal: "airbyte", pattern: /Airbyte|airbyte-cdk|sourceId|destinationId|connectionId|configuredCatalog/i, evidence: "Airbyte data movement evidence was detected." },
+    { signal: "custom", pattern: /custom connector|data connector|CDC|ELT|ETL|data movement/i, evidence: "custom connector evidence was detected." }
+  ];
+  return dataConnectorReadinessSignalFromSpecs(sourceFiles, specs, "platform", "signal");
+}
+
+function dataConnectorReadinessKindSignals(sourceFiles: DataConnectorReadinessSourceFile[]): DataConnectorReadinessReport["connectorKindSignals"] {
+  const specs: Array<{ signal: DataConnectorReadinessReport["connectorKindSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "source-connector", pattern: /SourceConnector|FileStreamSource|source connector|sourceDefinition|sourceId|sourceType/i, evidence: "source connector evidence was detected." },
+    { signal: "sink-connector", pattern: /SinkConnector|FileStreamSink|sink connector|destinationDefinition|destinationId|destinationType/i, evidence: "sink connector evidence was detected." },
+    { signal: "cdc-connector", pattern: /Debezium|CDC|change data capture|change events?|binlog|logical decoding|replication slot|oplog/i, evidence: "CDC connector evidence was detected." },
+    { signal: "elt-connection", pattern: /Airbyte|ELT|ETL|connectionId|syncMode|configuredCatalog|destination/i, evidence: "ELT connection evidence was detected." },
+    { signal: "embedded-engine", pattern: /DebeziumEngine|EmbeddedEngine|embedded connector|record the progress of the connector/i, evidence: "embedded connector engine evidence was detected." }
+  ];
+  return dataConnectorReadinessSignalFromSpecs(sourceFiles, specs, "connector kind", "signal");
+}
+
+function dataConnectorReadinessConfigSignals(sourceFiles: DataConnectorReadinessSourceFile[]): DataConnectorReadinessReport["configSignals"] {
+  const specs: Array<{ signal: DataConnectorReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "connector-class", pattern: /connector\.class|ConnectorConfig|SourceConnector|SinkConnector/i, evidence: "connector class evidence was detected." },
+    { signal: "tasks-max", pattern: /tasks\.max|max tasks|maximum number of tasks/i, evidence: "tasks.max evidence was detected." },
+    { signal: "plugin-path", pattern: /plugin\.path|plugin path|Connect plugins/i, evidence: "plugin path evidence was detected." },
+    { signal: "converters", pattern: /key\.converter|value\.converter|JsonConverter|AvroConverter|converter schemas/i, evidence: "converter configuration evidence was detected." },
+    { signal: "topics", pattern: /\btopics\b|topic=|topic\.prefix|topic prefix/i, evidence: "topics evidence was detected." },
+    { signal: "topics-regex", pattern: /topics\.regex|topic regex|TopicNameMatches/i, evidence: "topics regex evidence was detected." },
+    { signal: "snapshot-mode", pattern: /snapshot\.mode|snapshot mode|initial snapshot/i, evidence: "snapshot mode evidence was detected." },
+    { signal: "schema-history", pattern: /schema\.history|database\.history|schema history/i, evidence: "schema history evidence was detected." },
+    { signal: "database-include-list", pattern: /database\.include\.list|database\.whitelist|database include/i, evidence: "database include-list evidence was detected." },
+    { signal: "table-include-list", pattern: /table\.include\.list|table\.whitelist|table include/i, evidence: "table include-list evidence was detected." },
+    { signal: "slot-name", pattern: /slot\.name|replication slot/i, evidence: "replication slot evidence was detected." },
+    { signal: "publication-name", pattern: /publication\.name|publication\.autocreate|publication name/i, evidence: "publication evidence was detected." },
+    { signal: "source-definition", pattern: /sourceDefinition|sourceId|sourceType|source connector definition/i, evidence: "source definition evidence was detected." },
+    { signal: "destination-definition", pattern: /destinationDefinition|destinationId|destinationType|destination connector definition/i, evidence: "destination definition evidence was detected." },
+    { signal: "connection-id", pattern: /connectionId|connection ID|AirbyteConnection|connections\//i, evidence: "connection ID evidence was detected." }
+  ];
+  return dataConnectorReadinessSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function dataConnectorReadinessStateSignals(sourceFiles: DataConnectorReadinessSourceFile[]): DataConnectorReadinessReport["stateSignals"] {
+  const specs: Array<{ signal: DataConnectorReadinessReport["stateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "offset-storage-file", pattern: /offset\.storage\.file\.filename|offset storage file/i, evidence: "offset storage file evidence was detected." },
+    { signal: "offset-storage-topic", pattern: /offset\.storage\.topic|offsets topic|offset commit data/i, evidence: "offset storage topic evidence was detected." },
+    { signal: "config-storage-topic", pattern: /config\.storage\.topic|connector and task configurations/i, evidence: "config storage topic evidence was detected." },
+    { signal: "status-storage-topic", pattern: /status\.storage\.topic|task statuses|status topic/i, evidence: "status storage topic evidence was detected." },
+    { signal: "airbyte-state", pattern: /AirbyteStateMessage|state message|STATE\b|stream state|global state/i, evidence: "Airbyte state evidence was detected." },
+    { signal: "cursor", pattern: /cursor|cursor_field|cursor method|cursor_method/i, evidence: "cursor evidence was detected." },
+    { signal: "incremental-sync", pattern: /incremental|syncMode|sync mode|dedup/i, evidence: "incremental sync evidence was detected." },
+    { signal: "checkpoint", pattern: /checkpoint|checkpoint_target_interval_seconds|checkpoint interval/i, evidence: "checkpoint evidence was detected." }
+  ];
+  return dataConnectorReadinessSignalFromSpecs(sourceFiles, specs, "state", "signal");
+}
+
+function dataConnectorReadinessTransformSignals(sourceFiles: DataConnectorReadinessSourceFile[]): DataConnectorReadinessReport["transformSignals"] {
+  const specs: Array<{ signal: DataConnectorReadinessReport["transformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "smt-transform", pattern: /transforms\.|single message transform|SMT|InsertField|TimestampRouter|SetSchemaMetadata/i, evidence: "single-message transform evidence was detected." },
+    { signal: "predicate", pattern: /predicates\.|TopicNameMatches|HasHeaderKey|RecordIsTombstone|predicate=/i, evidence: "predicate evidence was detected." },
+    { signal: "regex-router", pattern: /RegexRouter|regex router/i, evidence: "RegexRouter evidence was detected." },
+    { signal: "mask-field", pattern: /MaskField|mask field|field masking/i, evidence: "MaskField evidence was detected." },
+    { signal: "extract-field", pattern: /ExtractField|extract field/i, evidence: "ExtractField evidence was detected." },
+    { signal: "hoist-field", pattern: /HoistField|hoist field/i, evidence: "HoistField evidence was detected." },
+    { signal: "flatten", pattern: /Flatten|flatten nested/i, evidence: "Flatten evidence was detected." },
+    { signal: "normalization", pattern: /normalization|normalize\/|base-normalization/i, evidence: "normalization evidence was detected." },
+    { signal: "dbt", pattern: /\bdbt\b|dbt project|profiles\.yml/i, evidence: "dbt transformation evidence was detected." }
+  ];
+  return dataConnectorReadinessSignalFromSpecs(sourceFiles, specs, "transform", "signal");
+}
+
+function dataConnectorReadinessOpsSignals(sourceFiles: DataConnectorReadinessSourceFile[]): DataConnectorReadinessReport["opsSignals"] {
+  const specs: Array<{ signal: DataConnectorReadinessReport["opsSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "rest-api", pattern: /REST API|\/connectors|GET \/connectors|POST \/connectors|\/api\/public\/v1|Airbyte API/i, evidence: "connector REST/API evidence was detected." },
+    { signal: "connector-status", pattern: /\/connectors\/\{name\}\/status|connector status|current status of the connector/i, evidence: "connector status evidence was detected." },
+    { signal: "task-status", pattern: /\/tasks\/\{taskid\}\/status|task status|state of all its tasks/i, evidence: "task status evidence was detected." },
+    { signal: "pause-resume", pattern: /\/pause|\/resume|pause the connector|resume a paused|PAUSED|STOPPED|RUNNING/i, evidence: "pause/resume evidence was detected." },
+    { signal: "restart", pattern: /\/restart|restart an individual task|onlyFailed|includeTasks/i, evidence: "restart evidence was detected." },
+    { signal: "offset-reset", pattern: /DELETE .*\/offsets|PATCH .*\/offsets|reset the offsets|alter the offsets|offset reset/i, evidence: "offset reset evidence was detected." },
+    { signal: "dead-letter-queue", pattern: /errors\.deadletterqueue|dead[-_ ]?letter|DLQ/i, evidence: "dead-letter queue evidence was detected." },
+    { signal: "errors-tolerance", pattern: /errors\.tolerance|tolerance|errors\.log\.enable/i, evidence: "error tolerance evidence was detected." },
+    { signal: "retry", pattern: /retry|backoff|attempts|failure retry/i, evidence: "retry evidence was detected." },
+    { signal: "health-metrics", pattern: /health|metrics?|JMX|Prometheus|usage|monitoring/i, evidence: "health or metrics evidence was detected." }
+  ];
+  return dataConnectorReadinessSignalFromSpecs(sourceFiles, specs, "ops", "signal");
+}
+
+function dataConnectorReadinessWorkflowSignals(sourceFiles: DataConnectorReadinessSourceFile[]): DataConnectorReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: DataConnectorReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "connect-standalone", pattern: /connect-standalone|standalone mode/i, evidence: "connect-standalone workflow evidence was detected." },
+    { signal: "connect-distributed", pattern: /connect-distributed|distributed mode/i, evidence: "connect-distributed workflow evidence was detected." },
+    { signal: "curl-connectors", pattern: /curl .*\/connectors|POST .*\/connectors|PUT .*\/connectors/i, evidence: "curl connector API workflow evidence was detected." },
+    { signal: "airbyte-api", pattern: /Airbyte API|api\.airbyte\.com|\/api\/public\/v1|reference\.airbyte\.com/i, evidence: "Airbyte API workflow evidence was detected." },
+    { signal: "orchestrator", pattern: /Airflow|Dagster|Kestra|orchestrate Airbyte syncs|operator/i, evidence: "orchestrated sync evidence was detected." },
+    { signal: "docker-compose", pattern: /docker compose|docker-compose|compose\.ya?ml/i, evidence: "Docker Compose workflow evidence was detected." },
+    { signal: "github-actions", pattern: /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\//i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|connector-readiness-report\.json|connect-status\.json|airbyte-sync-report\.json|debezium-report\.json/i, evidence: "connector readiness artifact upload evidence was detected." }
+  ];
+  return dataConnectorReadinessSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function dataConnectorReadinessPackageSignals(sourceFiles: DataConnectorReadinessSourceFile[]): DataConnectorReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DataConnectorReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kafka-connect-api", pattern: /org\.apache\.kafka:connect-api|kafka-connect|connect-api|org\.apache\.kafka\.connect/i, evidence: "Kafka Connect API package evidence was detected." },
+    { signal: "connect-json", pattern: /connect-json|JsonConverter|org\.apache\.kafka\.connect\.json/i, evidence: "Kafka Connect JSON converter evidence was detected." },
+    { signal: "debezium-connector", pattern: /io\.debezium|debezium-connector|debezium.*postgres|debezium.*mysql|debezium.*sqlserver/i, evidence: "Debezium connector package evidence was detected." },
+    { signal: "debezium-embedded", pattern: /debezium-embedded|DebeziumEngine|EmbeddedEngine/i, evidence: "Debezium embedded package evidence was detected." },
+    { signal: "airbyte-cdk", pattern: /airbyte-cdk|airbyte_cdk|Airbyte CDK/i, evidence: "Airbyte CDK package evidence was detected." },
+    { signal: "airbyte-api", pattern: /airbyte-api|Airbyte API|airbytehq\/airbyte/i, evidence: "Airbyte API package evidence was detected." },
+    { signal: "custom", pattern: /connector sdk|custom connector|data connector/i, evidence: "custom connector package evidence was detected." }
+  ];
+  return dataConnectorReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function dataConnectorReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DataConnectorReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/data-connector-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
