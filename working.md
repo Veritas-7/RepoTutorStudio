@@ -6529,6 +6529,56 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 243:
   - `19d8f11` data lineage readiness report
 
+- 2026-06-05: AutoResearch Upgrade 244 candidate selected:
+  data catalog readiness from `open-metadata/OpenMetadata`
+  (`https://github.com/open-metadata/OpenMetadata`; ignored clone HEAD
+  `e21e1134`), `datahub-project/datahub`
+  (`https://github.com/datahub-project/datahub`; ignored clone HEAD
+  `31ed631a`), and `amundsen-io/amundsen`
+  (`https://github.com/amundsen-io/amundsen`; ignored clone HEAD
+  `2a6ba58`). Static source inspection only; `git ls-files` for all three
+  external source paths returned `0`, and `git status --ignored=matching`
+  showed the clones only under ignored `research/external-src/`.
+- 2026-06-05: Implemented OpenMetadata/DataHub/Amundsen-style
+  data-catalog-readiness report: `DataCatalogReadinessReportSchema`,
+  `analysis/data-catalog-readiness-report.json`,
+  `markdown/data-catalog-readiness.md`,
+  `html/data-catalog-readiness.html`, static catalog setup detection,
+  ingestion/source config/connector/recipe/workflow/pipeline/scheduler,
+  profiling and usage signals, dataset/table/column/dashboard/chart/job/flow
+  entity signals, owner/glossary/tag/classification/policy/domain/stewardship
+  governance signals, ElasticSearch/OpenSearch/semantic/search API/browse/MCP
+  search signals, upstream/column/query/job-IO/impact lineage signals, CI and
+  package signals, static-only risk queue, recommended inspection commands,
+  manifest/session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target data-catalog-readiness`.
+- 2026-06-05: RED/GREEN data-catalog-readiness smoke recorded:
+  old behavior at `b67a1f8` had no `DataCatalogReadinessReportSchema` and no
+  `data-catalog-readiness` CLI target (`schema-missing`, `cli-missing`). GREEN
+  fixture detected OpenMetadata `sourceConfig`, `serviceConnection`,
+  `IngestionPipeline`, `PipelineType`, profiler/query lineage metrics,
+  DataHub `MetadataChangeProposal`, `MetadataChangeEvent`, `Dataset`,
+  `DataJob`, `DataFlow`, `CorpUser`, `Ownership`, `globalTags`,
+  `GlossaryTerm`, `browsePaths`, `upstreamLineage`, Amundsen
+  `amundsen-databuilder`, `SearchService`, `MetadataService`,
+  `TableMetadata`, `Elasticsearch`, `Neo4j`, `popular_tables`, catalog CI
+  ingestion/test/artifact commands, package signals, recommended commands, and
+  all three new artifacts.
+- 2026-06-05: Verification for Upgrade 244:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused data-catalog-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 51/51 tests
+  - `pnpm test`: PASS, 51/51 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 142/142 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 244:
+  - `40720a3` data catalog readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
