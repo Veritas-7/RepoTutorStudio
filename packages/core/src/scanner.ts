@@ -125,6 +125,7 @@ import {
   EventStreamReadinessReport,
   DataConnectorReadinessReport,
   SemanticLayerReadinessReport,
+  BiDashboardReadinessReport,
   SchemaRegistryReadinessReport,
   StreamProcessingReadinessReport,
   PipelineOrchestrationReadinessReport,
@@ -325,6 +326,7 @@ export interface AnalysisBundle {
   eventStreamReadinessReport: EventStreamReadinessReport;
   dataConnectorReadinessReport: DataConnectorReadinessReport;
   semanticLayerReadinessReport: SemanticLayerReadinessReport;
+  biDashboardReadinessReport: BiDashboardReadinessReport;
   schemaRegistryReadinessReport: SchemaRegistryReadinessReport;
   streamProcessingReadinessReport: StreamProcessingReadinessReport;
   pipelineOrchestrationReadinessReport: PipelineOrchestrationReadinessReport;
@@ -525,6 +527,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const eventStreamReadinessReport = await buildEventStreamReadinessReport(walk);
   const dataConnectorReadinessReport = await buildDataConnectorReadinessReport(walk);
   const semanticLayerReadinessReport = await buildSemanticLayerReadinessReport(walk);
+  const biDashboardReadinessReport = await buildBiDashboardReadinessReport(walk);
   const schemaRegistryReadinessReport = await buildSchemaRegistryReadinessReport(walk);
   const streamProcessingReadinessReport = await buildStreamProcessingReadinessReport(walk);
   const pipelineOrchestrationReadinessReport = await buildPipelineOrchestrationReadinessReport(walk);
@@ -595,7 +598,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -28753,6 +28756,341 @@ function semanticLayerReadinessSignalFromSpecs<T extends Record<K, string> & { p
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/semantic-layer-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildBiDashboardReadinessReport(walk: WalkResult): Promise<BiDashboardReadinessReport> {
+  const sourceFiles = await biDashboardReadinessSourceFiles(walk);
+  const dashboardSetups = biDashboardReadinessSetups(sourceFiles);
+  const platformSignals = biDashboardReadinessPlatformSignals(sourceFiles);
+  const dashboardSignals = biDashboardReadinessDashboardSignals(sourceFiles);
+  const querySignals = biDashboardReadinessQuerySignals(sourceFiles);
+  const filterSignals = biDashboardReadinessFilterSignals(sourceFiles);
+  const accessSignals = biDashboardReadinessAccessSignals(sourceFiles);
+  const embeddingSignals = biDashboardReadinessEmbeddingSignals(sourceFiles);
+  const alertSignals = biDashboardReadinessAlertSignals(sourceFiles);
+  const cacheSignals = biDashboardReadinessCacheSignals(sourceFiles);
+  const workflowSignals = biDashboardReadinessWorkflowSignals(sourceFiles);
+  const packageSignals = biDashboardReadinessPackageSignals(sourceFiles);
+
+  const hasPlatform = platformSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasDashboard = dashboardSignals.some((item) => item.readiness === "ready") || dashboardSetups.some((item) => item.dashboardCount + item.chartCount > 0);
+  const hasQuery = querySignals.some((item) => item.readiness === "ready") || dashboardSetups.some((item) => item.queryCount + item.datasetCount > 0);
+  const hasFilters = filterSignals.some((item) => item.readiness === "ready") || dashboardSetups.some((item) => item.filterCount > 0);
+  const hasAccess = accessSignals.some((item) => item.readiness === "ready") || dashboardSetups.some((item) => item.permissionCount > 0);
+  const hasEmbedding = embeddingSignals.some((item) => item.readiness === "ready") || dashboardSetups.some((item) => item.embeddingCount > 0);
+  const hasAlert = alertSignals.some((item) => item.readiness === "ready") || dashboardSetups.some((item) => item.alertCount > 0);
+  const hasCache = cacheSignals.some((item) => item.readiness === "ready") || dashboardSetups.some((item) => item.cacheCount > 0);
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready") || dashboardSetups.some((item) => item.workflowCount > 0);
+
+  const riskQueue: BiDashboardReadinessReport["riskQueue"] = [];
+  if (!hasPlatform && !hasDashboard) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a concrete Metabase, Superset, Lightdash, or custom dashboard configuration before claiming BI dashboard readiness.",
+      why: "BI dashboard readiness starts from an owned dashboard surface with visible cards, charts, explores, or dashboard definitions.",
+      relatedHref: "html/bi-dashboard-readiness.html"
+    });
+  }
+  if (hasDashboard && !hasQuery) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document the SQL, native query, dataset, semantic model, metric, dimension, or join contract behind dashboard tiles.",
+      why: "Dashboards without visible data contracts cannot be reviewed for correctness or freshness.",
+      relatedHref: "html/bi-dashboard-readiness.html"
+    });
+  }
+  if (hasDashboard && !hasFilters) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add parameter, field filter, dashboard filter, date filter, cross-filter, or drilldown evidence.",
+      why: "BI learners need to see how dashboard interactivity changes query scope.",
+      relatedHref: "html/bi-dashboard-readiness.html"
+    });
+  }
+  if ((hasDashboard || hasEmbedding) && !hasAccess) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document roles, permissions, row-level security, collection access, space access, or embedding secrets.",
+      why: "Dashboards and embeds can expose analytics data; access boundaries should be visible before production use.",
+      relatedHref: "html/bi-dashboard-readiness.html"
+    });
+  }
+  if (hasDashboard && !hasCache) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document cache, refresh, TTL, async query, result cache, or precomputed dashboard assumptions.",
+      why: "Dashboard cache and refresh choices affect freshness, latency, and warehouse cost.",
+      relatedHref: "html/bi-dashboard-readiness.html"
+    });
+  }
+  if (hasDashboard && !hasAlert) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record whether alerts, subscriptions, pulses, scheduled reports, Slack, or email delivery are intentionally used or absent.",
+      why: "Scheduled BI delivery changes operational expectations beyond interactive dashboard views.",
+      relatedHref: "html/bi-dashboard-readiness.html"
+    });
+  }
+  if (hasDashboard && !hasWorkflow) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add repeatable dashboard validation, export/import, SQL validation, dbt sync, visual regression, or artifact retention workflows.",
+      why: "Static readiness is stronger when dashboard definitions and validation artifacts are reproducible.",
+      relatedHref: "html/bi-dashboard-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run BI dashboard commands only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor records BI dashboard readiness only; it does not connect to BI servers, query databases, render dashboards, publish embeds, send alerts, or change permissions.",
+    relatedHref: "html/bi-dashboard-readiness.html"
+  });
+
+  return {
+    summary: `BI dashboard readiness report: setup ${dashboardSetups.length}개, platform signal ${platformSignals.length}개, dashboard signal ${dashboardSignals.length}개, workflow signal ${workflowSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "BI dashboard readiness Metabase Superset Lightdash dashboards cards charts queries datasets saved questions explores metrics semantic layer filters parameters drilldowns alerts subscriptions embedded analytics permissions roles row level security cache refresh SQL lab database connections",
+    dashboardSetups,
+    platformSignals,
+    dashboardSignals,
+    querySignals,
+    filterSignals,
+    accessSignals,
+    embeddingSignals,
+    alertSignals,
+    cacheSignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"metabase|dashboard|card|native_query|dataset_query|pulse|collection|field_filter\" .", purpose: "Find Metabase dashboard, card, native query, dataset query, pulse, collection, and field-filter surfaces." },
+      { command: "rg \"superset|Slice|Dashboard|SqlaTable|SQL Lab|RLS|row_level_security|ChartData\" .", purpose: "Review Superset chart, dashboard, dataset, SQL Lab, RLS, and chart data signals." },
+      { command: "rg \"lightdash|explores|metrics|dimensions|Dashboard|SavedChart|Space|scheduled_delivery\" .", purpose: "Inventory Lightdash explores, metrics, dimensions, dashboards, saved charts, spaces, and scheduled delivery." },
+      { command: "rg \"embed|iframe|signed|public link|JWT|permissions|roles|row-level|collection\" .", purpose: "Trace embedded analytics, public links, signed JWT embeds, permissions, roles, row-level rules, and collection access." },
+      { command: "rg \"cache|refresh|ttl|async query|dashboard export|visual regression|upload-artifact\" .github .", purpose: "Check cache, refresh, async query, dashboard export, visual regression, and artifact-retention workflows." }
+    ],
+    learnerNextSteps: [
+      "먼저 Metabase, Superset, Lightdash, custom dashboard 중 어떤 BI dashboard surface가 있는지 확인하세요.",
+      "dashboard, card, chart, slice, explore, saved question이 어떤 query, dataset, metric, dimension에 연결되는지 표시하세요.",
+      "parameters, field filters, date filters, cross filters, drilldowns가 query scope를 어떻게 바꾸는지 추적하세요.",
+      "embedding, public link, signed embed, SDK embed가 있으면 roles, permissions, row-level security, collection/space access를 같이 검토하세요.",
+      "cache TTL, refresh, scheduled delivery, Slack/email reports, validation workflow를 운영 준비도 관점에서 확인하세요."
+    ]
+  };
+}
+
+type BiDashboardReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function biDashboardReadinessSourceFiles(walk: WalkResult): Promise<BiDashboardReadinessSourceFile[]> {
+  const files: BiDashboardReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !biDashboardReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!biDashboardReadinessPathSignal(file.relPath) && !biDashboardReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function biDashboardReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return biDashboardReadinessPathSignal(filePath)
+    || /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|pyproject\.toml|requirements\.txt|dashboard\.ya?ml|dashboard\.json|lightdash\.ya?ml|superset_config\.py|\.env\.example|\.env\.sample)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|py|json|md|mdx|ya?ml|toml|sql)$/i.test(filePath);
+}
+
+function biDashboardReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(metabase|superset|lightdash|bi[-_ ]?dashboard|dashboards?|cards?|charts?|slices?|explores?|saved[-_ ]?(question|chart)s?|embedded[-_ ]?analytics|embeds?|permissions?|row[-_ ]?level|collections?|spaces?)(\/|\.|-|_|$)|\.github\/workflows/i.test(filePath);
+}
+
+function biDashboardReadinessContentSignal(text: string): boolean {
+  return /Metabase|Superset|Lightdash|dashboard_id|dashboard_title|dataset_query|native_query|field_filter|pulse|collection_id|enable_embedding|superset|Slice|SqlaTable|SQL Lab|row_level_security|lightdash|explores:|savedCharts|scheduled_delivery|embedded analytics|signed embed|iframe|public link|cache_ttl|cache_timeout/i.test(text);
+}
+
+function biDashboardReadinessSetups(sourceFiles: BiDashboardReadinessSourceFile[]): BiDashboardReadinessReport["dashboardSetups"] {
+  const rows: BiDashboardReadinessReport["dashboardSetups"] = [];
+  for (const source of sourceFiles) {
+    const dashboardCount = countMatches(source.text, /\bdashboards?:|dashboard_id|dashboard_title|dashboardId|Dashboard\b|dashboard[-_ ]?config|executive_revenue/gi);
+    const chartCount = countMatches(source.text, /\bcards?:|\bcard_id\b|\bcharts?:|\bslice_name\b|SavedChart|savedCharts|savedChartUuid|\btiles?:|visualization_settings|ChartData/gi);
+    const queryCount = countMatches(source.text, /\bquery\b|native_query|dataset_query|query_context|SQL Lab|SELECT\s+|saved question|SavedQuestion|explore:/gi);
+    const datasetCount = countMatches(source.text, /dataset_query|datasetId|datasource|SqlaTable|table_id|explores?:|\bmetrics?:|\bdimensions?:|semantic layer|semantic model/gi);
+    const filterCount = countMatches(source.text, /\bparameters?:|parameter_mappings|template_tags|field_filter|native_filter|filter_select|dashboard filter|date filter|created_at|cross[-_ ]?filter|drilldown|drill[-_ ]?through/gi);
+    const permissionCount = countMatches(source.text, /\bpermissions?:|\broles?:|row[-_ ]level[-_ ]security|RLS|collection_id|collection permission|spaces?:|space access|user_attributes|access:|viewer|Admin|Gamma/gi);
+    const embeddingCount = countMatches(source.text, /enable_embedding|embedding_params|embedded_dashboard|embedded analytics|iframe|signedEmbed|signed embed|public_uuid|publicLink|public link|JWT|jwt|sdkEmbed|embedConfig|embed\/dashboard/gi);
+    const alertCount = countMatches(source.text, /\balerts?:|\bsubscriptions?:|\bpulse\b|scheduled_delivery|schedule_type|scheduled report|slack|email/gi);
+    const cacheCount = countMatches(source.text, /\bcache\b|cache_ttl|cache_timeout|\bttl\b|refresh|async[-_ ]?query|query_context|result[-_ ]?cache|precomputed/gi);
+    const workflowCount = countMatches(source.text, /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\/|metabase export|metabase import|superset import-dashboards|superset export-dashboards|lightdash validate|lightdash compile|lightdash dbt sync|visual[-_ ]regression|upload-artifact/gi)
+      + (source.filePath.includes(".github/workflows") ? 1 : 0);
+    const hasSetupSignal = dashboardCount + chartCount + queryCount + datasetCount + filterCount + permissionCount + embeddingCount + alertCount + cacheCount + workflowCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: biDashboardReadinessPlatform(source),
+      dashboardCount,
+      chartCount,
+      queryCount,
+      datasetCount,
+      filterCount,
+      permissionCount,
+      embeddingCount,
+      alertCount,
+      cacheCount,
+      workflowCount,
+      readiness: (dashboardCount + chartCount > 0) && (queryCount + datasetCount > 0) && (filterCount + permissionCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains dashboards ${dashboardCount}, charts ${chartCount}, queries ${queryCount}, datasets ${datasetCount}, filters ${filterCount}, permissions ${permissionCount}, embedding ${embeddingCount}, alerts ${alertCount}, cache ${cacheCount}, workflow ${workflowCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function biDashboardReadinessPlatform(source: BiDashboardReadinessSourceFile): BiDashboardReadinessReport["dashboardSetups"][number]["platform"] {
+  if (/metabase/i.test(source.filePath) || /Metabase|dataset_query|native_query|field_filter|pulse|collection_id|enable_embedding/i.test(source.text)) return "metabase";
+  if (/superset/i.test(source.filePath) || /Superset|dashboard_title|slice_name|SqlaTable|SQL Lab|row_level_security|native_filter_configuration/i.test(source.text)) return "superset";
+  if (/lightdash/i.test(source.filePath) || /Lightdash|lightdash|explores:|savedCharts|scheduled_delivery|@lightdash\/sdk/i.test(source.text)) return "lightdash";
+  if (/BI Dashboard|business intelligence|embedded analytics|custom dashboard/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function biDashboardReadinessPlatformSignals(sourceFiles: BiDashboardReadinessSourceFile[]): BiDashboardReadinessReport["platformSignals"] {
+  const specs: Array<{ signal: BiDashboardReadinessReport["platformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "metabase", pattern: /Metabase|metabase|dataset_query|native_query|field_filter|pulse|collection_id/i, evidence: "Metabase evidence was detected." },
+    { signal: "superset", pattern: /Superset|superset|dashboard_title|slice_name|SqlaTable|SQL Lab|row_level_security/i, evidence: "Superset evidence was detected." },
+    { signal: "lightdash", pattern: /Lightdash|lightdash|explores:|savedCharts|scheduled_delivery|@lightdash\/sdk/i, evidence: "Lightdash evidence was detected." },
+    { signal: "custom", pattern: /BI Dashboard|business intelligence|embedded analytics|custom dashboard/i, evidence: "custom BI dashboard evidence was detected." }
+  ];
+  return biDashboardReadinessSignalFromSpecs(sourceFiles, specs, "platform", "signal");
+}
+
+function biDashboardReadinessDashboardSignals(sourceFiles: BiDashboardReadinessSourceFile[]): BiDashboardReadinessReport["dashboardSignals"] {
+  const specs: Array<{ signal: BiDashboardReadinessReport["dashboardSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dashboard", pattern: /\bdashboards?:|dashboard_id|dashboard_title|Dashboard\b/i, evidence: "dashboard evidence was detected." },
+    { signal: "card", pattern: /\bcards?:|\bcard_id\b|metabase card/i, evidence: "card evidence was detected." },
+    { signal: "chart", pattern: /\bcharts?:|SavedChart|savedCharts|savedChartUuid|echarts|chart\.js/i, evidence: "chart evidence was detected." },
+    { signal: "slice", pattern: /\bslice_name\b|\bSlice\b/i, evidence: "Superset slice evidence was detected." },
+    { signal: "explore", pattern: /\bexplores?:|\bexplore:/i, evidence: "explore evidence was detected." },
+    { signal: "saved-question", pattern: /saved question|SavedQuestion|savedCharts|savedChartUuid/i, evidence: "saved question/chart evidence was detected." },
+    { signal: "dashboard-config", pattern: /dashboard\.ya?ml|dashboard\.json|dashboard[-_ ]?config|position_json|native_filter_configuration/i, evidence: "dashboard config evidence was detected." }
+  ];
+  return biDashboardReadinessSignalFromSpecs(sourceFiles, specs, "dashboard", "signal");
+}
+
+function biDashboardReadinessQuerySignals(sourceFiles: BiDashboardReadinessSourceFile[]): BiDashboardReadinessReport["querySignals"] {
+  const specs: Array<{ signal: BiDashboardReadinessReport["querySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "sql-query", pattern: /SELECT\s+|SQL Lab|sql:\s|query_context/i, evidence: "SQL query evidence was detected." },
+    { signal: "native-query", pattern: /native_query|dataset_query|type:\s*["']?native|native:/i, evidence: "native query evidence was detected." },
+    { signal: "dataset", pattern: /dataset_query|datasetId|datasource|SqlaTable|table_id/i, evidence: "dataset evidence was detected." },
+    { signal: "semantic-model", pattern: /semantic layer|semantic model|explores?:|\bmetrics?:/i, evidence: "semantic model or explore evidence was detected." },
+    { signal: "metric", pattern: /\bmetrics?:|sum__|total_revenue|measure|Metric\b/i, evidence: "metric evidence was detected." },
+    { signal: "dimension", pattern: /\bdimensions?:|field_filter|column:|created_at|region/i, evidence: "dimension evidence was detected." },
+    { signal: "join", pattern: /\bjoins?:|sql_on|join relationship/i, evidence: "join evidence was detected." }
+  ];
+  return biDashboardReadinessSignalFromSpecs(sourceFiles, specs, "query", "signal");
+}
+
+function biDashboardReadinessFilterSignals(sourceFiles: BiDashboardReadinessSourceFile[]): BiDashboardReadinessReport["filterSignals"] {
+  const specs: Array<{ signal: BiDashboardReadinessReport["filterSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "parameter", pattern: /\bparameters?:|parameter_mappings|template_tags/i, evidence: "parameter evidence was detected." },
+    { signal: "filter", pattern: /\bfilter\b|filter_select|native_filter/i, evidence: "filter evidence was detected." },
+    { signal: "field-filter", pattern: /field_filter|field filter/i, evidence: "field filter evidence was detected." },
+    { signal: "dashboard-filter", pattern: /native_filter_configuration|dashboard filter|filter_select/i, evidence: "dashboard filter evidence was detected." },
+    { signal: "date-filter", pattern: /date filter|created_at|time range|time_range/i, evidence: "date filter evidence was detected." },
+    { signal: "cross-filter", pattern: /cross[-_ ]?filter|native_filter_configuration/i, evidence: "cross-filter evidence was detected." },
+    { signal: "drilldown", pattern: /drilldown|drill[-_ ]?through|parameter_mappings/i, evidence: "drilldown evidence was detected." }
+  ];
+  return biDashboardReadinessSignalFromSpecs(sourceFiles, specs, "filter", "signal");
+}
+
+function biDashboardReadinessAccessSignals(sourceFiles: BiDashboardReadinessSourceFile[]): BiDashboardReadinessReport["accessSignals"] {
+  const specs: Array<{ signal: BiDashboardReadinessReport["accessSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "role", pattern: /\broles?:|\bAdmin\b|\bGamma\b|\banalyst\b/i, evidence: "role evidence was detected." },
+    { signal: "permission", pattern: /\bpermissions?:|access:|viewer|permission/i, evidence: "permission evidence was detected." },
+    { signal: "row-level-security", pattern: /row[-_ ]level[-_ ]security|RLS|user_attributes/i, evidence: "row-level security evidence was detected." },
+    { signal: "collection-permission", pattern: /collection_id|collection permission|collection access|collection/i, evidence: "collection permission evidence was detected." },
+    { signal: "space-access", pattern: /\bspaces?:|space access|access:\s*viewer/i, evidence: "space access evidence was detected." },
+    { signal: "embedding-secret", pattern: /JWT|jwt|signedEmbed|signed embed|embedding_secret|embed secret/i, evidence: "embedding secret evidence was detected." }
+  ];
+  return biDashboardReadinessSignalFromSpecs(sourceFiles, specs, "access", "signal");
+}
+
+function biDashboardReadinessEmbeddingSignals(sourceFiles: BiDashboardReadinessSourceFile[]): BiDashboardReadinessReport["embeddingSignals"] {
+  const specs: Array<{ signal: BiDashboardReadinessReport["embeddingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "iframe", pattern: /<iframe|iframe/i, evidence: "iframe embed evidence was detected." },
+    { signal: "signed-embed", pattern: /signedEmbed|signed embed|JWT|jwt/i, evidence: "signed embed evidence was detected." },
+    { signal: "public-link", pattern: /public_uuid|publicLink|public link/i, evidence: "public link evidence was detected." },
+    { signal: "sdk-embed", pattern: /sdkEmbed|@lightdash\/sdk|embed SDK/i, evidence: "SDK embed evidence was detected." },
+    { signal: "embed-config", pattern: /embedConfig|enable_embedding|embedding_params|embedded_dashboard|embed\/dashboard/i, evidence: "embed config evidence was detected." }
+  ];
+  return biDashboardReadinessSignalFromSpecs(sourceFiles, specs, "embedding", "signal");
+}
+
+function biDashboardReadinessAlertSignals(sourceFiles: BiDashboardReadinessSourceFile[]): BiDashboardReadinessReport["alertSignals"] {
+  const specs: Array<{ signal: BiDashboardReadinessReport["alertSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "alert", pattern: /\balerts?:|\bpulse\b|scheduled_delivery/i, evidence: "alert evidence was detected." },
+    { signal: "subscription", pattern: /\bsubscriptions?:|\bpulse\b|scheduled_delivery/i, evidence: "subscription evidence was detected." },
+    { signal: "pulse", pattern: /\bpulse\b/i, evidence: "Metabase pulse evidence was detected." },
+    { signal: "report-schedule", pattern: /scheduled_delivery|schedule_type|scheduled report/i, evidence: "scheduled report evidence was detected." },
+    { signal: "slack-email", pattern: /slack|email/i, evidence: "Slack/email delivery evidence was detected." }
+  ];
+  return biDashboardReadinessSignalFromSpecs(sourceFiles, specs, "alert", "signal");
+}
+
+function biDashboardReadinessCacheSignals(sourceFiles: BiDashboardReadinessSourceFile[]): BiDashboardReadinessReport["cacheSignals"] {
+  const specs: Array<{ signal: BiDashboardReadinessReport["cacheSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "cache", pattern: /\bcache\b|cache_ttl|cache_timeout/i, evidence: "cache evidence was detected." },
+    { signal: "refresh", pattern: /refresh|cache_ttl|cache_timeout/i, evidence: "refresh evidence was detected." },
+    { signal: "ttl", pattern: /\bttl\b|cache_ttl|cache_timeout/i, evidence: "TTL evidence was detected." },
+    { signal: "async-query", pattern: /async[-_ ]?query|query_context/i, evidence: "async query evidence was detected." },
+    { signal: "result-cache", pattern: /result[-_ ]?cache|cache_ttl|cache_timeout/i, evidence: "result cache evidence was detected." },
+    { signal: "precomputed", pattern: /precomputed|cache_ttl|cache_timeout/i, evidence: "precomputed/cache evidence was detected." }
+  ];
+  return biDashboardReadinessSignalFromSpecs(sourceFiles, specs, "cache", "signal");
+}
+
+function biDashboardReadinessWorkflowSignals(sourceFiles: BiDashboardReadinessSourceFile[]): BiDashboardReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: BiDashboardReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\//i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "dashboard-export", pattern: /metabase export|superset export-dashboards|dashboard export|export dashboards/i, evidence: "dashboard export evidence was detected." },
+    { signal: "asset-import", pattern: /superset import-dashboards|metabase import|asset import|import-dashboards/i, evidence: "dashboard import evidence was detected." },
+    { signal: "sql-validation", pattern: /SQL Lab|sql validation|query_context|lightdash validate/i, evidence: "SQL validation evidence was detected." },
+    { signal: "dbt-sync", pattern: /lightdash dbt sync|dbt sync/i, evidence: "dbt sync evidence was detected." },
+    { signal: "visual-regression", pattern: /visual[-_ ]regression/i, evidence: "visual regression evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|bi-dashboard-artifacts|dashboard artifact/i, evidence: "dashboard artifact upload evidence was detected." }
+  ];
+  return biDashboardReadinessSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function biDashboardReadinessPackageSignals(sourceFiles: BiDashboardReadinessSourceFile[]): BiDashboardReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: BiDashboardReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "metabase", pattern: /\bmetabase\b/i, evidence: "Metabase package evidence was detected." },
+    { signal: "apache-superset", pattern: /apache-superset|\bsuperset\b/i, evidence: "Apache Superset package evidence was detected." },
+    { signal: "lightdash", pattern: /\blightdash\b|@lightdash\/sdk/i, evidence: "Lightdash package evidence was detected." },
+    { signal: "echarts", pattern: /\becharts\b/i, evidence: "ECharts package evidence was detected." },
+    { signal: "chartjs", pattern: /chart\.js|chartjs/i, evidence: "Chart.js package evidence was detected." }
+  ];
+  return biDashboardReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function biDashboardReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: BiDashboardReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/bi-dashboard-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
