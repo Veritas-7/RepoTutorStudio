@@ -10107,6 +10107,67 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 304:
   - `c9a7c52` toolbar toggle readiness report
 
+- 2026-06-06: AutoResearch Upgrade 305 candidate selected:
+  scroll-area readiness from existing ignored `radix-ui/primitives` clone
+  (`https://github.com/radix-ui/primitives.git`; ignored clone HEAD
+  `65db6fb91c16b636f05afe51e735f066a17031c3`) and existing ignored
+  `chakra-ui/zag` clone (`https://github.com/chakra-ui/zag.git`; ignored
+  clone HEAD `91f6bb54acd658dce0c63946da9310e945322aa0`). Static source
+  inspection only; no external source was executed. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Radix ScrollArea and Zag scroll-area readiness
+  report: `ScrollAreaReadinessReportSchema`,
+  `analysis/scroll-area-readiness-report.json`,
+  `markdown/scroll-area-readiness.md`, `html/scroll-area-readiness.html`,
+  static setup detection, framework, structure, state, measurement,
+  orientation, interaction, accessibility, test, and package signals, Radix
+  root/viewport/scrollbar/thumb/corner/type/dir/scrollHideDelay/forceMount
+  evidence, Zag machine/connect/getRootProps/getViewportProps/
+  getContentProps/getScrollbarProps/getThumbProps/getCornerProps evidence,
+  overflow-x/y and data-overflow evidence, ResizeObserver/scrollHeight/
+  scrollWidth/clientHeight/clientWidth/thumb size/thumb offset/corner size/
+  ratio/scrollProgress evidence, pointer/wheel/drag/scroll event/scrollTo/
+  scrollToEdge evidence, role presentation/tabIndex/aria-label/data-ownedby
+  evidence, static-only scroll-area guardrail, recommended inspection commands,
+  manifest and session-verification coverage, learning-path linkage, HTML page/
+  nav entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target scroll-area-readiness`.
+- 2026-06-06: RED/GREEN scroll-area readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/scroll-area-readiness-report.json` did not exist. GREEN fixture
+  detected Radix ScrollArea and Zag scroll-area signals; root, viewport,
+  content, scrollbar, thumb, corner, provider/context, anatomy props, type,
+  scroll-hide-delay, forceMount, overflow-x/y, scrollbar hidden state,
+  scroll-progress, data-state, ResizeObserver, scrollHeight/scrollWidth,
+  clientHeight/clientWidth, thumb size/offset, corner size, ratio, vertical/
+  horizontal orientation, RTL direction, data-orientation, pointer, wheel,
+  drag, scroll event, scrollTo, scrollToEdge, role presentation, tabIndex,
+  aria-label, data-overflow, data-ownedby, Vitest, Testing Library, user-event,
+  scroll/wheel/attribute tests, artifact upload, packages, recommended command,
+  static-only guardrail, and all three new artifacts without scrolling
+  viewports, dragging thumbs, dispatching wheel or pointer events, mutating
+  scroll positions, measuring live layout, or running analyzed project tests.
+- 2026-06-06: Verification for Upgrade 305:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused scroll-area readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 112/112 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 203/203 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~81.58 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 305:
+  - `df5ddc4` scroll area readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
