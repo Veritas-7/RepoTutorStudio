@@ -68,6 +68,7 @@ import type {
   DatabaseMigrationReadinessReport,
   DatabaseOrmReadinessReport,
   DataQualityReadinessReport,
+  DataLineageReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -224,6 +225,7 @@ export interface StudyHtmlInput {
   databaseMigrationReadinessReport: DatabaseMigrationReadinessReport;
   databaseOrmReadinessReport: DatabaseOrmReadinessReport;
   dataQualityReadinessReport: DataQualityReadinessReport;
+  dataLineageReadinessReport: DataLineageReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -399,6 +401,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["database-migration-readiness.html", "DB Migrations"],
     ["database-orm-readiness.html", "DB ORM"],
     ["data-quality-readiness.html", "Data Quality"],
+    ["data-lineage-readiness.html", "Data Lineage"],
     ["ci-cd.html", "CI/CD"],
     ["unit-tests.html", "Unit Tests"],
     ["coverage-readiness.html", "Coverage"],
@@ -592,6 +595,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Database Migration Readiness</h3><p>${escapeHtml(input.databaseMigrationReadinessReport.summary)}</p><p>Flyway/Liquibase/Alembic 패턴으로 versioned migrations, changelog, revision, rollback, validation, CI 준비도를 정리합니다.</p><a href="database-migration-readiness.html">DB Migrations 열기</a></article>
           <article><h3>Database ORM Readiness</h3><p>${escapeHtml(input.databaseOrmReadinessReport.summary)}</p><p>TypeORM/Sequelize/SQLAlchemy 패턴으로 entity/model, relation, repository/session, transaction, loading, config 준비도를 정리합니다.</p><a href="database-orm-readiness.html">DB ORM 열기</a></article>
           <article><h3>Data Quality Readiness</h3><p>${escapeHtml(input.dataQualityReadinessReport.summary)}</p><p>Great Expectations, SodaCL, dbt data_tests 패턴으로 expectation, freshness, failed rows, artifact 준비도를 정리합니다.</p><a href="data-quality-readiness.html">Data Quality 열기</a></article>
+          <article><h3>Data Lineage Readiness</h3><p>${escapeHtml(input.dataLineageReadinessReport.summary)}</p><p>OpenLineage, Marquez, dbt artifact 패턴으로 event, dataset edge, facet, column lineage, storage 준비도를 정리합니다.</p><a href="data-lineage-readiness.html">Data Lineage 열기</a></article>
           <article><h3>CI/CD Readiness</h3><p>${escapeHtml(input.ciCdReport.summary)}</p><p>GitHub Actions 패턴으로 workflow, trigger, job, permission, artifact/cache, deployment 준비도를 정리합니다.</p><a href="ci-cd.html">CI/CD 열기</a></article>
           <article><h3>Unit Test Readiness</h3><p>${escapeHtml(input.unitTestReport.summary)}</p><p>Vitest 패턴으로 test files, assertions, mocks, coverage, environment, reporters 준비도를 정리합니다.</p><a href="unit-tests.html">Unit Tests 열기</a></article>
           <article><h3>Coverage Readiness</h3><p>${escapeHtml(input.coverageReadinessReport.summary)}</p><p>nyc/c8/Codecov 패턴으로 instrumentation, scope, thresholds, reports, CI uploads 준비도를 정리합니다.</p><a href="coverage-readiness.html">Coverage 열기</a></article>
@@ -945,6 +949,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "data-quality-readiness.html",
       title: "Data Quality Readiness",
       html: pageShell("Data Quality Readiness", "data-quality-readiness.html", `<section class="panel" data-source-pattern="DataQuality"><h2>Data Quality Snapshot</h2><p>${escapeHtml(input.dataQualityReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dataQualityReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dataQualityReadinessReport.dataQualitySetups.length}</dd></div><div><dt>expectations</dt><dd>${input.dataQualityReadinessReport.expectationSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>Soda</dt><dd>${input.dataQualityReadinessReport.sodaSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>dbt</dt><dd>${input.dataQualityReadinessReport.dbtSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>results</dt><dd>${input.dataQualityReadinessReport.resultSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records data quality readiness only; it does not connect to warehouses, run dbt, execute Soda scans, run Great Expectations checkpoints, or inspect live data rows.</p></section><section class="grid"><article class="data-quality-readiness-card"><h3>Data Quality Setups</h3>${dataQualityReadinessSetupList(input.dataQualityReadinessReport.dataQualitySetups)}</article><article class="data-quality-readiness-card"><h3>Great Expectations Signals</h3>${dataQualityReadinessSignalList(input.dataQualityReadinessReport.expectationSignals, "signal")}</article><article class="data-quality-readiness-card"><h3>Soda Signals</h3>${dataQualityReadinessSignalList(input.dataQualityReadinessReport.sodaSignals, "signal")}</article><article class="data-quality-readiness-card"><h3>dbt Signals</h3>${dataQualityReadinessSignalList(input.dataQualityReadinessReport.dbtSignals, "signal")}</article></section><section class="grid"><article class="data-quality-readiness-card"><h3>Quality Dimension Signals</h3>${dataQualityReadinessSignalList(input.dataQualityReadinessReport.qualityDimensionSignals, "signal")}</article><article class="data-quality-readiness-card"><h3>Result Signals</h3>${dataQualityReadinessSignalList(input.dataQualityReadinessReport.resultSignals, "signal")}</article><article class="data-quality-readiness-card"><h3>CI Signals</h3>${dataQualityReadinessSignalList(input.dataQualityReadinessReport.ciSignals, "signal")}</article><article class="data-quality-readiness-card"><h3>Package Signals</h3>${dataQualityReadinessSignalList(input.dataQualityReadinessReport.packageSignals, "signal")}</article><article class="data-quality-readiness-card"><h3>Recommended Commands</h3>${dataQualityReadinessCommandList(input.dataQualityReadinessReport.recommendedCommands)}</article><article class="data-quality-readiness-card"><h3>Risk Queue</h3>${dataQualityReadinessRiskList(input.dataQualityReadinessReport.riskQueue)}</article><article class="data-quality-readiness-card"><h3>다음 확인 단계</h3>${list(input.dataQualityReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "data-lineage-readiness.html",
+      title: "Data Lineage Readiness",
+      html: pageShell("Data Lineage Readiness", "data-lineage-readiness.html", `<section class="panel" data-source-pattern="DataLineage"><h2>Data Lineage Snapshot</h2><p>${escapeHtml(input.dataLineageReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dataLineageReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dataLineageReadinessReport.lineageSetups.length}</dd></div><div><dt>events</dt><dd>${input.dataLineageReadinessReport.eventSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>datasets</dt><dd>${input.dataLineageReadinessReport.datasetSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>dbt artifacts</dt><dd>${input.dataLineageReadinessReport.dbtArtifactSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>storage</dt><dd>${input.dataLineageReadinessReport.storageSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records data lineage readiness only; it does not run OpenLineage producers, call Marquez, execute dbt, parse SQL plans, or contact lineage backends.</p></section><section class="grid"><article class="data-lineage-readiness-card"><h3>Lineage Setups</h3>${dataLineageReadinessSetupList(input.dataLineageReadinessReport.lineageSetups)}</article><article class="data-lineage-readiness-card"><h3>Event Signals</h3>${dataLineageReadinessSignalList(input.dataLineageReadinessReport.eventSignals, "signal")}</article><article class="data-lineage-readiness-card"><h3>Identity Signals</h3>${dataLineageReadinessSignalList(input.dataLineageReadinessReport.identitySignals, "signal")}</article><article class="data-lineage-readiness-card"><h3>Dataset Signals</h3>${dataLineageReadinessSignalList(input.dataLineageReadinessReport.datasetSignals, "signal")}</article></section><section class="grid"><article class="data-lineage-readiness-card"><h3>dbt Artifact Signals</h3>${dataLineageReadinessSignalList(input.dataLineageReadinessReport.dbtArtifactSignals, "signal")}</article><article class="data-lineage-readiness-card"><h3>Storage Signals</h3>${dataLineageReadinessSignalList(input.dataLineageReadinessReport.storageSignals, "signal")}</article><article class="data-lineage-readiness-card"><h3>CI Signals</h3>${dataLineageReadinessSignalList(input.dataLineageReadinessReport.ciSignals, "signal")}</article><article class="data-lineage-readiness-card"><h3>Package Signals</h3>${dataLineageReadinessSignalList(input.dataLineageReadinessReport.packageSignals, "signal")}</article><article class="data-lineage-readiness-card"><h3>Recommended Commands</h3>${dataLineageReadinessCommandList(input.dataLineageReadinessReport.recommendedCommands)}</article><article class="data-lineage-readiness-card"><h3>Risk Queue</h3>${dataLineageReadinessRiskList(input.dataLineageReadinessReport.riskQueue)}</article><article class="data-lineage-readiness-card"><h3>다음 확인 단계</h3>${list(input.dataLineageReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "ci-cd.html",
@@ -1525,6 +1534,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Database Migration Readiness", path: "html/database-migration-readiness.html", description: "Flyway/Liquibase/Alembic식 versioned migration, changelog, revision, rollback, validation 준비도를 확인합니다." },
       { label: "Database ORM Readiness", path: "html/database-orm-readiness.html", description: "TypeORM/Sequelize/SQLAlchemy식 entity/model, relation, repository/session, transaction 준비도를 확인합니다." },
       { label: "Data Quality Readiness", path: "html/data-quality-readiness.html", description: "Great Expectations/SodaCL/dbt식 expectation, freshness, failed-row, artifact 준비도를 확인합니다." },
+      { label: "Data Lineage Readiness", path: "html/data-lineage-readiness.html", description: "OpenLineage/Marquez/dbt식 event, dataset edge, facet, column lineage, artifact 준비도를 확인합니다." },
       { label: "CI/CD Readiness", path: "html/ci-cd.html", description: "GitHub Actions식 workflow, trigger, job, permission, cache/artifact, deployment 준비도를 확인합니다." },
       { label: "Unit Test Readiness", path: "html/unit-tests.html", description: "Vitest식 test file, assertion, mock, coverage, environment, reporter 준비도를 확인합니다." },
       { label: "Coverage Readiness", path: "html/coverage-readiness.html", description: "nyc/c8/Codecov식 instrumentation, scope, threshold, report, upload 준비도를 확인합니다." },
@@ -1951,6 +1961,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "data-quality-readiness.html",
       goal: "Great Expectations, SodaCL, dbt data_tests식 expectation, freshness, failed-row, artifact 준비도를 확인합니다.",
       evidence: `setups ${input.dataQualityReadinessReport.dataQualitySetups.length}개, dbt signals ${input.dataQualityReadinessReport.dbtSignals.filter((item) => item.readiness === "ready").length}개, Soda signals ${input.dataQualityReadinessReport.sodaSignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Data lineage readiness 확인",
+      href: "data-lineage-readiness.html",
+      goal: "OpenLineage, Marquez, dbt artifact식 event, dataset edge, facet, column lineage, storage 준비도를 확인합니다.",
+      evidence: `setups ${input.dataLineageReadinessReport.lineageSetups.length}개, event signals ${input.dataLineageReadinessReport.eventSignals.filter((item) => item.readiness === "ready").length}개, dataset signals ${input.dataLineageReadinessReport.datasetSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Integration test environment 준비도 확인",
@@ -3623,6 +3639,34 @@ function dataQualityReadinessRiskList(items: DataQualityReadinessReport["riskQue
 }
 
 function dataQualityReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function dataLineageReadinessSetupList(items: DataLineageReadinessReport["lineageSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">data lineage setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)} / ${escapeHtml(item.readiness)}]<br>event ${item.eventCount}, dataset ${item.datasetCount}, job ${item.jobCount}, run ${item.runCount}<br>facet ${item.facetCount}, column lineage ${item.columnLineageCount}, artifact ${item.artifactCount}, CI ${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dataLineageReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function dataLineageReadinessSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">data lineage readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dataLineageReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dataLineageReadinessCommandList(items: DataLineageReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function dataLineageReadinessRiskList(items: DataLineageReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(dataLineageReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dataLineageReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

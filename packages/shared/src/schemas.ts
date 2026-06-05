@@ -3105,6 +3105,79 @@ export const DataQualityReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DataLineageReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  lineageSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["openlineage", "marquez", "dbt", "airflow", "spark", "custom", "unknown"]),
+    eventCount: z.number().int().nonnegative(),
+    datasetCount: z.number().int().nonnegative(),
+    jobCount: z.number().int().nonnegative(),
+    runCount: z.number().int().nonnegative(),
+    facetCount: z.number().int().nonnegative(),
+    columnLineageCount: z.number().int().nonnegative(),
+    artifactCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  eventSignals: z.array(z.object({
+    signal: z.enum(["run-event", "event-type", "producer", "schema-url", "event-time", "run-id", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  identitySignals: z.array(z.object({
+    signal: z.enum(["namespace", "job-name", "run-id", "dataset-namespace", "dataset-name", "unique-id", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  datasetSignals: z.array(z.object({
+    signal: z.enum(["input-dataset", "output-dataset", "dataset-version", "schema-facet", "column-lineage", "data-source", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dbtArtifactSignals: z.array(z.object({
+    signal: z.enum(["manifest", "catalog", "run-results", "sources", "exposures", "metrics", "semantic-models", "parent-child-map", "depends-on", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  storageSignals: z.array(z.object({
+    signal: z.enum(["marquez-api", "lineage-events-table", "dataset-facets", "job-facets", "run-facets", "dataset-version", "job-version", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "dbt-docs-generate", "openlineage-command", "lineage-export", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["openlineage", "marquez", "dbt-core", "airflow-openlineage", "spark-openlineage", "sqlglot", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CiCdReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -8938,6 +9011,7 @@ export type DatabaseReadinessReport = z.infer<typeof DatabaseReadinessReportSche
 export type DatabaseMigrationReadinessReport = z.infer<typeof DatabaseMigrationReadinessReportSchema>;
 export type DatabaseOrmReadinessReport = z.infer<typeof DatabaseOrmReadinessReportSchema>;
 export type DataQualityReadinessReport = z.infer<typeof DataQualityReadinessReportSchema>;
+export type DataLineageReadinessReport = z.infer<typeof DataLineageReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type CoverageReadinessReport = z.infer<typeof CoverageReadinessReportSchema>;

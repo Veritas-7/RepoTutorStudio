@@ -73,6 +73,7 @@ import {
   DatabaseMigrationReadinessReport,
   DatabaseOrmReadinessReport,
   DataQualityReadinessReport,
+  DataLineageReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -234,6 +235,7 @@ export interface AnalysisBundle {
   databaseMigrationReadinessReport: DatabaseMigrationReadinessReport;
   databaseOrmReadinessReport: DatabaseOrmReadinessReport;
   dataQualityReadinessReport: DataQualityReadinessReport;
+  dataLineageReadinessReport: DataLineageReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -395,6 +397,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const databaseMigrationReadinessReport = await buildDatabaseMigrationReadinessReport(walk);
   const databaseOrmReadinessReport = await buildDatabaseOrmReadinessReport(walk);
   const dataQualityReadinessReport = await buildDataQualityReadinessReport(walk);
+  const dataLineageReadinessReport = await buildDataLineageReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
   const coverageReadinessReport = await buildCoverageReadinessReport(walk);
@@ -478,7 +481,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -13114,6 +13117,288 @@ function dataQualitySignalFromSpecs<T extends Record<K, string> & { pattern: Reg
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/data-quality-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDataLineageReadinessReport(walk: WalkResult): Promise<DataLineageReadinessReport> {
+  const sourceFiles = await dataLineageSourceFiles(walk);
+  const lineageSetups = dataLineageSetupsFromSources(sourceFiles);
+  const eventSignals = dataLineageEventSignals(sourceFiles);
+  const identitySignals = dataLineageIdentitySignals(sourceFiles);
+  const datasetSignals = dataLineageDatasetSignals(sourceFiles);
+  const dbtArtifactSignals = dataLineageDbtArtifactSignals(sourceFiles);
+  const storageSignals = dataLineageStorageSignals(sourceFiles);
+  const ciSignals = dataLineageCiSignals(sourceFiles);
+  const packageSignals = dataLineagePackageSignals(sourceFiles);
+
+  const hasEvents = eventSignals.some((item) => item.readiness === "ready") || lineageSetups.some((item) => item.eventCount > 0);
+  const hasIdentity = identitySignals.filter((item) => item.readiness === "ready").length >= 3 || lineageSetups.some((item) => item.jobCount > 0 && item.runCount > 0);
+  const hasDatasets = datasetSignals.some((item) => ["input-dataset", "output-dataset"].includes(item.signal) && item.readiness === "ready") || lineageSetups.some((item) => item.datasetCount > 1);
+  const hasColumnLineage = datasetSignals.some((item) => item.signal === "column-lineage" && item.readiness === "ready") || lineageSetups.some((item) => item.columnLineageCount > 0);
+  const hasArtifacts = dbtArtifactSignals.some((item) => item.readiness === "ready") || lineageSetups.some((item) => item.artifactCount > 0);
+  const hasStorage = storageSignals.some((item) => item.readiness === "ready");
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || lineageSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: DataLineageReadinessReport["riskQueue"] = [];
+  if (!hasEvents && !hasArtifacts) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add lineage events or lineage artifacts before claiming lineage readiness.",
+      why: "Learners need either OpenLineage/Marquez event evidence or dbt artifact DAG evidence to trace jobs and datasets.",
+      relatedHref: "html/data-lineage-readiness.html"
+    });
+  }
+  if ((hasEvents || hasArtifacts) && !hasIdentity) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document stable namespace, job, run, dataset, and unique_id identity fields.",
+      why: "Lineage graphs are hard to compare across runs if identifiers are not stable.",
+      relatedHref: "html/data-lineage-readiness.html"
+    });
+  }
+  if ((hasEvents || hasArtifacts) && !hasDatasets) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Capture both input and output dataset edges.",
+      why: "A job-only trace is not enough to explain upstream and downstream data impact.",
+      relatedHref: "html/data-lineage-readiness.html"
+    });
+  }
+  if (hasDatasets && !hasColumnLineage) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add column-level lineage or field mapping when the repository transforms tabular data.",
+      why: "Column lineage makes schema and metric impact analysis more precise.",
+      relatedHref: "html/data-lineage-readiness.html"
+    });
+  }
+  if (hasEvents && !hasStorage) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record where lineage events or facets are stored and queried.",
+      why: "OpenLineage events need a backend, export, or retained artifact to be useful after execution.",
+      relatedHref: "html/data-lineage-readiness.html"
+    });
+  }
+  if ((hasEvents || hasArtifacts) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Generate or export lineage artifacts in CI or scheduled jobs.",
+      why: "Lineage evidence should be reproducible, not only available from a local run.",
+      relatedHref: "html/data-lineage-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Data lineage readiness report: lineage setup ${lineageSetups.length}개, event signal ${eventSignals.length}개, dataset signal ${datasetSignals.length}개, dbt artifact signal ${dbtArtifactSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Data lineage readiness OpenLineage Marquez dbt RunEvent LineageEvent eventType producer schemaURL namespace job run dataset input output facet columnLineage manifest.json catalog.json run_results.json parent_map child_map depends_on lineage_events dataset_facets job_facets run_facets CI",
+    lineageSetups,
+    eventSignals,
+    identitySignals,
+    datasetSignals,
+    dbtArtifactSignals,
+    storageSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"RunEvent|LineageEvent|eventType|producer|schemaURL|runId|namespace\" .", purpose: "Find OpenLineage event identity and lifecycle fields." },
+      { command: "rg \"inputs|outputs|InputDataset|OutputDataset|columnLineage|inputFields|DatasetVersion\" .", purpose: "Find dataset edges, dataset versions, and column-level lineage evidence." },
+      { command: "rg \"manifest.json|catalog.json|run_results.json|parent_map|child_map|depends_on|unique_id\" .", purpose: "Find dbt artifact DAG and dependency evidence." },
+      { command: "rg \"lineage_events|dataset_facets|job_facets|run_facets|POST /lineage|Marquez\" .", purpose: "Find Marquez/OpenLineage storage and API evidence." },
+      { command: "dbt docs generate && dbt ls --output json", purpose: "Generate dbt lineage artifacts when the target repository is a dbt project." }
+    ],
+    learnerNextSteps: [
+      "먼저 OpenLineage RunEvent/LineageEvent 또는 dbt manifest/catalog/run_results 산출물이 있는지 찾으세요.",
+      "namespace, job name, runId/run_uuid, dataset namespace/name, dbt unique_id가 안정적으로 남는지 확인하세요.",
+      "inputs/outputs dataset edge와 parent_map/child_map/depends_on이 함께 설명되는지 확인하세요.",
+      "columnLineage, inputFields, DatasetField mapping처럼 컬럼 단위 영향 분석 근거가 있는지 확인하세요.",
+      "Marquez lineage_events/facet tables, export artifact, CI upload처럼 실행 후에도 남는 저장 경로를 확인하세요."
+    ]
+  };
+}
+
+type DataLineageSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function dataLineageSourceFiles(walk: WalkResult): Promise<DataLineageSourceFile[]> {
+  const rows: DataLineageSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!dataLineageInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!dataLineagePathSignal(file.relPath) && !dataLineageContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 240);
+}
+
+function dataLineageInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements\.txt|dbt_project\.ya?ml|manifest\.json|catalog\.json|run_results\.json|sources\.json|openlineage\.ya?ml|marquez\.ya?ml)$/i.test(base)
+    || /(^|\/)(openlineage|open-lineage|lineage|marquez|dbt|models|exposures|metrics|semantic_models|target|artifacts)(\/|\.|-|_|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/[^/]+\.(ya?ml)$/i.test(filePath)
+    || /\.(json|ya?ml|toml|txt|ts|tsx|js|jsx|mjs|cjs|md|sql|py|java|scala|kt|go|rs)$/i.test(filePath);
+}
+
+function dataLineagePathSignal(filePath: string): boolean {
+  return /(^|\/)(openlineage|open-lineage|lineage|marquez|dbt|models|exposures|metrics|semantic_models|target|artifacts)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(manifest\.json|catalog\.json|run_results\.json|sources\.json|openlineage\.ya?ml|marquez\.ya?ml)$/i.test(path.basename(filePath));
+}
+
+function dataLineageContentSignal(text: string): boolean {
+  return /RunEvent|LineageEvent|eventType|_producer|_schemaURL|runId|run_uuid|namespace|InputDataset|OutputDataset|columnLineage|inputFields|manifest\.json|catalog\.json|run_results|parent_map|child_map|depends_on|lineage_events|dataset_facets|job_facets|run_facets|Marquez|openlineage/i.test(text);
+}
+
+function dataLineageSetupsFromSources(sourceFiles: DataLineageSourceFile[]): DataLineageReadinessReport["lineageSetups"] {
+  const rows: DataLineageReadinessReport["lineageSetups"] = [];
+  for (const source of sourceFiles) {
+    const eventCount = countMatches(source.text, /RunEvent|LineageEvent|eventType|START|RUNNING|COMPLETE|FAIL|ABORT|OpenLineage/gi);
+    const datasetCount = countMatches(source.text, /InputDataset|OutputDataset|inputs|outputs|datasetNamespace|datasetName|DatasetId|DatasetVersion|dataset_version/gi);
+    const jobCount = countMatches(source.text, /jobName|job_name|JobFacet|JobId|job_namespace|jobs:|job name/gi);
+    const runCount = countMatches(source.text, /runId|run_id|run_uuid|RunFacet|RunState|runs:|run state/gi);
+    const facetCount = countMatches(source.text, /facet|facets|_schemaURL|_producer|RunFacet|JobFacet|DatasetFacet|nominalTime|parent|ownership|schemaURL/gi);
+    const columnLineageCount = countMatches(source.text, /columnLineage|ColumnLineage|inputFields|field_mapping|DatasetField|column lineage|field mapping/gi);
+    const artifactCount = countMatches(source.text, /manifest\.json|catalog\.json|run_results\.json|sources\.json|parent_map|child_map|depends_on|unique_id|dbt docs generate|dbt ls/gi);
+    const ciCount = countMatches(source.text, /github actions|\.github\/workflows|openlineage|dbt docs generate|dbt ls|upload-artifact|lineage export|Marquez|marquez/gi);
+    const totalSignals = eventCount + datasetCount + jobCount + runCount + facetCount + columnLineageCount + artifactCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: dataLineageTool(source),
+      eventCount,
+      datasetCount,
+      jobCount,
+      runCount,
+      facetCount,
+      columnLineageCount,
+      artifactCount,
+      ciCount,
+      readiness: (eventCount + artifactCount) > 0 && datasetCount > 0 && (facetCount + columnLineageCount + ciCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} data lineage readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.eventCount + b.datasetCount + b.jobCount + b.runCount + b.facetCount + b.columnLineageCount + b.artifactCount + b.ciCount) - (a.eventCount + a.datasetCount + a.jobCount + a.runCount + a.facetCount + a.columnLineageCount + a.artifactCount + a.ciCount))
+    .slice(0, 60);
+}
+
+function dataLineageTool(source: DataLineageSourceFile): DataLineageReadinessReport["lineageSetups"][number]["tool"] {
+  if (/marquez/i.test(source.filePath) || /Marquez|lineage_events|dataset_facets|job_facets|run_facets|POST \/lineage/i.test(source.text)) return "marquez";
+  if (/openlineage|open-lineage/i.test(source.filePath) || /OpenLineage|RunEvent|LineageEvent|InputDataset|OutputDataset/i.test(source.text)) return "openlineage";
+  if (/dbt_project|manifest\.json|catalog\.json|run_results\.json|(^|\/)(dbt|models|target)(\/|$)/i.test(source.filePath) || /dbt docs generate|parent_map|child_map|depends_on|unique_id/i.test(source.text)) return "dbt";
+  if (/airflow/i.test(source.filePath) || /airflow|OpenLineageProvider|DAG\(/i.test(source.text)) return "airflow";
+  if (/spark/i.test(source.filePath) || /spark\.openlineage|SparkListener|LogicalPlan/i.test(source.text)) return "spark";
+  if (/lineage|dataset|job|run/i.test(source.filePath) || /lineage|dataset|job|run/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function dataLineageEventSignals(sourceFiles: DataLineageSourceFile[]): DataLineageReadinessReport["eventSignals"] {
+  const specs: Array<{ signal: DataLineageReadinessReport["eventSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "run-event", pattern: /RunEvent|LineageEvent|OpenLineage\.RunEvent/i, evidence: "OpenLineage run event evidence was detected." },
+    { signal: "event-type", pattern: /eventType|START|RUNNING|COMPLETE|FAIL|ABORT/i, evidence: "event lifecycle type evidence was detected." },
+    { signal: "producer", pattern: /producer|_producer/i, evidence: "producer metadata evidence was detected." },
+    { signal: "schema-url", pattern: /schemaURL|_schemaURL|schemaUrl/i, evidence: "schema URL evidence was detected." },
+    { signal: "event-time", pattern: /eventTime|event_time|lineage_event_time|nominalTime/i, evidence: "event time evidence was detected." },
+    { signal: "run-id", pattern: /runId|run_id|run_uuid/i, evidence: "run ID evidence was detected." }
+  ];
+  return dataLineageSignalFromSpecs(sourceFiles, specs, "event", "signal");
+}
+
+function dataLineageIdentitySignals(sourceFiles: DataLineageSourceFile[]): DataLineageReadinessReport["identitySignals"] {
+  const specs: Array<{ signal: DataLineageReadinessReport["identitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "namespace", pattern: /namespace|job_namespace|namespaceName/i, evidence: "namespace identity evidence was detected." },
+    { signal: "job-name", pattern: /jobName|job_name|job name|JobId/i, evidence: "job name identity evidence was detected." },
+    { signal: "run-id", pattern: /runId|run_id|run_uuid|RunId/i, evidence: "run identity evidence was detected." },
+    { signal: "dataset-namespace", pattern: /datasetNamespace|dataset namespace|DatasetId|namespace.*dataset/i, evidence: "dataset namespace evidence was detected." },
+    { signal: "dataset-name", pattern: /datasetName|dataset_name|DatasetName|relation_name/i, evidence: "dataset name evidence was detected." },
+    { signal: "unique-id", pattern: /unique_id|uniqueId|model\.[^.]+\.|source\.[^.]+\./i, evidence: "dbt unique_id evidence was detected." }
+  ];
+  return dataLineageSignalFromSpecs(sourceFiles, specs, "identity", "signal");
+}
+
+function dataLineageDatasetSignals(sourceFiles: DataLineageSourceFile[]): DataLineageReadinessReport["datasetSignals"] {
+  const specs: Array<{ signal: DataLineageReadinessReport["datasetSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "input-dataset", pattern: /InputDataset|inputs:|\"inputs\"|inputDataset|input dataset/i, evidence: "input dataset edge evidence was detected." },
+    { signal: "output-dataset", pattern: /OutputDataset|outputs:|\"outputs\"|outputDataset|output dataset/i, evidence: "output dataset edge evidence was detected." },
+    { signal: "dataset-version", pattern: /DatasetVersion|dataset_version|DatasetVersionDatasetFacet|version field|externalVersion/i, evidence: "dataset version evidence was detected." },
+    { signal: "schema-facet", pattern: /SchemaDatasetFacet|schema facet|fields:|DatasetField|schemaURL/i, evidence: "schema/dataset field facet evidence was detected." },
+    { signal: "column-lineage", pattern: /columnLineage|ColumnLineage|inputFields|field_mapping|column lineage|field mapping/i, evidence: "column lineage evidence was detected." },
+    { signal: "data-source", pattern: /dataSource|datasource|database|warehouse|relation_name|DbTable|table name/i, evidence: "data source or relation evidence was detected." }
+  ];
+  return dataLineageSignalFromSpecs(sourceFiles, specs, "dataset", "signal");
+}
+
+function dataLineageDbtArtifactSignals(sourceFiles: DataLineageSourceFile[]): DataLineageReadinessReport["dbtArtifactSignals"] {
+  const specs: Array<{ signal: DataLineageReadinessReport["dbtArtifactSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "manifest", pattern: /manifest\.json|ManifestArtifact|manifest:/i, evidence: "dbt manifest evidence was detected." },
+    { signal: "catalog", pattern: /catalog\.json|CatalogArtifact|dbt docs generate/i, evidence: "dbt catalog evidence was detected." },
+    { signal: "run-results", pattern: /run_results\.json|RunResultsArtifact|run_results/i, evidence: "dbt run results evidence was detected." },
+    { signal: "sources", pattern: /sources\.json|sources:|source_status|source freshness/i, evidence: "dbt source artifact evidence was detected." },
+    { signal: "exposures", pattern: /exposures:|exposure\.|exposures\b/i, evidence: "dbt exposure evidence was detected." },
+    { signal: "metrics", pattern: /metrics:|metric\.|metrics\b/i, evidence: "dbt metric evidence was detected." },
+    { signal: "semantic-models", pattern: /semantic_models|semantic model|semantic_models:/i, evidence: "dbt semantic model evidence was detected." },
+    { signal: "parent-child-map", pattern: /parent_map|child_map|build_parent_and_child_maps/i, evidence: "dbt parent/child map evidence was detected." },
+    { signal: "depends-on", pattern: /depends_on|refs:|sources:/i, evidence: "dbt dependency evidence was detected." }
+  ];
+  return dataLineageSignalFromSpecs(sourceFiles, specs, "dbt artifact", "signal");
+}
+
+function dataLineageStorageSignals(sourceFiles: DataLineageSourceFile[]): DataLineageReadinessReport["storageSignals"] {
+  const specs: Array<{ signal: DataLineageReadinessReport["storageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "marquez-api", pattern: /POST [` ]?\/lineage|\/lineage|LineageResource|Marquez/i, evidence: "Marquez/OpenLineage API evidence was detected." },
+    { signal: "lineage-events-table", pattern: /lineage_events|lineage event table/i, evidence: "lineage events table evidence was detected." },
+    { signal: "dataset-facets", pattern: /dataset_facets|dataset facets/i, evidence: "dataset facets storage evidence was detected." },
+    { signal: "job-facets", pattern: /job_facets|job facets/i, evidence: "job facets storage evidence was detected." },
+    { signal: "run-facets", pattern: /run_facets|run facets/i, evidence: "run facets storage evidence was detected." },
+    { signal: "dataset-version", pattern: /DatasetVersionRow|DatasetVersionId|dataset_versions|externalVersion/i, evidence: "dataset version storage evidence was detected." },
+    { signal: "job-version", pattern: /JobVersionRow|JobVersionId|job_versions/i, evidence: "job version storage evidence was detected." }
+  ];
+  return dataLineageSignalFromSpecs(sourceFiles, specs, "storage", "signal");
+}
+
+function dataLineageCiSignals(sourceFiles: DataLineageSourceFile[]): DataLineageReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: DataLineageReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|uses: actions\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "dbt-docs-generate", pattern: /dbt docs generate|dbt docs/i, evidence: "dbt docs artifact generation evidence was detected." },
+    { signal: "openlineage-command", pattern: /openlineage|OPENLINEAGE|dbt-ol|lineage backend/i, evidence: "OpenLineage command/config evidence was detected." },
+    { signal: "lineage-export", pattern: /lineage export|export lineage|lineage artifact|lineage\.json/i, evidence: "lineage export evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|manifest\.json|catalog\.json|run_results\.json|lineage\.json/i, evidence: "artifact upload/output evidence was detected." }
+  ];
+  return dataLineageSignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function dataLineagePackageSignals(sourceFiles: DataLineageSourceFile[]): DataLineageReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DataLineageReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "openlineage", pattern: /openlineage|open-lineage|OpenLineage|RunEvent/i, evidence: "OpenLineage package/API evidence was detected." },
+    { signal: "marquez", pattern: /marquez|Marquez|LineageResource/i, evidence: "Marquez package/API evidence was detected." },
+    { signal: "dbt-core", pattern: /dbt-core|dbt_project|manifest\.json|dbt docs generate/i, evidence: "dbt Core package/artifact evidence was detected." },
+    { signal: "airflow-openlineage", pattern: /airflow-openlineage|apache-airflow-providers-openlineage|OpenLineageProvider/i, evidence: "Airflow OpenLineage package evidence was detected." },
+    { signal: "spark-openlineage", pattern: /spark\.openlineage|openlineage-spark|SparkListener/i, evidence: "Spark OpenLineage package evidence was detected." },
+    { signal: "sqlglot", pattern: /sqlglot|SQLGlot/i, evidence: "SQLGlot lineage/parser package evidence was detected." }
+  ];
+  return dataLineageSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function dataLineageSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DataLineageSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/data-lineage-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }

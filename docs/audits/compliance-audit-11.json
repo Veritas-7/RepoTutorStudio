@@ -1,6 +1,6 @@
 {
   "iteration": 11,
-  "createdAt": "2026-06-05T04:00:03.776Z",
+  "createdAt": "2026-06-05T04:14:21.442Z",
   "checks": [
     {
       "name": "project setup",
@@ -375,6 +375,13 @@
     },
     {
       "name": "data quality readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "data lineage readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

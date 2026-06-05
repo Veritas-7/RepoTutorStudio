@@ -1,6 +1,6 @@
 # Compliance Audit 1
 
-Created: 2026-06-05T03:59:05.500Z
+Created: 2026-06-05T04:13:14.672Z
 
 Status: PASS
 
@@ -323,6 +323,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - data quality readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - data lineage readiness report
 
 - missing files: none
 - missing strings: none
