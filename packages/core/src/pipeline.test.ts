@@ -123,6 +123,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "deployment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "serverless-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "mobile-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "desktop-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "edge-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "compose-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "devcontainer-readiness-report.json"))).resolves.toBeUndefined();
@@ -250,6 +251,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "deployment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "serverless-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mobile-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "desktop-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "edge-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "compose-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "devcontainer-readiness.md"))).resolves.toBeUndefined();
@@ -377,6 +379,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "deployment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "serverless-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mobile-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "desktop-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "edge-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "compose-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "devcontainer-readiness.html"))).resolves.toBeUndefined();
@@ -535,6 +538,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/deployment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/serverless-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/mobile-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/desktop-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/edge-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/compose-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/devcontainer-readiness.html\"");
@@ -2711,6 +2715,19 @@ describe("RepoTutor core pipeline", () => {
     expect(mobileReadinessMarkdown).toContain("# Mobile Readiness");
     expect(mobileReadinessMarkdown).toContain("Source pattern: Expo");
     expect(mobileReadinessMarkdown).toContain("## Build Signals");
+    const desktopReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "desktop-readiness-report.json"), "utf8");
+    expect(desktopReadinessText).toContain("Tauri tauri.conf.json capabilities permissions bundle updater createUpdaterArtifacts signing notarization Electron electron-builder electron-forge autoUpdater Wails wails.json wails build desktop app packaging");
+    expect(desktopReadinessText).toContain("\"desktopSetups\"");
+    expect(desktopReadinessText).toContain("\"permissionSignals\"");
+    expect(desktopReadinessText).toContain("\"releaseSignals\"");
+    const desktopReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "desktop-readiness.html"), "utf8");
+    expect(desktopReadinessHtml).toContain("Desktop Readiness");
+    expect(desktopReadinessHtml).toContain("desktop-readiness-card");
+    expect(desktopReadinessHtml).toContain("data-source-pattern=\"Tauri\"");
+    const desktopReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "desktop-readiness.md"), "utf8");
+    expect(desktopReadinessMarkdown).toContain("# Desktop Readiness");
+    expect(desktopReadinessMarkdown).toContain("Source pattern: Tauri");
+    expect(desktopReadinessMarkdown).toContain("## Permission Signals");
     const edgeReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "edge-readiness-report.json"), "utf8");
     expect(edgeReadinessText).toContain("Cloudflare Workers wrangler.toml compatibility_date main fetch handler bindings kv_namespaces r2_buckets d1_databases durable_objects queues services vars routes workers_dev wrangler dev deploy tail secret Miniflare vitest-pool-workers");
     expect(edgeReadinessText).toContain("\"edgeSetups\"");
@@ -2958,6 +2975,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/feature-flag-readiness.html");
     expect(exportManifestText).toContain("html/rate-limit-readiness.html");
     expect(exportManifestText).toContain("html/error-tracking-readiness.html");
+    expect(exportManifestText).toContain("html/desktop-readiness.html");
     expect(exportManifestText).toContain("html/edge-readiness.html");
     expect(exportManifestText).toContain("html/compose-readiness.html");
     expect(exportManifestText).toContain("html/devcontainer-readiness.html");
@@ -3108,6 +3126,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
     expect(learningPathHtml).toContain("rate-limit-readiness.html");
     expect(learningPathHtml).toContain("error-tracking-readiness.html");
+    expect(learningPathHtml).toContain("desktop-readiness.html");
     expect(learningPathHtml).toContain("llm-eval-readiness.html");
     expect(learningPathHtml).toContain("llm-observability-readiness.html");
     expect(learningPathHtml).toContain("vector-db-readiness.html");
@@ -4442,6 +4461,196 @@ describe("RepoTutor core pipeline", () => {
     expect(report.packageSignals.some((item) => item.signal === "expo-dev-client" && item.readiness === "ready")).toBe(true);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "mobile-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "mobile-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects Tauri desktop readiness without running native build tools", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-desktop-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-desktop-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src-tauri", "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src-tauri", "capabilities"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src-tauri", "permissions"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src-tauri", "icons"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "electron"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "desktop"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "desktop-demo",
+      version: "1.0.0",
+      main: "electron/main.js",
+      scripts: {
+        "tauri:dev": "tauri dev",
+        "tauri:info": "tauri info",
+        "tauri:build": "tauri build --bundles app,dmg,nsis,msi,appimage",
+        "electron:build": "electron-builder --mac --win --linux",
+        "wails:build": "wails build -platform darwin/universal,windows/amd64,linux/amd64"
+      },
+      dependencies: {
+        "@tauri-apps/api": "^2.0.0",
+        "@tauri-apps/plugin-opener": "^2.0.0",
+        "@tauri-apps/plugin-updater": "^2.0.0",
+        electron: "^35.0.0",
+        wails: "^3.0.0"
+      },
+      devDependencies: {
+        "@tauri-apps/cli": "^2.0.0",
+        "electron-builder": "^26.0.0",
+        "electron-forge": "^7.0.0",
+        "@electron/notarize": "^3.0.0"
+      },
+      build: {
+        appId: "com.example.desktopdemo",
+        mac: { target: ["dmg"], hardenedRuntime: true, entitlements: "build/entitlements.plist" },
+        win: { target: ["nsis", "msi"] },
+        linux: { target: ["AppImage", "deb"] },
+        publish: ["github"]
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src-tauri", "tauri.conf.json"), JSON.stringify({
+      productName: "Desktop Demo",
+      version: "1.0.0",
+      identifier: "com.example.desktopdemo",
+      build: {
+        beforeDevCommand: "pnpm dev",
+        beforeBuildCommand: "pnpm build",
+        devUrl: "http://localhost:5173",
+        frontendDist: "../dist"
+      },
+      app: {
+        withGlobalTauri: true,
+        security: { csp: "default-src 'self'" },
+        windows: [{ label: "main", title: "Desktop Demo", width: 1200, height: 800, resizable: true }]
+      },
+      bundle: {
+        active: true,
+        targets: ["app", "dmg", "nsis", "msi", "appimage"],
+        icon: ["icons/icon.icns", "icons/icon.ico", "icons/icon.png"],
+        resources: ["resources/**"],
+        fileAssociations: [{ ext: ["demo"], name: "Desktop Demo Document" }],
+        macOS: { hardenedRuntime: true, entitlements: "Entitlements.plist" },
+        windows: { nsis: { installerIcon: "icons/icon.ico" } },
+        linux: { appimage: { bundleMediaFramework: true } }
+      },
+      plugins: {
+        updater: {
+          active: true,
+          endpoints: ["https://example.com/latest.json"],
+          pubkey: "TAURI_PUBKEY",
+          createUpdaterArtifacts: true
+        },
+        opener: {}
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src-tauri", "Cargo.toml"), [
+      "[package]",
+      "name = \"desktop-demo\"",
+      "version = \"1.0.0\"",
+      "[build-dependencies]",
+      "tauri-build = \"2\"",
+      "[dependencies]",
+      "tauri = { version = \"2\", features = [\"tray-icon\", \"devtools\"] }",
+      "tauri-plugin-opener = \"2\"",
+      "tauri-plugin-updater = \"2\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src-tauri", "src", "main.rs"), [
+      "#[tauri::command]",
+      "fn greet(name: String) -> String { format!(\"Hello {name}\") }",
+      "fn main() {",
+      "  tauri::Builder::default()",
+      "    .plugin(tauri_plugin_opener::init())",
+      "    .invoke_handler(tauri::generate_handler![greet])",
+      "    .setup(|app| { let _ = app.handle(); Ok(()) })",
+      "    .run(tauri::generate_context!())",
+      "    .expect(\"error while running tauri application\");",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src-tauri", "capabilities", "default.json"), JSON.stringify({
+      identifier: "default",
+      windows: ["main"],
+      permissions: [
+        "core:default",
+        "opener:allow-open-url",
+        "updater:allow-check",
+        "updater:allow-download-and-install",
+        "fs:allow-read-text-file"
+      ]
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src-tauri", "permissions", "fs.toml"), "identifier = \"fs-scope\"\ndescription = \"allow scoped read\"\ncommands.allow = [\"read_text_file\"]\n");
+    await fs.writeFile(path.join(sourceRoot, "src-tauri", "Entitlements.plist"), "<plist><dict><key>com.apple.security.app-sandbox</key><true/><key>com.apple.security.cs.allow-jit</key><true/></dict></plist>\n");
+    await fs.writeFile(path.join(sourceRoot, "electron", "main.js"), [
+      "const { app, BrowserWindow, ipcMain, Menu, Tray, dialog, protocol, shell } = require('electron');",
+      "const { autoUpdater } = require('electron-updater');",
+      "let tray;",
+      "function createWindow() {",
+      "  tray = new Tray('icon.png');",
+      "  const win = new BrowserWindow({ webPreferences: { preload: __dirname + '/preload.js', contextIsolation: true, sandbox: true }});",
+      "  win.loadURL('app://index.html');",
+      "  autoUpdater.checkForUpdatesAndNotify();",
+      "  shell.openExternal('https://example.com');",
+      "}",
+      "app.whenReady().then(() => { protocol.registerFileProtocol('app', () => {}); Menu.setApplicationMenu(Menu.buildFromTemplate([])); createWindow(); });",
+      "ipcMain.handle('dialog:open', () => dialog.showOpenDialog({}));"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "electron", "preload.js"), [
+      "const { contextBridge, ipcRenderer } = require('electron');",
+      "contextBridge.exposeInMainWorld('desktopApi', { open: () => ipcRenderer.invoke('dialog:open') });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "wails.json"), JSON.stringify({
+      name: "Desktop Demo",
+      outputfilename: "desktop-demo",
+      "frontend:install": "pnpm install",
+      "frontend:build": "pnpm build",
+      "frontend:dev:watcher": "pnpm dev",
+      author: { name: "RepoTutor" }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "desktop", "README.md"), "Desktop deep-link protocol and file-associations notes for Tauri, Electron, and Wails packaging.\n");
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "desktop.yml"), [
+      "name: desktop",
+      "on: [push]",
+      "jobs:",
+      "  build:",
+      "    runs-on: macos-latest",
+      "    steps:",
+      "      - run: pnpm tauri info",
+      "      - run: pnpm tauri build --bundles app,dmg,nsis,msi,appimage",
+      "      - run: pnpm electron-builder --mac --win --linux",
+      "      - run: wails build -platform darwin/universal,windows/amd64,linux/amd64",
+      "      - run: echo TAURI_SIGNING_PRIVATE_KEY APPLE_ID APPLE_TEAM_ID codesign notarize createUpdaterArtifacts",
+      "      - uses: actions/upload-artifact@v4",
+      "      - uses: softprops/action-gh-release@v2"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "desktop-readiness-report.json"), "utf8")) as {
+      desktopSetups: Array<{ filePath: string; framework: string; configCount: number; windowCount: number; commandCount: number; permissionCount: number; bundleCount: number; updaterCount: number; signingCount: number; platformCount: number; packageCount: number }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      configSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      permissionSignals: Array<{ signal: string; readiness: string }>;
+      bundleSignals: Array<{ signal: string; readiness: string }>;
+      releaseSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const tauriConfig = report.desktopSetups.find((item) => item.filePath === "src-tauri/tauri.conf.json");
+    expect(report.desktopSetups.length).toBeGreaterThan(0);
+    expect(tauriConfig?.framework).toBe("tauri");
+    expect(tauriConfig?.configCount).toBeGreaterThan(0);
+    expect(tauriConfig?.permissionCount).toBeGreaterThan(0);
+    expect(tauriConfig?.bundleCount).toBeGreaterThan(0);
+    expect(tauriConfig?.updaterCount).toBeGreaterThan(0);
+    expect(tauriConfig?.signingCount).toBeGreaterThan(0);
+    expect(report.desktopSetups.some((item) => item.framework === "electron" && item.commandCount > 0)).toBe(true);
+    expect(report.desktopSetups.some((item) => item.framework === "wails" && item.configCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["tauri", "electron", "wails"]));
+    expect(readySignals(report.configSignals)).toEqual(expect.arrayContaining(["tauri-conf", "wails-json", "electron-builder", "forge-config", "package-main", "cargo-manifest", "frontend-dist", "dev-url", "identifier"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["window", "tray", "menu", "dialog", "deep-link", "file-association", "custom-protocol", "ipc"]));
+    expect(readySignals(report.permissionSignals)).toEqual(expect.arrayContaining(["tauri-capabilities", "permissions", "csp", "entitlements", "sandbox", "shell-open", "fs-scope", "global-tauri"]));
+    expect(readySignals(report.bundleSignals)).toEqual(expect.arrayContaining(["bundle-targets", "icons", "resources", "macos", "windows", "linux", "dmg", "nsis", "appimage", "msi"]));
+    expect(readySignals(report.releaseSignals)).toEqual(expect.arrayContaining(["updater", "updater-artifacts", "signing", "notarization", "hardened-runtime", "ci-build", "artifact-upload", "release-draft", "version-sync"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["tauri-cli", "tauri-api", "tauri-plugin", "electron", "electron-builder", "electron-forge", "electron-notarize", "wails", "wails-cli"]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "desktop-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "desktop-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "desktop-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects Cloudflare Workers edge readiness in Wrangler config and handlers", async () => {

@@ -7097,6 +7097,80 @@ export const MobileReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DesktopReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  desktopSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["tauri", "electron", "wails", "neutralino", "desktop-webview", "unknown"]),
+    configCount: z.number().int().nonnegative(),
+    windowCount: z.number().int().nonnegative(),
+    commandCount: z.number().int().nonnegative(),
+    permissionCount: z.number().int().nonnegative(),
+    bundleCount: z.number().int().nonnegative(),
+    updaterCount: z.number().int().nonnegative(),
+    signingCount: z.number().int().nonnegative(),
+    platformCount: z.number().int().nonnegative(),
+    packageCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["tauri", "electron", "wails", "neutralino", "webview", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["tauri-conf", "wails-json", "electron-builder", "forge-config", "package-main", "cargo-manifest", "frontend-dist", "dev-url", "identifier", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runtimeSignals: z.array(z.object({
+    signal: z.enum(["window", "multi-window", "tray", "menu", "dialog", "deep-link", "file-association", "custom-protocol", "ipc", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  permissionSignals: z.array(z.object({
+    signal: z.enum(["tauri-capabilities", "permissions", "csp", "allowlist", "entitlements", "sandbox", "shell-open", "fs-scope", "global-tauri", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  bundleSignals: z.array(z.object({
+    signal: z.enum(["bundle-targets", "icons", "resources", "macos", "windows", "linux", "dmg", "nsis", "appimage", "msi", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  releaseSignals: z.array(z.object({
+    signal: z.enum(["updater", "updater-artifacts", "signing", "notarization", "hardened-runtime", "ci-build", "artifact-upload", "release-draft", "version-sync", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["tauri-cli", "tauri-api", "tauri-plugin", "electron", "electron-builder", "electron-forge", "electron-notarize", "wails", "wails-cli", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const EdgeReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7899,6 +7973,7 @@ export type InfrastructureReadinessReport = z.infer<typeof InfrastructureReadine
 export type DeploymentReadinessReport = z.infer<typeof DeploymentReadinessReportSchema>;
 export type ServerlessReadinessReport = z.infer<typeof ServerlessReadinessReportSchema>;
 export type MobileReadinessReport = z.infer<typeof MobileReadinessReportSchema>;
+export type DesktopReadinessReport = z.infer<typeof DesktopReadinessReportSchema>;
 export type EdgeReadinessReport = z.infer<typeof EdgeReadinessReportSchema>;
 export type ComposeReadinessReport = z.infer<typeof ComposeReadinessReportSchema>;
 export type DevContainerReadinessReport = z.infer<typeof DevContainerReadinessReportSchema>;
