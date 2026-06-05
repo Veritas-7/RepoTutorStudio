@@ -42,6 +42,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "flaky-test-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-impact-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-reporting-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "chaos-engineering-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "accessibility-report.json"))).resolves.toBeUndefined();
@@ -176,6 +177,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "flaky-test-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-impact-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-reporting-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "chaos-engineering-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "accessibility.md"))).resolves.toBeUndefined();
@@ -313,6 +315,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "flaky-test-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "test-impact-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "test-reporting-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "chaos-engineering-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "accessibility.html"))).resolves.toBeUndefined();
@@ -477,6 +480,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/flaky-test-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/test-impact-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/test-reporting-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/integration-test-environment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/chaos-engineering-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/accessibility.html\"");
@@ -1105,6 +1109,27 @@ describe("RepoTutor core pipeline", () => {
     expect(testImpactMarkdown).toContain("Source pattern: Test impact readiness");
     expect(testImpactMarkdown).toContain("## Selection Signals");
     expect(testImpactMarkdown).toContain("## Cache Signals");
+    const testReportingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "test-reporting-readiness-report.json"), "utf8");
+    expect(testReportingText).toContain("Test reporting readiness CTRF JSON Allure results JUnit XML GitHub annotations checks summaries artifacts history");
+    expect(testReportingText).toContain("\"reportSetups\"");
+    expect(testReportingText).toContain("\"formatSignals\"");
+    expect(testReportingText).toContain("\"adapterSignals\"");
+    expect(testReportingText).toContain("\"ciSignals\"");
+    expect(testReportingText).toContain("\"outputSignals\"");
+    expect(testReportingText).toContain("\"qualitySignals\"");
+    expect(testReportingText).toContain("\"packageSignals\"");
+    expect(testReportingText).toContain("npx jest --ci --reporters=default --reporters=jest-junit");
+    const testReportingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "test-reporting-readiness.html"), "utf8");
+    expect(testReportingHtml).toContain("Test Reporting Readiness");
+    expect(testReportingHtml).toContain("test-reporting-readiness-card");
+    expect(testReportingHtml).toContain("data-source-pattern=\"Test Reporting\"");
+    expect(testReportingHtml).toContain("Adapter Signals");
+    expect(testReportingHtml).toContain("Output Signals");
+    const testReportingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "test-reporting-readiness.md"), "utf8");
+    expect(testReportingMarkdown).toContain("# Test Reporting Readiness");
+    expect(testReportingMarkdown).toContain("Source pattern: Test reporting readiness");
+    expect(testReportingMarkdown).toContain("## Adapter Signals");
+    expect(testReportingMarkdown).toContain("## Quality Signals");
     const integrationTestEnvironmentText = await fs.readFile(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"), "utf8");
     expect(integrationTestEnvironmentText).toContain("Testcontainers GenericContainer DockerContainer DockerComposeEnvironment DockerCompose wait strategies exposed ports env lifecycle stop Ryuk resource reaper pytest beforeAll afterAll");
     expect(integrationTestEnvironmentText).toContain("\"integrationSetups\"");
@@ -3087,6 +3112,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/e2e.html");
     expect(exportManifestText).toContain("html/flaky-test-readiness.html");
     expect(exportManifestText).toContain("html/test-impact-readiness.html");
+    expect(exportManifestText).toContain("html/test-reporting-readiness.html");
     expect(exportManifestText).toContain("html/integration-test-environment-readiness.html");
     expect(exportManifestText).toContain("html/chaos-engineering-readiness.html");
     expect(exportManifestText).toContain("html/accessibility.html");
@@ -3243,6 +3269,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("e2e.html");
     expect(learningPathHtml).toContain("flaky-test-readiness.html");
     expect(learningPathHtml).toContain("test-impact-readiness.html");
+    expect(learningPathHtml).toContain("test-reporting-readiness.html");
     expect(learningPathHtml).toContain("integration-test-environment-readiness.html");
     expect(learningPathHtml).toContain("chaos-engineering-readiness.html");
     expect(learningPathHtml).toContain("accessibility.html");
@@ -5473,6 +5500,207 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-impact-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-impact-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "test-impact-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects test reporting readiness without running test toolchains", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-test-reporting-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-test-reporting-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "reports"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test-results"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "allure-results"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "test:jest": "jest --ci --reporters=default --reporters=jest-junit",
+        "test:pytest": "pytest --junitxml=reports/pytest.xml",
+        "test:playwright": "playwright test --reporter=list,junit,html,json",
+        "test:vitest": "vitest run --reporter=default --reporter=junit --outputFile.junit=reports/vitest-junit.xml",
+        "report:allure": "allure generate ./allure-results -o ./allure-report && allure open ./allure-report",
+        "report:ctrf": "node -e \"console.log('ctrf-report.json results.summary.tests results.tests duration start stop')\""
+      },
+      devDependencies: {
+        "@playwright/test": "^1.54.0",
+        "allure": "^3.0.0",
+        "allure-js-commons": "^3.0.0",
+        "allure-jest": "^3.0.0",
+        "allure-playwright": "^3.0.0",
+        "ctrf": "^0.0.0",
+        "jest": "^30.0.0",
+        "jest-junit": "^16.0.0",
+        "junit-report-builder": "^5.0.0",
+        "vitest": "^3.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "jest.config.js"), [
+      "module.exports = {",
+      "  reporters: [",
+      "    'default',",
+      "    ['jest-junit', { outputDirectory: 'reports/junit', outputName: 'jest-junit.xml' }],",
+      "    ['allure-jest', { resultsDir: 'allure-results' }]",
+      "  ]",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "vitest.config.ts"), [
+      "import { defineConfig } from 'vitest/config';",
+      "export default defineConfig({",
+      "  test: {",
+      "    reporters: ['default', 'junit'],",
+      "    outputFile: { junit: 'reports/vitest-junit.xml' }",
+      "  }",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "playwright.config.ts"), [
+      "import { defineConfig } from '@playwright/test';",
+      "export default defineConfig({",
+      "  reporter: [",
+      "    ['list'],",
+      "    ['junit', { outputFile: 'reports/playwright-junit.xml' }],",
+      "    ['html', { outputFolder: 'playwright-report' }],",
+      "    ['json', { outputFile: 'reports/playwright.json' }],",
+      "    ['allure-playwright', { resultsDir: 'allure-results' }]",
+      "  ]",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "dependencies = ['pytest', 'allure-pytest']",
+      "[tool.pytest.ini_options]",
+      "addopts = '--junitxml=reports/pytest.xml --alluredir=allure-results'",
+      "junit_family = 'xunit2'"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "allurerc.mjs"), [
+      "export default {",
+      "  output: './allure-report',",
+      "  resultsDir: './allure-results',",
+      "  categories: [{ name: 'flaky analysis', matchedStatuses: ['broken'] }],",
+      "  environmentInfo: { appName: 'RepoTutor fixture', buildName: 'test-reporting' },",
+      "  executor: { name: 'GitHub Actions', buildUrl: 'https://example.test/build', reportUrl: 'https://example.test/report', jobName: 'reports' }",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "jest-reporting.yml"), [
+      "name: jest reporting",
+      "on:",
+      "  pull_request:",
+      "permissions:",
+      "  checks: write",
+      "  contents: read",
+      "jobs:",
+      "  junit:",
+      "    if: ${{ !cancelled() }}",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npm run test:jest",
+      "      - run: echo '### JUnit test report summary' >> $GITHUB_STEP_SUMMARY",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: junit-reports",
+      "          path: reports/**/*.xml",
+      "      - uses: dorny/test-reporter@v3",
+      "        with:",
+      "          name: JUnit Tests",
+      "          path: reports/**/*.xml",
+      "          reporter: jest-junit",
+      "          max-annotations: 10",
+      "          fail-on-error: true",
+      "          fail-on-empty: true",
+      "          summary_file: reports/test-summary.md"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "test-reporting.yml"), [
+      "name: test reporting",
+      "on:",
+      "  pull_request:",
+      "  workflow_run:",
+      "    workflows: ['tests']",
+      "    types: [completed]",
+      "permissions:",
+      "  checks: write",
+      "  contents: read",
+      "jobs:",
+      "  reports:",
+      "    if: ${{ !cancelled() }}",
+      "    strategy:",
+      "      matrix:",
+      "        shard: [1, 2]",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npm run test:jest",
+      "      - run: pytest --junitxml=reports/pytest.xml",
+      "      - run: npx playwright test --reporter=list,junit,html,json",
+      "      - run: npx allure generate ./allure-results -o ./allure-report",
+      "      - run: echo '### Test report summary threshold pass rate duration owner labels' >> $GITHUB_STEP_SUMMARY",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: test-report-artifacts",
+      "          path: |",
+      "            reports/**/*.xml",
+      "            reports/**/*.json",
+      "            test-results/**/*.json",
+      "            allure-results",
+      "            allure-report",
+      "            ctrf-report.json",
+      "      - uses: actions/download-artifact@v4",
+      "      - uses: dorny/test-reporter@v3",
+      "        with:",
+      "          name: JUnit Tests",
+      "          path: reports/**/*.xml",
+      "          reporter: python-xunit",
+      "          max-annotations: 10",
+      "          fail-on-error: true",
+      "          fail-on-empty: true",
+      "          summary: true",
+      "          summary_file: reports/test-summary.md",
+      "      - uses: ctrf-io/github-test-reporter@v1",
+      "        with:",
+      "          report-path: ctrf-report.json",
+      "      - uses: EnricoMi/publish-unit-test-result-action@v2",
+      "        with:",
+      "          files: reports/**/*.xml"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Test Reporting Study",
+      "CTRF JSON stores results.summary.tests, results.tests, duration, start, and stop in ctrf-report.json.",
+      "Allure history-aware reports use retries, flaky analysis, categories, environment metadata, executor metadata, attachments, screenshots, logs, traces, and API payloads.",
+      "dorny/test-reporter can parse dotnet-trx, java-junit, jest-junit, mocha-json, and python-xunit for annotations and Check Run output.",
+      "GitHub annotations, checks, job summary, artifact trend history, owner labels, duration thresholds, and Markdown summary files are required.",
+      "Use publish-unit-test-result for pull request comments when checks are unavailable."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "test-reporting-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      reportSetups: Array<{ filePath: string; format: string; junitCount: number; ctrfCount: number; allureCount: number; outputCount: number; historyCount: number; readiness: string }>;
+      formatSignals: Array<{ signal: string; readiness: string }>;
+      adapterSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      outputSignals: Array<{ signal: string; readiness: string }>;
+      qualitySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("Test reporting readiness CTRF JSON Allure results JUnit XML GitHub annotations checks summaries artifacts history");
+    expect(report.reportSetups.some((item) => item.format === "junit" && item.readiness === "ready" && item.junitCount > 0 && item.outputCount > 0)).toBe(true);
+    expect(report.reportSetups.some((item) => item.format === "allure" && item.allureCount > 0 && item.outputCount > 0 && item.historyCount > 0)).toBe(true);
+    expect(report.reportSetups.some((item) => item.format === "ctrf" && item.ctrfCount > 0 && item.outputCount > 0)).toBe(true);
+    expect(readySignals(report.formatSignals)).toEqual(expect.arrayContaining(["junit-xml", "ctrf-json", "allure-results", "allure-report", "trx", "xunit", "mocha-json", "json", "html", "markdown"]));
+    expect(readySignals(report.adapterSignals)).toEqual(expect.arrayContaining(["jest-junit", "vitest-junit", "pytest-junitxml", "playwright-reporters", "allure-js", "allure-pytest", "ctrf-reporter", "dorny-test-reporter", "github-test-reporter", "publish-unit-test-result"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "workflow-run", "checks-write", "job-summary", "annotations", "upload-artifact", "download-artifact", "pull-request", "always-run", "matrix"]));
+    expect(readySignals(report.outputSignals)).toEqual(expect.arrayContaining(["report-path", "glob-path", "results-dir", "output-file", "summary-file", "html-report", "history-trend", "attachments", "environment-metadata", "executor-metadata"]));
+    expect(readySignals(report.qualitySignals)).toEqual(expect.arrayContaining(["fail-on-error", "fail-on-empty", "max-annotations", "threshold-summary", "rerun-history", "flaky-analysis", "categories", "owner-labels", "duration"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["jest-junit", "allure", "allure-js", "allure-pytest", "ctrf", "test-reporter", "publish-unit-test-result", "junit"]));
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "npx jest --ci --reporters=default --reporters=jest-junit",
+      "pytest --junitxml=reports/pytest.xml",
+      "npx playwright test --reporter=list,junit,html",
+      "npx allure generate ./allure-results -o ./allure-report"
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-reporting-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-reporting-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "test-reporting-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {

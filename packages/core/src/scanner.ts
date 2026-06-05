@@ -53,6 +53,7 @@ import {
   E2eReport,
   FlakyTestReadinessReport,
   TestImpactReadinessReport,
+  TestReportingReadinessReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
   AccessibilityReport,
@@ -206,6 +207,7 @@ export interface AnalysisBundle {
   e2eReport: E2eReport;
   flakyTestReadinessReport: FlakyTestReadinessReport;
   testImpactReadinessReport: TestImpactReadinessReport;
+  testReportingReadinessReport: TestReportingReadinessReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
   accessibilityReport: AccessibilityReport;
@@ -359,6 +361,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
   const flakyTestReadinessReport = await buildFlakyTestReadinessReport(walk);
   const testImpactReadinessReport = await buildTestImpactReadinessReport(walk);
+  const testReportingReadinessReport = await buildTestReportingReadinessReport(walk);
   const integrationTestEnvironmentReadinessReport = await buildIntegrationTestEnvironmentReadinessReport(walk, runtimeEnvironmentReport);
   const chaosEngineeringReadinessReport = await buildChaosEngineeringReadinessReport(walk);
   const accessibilityReport = await buildAccessibilityReport(walk, e2eReport);
@@ -454,7 +457,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -7302,6 +7305,284 @@ function testImpactSignalFromSpecs<T extends Record<K, string> & { pattern: RegE
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/test-impact-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildTestReportingReadinessReport(walk: WalkResult): Promise<TestReportingReadinessReport> {
+  const sourceFiles = await testReportingSourceFiles(walk);
+  const reportSetups = testReportingSetupRows(sourceFiles);
+  const formatSignals = testReportingFormatSignals(sourceFiles);
+  const adapterSignals = testReportingAdapterSignals(sourceFiles);
+  const ciSignals = testReportingCiSignals(sourceFiles);
+  const outputSignals = testReportingOutputSignals(sourceFiles);
+  const qualitySignals = testReportingQualitySignals(sourceFiles);
+  const packageSignals = testReportingPackageSignals(sourceFiles);
+  const hasFormat = formatSignals.some((item) => item.readiness === "ready");
+  const hasAdapter = adapterSignals.some((item) => item.readiness === "ready");
+  const hasOutput = outputSignals.some((item) => item.readiness === "ready");
+  const hasCiSurface = ciSignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: TestReportingReadinessReport["riskQueue"] = [];
+  if (!hasFormat && !hasAdapter) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a machine-readable test report format before relying on CI test reporting.",
+      why: "JUnit XML, CTRF JSON, Allure results, TRX, xUnit, or Mocha JSON is needed before tools can parse failures consistently.",
+      relatedHref: "html/test-reporting-readiness.html"
+    });
+  }
+  if ((hasFormat || hasAdapter) && !hasOutput) {
+    riskQueue.push({
+      priority: "high",
+      action: "Declare report output paths, result directories, or glob patterns.",
+      why: "A reporter is not actionable unless CI and humans can find the generated report files.",
+      relatedHref: "html/test-reporting-readiness.html"
+    });
+  }
+  if ((hasFormat || hasAdapter) && !hasCiSurface) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Publish reports through CI summaries, annotations, checks, or artifacts.",
+      why: "Static report files are easy to miss unless the workflow exposes them to pull-request reviewers.",
+      relatedHref: "html/test-reporting-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the original project test commands before treating this as report quality evidence.",
+    why: "RepoTutor records static readiness only; it does not execute tests, parse generated reports, or validate annotations.",
+    relatedHref: "html/test-reporting-readiness.html"
+  });
+
+  return {
+    summary: `Test reporting readiness report: setup ${reportSetups.length}개, format signal ${formatSignals.filter((item) => item.readiness === "ready").length}개, adapter signal ${adapterSignals.filter((item) => item.readiness === "ready").length}개, CI signal ${ciSignals.filter((item) => item.readiness === "ready").length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Test reporting readiness CTRF JSON Allure results JUnit XML GitHub annotations checks summaries artifacts history",
+    reportSetups,
+    formatSignals,
+    adapterSignals,
+    ciSignals,
+    outputSignals,
+    qualitySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx jest --ci --reporters=default --reporters=jest-junit", purpose: "Generate JUnit XML from Jest for CI parsing." },
+      { command: "pytest --junitxml=reports/pytest.xml", purpose: "Generate xUnit/JUnit-style XML from pytest." },
+      { command: "npx playwright test --reporter=list,junit,html", purpose: "Generate list, JUnit, and HTML reports from Playwright." },
+      { command: "npx allure generate ./allure-results -o ./allure-report", purpose: "Render Allure result files into an HTML report." },
+      { command: "rg \"junit|ctrf|allure-results|test-reporter|GITHUB_STEP_SUMMARY|upload-artifact\" .", purpose: "Locate static test-reporting evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 test runner가 JUnit XML, CTRF JSON, Allure results 같은 machine-readable report를 생성하는지 확인하세요.",
+      "report path, result directory, glob, output file이 CI에서 같은 위치를 가리키는지 보세요.",
+      "GitHub annotations, checks, job summary, artifact upload가 PR 리뷰 표면에 연결되는지 확인하세요.",
+      "이 리포트는 정적 readiness만 기록합니다. 실제 report parse와 annotation 품질은 원본 CI에서 검증해야 합니다."
+    ]
+  };
+}
+
+type TestReportingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function testReportingSourceFiles(walk: WalkResult): Promise<TestReportingSourceFile[]> {
+  const files: TestReportingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !testReportingInspectablePath(file.relPath)) continue;
+    const pathCandidate = testReportingPathSignal(file.relPath);
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!pathCandidate && !testReportingContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 170) break;
+  }
+  return files;
+}
+
+function testReportingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|allurerc\.[cm]?[jt]s|allure\.properties|jest\.config\.[cm]?[jt]s|vitest\.config\.[cm]?[jt]s|playwright\.config\.[cm]?[jt]s|pyproject\.toml|pytest\.ini|README\.md|action\.ya?ml)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(js|ts|mjs|cjs|json|ya?ml|toml|ini|md|xml|properties|sh)$/i.test(filePath);
+}
+
+function testReportingPathSignal(filePath: string): boolean {
+  return /(^|\/)(reports?|test-results|allure-results|allure-report|ctrf|junit|xunit|trx|test-reporter|coverage)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function testReportingContentSignal(text: string): boolean {
+  return /(junit|xunit|trx|ctrf|ctrf-report|allure-results|allure-report|allurerc|jest-junit|test-reporter|publish-unit-test-result|github-test-reporter|GITHUB_STEP_SUMMARY|checks:\s*write|upload-artifact|download-artifact|max-annotations|fail-on-empty|summary_file|annotations)/i.test(text);
+}
+
+function testReportingSetupRows(sourceFiles: TestReportingSourceFile[]): TestReportingReadinessReport["reportSetups"] {
+  const rows: TestReportingReadinessReport["reportSetups"] = [];
+  for (const source of sourceFiles) {
+    const junitCount = countMatches(source.text, /junit|xunit|--junitxml|jest-junit|vitest.*junit|reporter:\s*java-junit|reporter:\s*python-xunit/gi);
+    const ctrfCount = countMatches(source.text, /ctrf|ctrf-report\.json|github-test-reporter|common test report format/gi);
+    const allureCount = countMatches(source.text, /allure-results|allure-report|allurerc|allure generate|allure open|allure watch|allure run/gi);
+    const reporterCount = countMatches(source.text, /reporters?|testReporter|test-reporter|publish-unit-test-result|github-test-reporter|jest-junit|mocha-json|dotnet-trx|java-junit|python-xunit/gi);
+    const outputCount = countMatches(source.text, /output(File|Name|Directory)?|report[-_ ]?path|resultsDir|results-dir|path:|glob|reports\/|test-results\/|allure-results|allure-report|ctrf-report\.json/gi);
+    const summaryCount = countMatches(source.text, /GITHUB_STEP_SUMMARY|job summary|Actions Summary|summary_file|summary file|Markdown summary|summary:/gi);
+    const annotationCount = countMatches(source.text, /annotations?|max-annotations|checks?:\s*write|Check Run|check run|pull request annotations?/gi);
+    const artifactCount = countMatches(source.text, /upload-artifact|download-artifact|artifact:|artifacts?|report artifact/gi);
+    const historyCount = countMatches(source.text, /history|trend|rerun|flaky analysis|retries|previous runs?|categories/gi);
+    const metadataCount = countMatches(source.text, /environment|executor|build(Name|Number)?|appName|owner|labels?|attachments?|screenshots?|logs?|traces?/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|GitHub Actions|workflow_run|pull_request|always\(\)|!cancelled\(\)|matrix|runs-on|permissions:|checks:\s*write/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const failPolicyCount = countMatches(source.text, /fail-on-error|fail-on-empty|failOnError|failOnEmpty|max-annotations|threshold|continue-on-error|if:\s*\$\{\{\s*!cancelled\(\)\s*\}\}/gi);
+    const totalSignals = junitCount + ctrfCount + allureCount + reporterCount + outputCount + summaryCount + annotationCount + artifactCount + historyCount + metadataCount + ciCount + failPolicyCount;
+    if (totalSignals === 0 && !testReportingPathSignal(source.filePath)) continue;
+    const readiness = (junitCount + ctrfCount + allureCount + reporterCount) > 0 && outputCount > 0 && (ciCount > 0 || summaryCount > 0 || artifactCount > 0)
+      ? "ready"
+      : totalSignals > 0
+        ? "partial"
+        : "missing";
+    rows.push({
+      filePath: source.filePath,
+      format: testReportingFormat(source.filePath, source.text),
+      junitCount,
+      ctrfCount,
+      allureCount,
+      reporterCount,
+      outputCount,
+      summaryCount,
+      annotationCount,
+      artifactCount,
+      historyCount,
+      metadataCount,
+      ciCount,
+      failPolicyCount,
+      readiness,
+      evidence: `${source.filePath} contains ${totalSignals} test-reporting readiness signal(s).`,
+      sourceHref: source.sourceHref
+    });
+  }
+  const order = { ready: 0, partial: 1, missing: 2 };
+  return rows.sort((a, b) => order[a.readiness] - order[b.readiness] || a.filePath.localeCompare(b.filePath)).slice(0, 90);
+}
+
+function testReportingFormat(filePath: string, text: string): TestReportingReadinessReport["reportSetups"][number]["format"] {
+  if (/allure-results|allure-report|allurerc|allure generate|allure open/i.test(text) || /allure/i.test(filePath)) return "allure";
+  if (/ctrf|ctrf-report\.json|github-test-reporter/i.test(text) || /ctrf/i.test(filePath)) return "ctrf";
+  if (/dotnet-trx|\.trx\b|trx;/i.test(text) || /\.trx$/i.test(filePath)) return "trx";
+  if (/python-xunit|xunit|--junitxml/i.test(text)) return "xunit";
+  if (/mocha-json/i.test(text)) return "mocha-json";
+  if (/junit|jest-junit|java-junit|junit\.xml/i.test(text) || /junit/i.test(filePath)) return "junit";
+  if (/dorny\/test-reporter|publish-unit-test-result|github-test-reporter|checks:\s*write|GITHUB_STEP_SUMMARY/i.test(text)) return "github-action";
+  return testReportingContentSignal(text) ? "custom" : "unknown";
+}
+
+function testReportingFormatSignals(sourceFiles: TestReportingSourceFile[]): TestReportingReadinessReport["formatSignals"] {
+  const specs: Array<{ signal: TestReportingReadinessReport["formatSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "junit-xml", pattern: /junit|jest-junit|--junitxml|junit\.xml|java-junit/i, evidence: "JUnit XML evidence was detected." },
+    { signal: "ctrf-json", pattern: /ctrf|ctrf-report\.json|common test report format/i, evidence: "CTRF JSON evidence was detected." },
+    { signal: "allure-results", pattern: /allure-results|resultsDir.*allure/i, evidence: "Allure results evidence was detected." },
+    { signal: "allure-report", pattern: /allure-report|allure generate|allure open|allure watch/i, evidence: "Allure report evidence was detected." },
+    { signal: "trx", pattern: /dotnet-trx|\.trx\b|trx;/i, evidence: "TRX report evidence was detected." },
+    { signal: "xunit", pattern: /xunit|python-xunit|--junitxml/i, evidence: "xUnit report evidence was detected." },
+    { signal: "mocha-json", pattern: /mocha-json|mocha.*json/i, evidence: "Mocha JSON report evidence was detected." },
+    { signal: "json", pattern: /json report|report\.json|ctrf-report\.json|--json/i, evidence: "JSON report evidence was detected." },
+    { signal: "html", pattern: /html report|allure-report|playwright-report|reporter:\s*html/i, evidence: "HTML report evidence was detected." },
+    { signal: "markdown", pattern: /markdown|summary_file|GITHUB_STEP_SUMMARY/i, evidence: "Markdown summary evidence was detected." }
+  ];
+  return testReportingSignalFromSpecs(sourceFiles, specs, "format", "signal");
+}
+
+function testReportingAdapterSignals(sourceFiles: TestReportingSourceFile[]): TestReportingReadinessReport["adapterSignals"] {
+  const specs: Array<{ signal: TestReportingReadinessReport["adapterSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "jest-junit", pattern: /jest-junit/i, evidence: "jest-junit adapter evidence was detected." },
+    { signal: "vitest-junit", pattern: /vitest.*junit|junit.*vitest/i, evidence: "Vitest JUnit adapter evidence was detected." },
+    { signal: "pytest-junitxml", pattern: /--junitxml|junit_family|pytest.*junit/i, evidence: "pytest JUnit XML evidence was detected." },
+    { signal: "playwright-reporters", pattern: /playwright.*reporter|reporter:\s*\[\[?['"]?(junit|html|json|list)/i, evidence: "Playwright reporter evidence was detected." },
+    { signal: "allure-js", pattern: /allure-(jest|vitest|mocha|playwright|cucumberjs)|allure-js-commons|allure generate|allure-results/i, evidence: "Allure JS evidence was detected." },
+    { signal: "allure-pytest", pattern: /allure-pytest|pytest.*allure/i, evidence: "Allure pytest evidence was detected." },
+    { signal: "ctrf-reporter", pattern: /ctrf|github-test-reporter|ctrf-report\.json/i, evidence: "CTRF reporter evidence was detected." },
+    { signal: "dorny-test-reporter", pattern: /dorny\/test-reporter|test-reporter@v/i, evidence: "dorny/test-reporter evidence was detected." },
+    { signal: "github-test-reporter", pattern: /github-test-reporter@|ctrf-io\/github-test-reporter/i, evidence: "GitHub test reporter evidence was detected." },
+    { signal: "publish-unit-test-result", pattern: /publish-unit-test-result|publish-test-results/i, evidence: "publish unit test result evidence was detected." }
+  ];
+  return testReportingSignalFromSpecs(sourceFiles, specs, "adapter", "signal");
+}
+
+function testReportingCiSignals(sourceFiles: TestReportingSourceFile[]): TestReportingReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: TestReportingReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /^\.github\/workflows\/|GitHub Actions|actions\/checkout/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "workflow-run", pattern: /workflow_run/i, evidence: "workflow_run reporting evidence was detected." },
+    { signal: "checks-write", pattern: /checks:\s*write|Check Run|check run/i, evidence: "checks write evidence was detected." },
+    { signal: "job-summary", pattern: /GITHUB_STEP_SUMMARY|job summary|Actions Summary/i, evidence: "job summary evidence was detected." },
+    { signal: "annotations", pattern: /annotations?|max-annotations/i, evidence: "annotation evidence was detected." },
+    { signal: "upload-artifact", pattern: /upload-artifact|actions\/upload-artifact/i, evidence: "upload artifact evidence was detected." },
+    { signal: "download-artifact", pattern: /download-artifact|actions\/download-artifact/i, evidence: "download artifact evidence was detected." },
+    { signal: "pull-request", pattern: /pull_request|pull request|PR comment/i, evidence: "pull request reporting evidence was detected." },
+    { signal: "always-run", pattern: /always\(\)|!cancelled\(\)|if:\s*\$\{\{\s*!cancelled\(\)\s*\}\}/i, evidence: "always-run report publication evidence was detected." },
+    { signal: "matrix", pattern: /\bmatrix\b|strategy:/i, evidence: "matrix report evidence was detected." }
+  ];
+  return testReportingSignalFromSpecs(sourceFiles, specs, "ci", "signal");
+}
+
+function testReportingOutputSignals(sourceFiles: TestReportingSourceFile[]): TestReportingReadinessReport["outputSignals"] {
+  const specs: Array<{ signal: TestReportingReadinessReport["outputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "report-path", pattern: /report[-_ ]?path|path:\s*['"]?[^'"]*(reports|test-results|ctrf|allure)/i, evidence: "report path evidence was detected." },
+    { signal: "glob-path", pattern: /\*\*\/\*|\*\.xml|\*\.json|fast-glob|glob/i, evidence: "glob path evidence was detected." },
+    { signal: "results-dir", pattern: /resultsDir|results-dir|allure-results|test-results/i, evidence: "result directory evidence was detected." },
+    { signal: "output-file", pattern: /outputFile|outputName|LogFileName|--output|junit\.xml|ctrf-report\.json/i, evidence: "output file evidence was detected." },
+    { signal: "summary-file", pattern: /summary_file|summary file|GITHUB_STEP_SUMMARY/i, evidence: "summary file evidence was detected." },
+    { signal: "html-report", pattern: /html report|allure-report|playwright-report|reporter:\s*html/i, evidence: "HTML report output evidence was detected." },
+    { signal: "history-trend", pattern: /history|trend|previous runs?|rerun/i, evidence: "history/trend evidence was detected." },
+    { signal: "attachments", pattern: /attachments?|screenshots?|logs?|traces?|API payloads?/i, evidence: "attachment evidence was detected." },
+    { signal: "environment-metadata", pattern: /environment|environmentInfo|appName|buildName|buildNumber/i, evidence: "environment metadata evidence was detected." },
+    { signal: "executor-metadata", pattern: /executor|buildUrl|reportUrl|jobName|buildOrder/i, evidence: "executor metadata evidence was detected." }
+  ];
+  return testReportingSignalFromSpecs(sourceFiles, specs, "output", "signal");
+}
+
+function testReportingQualitySignals(sourceFiles: TestReportingSourceFile[]): TestReportingReadinessReport["qualitySignals"] {
+  const specs: Array<{ signal: TestReportingReadinessReport["qualitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "fail-on-error", pattern: /fail-on-error|failOnError/i, evidence: "fail-on-error evidence was detected." },
+    { signal: "fail-on-empty", pattern: /fail-on-empty|failOnEmpty/i, evidence: "fail-on-empty evidence was detected." },
+    { signal: "max-annotations", pattern: /max-annotations|maxAnnotations/i, evidence: "max annotation evidence was detected." },
+    { signal: "threshold-summary", pattern: /threshold|summary.*failed|failed.*summary|pass rate|failure rate/i, evidence: "threshold or summary evidence was detected." },
+    { signal: "rerun-history", pattern: /rerun|history|previous runs?/i, evidence: "rerun/history evidence was detected." },
+    { signal: "flaky-analysis", pattern: /flaky analysis|flaky|retries/i, evidence: "flaky analysis evidence was detected." },
+    { signal: "categories", pattern: /categories|category/i, evidence: "category evidence was detected." },
+    { signal: "owner-labels", pattern: /owner|labels?|tag|suite|feature|story/i, evidence: "owner/label evidence was detected." },
+    { signal: "duration", pattern: /duration|time \[ms\]|start|stop|elapsed/i, evidence: "duration evidence was detected." }
+  ];
+  return testReportingSignalFromSpecs(sourceFiles, specs, "quality", "signal");
+}
+
+function testReportingPackageSignals(sourceFiles: TestReportingSourceFile[]): TestReportingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: TestReportingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "jest-junit", pattern: /"jest-junit"|jest-junit/i, evidence: "jest-junit package evidence was detected." },
+    { signal: "allure", pattern: /"allure"|npx allure|allure generate/i, evidence: "Allure package/CLI evidence was detected." },
+    { signal: "allure-js", pattern: /allure-(jest|vitest|mocha|playwright|cucumberjs)|allure-js-commons/i, evidence: "Allure JS package evidence was detected." },
+    { signal: "allure-pytest", pattern: /allure-pytest/i, evidence: "Allure pytest package evidence was detected." },
+    { signal: "ctrf", pattern: /ctrf|github-test-reporter/i, evidence: "CTRF package evidence was detected." },
+    { signal: "test-reporter", pattern: /dorny\/test-reporter|test-reporter@v/i, evidence: "test-reporter action evidence was detected." },
+    { signal: "publish-unit-test-result", pattern: /publish-unit-test-result|publish-test-results/i, evidence: "publish unit test result action evidence was detected." },
+    { signal: "junit", pattern: /junit|java-junit|python-xunit/i, evidence: "JUnit package/report evidence was detected." }
+  ];
+  return testReportingSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function testReportingSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: TestReportingSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(source.filePath) || spec.pattern.test(source.text) || spec.pattern.test(haystack);
+    });
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/test-reporting-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
