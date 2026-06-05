@@ -23654,6 +23654,148 @@ describe("RepoTutor core pipeline", () => {
     expect(toolbarHtml).toContain("RepoTutor records toolbar/toggle readiness only");
   });
 
+  it("detects scroll area readiness without scrolling viewports", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-scroll-area-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-scroll-area-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "radix-scroll-area.tsx"), [
+      "import * as ScrollArea from '@radix-ui/react-scroll-area';",
+      "export function RadixScrollAreaDemo() {",
+      "  const measurementEvidence = 'ResizeObserver scrollHeight scrollWidth clientHeight clientWidth thumbSize thumbOffset cornerSize ratio scrollProgress';",
+      "  void measurementEvidence;",
+      "  return (",
+      "    <ScrollArea.Root type=\"hover\" dir=\"rtl\" scrollHideDelay={600} data-state=\"visible\" aria-label=\"Scrollable documents\">",
+      "      <ScrollArea.Viewport data-testid=\"scroll-viewport\" style={{ width: 300, height: 200, overflowX: 'scroll', overflowY: 'scroll' }} tabIndex={0}>",
+      "        <div style={{ width: 900, height: 700 }}>Large scrollable content</div>",
+      "      </ScrollArea.Viewport>",
+      "      <ScrollArea.Scrollbar orientation=\"vertical\" forceMount data-orientation=\"vertical\">",
+      "        <ScrollArea.Thumb data-state=\"visible\" />",
+      "      </ScrollArea.Scrollbar>",
+      "      <ScrollArea.Scrollbar orientation=\"horizontal\" forceMount data-orientation=\"horizontal\">",
+      "        <ScrollArea.Thumb data-state=\"visible\" />",
+      "      </ScrollArea.Scrollbar>",
+      "      <ScrollArea.Corner />",
+      "    </ScrollArea.Root>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-scroll-area.tsx"), [
+      "import * as scrollArea from '@zag-js/scroll-area';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "export function ZagScrollAreaDemo() {",
+      "  const service = useMachine(scrollArea.machine, { id: 'docs-scroll-area', dir: 'rtl' });",
+      "  const api = scrollArea.connect(service, normalizeProps);",
+      "  api.scrollTo({ top: 0, left: 0, behavior: 'smooth' });",
+      "  api.scrollToEdge({ edge: 'bottom', behavior: 'smooth' });",
+      "  api.hasOverflowX;",
+      "  api.hasOverflowY;",
+      "  return (",
+      "    <div {...api.getRootProps()} data-overflow-x=\"true\" data-overflow-y=\"true\" data-ownedby=\"docs-scroll-area\">",
+      "      <div {...api.getViewportProps()} role=\"presentation\" tabIndex={0} data-scrolling=\"true\">",
+      "        <div {...api.getContentProps()}>Scrollable content</div>",
+      "      </div>",
+      "      <div {...api.getScrollbarProps({ orientation: 'vertical' })} data-orientation=\"vertical\" role=\"presentation\">",
+      "        <div {...api.getThumbProps({ orientation: 'vertical' })} />",
+      "      </div>",
+      "      <div {...api.getScrollbarProps({ orientation: 'horizontal' })} data-orientation=\"horizontal\" role=\"presentation\">",
+      "        <div {...api.getThumbProps({ orientation: 'horizontal' })} />",
+      "      </div>",
+      "      <div {...api.getCornerProps()} />",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "scroll-area.spec.tsx"), [
+      "import { fireEvent, render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { RadixScrollAreaDemo } from '../src/radix-scroll-area';",
+      "describe('scroll area readiness', () => {",
+      "  it('keeps viewport scrollbar and overflow attributes testable', async () => {",
+      "    render(<RadixScrollAreaDemo />);",
+      "    const viewport = screen.getByTestId('scroll-viewport');",
+      "    expect(viewport).toHaveStyle({ overflowX: 'scroll', overflowY: 'scroll' });",
+      "    expect(screen.getAllByRole('presentation').length).toBeGreaterThanOrEqual(1);",
+      "    expect(document.querySelector('[data-orientation=\"vertical\"]')).toHaveAttribute('data-orientation', 'vertical');",
+      "    fireEvent.scroll(viewport, { target: { scrollTop: 120, scrollLeft: 20 } });",
+      "    fireEvent.wheel(viewport, { deltaY: 64 });",
+      "    await userEvent.pointer([{ keys: '[MouseLeft>]', target: viewport }, { keys: '[/MouseLeft]' }]);",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "scroll-area.yml"), [
+      "name: scroll area",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- scroll-area",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: scroll-area-traces",
+      "          path: test-results/scroll-area"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@radix-ui/react-scroll-area": "latest",
+        "@zag-js/react": "latest",
+        "@zag-js/scroll-area": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "scroll-area-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      scrollAreaSetups: Array<{ filePath: string; framework: string; scrollAreaCount: number; viewportCount: number; contentCount: number; scrollbarCount: number; thumbCount: number; cornerCount: number; orientationCount: number; overflowCount: number; measurementCount: number; interactionCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      measurementSignals: Array<{ signal: string; readiness: string }>;
+      orientationSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Scroll area readiness Radix ScrollArea Zag scroll-area viewport scrollbar thumb corner overflow scrollTop scrollLeft ResizeObserver pointer wheel tests");
+    expect(report.scrollAreaSetups.some((item) => item.filePath === "src/radix-scroll-area.tsx" && item.framework === "radix-scroll-area" && item.scrollAreaCount > 0 && item.viewportCount > 0 && item.contentCount > 0 && item.scrollbarCount > 0 && item.thumbCount > 0 && item.cornerCount > 0 && item.orientationCount > 0 && item.overflowCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.scrollAreaSetups.some((item) => item.filePath === "src/zag-scroll-area.tsx" && item.framework === "zag-scroll-area" && item.scrollAreaCount > 0 && item.viewportCount > 0 && item.contentCount > 0 && item.scrollbarCount > 0 && item.thumbCount > 0 && item.cornerCount > 0 && item.orientationCount > 0 && item.overflowCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["radix-scroll-area", "zag-scroll-area", "native-scroll"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "viewport", "content", "scrollbar", "thumb", "corner", "provider-context", "anatomy-parts"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["type", "scroll-hide-delay", "force-mount", "overflow-x", "overflow-y", "scrollbar-hidden", "scroll-progress", "data-state"]));
+    expect(readySignals(report.measurementSignals)).toEqual(expect.arrayContaining(["resize-observer", "scroll-height", "scroll-width", "client-height", "client-width", "thumb-size", "thumb-offset", "corner-size", "ratio"]));
+    expect(readySignals(report.orientationSignals)).toEqual(expect.arrayContaining(["vertical", "horizontal", "dir", "rtl", "data-orientation"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["pointer", "wheel", "drag", "scroll-event", "scroll-to", "scroll-to-edge"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-presentation", "tabindex", "aria-label", "data-overflow", "data-ownedby"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "scroll-event-test", "wheel-test", "attribute-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@radix-ui/react-scroll-area", "@zag-js/scroll-area", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@radix-ui/react-scroll-area"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records scroll area readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "scroll-area-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "scroll-area-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "scroll-area-readiness.html"))).resolves.toBeUndefined();
+    const scrollMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "scroll-area-readiness.md"), "utf8");
+    expect(scrollMarkdown).toContain("Scroll Area Readiness");
+    expect(scrollMarkdown).toContain("@radix-ui/react-scroll-area");
+    const scrollHtml = await fs.readFile(path.join(result.session.outputPaths.html, "scroll-area-readiness.html"), "utf8");
+    expect(scrollHtml).toContain("scroll-area-readiness-card");
+    expect(scrollHtml).toContain("data-source-pattern=\"ScrollArea\"");
+    expect(scrollHtml).toContain("RepoTutor records scroll area readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
