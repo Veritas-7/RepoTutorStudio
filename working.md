@@ -8249,6 +8249,67 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 273:
   - `adc3215` crash reporting readiness report
 
+- 2026-06-05: AutoResearch Upgrade 274 candidate selected:
+  incident response readiness from `PagerDuty/terraform-provider-pagerduty`
+  (`https://github.com/PagerDuty/terraform-provider-pagerduty`; ignored clone
+  HEAD `95cf9d8b41aaa7f90df29938789aa8abc3fc3212`),
+  `grafana/oncall`
+  (`https://github.com/grafana/oncall`; ignored clone HEAD
+  `af0fbd40558c9a63bcf438589894c440fc434a54`), and
+  `firehydrant/terraform-provider-firehydrant`
+  (`https://github.com/firehydrant/terraform-provider-firehydrant`; ignored
+  clone HEAD `3e98d8c887f70596130ed7bccb1c265e5c400cde`). Static source
+  inspection only; `git ls-files` for the new external source paths returned
+  `0`, and `git status --ignored=matching` showed the clones only under
+  ignored `research/external-src/`.
+- 2026-06-05: Implemented PagerDuty/Grafana OnCall/FireHydrant-style incident
+  response readiness report: `IncidentResponseReadinessReportSchema`,
+  `analysis/incident-response-readiness-report.json`,
+  `markdown/incident-response-readiness.md`,
+  `html/incident-response-readiness.html`, static incident setup detection,
+  intake, triage, on-call, communication, runbook, lifecycle, governance,
+  workflow, and package signals, alert route/signal rule/webhook/email ingest
+  detection, severity/priority/incident type/service/team triage detection,
+  schedule/rotation/handoff/escalation policy/override/follow-the-sun
+  detection, Slack/ChatOps/phone/SMS/email/status page communication
+  coverage, runbook automatic/manual step, owner, attachment rule, private and
+  restricted incident controls, timeline/retrospective/postmortem evidence,
+  Terraform/API token/audit/access control governance signals, static-only
+  incident response guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target incident-response-readiness`.
+- 2026-06-05: RED/GREEN incident response readiness smoke recorded:
+  pre-implementation precise gap checks had no
+  `IncidentResponseReadinessReportSchema`, no
+  `incidentResponseReadinessReport`, and no `incident-response-readiness`
+  target. GREEN fixture detected Terraform, Grafana OnCall, and workflow setup
+  rows; alert route, signal rule, webhook, email ingest, manual incident, and
+  deduplication intake; severity, priority, incident type, service ownership,
+  and team assignment triage; schedule, rotation, handoff, escalation policy,
+  override, and follow-the-sun on-call signals; Slack, ChatOps, phone, SMS,
+  email, and status page communication; runbook, automatic/manual step, owner,
+  attachment rule, private incident controls, lifecycle, governance, workflow,
+  package, recommended command, static-only guardrail, and all three new
+  artifacts.
+- 2026-06-05: Verification for Upgrade 274:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused incident response readiness Vitest command: PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - full pipeline Vitest: PASS, 81/81 tests
+  - `pnpm test`: PASS, 81/81 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 172/172 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~82.16 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 274:
+  - `98b8344` incident response readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
