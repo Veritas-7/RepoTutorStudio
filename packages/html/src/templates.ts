@@ -114,6 +114,7 @@ import type {
   QueueReadinessReport,
   EventStreamReadinessReport,
   DataConnectorReadinessReport,
+  SemanticLayerReadinessReport,
   SchemaRegistryReadinessReport,
   StreamProcessingReadinessReport,
   PipelineOrchestrationReadinessReport,
@@ -311,6 +312,7 @@ export interface StudyHtmlInput {
   queueReadinessReport: QueueReadinessReport;
   eventStreamReadinessReport: EventStreamReadinessReport;
   dataConnectorReadinessReport: DataConnectorReadinessReport;
+  semanticLayerReadinessReport: SemanticLayerReadinessReport;
   schemaRegistryReadinessReport: SchemaRegistryReadinessReport;
   streamProcessingReadinessReport: StreamProcessingReadinessReport;
   pipelineOrchestrationReadinessReport: PipelineOrchestrationReadinessReport;
@@ -521,6 +523,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["payment-readiness.html", "Payments"],
     ["email-readiness.html", "Email"],
     ["data-connector-readiness.html", "Data Connectors"],
+    ["semantic-layer-readiness.html", "Semantic Layer"],
     ["schema-registry-readiness.html", "Schema Registry"],
     ["analytics-readiness.html", "Analytics"],
     ["http-client-readiness.html", "HTTP Client"],
@@ -1331,6 +1334,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Data Connector Readiness", "data-connector-readiness.html", `<section class="panel" data-source-pattern="DataConnector"><h2>Data Connector Snapshot</h2><p>${escapeHtml(input.dataConnectorReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dataConnectorReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dataConnectorReadinessReport.connectorSetups.length}</dd></div><div><dt>platforms</dt><dd>${input.dataConnectorReadinessReport.platformSignals.length}</dd></div><div><dt>config</dt><dd>${input.dataConnectorReadinessReport.configSignals.length}</dd></div><div><dt>state</dt><dd>${input.dataConnectorReadinessReport.stateSignals.length}</dd></div><div><dt>ops</dt><dd>${input.dataConnectorReadinessReport.opsSignals.length}</dd></div><div><dt>workflow</dt><dd>${input.dataConnectorReadinessReport.workflowSignals.length}</dd></div></dl><p class="muted">RepoTutor records data connector readiness only; it does not start Kafka Connect, deploy Debezium, call Airbyte APIs, create connectors, reset offsets, run syncs, or move data.</p></section><section class="grid"><article class="data-connector-readiness-card"><h3>Connector Setups</h3>${dataConnectorReadinessSetupList(input.dataConnectorReadinessReport.connectorSetups)}</article><article class="data-connector-readiness-card"><h3>Platform Signals</h3>${dataConnectorReadinessSignalList(input.dataConnectorReadinessReport.platformSignals, "signal")}</article><article class="data-connector-readiness-card"><h3>Connector Kind Signals</h3>${dataConnectorReadinessSignalList(input.dataConnectorReadinessReport.connectorKindSignals, "signal")}</article><article class="data-connector-readiness-card"><h3>Config Signals</h3>${dataConnectorReadinessSignalList(input.dataConnectorReadinessReport.configSignals, "signal")}</article></section><section class="grid"><article class="data-connector-readiness-card"><h3>State Signals</h3>${dataConnectorReadinessSignalList(input.dataConnectorReadinessReport.stateSignals, "signal")}</article><article class="data-connector-readiness-card"><h3>Transform Signals</h3>${dataConnectorReadinessSignalList(input.dataConnectorReadinessReport.transformSignals, "signal")}</article><article class="data-connector-readiness-card"><h3>Ops Signals</h3>${dataConnectorReadinessSignalList(input.dataConnectorReadinessReport.opsSignals, "signal")}</article><article class="data-connector-readiness-card"><h3>Workflow Signals</h3>${dataConnectorReadinessSignalList(input.dataConnectorReadinessReport.workflowSignals, "signal")}</article></section><section class="grid"><article class="data-connector-readiness-card"><h3>Package Signals</h3>${dataConnectorReadinessSignalList(input.dataConnectorReadinessReport.packageSignals, "signal")}</article><article class="data-connector-readiness-card"><h3>Recommended Commands</h3>${dataConnectorReadinessCommandList(input.dataConnectorReadinessReport.recommendedCommands)}</article><article class="data-connector-readiness-card"><h3>Risk Queue</h3>${dataConnectorReadinessRiskList(input.dataConnectorReadinessReport.riskQueue)}</article><article class="data-connector-readiness-card"><h3>다음 확인 단계</h3>${list(input.dataConnectorReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "semantic-layer-readiness.html",
+      title: "Semantic Layer Readiness",
+      html: pageShell("Semantic Layer Readiness", "semantic-layer-readiness.html", `<section class="panel" data-source-pattern="SemanticLayer"><h2>Semantic Layer Snapshot</h2><p>${escapeHtml(input.semanticLayerReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.semanticLayerReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.semanticLayerReadinessReport.semanticLayerSetups.length}</dd></div><div><dt>platforms</dt><dd>${input.semanticLayerReadinessReport.platformSignals.length}</dd></div><div><dt>metrics</dt><dd>${input.semanticLayerReadinessReport.metricSignals.length}</dd></div><div><dt>dimensions</dt><dd>${input.semanticLayerReadinessReport.dimensionSignals.length}</dd></div><div><dt>queries</dt><dd>${input.semanticLayerReadinessReport.querySignals.length}</dd></div><div><dt>access</dt><dd>${input.semanticLayerReadinessReport.accessSignals.length}</dd></div></dl><p class="muted">RepoTutor records semantic layer readiness only; it does not run MetricFlow, compile SQL, query warehouses, start Cube, refresh pre-aggregations, call APIs, or expose analytics data.</p></section><section class="grid"><article class="semantic-layer-readiness-card"><h3>Semantic Layer Setups</h3>${semanticLayerReadinessSetupList(input.semanticLayerReadinessReport.semanticLayerSetups)}</article><article class="semantic-layer-readiness-card"><h3>Platform Signals</h3>${semanticLayerReadinessSignalList(input.semanticLayerReadinessReport.platformSignals, "signal")}</article><article class="semantic-layer-readiness-card"><h3>Model Signals</h3>${semanticLayerReadinessSignalList(input.semanticLayerReadinessReport.modelSignals, "signal")}</article><article class="semantic-layer-readiness-card"><h3>Metric Signals</h3>${semanticLayerReadinessSignalList(input.semanticLayerReadinessReport.metricSignals, "signal")}</article></section><section class="grid"><article class="semantic-layer-readiness-card"><h3>Dimension Signals</h3>${semanticLayerReadinessSignalList(input.semanticLayerReadinessReport.dimensionSignals, "signal")}</article><article class="semantic-layer-readiness-card"><h3>Entity Signals</h3>${semanticLayerReadinessSignalList(input.semanticLayerReadinessReport.entitySignals, "signal")}</article><article class="semantic-layer-readiness-card"><h3>Query Signals</h3>${semanticLayerReadinessSignalList(input.semanticLayerReadinessReport.querySignals, "signal")}</article><article class="semantic-layer-readiness-card"><h3>Cache Signals</h3>${semanticLayerReadinessSignalList(input.semanticLayerReadinessReport.cacheSignals, "signal")}</article></section><section class="grid"><article class="semantic-layer-readiness-card"><h3>Access Signals</h3>${semanticLayerReadinessSignalList(input.semanticLayerReadinessReport.accessSignals, "signal")}</article><article class="semantic-layer-readiness-card"><h3>Workflow Signals</h3>${semanticLayerReadinessSignalList(input.semanticLayerReadinessReport.workflowSignals, "signal")}</article><article class="semantic-layer-readiness-card"><h3>Package Signals</h3>${semanticLayerReadinessSignalList(input.semanticLayerReadinessReport.packageSignals, "signal")}</article><article class="semantic-layer-readiness-card"><h3>Recommended Commands</h3>${semanticLayerReadinessCommandList(input.semanticLayerReadinessReport.recommendedCommands)}</article><article class="semantic-layer-readiness-card"><h3>Risk Queue</h3>${semanticLayerReadinessRiskList(input.semanticLayerReadinessReport.riskQueue)}</article><article class="semantic-layer-readiness-card"><h3>다음 확인 단계</h3>${list(input.semanticLayerReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "schema-registry-readiness.html",
       title: "Schema Registry Readiness",
       html: pageShell("Schema Registry Readiness", "schema-registry-readiness.html", `<section class="panel" data-source-pattern="Schema Registry"><h2>Schema Registry Snapshot</h2><p>${escapeHtml(input.schemaRegistryReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.schemaRegistryReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.schemaRegistryReadinessReport.registrySetups.length}</dd></div><div><dt>registries</dt><dd>${input.schemaRegistryReadinessReport.registrySignals.length}</dd></div><div><dt>formats</dt><dd>${input.schemaRegistryReadinessReport.schemaFormatSignals.length}</dd></div><div><dt>compatibility</dt><dd>${input.schemaRegistryReadinessReport.compatibilitySignals.length}</dd></div><div><dt>governance</dt><dd>${input.schemaRegistryReadinessReport.governanceSignals.length}</dd></div><div><dt>workflow</dt><dd>${input.schemaRegistryReadinessReport.workflowSignals.length}</dd></div></dl><p class="muted">RepoTutor records schema registry readiness only; it does not start registries, register schemas, change compatibility config, run Buf, publish modules, or call registry APIs.</p></section><section class="grid"><article class="schema-registry-readiness-card"><h3>Registry Setups</h3>${schemaRegistryReadinessSetupList(input.schemaRegistryReadinessReport.registrySetups)}</article><article class="schema-registry-readiness-card"><h3>Registry Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.registrySignals, "signal")}</article><article class="schema-registry-readiness-card"><h3>Schema Format Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.schemaFormatSignals, "signal")}</article><article class="schema-registry-readiness-card"><h3>Identity Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.identitySignals, "signal")}</article></section><section class="grid"><article class="schema-registry-readiness-card"><h3>Compatibility Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.compatibilitySignals, "signal")}</article><article class="schema-registry-readiness-card"><h3>Governance Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.governanceSignals, "signal")}</article><article class="schema-registry-readiness-card"><h3>Workflow Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.workflowSignals, "signal")}</article><article class="schema-registry-readiness-card"><h3>Package Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.packageSignals, "signal")}</article><article class="schema-registry-readiness-card"><h3>Recommended Commands</h3>${schemaRegistryReadinessCommandList(input.schemaRegistryReadinessReport.recommendedCommands)}</article><article class="schema-registry-readiness-card"><h3>Risk Queue</h3>${schemaRegistryReadinessRiskList(input.schemaRegistryReadinessReport.riskQueue)}</article><article class="schema-registry-readiness-card"><h3>다음 확인 단계</h3>${list(input.schemaRegistryReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1894,6 +1902,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Queue Readiness", path: "html/queue-readiness.html", description: "BullMQ식 Queue, Worker, QueueEvents, FlowProducer, Redis connection, retry 준비도를 확인합니다." },
       { label: "Event Stream Readiness", path: "html/event-stream-readiness.html", description: "Kafka/Redpanda/Pulsar식 broker, topic, producer/consumer, schema registry, DLQ, security, CI 준비도를 확인합니다." },
       { label: "Data Connector Readiness", path: "html/data-connector-readiness.html", description: "Debezium/Kafka Connect/Airbyte식 connector, CDC, state, transform, sync 준비도를 확인합니다." },
+      { label: "Semantic Layer Readiness", path: "html/semantic-layer-readiness.html", description: "MetricFlow/dbt Semantic Layer/Cube식 semantic model, metric, dimension, query, cache, access 준비도를 확인합니다." },
       { label: "Schema Registry Readiness", path: "html/schema-registry-readiness.html", description: "Confluent/Apicurio/Buf식 subject, artifact, version, compatibility, breaking-change 준비도를 확인합니다." },
       { label: "Stream Processing Readiness", path: "html/stream-processing-readiness.html", description: "Flink/Beam/Spark식 stream job, window, watermark, state, checkpoint, sink, deployment 준비도를 확인합니다." },
       { label: "Pipeline Orchestration Readiness", path: "html/pipeline-orchestration-readiness.html", description: "Apache Airflow/Dagster/Prefect식 DAG, task, schedule, sensor, asset, partition, executor, deployment 준비도를 확인합니다." },
@@ -2685,6 +2694,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "data-connector-readiness.html",
       goal: "Debezium/Kafka Connect/Airbyte식 connector, CDC, state, transform, sync 흐름을 보고 data movement 관문을 확인합니다.",
       evidence: `data connector setups ${input.dataConnectorReadinessReport.connectorSetups.length}개, platform signals ${input.dataConnectorReadinessReport.platformSignals.length}개`
+    },
+    {
+      title: "Semantic layer readiness 확인",
+      href: "semantic-layer-readiness.html",
+      goal: "MetricFlow/dbt Semantic Layer/Cube식 semantic model, metric, dimension, query, cache, access 흐름을 보고 analytics contract 관문을 확인합니다.",
+      evidence: `semantic layer setups ${input.semanticLayerReadinessReport.semanticLayerSetups.length}개, metric signals ${input.semanticLayerReadinessReport.metricSignals.length}개`
     },
     {
       title: "Schema registry readiness 확인",
@@ -5970,6 +5985,31 @@ function dataConnectorReadinessRiskList(items: DataConnectorReadinessReport["ris
 }
 
 function dataConnectorReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function semanticLayerReadinessSetupList(items: SemanticLayerReadinessReport["semanticLayerSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">semantic layer setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)}/${escapeHtml(item.readiness)}]<br>semantic models/metrics/measures/dimensions/entities/joins/saved queries/APIs/cache/access/workflow ${item.semanticModelCount}/${item.metricCount}/${item.measureCount}/${item.dimensionCount}/${item.entityCount}/${item.joinCount}/${item.savedQueryCount}/${item.apiCount}/${item.cacheCount}/${item.accessCount}/${item.workflowCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(semanticLayerReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function semanticLayerReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">semantic layer signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(semanticLayerReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function semanticLayerReadinessCommandList(items: SemanticLayerReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function semanticLayerReadinessRiskList(items: SemanticLayerReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(semanticLayerReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function semanticLayerReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

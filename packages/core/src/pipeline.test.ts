@@ -112,6 +112,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "queue-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "event-stream-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-connector-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "semantic-layer-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "schema-registry-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "stream-processing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "pipeline-orchestration-readiness-report.json"))).resolves.toBeUndefined();
@@ -291,6 +292,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "queue-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "event-stream-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-connector-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "semantic-layer-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "schema-registry-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "stream-processing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "pipeline-orchestration-readiness.md"))).resolves.toBeUndefined();
@@ -473,6 +475,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "queue-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "event-stream-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-connector-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "semantic-layer-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "schema-registry-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "stream-processing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "pipeline-orchestration-readiness.html"))).resolves.toBeUndefined();
@@ -679,6 +682,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/queue-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/event-stream-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-connector-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/semantic-layer-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/schema-registry-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/stream-processing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/pipeline-orchestration-readiness.html\"");
@@ -2481,6 +2485,23 @@ describe("RepoTutor core pipeline", () => {
     expect(dataConnectorReadinessMarkdown).toContain("Source pattern: Data connector readiness");
     expect(dataConnectorReadinessMarkdown).toContain("## Config Signals");
     expect(dataConnectorReadinessMarkdown).toContain("## State Signals");
+    const semanticLayerReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "semantic-layer-readiness-report.json"), "utf8");
+    expect(semanticLayerReadinessText).toContain("Semantic layer readiness MetricFlow dbt Semantic Layer Cube semantic_models metrics measures dimensions entities saved_queries TimeDimension Dimension agg_time_dimension type_params ratio derived cumulative cubes joins pre_aggregations access_policy query_rewrite SQL REST GraphQL");
+    expect(semanticLayerReadinessText).toContain("\"semanticLayerSetups\"");
+    expect(semanticLayerReadinessText).toContain("\"metricSignals\"");
+    expect(semanticLayerReadinessText).toContain("\"querySignals\"");
+    expect(semanticLayerReadinessText).toContain("\"accessSignals\"");
+    const semanticLayerReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "semantic-layer-readiness.html"), "utf8");
+    expect(semanticLayerReadinessHtml).toContain("Semantic Layer Readiness");
+    expect(semanticLayerReadinessHtml).toContain("semantic-layer-readiness-card");
+    expect(semanticLayerReadinessHtml).toContain("data-source-pattern=\"SemanticLayer\"");
+    expect(semanticLayerReadinessHtml).toContain("Metric Signals");
+    expect(semanticLayerReadinessHtml).toContain("Query Signals");
+    const semanticLayerReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "semantic-layer-readiness.md"), "utf8");
+    expect(semanticLayerReadinessMarkdown).toContain("# Semantic Layer Readiness");
+    expect(semanticLayerReadinessMarkdown).toContain("Source pattern: Semantic layer readiness");
+    expect(semanticLayerReadinessMarkdown).toContain("## Metric Signals");
+    expect(semanticLayerReadinessMarkdown).toContain("## Query Signals");
     const schemaRegistryReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "schema-registry-readiness-report.json"), "utf8");
     expect(schemaRegistryReadinessText).toContain("Schema registry readiness Confluent Apicurio Buf subject artifact version compatibility Avro Protobuf JSON Schema lint breaking generate push");
     expect(schemaRegistryReadinessText).toContain("\"registrySetups\"");
@@ -3983,6 +4004,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/queue-readiness.html");
     expect(exportManifestText).toContain("html/event-stream-readiness.html");
     expect(exportManifestText).toContain("html/data-connector-readiness.html");
+    expect(exportManifestText).toContain("html/semantic-layer-readiness.html");
     expect(exportManifestText).toContain("html/schema-registry-readiness.html");
     expect(exportManifestText).toContain("html/stream-processing-readiness.html");
     expect(exportManifestText).toContain("html/pipeline-orchestration-readiness.html");
@@ -4184,6 +4206,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("queue-readiness.html");
     expect(learningPathHtml).toContain("event-stream-readiness.html");
     expect(learningPathHtml).toContain("data-connector-readiness.html");
+    expect(learningPathHtml).toContain("semantic-layer-readiness.html");
     expect(learningPathHtml).toContain("schema-registry-readiness.html");
     expect(learningPathHtml).toContain("stream-processing-readiness.html");
     expect(learningPathHtml).toContain("pipeline-orchestration-readiness.html");
@@ -10669,6 +10692,251 @@ describe("RepoTutor core pipeline", () => {
     const dataConnectorHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-connector-readiness.html"), "utf8");
     expect(dataConnectorHtml).toContain("data-connector-readiness-card");
     expect(dataConnectorHtml).toContain("data-source-pattern=\"DataConnector\"");
+  });
+
+  it("detects semantic layer readiness without compiling SQL or querying warehouses", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-semantic-layer-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-semantic-layer-source-"));
+    await fs.mkdir(path.join(sourceRoot, "semantic"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "cube"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "mf:validate": "mf validate-configs",
+        "mf:list": "mf list metrics && mf list dimensions --metrics transactions",
+        "mf:query": "mf query --metrics transactions --group-by metric_time --order metric_time --explain --display-plans",
+        "cube:dev": "cubejs dev",
+        "semantic:report": "node scripts/semantic-layer-report.js"
+      },
+      dependencies: {
+        "@cubejs-backend/server": "0.36.0",
+        "@cubejs-client/core": "0.36.0",
+        "cube": "0.36.0"
+      },
+      devDependencies: {
+        "custom-semantic-layer-sdk": "0.1.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "name = \"semantic-layer-fixture\"",
+      "dependencies = [\"metricflow\", \"dbt-metricflow\", \"dbt-semantic-interfaces\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "semantic", "transactions.yml"), [
+      "semantic_models:",
+      "  - name: transactions",
+      "    defaults:",
+      "      agg_time_dimension: metric_time",
+      "    model: ref('transactions')",
+      "    entities:",
+      "      - name: transaction",
+      "        type: primary",
+      "      - name: customer",
+      "        type: foreign",
+      "      - name: order",
+      "        type: unique",
+      "    measures:",
+      "      - name: transaction_amount",
+      "        agg: SUM",
+      "      - name: distinct_customers",
+      "        agg: COUNT_DISTINCT",
+      "      - name: is_paid",
+      "        agg: SUM_BOOLEAN",
+      "        expr: paid",
+      "    dimensions:",
+      "      - name: metric_time",
+      "        type: time",
+      "        type_params:",
+      "          time_granularity: day",
+      "      - name: customer_country",
+      "        type: categorical",
+      "        expr: country",
+      "      - name: customer__customer_country",
+      "        entity_path: customer"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "semantic", "metrics.yml"), [
+      "metrics:",
+      "  - name: transactions",
+      "    type: SIMPLE",
+      "    type_params:",
+      "      measure: transaction_amount",
+      "  - name: paid_ratio",
+      "    type: ratio",
+      "    type_params:",
+      "      numerator: paid_transactions",
+      "      denominator: transactions",
+      "  - name: revenue_per_customer",
+      "    type: derived",
+      "    type_params:",
+      "      expr: revenue / customers",
+      "      metrics:",
+      "        - name: transactions",
+      "        - name: distinct_customers",
+      "  - name: rolling_transactions",
+      "    type: cumulative",
+      "    type_params:",
+      "      measure: transaction_amount",
+      "      cumulative_type_params:",
+      "        window: 7 days",
+      "    filter: \"{{ Dimension('customer__customer_country') }} = 'US'\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "semantic", "saved_queries.yml"), [
+      "saved_queries:",
+      "  - name: daily_transactions_by_country",
+      "    query_params:",
+      "      metrics:",
+      "        - transactions",
+      "        - paid_ratio",
+      "      group_by:",
+      "        - TimeDimension('metric_time', 'day')",
+      "        - Dimension('customer__customer_country')"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "cube", "orders.yml"), [
+      "cubes:",
+      "  - name: orders",
+      "    sql_table: public.orders",
+      "    measures:",
+      "      - name: count",
+      "        type: count",
+      "      - name: revenue",
+      "        type: sum",
+      "        sql: amount",
+      "    dimensions:",
+      "      - name: created_at",
+      "        type: time",
+      "        sql: created_at",
+      "      - name: status",
+      "        type: string",
+      "    joins:",
+      "      - name: customers",
+      "        relationship: many_to_one",
+      "        sql_on: \"{CUBE}.customer_id = {customers}.id\"",
+      "    pre_aggregations:",
+      "      - name: orders_rollup",
+      "        type: rollup",
+      "        measures:",
+      "          - CUBE.count",
+      "        dimensions:",
+      "          - CUBE.status",
+      "        time_dimension: CUBE.created_at",
+      "        granularity: day",
+      "        refresh_key:",
+      "          every: 1 hour",
+      "        partition_granularity: month",
+      "        incremental_refresh: true",
+      "        description: Cube Store relational caching engine",
+      "views:",
+      "  - name: executive_orders",
+      "    cubes:",
+      "      - join_path: orders",
+      "        includes:",
+      "          - status",
+      "          - revenue"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "cube", "security.yml"), [
+      "access_policy:",
+      "  - role: analyst",
+      "    row_level_security: organization_id = securityContext.organizationId",
+      "    member_security: hide_private_metrics",
+      "securityContext:",
+      "  organizationId: org_123",
+      "query_rewrite: tenant_filter",
+      "COMPILE_CONTEXT: tenant compile context"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "apis.ts"), [
+      "export const semanticApiNotes = \"custom semantic layer analytics API with SQL API REST API GraphQL API /cubejs-api/v1/load /cubejs-api/v1/sql graphql endpoint\";"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "semantic-layer.yml"), [
+      "name: semantic layer readiness",
+      "on: [push]",
+      "jobs:",
+      "  semantic:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: mf tutorial",
+      "      - run: mf validate-configs",
+      "      - run: mf list metrics",
+      "      - run: mf list dimensions --metrics transactions",
+      "      - run: mf query --metrics transactions --group-by metric_time --order metric_time --explain --display-plans",
+      "      - run: curl http://localhost:4000/cubejs-api/v1/load",
+      "      - run: curl http://localhost:4000/cubejs-api/v1/sql",
+      "      - run: echo 'SQL API REST API GraphQL API generated SQL display plans'",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          path: |",
+      "            semantic-layer-report.json",
+      "            metricflow-sql.sql",
+      "            cube-pre-aggregations.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "semantic-layer-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      semanticLayerSetups: Array<{ platform: string; semanticModelCount: number; metricCount: number; measureCount: number; dimensionCount: number; entityCount: number; joinCount: number; savedQueryCount: number; apiCount: number; cacheCount: number; accessCount: number; workflowCount: number }>;
+      platformSignals: Array<{ signal: string; readiness: string }>;
+      modelSignals: Array<{ signal: string; readiness: string }>;
+      metricSignals: Array<{ signal: string; readiness: string }>;
+      dimensionSignals: Array<{ signal: string; readiness: string }>;
+      entitySignals: Array<{ signal: string; readiness: string }>;
+      querySignals: Array<{ signal: string; readiness: string }>;
+      cacheSignals: Array<{ signal: string; readiness: string }>;
+      accessSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (platform: string) => report.semanticLayerSetups
+      .filter((item) => item.platform === platform)
+      .reduce((totals, item) => ({
+        semanticModelCount: totals.semanticModelCount + item.semanticModelCount,
+        metricCount: totals.metricCount + item.metricCount,
+        measureCount: totals.measureCount + item.measureCount,
+        dimensionCount: totals.dimensionCount + item.dimensionCount,
+        entityCount: totals.entityCount + item.entityCount,
+        joinCount: totals.joinCount + item.joinCount,
+        savedQueryCount: totals.savedQueryCount + item.savedQueryCount,
+        apiCount: totals.apiCount + item.apiCount,
+        cacheCount: totals.cacheCount + item.cacheCount,
+        accessCount: totals.accessCount + item.accessCount,
+        workflowCount: totals.workflowCount + item.workflowCount
+      }), { semanticModelCount: 0, metricCount: 0, measureCount: 0, dimensionCount: 0, entityCount: 0, joinCount: 0, savedQueryCount: 0, apiCount: 0, cacheCount: 0, accessCount: 0, workflowCount: 0 });
+
+    expect(report.sourcePattern).toBe("Semantic layer readiness MetricFlow dbt Semantic Layer Cube semantic_models metrics measures dimensions entities saved_queries TimeDimension Dimension agg_time_dimension type_params ratio derived cumulative cubes joins pre_aggregations access_policy query_rewrite SQL REST GraphQL");
+    expect(setupTotals("dbt-semantic-layer").semanticModelCount).toBeGreaterThan(0);
+    expect(setupTotals("dbt-semantic-layer").metricCount + setupTotals("metricflow").metricCount).toBeGreaterThan(0);
+    expect(setupTotals("cube").cacheCount).toBeGreaterThan(0);
+    expect(setupTotals("cube").accessCount).toBeGreaterThan(0);
+    expect(report.semanticLayerSetups.some((item) => item.workflowCount > 0)).toBe(true);
+    expect(readySignals(report.platformSignals)).toEqual(expect.arrayContaining(["metricflow", "dbt-semantic-layer", "cube", "custom"]));
+    expect(readySignals(report.modelSignals)).toEqual(expect.arrayContaining(["semantic-model", "cube", "view", "sql-table", "ref-model", "time-spine"]));
+    expect(readySignals(report.metricSignals)).toEqual(expect.arrayContaining(["simple-metric", "ratio-metric", "derived-metric", "cumulative-metric", "filtered-metric", "measure"]));
+    expect(readySignals(report.dimensionSignals)).toEqual(expect.arrayContaining(["time-dimension", "categorical-dimension", "dimension-reference", "entity-path", "granularity"]));
+    expect(readySignals(report.entitySignals)).toEqual(expect.arrayContaining(["primary-entity", "foreign-entity", "unique-entity", "entity-relationship", "join"]));
+    expect(readySignals(report.querySignals)).toEqual(expect.arrayContaining(["saved-query", "metricflow-query", "explain-sql", "display-plan", "sql-api", "rest-api", "graphql-api"]));
+    expect(readySignals(report.cacheSignals)).toEqual(expect.arrayContaining(["pre-aggregation", "rollup", "refresh-key", "partition-granularity", "incremental-refresh", "cache-engine"]));
+    expect(readySignals(report.accessSignals)).toEqual(expect.arrayContaining(["access-policy", "row-level-security", "member-security", "security-context", "query-rewrite", "compile-context"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["mf-tutorial", "validate-configs", "list-metrics", "list-dimensions", "query-command", "github-actions", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["metricflow", "dbt-metricflow", "dbt-semantic-interfaces", "cubejs-server", "cube-client", "cube"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"semantic_models:|metrics:|saved_queries:|MetricFlow|dbt-metricflow|dbt_semantic_interfaces\" .",
+      "rg \"cubes:|joins:|pre_aggregations:|refresh_key|rollup|query_rewrite|COMPILE_CONTEXT|access_policy\" .",
+      "rg \"mf validate-configs|mf list metrics|mf list dimensions|mf query|--explain|SQL API|REST API|GraphQL API|upload-artifact\" .github ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "semantic-layer-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "semantic-layer-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "semantic-layer-readiness.html"))).resolves.toBeUndefined();
+    const semanticLayerMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "semantic-layer-readiness.md"), "utf8");
+    expect(semanticLayerMarkdown).toContain("Metric Signals");
+    expect(semanticLayerMarkdown).toContain("Query Signals");
+    expect(semanticLayerMarkdown).toContain("Access Signals");
+    const semanticLayerHtml = await fs.readFile(path.join(result.session.outputPaths.html, "semantic-layer-readiness.html"), "utf8");
+    expect(semanticLayerHtml).toContain("semantic-layer-readiness-card");
+    expect(semanticLayerHtml).toContain("data-source-pattern=\"SemanticLayer\"");
   });
 
   it("detects schema registry readiness without starting registries or publishing modules", async () => {
