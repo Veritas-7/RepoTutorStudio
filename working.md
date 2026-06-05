@@ -9732,6 +9732,66 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 298:
   - `af6b748` menu dropdown readiness report
 
+- 2026-06-06: AutoResearch Upgrade 299 candidate selected:
+  toast/snackbar readiness from existing ignored `radix-ui/primitives` clone
+  (`https://github.com/radix-ui/primitives.git`; ignored clone HEAD
+  `65db6fb91c16b636f05afe51e735f066a17031c3`) plus new ignored shallow clones
+  `emilkowalski/sonner` (`45d894085af8ca8421912789a8f5a4ac4ac3d0ea`),
+  `timolins/react-hot-toast` (`f339d7105c90e64bc80ee836b987f2efe235035c`),
+  and `iamhosseindhv/notistack` (`8bafe103b8f447d8144fad58766ddcaf28f82b38`).
+  Static source inspection only; no external source was executed. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Radix Toast, Sonner, React Hot Toast, Notistack, and
+  MUI Snackbar readiness report: `ToastSnackbarReadinessReportSchema`,
+  `analysis/toast-snackbar-readiness-report.json`,
+  `markdown/toast-snackbar-readiness.md`,
+  `html/toast-snackbar-readiness.html`, static setup detection, framework,
+  structure, variant, lifecycle, interaction, accessibility, styling, test, and
+  package signals, Radix provider/root/title/description/action/close/viewport,
+  Sonner toaster/toast variant/action/close/duration/rich-colors/classNames,
+  React Hot Toast toaster/toast/promise/dismiss/remove/aria props/ToastBar, and
+  Notistack provider/enqueue/close/content/maxSnack/preventDuplicate/persist
+  evidence, static-only toast/snackbar guardrail, recommended inspection
+  commands, manifest and session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit coverage,
+  and `open --target toast-snackbar-readiness`.
+- 2026-06-06: RED/GREEN toast/snackbar readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/toast-snackbar-readiness-report.json` did not exist. GREEN fixture
+  detected Radix Toast, Sonner, React Hot Toast, Notistack, and MUI Snackbar
+  package signals; provider, toaster, viewport, root, title, description,
+  action, close, icon, portal-container, success/error/warning/info/loading/
+  promise/custom/rich-colors variants, open state, duration, auto-dismiss,
+  dismiss/remove, pause-resume, queue limit, prevent-duplicate, persist,
+  swipe, keyboard shortcut, Escape, click-away, action button, close button,
+  hover-pause, role status, aria-live, aria-atomic, region label, alt text,
+  close label, focus-visible, position, offset, transition, swipe direction,
+  theme, unstyled, class names, data-state, Vitest, Playwright, Cypress,
+  Testing Library, timer/role/interaction tests, artifact upload, recommended
+  command, static-only guardrail, and all three new artifacts without displaying
+  transient notifications. Follow-up focused run added explicit pause/pausedAt
+  fixture evidence for lifecycle and hover-pause coverage.
+- 2026-06-06: Verification for Upgrade 299:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused toast/snackbar readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 106/106 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 197/197 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~84.83 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 299:
+  - `0ed49fc` toast snackbar readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
