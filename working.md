@@ -9980,6 +9980,73 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 302:
   - `1e3eb5a` slider progress readiness report
 
+- 2026-06-06: AutoResearch Upgrade 303 candidate selected:
+  select/combobox/listbox readiness from existing ignored `radix-ui/primitives`
+  clone (`https://github.com/radix-ui/primitives.git`; ignored clone HEAD
+  `65db6fb91c16b636f05afe51e735f066a17031c3`), existing ignored
+  `tailwindlabs/headlessui` clone
+  (`https://github.com/tailwindlabs/headlessui.git`; ignored clone HEAD
+  `eea57cf46fd6767ed1059012f7073b88eb159fba`), and existing ignored
+  `ariakit/ariakit` clone (`https://github.com/ariakit/ariakit.git`; ignored
+  clone HEAD `eb5a29ed20dce2c5aa63c38591efb43a5d0ef754`). Static source
+  inspection only; no external source was executed. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Radix Select, Headless UI Combobox/Listbox/Select,
+  and Ariakit Combobox/Select readiness report:
+  `SelectComboboxReadinessReportSchema`,
+  `analysis/select-combobox-readiness-report.json`,
+  `markdown/select-combobox-readiness.md`,
+  `html/select-combobox-readiness.html`, static setup detection, framework,
+  structure, state, interaction, accessibility, form, test, and package signals,
+  Radix Select root/trigger/value/content/viewport/item/indicator/native select
+  bridge evidence, Headless UI combobox/listbox/select input/options/option
+  evidence, Ariakit provider/store/popover/item/check/value/cancel evidence,
+  value/defaultValue/onChange/onValueChange/multiple/nullable/active/selected/
+  disabled/data-state evidence, keyboard/typeahead/focus/virtual-filtered
+  evidence, combobox/listbox/option role and aria-expanded/controls/selected/
+  activedescendant/autocomplete/label evidence, static-only select/combobox/
+  listbox guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav entry, CLI
+  help/list-target coverage, dedicated audit coverage, and `open --target
+  select-combobox-readiness`.
+- 2026-06-06: RED/GREEN select/combobox/listbox readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/select-combobox-readiness-report.json` did not exist. GREEN fixture
+  detected Radix Select, Headless UI Combobox/Listbox/Select, and Ariakit
+  Combobox/Select signals; root/provider, trigger/button, input, value display,
+  options/listbox, option item, portal/popover, label, indicator/check,
+  cancel/clear, value/defaultValue, onChange/onValueChange, multiple, nullable,
+  active option, selected option, disabled option, data-state, keyboard,
+  arrow/Home/End/Enter/Escape, pointer/click, typeahead, focus management,
+  virtual/filter evidence, role combobox/listbox/option, aria-expanded,
+  aria-controls, aria-selected, aria-activedescendant, aria-autocomplete,
+  aria-label, form/name/required/native-select/hidden-select/value, Vitest,
+  Testing Library, user-event, role/keyboard/attribute tests, artifact upload,
+  packages, recommended command, static-only guardrail, and all three new
+  artifacts without opening popups, typing queries, moving active options,
+  selecting values, submitting forms, mutating stores, or running analyzed
+  project tests.
+- 2026-06-06: Verification for Upgrade 303:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused select/combobox/listbox readiness Vitest command: PASS, pipeline
+    file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 110/110 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 201/201 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~82.71 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 303:
+  - `ef7d67e` select combobox readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
