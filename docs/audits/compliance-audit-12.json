@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-05T23:37:05.578Z",
+  "createdAt": "2026-06-05T23:52:14.113Z",
   "checks": [
     {
       "name": "project setup",
@@ -1166,6 +1166,13 @@
     },
     {
       "name": "Avatar readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Pin input readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

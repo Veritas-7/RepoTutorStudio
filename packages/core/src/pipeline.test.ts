@@ -23930,6 +23930,148 @@ describe("RepoTutor core pipeline", () => {
     expect(avatarHtml).toContain("RepoTutor records avatar readiness only");
   });
 
+  it("detects pin input readiness without entering codes", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-pin-input-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-pin-input-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "radix-otp.tsx"), [
+      "import * as React from 'react';",
+      "import * as OneTimePasswordField from '@radix-ui/react-one-time-password-field';",
+      "export function RadixOtpForm() {",
+      "  const [value, setValue] = React.useState('');",
+      "  const validationEvidence = 'validationType numeric alpha alphanumeric sanitizeValue pattern inputMode one-time-code';",
+      "  const actionEvidence = 'SET_CHAR CLEAR_CHAR PASTE onBeforeInput INPUT.CHANGE onChange Backspace Delete ArrowLeft ArrowRight Home End autoSubmit requestSubmit reset useIsHydrated RovingFocusGroup focusedIndex setFocusedIndex focusedValue advanceFocusedIndex INPUT.ADVANCE';",
+      "  void validationEvidence;",
+      "  void actionEvidence;",
+      "  return (",
+      "    <form id=\"otp-form\">",
+      "      <OneTimePasswordField.Root value={value} defaultValue=\"\" onValueChange={setValue} onAutoSubmit={() => undefined} autoSubmit autoComplete=\"one-time-code\" autoFocus form=\"otp-form\" name=\"code\" placeholder=\"------\" type=\"password\" orientation=\"horizontal\" dir=\"ltr\" validationType=\"numeric\" sanitizeValue={(text) => text.replace(/-/g, '')} role=\"group\" aria-label=\"One-time code\">",
+      "        <OneTimePasswordField.Input index={0} onInvalidChange={() => undefined} />",
+      "        <OneTimePasswordField.Input index={1} />",
+      "        <OneTimePasswordField.HiddenInput name=\"code\" />",
+      "      </OneTimePasswordField.Root>",
+      "    </form>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-pin-input.tsx"), [
+      "import * as pinInput from '@zag-js/pin-input';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "export function ZagPinInputForm() {",
+      "  const service = useMachine(pinInput.machine, { id: 'pin-code', name: 'pin', form: 'pin-form', count: 6, otp: true, type: 'numeric', pattern: '[0-9]', mask: true, autoFocus: true, autoSubmit: true, blurOnComplete: true, selectOnFocus: true, required: true, invalid: false, readOnly: false, disabled: false, defaultValue: ['', '', '', '', '', ''], onValueChange(details) { console.log(details.valueAsString); }, onValueComplete(details) { console.log(details.value); }, onValueInvalid(details) { console.warn(details.index); }, sanitizeValue(value) { return value.replace(/\\s/g, ''); }, translations: { inputLabel: (index, length) => `pin code ${index + 1} of ${length}` } });",
+      "  const api = pinInput.connect(service, normalizeProps);",
+      "  api.focus();",
+      "  api.setValue(['1', '2', '3', '4', '5', '6']);",
+      "  api.setValueAtIndex(0, '9');",
+      "  api.clearValue();",
+      "  return (",
+      "    <div {...api.getRootProps()} data-scope=\"pin-input\" data-part=\"root\">",
+      "      <label {...api.getLabelProps()}>Code</label>",
+      "      <input {...api.getHiddenInputProps()} />",
+      "      <div {...api.getControlProps()}>{api.items.map((index) => <input key={index} {...api.getInputProps({ index })} inputMode=\"numeric\" autoComplete=\"one-time-code\" aria-label={`pin code ${index + 1} of ${api.count}`} />)}</div>",
+      "      <span data-complete={api.complete}>{api.valueAsString}</span>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "pin-input.spec.tsx"), [
+      "import { cleanup, render, screen } from '@testing-library/react';",
+      "import { userEvent } from '@testing-library/user-event';",
+      "import { axe } from 'vitest-axe';",
+      "import { afterEach, describe, expect, it, vi } from 'vitest';",
+      "import { RadixOtpForm } from '../src/radix-otp';",
+      "afterEach(cleanup);",
+      "describe('pin input readiness', () => {",
+      "  it('types, pastes, navigates, validates, submits, and remains accessible', async () => {",
+      "    const user = userEvent.setup();",
+      "    const rendered = render(<RadixOtpForm />);",
+      "    expect(await axe(rendered.container)).toHaveNoViolations();",
+      "    const inputs = screen.getAllByRole('textbox', { hidden: false });",
+      "    await user.click(inputs[0]!);",
+      "    await user.keyboard('1{ArrowRight}2{Backspace}{Delete}{Home}{End}{Enter}');",
+      "    await user.paste('123456');",
+      "    const requestSubmit = vi.fn();",
+      "    HTMLFormElement.prototype.requestSubmit = requestSubmit;",
+      "    rendered.container.querySelector('form')?.reset();",
+      "    expect(screen.getByRole('group', { name: /one-time code/i })).toBeInTheDocument();",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "pin-input.yml"), [
+      "name: pin-input",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- pin-input",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: pin-input-traces",
+      "          path: test-results/pin-input"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@radix-ui/react-one-time-password-field": "latest",
+        "@zag-js/pin-input": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest",
+        "vitest-axe": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "pin-input-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      pinInputSetups: Array<{ filePath: string; framework: string; rootCount: number; inputCount: number; hiddenInputCount: number; valueCount: number; validationCount: number; interactionCount: number; formCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      valueSignals: Array<{ signal: string; readiness: string }>;
+      validationSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      formSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Pin input readiness Radix OneTimePasswordField Zag pin-input OTP hidden input paste keyboard validation form submit accessibility tests");
+    expect(report.pinInputSetups.some((item) => item.filePath === "src/radix-otp.tsx" && item.framework === "radix-otp" && item.rootCount > 0 && item.inputCount > 0 && item.hiddenInputCount > 0 && item.valueCount > 0 && item.validationCount > 0 && item.interactionCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.pinInputSetups.some((item) => item.filePath === "src/zag-pin-input.tsx" && item.framework === "zag-pin-input" && item.rootCount > 0 && item.inputCount > 0 && item.hiddenInputCount > 0 && item.valueCount > 0 && item.validationCount > 0 && item.interactionCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["radix-otp", "zag-pin-input", "native-input"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "input", "hidden-input", "label", "control", "collection"]));
+    expect(readySignals(report.valueSignals)).toEqual(expect.arrayContaining(["value", "default-value", "value-as-string", "complete", "count", "focused-index", "set-value", "clear-value", "set-index"]));
+    expect(readySignals(report.validationSignals)).toEqual(expect.arrayContaining(["numeric", "alpha", "alphanumeric", "pattern", "sanitize", "invalid", "mask"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["paste", "before-input", "change", "backspace", "delete", "arrow-left", "arrow-right", "home", "end", "enter", "focus-blur", "auto-advance"]));
+    expect(readySignals(report.formSignals)).toEqual(expect.arrayContaining(["name", "form", "auto-submit", "request-submit", "hidden-submit-input", "reset"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["aria-label", "group-role", "input-mode", "autocomplete-one-time-code", "disabled", "readonly", "required"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "axe", "keyboard-test", "paste-test", "form-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@radix-ui/react-one-time-password-field", "@zag-js/pin-input", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@radix-ui/react-one-time-password-field"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records pin input readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "pin-input-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "pin-input-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "pin-input-readiness.html"))).resolves.toBeUndefined();
+    const pinMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "pin-input-readiness.md"), "utf8");
+    expect(pinMarkdown).toContain("Pin Input Readiness");
+    expect(pinMarkdown).toContain("@radix-ui/react-one-time-password-field");
+    const pinHtml = await fs.readFile(path.join(result.session.outputPaths.html, "pin-input-readiness.html"), "utf8");
+    expect(pinHtml).toContain("pin-input-readiness-card");
+    expect(pinHtml).toContain("data-source-pattern=\"PinInput\"");
+    expect(pinHtml).toContain("RepoTutor records pin input readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
