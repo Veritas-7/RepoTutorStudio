@@ -20116,6 +20116,136 @@ describe("RepoTutor core pipeline", () => {
     expect(notebookHtml).toContain("RepoTutor records notebook readiness only");
   });
 
+  it("detects map visualization readiness without opening canvases or fetching tiles", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-map-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-map-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "data"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "maplibre.ts"), [
+      "import maplibregl from 'maplibre-gl';",
+      "import 'maplibre-gl/dist/maplibre-gl.css';",
+      "const map = new maplibregl.Map({",
+      "  container: 'map',",
+      "  style: 'https://demotiles.maplibre.org/style.json',",
+      "  center: [127.0276, 37.4979],",
+      "  zoom: 12,",
+      "  bounds: [[126.9, 37.4], [127.1, 37.6]]",
+      "});",
+      "map.addControl(new maplibregl.NavigationControl(), 'top-right');",
+      "map.addControl(new maplibregl.GeolocateControl({ trackUserLocation: true }));",
+      "map.on('load', () => {",
+      "  map.addSource('districts', { type: 'geojson', data: '/data/districts.geojson' });",
+      "  map.addLayer({ id: 'district-fill', type: 'fill', source: 'districts', paint: { 'fill-color': '#2463eb', 'fill-opacity': 0.4 } });",
+      "  map.addLayer({ id: 'district-label', type: 'symbol', source: 'districts', layout: { 'text-field': ['get', 'name'] } });",
+      "});",
+      "new maplibregl.Marker().setLngLat([127.0276, 37.4979]).setPopup(new maplibregl.Popup().setText('Gangnam')).addTo(map);",
+      "map.fitBounds([[126.9, 37.4], [127.1, 37.6]]);",
+      "map.on('click', 'district-fill', event => console.log(event.features?.[0]?.properties));"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "leaflet.js"), [
+      "import L from 'leaflet';",
+      "const leafletMap = L.map('leaflet-map').setView([37.5665, 126.9780], 11);",
+      "L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', maxZoom: 19 }).addTo(leafletMap);",
+      "const station = L.marker([37.5665, 126.9780]).bindPopup('Seoul City Hall').addTo(leafletMap);",
+      "const parks = L.geoJSON({ type: 'FeatureCollection', features: [] }).addTo(leafletMap);",
+      "L.control.layers({ OSM: leafletMap }, { Parks: parks, Station: station }).addTo(leafletMap);",
+      "leafletMap.fitBounds([[37.45, 126.8], [37.7, 127.2]]);"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "deck-map.tsx"), [
+      "import {Deck, MapView} from '@deck.gl/core';",
+      "import {GeoJsonLayer, ScatterplotLayer} from '@deck.gl/layers';",
+      "import {TileLayer} from '@deck.gl/geo-layers';",
+      "const deck = new Deck({",
+      "  canvas: 'deck-canvas',",
+      "  views: [new MapView({ id: 'main-map', repeat: true })],",
+      "  initialViewState: { longitude: 127.0276, latitude: 37.4979, zoom: 11, pitch: 35, bearing: 20 },",
+      "  controller: true,",
+      "  layers: [",
+      "    new GeoJsonLayer({ id: 'districts', data: '/data/districts.geojson', pickable: true, stroked: true, filled: true, onHover: info => console.log(info.object), onClick: info => console.log(info.coordinate) }),",
+      "    new ScatterplotLayer({ id: 'stations', data: [{ position: [127.0276, 37.4979] }], getPosition: d => d.position, getRadius: 120 }),",
+      "    new TileLayer({ id: 'tiles', data: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', minZoom: 0, maxZoom: 19 })",
+      "  ]",
+      "});",
+      "deck.pickObject({ x: 10, y: 10 });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "data", "districts.geojson"), JSON.stringify({ type: "FeatureCollection", features: [{ type: "Feature", properties: { name: "Gangnam" }, geometry: { type: "Point", coordinates: [127.0276, 37.4979] } }] }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "maplibre-gl": "^5.0.0",
+        leaflet: "^2.0.0",
+        "deck.gl": "^9.0.0",
+        "@deck.gl/core": "^9.0.0",
+        "@deck.gl/layers": "^9.0.0",
+        "@deck.gl/geo-layers": "^9.0.0",
+        "react-map-gl": "^8.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "maps.yml"), [
+      "name: maps",
+      "on: [push]",
+      "jobs:",
+      "  static-map-check:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npx eslint src/maplibre.ts src/leaflet.js src/deck-map.tsx",
+      "      - run: npx playwright test map.spec.ts --grep @map",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: map-screenshots",
+      "          path: reports/maps"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "map-visualization-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      mapSetups: Array<{ filePath: string; platform: string; mapCount: number; layerCount: number; tileCount: number; viewportCount: number; readiness: string }>;
+      platformSignals: Array<{ signal: string; readiness: string }>;
+      containerSignals: Array<{ signal: string; readiness: string }>;
+      tileSignals: Array<{ signal: string; readiness: string }>;
+      layerSignals: Array<{ signal: string; readiness: string }>;
+      dataSignals: Array<{ signal: string; readiness: string }>;
+      viewportSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      controlSignals: Array<{ signal: string; readiness: string }>;
+      styleSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Map visualization readiness MapLibre maplibregl Leaflet L.map deck.gl Deck MapView tileLayer addLayer addSource GeoJSON marker popup viewport bounds controls tokens");
+    expect(report.mapSetups.some((item) => item.filePath === "src/maplibre.ts" && item.platform === "maplibre" && item.layerCount >= 2 && item.tileCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(report.mapSetups.some((item) => item.filePath === "src/leaflet.js" && item.platform === "leaflet" && item.mapCount > 0 && item.tileCount > 0)).toBe(true);
+    expect(report.mapSetups.some((item) => item.filePath === "src/deck-map.tsx" && item.platform === "deck-gl" && item.layerCount >= 3 && item.viewportCount > 0)).toBe(true);
+    expect(readySignals(report.platformSignals)).toEqual(expect.arrayContaining(["maplibre", "leaflet", "deck-gl"]));
+    expect(readySignals(report.containerSignals)).toEqual(expect.arrayContaining(["container", "canvas", "map-div"]));
+    expect(readySignals(report.tileSignals)).toEqual(expect.arrayContaining(["tile-url", "vector-tile", "raster-tile"]));
+    expect(readySignals(report.layerSignals)).toEqual(expect.arrayContaining(["geojson-layer", "marker-layer", "symbol-layer", "deck-layer"]));
+    expect(readySignals(report.dataSignals)).toEqual(expect.arrayContaining(["geojson", "coordinates", "feature-properties"]));
+    expect(readySignals(report.viewportSignals)).toEqual(expect.arrayContaining(["center-zoom", "bounds", "deck-view-state"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["click", "hover-pick", "popup"]));
+    expect(readySignals(report.controlSignals)).toEqual(expect.arrayContaining(["navigation", "geolocation", "layer-control"]));
+    expect(readySignals(report.styleSignals)).toEqual(expect.arrayContaining(["style-json", "paint-layout", "attribution"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["github-actions", "playwright", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["maplibre-gl", "leaflet", "deck.gl", "@deck.gl/core", "@deck.gl/layers"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("maplibregl"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records map visualization readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "map-visualization-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "map-visualization-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "map-visualization-readiness.html"))).resolves.toBeUndefined();
+    const mapMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "map-visualization-readiness.md"), "utf8");
+    expect(mapMarkdown).toContain("Map Visualization Readiness");
+    expect(mapMarkdown).toContain("MapLibre");
+    const mapHtml = await fs.readFile(path.join(result.session.outputPaths.html, "map-visualization-readiness.html"), "utf8");
+    expect(mapHtml).toContain("map-visualization-readiness-card");
+    expect(mapHtml).toContain("data-source-pattern=\"Map Visualization\"");
+    expect(mapHtml).toContain("RepoTutor records map visualization readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

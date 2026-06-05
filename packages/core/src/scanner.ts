@@ -153,6 +153,7 @@ import {
   SpreadsheetReadinessReport,
   ChartVisualizationReadinessReport,
   NotebookReadinessReport,
+  MapVisualizationReadinessReport,
   DiagramRenderingReadinessReport,
   LinkIntegrityReadinessReport,
   SeoMetadataReadinessReport,
@@ -355,6 +356,7 @@ export interface AnalysisBundle {
   spreadsheetReadinessReport: SpreadsheetReadinessReport;
   chartVisualizationReadinessReport: ChartVisualizationReadinessReport;
   notebookReadinessReport: NotebookReadinessReport;
+  mapVisualizationReadinessReport: MapVisualizationReadinessReport;
   diagramRenderingReadinessReport: DiagramRenderingReadinessReport;
   linkIntegrityReadinessReport: LinkIntegrityReadinessReport;
   seoMetadataReadinessReport: SeoMetadataReadinessReport;
@@ -557,6 +559,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const spreadsheetReadinessReport = await buildSpreadsheetReadinessReport(walk);
   const chartVisualizationReadinessReport = await buildChartVisualizationReadinessReport(walk);
   const notebookReadinessReport = await buildNotebookReadinessReport(walk);
+  const mapVisualizationReadinessReport = await buildMapVisualizationReadinessReport(walk);
   const diagramRenderingReadinessReport = await buildDiagramRenderingReadinessReport(walk);
   const linkIntegrityReadinessReport = await buildLinkIntegrityReadinessReport(walk);
   const seoMetadataReadinessReport = await buildSeoMetadataReadinessReport(walk);
@@ -601,7 +604,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -37016,6 +37019,335 @@ function notebookReadinessSignalFromSpecs<T extends Record<K, string> & { patter
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/notebook-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildMapVisualizationReadinessReport(walk: WalkResult): Promise<MapVisualizationReadinessReport> {
+  const sourceFiles = await mapVisualizationSourceFiles(walk);
+  const mapSetups = mapVisualizationSetups(sourceFiles);
+  const platformSignals = mapVisualizationPlatformSignals(sourceFiles);
+  const containerSignals = mapVisualizationContainerSignals(sourceFiles);
+  const tileSignals = mapVisualizationTileSignals(sourceFiles);
+  const layerSignals = mapVisualizationLayerSignals(sourceFiles);
+  const dataSignals = mapVisualizationDataSignals(sourceFiles);
+  const viewportSignals = mapVisualizationViewportSignals(sourceFiles);
+  const interactionSignals = mapVisualizationInteractionSignals(sourceFiles);
+  const controlSignals = mapVisualizationControlSignals(sourceFiles);
+  const styleSignals = mapVisualizationStyleSignals(sourceFiles);
+  const workflowSignals = mapVisualizationWorkflowSignals(sourceFiles);
+  const packageSignals = mapVisualizationPackageSignals(sourceFiles);
+
+  const hasPlatform = platformSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasMap = mapSetups.some((item) => item.readiness !== "missing");
+  const hasTiles = tileSignals.some((item) => item.readiness === "ready") || mapSetups.some((item) => item.tileCount > 0);
+  const hasViewport = viewportSignals.some((item) => item.readiness === "ready") || mapSetups.some((item) => item.viewportCount > 0);
+  const hasData = dataSignals.some((item) => item.readiness === "ready") || mapSetups.some((item) => item.geometryCount > 0 || item.sourceCount > 0);
+  const hasInteractions = interactionSignals.some((item) => item.readiness === "ready") || mapSetups.some((item) => item.interactionCount > 0);
+
+  const riskQueue: MapVisualizationReadinessReport["riskQueue"] = [];
+  if (!hasPlatform && !hasMap) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the map visualization strategy before claiming geospatial UI readiness.",
+      why: "Map visualization readiness starts with visible MapLibre, Leaflet, deck.gl, Mapbox, Google Maps, or custom map source files.",
+      relatedHref: "html/map-visualization-readiness.html"
+    });
+  }
+  if (hasMap && !hasTiles) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record tile URL, style JSON, vector/raster source, TileLayer, or tile service evidence.",
+      why: "Interactive maps are hard to reproduce when the basemap or tile source is invisible.",
+      relatedHref: "html/map-visualization-readiness.html"
+    });
+  }
+  if (hasMap && !hasViewport) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document center/zoom, bounds, fitBounds, viewState, pitch, or bearing defaults.",
+      why: "Learners need viewport defaults before they can understand what geography the map opens to.",
+      relatedHref: "html/map-visualization-readiness.html"
+    });
+  }
+  if (hasMap && !hasData) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record GeoJSON, coordinates, feature properties, MVT, source data, or bounds data evidence.",
+      why: "Map UI readiness depends on knowing which geographic data feeds layers and interactions.",
+      relatedHref: "html/map-visualization-readiness.html"
+    });
+  }
+  if (hasMap && !hasInteractions) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document click, hover, picking, popup, tooltip, or feature-query behavior.",
+      why: "Learners need to distinguish passive basemaps from interactive geospatial applications.",
+      relatedHref: "html/map-visualization-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Open map canvases, fetch tiles, request geolocation, and use provider tokens only in a trusted browser session.",
+    why: "RepoTutor records map visualization readiness only; it does not open map canvases, fetch tiles, contact geocoders, use map tokens, render WebGL, request geolocation, or run the analyzed project's tests.",
+    relatedHref: "html/map-visualization-readiness.html"
+  });
+
+  return {
+    summary: `Map visualization readiness report: setup ${mapSetups.length}개, platform signal ${platformSignals.length}개, tile signal ${tileSignals.length}개, layer signal ${layerSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Map visualization readiness MapLibre maplibregl Leaflet L.map deck.gl Deck MapView tileLayer addLayer addSource GeoJSON marker popup viewport bounds controls tokens",
+    mapSetups,
+    platformSignals,
+    containerSignals,
+    tileSignals,
+    layerSignals,
+    dataSignals,
+    viewportSignals,
+    interactionSignals,
+    controlSignals,
+    styleSignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"maplibregl|new maplibregl.Map|addSource|addLayer|NavigationControl|GeolocateControl|fitBounds\" .", purpose: "Inventory MapLibre map creation, sources, layers, controls, and viewport behavior." },
+      { command: "rg \"L\\.map|tileLayer|L\\.marker|L\\.geoJSON|control\\.layers|fitBounds|setView\" .", purpose: "Review Leaflet map creation, tiles, markers, GeoJSON, layer controls, and bounds." },
+      { command: "rg \"Deck\\(|new Deck|MapView|GeoJsonLayer|ScatterplotLayer|TileLayer|viewState|pickable|onHover|onClick\" .", purpose: "Map deck.gl views, layers, tile overlays, view state, and picking interactions." },
+      { command: "rg \"GeoJSON|FeatureCollection|coordinates|longitude|latitude|bounds|bbox|MVTLayer|vector tile\" .", purpose: "Check geospatial data and coordinate evidence feeding map layers." },
+      { command: "rg \"MAPBOX_TOKEN|accessToken|apiKey|attribution|style.json|sprite|glyphs|upload-artifact|playwright\" .", purpose: "Check token, attribution, style assets, and static map QA workflow evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 MapLibre, Leaflet, deck.gl, Mapbox, Google Maps, custom map wrapper 중 어떤 플랫폼이 쓰였는지 확인하세요.",
+      "container/canvas, tile URL/style JSON, GeoJSON/source/layer, center/zoom/bounds 순서로 map bootstrap을 따라가세요.",
+      "marker, popup, click, hover, picking, queryRenderedFeatures 신호로 상호작용을 구분하세요.",
+      "provider token, attribution, geolocation, external tile URL은 실제 실행 전에 보안과 개인정보 경계를 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 tile fetch, WebGL render, geolocation, map screenshot QA는 안전한 브라우저 세션에서 별도로 검증하세요."
+    ]
+  };
+}
+
+type MapVisualizationSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function mapVisualizationSourceFiles(walk: WalkResult): Promise<MapVisualizationSourceFile[]> {
+  const files: MapVisualizationSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !mapVisualizationInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!mapVisualizationPathSignal(file.relPath) && !mapVisualizationContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function mapVisualizationInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return mapVisualizationPathSignal(filePath)
+    || /^(package\.json|pnpm-lock\.yaml|yarn\.lock|package-lock\.json|vite\.config\.[jt]s|playwright\.config\.[jt]s)$/i.test(base)
+    || /\.(ts|tsx|js|jsx|mjs|cjs|json|geojson|ya?ml|toml|md|mdx|css|scss)$/i.test(filePath);
+}
+
+function mapVisualizationPathSignal(filePath: string): boolean {
+  return /(^|\/)(maps?|geo|geospatial|maplibre|leaflet|deck|deck-gl|mapbox|google[-_]?maps?|tiles?|layers?|markers?|bounds?|viewport|data|reports?)(\/|\.|-|_|$)|\.github\/workflows/i.test(filePath);
+}
+
+function mapVisualizationContentSignal(text: string): boolean {
+  return /maplibregl|maplibre-gl|Leaflet|L\.map|tileLayer|deck\.gl|new Deck|MapView|GeoJsonLayer|TileLayer|addLayer|addSource|GeoJSON|FeatureCollection|Marker|Popup|fitBounds|setView|NavigationControl|GeolocateControl|viewState/i.test(text);
+}
+
+function mapVisualizationSetups(sourceFiles: MapVisualizationSourceFile[]): MapVisualizationReadinessReport["mapSetups"] {
+  const rows: MapVisualizationReadinessReport["mapSetups"] = [];
+  for (const source of sourceFiles) {
+    const mapCount = countMatches(source.text, /new\s+maplibregl\.Map|L\.map\(|new\s+LeafletMap|new\s+Deck\(|Deck\(|new\s+MapView|GoogleMapsOverlay|MapboxOverlay|new\s+google\.maps\.Map/gi);
+    const tileCount = countMatches(source.text, /tileLayer|TileLayer|tiles?\/|\{z\}\/\{x\}\/\{y\}|style\.json|vector tile|raster tile|tilejson|type:\s*['"]?(vector|raster)|openstreetmap/gi);
+    const layerCount = countMatches(source.text, /addLayer|new\s+(GeoJsonLayer|ScatterplotLayer|TileLayer|MVTLayer|HexagonLayer|IconLayer|ArcLayer)|L\.geoJSON|L\.marker|marker|symbol|fill|line|LayerGroup|FeatureGroup/gi);
+    const sourceCount = countMatches(source.text, /addSource|source:\s*|data:\s*|GeoJSON|FeatureCollection|MVTLayer|TileLayer|source-layer|sourceLayer/gi);
+    const viewportCount = countMatches(source.text, /center|zoom|bounds|fitBounds|setView|initialViewState|viewState|longitude|latitude|pitch|bearing|LngLat|LatLng/gi);
+    const markerCount = countMatches(source.text, /Marker|marker|Popup|popup|bindPopup|Tooltip|tooltip|Icon|DivIcon/gi);
+    const geometryCount = countMatches(source.text, /GeoJSON|FeatureCollection|Feature|coordinates|Point|LineString|Polygon|MultiPolygon|getPosition|longitude|latitude|bbox|bounds/gi);
+    const interactionCount = countMatches(source.text, /on\(['"]?(click|mousemove|mouseenter|mouseleave)|onClick|onHover|pickable|pickObject|queryRenderedFeatures|Popup|bindPopup|Tooltip/gi);
+    const controlCount = countMatches(source.text, /addControl|NavigationControl|GeolocateControl|ScaleControl|AttributionControl|control\.layers|zoomControl|controller:\s*true/gi);
+    const styleCount = countMatches(source.text, /style\.json|style:\s*|paint:\s*|layout:\s*|fill-color|line-color|circle-color|attribution|maplibre-gl\.css|leaflet\.css|sprite|glyphs/gi);
+    const tokenCount = countMatches(source.text, /accessToken|MAPBOX_TOKEN|MAPTILER_KEY|GOOGLE_MAPS_API_KEY|apiKey|mapboxgl\.accessToken|token/gi);
+    const workflowCount = countMatches(source.text, /\.github\/workflows|github[-_ ]?actions|uses:\s*actions\/|playwright|screenshot|visual[-_ ]?regression|upload-artifact|eslint/gi)
+      + (source.filePath.includes(".github/workflows") ? 1 : 0);
+    const hasSetupSignal = mapCount + tileCount + layerCount + sourceCount + viewportCount + markerCount + geometryCount + interactionCount + controlCount + styleCount + tokenCount + workflowCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: mapVisualizationPlatform(source),
+      mapCount,
+      tileCount,
+      layerCount,
+      sourceCount,
+      viewportCount,
+      markerCount,
+      geometryCount,
+      interactionCount,
+      controlCount,
+      styleCount,
+      tokenCount,
+      workflowCount,
+      readiness: (mapCount > 0 || mapVisualizationPathSignal(source.filePath)) && (tileCount > 0 || layerCount > 0) && (viewportCount > 0 || geometryCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains maps ${mapCount}, tiles ${tileCount}, layers ${layerCount}, sources ${sourceCount}, viewport ${viewportCount}, markers ${markerCount}, geometry ${geometryCount}, interactions ${interactionCount}, controls ${controlCount}, style ${styleCount}, tokens ${tokenCount}, workflow ${workflowCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function mapVisualizationPlatform(source: MapVisualizationSourceFile): MapVisualizationReadinessReport["mapSetups"][number]["platform"] {
+  if (/maplibre/i.test(source.filePath) || /maplibregl|maplibre-gl|MapLibre/i.test(source.text)) return "maplibre";
+  if (/deck[-_.]?gl|deck-map/i.test(source.filePath) || /deck\.gl|new\s+Deck\(|MapView|GeoJsonLayer|ScatterplotLayer|@deck\.gl/i.test(source.text)) return "deck-gl";
+  if (/leaflet/i.test(source.filePath) || /Leaflet|L\.map|tileLayer|L\.geoJSON/i.test(source.text)) return "leaflet";
+  if (/google[-_]?maps/i.test(source.filePath) || /google\.maps|GoogleMapsOverlay|GOOGLE_MAPS/i.test(source.text)) return "google-maps";
+  if (/mapbox/i.test(source.filePath) || /mapboxgl|MapboxOverlay|MAPBOX_TOKEN/i.test(source.text)) return "mapbox";
+  if (/map|geo|coordinates|tiles?|layers?/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function mapVisualizationPlatformSignals(sourceFiles: MapVisualizationSourceFile[]): MapVisualizationReadinessReport["platformSignals"] {
+  const specs: Array<{ signal: MapVisualizationReadinessReport["platformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "maplibre", pattern: /maplibregl|maplibre-gl|MapLibre/i, evidence: "MapLibre map evidence was detected." },
+    { signal: "leaflet", pattern: /Leaflet|L\.map|tileLayer|L\.geoJSON/i, evidence: "Leaflet map evidence was detected." },
+    { signal: "deck-gl", pattern: /deck\.gl|@deck\.gl|new\s+Deck\(|MapView|GeoJsonLayer|ScatterplotLayer/i, evidence: "deck.gl map visualization evidence was detected." },
+    { signal: "google-maps", pattern: /google\.maps|GoogleMapsOverlay|GOOGLE_MAPS/i, evidence: "Google Maps evidence was detected." },
+    { signal: "mapbox", pattern: /mapboxgl|MapboxOverlay|MAPBOX_TOKEN/i, evidence: "Mapbox evidence was detected." },
+    { signal: "custom", pattern: /interactive map|map canvas|geo visualization|geospatial UI/i, evidence: "custom map visualization evidence was detected." }
+  ];
+  return mapVisualizationSignalFromSpecs(sourceFiles, specs, "platform", "signal");
+}
+
+function mapVisualizationContainerSignals(sourceFiles: MapVisualizationSourceFile[]): MapVisualizationReadinessReport["containerSignals"] {
+  const specs: Array<{ signal: MapVisualizationReadinessReport["containerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "container", pattern: /container:\s*|new\s+maplibregl\.Map|L\.map\(|new\s+Deck\(/i, evidence: "map container evidence was detected." },
+    { signal: "canvas", pattern: /canvas|deck-canvas|WebGL|webgl|map canvas/i, evidence: "canvas/WebGL container evidence was detected." },
+    { signal: "map-div", pattern: /map[-_]?div|leaflet-map|container:\s*['"]map|id=['"]map|<div[^>]+map/i, evidence: "map div evidence was detected." },
+    { signal: "webgl-context", pattern: /WebGL|webgl|GPU|deck\.gl|maplibre/i, evidence: "WebGL/GPU map context evidence was detected." },
+    { signal: "react-component", pattern: /react-map-gl|<Map|function\s+\w*Map|MapboxOverlay|GoogleMapsOverlay/i, evidence: "React map component evidence was detected." }
+  ];
+  return mapVisualizationSignalFromSpecs(sourceFiles, specs, "container", "signal");
+}
+
+function mapVisualizationTileSignals(sourceFiles: MapVisualizationSourceFile[]): MapVisualizationReadinessReport["tileSignals"] {
+  const specs: Array<{ signal: MapVisualizationReadinessReport["tileSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tile-url", pattern: /\{z\}\/\{x\}\/\{y\}|tiles?\/|tileLayer|TileLayer|style\.json|openstreetmap/i, evidence: "tile URL or style evidence was detected." },
+    { signal: "vector-tile", pattern: /vector tile|MVTLayer|type:\s*['"]?vector|source-layer|sourceLayer|maplibre|style\.json/i, evidence: "vector tile evidence was detected." },
+    { signal: "raster-tile", pattern: /raster tile|type:\s*['"]?raster|tileLayer|TileLayer|\{z\}\/\{x\}\/\{y\}/i, evidence: "raster tile evidence was detected." },
+    { signal: "tilejson", pattern: /tilejson|TileJSON|tiles:\s*\[/i, evidence: "TileJSON evidence was detected." },
+    { signal: "osm", pattern: /openstreetmap|tile\.openstreetmap|OSM/i, evidence: "OpenStreetMap tile evidence was detected." }
+  ];
+  return mapVisualizationSignalFromSpecs(sourceFiles, specs, "tile", "signal");
+}
+
+function mapVisualizationLayerSignals(sourceFiles: MapVisualizationSourceFile[]): MapVisualizationReadinessReport["layerSignals"] {
+  const specs: Array<{ signal: MapVisualizationReadinessReport["layerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "geojson-layer", pattern: /GeoJsonLayer|L\.geoJSON|type:\s*['"]geojson|GeoJSON|FeatureCollection/i, evidence: "GeoJSON layer evidence was detected." },
+    { signal: "marker-layer", pattern: /Marker|marker|L\.marker|ScatterplotLayer|IconLayer/i, evidence: "marker layer evidence was detected." },
+    { signal: "symbol-layer", pattern: /type:\s*['"]symbol|symbol|text-field|label/i, evidence: "symbol layer evidence was detected." },
+    { signal: "fill-line-layer", pattern: /type:\s*['"](fill|line)|fill-color|line-color|Polygon|LineString/i, evidence: "fill/line layer evidence was detected." },
+    { signal: "deck-layer", pattern: /new\s+(GeoJsonLayer|ScatterplotLayer|TileLayer|MVTLayer|HexagonLayer|ArcLayer|IconLayer)/i, evidence: "deck.gl layer evidence was detected." }
+  ];
+  return mapVisualizationSignalFromSpecs(sourceFiles, specs, "layer", "signal");
+}
+
+function mapVisualizationDataSignals(sourceFiles: MapVisualizationSourceFile[]): MapVisualizationReadinessReport["dataSignals"] {
+  const specs: Array<{ signal: MapVisualizationReadinessReport["dataSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "geojson", pattern: /GeoJSON|geojson|FeatureCollection/i, evidence: "GeoJSON data evidence was detected." },
+    { signal: "coordinates", pattern: /coordinates|longitude|latitude|LngLat|LatLng|getPosition|position:\s*\[/i, evidence: "coordinate evidence was detected." },
+    { signal: "feature-properties", pattern: /properties|feature\.properties|\['get'|getProperty/i, evidence: "feature property evidence was detected." },
+    { signal: "mvt", pattern: /MVTLayer|vector tile|source-layer|sourceLayer|\.pbf/i, evidence: "MVT/vector feature evidence was detected." },
+    { signal: "bounds-data", pattern: /bounds|bbox|fitBounds|LatLngBounds/i, evidence: "bounds data evidence was detected." }
+  ];
+  return mapVisualizationSignalFromSpecs(sourceFiles, specs, "data", "signal");
+}
+
+function mapVisualizationViewportSignals(sourceFiles: MapVisualizationSourceFile[]): MapVisualizationReadinessReport["viewportSignals"] {
+  const specs: Array<{ signal: MapVisualizationReadinessReport["viewportSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "center-zoom", pattern: /center:\s*|zoom:\s*|setView\(|initialViewState/i, evidence: "center/zoom evidence was detected." },
+    { signal: "bounds", pattern: /bounds|bbox|LatLngBounds/i, evidence: "bounds evidence was detected." },
+    { signal: "deck-view-state", pattern: /initialViewState|viewState|MapView|longitude|latitude/i, evidence: "deck.gl view state evidence was detected." },
+    { signal: "pitch-bearing", pattern: /pitch|bearing|rotation|tilt/i, evidence: "pitch/bearing evidence was detected." },
+    { signal: "fit-bounds", pattern: /fitBounds|fitBoundsOptions/i, evidence: "fitBounds evidence was detected." }
+  ];
+  return mapVisualizationSignalFromSpecs(sourceFiles, specs, "viewport", "signal");
+}
+
+function mapVisualizationInteractionSignals(sourceFiles: MapVisualizationSourceFile[]): MapVisualizationReadinessReport["interactionSignals"] {
+  const specs: Array<{ signal: MapVisualizationReadinessReport["interactionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "click", pattern: /on\(['"]click|onClick|click:/i, evidence: "click interaction evidence was detected." },
+    { signal: "hover-pick", pattern: /onHover|pickable|pickObject|hover|mousemove/i, evidence: "hover/picking evidence was detected." },
+    { signal: "popup", pattern: /Popup|popup|bindPopup/i, evidence: "popup evidence was detected." },
+    { signal: "tooltip", pattern: /Tooltip|tooltip|bindTooltip/i, evidence: "tooltip evidence was detected." },
+    { signal: "feature-query", pattern: /queryRenderedFeatures|features\?\.\[|event\.features|pickObject/i, evidence: "feature query evidence was detected." }
+  ];
+  return mapVisualizationSignalFromSpecs(sourceFiles, specs, "interaction", "signal");
+}
+
+function mapVisualizationControlSignals(sourceFiles: MapVisualizationSourceFile[]): MapVisualizationReadinessReport["controlSignals"] {
+  const specs: Array<{ signal: MapVisualizationReadinessReport["controlSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "navigation", pattern: /NavigationControl|ZoomControl|zoomControl/i, evidence: "navigation control evidence was detected." },
+    { signal: "geolocation", pattern: /GeolocateControl|geolocation|trackUserLocation|locate\(/i, evidence: "geolocation control evidence was detected." },
+    { signal: "layer-control", pattern: /control\.layers|LayersControl|LayerControl/i, evidence: "layer control evidence was detected." },
+    { signal: "scale", pattern: /ScaleControl|control\.scale|scaleControl/i, evidence: "scale control evidence was detected." },
+    { signal: "attribution-control", pattern: /AttributionControl|attribution|control\.attribution/i, evidence: "attribution control evidence was detected." }
+  ];
+  return mapVisualizationSignalFromSpecs(sourceFiles, specs, "control", "signal");
+}
+
+function mapVisualizationStyleSignals(sourceFiles: MapVisualizationSourceFile[]): MapVisualizationReadinessReport["styleSignals"] {
+  const specs: Array<{ signal: MapVisualizationReadinessReport["styleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "style-json", pattern: /style\.json|style:\s*['"][^'"]+\.json|StyleSpecification/i, evidence: "style JSON evidence was detected." },
+    { signal: "paint-layout", pattern: /paint:\s*|layout:\s*|fill-color|line-color|circle-color|text-field/i, evidence: "paint/layout style evidence was detected." },
+    { signal: "attribution", pattern: /attribution|OpenStreetMap contributors|AttributionControl/i, evidence: "attribution evidence was detected." },
+    { signal: "css", pattern: /maplibre-gl\.css|leaflet\.css|\.map-container|\.leaflet-container/i, evidence: "map CSS evidence was detected." },
+    { signal: "icon-sprite", pattern: /sprite|glyphs|Icon|DivIcon|marker-icon/i, evidence: "sprite/icon evidence was detected." }
+  ];
+  return mapVisualizationSignalFromSpecs(sourceFiles, specs, "style", "signal");
+}
+
+function mapVisualizationWorkflowSignals(sourceFiles: MapVisualizationSourceFile[]): MapVisualizationReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: MapVisualizationReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|uses:\s*actions\/|runs-on:/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "playwright", pattern: /playwright|@map|map\.spec/i, evidence: "Playwright map QA evidence was detected." },
+    { signal: "visual-regression", pattern: /visual[-_ ]?regression|screenshot|pixelmatch|vrt/i, evidence: "visual regression evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|artifact|screenshots?/i, evidence: "artifact upload evidence was detected." },
+    { signal: "lint", pattern: /eslint|lint/i, evidence: "lint workflow evidence was detected." }
+  ];
+  return mapVisualizationSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function mapVisualizationPackageSignals(sourceFiles: MapVisualizationSourceFile[]): MapVisualizationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: MapVisualizationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "maplibre-gl", pattern: /"maplibre-gl"|maplibre-gl/i, evidence: "maplibre-gl package evidence was detected." },
+    { signal: "leaflet", pattern: /"leaflet"|leaflet/i, evidence: "Leaflet package evidence was detected." },
+    { signal: "deck.gl", pattern: /"deck\.gl"|deck\.gl/i, evidence: "deck.gl package evidence was detected." },
+    { signal: "@deck.gl/core", pattern: /"@deck\.gl\/core"|@deck\.gl\/core/i, evidence: "@deck.gl/core package evidence was detected." },
+    { signal: "@deck.gl/layers", pattern: /"@deck\.gl\/layers"|@deck\.gl\/layers/i, evidence: "@deck.gl/layers package evidence was detected." },
+    { signal: "@deck.gl/geo-layers", pattern: /"@deck\.gl\/geo-layers"|@deck\.gl\/geo-layers/i, evidence: "@deck.gl/geo-layers package evidence was detected." },
+    { signal: "react-map-gl", pattern: /"react-map-gl"|react-map-gl/i, evidence: "react-map-gl package evidence was detected." }
+  ];
+  return mapVisualizationSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function mapVisualizationSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: MapVisualizationSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/map-visualization-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

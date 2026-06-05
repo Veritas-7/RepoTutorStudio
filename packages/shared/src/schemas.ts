@@ -8885,6 +8885,107 @@ export const NotebookReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const MapVisualizationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  mapSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["maplibre", "leaflet", "deck-gl", "google-maps", "mapbox", "custom", "unknown"]),
+    mapCount: z.number().int().nonnegative(),
+    tileCount: z.number().int().nonnegative(),
+    layerCount: z.number().int().nonnegative(),
+    sourceCount: z.number().int().nonnegative(),
+    viewportCount: z.number().int().nonnegative(),
+    markerCount: z.number().int().nonnegative(),
+    geometryCount: z.number().int().nonnegative(),
+    interactionCount: z.number().int().nonnegative(),
+    controlCount: z.number().int().nonnegative(),
+    styleCount: z.number().int().nonnegative(),
+    tokenCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  platformSignals: z.array(z.object({
+    signal: z.enum(["maplibre", "leaflet", "deck-gl", "google-maps", "mapbox", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  containerSignals: z.array(z.object({
+    signal: z.enum(["container", "canvas", "map-div", "webgl-context", "react-component", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  tileSignals: z.array(z.object({
+    signal: z.enum(["tile-url", "vector-tile", "raster-tile", "tilejson", "osm", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  layerSignals: z.array(z.object({
+    signal: z.enum(["geojson-layer", "marker-layer", "symbol-layer", "fill-line-layer", "deck-layer", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dataSignals: z.array(z.object({
+    signal: z.enum(["geojson", "coordinates", "feature-properties", "mvt", "bounds-data", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  viewportSignals: z.array(z.object({
+    signal: z.enum(["center-zoom", "bounds", "deck-view-state", "pitch-bearing", "fit-bounds", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["click", "hover-pick", "popup", "tooltip", "feature-query", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  controlSignals: z.array(z.object({
+    signal: z.enum(["navigation", "geolocation", "layer-control", "scale", "attribution-control", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  styleSignals: z.array(z.object({
+    signal: z.enum(["style-json", "paint-layout", "attribution", "css", "icon-sprite", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "playwright", "visual-regression", "artifact-upload", "lint", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["maplibre-gl", "leaflet", "deck.gl", "@deck.gl/core", "@deck.gl/layers", "@deck.gl/geo-layers", "react-map-gl", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const DiagramRenderingReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -12604,6 +12705,7 @@ export type PdfGenerationReadinessReport = z.infer<typeof PdfGenerationReadiness
 export type SpreadsheetReadinessReport = z.infer<typeof SpreadsheetReadinessReportSchema>;
 export type ChartVisualizationReadinessReport = z.infer<typeof ChartVisualizationReadinessReportSchema>;
 export type NotebookReadinessReport = z.infer<typeof NotebookReadinessReportSchema>;
+export type MapVisualizationReadinessReport = z.infer<typeof MapVisualizationReadinessReportSchema>;
 export type DiagramRenderingReadinessReport = z.infer<typeof DiagramRenderingReadinessReportSchema>;
 export type LinkIntegrityReadinessReport = z.infer<typeof LinkIntegrityReadinessReportSchema>;
 export type SeoMetadataReadinessReport = z.infer<typeof SeoMetadataReadinessReportSchema>;
