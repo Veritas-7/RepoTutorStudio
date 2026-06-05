@@ -40,6 +40,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "flaky-test-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "chaos-engineering-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "accessibility-report.json"))).resolves.toBeUndefined();
@@ -172,6 +173,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "flaky-test-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "chaos-engineering-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "accessibility.md"))).resolves.toBeUndefined();
@@ -307,6 +309,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "load-testing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "flaky-test-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "chaos-engineering-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "accessibility.html"))).resolves.toBeUndefined();
@@ -469,6 +472,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/load-testing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/benchmark-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/flaky-test-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/integration-test-environment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/chaos-engineering-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/accessibility.html\"");
@@ -1054,6 +1058,28 @@ describe("RepoTutor core pipeline", () => {
     expect(e2eMarkdown).toContain("Source pattern: Playwright");
     expect(e2eMarkdown).toContain("## Browser Projects");
     expect(e2eMarkdown).toContain("## Runtime Targets");
+    const flakyTestText = await fs.readFile(path.join(result.session.outputPaths.analysis, "flaky-test-readiness-report.json"), "utf8");
+    expect(flakyTestText).toContain("Flaky test readiness Playwright retries failOnFlakyTests trace on-first-retry pytest-rerunfailures --reruns --fail-on-flaky jest.retryTimes quarantine skip fixme xfail artifacts");
+    expect(flakyTestText).toContain("\"flakyTestSetups\"");
+    expect(flakyTestText).toContain("\"frameworkSignals\"");
+    expect(flakyTestText).toContain("\"retrySignals\"");
+    expect(flakyTestText).toContain("\"quarantineSignals\"");
+    expect(flakyTestText).toContain("\"isolationSignals\"");
+    expect(flakyTestText).toContain("\"artifactSignals\"");
+    expect(flakyTestText).toContain("\"ciSignals\"");
+    expect(flakyTestText).toContain("\"packageSignals\"");
+    expect(flakyTestText).toContain("npx playwright test --retries=2");
+    const flakyTestHtml = await fs.readFile(path.join(result.session.outputPaths.html, "flaky-test-readiness.html"), "utf8");
+    expect(flakyTestHtml).toContain("Flaky Test Readiness");
+    expect(flakyTestHtml).toContain("flaky-test-readiness-card");
+    expect(flakyTestHtml).toContain("data-source-pattern=\"Flaky\"");
+    expect(flakyTestHtml).toContain("Flaky Test Setups");
+    expect(flakyTestHtml).toContain("Quarantine Signals");
+    const flakyTestMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "flaky-test-readiness.md"), "utf8");
+    expect(flakyTestMarkdown).toContain("# Flaky Test Readiness");
+    expect(flakyTestMarkdown).toContain("Source pattern: Flaky test readiness");
+    expect(flakyTestMarkdown).toContain("## Retry Signals");
+    expect(flakyTestMarkdown).toContain("## Artifact Signals");
     const integrationTestEnvironmentText = await fs.readFile(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"), "utf8");
     expect(integrationTestEnvironmentText).toContain("Testcontainers GenericContainer DockerContainer DockerComposeEnvironment DockerCompose wait strategies exposed ports env lifecycle stop Ryuk resource reaper pytest beforeAll afterAll");
     expect(integrationTestEnvironmentText).toContain("\"integrationSetups\"");
@@ -3034,6 +3060,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/load-testing-readiness.html");
     expect(exportManifestText).toContain("html/benchmark-readiness.html");
     expect(exportManifestText).toContain("html/e2e.html");
+    expect(exportManifestText).toContain("html/flaky-test-readiness.html");
     expect(exportManifestText).toContain("html/integration-test-environment-readiness.html");
     expect(exportManifestText).toContain("html/chaos-engineering-readiness.html");
     expect(exportManifestText).toContain("html/accessibility.html");
@@ -3188,6 +3215,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("load-testing-readiness.html");
     expect(learningPathHtml).toContain("benchmark-readiness.html");
     expect(learningPathHtml).toContain("e2e.html");
+    expect(learningPathHtml).toContain("flaky-test-readiness.html");
     expect(learningPathHtml).toContain("integration-test-environment-readiness.html");
     expect(learningPathHtml).toContain("chaos-engineering-readiness.html");
     expect(learningPathHtml).toContain("accessibility.html");
@@ -5131,6 +5159,153 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects flaky test readiness without running test toolchains", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-flaky-test-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-flaky-test-source-"));
+    await fs.mkdir(path.join(sourceRoot, "tests"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "test:pw": "playwright test --retries=2 --trace=on-first-retry --repeat-each=2 --workers=1",
+        "test:jest": "jest --runInBand --detectOpenHandles --testTimeout=10000",
+        "test:pytest": "pytest --reruns 3 --reruns-delay 2 --fail-on-flaky -r aR --only-rerun AssertionError --rerun-except OSError"
+      },
+      devDependencies: {
+        "@playwright/test": "^1.0.0",
+        "jest": "^30.0.0",
+        "jest-junit": "^16.0.0",
+        "vitest": "^3.0.0",
+        "cypress": "^14.0.0",
+        "mocha": "^11.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "playwright.config.ts"), [
+      "import { defineConfig } from '@playwright/test';",
+      "export default defineConfig({",
+      "  retries: process.env.CI ? 2 : 0,",
+      "  failOnFlakyTests: true,",
+      "  reporter: [['html'], ['junit', { outputFile: 'test-results/junit.xml' }], ['blob']],",
+      "  trace: 'on-first-retry',",
+      "  screenshot: 'only-on-failure',",
+      "  video: 'on-first-retry',",
+      "  workers: 1,",
+      "  fullyParallel: false,",
+      "  timeout: 30000,",
+      "  globalTimeout: 600000,",
+      "  use: { storageState: 'state.json' },",
+      "  projects: [{ name: 'chromium' }]",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "flaky.spec.ts"), [
+      "import { test, expect } from '@playwright/test';",
+      "test.describe.configure({ mode: 'serial', retries: 2 });",
+      "test.fixme(true, 'flaky issue #123 owner: qa-team quarantine');",
+      "test('retry aware', async ({ page }, testInfo) => {",
+      "  if (testInfo.retry) await testInfo.attach('retry-log', { body: 'retry trace.zip test-results/junit.xml' });",
+      "  expect(testInfo.retry).toBeGreaterThanOrEqual(0);",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "jest.config.js"), [
+      "module.exports = {",
+      "  bail: 1,",
+      "  testTimeout: 10000,",
+      "  slowTestThreshold: 5,",
+      "  detectOpenHandles: true,",
+      "  randomize: true,",
+      "  seed: 123,",
+      "  reporters: ['default', 'jest-junit']",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "flaky.test.js"), [
+      "jest.retryTimes(3, { logErrorsBeforeRetry: true, waitBeforeRetry: 100, retryImmediately: true });",
+      "it.skip('quarantined flaky BUG-123 owner: qa-team', () => {});",
+      "test('retry artifact', () => { expect('junit test-results').toContain('junit'); });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "dependencies = ['pytest-rerunfailures', 'flaky']",
+      "[tool.pytest.ini_options]",
+      "addopts = '--reruns 3 --reruns-delay 2 --fail-on-flaky -r aR --only-rerun AssertionError --rerun-except OSError'",
+      "markers = ['flaky: flaky rerun quarantine marker']"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "tests", "test_flaky.py"), [
+      "import pytest",
+      "import sys",
+      "@pytest.mark.flaky(reruns=2, reruns_delay=1, only_rerun=['AssertionError'], condition=sys.platform.startswith('linux'))",
+      "@pytest.mark.xfail(reason='BUG-123 owner: qa-team quarantine test-results/junit.xml')",
+      "def test_py_flaky():",
+      "    assert True"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "flaky-tests.yml"), [
+      "name: flaky tests",
+      "on:",
+      "  pull_request:",
+      "  schedule:",
+      "    - cron: '0 5 * * *'",
+      "  workflow_dispatch:",
+      "jobs:",
+      "  flaky:",
+      "    strategy:",
+      "      matrix:",
+      "        shard: [1, 2]",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npx playwright test --shard=${{ matrix.shard }}/2 --retries=2 --trace=on-first-retry",
+      "      - run: pytest --reruns 3 --reruns-delay 2 --fail-on-flaky -r aR",
+      "      - run: echo 'flaky dashboard rerun job retry job' >> $GITHUB_STEP_SUMMARY",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: retry-trace-upload",
+      "          path: |",
+      "            playwright-report",
+      "            test-results",
+      "            blob-report",
+      "            trace.zip"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Flaky Test Study",
+      "Quarantine-list and flaky-tests.txt isolate owner: qa-team issue #123 while grep-invert @flaky keeps noisy tests out of blocking jobs.",
+      "Random seed order randomization is tracked before release gates."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "flaky-tests.txt"), "tests/flaky.spec.ts # owner: qa-team issue #123 quarantine grep-invert @flaky\n");
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "flaky-test-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      flakyTestSetups: Array<{ filePath: string; framework: string; retryCount: number; rerunCount: number; quarantineCount: number; failOnFlakyCount: number; artifactCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      retrySignals: Array<{ signal: string; readiness: string }>;
+      quarantineSignals: Array<{ signal: string; readiness: string }>;
+      isolationSignals: Array<{ signal: string; readiness: string }>;
+      artifactSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Flaky test readiness Playwright retries failOnFlakyTests trace on-first-retry pytest-rerunfailures --reruns --fail-on-flaky jest.retryTimes quarantine skip fixme xfail artifacts");
+    expect(report.flakyTestSetups.some((item) => item.framework === "playwright" && item.retryCount > 0 && item.quarantineCount > 0 && item.artifactCount > 0)).toBe(true);
+    expect(report.flakyTestSetups.some((item) => item.framework === "pytest" && item.rerunCount > 0 && item.quarantineCount > 0)).toBe(true);
+    expect(report.flakyTestSetups.some((item) => item.framework === "jest" && item.retryCount > 0 && item.quarantineCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["playwright", "pytest-rerunfailures", "jest", "vitest", "cypress", "mocha"]));
+    expect(readySignals(report.retrySignals)).toEqual(expect.arrayContaining(["retries", "reruns", "retry-times", "retry-immediately", "wait-before-retry", "reruns-delay", "repeat-each", "only-rerun", "rerun-except", "fail-on-flaky"]));
+    expect(readySignals(report.quarantineSignals)).toEqual(expect.arrayContaining(["flaky-marker", "skip-fixme", "xfail", "quarantine-tag", "grep-invert", "test-list", "issue-link", "owner"]));
+    expect(readySignals(report.isolationSignals)).toEqual(expect.arrayContaining(["workers-one", "run-in-band", "fully-parallel-control", "serial-mode", "test-timeout", "global-timeout", "detect-open-handles", "storage-state", "random-seed", "order-randomization"]));
+    expect(readySignals(report.artifactSignals)).toEqual(expect.arrayContaining(["trace-on-first-retry", "screenshot-on-failure", "video-on-retry", "html-report", "junit-report", "blob-report", "retry-trace-upload", "test-results", "step-summary"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "pull-request", "scheduled", "shard", "matrix", "upload-artifact", "flaky-dashboard", "rerun-job"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@playwright/test", "pytest-rerunfailures", "jest", "vitest", "cypress", "mocha", "flaky"]));
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "npx playwright test --retries=2 --trace=on-first-retry",
+      "pytest --reruns 3 --reruns-delay 2 --fail-on-flaky -r aR",
+      "npx jest --runInBand --detectOpenHandles"
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "flaky-test-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "flaky-test-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "flaky-test-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {

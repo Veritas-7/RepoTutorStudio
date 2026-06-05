@@ -46,6 +46,7 @@ import type {
   LoadTestingReadinessReport,
   BenchmarkReadinessReport,
   E2eReport,
+  FlakyTestReadinessReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
   AccessibilityReport,
@@ -192,6 +193,7 @@ export interface StudyHtmlInput {
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
+  flakyTestReadinessReport: FlakyTestReadinessReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
   accessibilityReport: AccessibilityReport;
@@ -358,6 +360,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["load-testing-readiness.html", "Load Testing"],
     ["benchmark-readiness.html", "Benchmarks"],
     ["e2e.html", "E2E"],
+    ["flaky-test-readiness.html", "Flaky Tests"],
     ["chaos-engineering-readiness.html", "Chaos Engineering"],
     ["accessibility.html", "Accessibility"],
     ["storybook.html", "Storybook"],
@@ -542,6 +545,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Load Testing Readiness</h3><p>${escapeHtml(input.loadTestingReadinessReport.summary)}</p><p>k6/Artillery/Locust 패턴으로 profile, protocol, SLO gates, data, execution, reports 준비도를 정리합니다.</p><a href="load-testing-readiness.html">Load Testing 열기</a></article>
           <article><h3>Benchmark Readiness</h3><p>${escapeHtml(input.benchmarkReadinessReport.summary)}</p><p>Tinybench/Benchmark.js/Hyperfine 패턴으로 suite, timing, comparison, reports, CI 준비도를 정리합니다.</p><a href="benchmark-readiness.html">Benchmarks 열기</a></article>
           <article><h3>E2E Readiness</h3><p>${escapeHtml(input.e2eReport.summary)}</p><p>Playwright 패턴으로 browser projects, locators, assertions, traces/reporters, webServer/baseURL 준비도를 정리합니다.</p><a href="e2e.html">E2E 열기</a></article>
+          <article><h3>Flaky Test Readiness</h3><p>${escapeHtml(input.flakyTestReadinessReport.summary)}</p><p>Playwright/Pytest/Jest 패턴으로 retry, quarantine, fail-on-flaky, artifact, CI 준비도를 정리합니다.</p><a href="flaky-test-readiness.html">Flaky Tests 열기</a></article>
           <article><h3>Chaos Engineering Readiness</h3><p>${escapeHtml(input.chaosEngineeringReadinessReport.summary)}</p><p>Chaos Mesh, LitmusChaos, Toxiproxy 패턴으로 experiment, fault, scope, probe/steady-state, observability 준비도를 정리합니다.</p><a href="chaos-engineering-readiness.html">Chaos Engineering 열기</a></article>
           <article><h3>Accessibility Readiness</h3><p>${escapeHtml(input.accessibilityReport.summary)}</p><p>axe-core 패턴으로 scan targets, WCAG/category tags, result buckets, impact, context controls를 정리합니다.</p><a href="accessibility.html">Accessibility 열기</a></article>
           <article><h3>Storybook Readiness</h3><p>${escapeHtml(input.storybookReport.summary)}</p><p>Storybook 패턴으로 CSF stories, args, decorators, play functions, addons, publish/test signals를 정리합니다.</p><a href="storybook.html">Storybook 열기</a></article>
@@ -796,6 +800,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "e2e.html",
       title: "E2E Readiness",
       html: pageShell("E2E Readiness", "e2e.html", `<section class="panel" data-source-pattern="Playwright"><h2>E2E Snapshot</h2><p>${escapeHtml(input.e2eReport.summary)}</p><p class="muted">${escapeHtml(input.e2eReport.sourcePattern)}</p><dl class="meta"><div><dt>suites</dt><dd>${input.e2eReport.testSuites.length}</dd></div><div><dt>browser projects</dt><dd>${input.e2eReport.browserProjects.length}</dd></div><div><dt>locators</dt><dd>${input.e2eReport.locatorSignals.length}</dd></div><div><dt>artifacts</dt><dd>${input.e2eReport.artifacts.length}</dd></div></dl><p class="muted">RepoTutor records Playwright-style E2E readiness only. It does not launch browsers or claim user-flow pass/fail results.</p></section><section class="grid"><article class="e2e-card"><h3>Test Suites</h3>${e2eSuiteList(input.e2eReport.testSuites)}</article><article class="e2e-card"><h3>Browser Projects</h3>${e2eBrowserList(input.e2eReport.browserProjects)}</article><article class="e2e-card"><h3>Locator Signals</h3>${e2eLocatorList(input.e2eReport.locatorSignals)}</article><article class="e2e-card"><h3>Assertions</h3>${e2eAssertionList(input.e2eReport.assertions)}</article></section><section class="grid"><article class="e2e-card"><h3>Artifacts</h3>${e2eArtifactList(input.e2eReport.artifacts)}</article><article class="e2e-card"><h3>Runtime Targets</h3>${e2eRuntimeList(input.e2eReport.runtimeTargets)}</article><article class="e2e-card"><h3>Recommended Commands</h3>${e2eCommandList(input.e2eReport.recommendedCommands)}</article><article class="e2e-card"><h3>Risk Queue</h3>${e2eRiskList(input.e2eReport.riskQueue)}</article><article class="e2e-card"><h3>다음 확인 단계</h3>${list(input.e2eReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "flaky-test-readiness.html",
+      title: "Flaky Test Readiness",
+      html: pageShell("Flaky Test Readiness", "flaky-test-readiness.html", `<section class="panel" data-source-pattern="Flaky"><h2>Flaky Test Snapshot</h2><p>${escapeHtml(input.flakyTestReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.flakyTestReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.flakyTestReadinessReport.flakyTestSetups.length}</dd></div><div><dt>retry signals</dt><dd>${input.flakyTestReadinessReport.retrySignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>quarantine</dt><dd>${input.flakyTestReadinessReport.quarantineSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>artifacts</dt><dd>${input.flakyTestReadinessReport.artifactSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records flaky-test readiness only; it does not rerun tests, execute Playwright/Jest/Pytest, or claim a flake has been reproduced.</p></section><section class="grid"><article class="flaky-test-readiness-card"><h3>Flaky Test Setups</h3>${flakyTestSetupList(input.flakyTestReadinessReport.flakyTestSetups)}</article><article class="flaky-test-readiness-card"><h3>Framework Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.frameworkSignals, "signal")}</article><article class="flaky-test-readiness-card"><h3>Retry Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.retrySignals, "signal")}</article><article class="flaky-test-readiness-card"><h3>Quarantine Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.quarantineSignals, "signal")}</article></section><section class="grid"><article class="flaky-test-readiness-card"><h3>Isolation Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.isolationSignals, "signal")}</article><article class="flaky-test-readiness-card"><h3>Artifact Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.artifactSignals, "signal")}</article><article class="flaky-test-readiness-card"><h3>CI Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.ciSignals, "signal")}</article><article class="flaky-test-readiness-card"><h3>Package Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.packageSignals, "signal")}</article><article class="flaky-test-readiness-card"><h3>Recommended Commands</h3>${flakyTestCommandList(input.flakyTestReadinessReport.recommendedCommands)}</article><article class="flaky-test-readiness-card"><h3>Risk Queue</h3>${flakyTestRiskList(input.flakyTestReadinessReport.riskQueue)}</article><article class="flaky-test-readiness-card"><h3>다음 확인 단계</h3>${list(input.flakyTestReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "integration-test-environment-readiness.html",
@@ -1414,6 +1423,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Load Testing Readiness", path: "html/load-testing-readiness.html", description: "k6/Artillery/Locust식 load profile, protocol, SLO gate, report 준비도를 확인합니다." },
       { label: "Benchmark Readiness", path: "html/benchmark-readiness.html", description: "Tinybench/Benchmark.js/Hyperfine식 suite, timing, comparison, report, CI 준비도를 확인합니다." },
       { label: "E2E Readiness", path: "html/e2e.html", description: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다." },
+      { label: "Flaky Test Readiness", path: "html/flaky-test-readiness.html", description: "Playwright/Pytest/Jest식 retry, quarantine, fail-on-flaky, artifact 준비도를 확인합니다." },
       { label: "Integration Test Environment Readiness", path: "html/integration-test-environment-readiness.html", description: "Testcontainers식 container fixture, wait strategy, lifecycle cleanup, runtime 준비도를 확인합니다." },
       { label: "Chaos Engineering Readiness", path: "html/chaos-engineering-readiness.html", description: "Chaos Mesh, LitmusChaos, Toxiproxy식 fault, scope, probe, cleanup 준비도를 확인합니다." },
       { label: "Accessibility Readiness", path: "html/accessibility.html", description: "axe-core식 scan target, WCAG/category tag, result bucket, impact 준비도를 확인합니다." },
@@ -1798,6 +1808,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "e2e.html",
       goal: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다.",
       evidence: `test suites ${input.e2eReport.testSuites.length}개, locator signals ${input.e2eReport.locatorSignals.length}개`
+    },
+    {
+      title: "Flaky test 준비도 확인",
+      href: "flaky-test-readiness.html",
+      goal: "Playwright, pytest-rerunfailures, Jest식 retry, quarantine, fail-on-flaky, artifact 준비도를 확인합니다.",
+      evidence: `setups ${input.flakyTestReadinessReport.flakyTestSetups.length}개, retry signals ${input.flakyTestReadinessReport.retrySignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Integration test environment 준비도 확인",
@@ -3212,6 +3228,34 @@ function e2eRiskList(items: E2eReport["riskQueue"]): string {
 }
 
 function e2eHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function flakyTestSetupList(items: FlakyTestReadinessReport["flakyTestSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">flaky test setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)} / ${escapeHtml(item.readiness)}]<br>retry ${item.retryCount}, rerun ${item.rerunCount}, quarantine ${item.quarantineCount}, fail-on-flaky ${item.failOnFlakyCount}<br>filter ${item.filterCount}, delay ${item.delayCount}, artifact ${item.artifactCount}, isolation ${item.isolationCount}, timeout ${item.timeoutCount}, CI ${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(flakyTestHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function flakyTestSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">flaky test readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(flakyTestHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function flakyTestCommandList(items: FlakyTestReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function flakyTestRiskList(items: FlakyTestReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(flakyTestHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function flakyTestHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

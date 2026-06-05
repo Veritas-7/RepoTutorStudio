@@ -1700,6 +1700,81 @@ export const E2eReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const FlakyTestReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  flakyTestSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["playwright", "pytest", "jest", "vitest", "cypress", "mocha", "custom", "unknown"]),
+    retryCount: z.number().int().nonnegative(),
+    rerunCount: z.number().int().nonnegative(),
+    quarantineCount: z.number().int().nonnegative(),
+    failOnFlakyCount: z.number().int().nonnegative(),
+    filterCount: z.number().int().nonnegative(),
+    delayCount: z.number().int().nonnegative(),
+    artifactCount: z.number().int().nonnegative(),
+    isolationCount: z.number().int().nonnegative(),
+    timeoutCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["playwright", "pytest-rerunfailures", "jest", "vitest", "cypress", "mocha", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  retrySignals: z.array(z.object({
+    signal: z.enum(["retries", "reruns", "retry-times", "retry-immediately", "wait-before-retry", "reruns-delay", "repeat-each", "only-rerun", "rerun-except", "fail-on-flaky", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  quarantineSignals: z.array(z.object({
+    signal: z.enum(["flaky-marker", "skip-fixme", "xfail", "quarantine-tag", "grep-invert", "test-list", "issue-link", "owner", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  isolationSignals: z.array(z.object({
+    signal: z.enum(["workers-one", "run-in-band", "fully-parallel-control", "serial-mode", "test-timeout", "global-timeout", "detect-open-handles", "storage-state", "random-seed", "order-randomization", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  artifactSignals: z.array(z.object({
+    signal: z.enum(["trace-on-first-retry", "screenshot-on-failure", "video-on-retry", "html-report", "junit-report", "blob-report", "retry-trace-upload", "test-results", "step-summary", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "pull-request", "scheduled", "shard", "matrix", "upload-artifact", "flaky-dashboard", "rerun-job", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@playwright/test", "pytest-rerunfailures", "jest", "vitest", "cypress", "mocha", "flaky", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const IntegrationTestEnvironmentReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -8182,6 +8257,7 @@ export type PerformanceReport = z.infer<typeof PerformanceReportSchema>;
 export type LoadTestingReadinessReport = z.infer<typeof LoadTestingReadinessReportSchema>;
 export type BenchmarkReadinessReport = z.infer<typeof BenchmarkReadinessReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;
+export type FlakyTestReadinessReport = z.infer<typeof FlakyTestReadinessReportSchema>;
 export type IntegrationTestEnvironmentReadinessReport = z.infer<typeof IntegrationTestEnvironmentReadinessReportSchema>;
 export type ChaosEngineeringReadinessReport = z.infer<typeof ChaosEngineeringReadinessReportSchema>;
 export type AccessibilityReport = z.infer<typeof AccessibilityReportSchema>;
