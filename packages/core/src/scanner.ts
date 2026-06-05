@@ -70,6 +70,7 @@ import {
   CodeQualityReport,
   DocumentationReport,
   DatabaseReadinessReport,
+  DatabaseMigrationReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -227,6 +228,7 @@ export interface AnalysisBundle {
   codeQualityReport: CodeQualityReport;
   documentationReport: DocumentationReport;
   databaseReadinessReport: DatabaseReadinessReport;
+  databaseMigrationReadinessReport: DatabaseMigrationReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -384,6 +386,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const codeQualityReport = await buildCodeQualityReport(walk);
   const documentationReport = await buildDocumentationReport(walk);
   const databaseReadinessReport = await buildDatabaseReadinessReport(walk);
+  const databaseMigrationReadinessReport = await buildDatabaseMigrationReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
   const coverageReadinessReport = await buildCoverageReadinessReport(walk);
@@ -466,7 +469,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -12185,6 +12188,309 @@ function normalizeDatabaseProvider(value: string | null): DatabaseReadinessRepor
   if (normalized === "cockroachdb") return "cockroachdb";
   if (normalized === "mariadb") return "mariadb";
   return "unknown";
+}
+
+async function buildDatabaseMigrationReadinessReport(walk: WalkResult): Promise<DatabaseMigrationReadinessReport> {
+  const sourceFiles = await databaseMigrationReadinessSourceFiles(walk);
+  const migrationSetups = databaseMigrationReadinessSetupRows(sourceFiles);
+  const fileSignals = databaseMigrationReadinessFileSignals(sourceFiles);
+  const lineageSignals = databaseMigrationReadinessLineageSignals(sourceFiles);
+  const rollbackSignals = databaseMigrationReadinessRollbackSignals(sourceFiles);
+  const validationSignals = databaseMigrationReadinessValidationSignals(sourceFiles);
+  const configSignals = databaseMigrationReadinessConfigSignals(sourceFiles);
+  const ciSignals = databaseMigrationReadinessCiSignals(sourceFiles);
+  const packageSignals = databaseMigrationReadinessPackageSignals(sourceFiles);
+  const hasMigration = migrationSetups.some((item) => item.readiness !== "missing") || fileSignals.some((item) => item.readiness === "ready");
+  const hasLineage = lineageSignals.some((item) => item.readiness === "ready");
+  const hasRollback = rollbackSignals.some((item) => item.readiness === "ready");
+  const hasValidation = validationSignals.some((item) => item.readiness === "ready");
+  const hasCi = ciSignals.some((item) => ["github-actions", "migration-command", "dry-run", "schema-drift"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: DatabaseMigrationReadinessReport["riskQueue"] = [];
+  if (!hasMigration) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document a versioned migration path before treating database schema changes as reproducible.",
+      why: "Flyway, Liquibase, and Alembic-style workflows start with visible migration files, changelogs, or revision scripts.",
+      relatedHref: "html/database-migration-readiness.html"
+    });
+  }
+  if (hasMigration && !hasLineage) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record migration lineage through version prefixes, down_revision, checksum tables, or schema history.",
+      why: "Migration files without ordering and applied-history evidence are hard to reason about during drift or rollback reviews.",
+      relatedHref: "html/database-migration-readiness.html"
+    });
+  }
+  if (hasMigration && !hasRollback) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document rollback or restore policy for irreversible schema changes.",
+      why: "Liquibase rollback blocks, Alembic downgrade functions, Flyway undo migrations, and Rails down/change paths make failure recovery visible.",
+      relatedHref: "html/database-migration-readiness.html"
+    });
+  }
+  if (hasMigration && !hasValidation) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add static validation or dry-run commands for migration review.",
+      why: "Flyway validate/info, Liquibase status/updateSQL, and Alembic current/heads/check catch drift before changing a shared database.",
+      relatedHref: "html/database-migration-readiness.html"
+    });
+  }
+  if (hasMigration && !hasCi) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Wire migration validation, dry-run SQL, or drift checks into CI with explicit database service boundaries.",
+      why: "Migration safety degrades when schema changes are only tested manually on a developer machine.",
+      relatedHref: "html/database-migration-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run migration commands only in a trusted disposable database or reviewed CI job.",
+    why: "RepoTutor records static migration readiness only; it does not connect to databases, run migrate, update, rollback, repair, or stamp commands.",
+    relatedHref: "html/database-migration-readiness.html"
+  });
+
+  return {
+    summary: `Database migration readiness report: setup ${migrationSetups.length}개, file signal ${fileSignals.filter((item) => item.readiness === "ready").length}개, lineage signal ${lineageSignals.filter((item) => item.readiness === "ready").length}개, validation signal ${validationSignals.filter((item) => item.readiness === "ready").length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Database migration readiness Flyway Liquibase Alembic versioned migrations changelog changeset revision down_revision upgrade downgrade rollback validate repair info status updateSQL current heads dry-run drift CI",
+    migrationSetups,
+    fileSignals,
+    lineageSignals,
+    rollbackSignals,
+    validationSignals,
+    configSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "flyway info -configFiles=flyway.conf", purpose: "Inspect Flyway migration history and pending versioned/repeatable migrations in a safe database." },
+      { command: "flyway validate", purpose: "Validate Flyway resolved migrations against the schema history table before deployment." },
+      { command: "liquibase status --verbose", purpose: "Review pending Liquibase changesets without applying them." },
+      { command: "liquibase updateSQL", purpose: "Generate SQL for review instead of applying Liquibase changes immediately." },
+      { command: "alembic current && alembic heads", purpose: "Compare applied Alembic revision state with available heads." },
+      { command: "alembic revision --autogenerate -m \"check drift\" && git diff -- migrations", purpose: "Use Alembic autogenerate as a drift review against a disposable database." },
+      { command: "rg \"flyway|liquibase|alembic|V[0-9]+__|databaseChangeLog|changeSet|down_revision|def downgrade|updateSQL|validate|repair\" .", purpose: "Locate static migration files, lineage, rollback, and validation evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 migration file naming과 applied-history boundary를 분리하세요: Flyway version prefix, Liquibase DATABASECHANGELOG, Alembic down_revision/heads를 찾습니다.",
+      "Rollback은 파일 존재와 별개입니다. Liquibase rollback block, Alembic downgrade, Flyway undo, Rails down/change 정책을 확인하세요.",
+      "validate/info/status/updateSQL/current/heads 같은 dry-run 또는 drift review 명령이 CI에 있는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 migration, rollback, repair, stamp는 disposable DB 또는 검토된 CI에서만 실행해야 합니다."
+    ]
+  };
+}
+
+type DatabaseMigrationReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function databaseMigrationReadinessSourceFiles(walk: WalkResult): Promise<DatabaseMigrationReadinessSourceFile[]> {
+  const files: DatabaseMigrationReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !databaseMigrationReadinessInspectablePath(file.relPath)) continue;
+    const pathCandidate = databaseMigrationReadinessPathSignal(file.relPath);
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!pathCandidate && !databaseMigrationReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 220) break;
+  }
+  return files;
+}
+
+function databaseMigrationReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(flyway\.conf|flyway\.toml|liquibase\.properties|liquibase\.yaml|liquibase\.yml|liquibase\.json|liquibase\.xml|alembic\.ini|env\.py|package\.json|Gemfile|pyproject\.toml|requirements.*\.txt|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(^|\/)(db\/migrate|migrations?|versions|database\/changelog|changelogs?|liquibase|flyway|alembic|drizzle|prisma)(\/|\.|$)/i.test(filePath)
+    || /\.(sql|xml|ya?ml|json|toml|ini|py|rb|[cm]?[jt]sx?|md)$/i.test(filePath);
+}
+
+function databaseMigrationReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(db\/migrate|migrations?|versions|database\/changelog|changelogs?|liquibase|flyway|alembic|drizzle|prisma)(\/|\.|$)|(^|\/)(V[0-9][^/]*__.*\.sql|R__.*\.sql|U[0-9][^/]*__.*\.sql)|alembic\.ini|flyway\.(conf|toml)|liquibase\.properties/i.test(filePath);
+}
+
+function databaseMigrationReadinessContentSignal(text: string): boolean {
+  return /(flyway|baselineOnMigrate|validateOnMigrate|cleanDisabled|outOfOrder|databaseChangeLog|changeSet|--liquibase formatted sql|preConditions|rollback|runOnChange|runAlways|tagDatabase|liquibase status|updateSQL|DATABASECHANGELOG|alembic|script_location|version_locations|down_revision|def upgrade|def downgrade|autogenerate|run_migrations_online|run_migrations_offline|drizzle-kit|rails db:migrate|ActiveRecord::Migration|prisma migrate|migrate deploy)/i.test(text);
+}
+
+function databaseMigrationReadinessSetupRows(sourceFiles: DatabaseMigrationReadinessSourceFile[]): DatabaseMigrationReadinessReport["migrationSetups"] {
+  const rows: DatabaseMigrationReadinessReport["migrationSetups"] = [];
+  for (const source of sourceFiles) {
+    const haystack = `${source.filePath}\n${source.text}`;
+    const versionedCount = countMatches(haystack, /(^|\/)V[0-9][A-Za-z0-9_.-]*__[^/\s]+\.sql|versioned migration|create_table|ActiveRecord::Migration|prisma migrate|drizzle-kit (generate|migrate)/gi);
+    const repeatableCount = countMatches(haystack, /(^|\/)R__[^/\s]+\.sql|repeatable migration|repeatableSqlMigrationPrefix/gi);
+    const changelogCount = countMatches(haystack, /databaseChangeLog|--liquibase formatted sql|changelogFile|includeAll|include file|liquibase\.(properties|ya?ml|xml|json)/gi);
+    const changesetCount = countMatches(haystack, /changeSet|--changeset|runOnChange|runAlways|preConditions|tagDatabase/gi);
+    const revisionCount = countMatches(haystack, /revision\s*=|down_revision\s*=|def upgrade|def downgrade|script_location|version_locations|alembic revision|alembic upgrade/gi);
+    const rollbackCount = countMatches(haystack, /rollback|def downgrade|(^|\/)U[0-9][A-Za-z0-9_.-]*__[^/\s]+\.sql|revert|down\s+do|def down|restore point|restore-point/gi);
+    const validationCount = countMatches(haystack, /flyway (validate|info|repair)|validateOnMigrate|liquibase (status|updateSQL|validate|checks)|alembic (current|heads|check|history)|drizzle-kit check|migrate diff|schema drift|drift detected/gi);
+    const ciCount = countMatches(haystack, /^\.github\/workflows\/|GitHub Actions|runs-on|pull_request|workflow_dispatch|services:|postgres:|mysql:|upload-artifact|environment:|manual approval|migration/gi);
+    const totalSignals = versionedCount + repeatableCount + changelogCount + changesetCount + revisionCount + rollbackCount + validationCount + ciCount;
+    if (totalSignals === 0 && !databaseMigrationReadinessPathSignal(source.filePath)) continue;
+    const readiness = (versionedCount > 0 || changelogCount > 0 || revisionCount > 0) && validationCount > 0 && rollbackCount > 0
+      ? "ready"
+      : totalSignals > 0
+        ? "partial"
+        : "missing";
+    rows.push({
+      filePath: source.filePath,
+      tool: databaseMigrationReadinessTool(source.filePath, source.text),
+      versionedCount,
+      repeatableCount,
+      changelogCount,
+      changesetCount,
+      revisionCount,
+      rollbackCount,
+      validationCount,
+      ciCount,
+      readiness,
+      evidence: `${source.filePath} contains ${totalSignals} database migration readiness signal(s).`,
+      sourceHref: source.sourceHref
+    });
+  }
+  const order = { ready: 0, partial: 1, missing: 2 };
+  return rows.sort((a, b) => order[a.readiness] - order[b.readiness] || a.filePath.localeCompare(b.filePath)).slice(0, 100);
+}
+
+function databaseMigrationReadinessTool(filePath: string, text: string): DatabaseMigrationReadinessReport["migrationSetups"][number]["tool"] {
+  const haystack = `${filePath}\n${text}`;
+  if (/flyway|(^|\/)V[0-9][^/]*__.*\.sql|(^|\/)R__.*\.sql|flyway\.(conf|toml)/i.test(haystack)) return "flyway";
+  if (/liquibase|databaseChangeLog|changeSet|--liquibase formatted sql|DATABASECHANGELOG/i.test(haystack)) return "liquibase";
+  if (/alembic|alembic\.ini|down_revision|def upgrade|def downgrade|script_location|version_locations/i.test(haystack)) return "alembic";
+  if (/drizzle-kit|drizzle\/meta|_journal\.json|drizzle migrations/i.test(haystack)) return "drizzle";
+  if (/ActiveRecord::Migration|rails db:migrate|db\/migrate/i.test(haystack)) return "rails";
+  if (/prisma migrate|migration_lock\.toml|schema\.prisma/i.test(haystack)) return "prisma";
+  if (/\.sql$|CREATE TABLE|ALTER TABLE|DROP TABLE/i.test(haystack)) return "sql";
+  return databaseMigrationReadinessContentSignal(text) ? "custom" : "unknown";
+}
+
+function databaseMigrationReadinessFileSignals(sourceFiles: DatabaseMigrationReadinessSourceFile[]): DatabaseMigrationReadinessReport["fileSignals"] {
+  const specs: Array<{ signal: DatabaseMigrationReadinessReport["fileSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "flyway-versioned", pattern: /(^|\/)V[0-9][A-Za-z0-9_.-]*__[^/\s]+\.sql|versioned migration/i, evidence: "Flyway versioned migration evidence was detected." },
+    { signal: "flyway-repeatable", pattern: /(^|\/)R__[^/\s]+\.sql|repeatable migration/i, evidence: "Flyway repeatable migration evidence was detected." },
+    { signal: "flyway-undo", pattern: /(^|\/)U[0-9][A-Za-z0-9_.-]*__[^/\s]+\.sql|undo migration/i, evidence: "Flyway undo migration evidence was detected." },
+    { signal: "liquibase-changelog", pattern: /databaseChangeLog|changelogFile|includeAll|liquibase\.(properties|ya?ml|xml|json)/i, evidence: "Liquibase changelog evidence was detected." },
+    { signal: "liquibase-formatted-sql", pattern: /--liquibase formatted sql|--changeset/i, evidence: "Liquibase formatted SQL evidence was detected." },
+    { signal: "alembic-revision", pattern: /revision\s*=|down_revision\s*=|def upgrade|def downgrade|versions\/.+\.py/i, evidence: "Alembic revision evidence was detected." },
+    { signal: "drizzle-migration", pattern: /drizzle-kit|drizzle\/meta|_journal\.json|sql.*breakpoint/i, evidence: "Drizzle migration evidence was detected." },
+    { signal: "rails-migration", pattern: /ActiveRecord::Migration|db\/migrate|create_table|change_table|rails db:migrate/i, evidence: "Rails migration evidence was detected." },
+    { signal: "sql-migration", pattern: /CREATE TABLE|ALTER TABLE|DROP TABLE|CREATE INDEX|ALTER INDEX/i, evidence: "SQL migration evidence was detected." }
+  ];
+  return databaseMigrationReadinessSignalFromSpecs(sourceFiles, specs, "file", "signal");
+}
+
+function databaseMigrationReadinessLineageSignals(sourceFiles: DatabaseMigrationReadinessSourceFile[]): DatabaseMigrationReadinessReport["lineageSignals"] {
+  const specs: Array<{ signal: DatabaseMigrationReadinessReport["lineageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "version-prefix", pattern: /(^|\/)V[0-9][A-Za-z0-9_.-]*__|sqlMigrationPrefix|versioned/i, evidence: "version prefix evidence was detected." },
+    { signal: "repeatable-prefix", pattern: /(^|\/)R__|repeatableSqlMigrationPrefix|repeatable migration/i, evidence: "repeatable migration prefix evidence was detected." },
+    { signal: "down-revision", pattern: /down_revision\s*=|depends_on\s*=|branch_labels\s*=/i, evidence: "Alembic down_revision lineage evidence was detected." },
+    { signal: "heads", pattern: /alembic heads|alembic current|head_revision|check_heads|Multiple heads/i, evidence: "Alembic head/current evidence was detected." },
+    { signal: "branch-label", pattern: /branch_labels|branch label|branch-point|merge revision/i, evidence: "branch label or merge revision evidence was detected." },
+    { signal: "timestamped-version", pattern: /20[0-9]{12,}|[0-9]{14}_[a-z0-9_]+|version\s*:\s*[0-9]{14}/i, evidence: "timestamped migration version evidence was detected." },
+    { signal: "checksum", pattern: /checksum|MD5SUM|calculate-checksum|validCheckSum/i, evidence: "checksum evidence was detected." },
+    { signal: "databasechangelog", pattern: /DATABASECHANGELOG|DATABASECHANGELOGLOCK/i, evidence: "Liquibase database changelog table evidence was detected." },
+    { signal: "schema-history", pattern: /flyway_schema_history|schema history table|schemaHistory/i, evidence: "Flyway schema history evidence was detected." }
+  ];
+  return databaseMigrationReadinessSignalFromSpecs(sourceFiles, specs, "lineage", "signal");
+}
+
+function databaseMigrationReadinessRollbackSignals(sourceFiles: DatabaseMigrationReadinessSourceFile[]): DatabaseMigrationReadinessReport["rollbackSignals"] {
+  const specs: Array<{ signal: DatabaseMigrationReadinessReport["rollbackSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "liquibase-rollback", pattern: /<rollback>|rollback:|--rollback|rollbackSqlFile|rollback-one|future-rollback/i, evidence: "Liquibase rollback evidence was detected." },
+    { signal: "alembic-downgrade", pattern: /def downgrade|alembic downgrade/i, evidence: "Alembic downgrade evidence was detected." },
+    { signal: "flyway-undo", pattern: /(^|\/)U[0-9][A-Za-z0-9_.-]*__|flyway undo|undoSqlMigrationPrefix/i, evidence: "Flyway undo evidence was detected." },
+    { signal: "rails-down-change", pattern: /def down|def change|reversible do|revert do|rails db:rollback/i, evidence: "Rails rollback/down evidence was detected." },
+    { signal: "drizzle-down", pattern: /down.sql|drizzle.*rollback|migration down/i, evidence: "Drizzle down migration evidence was detected." },
+    { signal: "transactional-ddl", pattern: /transactional|executeInTransaction|canExecuteInTransaction|disable_ddl_transaction/i, evidence: "transactional DDL evidence was detected." },
+    { signal: "restore-point", pattern: /restore point|backup before migration|point-in-time recovery|PITR|snapshot before migration/i, evidence: "restore point evidence was detected." }
+  ];
+  return databaseMigrationReadinessSignalFromSpecs(sourceFiles, specs, "rollback", "signal");
+}
+
+function databaseMigrationReadinessValidationSignals(sourceFiles: DatabaseMigrationReadinessSourceFile[]): DatabaseMigrationReadinessReport["validationSignals"] {
+  const specs: Array<{ signal: DatabaseMigrationReadinessReport["validationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "flyway-validate", pattern: /flyway validate|validateOnMigrate|DbValidate/i, evidence: "Flyway validate evidence was detected." },
+    { signal: "flyway-repair", pattern: /flyway repair|DbRepair|repairResult/i, evidence: "Flyway repair evidence was detected." },
+    { signal: "flyway-info", pattern: /flyway info|DbInfo|infoOfState/i, evidence: "Flyway info evidence was detected." },
+    { signal: "liquibase-status", pattern: /liquibase status|StatusCommand|status --verbose/i, evidence: "Liquibase status evidence was detected." },
+    { signal: "liquibase-update-sql", pattern: /updateSQL|update-sql|futureRollbackSQL|rollbackSQL/i, evidence: "Liquibase SQL dry-run evidence was detected." },
+    { signal: "alembic-current", pattern: /alembic current|def current|command\.current|check_heads/i, evidence: "Alembic current evidence was detected." },
+    { signal: "alembic-heads", pattern: /alembic heads|def heads|command\.heads|script\.get_heads/i, evidence: "Alembic heads evidence was detected." },
+    { signal: "alembic-check", pattern: /alembic check|command\.check|pending upgrade ops/i, evidence: "Alembic check evidence was detected." },
+    { signal: "drizzle-check", pattern: /drizzle-kit check|drizzle check|check migrations/i, evidence: "Drizzle migration check evidence was detected." }
+  ];
+  return databaseMigrationReadinessSignalFromSpecs(sourceFiles, specs, "validation", "signal");
+}
+
+function databaseMigrationReadinessConfigSignals(sourceFiles: DatabaseMigrationReadinessSourceFile[]): DatabaseMigrationReadinessReport["configSignals"] {
+  const specs: Array<{ signal: DatabaseMigrationReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "flyway-conf", pattern: /flyway\.conf|flyway\.url|flyway\.locations|flyway\.schemas/i, evidence: "flyway.conf evidence was detected." },
+    { signal: "flyway-toml", pattern: /flyway\.toml|locations\s*=\s*\[|cleanDisabled|baselineOnMigrate/i, evidence: "flyway.toml evidence was detected." },
+    { signal: "liquibase-properties", pattern: /liquibase\.properties|changelogFile|changeLogFile|liquibase\.command\./i, evidence: "Liquibase properties evidence was detected." },
+    { signal: "alembic-ini", pattern: /alembic\.ini|\[alembic\]|sqlalchemy\.url/i, evidence: "alembic.ini evidence was detected." },
+    { signal: "script-location", pattern: /script_location|scriptLocation/i, evidence: "Alembic script location evidence was detected." },
+    { signal: "version-locations", pattern: /version_locations|recursive_version_locations/i, evidence: "Alembic version locations evidence was detected." },
+    { signal: "database-url", pattern: /DATABASE_URL|JDBC_DATABASE_URL|sqlalchemy\.url|url\s*=|url:/i, evidence: "database URL config evidence was detected." },
+    { signal: "migration-path", pattern: /locations\s*=|migrationsDir|migrations_folder|migrationsTable|migrations_path|db\/migrate/i, evidence: "migration path evidence was detected." },
+    { signal: "placeholder", pattern: /placeholder|placeholders|changeLogParameters|\$\{[^}]+\}/i, evidence: "migration placeholder evidence was detected." },
+    { signal: "contexts-labels", pattern: /contexts?|labels?|contextFilter|labelFilter/i, evidence: "Liquibase context/label evidence was detected." }
+  ];
+  return databaseMigrationReadinessSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function databaseMigrationReadinessCiSignals(sourceFiles: DatabaseMigrationReadinessSourceFile[]): DatabaseMigrationReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: DatabaseMigrationReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /^\.github\/workflows\/|GitHub Actions|actions\/checkout|runs-on/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "migration-command", pattern: /flyway (migrate|validate|info)|liquibase (status|update|updateSQL|validate)|alembic (upgrade|current|heads|check)|rails db:migrate|drizzle-kit migrate|prisma migrate deploy/i, evidence: "CI migration command evidence was detected." },
+    { signal: "dry-run", pattern: /updateSQL|--dry-run|migrate diff|plan only|dry run|futureRollbackSQL|alembic check/i, evidence: "dry-run migration evidence was detected." },
+    { signal: "schema-drift", pattern: /schema drift|drift detected|migrate diff|autogenerate|pending upgrade ops|database is out of sync/i, evidence: "schema drift check evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|migration report|dry-run sql|updateSQL.*artifact|schema diff artifact/i, evidence: "migration artifact evidence was detected." },
+    { signal: "database-service", pattern: /services:\s*|postgres:|mysql:|mariadb:|sqlite|docker compose|test database/i, evidence: "CI database service evidence was detected." },
+    { signal: "manual-approval", pattern: /environment:|manual approval|workflow_dispatch|approval|protected environment/i, evidence: "manual approval evidence was detected." }
+  ];
+  return databaseMigrationReadinessSignalFromSpecs(sourceFiles, specs, "ci", "signal");
+}
+
+function databaseMigrationReadinessPackageSignals(sourceFiles: DatabaseMigrationReadinessSourceFile[]): DatabaseMigrationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DatabaseMigrationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "flyway", pattern: /flyway-core|org\.flywaydb|flyway\/flyway|\bflyway\b/i, evidence: "Flyway package evidence was detected." },
+    { signal: "liquibase", pattern: /liquibase-core|org\.liquibase|\bliquibase\b/i, evidence: "Liquibase package evidence was detected." },
+    { signal: "alembic", pattern: /\balembic\b|sqlalchemy\[alembic\]/i, evidence: "Alembic package evidence was detected." },
+    { signal: "drizzle-kit", pattern: /drizzle-kit|drizzle-orm/i, evidence: "Drizzle Kit package evidence was detected." },
+    { signal: "typeorm", pattern: /typeorm|typeorm migration/i, evidence: "TypeORM migration package evidence was detected." },
+    { signal: "knex", pattern: /\bknex\b|knexfile/i, evidence: "Knex migration package evidence was detected." },
+    { signal: "sequelize", pattern: /\bsequelize\b|sequelize-cli|sequelize migration/i, evidence: "Sequelize migration package evidence was detected." },
+    { signal: "rails", pattern: /activerecord|rails\b|ActiveRecord::Migration/i, evidence: "Rails migration package evidence was detected." },
+    { signal: "prisma", pattern: /@prisma\/client|\bprisma\b|prisma migrate/i, evidence: "Prisma migration package evidence was detected." }
+  ];
+  return databaseMigrationReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function databaseMigrationReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DatabaseMigrationReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(source.filePath) || spec.pattern.test(source.text) || spec.pattern.test(haystack);
+    });
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/database-migration-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
 }
 
 async function buildCiCdReport(walk: WalkResult): Promise<CiCdReport> {

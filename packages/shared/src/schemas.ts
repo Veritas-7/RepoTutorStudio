@@ -2880,6 +2880,79 @@ export const DatabaseReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DatabaseMigrationReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  migrationSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["flyway", "liquibase", "alembic", "drizzle", "rails", "prisma", "sql", "custom", "unknown"]),
+    versionedCount: z.number().int().nonnegative(),
+    repeatableCount: z.number().int().nonnegative(),
+    changelogCount: z.number().int().nonnegative(),
+    changesetCount: z.number().int().nonnegative(),
+    revisionCount: z.number().int().nonnegative(),
+    rollbackCount: z.number().int().nonnegative(),
+    validationCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  fileSignals: z.array(z.object({
+    signal: z.enum(["flyway-versioned", "flyway-repeatable", "flyway-undo", "liquibase-changelog", "liquibase-formatted-sql", "alembic-revision", "drizzle-migration", "rails-migration", "sql-migration", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lineageSignals: z.array(z.object({
+    signal: z.enum(["version-prefix", "repeatable-prefix", "down-revision", "heads", "branch-label", "timestamped-version", "checksum", "databasechangelog", "schema-history", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  rollbackSignals: z.array(z.object({
+    signal: z.enum(["liquibase-rollback", "alembic-downgrade", "flyway-undo", "rails-down-change", "drizzle-down", "transactional-ddl", "restore-point", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  validationSignals: z.array(z.object({
+    signal: z.enum(["flyway-validate", "flyway-repair", "flyway-info", "liquibase-status", "liquibase-update-sql", "alembic-current", "alembic-heads", "alembic-check", "drizzle-check", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["flyway-conf", "flyway-toml", "liquibase-properties", "alembic-ini", "script-location", "version-locations", "database-url", "migration-path", "placeholder", "contexts-labels", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "migration-command", "dry-run", "schema-drift", "artifact-upload", "database-service", "manual-approval", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["flyway", "liquibase", "alembic", "drizzle-kit", "typeorm", "knex", "sequelize", "rails", "prisma", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CiCdReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -8637,6 +8710,7 @@ export type ContainerReadinessReport = z.infer<typeof ContainerReadinessReportSc
 export type CodeQualityReport = z.infer<typeof CodeQualityReportSchema>;
 export type DocumentationReport = z.infer<typeof DocumentationReportSchema>;
 export type DatabaseReadinessReport = z.infer<typeof DatabaseReadinessReportSchema>;
+export type DatabaseMigrationReadinessReport = z.infer<typeof DatabaseMigrationReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type CoverageReadinessReport = z.infer<typeof CoverageReadinessReportSchema>;
