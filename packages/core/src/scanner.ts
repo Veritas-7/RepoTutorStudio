@@ -48,6 +48,7 @@ import {
   ConsumerContractReadinessReport,
   ObservabilityReport,
   PerformanceReport,
+  LoadTestingReadinessReport,
   E2eReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
@@ -197,6 +198,7 @@ export interface AnalysisBundle {
   consumerContractReadinessReport: ConsumerContractReadinessReport;
   observabilityReport: ObservabilityReport;
   performanceReport: PerformanceReport;
+  loadTestingReadinessReport: LoadTestingReadinessReport;
   e2eReport: E2eReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
@@ -346,6 +348,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const consumerContractReadinessReport = await buildConsumerContractReadinessReport(walk);
   const observabilityReport = await buildObservabilityReport(walk, runtimeEnvironmentReport);
   const performanceReport = await buildPerformanceReport(walk, runtimeEnvironmentReport);
+  const loadTestingReadinessReport = await buildLoadTestingReadinessReport(walk);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
   const integrationTestEnvironmentReadinessReport = await buildIntegrationTestEnvironmentReadinessReport(walk, runtimeEnvironmentReport);
   const chaosEngineeringReadinessReport = await buildChaosEngineeringReadinessReport(walk);
@@ -442,7 +445,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -5835,6 +5838,333 @@ function performanceRuntimeControls(
       evidence: `${spec.control} runtime control was not detected in static performance files.`,
       relatedHref: runtimeHref
     };
+  });
+}
+
+async function buildLoadTestingReadinessReport(walk: WalkResult): Promise<LoadTestingReadinessReport> {
+  const sourceFiles = await loadTestingSourceFiles(walk);
+  const loadTestSetups = loadTestingSetups(sourceFiles);
+  const toolSignals = loadTestingToolSignals(sourceFiles);
+  const profileSignals = loadTestingProfileSignals(sourceFiles);
+  const protocolSignals = loadTestingProtocolSignals(sourceFiles);
+  const assertionSignals = loadTestingAssertionSignals(sourceFiles);
+  const dataSignals = loadTestingDataSignals(sourceFiles);
+  const executionSignals = loadTestingExecutionSignals(sourceFiles);
+  const reportSignals = loadTestingReportSignals(sourceFiles);
+  const packageSignals = loadTestingPackageSignals(sourceFiles);
+
+  const hasTool = toolSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasSetup = loadTestSetups.some((item) => item.readiness !== "missing");
+  const hasProfile = profileSignals.some((item) => item.readiness === "ready") || loadTestSetups.some((item) => item.loadProfileCount > 0);
+  const hasAssertion = assertionSignals.some((item) => item.readiness === "ready") || loadTestSetups.some((item) => item.thresholdCount > 0);
+  const hasReport = reportSignals.some((item) => item.readiness === "ready") || loadTestSetups.some((item) => item.reportCount > 0);
+  const hasExecution = executionSignals.some((item) => item.readiness === "ready") || loadTestSetups.some((item) => item.ciCount > 0 || item.distributedCount > 0);
+
+  const riskQueue: LoadTestingReadinessReport["riskQueue"] = [];
+  if (!hasTool && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document a load testing tool before claiming load-test readiness.",
+      why: "k6, Artillery, and Locust all start from a visible script, config, package, or CLI command.",
+      relatedHref: "html/load-testing-readiness.html"
+    });
+  }
+  if ((hasTool || hasSetup) && !hasProfile) {
+    riskQueue.push({
+      priority: "high",
+      action: "Define the load profile with users, VUs, arrival rate, stages, scenarios, spawn rate, or runtime duration.",
+      why: "A load test without a traffic model cannot explain how much load it generated or for how long.",
+      relatedHref: "html/load-testing-readiness.html"
+    });
+  }
+  if ((hasTool || hasSetup) && !hasAssertion) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add SLO gates such as k6 thresholds/checks, Artillery ensure/expect, or Locust failure criteria.",
+      why: "Load tests need pass/fail criteria for latency, error rate, functional checks, and percentiles.",
+      relatedHref: "html/load-testing-readiness.html"
+    });
+  }
+  if ((hasTool || hasSetup) && !hasReport) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Persist summary, JSON, HTML, CSV, Prometheus, InfluxDB, Grafana, or cloud report output.",
+      why: "Load-test evidence must survive beyond terminal output for review and trend comparison.",
+      relatedHref: "html/load-testing-readiness.html"
+    });
+  }
+  if ((hasTool || hasSetup) && !hasExecution) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document headless, CI, cloud, Docker, or distributed execution before relying on recurring runs.",
+      why: "Repeatable load testing needs controlled runtime placement and artifacts.",
+      relatedHref: "html/load-testing-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the original load test only against an authorized target before treating this static report as approval.",
+    why: "RepoTutor records load-testing readiness only; it does not generate traffic, validate targets, or contact external services.",
+    relatedHref: "html/load-testing-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `k6/Artillery/Locust-style load testing readiness report: setup ${loadTestSetups.length}개, profile signal ${profileSignals.length}개, assertion signal ${assertionSignals.length}개, report signal ${reportSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "k6 Artillery Locust load testing scenarios phases thresholds checks ensure HttpUser headless distributed reports",
+    loadTestSetups,
+    toolSignals,
+    profileSignals,
+    protocolSignals,
+    assertionSignals,
+    dataSignals,
+    executionSignals,
+    reportSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "k6 run --summary-export reports/k6-summary.json performance/load-test.js", purpose: "Run k6 with a retained JSON summary artifact." },
+      { command: "artillery run load-test.yml --output reports/artillery.json && artillery report reports/artillery.json", purpose: "Run Artillery and render an HTML report from JSON output." },
+      { command: "locust -f locustfile.py --headless -u 50 -r 5 --run-time 5m --html reports/locust.html --csv reports/locust", purpose: "Run Locust headlessly with HTML and CSV report artifacts." },
+      { command: "rg \"k6 run|artillery run|locust --headless|thresholds|ensure|HttpUser|arrivalRate|spawn-rate\" .", purpose: "Trace static load-test scripts, profiles, and gates." },
+      { command: "rg \"prometheus|influxdb|grafana|datadog|cloud|upload-artifact\" .github performance tests", purpose: "Trace retained report, metrics backend, and CI artifact evidence." }
+    ],
+    learnerNextSteps: [
+      "Start with the runnable command, then read the load profile before reviewing target endpoints.",
+      "Check whether the script has pass/fail gates, not just traffic generation.",
+      "Confirm report artifacts or metrics backends are retained for trend comparison.",
+      "Separate local smoke load, CI load, cloud/distributed load, and production load authorization.",
+      "This report is static readiness only. Real latency, error rate, and throughput require a controlled load-test run."
+    ]
+  };
+}
+
+type LoadTestingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function loadTestingSourceFiles(walk: WalkResult): Promise<LoadTestingSourceFile[]> {
+  const files: LoadTestingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !loadTestingInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!loadTestingPathSignal(file.relPath) && !loadTestingContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 320) break;
+  }
+  return files;
+}
+
+function loadTestingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements.*\.txt|locustfile\.py|docker-compose\.ya?ml|Dockerfile|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(js|ts|mjs|cjs|json|ya?ml|toml|md|py|sh|jmx|scala|conf|ini|csv)$/i.test(filePath);
+}
+
+function loadTestingPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /(^|\/)(load[-_ ]?tests?|performance|perf|stress|soak|spike|benchmarks?|k6|artillery|locust|jmeter|gatling)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(locustfile\.py|artillery\.ya?ml|load-test\.ya?ml|k6\.[cm]?[jt]s|performance\.[cm]?[jt]s)$/i.test(base);
+}
+
+function loadTestingContentSignal(text: string): boolean {
+  return /(k6 run|from ["']k6|k6\/http|artillery run|config:\s*[\s\S]{0,300}phases|arrivalRate|rampTo|locust --headless|from locust import|HttpUser|FastHttpUser|LoadTestShape|--spawn-rate|thresholds|ensure|publish-metrics|handleSummary|summary-export|prometheus|influxdb|grafana|load testing|stress test|soak test)/i.test(text);
+}
+
+function loadTestingSetups(sourceFiles: LoadTestingSourceFile[]): LoadTestingReadinessReport["loadTestSetups"] {
+  const rows: LoadTestingReadinessReport["loadTestSetups"] = [];
+  for (const source of sourceFiles) {
+    const configCount = countMatches(source.text, /export const options|config\s*:|phases\s*:|scenarios\s*:|locust\.conf|LoadTestShape|thresholds|ensure|target\s*:/gi) + (loadTestingPathSignal(source.filePath) ? 1 : 0);
+    const scriptCount = countMatches(source.text, /k6\s+run|artillery\s+run|locust\s+|from ["']k6|from locust import|class\s+\w+\(HttpUser\)|class\s+\w+\(FastHttpUser\)|@task|http\.get|self\.client\./gi);
+    const scenarioCount = countMatches(source.text, /scenarios\s*:|flow\s*:|@task|TaskSet|beforeScenario|afterScenario|setup\(|teardown\(|default function|LoadTestShape/gi);
+    const loadProfileCount = countMatches(source.text, /vus\s*:|duration\s*:|stages\s*:|arrivalRate|rampTo|spawn-rate|--users|-u\s+\d+|users\s*=|run-time|wait_time|between\(|constant_pacing|load_shape/gi);
+    const thresholdCount = countMatches(source.text, /thresholds|check\(|ensure\s*:|expect\s*:|apdex|SLO|p\(95\)|p\(99\)|abortOnFail|fail_ci_if_error|status is|response time/gi);
+    const protocolCount = countMatches(source.text, /http\.|k6\/http|websocket|ws:\/\/|grpc|GraphQL|graphql|browser|playwright|tcp|self\.client\.(get|post|put|delete)/gi);
+    const dataCount = countMatches(source.text, /SharedArray|open\(|csv|__ENV|process\.env|processor|payload|variables|tags\s*:|group\(|Counter|Rate|Trend|Gauge|events\./gi);
+    const reportCount = countMatches(source.text, /handleSummary|summary-export|--output|artillery report|--html|--csv|prometheus|influxdb|grafana|datadog|cloud|json|junit|upload-artifact/gi);
+    const distributedCount = countMatches(source.text, /master|worker|distributed|k6-operator|cloud run|--processes|--expect-workers|Kubernetes|docker compose|Dockerfile/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|CI|pull_request|push|upload-artifact|artifact|workflow|actions\//gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = configCount + scriptCount + scenarioCount + loadProfileCount + thresholdCount + protocolCount + dataCount + reportCount + distributedCount + ciCount;
+    if (totalSignals === 0 && !loadTestingPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: loadTestingTool(source),
+      configCount,
+      scriptCount,
+      scenarioCount,
+      loadProfileCount,
+      thresholdCount,
+      protocolCount,
+      dataCount,
+      reportCount,
+      distributedCount,
+      ciCount,
+      readiness: (configCount > 0 || scriptCount > 0) && loadProfileCount > 0 && (thresholdCount > 0 || reportCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains config ${configCount}, script ${scriptCount}, scenario ${scenarioCount}, profile ${loadProfileCount}, threshold ${thresholdCount}, protocol ${protocolCount}, data ${dataCount}, report ${reportCount}, distributed ${distributedCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.configCount + b.scriptCount + b.loadProfileCount + b.thresholdCount + b.reportCount + b.ciCount;
+    const aScore = a.configCount + a.scriptCount + a.loadProfileCount + a.thresholdCount + a.reportCount + a.ciCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 100);
+}
+
+function loadTestingTool(source: LoadTestingSourceFile): LoadTestingReadinessReport["loadTestSetups"][number]["tool"] {
+  const haystack = `${source.filePath}\n${source.text}`;
+  if (/\bk6\b|from ["']k6|k6\/http|summary-export/i.test(haystack)) return "k6";
+  if (/artillery|arrivalRate|rampTo|beforeScenario|afterScenario|publish-metrics/i.test(haystack)) return "artillery";
+  if (/locust|HttpUser|FastHttpUser|LoadTestShape|spawn-rate/i.test(haystack)) return "locust";
+  if (/jmeter|\.jmx|ThreadGroup/i.test(haystack)) return "jmeter";
+  if (/gatling|Simulation|constantUsersPerSec|rampUsers/i.test(haystack)) return "gatling";
+  if (/autocannon/i.test(haystack)) return "autocannon";
+  if (/load testing|stress test|soak test|spike test|performance test/i.test(haystack)) return "custom";
+  return "unknown";
+}
+
+function loadTestingToolSignals(sourceFiles: LoadTestingSourceFile[]): LoadTestingReadinessReport["toolSignals"] {
+  const specs: Array<{ signal: LoadTestingReadinessReport["toolSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "k6", pattern: /\bk6\b|from ["']k6|k6\/http|summary-export/i, evidence: "k6 load testing evidence was detected." },
+    { signal: "artillery", pattern: /artillery|arrivalRate|rampTo|publish-metrics/i, evidence: "Artillery load testing evidence was detected." },
+    { signal: "locust", pattern: /locust|HttpUser|FastHttpUser|LoadTestShape/i, evidence: "Locust load testing evidence was detected." },
+    { signal: "jmeter", pattern: /jmeter|\.jmx|ThreadGroup/i, evidence: "JMeter evidence was detected." },
+    { signal: "gatling", pattern: /gatling|Simulation|constantUsersPerSec|rampUsers/i, evidence: "Gatling evidence was detected." },
+    { signal: "autocannon", pattern: /autocannon/i, evidence: "autocannon evidence was detected." }
+  ];
+  return loadTestingSignalFromSpecs(sourceFiles, specs, "tool", "signal");
+}
+
+function loadTestingProfileSignals(sourceFiles: LoadTestingSourceFile[]): LoadTestingReadinessReport["profileSignals"] {
+  const specs: Array<{ signal: LoadTestingReadinessReport["profileSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vus", pattern: /\bvus\s*:|--vus\b|\bVUs?\b/i, evidence: "virtual user count evidence was detected." },
+    { signal: "duration", pattern: /\bduration\s*:|--duration\b|run-time|-t\s+\d+/i, evidence: "duration/runtime evidence was detected." },
+    { signal: "stages", pattern: /\bstages\s*:/i, evidence: "ramp stage evidence was detected." },
+    { signal: "scenarios", pattern: /\bscenarios\s*:|flow\s*:|@task|TaskSet/i, evidence: "scenario/task evidence was detected." },
+    { signal: "arrival-rate", pattern: /arrivalRate|arrival-rate|constant-arrival-rate|ramping-arrival-rate/i, evidence: "arrival-rate model evidence was detected." },
+    { signal: "ramping", pattern: /rampTo|ramping|ramp-up|ramp down|rampUsers/i, evidence: "ramping load profile evidence was detected." },
+    { signal: "spawn-rate", pattern: /spawn-rate|-r\s+\d+|spawn_rate/i, evidence: "Locust spawn-rate evidence was detected." },
+    { signal: "users", pattern: /--users\b|-u\s+\d+|users\s*=|\busers?:\s*\d+/i, evidence: "user count evidence was detected." },
+    { signal: "wait-time", pattern: /wait_time|between\(|constant_pacing|constant_throughput|sleep\(/i, evidence: "wait time or pacing evidence was detected." },
+    { signal: "load-shape", pattern: /LoadTestShape|tick\(|load_shape|shape class/i, evidence: "custom load shape evidence was detected." },
+    { signal: "soak", pattern: /\bsoak\b|long[- ]?running/i, evidence: "soak test evidence was detected." },
+    { signal: "stress", pattern: /\bstress\b|stress[- ]?test/i, evidence: "stress test evidence was detected." },
+    { signal: "spike", pattern: /\bspike\b|spike[- ]?test/i, evidence: "spike test evidence was detected." },
+    { signal: "smoke", pattern: /\bsmoke\b|smoke[- ]?test/i, evidence: "smoke load test evidence was detected." }
+  ];
+  return loadTestingSignalFromSpecs(sourceFiles, specs, "profile", "signal");
+}
+
+function loadTestingProtocolSignals(sourceFiles: LoadTestingSourceFile[]): LoadTestingReadinessReport["protocolSignals"] {
+  const specs: Array<{ signal: LoadTestingReadinessReport["protocolSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "http", pattern: /k6\/http|http\.get|http\.post|self\.client\.(get|post|put|delete)|target:\s*https?:/i, evidence: "HTTP load test evidence was detected." },
+    { signal: "websocket", pattern: /websocket|ws:\/\/|wss:\/\/|engine:\s*['\"]?ws/i, evidence: "WebSocket load test evidence was detected." },
+    { signal: "grpc", pattern: /grpc|k6\/net\/grpc/i, evidence: "gRPC load test evidence was detected." },
+    { signal: "graphql", pattern: /graphql|GraphQL|query\s*:\s*['\"]?\{/i, evidence: "GraphQL load test evidence was detected." },
+    { signal: "browser", pattern: /k6\/browser|browser\./i, evidence: "browser-level load flow evidence was detected." },
+    { signal: "playwright", pattern: /playwright|engine:\s*['\"]playwright/i, evidence: "Artillery Playwright engine evidence was detected." },
+    { signal: "tcp", pattern: /\btcp\b|socket|net\.connect/i, evidence: "TCP/socket evidence was detected." },
+    { signal: "custom-client", pattern: /class\s+\w+\(User\)|events\.request|custom client|testing other systems/i, evidence: "custom client/protocol evidence was detected." }
+  ];
+  return loadTestingSignalFromSpecs(sourceFiles, specs, "protocol", "signal");
+}
+
+function loadTestingAssertionSignals(sourceFiles: LoadTestingSourceFile[]): LoadTestingReadinessReport["assertionSignals"] {
+  const specs: Array<{ signal: LoadTestingReadinessReport["assertionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "thresholds", pattern: /thresholds\s*:|threshold/i, evidence: "threshold gate evidence was detected." },
+    { signal: "checks", pattern: /check\s*\(|status is|response.*ok/i, evidence: "k6 check/status evidence was detected." },
+    { signal: "ensure", pattern: /ensure\s*:|artillery-plugin-ensure/i, evidence: "Artillery ensure evidence was detected." },
+    { signal: "expect-plugin", pattern: /expect\s*:|artillery-plugin-expect|expect plugin/i, evidence: "Artillery expect plugin evidence was detected." },
+    { signal: "apdex", pattern: /apdex/i, evidence: "Apdex score evidence was detected." },
+    { signal: "slo", pattern: /\bSLO\b|service level objective|objective/i, evidence: "SLO evidence was detected." },
+    { signal: "abort-on-fail", pattern: /abortOnFail|fail_ci_if_error|stop.*fail/i, evidence: "abort/fail-on-error evidence was detected." },
+    { signal: "percentiles", pattern: /p\(90\)|p\(95\)|p\(99\)|percentile|percentiles/i, evidence: "percentile threshold evidence was detected." },
+    { signal: "status-check", pattern: /status\s*(is|==|===)|statusCode|status_code|http\.status_code/i, evidence: "HTTP status assertion evidence was detected." }
+  ];
+  return loadTestingSignalFromSpecs(sourceFiles, specs, "assertion", "signal");
+}
+
+function loadTestingDataSignals(sourceFiles: LoadTestingSourceFile[]): LoadTestingReadinessReport["dataSignals"] {
+  const specs: Array<{ signal: LoadTestingReadinessReport["dataSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "setup-teardown", pattern: /setup\s*\(|teardown\s*\(|beforeScenario|afterScenario|test_start|test_stop/i, evidence: "setup/teardown hook evidence was detected." },
+    { signal: "shared-array", pattern: /SharedArray/i, evidence: "k6 SharedArray fixture evidence was detected." },
+    { signal: "csv-data", pattern: /\.csv|csv-parse|read_csv|CSV/i, evidence: "CSV data parameterization evidence was detected." },
+    { signal: "env-vars", pattern: /__ENV|process\.env|os\.environ|LOCUST_|K6_|ARTILLERY_/i, evidence: "environment variable evidence was detected." },
+    { signal: "processor", pattern: /processor\s*:|beforeRequest|afterResponse|function\s+\w+\(requestParams/i, evidence: "Artillery processor hook evidence was detected." },
+    { signal: "custom-metrics", pattern: /new\s+(Counter|Rate|Trend|Gauge)|events\.request\.fire|stats\.log|metric/i, evidence: "custom metric evidence was detected." },
+    { signal: "tags", pattern: /tags\s*:|tag_with|name\s*:|group\(/i, evidence: "tag/group labeling evidence was detected." },
+    { signal: "parameterization", pattern: /payload\s*:|variables\s*:|randomString|randomInt|faker|data file/i, evidence: "payload/variable parameterization evidence was detected." }
+  ];
+  return loadTestingSignalFromSpecs(sourceFiles, specs, "data", "signal");
+}
+
+function loadTestingExecutionSignals(sourceFiles: LoadTestingSourceFile[]): LoadTestingReadinessReport["executionSignals"] {
+  const specs: Array<{ signal: LoadTestingReadinessReport["executionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "headless", pattern: /--headless|headless\s*[:=]\s*true/i, evidence: "headless execution evidence was detected." },
+    { signal: "cloud", pattern: /k6 cloud|artillery cloud|Grafana Cloud|cloud-dashboard|K6_CLOUD/i, evidence: "cloud execution evidence was detected." },
+    { signal: "distributed-master-worker", pattern: /--master|--worker|master-host|expect-workers|distributed/i, evidence: "distributed master/worker evidence was detected." },
+    { signal: "k6-operator", pattern: /k6-operator|kind:\s*K6|TestRun|kubernetes/i, evidence: "k6 operator/Kubernetes evidence was detected." },
+    { signal: "docker", pattern: /docker compose|docker-compose|Dockerfile|grafana\/k6|locustio\/locust|artilleryio\/artillery/i, evidence: "Docker load-test runtime evidence was detected." },
+    { signal: "ci-workflow", pattern: /^\.github\/workflows\/|GitHub Actions|pull_request|CI|workflow/i, evidence: "CI workflow evidence was detected." },
+    { signal: "artifact-upload", pattern: /actions\/upload-artifact|upload-artifact|artifact.*(load|performance|k6|locust|artillery)/i, evidence: "load-test artifact upload evidence was detected." },
+    { signal: "parallel-workers", pattern: /--processes|workers?|parallel|shard/i, evidence: "parallel worker/process evidence was detected." }
+  ];
+  return loadTestingSignalFromSpecs(sourceFiles, specs, "execution", "signal");
+}
+
+function loadTestingReportSignals(sourceFiles: LoadTestingSourceFile[]): LoadTestingReadinessReport["reportSignals"] {
+  const specs: Array<{ signal: LoadTestingReadinessReport["reportSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "summary", pattern: /summary-export|summaryTrendStats|end-of-test summary|print-stats/i, evidence: "summary output evidence was detected." },
+    { signal: "handleSummary", pattern: /handleSummary/i, evidence: "k6 handleSummary evidence was detected." },
+    { signal: "json", pattern: /--output|--summary-export|\.json|json-output|stats\.json/i, evidence: "JSON report evidence was detected." },
+    { signal: "html", pattern: /artillery report|--html|\.html|html report/i, evidence: "HTML report evidence was detected." },
+    { signal: "csv", pattern: /--csv|\.csv|CSV/i, evidence: "CSV report evidence was detected." },
+    { signal: "prometheus", pattern: /prometheus|Prometheus|pushgateway/i, evidence: "Prometheus report/output evidence was detected." },
+    { signal: "influxdb", pattern: /influxdb|InfluxDB/i, evidence: "InfluxDB output evidence was detected." },
+    { signal: "grafana", pattern: /grafana|Grafana/i, evidence: "Grafana dashboard/backend evidence was detected." },
+    { signal: "datadog", pattern: /datadog|Datadog/i, evidence: "Datadog output evidence was detected." },
+    { signal: "cloud-dashboard", pattern: /cloud dashboard|Grafana Cloud|k6 cloud|artillery cloud/i, evidence: "cloud dashboard evidence was detected." },
+    { signal: "junit", pattern: /junit|JUnit|xunit/i, evidence: "JUnit/xUnit report evidence was detected." }
+  ];
+  return loadTestingSignalFromSpecs(sourceFiles, specs, "report", "signal");
+}
+
+function loadTestingPackageSignals(sourceFiles: LoadTestingSourceFile[]): LoadTestingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: LoadTestingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "k6", pattern: /grafana\/k6|\bk6\s+run\b|"k6"|from ["']k6/i, evidence: "k6 package/container/command evidence was detected." },
+    { signal: "artillery", pattern: /"artillery"|artillery\s+run|artilleryio\/artillery/i, evidence: "Artillery package/command evidence was detected." },
+    { signal: "@artilleryio/*", pattern: /@artilleryio\/|artillery-plugin-|artillery-engine-/i, evidence: "Artillery scoped package/plugin evidence was detected." },
+    { signal: "artillery-engine-playwright", pattern: /artillery-engine-playwright|engine:\s*['\"]playwright/i, evidence: "Artillery Playwright engine evidence was detected." },
+    { signal: "locust", pattern: /locustio\/locust|locust\s*(==|>=|~=)|from locust import|locust\s+--/i, evidence: "Locust package/command evidence was detected." },
+    { signal: "locust-plugins", pattern: /locust-plugins|locust_plugins/i, evidence: "locust-plugins evidence was detected." },
+    { signal: "jmeter", pattern: /jmeter|apache-jmeter|\.jmx/i, evidence: "JMeter package/config evidence was detected." },
+    { signal: "gatling", pattern: /gatling|io\.gatling|gatling-maven-plugin/i, evidence: "Gatling package/config evidence was detected." },
+    { signal: "autocannon", pattern: /autocannon/i, evidence: "autocannon package evidence was detected." }
+  ];
+  return loadTestingSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function loadTestingSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: LoadTestingSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(source.filePath) || spec.pattern.test(source.text) || spec.pattern.test(haystack);
+    });
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/load-testing-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
 

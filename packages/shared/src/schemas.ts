@@ -1496,6 +1496,87 @@ export const PerformanceReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const LoadTestingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  loadTestSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["k6", "artillery", "locust", "jmeter", "gatling", "autocannon", "custom", "unknown"]),
+    configCount: z.number().int().nonnegative(),
+    scriptCount: z.number().int().nonnegative(),
+    scenarioCount: z.number().int().nonnegative(),
+    loadProfileCount: z.number().int().nonnegative(),
+    thresholdCount: z.number().int().nonnegative(),
+    protocolCount: z.number().int().nonnegative(),
+    dataCount: z.number().int().nonnegative(),
+    reportCount: z.number().int().nonnegative(),
+    distributedCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  toolSignals: z.array(z.object({
+    signal: z.enum(["k6", "artillery", "locust", "jmeter", "gatling", "autocannon", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  profileSignals: z.array(z.object({
+    signal: z.enum(["vus", "duration", "stages", "scenarios", "arrival-rate", "ramping", "spawn-rate", "users", "wait-time", "load-shape", "soak", "stress", "spike", "smoke", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  protocolSignals: z.array(z.object({
+    signal: z.enum(["http", "websocket", "grpc", "graphql", "browser", "playwright", "tcp", "custom-client", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  assertionSignals: z.array(z.object({
+    signal: z.enum(["thresholds", "checks", "ensure", "expect-plugin", "apdex", "slo", "abort-on-fail", "percentiles", "status-check", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dataSignals: z.array(z.object({
+    signal: z.enum(["setup-teardown", "shared-array", "csv-data", "env-vars", "processor", "custom-metrics", "tags", "parameterization", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  executionSignals: z.array(z.object({
+    signal: z.enum(["headless", "cloud", "distributed-master-worker", "k6-operator", "docker", "ci-workflow", "artifact-upload", "parallel-workers", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reportSignals: z.array(z.object({
+    signal: z.enum(["summary", "handleSummary", "json", "html", "csv", "prometheus", "influxdb", "grafana", "datadog", "cloud-dashboard", "junit", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["k6", "artillery", "@artilleryio/*", "artillery-engine-playwright", "locust", "locust-plugins", "jmeter", "gatling", "autocannon", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const E2eReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -8029,6 +8110,7 @@ export type ApiContractReport = z.infer<typeof ApiContractReportSchema>;
 export type ConsumerContractReadinessReport = z.infer<typeof ConsumerContractReadinessReportSchema>;
 export type ObservabilityReport = z.infer<typeof ObservabilityReportSchema>;
 export type PerformanceReport = z.infer<typeof PerformanceReportSchema>;
+export type LoadTestingReadinessReport = z.infer<typeof LoadTestingReadinessReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;
 export type IntegrationTestEnvironmentReadinessReport = z.infer<typeof IntegrationTestEnvironmentReadinessReportSchema>;
 export type ChaosEngineeringReadinessReport = z.infer<typeof ChaosEngineeringReadinessReportSchema>;

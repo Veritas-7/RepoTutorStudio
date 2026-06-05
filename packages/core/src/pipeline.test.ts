@@ -37,6 +37,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "consumer-contract-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "observability-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "performance-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "chaos-engineering-readiness-report.json"))).resolves.toBeUndefined();
@@ -167,6 +168,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "consumer-contract-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "observability.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "performance.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "chaos-engineering-readiness.md"))).resolves.toBeUndefined();
@@ -300,6 +302,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "consumer-contract-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "observability.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "performance.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "load-testing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "chaos-engineering-readiness.html"))).resolves.toBeUndefined();
@@ -460,6 +463,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/consumer-contract-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/observability.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/performance.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/load-testing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/integration-test-environment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/chaos-engineering-readiness.html\"");
@@ -982,6 +986,29 @@ describe("RepoTutor core pipeline", () => {
     expect(performanceMarkdown).toContain("Source pattern: k6");
     expect(performanceMarkdown).toContain("## Workload Models");
     expect(performanceMarkdown).toContain("## Runtime Controls");
+    const loadTestingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"), "utf8");
+    expect(loadTestingText).toContain("k6 Artillery Locust load testing scenarios phases thresholds checks ensure HttpUser headless distributed reports");
+    expect(loadTestingText).toContain("\"loadTestSetups\"");
+    expect(loadTestingText).toContain("\"toolSignals\"");
+    expect(loadTestingText).toContain("\"profileSignals\"");
+    expect(loadTestingText).toContain("\"protocolSignals\"");
+    expect(loadTestingText).toContain("\"assertionSignals\"");
+    expect(loadTestingText).toContain("\"dataSignals\"");
+    expect(loadTestingText).toContain("\"executionSignals\"");
+    expect(loadTestingText).toContain("\"reportSignals\"");
+    expect(loadTestingText).toContain("\"packageSignals\"");
+    expect(loadTestingText).toContain("k6 run --summary-export");
+    const loadTestingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "load-testing-readiness.html"), "utf8");
+    expect(loadTestingHtml).toContain("Load Testing Readiness");
+    expect(loadTestingHtml).toContain("load-testing-readiness-card");
+    expect(loadTestingHtml).toContain("data-source-pattern=\"k6\"");
+    expect(loadTestingHtml).toContain("Load Test Setups");
+    expect(loadTestingHtml).toContain("Assertion Signals");
+    const loadTestingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"), "utf8");
+    expect(loadTestingMarkdown).toContain("# Load Testing Readiness");
+    expect(loadTestingMarkdown).toContain("Source pattern: k6 Artillery Locust");
+    expect(loadTestingMarkdown).toContain("## Profile Signals");
+    expect(loadTestingMarkdown).toContain("## Report Signals");
     const e2eText = await fs.readFile(path.join(result.session.outputPaths.analysis, "e2e-report.json"), "utf8");
     expect(e2eText).toContain("Playwright browser E2E tests config projects locators assertions traces screenshots video reporters CI webServer");
     expect(e2eText).toContain("\"testSuites\"");
@@ -2979,6 +3006,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/api-contracts.html");
     expect(exportManifestText).toContain("html/observability.html");
     expect(exportManifestText).toContain("html/performance.html");
+    expect(exportManifestText).toContain("html/load-testing-readiness.html");
     expect(exportManifestText).toContain("html/e2e.html");
     expect(exportManifestText).toContain("html/integration-test-environment-readiness.html");
     expect(exportManifestText).toContain("html/chaos-engineering-readiness.html");
@@ -3131,6 +3159,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("api-contracts.html");
     expect(learningPathHtml).toContain("observability.html");
     expect(learningPathHtml).toContain("performance.html");
+    expect(learningPathHtml).toContain("load-testing-readiness.html");
     expect(learningPathHtml).toContain("e2e.html");
     expect(learningPathHtml).toContain("integration-test-environment-readiness.html");
     expect(learningPathHtml).toContain("chaos-engineering-readiness.html");
@@ -4631,6 +4660,273 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects load testing readiness without running load toolchains", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-load-testing-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-load-testing-source-"));
+    await fs.mkdir(path.join(sourceRoot, "performance"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "reports"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "load-testing-study",
+      version: "1.0.0",
+      scripts: {
+        "load:k6": "k6 run --summary-export reports/k6-summary.json performance/k6-load.js",
+        "load:artillery": "artillery run load-test.yml --output reports/artillery.json && artillery report reports/artillery.json",
+        "load:locust": "locust -f locustfile.py --headless -u 50 -r 5 --run-time 5m --html reports/locust.html --csv reports/locust",
+        "load:autocannon": "autocannon -c 20 -d 30 http://localhost:3000"
+      },
+      dependencies: {
+        artillery: "latest",
+        "@artilleryio/processor": "latest",
+        "artillery-engine-playwright": "latest",
+        "artillery-plugin-ensure": "latest",
+        "artillery-plugin-expect": "latest",
+        "artillery-plugin-publish-metrics": "latest",
+        autocannon: "latest"
+      },
+      devDependencies: {
+        k6: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "performance", "k6-load.js"), [
+      "import http from 'k6/http';",
+      "import ws from 'k6/ws';",
+      "import grpc from 'k6/net/grpc';",
+      "import { browser } from 'k6/browser';",
+      "import { check, group, sleep } from 'k6';",
+      "import { Counter, Rate, Trend } from 'k6/metrics';",
+      "import { SharedArray } from 'k6/data';",
+      "const data = new SharedArray('users', () => JSON.parse(open('./users.json')));",
+      "export const options = {",
+      "  vus: 10,",
+      "  duration: '30s',",
+      "  stages: [{ duration: '30s', target: 20 }, { duration: '1m', target: 20 }, { duration: '10s', target: 0 }],",
+      "  scenarios: {",
+      "    smoke: { executor: 'constant-vus', vus: 1, duration: '30s' },",
+      "    stress: { executor: 'ramping-vus', stages: [{ duration: '1m', target: 50 }] },",
+      "    spike: { executor: 'ramping-arrival-rate', startRate: 1, timeUnit: '1s', preAllocatedVUs: 10, stages: [{ duration: '30s', target: 100 }] },",
+      "    soak: { executor: 'constant-arrival-rate', rate: 5, timeUnit: '1s', duration: '10m', preAllocatedVUs: 20 }",
+      "  },",
+      "  thresholds: {",
+      "    http_req_duration: ['p(95)<500', { threshold: 'p(99)<1000', abortOnFail: true }],",
+      "    http_req_failed: ['rate<0.01'],",
+      "    checks: ['rate>0.99']",
+      "  },",
+      "  summaryTrendStats: ['avg', 'p(95)', 'p(99)'],",
+      "  ext: { loadimpact: { projectID: 123 } }",
+      "};",
+      "const errors = new Counter('custom_errors');",
+      "const successRate = new Rate('custom_success');",
+      "const apiTrend = new Trend('api_duration');",
+      "export function setup() { return { token: __ENV.API_TOKEN, data }; }",
+      "export default function () {",
+      "  group('graphql api', () => {",
+      "    const res = http.post(`${__ENV.BASE_URL}/graphql`, JSON.stringify({ query: '{ viewer { id } }' }), { tags: { name: 'GraphQL query' } });",
+      "    check(res, { 'status is 200': (r) => r.status === 200, 'response body valid': (r) => r.body.includes('viewer') });",
+      "    successRate.add(res.status === 200);",
+      "    apiTrend.add(res.timings.duration);",
+      "    errors.add(res.status !== 200);",
+      "  });",
+      "  ws.connect('wss://example.test/socket', {}, () => {});",
+      "  grpc.Client;",
+      "  browser.newPage;",
+      "  sleep(1);",
+      "}",
+      "export function teardown() {}",
+      "export function handleSummary(data) {",
+      "  return { 'reports/k6-summary.json': JSON.stringify(data), stdout: 'summary' };",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "performance", "users.json"), "[{\"id\":1}]\n");
+    await fs.writeFile(path.join(sourceRoot, "load-test.yml"), [
+      "config:",
+      "  target: \"https://example.test\"",
+      "  phases:",
+      "    - duration: 60",
+      "      arrivalRate: 5",
+      "      rampTo: 50",
+      "      name: stress",
+      "  plugins:",
+      "    ensure: {}",
+      "    expect: {}",
+      "    publish-metrics:",
+      "      - type: prometheus",
+      "      - type: datadog",
+      "  processor: \"./processor.js\"",
+      "  engines:",
+      "    playwright: {}",
+      "  ensure:",
+      "    thresholds:",
+      "      - http.response_time.p95: 500",
+      "  apdex:",
+      "    threshold: 200",
+      "  variables:",
+      "    tenant:",
+      "      - alpha",
+      "  payload:",
+      "    path: ./performance/users.csv",
+      "    fields:",
+      "      - id",
+      "scenarios:",
+      "  - name: graphql websocket browser",
+      "    beforeScenario: \"beforeScenario\"",
+      "    afterScenario: \"afterScenario\"",
+      "    engine: \"playwright\"",
+      "    flow:",
+      "      - get:",
+      "          url: \"/health\"",
+      "          expect:",
+      "            - statusCode: 200",
+      "      - post:",
+      "          url: \"/graphql\"",
+      "          json:",
+      "            query: \"{ viewer { id } }\"",
+      "      - websocket:",
+      "          url: \"wss://example.test/socket\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "processor.js"), [
+      "module.exports.beforeScenario = function beforeScenario(context, events, done) {",
+      "  context.vars.token = process.env.API_TOKEN;",
+      "  events.request.fire('counter', 'custom_metric', 1);",
+      "  done();",
+      "};",
+      "module.exports.afterScenario = function afterScenario(context, events, done) {",
+      "  events.request.fire('histogram', 'scenario_duration', 10);",
+      "  done();",
+      "};",
+      "module.exports.beforeRequest = function beforeRequest(requestParams, context, events, done) {",
+      "  requestParams.headers = { 'x-tenant': context.vars.tenant };",
+      "  const tcpSocket = 'net.connect tcp socket';",
+      "  done();",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "locustfile.py"), [
+      "from locust import HttpUser, FastHttpUser, LoadTestShape, between, constant_pacing, task, events",
+      "import os, csv",
+      "class WebsiteUser(HttpUser):",
+      "    host = os.environ.get('TARGET_HOST', 'https://example.test')",
+      "    wait_time = between(1, 2)",
+      "    @task(3)",
+      "    def index(self):",
+      "        with self.client.get('/health', name='status-check', catch_response=True) as response:",
+      "            if response.status_code != 200:",
+      "                response.failure('status_check failed')",
+      "    @task",
+      "    def graphql(self):",
+      "        self.client.post('/graphql', json={'query': '{ viewer { id } }'}, name='GraphQL')",
+      "class ApiUser(FastHttpUser):",
+      "    wait_time = constant_pacing(1)",
+      "    @task",
+      "    def api(self):",
+      "        self.client.get('/api')",
+      "class StepLoadShape(LoadTestShape):",
+      "    def tick(self):",
+      "        run_time = self.get_run_time()",
+      "        if run_time < 60:",
+      "            return (10, 2)",
+      "        return None",
+      "@events.request.add_listener",
+      "def on_request(**kwargs):",
+      "    pass"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "requirements-load.txt"), [
+      "locust>=2",
+      "locust-plugins>=4"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "performance", "users.csv"), "id\n1\n");
+    await fs.writeFile(path.join(sourceRoot, "docker-compose.yml"), [
+      "services:",
+      "  k6:",
+      "    image: grafana/k6",
+      "    command: run /scripts/k6-load.js",
+      "  locust-master:",
+      "    image: locustio/locust",
+      "    command: --master --expect-workers 2",
+      "  locust-worker:",
+      "    image: locustio/locust",
+      "    command: --worker --master-host locust-master",
+      "  artillery:",
+      "    image: artilleryio/artillery",
+      "    command: run /scripts/load-test.yml"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "load.yml"), [
+      "name: load",
+      "on: [push, pull_request]",
+      "jobs:",
+      "  load:",
+      "    runs-on: ubuntu-latest",
+      "    env:",
+      "      K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: k6 run --summary-export reports/k6-summary.json performance/k6-load.js",
+      "      - run: k6 cloud performance/k6-load.js",
+      "      - run: artillery run load-test.yml --output reports/artillery.json && artillery report reports/artillery.json",
+      "      - run: artillery cloud run load-test.yml",
+      "      - run: locust -f locustfile.py --headless -u 50 -r 5 --run-time 5m --html reports/locust.html --csv reports/locust --processes 2 --expect-workers 2",
+      "      - run: echo 'SLO service level objective p(95) p(99) JUnit xunit InfluxDB cloud dashboard Grafana Cloud k6-operator Kubernetes TestRun distributed parallel workers'",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: load-performance-reports",
+      "          path: |",
+      "            reports/k6-summary.json",
+      "            reports/artillery.json",
+      "            reports/locust.html",
+      "            reports/locust_stats.csv",
+      "            reports/load-junit.xml"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Load Testing Study",
+      "Authorized load testing only.",
+      "Smoke, stress, spike, and soak profiles publish Prometheus, InfluxDB, Grafana, Datadog, JUnit, and cloud dashboard reports.",
+      "The k6-operator Kubernetes TestRun path is documented for distributed workers.",
+      "locust-plugins, tcp socket, and custom client coverage are documented for non-HTTP load testing."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "reports", "locust_stats.csv"), "Name,Requests\nGET /health,1\n");
+    await fs.writeFile(path.join(sourceRoot, "reports", "artillery.json"), "{\"aggregate\":{\"counters\":{}}}\n");
+    await fs.writeFile(path.join(sourceRoot, "reports", "k6-summary.json"), "{\"metrics\":{}}\n");
+    await fs.writeFile(path.join(sourceRoot, "reports", "load-junit.xml"), "<testsuite></testsuite>\n");
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      loadTestSetups: Array<{ filePath: string; tool: string; configCount: number; scriptCount: number; scenarioCount: number; loadProfileCount: number; thresholdCount: number; protocolCount: number; dataCount: number; reportCount: number; distributedCount: number; ciCount: number }>;
+      toolSignals: Array<{ signal: string; readiness: string }>;
+      profileSignals: Array<{ signal: string; readiness: string }>;
+      protocolSignals: Array<{ signal: string; readiness: string }>;
+      assertionSignals: Array<{ signal: string; readiness: string }>;
+      dataSignals: Array<{ signal: string; readiness: string }>;
+      executionSignals: Array<{ signal: string; readiness: string }>;
+      reportSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("k6 Artillery Locust load testing scenarios phases thresholds checks ensure HttpUser headless distributed reports");
+    expect(report.loadTestSetups.length).toBeGreaterThan(0);
+    expect(report.loadTestSetups.some((item) => item.tool === "k6" && item.configCount > 0 && item.loadProfileCount > 0 && item.thresholdCount > 0 && item.reportCount > 0)).toBe(true);
+    expect(report.loadTestSetups.some((item) => item.tool === "artillery" && item.scenarioCount > 0 && item.protocolCount > 0 && item.dataCount > 0)).toBe(true);
+    expect(report.loadTestSetups.some((item) => item.tool === "locust" && item.scriptCount > 0 && item.loadProfileCount > 0)).toBe(true);
+    expect(report.loadTestSetups.some((item) => item.distributedCount > 0)).toBe(true);
+    expect(report.loadTestSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.toolSignals)).toEqual(expect.arrayContaining(["k6", "artillery", "locust", "autocannon"]));
+    expect(readySignals(report.profileSignals)).toEqual(expect.arrayContaining(["vus", "duration", "stages", "scenarios", "arrival-rate", "ramping", "spawn-rate", "users", "wait-time", "load-shape", "soak", "stress", "spike", "smoke"]));
+    expect(readySignals(report.protocolSignals)).toEqual(expect.arrayContaining(["http", "websocket", "grpc", "graphql", "browser", "playwright", "tcp", "custom-client"]));
+    expect(readySignals(report.assertionSignals)).toEqual(expect.arrayContaining(["thresholds", "checks", "ensure", "expect-plugin", "apdex", "slo", "abort-on-fail", "percentiles", "status-check"]));
+    expect(readySignals(report.dataSignals)).toEqual(expect.arrayContaining(["setup-teardown", "shared-array", "csv-data", "env-vars", "processor", "custom-metrics", "tags", "parameterization"]));
+    expect(readySignals(report.executionSignals)).toEqual(expect.arrayContaining(["headless", "cloud", "distributed-master-worker", "k6-operator", "docker", "ci-workflow", "artifact-upload", "parallel-workers"]));
+    expect(readySignals(report.reportSignals)).toEqual(expect.arrayContaining(["summary", "handleSummary", "json", "html", "csv", "prometheus", "influxdb", "grafana", "datadog", "cloud-dashboard", "junit"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["k6", "artillery", "@artilleryio/*", "artillery-engine-playwright", "locust", "locust-plugins", "autocannon"]));
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "k6 run --summary-export reports/k6-summary.json performance/load-test.js",
+      "artillery run load-test.yml --output reports/artillery.json && artillery report reports/artillery.json",
+      "locust -f locustfile.py --headless -u 50 -r 5 --run-time 5m --html reports/locust.html --csv reports/locust"
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "load-testing-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {
