@@ -103,6 +103,7 @@ import type {
   EmailReadinessReport,
   QueueReadinessReport,
   EventStreamReadinessReport,
+  StreamProcessingReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -270,6 +271,7 @@ export interface StudyHtmlInput {
   emailReadinessReport: EmailReadinessReport;
   queueReadinessReport: QueueReadinessReport;
   eventStreamReadinessReport: EventStreamReadinessReport;
+  streamProcessingReadinessReport: StreamProcessingReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -1164,6 +1166,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Event Stream Readiness", "event-stream-readiness.html", `<section class="panel" data-source-pattern="EventStream"><h2>Event Stream Snapshot</h2><p>${escapeHtml(input.eventStreamReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.eventStreamReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.eventStreamReadinessReport.eventStreamSetups.length}</dd></div><div><dt>platforms</dt><dd>${input.eventStreamReadinessReport.platformSignals.length}</dd></div><div><dt>topics</dt><dd>${input.eventStreamReadinessReport.topicSignals.length}</dd></div><div><dt>reliability</dt><dd>${input.eventStreamReadinessReport.reliabilitySignals.length}</dd></div></dl><p class="muted">RepoTutor records event stream readiness only. It does not run Kafka, Redpanda, Pulsar, brokers, clients, schema registries, topic creation, producer/consumer jobs, security handshakes, or CI commands.</p></section><section class="grid"><article class="event-stream-readiness-card"><h3>Event Stream Setups</h3>${eventStreamReadinessSetupList(input.eventStreamReadinessReport.eventStreamSetups)}</article><article class="event-stream-readiness-card"><h3>Platform Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.platformSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Broker Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.brokerSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Topic Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.topicSignals, "signal")}</article></section><section class="grid"><article class="event-stream-readiness-card"><h3>Producer Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.producerSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Consumer Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.consumerSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Schema Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.schemaSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Reliability Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.reliabilitySignals, "signal")}</article></section><section class="grid"><article class="event-stream-readiness-card"><h3>Security Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.securitySignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Ops Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.opsSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>CI Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.ciSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Package Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.packageSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Recommended Commands</h3>${eventStreamReadinessCommandList(input.eventStreamReadinessReport.recommendedCommands)}</article><article class="event-stream-readiness-card"><h3>Risk Queue</h3>${eventStreamReadinessRiskList(input.eventStreamReadinessReport.riskQueue)}</article><article class="event-stream-readiness-card"><h3>다음 확인 단계</h3>${list(input.eventStreamReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "stream-processing-readiness.html",
+      title: "Stream Processing Readiness",
+      html: pageShell("Stream Processing Readiness", "stream-processing-readiness.html", `<section class="panel" data-source-pattern="StreamProcessing"><h2>Stream Processing Snapshot</h2><p>${escapeHtml(input.streamProcessingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.streamProcessingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.streamProcessingReadinessReport.streamProcessingSetups.length}</dd></div><div><dt>engines</dt><dd>${input.streamProcessingReadinessReport.engineSignals.length}</dd></div><div><dt>checkpoints</dt><dd>${input.streamProcessingReadinessReport.checkpointSignals.length}</dd></div><div><dt>sinks</dt><dd>${input.streamProcessingReadinessReport.sinkSignals.length}</dd></div></dl><p class="muted">RepoTutor records stream processing readiness only. It does not run Flink, Beam, Spark, runners, clusters, streaming jobs, checkpoint recovery, sinks, deployments, monitoring, or CI commands.</p></section><section class="grid"><article class="stream-processing-readiness-card"><h3>Stream Processing Setups</h3>${streamProcessingReadinessSetupList(input.streamProcessingReadinessReport.streamProcessingSetups)}</article><article class="stream-processing-readiness-card"><h3>Engine Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.engineSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Job Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.jobSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Source Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.sourceSignals, "signal")}</article></section><section class="grid"><article class="stream-processing-readiness-card"><h3>Transform Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.transformSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Window Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.windowSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Watermark Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.watermarkSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>State Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="stream-processing-readiness-card"><h3>Checkpoint Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.checkpointSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Sink Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.sinkSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Deployment Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.deploymentSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Monitoring Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.monitoringSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>CI Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.ciSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Package Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.packageSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Recommended Commands</h3>${streamProcessingReadinessCommandList(input.streamProcessingReadinessReport.recommendedCommands)}</article><article class="stream-processing-readiness-card"><h3>Risk Queue</h3>${streamProcessingReadinessRiskList(input.streamProcessingReadinessReport.riskQueue)}</article><article class="stream-processing-readiness-card"><h3>다음 확인 단계</h3>${list(input.streamProcessingReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "cache-readiness.html",
       title: "Cache Readiness",
       html: pageShell("Cache Readiness", "cache-readiness.html", `<section class="panel" data-source-pattern="Node Redis"><h2>Cache Snapshot</h2><p>${escapeHtml(input.cacheReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.cacheReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.cacheReadinessReport.cacheSetups.length}</dd></div><div><dt>operations</dt><dd>${input.cacheReadinessReport.operationSignals.length}</dd></div><div><dt>policy</dt><dd>${input.cacheReadinessReport.policySignals.length}</dd></div><div><dt>connection</dt><dd>${input.cacheReadinessReport.connectionSignals.length}</dd></div></dl><p class="muted">RepoTutor records cache readiness only. It does not start Redis, open cache sockets, read or write cache keys, subscribe to channels, flush data, or run the analyzed project's tests.</p></section><section class="grid"><article class="cache-readiness-card"><h3>Cache Setups</h3>${cacheReadinessSetupList(input.cacheReadinessReport.cacheSetups)}</article><article class="cache-readiness-card"><h3>Operation Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.operationSignals, "signal")}</article><article class="cache-readiness-card"><h3>Policy Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.policySignals, "signal")}</article><article class="cache-readiness-card"><h3>Connection Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.connectionSignals, "signal")}</article></section><section class="grid"><article class="cache-readiness-card"><h3>Advanced Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.advancedSignals, "signal")}</article><article class="cache-readiness-card"><h3>Package Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.packageSignals, "signal")}</article><article class="cache-readiness-card"><h3>Recommended Commands</h3>${cacheReadinessCommandList(input.cacheReadinessReport.recommendedCommands)}</article><article class="cache-readiness-card"><h3>Risk Queue</h3>${cacheReadinessRiskList(input.cacheReadinessReport.riskQueue)}</article><article class="cache-readiness-card"><h3>다음 확인 단계</h3>${list(input.cacheReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1657,6 +1664,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Email Readiness", path: "html/email-readiness.html", description: "Resend식 provider client, send payload, templates, domains, webhooks, env secret 준비도를 확인합니다." },
       { label: "Queue Readiness", path: "html/queue-readiness.html", description: "BullMQ식 Queue, Worker, QueueEvents, FlowProducer, Redis connection, retry 준비도를 확인합니다." },
       { label: "Event Stream Readiness", path: "html/event-stream-readiness.html", description: "Kafka/Redpanda/Pulsar식 broker, topic, producer/consumer, schema registry, DLQ, security, CI 준비도를 확인합니다." },
+      { label: "Stream Processing Readiness", path: "html/stream-processing-readiness.html", description: "Flink/Beam/Spark식 stream job, window, watermark, state, checkpoint, sink, deployment 준비도를 확인합니다." },
       { label: "Cache Readiness", path: "html/cache-readiness.html", description: "Node Redis식 client setup, get/set, TTL, invalidation, connection, advanced Redis 준비도를 확인합니다." },
       { label: "Logging Readiness", path: "html/logging-readiness.html", description: "Pino식 logger setup, level, context binding, redaction, transport 준비도를 확인합니다." },
       { label: "Feature Flag Readiness", path: "html/feature-flag-readiness.html", description: "OpenFeature식 provider, evaluation, targeting context, hooks, tracking 준비도를 확인합니다." },
@@ -2347,6 +2355,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "event-stream-readiness.html",
       goal: "Kafka/Redpanda/Pulsar식 broker, topic, producer/consumer, schema registry, DLQ, security, CI 흐름을 보고 streaming platform 관문을 확인합니다.",
       evidence: `event stream setups ${input.eventStreamReadinessReport.eventStreamSetups.length}개, platform signals ${input.eventStreamReadinessReport.platformSignals.length}개`
+    },
+    {
+      title: "Stream processing readiness 확인",
+      href: "stream-processing-readiness.html",
+      goal: "Flink/Beam/Spark식 job, source/sink, window/watermark, state/checkpoint, deployment 흐름을 보고 stream processing 관문을 확인합니다.",
+      evidence: `stream processing setups ${input.streamProcessingReadinessReport.streamProcessingSetups.length}개, engine signals ${input.streamProcessingReadinessReport.engineSignals.length}개`
     },
     {
       title: "Cache readiness 확인",
@@ -5188,6 +5202,31 @@ function eventStreamReadinessRiskList(items: EventStreamReadinessReport["riskQue
 }
 
 function eventStreamReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function streamProcessingReadinessSetupList(items: StreamProcessingReadinessReport["streamProcessingSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">stream processing setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.engine)}/${escapeHtml(item.readiness)}]<br>jobs/source/transform/window/watermark/state/checkpoint/sink/deploy/monitor/CI ${item.jobCount}/${item.sourceCount}/${item.transformCount}/${item.windowCount}/${item.watermarkCount}/${item.stateCount}/${item.checkpointCount}/${item.sinkCount}/${item.deploymentCount}/${item.monitoringCount}/${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(streamProcessingReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function streamProcessingReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">stream processing signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(streamProcessingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function streamProcessingReadinessCommandList(items: StreamProcessingReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function streamProcessingReadinessRiskList(items: StreamProcessingReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(streamProcessingReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function streamProcessingReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

@@ -5470,6 +5470,118 @@ export const EventStreamReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const StreamProcessingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  streamProcessingSetups: z.array(z.object({
+    filePath: z.string(),
+    engine: z.enum(["flink", "beam", "spark", "custom", "unknown"]),
+    jobCount: z.number().int().nonnegative(),
+    sourceCount: z.number().int().nonnegative(),
+    transformCount: z.number().int().nonnegative(),
+    windowCount: z.number().int().nonnegative(),
+    watermarkCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    checkpointCount: z.number().int().nonnegative(),
+    sinkCount: z.number().int().nonnegative(),
+    deploymentCount: z.number().int().nonnegative(),
+    monitoringCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  engineSignals: z.array(z.object({
+    signal: z.enum(["apache-flink", "apache-beam", "spark-structured-streaming", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  jobSignals: z.array(z.object({
+    signal: z.enum(["stream-execution-environment", "datastream", "beam-pipeline", "pcollection", "readstream", "writestream", "streaming-query", "runner", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sourceSignals: z.array(z.object({
+    signal: z.enum(["kafka-source", "file-source", "socket-source", "pubsub-source", "kinesis-source", "pulsar-source", "custom-source", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  transformSignals: z.array(z.object({
+    signal: z.enum(["map", "flatmap", "filter", "keyby", "par-do", "group-by-key", "aggregation", "join", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  windowSignals: z.array(z.object({
+    signal: z.enum(["tumbling-window", "sliding-window", "session-window", "fixed-window", "trigger", "allowed-lateness", "late-data", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  watermarkSignals: z.array(z.object({
+    signal: z.enum(["watermark-strategy", "with-watermark", "event-time", "processing-time", "timestamp-assigner", "idle-source", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["keyed-state", "value-state", "map-state", "state-store", "rocksdb", "timer", "ttl", "map-groups-with-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  checkpointSignals: z.array(z.object({
+    signal: z.enum(["checkpointing", "checkpoint-location", "savepoint", "restart-strategy", "exactly-once-mode", "checkpoint-timeout", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sinkSignals: z.array(z.object({
+    signal: z.enum(["kafka-sink", "file-sink", "jdbc-sink", "bigquery-sink", "foreach-batch", "two-phase-commit", "exactly-once-sink", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  deploymentSignals: z.array(z.object({
+    signal: z.enum(["flink-runner", "spark-runner", "cluster-submit", "kubernetes", "yarn", "operator", "jobmanager", "taskmanager", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  monitoringSignals: z.array(z.object({
+    signal: z.enum(["metrics", "backpressure", "checkpoint-metrics", "lag", "streaming-query-listener", "job-status", "alert", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "stream-job-smoke", "checkpoint-smoke", "window-smoke", "sink-smoke", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["flink-streaming", "flink-connector", "beam-sdk", "beam-runner", "spark-sql", "spark-streaming", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CacheReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -9906,6 +10018,7 @@ export type PaymentReadinessReport = z.infer<typeof PaymentReadinessReportSchema
 export type EmailReadinessReport = z.infer<typeof EmailReadinessReportSchema>;
 export type QueueReadinessReport = z.infer<typeof QueueReadinessReportSchema>;
 export type EventStreamReadinessReport = z.infer<typeof EventStreamReadinessReportSchema>;
+export type StreamProcessingReadinessReport = z.infer<typeof StreamProcessingReadinessReportSchema>;
 export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
 export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;
