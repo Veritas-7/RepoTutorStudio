@@ -6967,6 +6967,71 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 251:
   - `8b2d7fe` data annotation readiness report
 
+- 2026-06-05: AutoResearch Upgrade 252 candidate selected:
+  lakehouse table readiness from `delta-io/delta`
+  (`https://github.com/delta-io/delta`; ignored clone HEAD `67f226e`),
+  `apache/iceberg`
+  (`https://github.com/apache/iceberg`; ignored clone HEAD `c00669f`), and
+  `apache/hudi`
+  (`https://github.com/apache/hudi`; ignored clone HEAD `6f81c51`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Delta Lake/Iceberg/Hudi-style
+  lakehouse-table-readiness report:
+  `LakehouseTableReadinessReportSchema`,
+  `analysis/lakehouse-table-readiness-report.json`,
+  `markdown/lakehouse-table-readiness.md`,
+  `html/lakehouse-table-readiness.html`, static lakehouse setup detection,
+  Delta/Iceberg/Hudi/custom format signals, delta-table/iceberg-table/
+  hudi-table/catalog/path/managed/external table signals, `_delta_log`,
+  checkpoint, protocol-version, metadata.json, manifest-list, manifest-file,
+  snapshot, Hudi timeline, commit instant, metadata-table signals, schema
+  evolution, partition spec/evolution, generated-column, constraints,
+  sort-order, record-key, precombine-key schema signals, append/MERGE INTO/
+  upsert/delete/overwrite/copy-on-write/merge-on-read/streaming-write
+  write signals, version-as-of/timestamp-as-of/snapshot-id/branch-or-tag/
+  restore/rollback/savepoint time-travel signals, VACUUM/OPTIMIZE/
+  compaction/clustering/cleaner/expireSnapshots/rewriteDataFiles/
+  remove_orphan_files/manifest-rewrite maintenance signals, streaming/CDF/
+  checkpoint/incremental/Flink/Kafka/HoodieDeltaStreamer signals, CI and
+  package signals, static-only risk queue, recommended inspection commands,
+  manifest/session-verification coverage, learning-path linkage, HTML
+  page/nav entry, CLI help/list-target coverage, dedicated audit coverage,
+  and `open --target lakehouse-table-readiness`.
+- 2026-06-05: RED/GREEN lakehouse-table-readiness smoke recorded:
+  old behavior at `9d6aec1` had no
+  `LakehouseTableReadinessReportSchema` and no
+  `lakehouse-table-readiness` CLI target (`schema-missing`, `cli-missing`).
+  GREEN fixture detected Delta `DeltaTable`, `delta.\`...\``, `_delta_log`,
+  protocol upgrade, Change Data Feed, checkpointLocation, MERGE INTO,
+  DELETE, RESTORE, VERSION AS OF, TIMESTAMP AS OF, VACUUM, OPTIMIZE and
+  manifest generation; Iceberg `Catalog`, `HiveCatalog`, `HadoopCatalog`,
+  `PartitionSpec`, `Snapshot`, `ManifestFile`, `DataFile`, `DeleteFile`,
+  `TableMetadata`, `metadata.json`, snapshot id, branch/tag, MERGE INTO,
+  expireSnapshots, rewriteDataFiles, remove orphan files, manifest rewrite
+  and rollback; Hudi `HoodieTable`, `HoodieWriteConfig`,
+  `HoodieTableMetaClient`, `HoodieTimeline`, `HoodieCommitMetadata`,
+  `.hoodie`, record/precombine keys, COPY_ON_WRITE, MERGE_ON_READ, upsert,
+  HoodieDeltaStreamer, incremental query, compaction, clustering, cleaner,
+  rollback and savepoint; CI table/merge/maintenance/streaming smoke,
+  artifact upload, package signals, recommended commands, and all three new
+  artifacts.
+- 2026-06-05: Verification for Upgrade 252:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused lakehouse-table-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 59/59 tests
+  - `pnpm test`: PASS, 59/59 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 150/150 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~89.04 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 252:
+  - `ce6ad8a` lakehouse table readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
