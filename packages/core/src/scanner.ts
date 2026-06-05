@@ -52,6 +52,7 @@ import {
   BenchmarkReadinessReport,
   E2eReport,
   FlakyTestReadinessReport,
+  TestImpactReadinessReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
   AccessibilityReport,
@@ -204,6 +205,7 @@ export interface AnalysisBundle {
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
   flakyTestReadinessReport: FlakyTestReadinessReport;
+  testImpactReadinessReport: TestImpactReadinessReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
   accessibilityReport: AccessibilityReport;
@@ -356,6 +358,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const benchmarkReadinessReport = await buildBenchmarkReadinessReport(walk);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
   const flakyTestReadinessReport = await buildFlakyTestReadinessReport(walk);
+  const testImpactReadinessReport = await buildTestImpactReadinessReport(walk);
   const integrationTestEnvironmentReadinessReport = await buildIntegrationTestEnvironmentReadinessReport(walk, runtimeEnvironmentReport);
   const chaosEngineeringReadinessReport = await buildChaosEngineeringReadinessReport(walk);
   const accessibilityReport = await buildAccessibilityReport(walk, e2eReport);
@@ -451,7 +454,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -7031,6 +7034,274 @@ function flakySignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; e
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/flaky-test-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildTestImpactReadinessReport(walk: WalkResult): Promise<TestImpactReadinessReport> {
+  const sourceFiles = await testImpactSourceFiles(walk);
+  const impactSetups = testImpactSetupRows(sourceFiles);
+  const toolSignals = testImpactToolSignals(sourceFiles);
+  const changeDetectionSignals = testImpactChangeDetectionSignals(sourceFiles);
+  const selectionSignals = testImpactSelectionSignals(sourceFiles);
+  const cacheSignals = testImpactCacheSignals(sourceFiles);
+  const ciSignals = testImpactCiSignals(sourceFiles);
+  const packageSignals = testImpactPackageSignals(sourceFiles);
+  const hasTool = toolSignals.some((item) => item.readiness === "ready");
+  const hasChangeInput = changeDetectionSignals.some((item) => item.readiness === "ready");
+  const hasSelection = selectionSignals.some((item) => item.readiness === "ready");
+  const hasCi = ciSignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: TestImpactReadinessReport["riskQueue"] = [];
+  if (!hasTool) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a concrete test-impact tool or command before claiming affected-test selection.",
+      why: "Affected testing requires a known selector such as Nx affected, Jest findRelatedTests/onlyChanged, pytest-testmon, Turbo, Bazel, or Gradle inputs.",
+      relatedHref: "html/test-impact-readiness.html"
+    });
+  }
+  if (hasTool && !hasChangeInput) {
+    riskQueue.push({
+      priority: "high",
+      action: "Declare how changed files, base/head commits, or uncommitted/untracked files are supplied.",
+      why: "Impact selection is not reproducible if CI and local runs cannot explain the diff boundary.",
+      relatedHref: "html/test-impact-readiness.html"
+    });
+  }
+  if (hasTool && !hasSelection) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Pair change detection with an explicit project/test selection command.",
+      why: "Changed files alone do not prove only affected projects or related tests are selected.",
+      relatedHref: "html/test-impact-readiness.html"
+    });
+  }
+  if (hasTool && !hasCi) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add CI evidence for affected-only runs and fallbacks.",
+      why: "Test impact analysis is most valuable when pull requests run the selected target set deterministically.",
+      relatedHref: "html/test-impact-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the original project test toolchain before treating this as a runtime pass.",
+    why: "RepoTutor records static readiness only; it does not compute an actual affected graph or run selected tests.",
+    relatedHref: "html/test-impact-readiness.html"
+  });
+
+  return {
+    summary: `Test impact readiness report: setup ${impactSetups.length}개, tool signal ${toolSignals.filter((item) => item.readiness === "ready").length}개, change-detection signal ${changeDetectionSignals.filter((item) => item.readiness === "ready").length}개, selection signal ${selectionSignals.filter((item) => item.readiness === "ready").length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Test impact readiness Nx affected Jest findRelatedTests onlyChanged changedSince pytest-testmon --testmon dependency graph base head changed files CI cache",
+    impactSetups,
+    toolSignals,
+    changeDetectionSignals,
+    selectionSignals,
+    cacheSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx nx affected -t test --base=origin/main --head=HEAD", purpose: "Run tests for projects affected by the current branch." },
+      { command: "npx jest --findRelatedTests $(git diff --name-only origin/main...HEAD)", purpose: "Run Jest tests related to changed source files." },
+      { command: "pytest --testmon", purpose: "Use pytest-testmon's dependency database to select tests affected by recent changes." },
+      { command: "npx turbo run test --filter=...[origin/main]", purpose: "Run Turbo tasks affected by changes since the base ref." },
+      { command: "rg \"affected|findRelatedTests|onlyChanged|changedSince|--testmon|git diff --name-only|NX_BASE|NX_HEAD\" .", purpose: "Locate static test-impact selection evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 affected/related/changed-only command가 실제로 있는지 확인하세요.",
+      "base/head, changed files, uncommitted/untracked 입력이 CI와 로컬에서 어떻게 주입되는지 보세요.",
+      "선택된 테스트를 설명할 dependency graph, project graph, coverage dependency, cache evidence를 확인하세요.",
+      "이 리포트는 영향도 그래프를 계산하지 않습니다. 실제 selected tests는 원본 도구에서 확인해야 합니다."
+    ]
+  };
+}
+
+type TestImpactSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function testImpactSourceFiles(walk: WalkResult): Promise<TestImpactSourceFile[]> {
+  const files: TestImpactSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !testImpactInspectablePath(file.relPath)) continue;
+    const pathCandidate = testImpactPathSignal(file.relPath);
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!pathCandidate && !testImpactContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 160) break;
+  }
+  return files;
+}
+
+function testImpactInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|nx\.json|turbo\.json|workspace\.json|project\.json|jest\.config\.[cm]?[jt]s|pyproject\.toml|pytest\.ini|bazelrc|BUILD|BUILD\.bazel|settings\.gradle|build\.gradle|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(js|ts|mjs|cjs|json|ya?ml|toml|ini|md|py|bzl|gradle|sh)$/i.test(filePath);
+}
+
+function testImpactPathSignal(filePath: string): boolean {
+  return /(^|\/)(nx|jest|testmon|turbo|bazel|gradle|tests?|ci|workflows|affected|impact)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function testImpactContentSignal(text: string): boolean {
+  return /(nx affected|nx show projects --affected|findRelatedTests|onlyChanged|changedSince|lastCommit|--testmon|testmon-noselect|testmon-forceselect|git diff --name-only|NX_BASE|NX_HEAD|affected-only|remote cache|dependency graph|project graph|turbo run.*--filter|bazel test|gradle.*--tests)/i.test(text);
+}
+
+function testImpactSetupRows(sourceFiles: TestImpactSourceFile[]): TestImpactReadinessReport["impactSetups"] {
+  const rows: TestImpactReadinessReport["impactSetups"] = [];
+  for (const source of sourceFiles) {
+    const affectedCommandCount = countMatches(source.text, /nx\s+affected|nx\s+show\s+projects\s+--affected|findRelatedTests|onlyChanged|changedSince|--testmon|testmon-forceselect|turbo\s+run.+--filter|bazel\s+test|gradle.+--tests/gi);
+    const changedFileInputCount = countMatches(source.text, /git\s+diff\s+--name-only|changed files?|--files=|files-of-interest|changedSince|onlyChanged|lastCommit|--uncommitted|--untracked/gi);
+    const baseHeadCount = countMatches(source.text, /--base|--head|NX_BASE|NX_HEAD|base=|head=|origin\/main|merge-base|GITHUB_BASE_REF|GITHUB_SHA/gi);
+    const graphCount = countMatches(source.text, /project graph|dependency graph|reverse dependency|affected projects|dependsOn|implicitDependencies|coverage dependency|haste map|jest-haste-map/gi);
+    const cacheCount = countMatches(source.text, /cache|remote cache|task cache|\.testmondata|coverage data|nx-cache|turbo cache|watchman/gi);
+    const watchCount = countMatches(source.text, /--watch|\bwatch\b|watch mode|pytest-watch|watchman|changed files and repos/gi);
+    const selectionCount = countMatches(source.text, /selects? tests?|affected-only|related tests?|only run|deselect|selected target|test splitting|--shard|matrix/gi);
+    const reportCount = countMatches(source.text, /--listTests|print-affected|show projects|json|junit|html|GITHUB_STEP_SUMMARY|upload-artifact|report/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|CI|pull_request|workflow|actions\/|matrix|shard|upload-artifact|NX_BASE|NX_HEAD/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const fallbackCount = countMatches(source.text, /run all|watchAll|fallback|no affected|all tests|--all|run-many|testmon-noselect|--no-testmon/gi);
+    const totalSignals = affectedCommandCount + changedFileInputCount + baseHeadCount + graphCount + cacheCount + watchCount + selectionCount + reportCount + ciCount + fallbackCount;
+    if (totalSignals === 0 && !testImpactPathSignal(source.filePath)) continue;
+    const readiness = affectedCommandCount > 0 && changedFileInputCount > 0 && (baseHeadCount > 0 || graphCount > 0)
+      ? "ready"
+      : totalSignals > 0
+        ? "partial"
+        : "missing";
+    rows.push({
+      filePath: source.filePath,
+      tool: testImpactTool(source.filePath, source.text),
+      affectedCommandCount,
+      changedFileInputCount,
+      baseHeadCount,
+      graphCount,
+      cacheCount,
+      watchCount,
+      selectionCount,
+      reportCount,
+      ciCount,
+      fallbackCount,
+      readiness,
+      evidence: `${source.filePath} contains ${totalSignals} test-impact readiness signal(s).`,
+      sourceHref: source.sourceHref
+    });
+  }
+  const order = { ready: 0, partial: 1, missing: 2 };
+  return rows.sort((a, b) => order[a.readiness] - order[b.readiness] || a.filePath.localeCompare(b.filePath)).slice(0, 90);
+}
+
+function testImpactTool(filePath: string, text: string): TestImpactReadinessReport["impactSetups"][number]["tool"] {
+  if (/\bnx\s+affected|nx\s+show\s+projects\s+--affected|"nx"|nx\.json|NX_BASE|NX_HEAD/i.test(text) || /nx\.json|project\.json/i.test(filePath)) return "nx";
+  if (/findRelatedTests|onlyChanged|changedSince|lastCommit|jest-haste-map|jest-changed-files|"jest"/i.test(text) || /jest/i.test(filePath)) return "jest";
+  if (/pytest-testmon|--testmon|testmon_noselect|testmon-forceselect|\.testmondata/i.test(text) || /testmon/i.test(filePath)) return "pytest-testmon";
+  if (/turbo\s+run|turbo\.json|--filter=.*\[/i.test(text) || /turbo\.json/i.test(filePath)) return "turbo";
+  if (/bazel\s+test|bazelrc|BUILD\.bazel|bazel query/i.test(text) || /BUILD(\.bazel)?|\.bzl/i.test(filePath)) return "bazel";
+  if (/gradle|--tests|settings\.gradle|build\.gradle/i.test(text) || /\.gradle/i.test(filePath)) return "gradle";
+  return testImpactContentSignal(text) ? "custom" : "unknown";
+}
+
+function testImpactToolSignals(sourceFiles: TestImpactSourceFile[]): TestImpactReadinessReport["toolSignals"] {
+  const specs: Array<{ signal: TestImpactReadinessReport["toolSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "nx", pattern: /\bnx\s+affected|nx\s+show\s+projects\s+--affected|"nx"|nx\.json|NX_BASE|NX_HEAD/i, evidence: "Nx affected evidence was detected." },
+    { signal: "jest", pattern: /findRelatedTests|onlyChanged|changedSince|jest-changed-files|jest-haste-map|"jest"/i, evidence: "Jest related/changed tests evidence was detected." },
+    { signal: "pytest-testmon", pattern: /pytest-testmon|--testmon|testmon-noselect|testmon-forceselect|\.testmondata/i, evidence: "pytest-testmon evidence was detected." },
+    { signal: "turbo", pattern: /turbo\s+run|turbo\.json|--filter=.*\[/i, evidence: "Turbo affected filter evidence was detected." },
+    { signal: "bazel", pattern: /bazel\s+test|bazel query|bazelrc|BUILD\.bazel/i, evidence: "Bazel test/query evidence was detected." },
+    { signal: "gradle", pattern: /gradle|--tests|settings\.gradle|build\.gradle/i, evidence: "Gradle selective test evidence was detected." },
+    { signal: "custom", pattern: /affected tests?|test impact|related tests?|changed files?.*tests?/i, evidence: "custom test-impact evidence was detected." }
+  ];
+  return testImpactSignalFromSpecs(sourceFiles, specs, "tool", "signal");
+}
+
+function testImpactChangeDetectionSignals(sourceFiles: TestImpactSourceFile[]): TestImpactReadinessReport["changeDetectionSignals"] {
+  const specs: Array<{ signal: TestImpactReadinessReport["changeDetectionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "base-head", pattern: /--base|--head|NX_BASE|NX_HEAD|GITHUB_BASE_REF|GITHUB_SHA|merge-base/i, evidence: "base/head boundary evidence was detected." },
+    { signal: "changed-since", pattern: /changedSince|--changedSince|since=|origin\/main\.\.\.HEAD/i, evidence: "changed-since evidence was detected." },
+    { signal: "changed-files", pattern: /changed files?|getChangedFilesForRoots|jest-changed-files/i, evidence: "changed files evidence was detected." },
+    { signal: "git-diff", pattern: /git\s+diff\s+--name-only|git diff/i, evidence: "git diff changed-file evidence was detected." },
+    { signal: "uncommitted", pattern: /--uncommitted|uncommitted/i, evidence: "uncommitted-change input evidence was detected." },
+    { signal: "untracked", pattern: /--untracked|untracked/i, evidence: "untracked-file input evidence was detected." },
+    { signal: "last-commit", pattern: /lastCommit|--lastCommit|HEAD~1/i, evidence: "last-commit input evidence was detected." },
+    { signal: "files-input", pattern: /--files=|files-of-interest|findRelatedTests\s+\$|xargs.*findRelatedTests/i, evidence: "explicit files input evidence was detected." }
+  ];
+  return testImpactSignalFromSpecs(sourceFiles, specs, "change detection", "signal");
+}
+
+function testImpactSelectionSignals(sourceFiles: TestImpactSourceFile[]): TestImpactReadinessReport["selectionSignals"] {
+  const specs: Array<{ signal: TestImpactReadinessReport["selectionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "affected-projects", pattern: /nx\s+affected|nx\s+show\s+projects\s+--affected|affected projects/i, evidence: "affected project selection evidence was detected." },
+    { signal: "find-related-tests", pattern: /findRelatedTests/i, evidence: "Jest findRelatedTests evidence was detected." },
+    { signal: "only-changed", pattern: /onlyChanged|--onlyChanged|jest\s+-o\b/i, evidence: "Jest onlyChanged evidence was detected." },
+    { signal: "testmon-select", pattern: /--testmon|testmon: selecting|select tests affected/i, evidence: "pytest-testmon selection evidence was detected." },
+    { signal: "testmon-forceselect", pattern: /testmon-forceselect|--testmon-forceselect/i, evidence: "pytest-testmon force select evidence was detected." },
+    { signal: "related-tests-list", pattern: /--listTests|related tests?|test files related/i, evidence: "related test list evidence was detected." },
+    { signal: "dependency-graph", pattern: /dependency graph|reverse dependency|dependsOn|implicitDependencies/i, evidence: "dependency graph evidence was detected." },
+    { signal: "project-graph", pattern: /project graph|nx graph|show projects/i, evidence: "project graph evidence was detected." },
+    { signal: "test-splitting", pattern: /test splitting|split tests|--shard|matrix.*shard/i, evidence: "test splitting evidence was detected." }
+  ];
+  return testImpactSignalFromSpecs(sourceFiles, specs, "selection", "signal");
+}
+
+function testImpactCacheSignals(sourceFiles: TestImpactSourceFile[]): TestImpactReadinessReport["cacheSignals"] {
+  const specs: Array<{ signal: TestImpactReadinessReport["cacheSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "nx-cache", pattern: /nx cache|cacheableOperations|targetDefaults|outputs|inputs/i, evidence: "Nx cache/input evidence was detected." },
+    { signal: "remote-cache", pattern: /remote cache|Nx Cloud|TURBO_TOKEN|remote caching/i, evidence: "remote cache evidence was detected." },
+    { signal: "task-cache", pattern: /task cache|cache hit|cache miss|turbo cache|cache what didn't change/i, evidence: "task cache evidence was detected." },
+    { signal: "testmon-data", pattern: /\.testmondata|testmon data|testmon database/i, evidence: "pytest-testmon data evidence was detected." },
+    { signal: "coverage-deps", pattern: /coverage dependency|coverage data|coverage\.py|collect.*coverage/i, evidence: "coverage dependency evidence was detected." },
+    { signal: "jest-haste-map", pattern: /jest-haste-map|haste map|HasteMap/i, evidence: "Jest Haste map evidence was detected." },
+    { signal: "watchman", pattern: /watchman/i, evidence: "Watchman file watcher evidence was detected." }
+  ];
+  return testImpactSignalFromSpecs(sourceFiles, specs, "cache", "signal");
+}
+
+function testImpactCiSignals(sourceFiles: TestImpactSourceFile[]): TestImpactReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: TestImpactReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /^\.github\/workflows\/|GitHub Actions|actions\/checkout/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "pull-request", pattern: /pull_request|pull-request/i, evidence: "pull request trigger evidence was detected." },
+    { signal: "base-head-env", pattern: /NX_BASE|NX_HEAD|GITHUB_BASE_REF|GITHUB_SHA/i, evidence: "base/head CI env evidence was detected." },
+    { signal: "matrix", pattern: /\bmatrix\b|strategy:/i, evidence: "CI matrix evidence was detected." },
+    { signal: "shard", pattern: /\bshard\b|--shard/i, evidence: "test shard evidence was detected." },
+    { signal: "affected-only", pattern: /affected-only|nx affected|findRelatedTests|--testmon/i, evidence: "affected-only CI command evidence was detected." },
+    { signal: "upload-artifact", pattern: /upload-artifact|actions\/upload-artifact/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return testImpactSignalFromSpecs(sourceFiles, specs, "ci", "signal");
+}
+
+function testImpactPackageSignals(sourceFiles: TestImpactSourceFile[]): TestImpactReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: TestImpactReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "nx", pattern: /"nx"|"@nx\/|nx\.json|npx nx/i, evidence: "Nx package/config evidence was detected." },
+    { signal: "jest", pattern: /"jest"|jest\.config|findRelatedTests|jest-changed-files/i, evidence: "Jest package/config evidence was detected." },
+    { signal: "pytest-testmon", pattern: /pytest-testmon|--testmon/i, evidence: "pytest-testmon package/config evidence was detected." },
+    { signal: "turbo", pattern: /"turbo"|turbo\.json|npx turbo/i, evidence: "Turbo package/config evidence was detected." },
+    { signal: "bazel", pattern: /bazel|BUILD\.bazel|bazelrc/i, evidence: "Bazel package/config evidence was detected." },
+    { signal: "gradle", pattern: /gradle|settings\.gradle|build\.gradle/i, evidence: "Gradle package/config evidence was detected." }
+  ];
+  return testImpactSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function testImpactSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: TestImpactSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(source.filePath) || spec.pattern.test(source.text) || spec.pattern.test(haystack);
+    });
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/test-impact-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

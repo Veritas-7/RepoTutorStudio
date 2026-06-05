@@ -47,6 +47,7 @@ import type {
   BenchmarkReadinessReport,
   E2eReport,
   FlakyTestReadinessReport,
+  TestImpactReadinessReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
   AccessibilityReport,
@@ -194,6 +195,7 @@ export interface StudyHtmlInput {
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
   flakyTestReadinessReport: FlakyTestReadinessReport;
+  testImpactReadinessReport: TestImpactReadinessReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
   accessibilityReport: AccessibilityReport;
@@ -361,6 +363,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["benchmark-readiness.html", "Benchmarks"],
     ["e2e.html", "E2E"],
     ["flaky-test-readiness.html", "Flaky Tests"],
+    ["test-impact-readiness.html", "Test Impact"],
     ["chaos-engineering-readiness.html", "Chaos Engineering"],
     ["accessibility.html", "Accessibility"],
     ["storybook.html", "Storybook"],
@@ -546,6 +549,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Benchmark Readiness</h3><p>${escapeHtml(input.benchmarkReadinessReport.summary)}</p><p>Tinybench/Benchmark.js/Hyperfine 패턴으로 suite, timing, comparison, reports, CI 준비도를 정리합니다.</p><a href="benchmark-readiness.html">Benchmarks 열기</a></article>
           <article><h3>E2E Readiness</h3><p>${escapeHtml(input.e2eReport.summary)}</p><p>Playwright 패턴으로 browser projects, locators, assertions, traces/reporters, webServer/baseURL 준비도를 정리합니다.</p><a href="e2e.html">E2E 열기</a></article>
           <article><h3>Flaky Test Readiness</h3><p>${escapeHtml(input.flakyTestReadinessReport.summary)}</p><p>Playwright/Pytest/Jest 패턴으로 retry, quarantine, fail-on-flaky, artifact, CI 준비도를 정리합니다.</p><a href="flaky-test-readiness.html">Flaky Tests 열기</a></article>
+          <article><h3>Test Impact Readiness</h3><p>${escapeHtml(input.testImpactReadinessReport.summary)}</p><p>Nx/Jest/pytest-testmon 패턴으로 affected, related, changed-only test selection 준비도를 정리합니다.</p><a href="test-impact-readiness.html">Test Impact 열기</a></article>
           <article><h3>Chaos Engineering Readiness</h3><p>${escapeHtml(input.chaosEngineeringReadinessReport.summary)}</p><p>Chaos Mesh, LitmusChaos, Toxiproxy 패턴으로 experiment, fault, scope, probe/steady-state, observability 준비도를 정리합니다.</p><a href="chaos-engineering-readiness.html">Chaos Engineering 열기</a></article>
           <article><h3>Accessibility Readiness</h3><p>${escapeHtml(input.accessibilityReport.summary)}</p><p>axe-core 패턴으로 scan targets, WCAG/category tags, result buckets, impact, context controls를 정리합니다.</p><a href="accessibility.html">Accessibility 열기</a></article>
           <article><h3>Storybook Readiness</h3><p>${escapeHtml(input.storybookReport.summary)}</p><p>Storybook 패턴으로 CSF stories, args, decorators, play functions, addons, publish/test signals를 정리합니다.</p><a href="storybook.html">Storybook 열기</a></article>
@@ -805,6 +809,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "flaky-test-readiness.html",
       title: "Flaky Test Readiness",
       html: pageShell("Flaky Test Readiness", "flaky-test-readiness.html", `<section class="panel" data-source-pattern="Flaky"><h2>Flaky Test Snapshot</h2><p>${escapeHtml(input.flakyTestReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.flakyTestReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.flakyTestReadinessReport.flakyTestSetups.length}</dd></div><div><dt>retry signals</dt><dd>${input.flakyTestReadinessReport.retrySignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>quarantine</dt><dd>${input.flakyTestReadinessReport.quarantineSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>artifacts</dt><dd>${input.flakyTestReadinessReport.artifactSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records flaky-test readiness only; it does not rerun tests, execute Playwright/Jest/Pytest, or claim a flake has been reproduced.</p></section><section class="grid"><article class="flaky-test-readiness-card"><h3>Flaky Test Setups</h3>${flakyTestSetupList(input.flakyTestReadinessReport.flakyTestSetups)}</article><article class="flaky-test-readiness-card"><h3>Framework Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.frameworkSignals, "signal")}</article><article class="flaky-test-readiness-card"><h3>Retry Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.retrySignals, "signal")}</article><article class="flaky-test-readiness-card"><h3>Quarantine Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.quarantineSignals, "signal")}</article></section><section class="grid"><article class="flaky-test-readiness-card"><h3>Isolation Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.isolationSignals, "signal")}</article><article class="flaky-test-readiness-card"><h3>Artifact Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.artifactSignals, "signal")}</article><article class="flaky-test-readiness-card"><h3>CI Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.ciSignals, "signal")}</article><article class="flaky-test-readiness-card"><h3>Package Signals</h3>${flakyTestSignalList(input.flakyTestReadinessReport.packageSignals, "signal")}</article><article class="flaky-test-readiness-card"><h3>Recommended Commands</h3>${flakyTestCommandList(input.flakyTestReadinessReport.recommendedCommands)}</article><article class="flaky-test-readiness-card"><h3>Risk Queue</h3>${flakyTestRiskList(input.flakyTestReadinessReport.riskQueue)}</article><article class="flaky-test-readiness-card"><h3>다음 확인 단계</h3>${list(input.flakyTestReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "test-impact-readiness.html",
+      title: "Test Impact Readiness",
+      html: pageShell("Test Impact Readiness", "test-impact-readiness.html", `<section class="panel" data-source-pattern="Test Impact"><h2>Test Impact Snapshot</h2><p>${escapeHtml(input.testImpactReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.testImpactReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.testImpactReadinessReport.impactSetups.length}</dd></div><div><dt>tools</dt><dd>${input.testImpactReadinessReport.toolSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>changes</dt><dd>${input.testImpactReadinessReport.changeDetectionSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>selection</dt><dd>${input.testImpactReadinessReport.selectionSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records test-impact readiness only; it does not compute an affected graph, execute Nx/Jest/pytest-testmon, or claim selected tests passed.</p></section><section class="grid"><article class="test-impact-readiness-card"><h3>Impact Setups</h3>${testImpactSetupList(input.testImpactReadinessReport.impactSetups)}</article><article class="test-impact-readiness-card"><h3>Tool Signals</h3>${testImpactSignalList(input.testImpactReadinessReport.toolSignals, "signal")}</article><article class="test-impact-readiness-card"><h3>Change Detection Signals</h3>${testImpactSignalList(input.testImpactReadinessReport.changeDetectionSignals, "signal")}</article><article class="test-impact-readiness-card"><h3>Selection Signals</h3>${testImpactSignalList(input.testImpactReadinessReport.selectionSignals, "signal")}</article></section><section class="grid"><article class="test-impact-readiness-card"><h3>Cache Signals</h3>${testImpactSignalList(input.testImpactReadinessReport.cacheSignals, "signal")}</article><article class="test-impact-readiness-card"><h3>CI Signals</h3>${testImpactSignalList(input.testImpactReadinessReport.ciSignals, "signal")}</article><article class="test-impact-readiness-card"><h3>Package Signals</h3>${testImpactSignalList(input.testImpactReadinessReport.packageSignals, "signal")}</article><article class="test-impact-readiness-card"><h3>Recommended Commands</h3>${testImpactCommandList(input.testImpactReadinessReport.recommendedCommands)}</article><article class="test-impact-readiness-card"><h3>Risk Queue</h3>${testImpactRiskList(input.testImpactReadinessReport.riskQueue)}</article><article class="test-impact-readiness-card"><h3>다음 확인 단계</h3>${list(input.testImpactReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "integration-test-environment-readiness.html",
@@ -1424,6 +1433,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Benchmark Readiness", path: "html/benchmark-readiness.html", description: "Tinybench/Benchmark.js/Hyperfine식 suite, timing, comparison, report, CI 준비도를 확인합니다." },
       { label: "E2E Readiness", path: "html/e2e.html", description: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다." },
       { label: "Flaky Test Readiness", path: "html/flaky-test-readiness.html", description: "Playwright/Pytest/Jest식 retry, quarantine, fail-on-flaky, artifact 준비도를 확인합니다." },
+      { label: "Test Impact Readiness", path: "html/test-impact-readiness.html", description: "Nx/Jest/pytest-testmon식 affected, related, changed-only test selection 준비도를 확인합니다." },
       { label: "Integration Test Environment Readiness", path: "html/integration-test-environment-readiness.html", description: "Testcontainers식 container fixture, wait strategy, lifecycle cleanup, runtime 준비도를 확인합니다." },
       { label: "Chaos Engineering Readiness", path: "html/chaos-engineering-readiness.html", description: "Chaos Mesh, LitmusChaos, Toxiproxy식 fault, scope, probe, cleanup 준비도를 확인합니다." },
       { label: "Accessibility Readiness", path: "html/accessibility.html", description: "axe-core식 scan target, WCAG/category tag, result bucket, impact 준비도를 확인합니다." },
@@ -1814,6 +1824,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "flaky-test-readiness.html",
       goal: "Playwright, pytest-rerunfailures, Jest식 retry, quarantine, fail-on-flaky, artifact 준비도를 확인합니다.",
       evidence: `setups ${input.flakyTestReadinessReport.flakyTestSetups.length}개, retry signals ${input.flakyTestReadinessReport.retrySignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Test impact 준비도 확인",
+      href: "test-impact-readiness.html",
+      goal: "Nx affected, Jest findRelatedTests/onlyChanged, pytest-testmon식 영향도 기반 test selection 준비도를 확인합니다.",
+      evidence: `setups ${input.testImpactReadinessReport.impactSetups.length}개, selection signals ${input.testImpactReadinessReport.selectionSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Integration test environment 준비도 확인",
@@ -3256,6 +3272,34 @@ function flakyTestRiskList(items: FlakyTestReadinessReport["riskQueue"]): string
 }
 
 function flakyTestHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function testImpactSetupList(items: TestImpactReadinessReport["impactSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">test impact setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)} / ${escapeHtml(item.readiness)}]<br>affected ${item.affectedCommandCount}, changed files ${item.changedFileInputCount}, base/head ${item.baseHeadCount}, graph ${item.graphCount}, cache ${item.cacheCount}<br>watch ${item.watchCount}, selection ${item.selectionCount}, report ${item.reportCount}, CI ${item.ciCount}, fallback ${item.fallbackCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(testImpactHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function testImpactSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">test impact readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(testImpactHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function testImpactCommandList(items: TestImpactReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function testImpactRiskList(items: TestImpactReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(testImpactHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function testImpactHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
