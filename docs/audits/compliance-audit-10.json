@@ -1,6 +1,6 @@
 {
   "iteration": 10,
-  "createdAt": "2026-06-05T15:58:45.808Z",
+  "createdAt": "2026-06-05T16:15:46.142Z",
   "checks": [
     {
       "name": "project setup",
@@ -739,6 +739,13 @@
     },
     {
       "name": "semantic layer readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "BI dashboard readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

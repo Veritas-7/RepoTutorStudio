@@ -11219,6 +11219,191 @@ describe("RepoTutor core pipeline", () => {
     expect(semanticLayerHtml).toContain("data-source-pattern=\"SemanticLayer\"");
   });
 
+  it("detects BI dashboard readiness without connecting to BI servers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-bi-dashboard-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-bi-dashboard-source-"));
+    await fs.mkdir(path.join(sourceRoot, "metabase"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "superset"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "lightdash"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "embeds"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        metabase: "0.51.0",
+        "apache-superset": "4.0.0",
+        lightdash: "0.157.0",
+        "@lightdash/sdk": "0.157.0",
+        echarts: "5.5.0",
+        "chart.js": "4.4.0"
+      },
+      scripts: {
+        "dashboards:validate": "lightdash compile && superset import-dashboards -p superset/dashboard.yaml"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "metabase", "dashboard.json"), JSON.stringify({
+      dashboard_id: 42,
+      name: "Revenue dashboard",
+      cards: [{
+        card_id: 7,
+        dataset_query: { type: "native", native: { query: "select sum(revenue) from orders", template_tags: { region: { type: "dimension", "widget-type": "category", field_filter: true } } } },
+        visualization_settings: { graph: { dimensions: ["created_at"], metrics: ["revenue"] } },
+        parameter_mappings: [{ parameter_id: "region", card_id: 7 }],
+        collection_id: 3,
+        enable_embedding: true,
+        embedding_params: { region: "enabled" },
+        public_uuid: "public-dashboard",
+        cache_ttl: 3600
+      }],
+      parameters: [{ id: "region", type: "category", slug: "region" }],
+      pulse: { channels: ["slack", "email"], schedule_type: "daily" },
+      permissions: { collection: "view", roles: ["analyst"] }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "superset", "dashboard.yaml"), [
+      "dashboard_title: Executive Revenue",
+      "position_json: '{}'",
+      "charts:",
+      "  - slice_name: Revenue by Segment",
+      "    viz_type: echarts_timeseries",
+      "    datasource: orders__table",
+      "    query_context: { datasource: orders, queries: [{ columns: [created_at], metrics: [sum__revenue] }] }",
+      "native_filter_configuration:",
+      "  - id: native_filter_region",
+      "    type: filter_select",
+      "    targets: [{ datasetId: 12, column: region }]",
+      "metadata:",
+      "  SQL Lab: true",
+      "  row_level_security: enabled",
+      "  roles: [Admin, Gamma]",
+      "  cache_timeout: 300",
+      "  embedded_dashboard: true"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "lightdash", "lightdash.yml"), [
+      "project: analytics",
+      "explores:",
+      "  orders:",
+      "    label: Orders Explore",
+      "    joins:",
+      "      customers: { sql_on: '${orders.customer_id} = ${customers.id}' }",
+      "    metrics:",
+      "      total_revenue: { type: sum, sql: revenue }",
+      "    dimensions:",
+      "      region: { type: string, sql: region }",
+      "dashboards:",
+      "  executive_revenue:",
+      "    tiles:",
+      "      - savedChartUuid: revenue_by_region",
+      "savedCharts:",
+      "  revenue_by_region:",
+      "    explore: orders",
+      "spaces:",
+      "  finance: { access: viewer }",
+      "scheduled_delivery:",
+      "  slack: '#finance'",
+      "user_attributes:",
+      "  region_access: required"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "embeds", "signed-embed.ts"), [
+      "export const iframe = '<iframe src=\"/embed/dashboard/public-dashboard\"></iframe>';",
+      "export const signedEmbed = { jwt: 'signed', publicLink: true, sdkEmbed: '@lightdash/sdk', embedConfig: { dashboardId: 42 } };"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "bi-dashboard.yml"), [
+      "name: BI Dashboard Validation",
+      "on: [push]",
+      "jobs:",
+      "  dashboards:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: metabase export dashboards --collection finance",
+      "      - run: superset import-dashboards -p superset/dashboard.yaml",
+      "      - run: lightdash validate && lightdash compile && lightdash dbt sync",
+      "      - run: npm run visual-regression",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: bi-dashboard-artifacts",
+      "          path: |",
+      "            metabase/dashboard.json",
+      "            superset/dashboard.yaml",
+      "            lightdash/lightdash.yml"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "bi-dashboard-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      dashboardSetups: Array<{ platform: string; dashboardCount: number; chartCount: number; queryCount: number; datasetCount: number; filterCount: number; permissionCount: number; embeddingCount: number; alertCount: number; cacheCount: number; workflowCount: number }>;
+      platformSignals: Array<{ signal: string; readiness: string }>;
+      dashboardSignals: Array<{ signal: string; readiness: string }>;
+      querySignals: Array<{ signal: string; readiness: string }>;
+      filterSignals: Array<{ signal: string; readiness: string }>;
+      accessSignals: Array<{ signal: string; readiness: string }>;
+      embeddingSignals: Array<{ signal: string; readiness: string }>;
+      alertSignals: Array<{ signal: string; readiness: string }>;
+      cacheSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (platform: string) => report.dashboardSetups
+      .filter((item) => item.platform === platform)
+      .reduce((totals, item) => ({
+        dashboardCount: totals.dashboardCount + item.dashboardCount,
+        chartCount: totals.chartCount + item.chartCount,
+        queryCount: totals.queryCount + item.queryCount,
+        datasetCount: totals.datasetCount + item.datasetCount,
+        filterCount: totals.filterCount + item.filterCount,
+        permissionCount: totals.permissionCount + item.permissionCount,
+        embeddingCount: totals.embeddingCount + item.embeddingCount,
+        alertCount: totals.alertCount + item.alertCount,
+        cacheCount: totals.cacheCount + item.cacheCount,
+        workflowCount: totals.workflowCount + item.workflowCount
+      }), { dashboardCount: 0, chartCount: 0, queryCount: 0, datasetCount: 0, filterCount: 0, permissionCount: 0, embeddingCount: 0, alertCount: 0, cacheCount: 0, workflowCount: 0 });
+
+    expect(report.sourcePattern).toBe("BI dashboard readiness Metabase Superset Lightdash dashboards cards charts queries datasets saved questions explores metrics semantic layer filters parameters drilldowns alerts subscriptions embedded analytics permissions roles row level security cache refresh SQL lab database connections");
+    expect(setupTotals("metabase").dashboardCount).toBeGreaterThan(0);
+    expect(setupTotals("metabase").queryCount).toBeGreaterThan(0);
+    expect(setupTotals("metabase").embeddingCount).toBeGreaterThan(0);
+    expect(setupTotals("superset").chartCount).toBeGreaterThan(0);
+    expect(setupTotals("superset").datasetCount).toBeGreaterThan(0);
+    expect(setupTotals("superset").permissionCount).toBeGreaterThan(0);
+    expect(setupTotals("lightdash").dashboardCount).toBeGreaterThan(0);
+    expect(setupTotals("lightdash").chartCount).toBeGreaterThan(0);
+    expect(setupTotals("lightdash").alertCount).toBeGreaterThan(0);
+    expect(report.dashboardSetups.some((item) => item.filterCount > 0)).toBe(true);
+    expect(report.dashboardSetups.some((item) => item.cacheCount > 0)).toBe(true);
+    expect(report.dashboardSetups.some((item) => item.workflowCount > 0)).toBe(true);
+    expect(readySignals(report.platformSignals)).toEqual(expect.arrayContaining(["metabase", "superset", "lightdash", "custom"]));
+    expect(readySignals(report.dashboardSignals)).toEqual(expect.arrayContaining(["dashboard", "card", "chart", "slice", "explore", "saved-question", "dashboard-config"]));
+    expect(readySignals(report.querySignals)).toEqual(expect.arrayContaining(["sql-query", "native-query", "dataset", "semantic-model", "metric", "dimension", "join"]));
+    expect(readySignals(report.filterSignals)).toEqual(expect.arrayContaining(["parameter", "filter", "field-filter", "dashboard-filter", "date-filter", "cross-filter", "drilldown"]));
+    expect(readySignals(report.accessSignals)).toEqual(expect.arrayContaining(["role", "permission", "row-level-security", "collection-permission", "space-access", "embedding-secret"]));
+    expect(readySignals(report.embeddingSignals)).toEqual(expect.arrayContaining(["iframe", "signed-embed", "public-link", "sdk-embed", "embed-config"]));
+    expect(readySignals(report.alertSignals)).toEqual(expect.arrayContaining(["alert", "subscription", "pulse", "report-schedule", "slack-email"]));
+    expect(readySignals(report.cacheSignals)).toEqual(expect.arrayContaining(["cache", "refresh", "ttl", "async-query", "result-cache", "precomputed"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["github-actions", "dashboard-export", "asset-import", "sql-validation", "dbt-sync", "visual-regression", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["metabase", "apache-superset", "lightdash", "echarts", "chartjs"]));
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"metabase|dashboard|card|native_query|dataset_query|pulse|collection|field_filter\" .",
+      "rg \"superset|Slice|Dashboard|SqlaTable|SQL Lab|RLS|row_level_security|ChartData\" .",
+      "rg \"lightdash|explores|metrics|dimensions|Dashboard|SavedChart|Space|scheduled_delivery\" .",
+      "rg \"embed|iframe|signed|public link|JWT|permissions|roles|row-level|collection\" .",
+      "rg \"cache|refresh|ttl|async query|dashboard export|visual regression|upload-artifact\" .github ."
+    ]));
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records BI dashboard readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "bi-dashboard-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "bi-dashboard-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "bi-dashboard-readiness.html"))).resolves.toBeUndefined();
+    const biDashboardMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "bi-dashboard-readiness.md"), "utf8");
+    expect(biDashboardMarkdown).toContain("Dashboard Setups");
+    expect(biDashboardMarkdown).toContain("Embedding Signals");
+    expect(biDashboardMarkdown).toContain("Workflow Signals");
+    const biDashboardHtml = await fs.readFile(path.join(result.session.outputPaths.html, "bi-dashboard-readiness.html"), "utf8");
+    expect(biDashboardHtml).toContain("bi-dashboard-readiness-card");
+    expect(biDashboardHtml).toContain("data-source-pattern=\"BIDashboard\"");
+    expect(biDashboardHtml).toContain("RepoTutor records BI dashboard readiness only");
+  });
+
   it("detects schema registry readiness without starting registries or publishing modules", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-schema-registry-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-schema-registry-source-"));

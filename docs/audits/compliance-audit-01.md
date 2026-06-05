@@ -1,6 +1,6 @@
 # Compliance Audit 1
 
-Created: 2026-06-05T15:57:28.847Z
+Created: 2026-06-05T16:14:25.039Z
 
 Status: PASS
 
@@ -635,6 +635,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - semantic layer readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - BI dashboard readiness report
 
 - missing files: none
 - missing strings: none
