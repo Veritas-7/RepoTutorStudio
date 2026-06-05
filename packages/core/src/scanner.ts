@@ -51,6 +51,7 @@ import {
   LoadTestingReadinessReport,
   BenchmarkReadinessReport,
   E2eReport,
+  FlakyTestReadinessReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
   AccessibilityReport,
@@ -202,6 +203,7 @@ export interface AnalysisBundle {
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
+  flakyTestReadinessReport: FlakyTestReadinessReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
   accessibilityReport: AccessibilityReport;
@@ -353,6 +355,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const loadTestingReadinessReport = await buildLoadTestingReadinessReport(walk);
   const benchmarkReadinessReport = await buildBenchmarkReadinessReport(walk);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
+  const flakyTestReadinessReport = await buildFlakyTestReadinessReport(walk);
   const integrationTestEnvironmentReadinessReport = await buildIntegrationTestEnvironmentReadinessReport(walk, runtimeEnvironmentReport);
   const chaosEngineeringReadinessReport = await buildChaosEngineeringReadinessReport(walk);
   const accessibilityReport = await buildAccessibilityReport(walk, e2eReport);
@@ -448,7 +451,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -6737,6 +6740,298 @@ function e2eRuntimeTargets(
       evidence: `${spec.target} runtime target was not detected in E2E files.`,
       relatedHref: "html/runtime-environment.html"
     };
+  });
+}
+
+async function buildFlakyTestReadinessReport(walk: WalkResult): Promise<FlakyTestReadinessReport> {
+  const sourceFiles = await flakyTestSourceFiles(walk);
+  const flakyTestSetups = flakyTestSetupRows(sourceFiles);
+  const frameworkSignals = flakyFrameworkSignals(sourceFiles);
+  const retrySignals = flakyRetrySignals(sourceFiles);
+  const quarantineSignals = flakyQuarantineSignals(sourceFiles);
+  const isolationSignals = flakyIsolationSignals(sourceFiles);
+  const artifactSignals = flakyArtifactSignals(sourceFiles);
+  const ciSignals = flakyCiSignals(sourceFiles);
+  const packageSignals = flakyPackageSignals(sourceFiles);
+  const hasRetry = retrySignals.some((item) => ["retries", "reruns", "retry-times"].includes(item.signal) && item.readiness === "ready");
+  const hasQuarantine = quarantineSignals.some((item) => item.readiness === "ready");
+  const hasArtifact = artifactSignals.some((item) => item.readiness === "ready");
+  const hasFailOnFlaky = retrySignals.some((item) => item.signal === "fail-on-flaky" && item.readiness === "ready");
+
+  const riskQueue: FlakyTestReadinessReport["riskQueue"] = [];
+  if (!hasRetry) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add explicit retry or rerun policy before treating intermittent failures as managed flakes.",
+      why: "Flaky-test readiness starts with visible retry budgets such as Playwright retries, pytest-rerunfailures, or jest.retryTimes.",
+      relatedHref: "html/flaky-test-readiness.html"
+    });
+  }
+  if (hasRetry && !hasQuarantine) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a quarantine or ownership path for repeated flakes.",
+      why: "Retries reduce transient failure noise, but unowned flakes can hide regressions indefinitely.",
+      relatedHref: "html/flaky-test-readiness.html"
+    });
+  }
+  if (hasRetry && !hasArtifact) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Retain trace, screenshot, video, report, or CI artifact evidence for retry attempts.",
+      why: "Flake triage needs retry-specific artifacts to distinguish environment noise from product bugs.",
+      relatedHref: "html/flaky-test-readiness.html"
+    });
+  }
+  if (hasRetry && !hasFailOnFlaky) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Consider fail-on-flaky gates in CI once retry evidence is stable.",
+      why: "Fail-on-flaky prevents retry masking from becoming a silent quality regression.",
+      relatedHref: "html/flaky-test-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the original test toolchain before claiming a flaky-test policy pass.",
+    why: "RepoTutor only performs static readiness analysis and never reruns tests or opens retained traces.",
+    relatedHref: "html/flaky-test-readiness.html"
+  });
+
+  return {
+    summary: `Flaky test readiness report: setup ${flakyTestSetups.length}개, retry signal ${retrySignals.filter((item) => item.readiness === "ready").length}개, quarantine signal ${quarantineSignals.filter((item) => item.readiness === "ready").length}개, artifact signal ${artifactSignals.filter((item) => item.readiness === "ready").length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Flaky test readiness Playwright retries failOnFlakyTests trace on-first-retry pytest-rerunfailures --reruns --fail-on-flaky jest.retryTimes quarantine skip fixme xfail artifacts",
+    flakyTestSetups,
+    frameworkSignals,
+    retrySignals,
+    quarantineSignals,
+    isolationSignals,
+    artifactSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx playwright test --retries=2 --trace=on-first-retry", purpose: "Run Playwright with bounded retries and retry trace evidence." },
+      { command: "pytest --reruns 3 --reruns-delay 2 --fail-on-flaky -r aR", purpose: "Run pytest-rerunfailures with delay, RERUN reporting, and fail-on-flaky behavior." },
+      { command: "npx jest --runInBand --detectOpenHandles", purpose: "Reduce Jest concurrency noise while checking open handles during flake triage." },
+      { command: "rg \"retries|retryTimes|--reruns|flaky|fixme|xfail|trace: 'on-first-retry'|failOnFlakyTests\" .", purpose: "Locate static retry, quarantine, and flaky-test policy signals." },
+      { command: "rg \"upload-artifact|playwright-report|test-results|junit|blob-report|GITHUB_STEP_SUMMARY\" .github tests", purpose: "Locate retained CI artifacts for retry triage." }
+    ],
+    learnerNextSteps: [
+      "retry/rerun 설정이 있는지 먼저 확인하세요.",
+      "반복 실패를 격리할 quarantine, skip/fixme, xfail, owner, issue 링크가 있는지 보세요.",
+      "trace, screenshot, video, JUnit, HTML report 같은 retry evidence가 남는지 확인하세요.",
+      "이 리포트는 테스트를 재실행하지 않습니다. 실제 flaky 여부는 원본 test runner에서 확인해야 합니다."
+    ]
+  };
+}
+
+type FlakyTestSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function flakyTestSourceFiles(walk: WalkResult): Promise<FlakyTestSourceFile[]> {
+  const files: FlakyTestSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !flakyTestInspectablePath(file.relPath)) continue;
+    const pathCandidate = flakyTestPathSignal(file.relPath);
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!pathCandidate && !flakyTestContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 160) break;
+  }
+  return files;
+}
+
+function flakyTestInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|pytest\.ini|tox\.ini|jest\.config\.[cm]?[jt]s|playwright\.config\.[cm]?[jt]s|vitest\.config\.[cm]?[jt]s|cypress\.config\.[cm]?[jt]s|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(js|ts|mjs|cjs|json|ya?ml|toml|ini|md|py)$/i.test(filePath);
+}
+
+function flakyTestPathSignal(filePath: string): boolean {
+  return /(^|\/)(tests?|e2e|specs?|playwright|pytest|jest|vitest|cypress|flaky|quarantine)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function flakyTestContentSignal(text: string): boolean {
+  return /(failOnFlakyTests|on-first-retry|testInfo\.retry|retries\s*:|--retries|jest\.retryTimes|retryImmediately|waitBeforeRetry|--reruns|pytest-rerunfailures|pytest\.mark\.flaky|--fail-on-flaky|reruns-delay|only-rerun|rerun-except|test\.fixme|test\.skip|xfail|quarantine|flaky test|upload-artifact|playwright-report|detectOpenHandles|runInBand)/i.test(text);
+}
+
+function flakyTestSetupRows(sourceFiles: FlakyTestSourceFile[]): FlakyTestReadinessReport["flakyTestSetups"] {
+  const rows: FlakyTestReadinessReport["flakyTestSetups"] = [];
+  for (const source of sourceFiles) {
+    const retryCount = countMatches(source.text, /retries\s*:|--retries|retryTimes|retryImmediately|retry\s*:|testInfo\.retry/gi);
+    const rerunCount = countMatches(source.text, /--reruns|reruns\s*=|reruns-delay|rerun|RERUN|pytest-rerunfailures/gi);
+    const quarantineCount = countMatches(source.text, /flaky|quarantine|test\.fixme|test\.skip|describe\.skip|it\.skip|xfail|skipif|@pytest\.mark\.flaky|issue\s*#|owner\s*:/gi);
+    const failOnFlakyCount = countMatches(source.text, /failOnFlakyTests|--fail-on-flaky|fail-on-flaky|fail.*flaky/gi);
+    const filterCount = countMatches(source.text, /only-rerun|rerun-except|grep-invert|--grep-invert|test-list|grep\s*:|tag\s*:/gi);
+    const delayCount = countMatches(source.text, /reruns-delay|waitBeforeRetry|retry.*delay|backoff|sleep\(/gi);
+    const artifactCount = countMatches(source.text, /trace:\s*['"]on-first-retry|on-first-retry|screenshot|video|playwright-report|blob-report|junit|test-results|trace\.zip|upload-artifact|GITHUB_STEP_SUMMARY/gi);
+    const isolationCount = countMatches(source.text, /workers\s*:|--workers|runInBand|fullyParallel|serial|mode:\s*['"]serial|storageState|randomize|--seed|shard|matrix/gi);
+    const timeoutCount = countMatches(source.text, /timeout\s*:|testTimeout|globalTimeout|expect\.setTimeout|slowTestThreshold|detectOpenHandles/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|CI|pull_request|schedule|workflow|actions\/|upload-artifact|GITHUB_STEP_SUMMARY/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = retryCount + rerunCount + quarantineCount + failOnFlakyCount + filterCount + delayCount + artifactCount + isolationCount + timeoutCount + ciCount;
+    if (totalSignals === 0 && !flakyTestPathSignal(source.filePath)) continue;
+    const readiness = (retryCount > 0 || rerunCount > 0) && quarantineCount > 0 && (artifactCount > 0 || failOnFlakyCount > 0)
+      ? "ready"
+      : totalSignals > 0
+        ? "partial"
+        : "missing";
+    rows.push({
+      filePath: source.filePath,
+      framework: flakyFramework(source.filePath, source.text),
+      retryCount,
+      rerunCount,
+      quarantineCount,
+      failOnFlakyCount,
+      filterCount,
+      delayCount,
+      artifactCount,
+      isolationCount,
+      timeoutCount,
+      ciCount,
+      readiness,
+      evidence: `${source.filePath} contains ${totalSignals} flaky-test readiness signal(s).`,
+      sourceHref: source.sourceHref
+    });
+  }
+  const order = { ready: 0, partial: 1, missing: 2 };
+  return rows
+    .sort((a, b) => order[a.readiness] - order[b.readiness] || a.filePath.localeCompare(b.filePath))
+    .slice(0, 90);
+}
+
+function flakyFramework(filePath: string, text: string): FlakyTestReadinessReport["flakyTestSetups"][number]["framework"] {
+  if (/pytest|pytest-rerunfailures|@pytest\.mark|def test_/i.test(text) || /pytest|\.py$/i.test(filePath)) return "pytest";
+  if (/@playwright\/test|playwright\.config|failOnFlakyTests|testInfo\.retry/i.test(text) || /playwright/i.test(filePath)) return "playwright";
+  if (/jest\.retryTimes|jest\.config|detectOpenHandles/i.test(text) || /jest/i.test(filePath)) return "jest";
+  if (/vitest|vi\.|describe\.concurrent/i.test(text) || /vitest/i.test(filePath)) return "vitest";
+  if (/cypress|cy\.|cypress\.config/i.test(text) || /cypress/i.test(filePath)) return "cypress";
+  if (/mocha|describe\s*\(|it\s*\(/i.test(text) || /mocha/i.test(filePath)) return "mocha";
+  return flakyTestContentSignal(text) ? "custom" : "unknown";
+}
+
+function flakyFrameworkSignals(sourceFiles: FlakyTestSourceFile[]): FlakyTestReadinessReport["frameworkSignals"] {
+  const specs: Array<{ signal: FlakyTestReadinessReport["frameworkSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "playwright", pattern: /@playwright\/test|playwright\.config|npx playwright|failOnFlakyTests/i, evidence: "Playwright flaky-test evidence was detected." },
+    { signal: "pytest-rerunfailures", pattern: /pytest-rerunfailures|--reruns|@pytest\.mark\.flaky|fail-on-flaky/i, evidence: "pytest-rerunfailures evidence was detected." },
+    { signal: "jest", pattern: /jest\.retryTimes|jest\.config|detectOpenHandles|runInBand/i, evidence: "Jest retry/isolation evidence was detected." },
+    { signal: "vitest", pattern: /vitest|vi\.|describe\.concurrent/i, evidence: "Vitest package or test evidence was detected." },
+    { signal: "cypress", pattern: /cypress|cy\.|cypress\.config/i, evidence: "Cypress package or test evidence was detected." },
+    { signal: "mocha", pattern: /mocha|describe\s*\(|it\s*\(/i, evidence: "Mocha-style test evidence was detected." }
+  ];
+  return flakySignalFromSpecs(sourceFiles, specs, "framework", "signal");
+}
+
+function flakyRetrySignals(sourceFiles: FlakyTestSourceFile[]): FlakyTestReadinessReport["retrySignals"] {
+  const specs: Array<{ signal: FlakyTestReadinessReport["retrySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "retries", pattern: /retries\s*:|--retries|\bretries\b/i, evidence: "retry budget evidence was detected." },
+    { signal: "reruns", pattern: /--reruns|\breruns\s*=|pytest-rerunfailures|\bRERUN\b/i, evidence: "pytest rerun evidence was detected." },
+    { signal: "retry-times", pattern: /jest\.retryTimes|retryTimes\s*\(/i, evidence: "Jest retryTimes evidence was detected." },
+    { signal: "retry-immediately", pattern: /retryImmediately/i, evidence: "immediate retry evidence was detected." },
+    { signal: "wait-before-retry", pattern: /waitBeforeRetry/i, evidence: "wait-before-retry evidence was detected." },
+    { signal: "reruns-delay", pattern: /reruns-delay|reruns_delay/i, evidence: "rerun delay evidence was detected." },
+    { signal: "repeat-each", pattern: /repeat-each|repeatEach/i, evidence: "repeat-each stress evidence was detected." },
+    { signal: "only-rerun", pattern: /only-rerun|only_rerun/i, evidence: "only-rerun filter evidence was detected." },
+    { signal: "rerun-except", pattern: /rerun-except|rerun_except/i, evidence: "rerun-except filter evidence was detected." },
+    { signal: "fail-on-flaky", pattern: /failOnFlakyTests|--fail-on-flaky|fail-on-flaky/i, evidence: "fail-on-flaky gate evidence was detected." }
+  ];
+  return flakySignalFromSpecs(sourceFiles, specs, "retry", "signal");
+}
+
+function flakyQuarantineSignals(sourceFiles: FlakyTestSourceFile[]): FlakyTestReadinessReport["quarantineSignals"] {
+  const specs: Array<{ signal: FlakyTestReadinessReport["quarantineSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "flaky-marker", pattern: /@pytest\.mark\.flaky|pytest\.mark\.flaky|\bflaky\b/i, evidence: "flaky marker or label evidence was detected." },
+    { signal: "skip-fixme", pattern: /test\.fixme|test\.skip|describe\.skip|it\.skip|\bskipif\b/i, evidence: "skip/fixme quarantine evidence was detected." },
+    { signal: "xfail", pattern: /\bxfail\b|pytest\.mark\.xfail/i, evidence: "xfail evidence was detected." },
+    { signal: "quarantine-tag", pattern: /quarantine|@flaky|flaky-tests?/i, evidence: "quarantine tag evidence was detected." },
+    { signal: "grep-invert", pattern: /grep-invert|--grep-invert/i, evidence: "grep-invert exclusion evidence was detected." },
+    { signal: "test-list", pattern: /test-list|flaky-tests\.txt|quarantine-list/i, evidence: "test-list quarantine evidence was detected." },
+    { signal: "issue-link", pattern: /issue\s*#\d+|BUG-\d+|https:\/\/github\.com\/.+\/issues\/\d+/i, evidence: "issue link evidence was detected." },
+    { signal: "owner", pattern: /owner\s*:|@owner|CODEOWNER|qa-team/i, evidence: "owner evidence was detected." }
+  ];
+  return flakySignalFromSpecs(sourceFiles, specs, "quarantine", "signal");
+}
+
+function flakyIsolationSignals(sourceFiles: FlakyTestSourceFile[]): FlakyTestReadinessReport["isolationSignals"] {
+  const specs: Array<{ signal: FlakyTestReadinessReport["isolationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "workers-one", pattern: /workers\s*:\s*1|--workers[= ]1/i, evidence: "single-worker isolation evidence was detected." },
+    { signal: "run-in-band", pattern: /runInBand|--runInBand/i, evidence: "Jest runInBand isolation evidence was detected." },
+    { signal: "fully-parallel-control", pattern: /fullyParallel\s*:|fully-parallel/i, evidence: "Playwright fullyParallel control evidence was detected." },
+    { signal: "serial-mode", pattern: /mode:\s*['"]serial|describe\.serial|test\.describe\.serial/i, evidence: "serial mode evidence was detected." },
+    { signal: "test-timeout", pattern: /testTimeout|timeout\s*:|--timeout/i, evidence: "test timeout control evidence was detected." },
+    { signal: "global-timeout", pattern: /globalTimeout|global-timeout/i, evidence: "global timeout control evidence was detected." },
+    { signal: "detect-open-handles", pattern: /detectOpenHandles|--detectOpenHandles/i, evidence: "open-handle detection evidence was detected." },
+    { signal: "storage-state", pattern: /storageState|state\.json|auth\.json/i, evidence: "storage state isolation evidence was detected." },
+    { signal: "random-seed", pattern: /\bseed\b|--seed|random seed/i, evidence: "random seed evidence was detected." },
+    { signal: "order-randomization", pattern: /randomize|order randomization|random order|shuffle/i, evidence: "order randomization evidence was detected." }
+  ];
+  return flakySignalFromSpecs(sourceFiles, specs, "isolation", "signal");
+}
+
+function flakyArtifactSignals(sourceFiles: FlakyTestSourceFile[]): FlakyTestReadinessReport["artifactSignals"] {
+  const specs: Array<{ signal: FlakyTestReadinessReport["artifactSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "trace-on-first-retry", pattern: /trace:\s*['"]on-first-retry|on-first-retry|show-trace/i, evidence: "retry trace evidence was detected." },
+    { signal: "screenshot-on-failure", pattern: /screenshot:\s*['"]only-on-failure|only-on-failure|screenshot/i, evidence: "failure screenshot evidence was detected." },
+    { signal: "video-on-retry", pattern: /video:\s*['"]on-first-retry|video-on-retry|video/i, evidence: "retry video evidence was detected." },
+    { signal: "html-report", pattern: /reporter.*html|html reporter|playwright-report|show-report/i, evidence: "HTML test report evidence was detected." },
+    { signal: "junit-report", pattern: /\bjunit\b|jest-junit|outputFile.*junit/i, evidence: "JUnit report evidence was detected." },
+    { signal: "blob-report", pattern: /blob-report|\bblob\b/i, evidence: "Playwright blob report evidence was detected." },
+    { signal: "retry-trace-upload", pattern: /trace\.zip|upload-artifact.*trace|trace.*upload-artifact/i, evidence: "retry trace upload evidence was detected." },
+    { signal: "test-results", pattern: /test-results|results\/|junit\.xml/i, evidence: "test-results retention evidence was detected." },
+    { signal: "step-summary", pattern: /GITHUB_STEP_SUMMARY|\$GITHUB_STEP_SUMMARY/i, evidence: "GitHub step summary evidence was detected." }
+  ];
+  return flakySignalFromSpecs(sourceFiles, specs, "artifact", "signal");
+}
+
+function flakyCiSignals(sourceFiles: FlakyTestSourceFile[]): FlakyTestReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: FlakyTestReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /^\.github\/workflows\/|GitHub Actions|actions\/checkout/i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "pull-request", pattern: /pull_request|pull-request/i, evidence: "pull request trigger evidence was detected." },
+    { signal: "scheduled", pattern: /schedule:|cron:/i, evidence: "scheduled flaky-test trigger evidence was detected." },
+    { signal: "shard", pattern: /\bshard\b|--shard/i, evidence: "test sharding evidence was detected." },
+    { signal: "matrix", pattern: /\bmatrix\b|strategy:/i, evidence: "CI matrix evidence was detected." },
+    { signal: "upload-artifact", pattern: /upload-artifact|actions\/upload-artifact/i, evidence: "artifact upload evidence was detected." },
+    { signal: "flaky-dashboard", pattern: /flaky dashboard|flaky-dashboard|flake dashboard/i, evidence: "flaky dashboard evidence was detected." },
+    { signal: "rerun-job", pattern: /rerun job|rerun-job|workflow_dispatch|gh run rerun|retry job/i, evidence: "CI rerun job evidence was detected." }
+  ];
+  return flakySignalFromSpecs(sourceFiles, specs, "ci", "signal");
+}
+
+function flakyPackageSignals(sourceFiles: FlakyTestSourceFile[]): FlakyTestReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: FlakyTestReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@playwright/test", pattern: /"@playwright\/test"|from ["']@playwright\/test|@playwright\/test/i, evidence: "@playwright/test package/API evidence was detected." },
+    { signal: "pytest-rerunfailures", pattern: /pytest-rerunfailures/i, evidence: "pytest-rerunfailures package evidence was detected." },
+    { signal: "jest", pattern: /"jest"|jest\.retryTimes|jest-junit/i, evidence: "Jest package/API evidence was detected." },
+    { signal: "vitest", pattern: /"vitest"|from ["']vitest["']|vitest\s+/i, evidence: "Vitest package/API evidence was detected." },
+    { signal: "cypress", pattern: /"cypress"|cypress\.config|cy\./i, evidence: "Cypress package/API evidence was detected." },
+    { signal: "mocha", pattern: /"mocha"|\bmocha\b/i, evidence: "Mocha package/API evidence was detected." },
+    { signal: "flaky", pattern: /"flaky"|\bflaky\b/i, evidence: "flaky package or marker evidence was detected." }
+  ];
+  return flakySignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function flakySignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: FlakyTestSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(source.filePath) || spec.pattern.test(source.text) || spec.pattern.test(haystack);
+    });
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/flaky-test-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
 

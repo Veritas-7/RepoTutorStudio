@@ -1,6 +1,6 @@
 {
   "iteration": 1,
-  "createdAt": "2026-06-05T01:09:42.743Z",
+  "createdAt": "2026-06-05T01:28:59.236Z",
   "checks": [
     {
       "name": "project setup",
@@ -221,6 +221,13 @@
     },
     {
       "name": "e2e readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "flaky test readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
