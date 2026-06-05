@@ -20900,6 +20900,169 @@ describe("RepoTutor core pipeline", () => {
     expect(animationHtml).toContain("RepoTutor records animation readiness only");
   });
 
+  it("detects drag and drop readiness without dispatching pointer or drop events", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-dnd-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-dnd-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "dnd-kit-board.tsx"), [
+      "import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, closestCenter, useDraggable, useDroppable, useSensor, useSensors } from '@dnd-kit/core';",
+      "import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';",
+      "import { CSS } from '@dnd-kit/utilities';",
+      "",
+      "function Card({ id }: { id: string }) {",
+      "  const draggable = useDraggable({ id });",
+      "  const sortable = useSortable({ id });",
+      "  return <button ref={draggable.setNodeRef} aria-describedby=\"dnd-instructions\" style={{ transform: CSS.Transform.toString(sortable.transform) }}>{id}</button>;",
+      "}",
+      "",
+      "export function Board({ items }: { items: string[] }) {",
+      "  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }), useSensor(KeyboardSensor));",
+      "  const droppable = useDroppable({ id: 'lane' });",
+      "  const screenReaderInstructions = { draggable: 'Press space to lift, arrows to move, space to drop.' };",
+      "  return <DndContext sensors={sensors} collisionDetection={closestCenter} screenReaderInstructions={screenReaderInstructions} onDragEnd={(event) => arrayMove(items, event.active.data.current?.sortable.index ?? 0, event.over?.data.current?.sortable.index ?? 0)}><SortableContext items={items} strategy={verticalListSortingStrategy}><section ref={droppable.setNodeRef}>{items.map((id) => <Card key={id} id={id} />)}</section></SortableContext><DragOverlay>{items[0]}</DragOverlay><p id=\"dnd-instructions\" aria-live=\"polite\">Keyboard drag enabled</p></DndContext>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "react-dnd-card.tsx"), [
+      "import { DndProvider, useDrag, useDragLayer, useDrop } from 'react-dnd';",
+      "import { HTML5Backend } from 'react-dnd-html5-backend';",
+      "import { TouchBackend } from 'react-dnd-touch-backend';",
+      "",
+      "export function ReactDndCard({ touch }: { touch: boolean }) {",
+      "  const [{ isDragging }, dragRef, previewRef] = useDrag(() => ({ type: 'CARD', item: { id: 'card' }, collect: (monitor) => ({ isDragging: monitor.isDragging() }) }));",
+      "  const [{ canDrop }, dropRef] = useDrop(() => ({ accept: 'CARD', canDrop: () => true, hover: () => undefined, drop: () => ({ lane: 'done' }), collect: (monitor) => ({ canDrop: monitor.canDrop() }) }));",
+      "  const layer = useDragLayer((monitor) => ({ item: monitor.getItem(), offset: monitor.getSourceClientOffset() }));",
+      "  void previewRef;",
+      "  void layer;",
+      "  return <DndProvider backend={touch ? TouchBackend : HTML5Backend}><div ref={dropRef} data-can-drop={canDrop}><button ref={dragRef} aria-grabbed={isDragging}>Drag card</button></div></DndProvider>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "sortable-list.js"), [
+      "import Sortable from 'sortablejs';",
+      "",
+      "export function bindSortable(list, store) {",
+      "  return Sortable.create(list, {",
+      "    group: 'cards',",
+      "    animation: 150,",
+      "    handle: '.handle',",
+      "    filter: '.disabled',",
+      "    ghostClass: 'sortable-ghost',",
+      "    chosenClass: 'sortable-chosen',",
+      "    dragClass: 'sortable-drag',",
+      "    swapThreshold: 0.65,",
+      "    fallbackOnBody: true,",
+      "    store: { get: () => store.get('order'), set: (sortable) => store.set('order', sortable.toArray()) },",
+      "    onMove: () => true,",
+      "    onEnd: (event) => store.set('end', event.newIndex),",
+      "    onUpdate: (event) => store.set('update', event.oldIndex)",
+      "  });",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "dnd.spec.ts"), [
+      "import { fireEvent } from '@testing-library/dom';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { TestBackend } from 'react-dnd-test-backend';",
+      "",
+      "describe('drag and drop traces', () => {",
+      "  it('captures deterministic drag contracts without live browser playback', () => {",
+      "    const item = document.createElement('button');",
+      "    const target = document.createElement('div');",
+      "    item.draggable = true;",
+      "    fireEvent.pointerDown(item);",
+      "    fireEvent.dragStart(item, { dataTransfer: new DataTransfer() });",
+      "    fireEvent.keyDown(item, { key: ' ' });",
+      "    fireEvent.drop(target);",
+      "    void TestBackend;",
+      "    expect(item.draggable).toBe(true);",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        test: "vitest dnd.spec.ts",
+        "test:e2e": "playwright test dnd.spec.ts"
+      },
+      dependencies: {
+        "@dnd-kit/core": "^6.3.1",
+        "@dnd-kit/sortable": "^10.0.0",
+        "@dnd-kit/utilities": "^3.2.2",
+        "react-dnd": "^16.0.1",
+        "react-dnd-html5-backend": "^16.0.1",
+        "react-dnd-touch-backend": "^16.0.1",
+        "react-dnd-test-backend": "^16.0.1",
+        sortablejs: "^1.15.6",
+        react: "^19.0.0"
+      },
+      devDependencies: {
+        "@testing-library/dom": "^10.4.0",
+        vitest: "^3.0.0",
+        playwright: "^1.50.0",
+        typescript: "^5.8.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "dnd.yml"), [
+      "name: dnd",
+      "on: [push]",
+      "jobs:",
+      "  static-dnd:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest dnd.spec.ts",
+      "      - run: npx playwright test dnd.spec.ts",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: dnd-traces",
+      "          path: reports/dnd"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "drag-and-drop-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      dragAndDropSetups: Array<{ filePath: string; platform: string; providerCount: number; draggableCount: number; droppableCount: number; sortableCount: number; sensorCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      librarySignals: Array<{ signal: string; readiness: string }>;
+      providerSignals: Array<{ signal: string; readiness: string }>;
+      sensorSignals: Array<{ signal: string; readiness: string }>;
+      draggableSignals: Array<{ signal: string; readiness: string }>;
+      droppableSignals: Array<{ signal: string; readiness: string }>;
+      sortableSignals: Array<{ signal: string; readiness: string }>;
+      feedbackSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Drag and drop readiness DnD Kit DndContext useDraggable useDroppable React DnD DndProvider useDrag useDrop SortableJS onEnd keyboard tests");
+    expect(report.dragAndDropSetups.some((item) => item.filePath === "src/dnd-kit-board.tsx" && item.platform === "dnd-kit" && item.providerCount > 0 && item.draggableCount > 0 && item.droppableCount > 0 && item.sortableCount > 0 && item.sensorCount > 0 && item.accessibilityCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(report.dragAndDropSetups.some((item) => item.filePath === "src/react-dnd-card.tsx" && item.platform === "react-dnd" && item.providerCount > 0 && item.draggableCount > 0 && item.droppableCount > 0)).toBe(true);
+    expect(report.dragAndDropSetups.some((item) => item.filePath === "src/sortable-list.js" && item.platform === "sortablejs" && item.sortableCount > 0)).toBe(true);
+    expect(readySignals(report.librarySignals)).toEqual(expect.arrayContaining(["dnd-kit", "react-dnd", "sortablejs"]));
+    expect(readySignals(report.providerSignals)).toEqual(expect.arrayContaining(["dnd-context", "dnd-provider", "backend"]));
+    expect(readySignals(report.sensorSignals)).toEqual(expect.arrayContaining(["pointer-sensor", "keyboard-sensor", "touch-backend", "test-backend"]));
+    expect(readySignals(report.draggableSignals)).toEqual(expect.arrayContaining(["use-draggable", "use-drag", "drag-ref", "dragstart"]));
+    expect(readySignals(report.droppableSignals)).toEqual(expect.arrayContaining(["use-droppable", "use-drop", "drop-ref", "drop-handler"]));
+    expect(readySignals(report.sortableSignals)).toEqual(expect.arrayContaining(["sortable-context", "use-sortable", "array-move", "sortable-create", "on-end"]));
+    expect(readySignals(report.feedbackSignals)).toEqual(expect.arrayContaining(["drag-overlay", "ghost-class", "chosen-class", "drag-class", "monitor", "collect"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["keyboard", "screen-reader-instructions", "aria-live", "aria-grabbed", "handle"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "testing-library", "pointer-event", "drag-event", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@dnd-kit/core", "@dnd-kit/sortable", "react-dnd", "react-dnd-html5-backend", "react-dnd-test-backend", "sortablejs"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("DndContext"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records drag-and-drop readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "drag-and-drop-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "drag-and-drop-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "drag-and-drop-readiness.html"))).resolves.toBeUndefined();
+    const dndMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "drag-and-drop-readiness.md"), "utf8");
+    expect(dndMarkdown).toContain("Drag And Drop Readiness");
+    expect(dndMarkdown).toContain("DnD Kit");
+    const dndHtml = await fs.readFile(path.join(result.session.outputPaths.html, "drag-and-drop-readiness.html"), "utf8");
+    expect(dndHtml).toContain("drag-and-drop-readiness-card");
+    expect(dndHtml).toContain("data-source-pattern=\"Drag and Drop\"");
+    expect(dndHtml).toContain("RepoTutor records drag-and-drop readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
