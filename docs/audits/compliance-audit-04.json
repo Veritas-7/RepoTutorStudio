@@ -1,6 +1,6 @@
 {
   "iteration": 4,
-  "createdAt": "2026-06-05T23:22:35.133Z",
+  "createdAt": "2026-06-05T23:35:26.919Z",
   "checks": [
     {
       "name": "project setup",
@@ -1159,6 +1159,13 @@
     },
     {
       "name": "Scroll area readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Avatar readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

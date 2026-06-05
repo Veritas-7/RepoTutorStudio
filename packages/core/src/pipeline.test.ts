@@ -23796,6 +23796,140 @@ describe("RepoTutor core pipeline", () => {
     expect(scrollHtml).toContain("RepoTutor records scroll area readiness only");
   });
 
+  it("detects avatar readiness without loading images", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-avatar-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-avatar-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "radix-avatar.tsx"), [
+      "import * as React from 'react';",
+      "import * as Avatar from '@radix-ui/react-avatar';",
+      "export function RadixAvatarCard() {",
+      "  const [status, setStatus] = React.useState<'idle' | 'loading' | 'loaded' | 'error'>('idle');",
+      "  const hydrationEvidence = 'useIsHydrated complete naturalWidth naturalHeight renderToString hydrate SSR';",
+      "  void hydrationEvidence;",
+      "  return (",
+      "    <Avatar.Root data-testid=\"avatar-root\" aria-label=\"Ada Lovelace avatar\">",
+      "      <Avatar.Image src=\"/ada.png\" srcSet=\"/ada@2x.png 2x\" alt=\"Ada Lovelace\" referrerPolicy=\"no-referrer\" crossOrigin=\"anonymous\" onLoadingStatusChange={setStatus} data-state={status} />",
+      "      <Avatar.Fallback delayMs={300} data-testid=\"avatar-fallback\">AL</Avatar.Fallback>",
+      "    </Avatar.Root>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-avatar.tsx"), [
+      "import * as avatar from '@zag-js/avatar';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "export function ZagAvatarCard() {",
+      "  const service = useMachine(avatar.machine, { id: 'profile-avatar', dir: 'ltr', ids: { root: 'avatar-root', image: 'avatar-image', fallback: 'avatar-fallback' }, onStatusChange(details) { console.log(details.status); } });",
+      "  const api = avatar.connect(service, normalizeProps);",
+      "  const removalEvidence = 'trackImageRemoval img.unmount observeChildren removedNodes';",
+      "  void removalEvidence;",
+      "  api.setSrc('/next-avatar.png');",
+      "  api.setLoaded();",
+      "  api.setError();",
+      "  return (",
+      "    <div {...api.getRootProps()} data-scope=\"avatar\" data-part=\"root\">",
+      "      <img {...api.getImageProps()} src=\"/avatar.png\" srcSet=\"/avatar@2x.png 2x\" alt=\"Profile avatar\" />",
+      "      <span {...api.getFallbackProps()} data-state={api.loaded ? 'hidden' : 'visible'}>PA</span>",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "avatar.spec.tsx"), [
+      "import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';",
+      "import { axe } from 'vitest-axe';",
+      "import { renderToString } from 'react-dom/server';",
+      "import { afterEach, describe, expect, it } from 'vitest';",
+      "import { RadixAvatarCard } from '../src/radix-avatar';",
+      "afterEach(cleanup);",
+      "describe('avatar readiness', () => {",
+      "  it('keeps fallback image loading and accessibility testable', async () => {",
+      "    const rendered = render(<RadixAvatarCard />);",
+      "    expect(await axe(rendered.container)).toHaveNoViolations();",
+      "    expect(screen.getByTestId('avatar-fallback')).toHaveTextContent('AL');",
+      "    await waitFor(() => expect(screen.queryByRole('img')).not.toBeInTheDocument());",
+      "    const html = renderToString(<RadixAvatarCard />);",
+      "    expect(html).toContain('avatar-root');",
+      "    const image = document.createElement('img');",
+      "    fireEvent.load(image);",
+      "    fireEvent.error(image);",
+      "    expect(screen.queryByAltText('Ada Lovelace')).not.toBeInTheDocument();",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "avatar.yml"), [
+      "name: avatar",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- avatar",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: avatar-traces",
+      "          path: test-results/avatar"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@radix-ui/react-avatar": "latest",
+        "@zag-js/avatar": "latest",
+        "@zag-js/react": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "vitest": "latest",
+        "vitest-axe": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "avatar-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      avatarSetups: Array<{ filePath: string; framework: string; avatarCount: number; imageCount: number; fallbackCount: number; loadingStatusCount: number; delayCount: number; srcCount: number; altCount: number; eventCount: number; ssrCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      imageSignals: Array<{ signal: string; readiness: string }>;
+      eventSignals: Array<{ signal: string; readiness: string }>;
+      ssrSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Avatar readiness Radix Avatar Zag avatar image fallback loading loaded error delayMs alt src srcset SSR axe tests");
+    expect(report.avatarSetups.some((item) => item.filePath === "src/radix-avatar.tsx" && item.framework === "radix-avatar" && item.avatarCount > 0 && item.imageCount > 0 && item.fallbackCount > 0 && item.loadingStatusCount > 0 && item.delayCount > 0 && item.srcCount > 0 && item.altCount > 0 && item.ssrCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.avatarSetups.some((item) => item.filePath === "src/zag-avatar.tsx" && item.framework === "zag-avatar" && item.avatarCount > 0 && item.imageCount > 0 && item.fallbackCount > 0 && item.loadingStatusCount > 0 && item.srcCount > 0 && item.altCount > 0 && item.eventCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["radix-avatar", "zag-avatar", "native-img"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "image", "fallback", "provider-context", "anatomy-parts"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["idle", "loading", "loaded", "error", "data-state", "hidden", "delay"]));
+    expect(readySignals(report.imageSignals)).toEqual(expect.arrayContaining(["src", "srcset", "alt", "referrer-policy", "crossorigin", "complete", "natural-size"]));
+    expect(readySignals(report.eventSignals)).toEqual(expect.arrayContaining(["load-event", "error-event", "src-change", "image-removal", "status-change", "set-loaded-error"]));
+    expect(readySignals(report.ssrSignals)).toEqual(expect.arrayContaining(["hydration", "render-to-string", "use-is-hydrated", "server-render"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["alt-text", "role-img", "axe", "label", "fallback-text"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "axe", "wait-for", "role-test", "fallback-test", "ssr-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@radix-ui/react-avatar", "@zag-js/avatar", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@radix-ui/react-avatar"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records avatar readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "avatar-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "avatar-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "avatar-readiness.html"))).resolves.toBeUndefined();
+    const avatarMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "avatar-readiness.md"), "utf8");
+    expect(avatarMarkdown).toContain("Avatar Readiness");
+    expect(avatarMarkdown).toContain("@radix-ui/react-avatar");
+    const avatarHtml = await fs.readFile(path.join(result.session.outputPaths.html, "avatar-readiness.html"), "utf8");
+    expect(avatarHtml).toContain("avatar-readiness-card");
+    expect(avatarHtml).toContain("data-source-pattern=\"Avatar\"");
+    expect(avatarHtml).toContain("RepoTutor records avatar readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
