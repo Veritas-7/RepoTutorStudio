@@ -8366,6 +8366,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 275:
   - `70a0b0b` SLO readiness report
 
+- 2026-06-05: AutoResearch Upgrade 276 candidate selected:
+  cost readiness from `infracost/infracost`
+  (`https://github.com/infracost/infracost`; ignored clone HEAD
+  `c9c4eb7bc6af9347307aab555ee02eade0219fcf`),
+  `opencost/opencost`
+  (`https://github.com/opencost/opencost`; ignored clone HEAD
+  `0580d4561b896bbaf1eb6738d492ff45b5b48d94`), and
+  `kubecost/cost-analyzer-helm-chart`
+  (`https://github.com/kubecost/cost-analyzer-helm-chart`; ignored clone
+  HEAD `e6541c270ac1f502d59dca17f981221a5bc0acd8`). Static source inspection
+  only; `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Infracost/OpenCost/Kubecost-style cost readiness
+  report: `CostReadinessReportSchema`,
+  `analysis/cost-readiness-report.json`,
+  `markdown/cost-readiness.md`, `html/cost-readiness.html`, static cost
+  setup detection, estimate, allocation, pricing, budget, observability,
+  workflow, and package signals, Infracost breakdown/diff/usage/config/monthly
+  cost/policy-check evidence, OpenCost namespace/pod/node/controller/service/
+  label/cloud-cost/asset allocation evidence, custom/cloud pricing evidence,
+  budget threshold/forecast/savings/rightsizing/cost-events detection,
+  Prometheus metrics/Grafana/Thanos/network-costs/persistent-volume coverage,
+  pull request comment/GitHub Actions/CI cost diff/Helm/kubectl cost/MCP
+  workflow detection, static-only cost readiness guardrail, recommended
+  inspection commands, manifest and session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target cost-readiness`.
+- 2026-06-05: RED/GREEN cost readiness smoke recorded: pre-implementation
+  precise gap checks had no `CostReadinessReportSchema`, no
+  `costReadinessReport`, and no `cost-readiness` target. GREEN fixture
+  detected Infracost, OpenCost, Kubecost, Prometheus, workflow, and package
+  setup rows; Infracost breakdown, diff, usage-file, config-file, monthly-cost,
+  and policy-check estimate signals; namespace, pod, node, controller,
+  service, label, cloud-cost, and persistent-volume asset allocation signals;
+  custom pricing, pricing CSV, cloud provider, AWS, Azure, GCP, and on-prem
+  pricing signals; budget config, threshold, forecast, savings, rightsizing,
+  and cost-events signals; observability, workflow, package, recommended
+  command, static-only guardrail, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 276:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused cost readiness Vitest command: PASS, pipeline file 1/1 focused
+    test
+  - `pnpm -w typecheck`: PASS
+  - full pipeline Vitest: PASS, 83/83 tests
+  - `pnpm test`: PASS, 83/83 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 174/174 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~78.15 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 276:
+  - `1a329ca` cost readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
