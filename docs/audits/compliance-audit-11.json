@@ -1,6 +1,6 @@
 {
   "iteration": 11,
-  "createdAt": "2026-06-05T17:34:40.176Z",
+  "createdAt": "2026-06-05T17:50:03.779Z",
   "checks": [
     {
       "name": "project setup",
@@ -1026,6 +1026,13 @@
     },
     {
       "name": "Terminal UI readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "State machine readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -9859,6 +9859,99 @@ export const TerminalUiReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const StateMachineReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  stateMachineSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["xstate", "robot", "zag", "javascript-state-machine", "custom", "unknown"]),
+    machineCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    transitionCount: z.number().int().nonnegative(),
+    actionCount: z.number().int().nonnegative(),
+    guardCount: z.number().int().nonnegative(),
+    actorCount: z.number().int().nonnegative(),
+    invokeCount: z.number().int().nonnegative(),
+    contextCount: z.number().int().nonnegative(),
+    eventCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["xstate", "robot", "zag", "javascript-state-machine", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["initial", "states", "final", "nested", "parallel", "history", "computed", "watch", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  transitionSignals: z.array(z.object({
+    signal: z.enum(["on", "target", "always", "immediate", "transition", "after", "delay", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actionSignals: z.array(z.object({
+    signal: z.enum(["assign", "actions", "reduce", "entry", "exit", "effect", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  guardSignals: z.array(z.object({
+    signal: z.enum(["guard", "guards", "can-guard", "cond", "choose", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  actorSignals: z.array(z.object({
+    signal: z.enum(["create-actor", "interpret", "invoke", "from-promise", "service", "actor-ref", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["context", "snapshot", "matches", "computed", "watch", "input", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  eventSignals: z.array(z.object({
+    signal: z.enum(["send", "subscribe", "event-type", "on-done", "on-error", "event-payload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "model-test", "transition-test", "artifact-upload", "storybook", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["xstate", "robot3", "@zag-js/core", "@zag-js/react", "@zag-js/toggle", "javascript-state-machine", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -12909,6 +13002,7 @@ export type SecurityHeadersReadinessReport = z.infer<typeof SecurityHeadersReadi
 export type GraphqlReadinessReport = z.infer<typeof GraphqlReadinessReportSchema>;
 export type CliReadinessReport = z.infer<typeof CliReadinessReportSchema>;
 export type TerminalUiReadinessReport = z.infer<typeof TerminalUiReadinessReportSchema>;
+export type StateMachineReadinessReport = z.infer<typeof StateMachineReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
