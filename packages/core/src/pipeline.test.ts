@@ -20376,6 +20376,177 @@ describe("RepoTutor core pipeline", () => {
     expect(mediaHtml).toContain("RepoTutor records realtime media readiness only");
   });
 
+  it("detects terminal UI readiness without entering raw mode or running TUI programs", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-terminal-ui-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-terminal-ui-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "cmd", "dashboard"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "ink-app.tsx"), [
+      "import React, {useState} from 'react';",
+      "import {render, Box, Text, Static, Transform, useInput, useApp, useStdin, useStdout, useFocus, useFocusManager} from 'ink';",
+      "export function App() {",
+      "  const [selected, setSelected] = useState(0);",
+      "  const {exit} = useApp();",
+      "  const {stdin, isRawModeSupported, setRawMode} = useStdin();",
+      "  const {stdout, write} = useStdout();",
+      "  const {focusNext} = useFocusManager();",
+      "  const {isFocused} = useFocus({id: 'menu'});",
+      "  const cursorLabel = process.stdout.isTTY ? 'cursor tty' : 'cursor pipe';",
+      "  useInput((input, key) => {",
+      "    if (key.upArrow) setSelected(index => Math.max(0, index - 1));",
+      "    if (key.downArrow) setSelected(index => index + 1);",
+      "    if (key.tab) focusNext();",
+      "    if (input === 'q' || key.escape) exit();",
+      "  });",
+      "  return <Box flexDirection=\"column\" borderStyle=\"round\" width={60}>",
+      "    <Text color=\"cyan\" bold>Repo status</Text>",
+      "    <Static items={[\"loaded\"]}>{item => <Text key={item}>{item}</Text>}</Static>",
+      "    <Transform transform={line => line.toUpperCase()}><Text>{isFocused ? 'focused' : 'blurred'} {selected}</Text></Transform>",
+      "    <Text>{cursorLabel} {String(Boolean(stdin && stdout && write && isRawModeSupported && setRawMode))}</Text>",
+      "  </Box>;",
+      "}",
+      "render(<App />, {exitOnCtrlC: true});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "cmd", "dashboard", "main.go"), [
+      "package main",
+      "import (",
+      "  tea \"github.com/charmbracelet/bubbletea\"",
+      "  \"github.com/charmbracelet/bubbles/list\"",
+      "  \"github.com/charmbracelet/bubbles/spinner\"",
+      "  \"github.com/charmbracelet/lipgloss\"",
+      ")",
+      "type model struct { width int; height int; list list.Model; spinner spinner.Model }",
+      "func (m model) Init() tea.Cmd { return tea.Batch(m.spinner.Tick, tea.Tick(1000000, func(t time.Time) tea.Msg { return t })) }",
+      "func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {",
+      "  switch msg := msg.(type) {",
+      "  case tea.KeyMsg:",
+      "    switch msg.String() { case \"q\", \"ctrl+c\", \"esc\": return m, tea.Quit }",
+      "  case tea.WindowSizeMsg:",
+      "    m.width = msg.Width; m.height = msg.Height",
+      "  case tea.MouseMsg:",
+      "    return m, tea.Printf(\"mouse %d %d\", msg.X, msg.Y)",
+      "  }",
+      "  var cmd tea.Cmd; m.list, cmd = m.list.Update(msg); return m, tea.Sequence(cmd)",
+      "}",
+      "func (m model) View() string { return lipgloss.NewStyle().Width(m.width).Render(m.list.View() + m.spinner.View()) }",
+      "func main() { tea.NewProgram(model{}, tea.WithAltScreen(), tea.WithMouseCellMotion()).Run() }"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "blessed-dashboard.js"), [
+      "const blessed = require('blessed');",
+      "const screen = blessed.screen({ smartCSR: true, fullUnicode: true, title: 'RepoTutor dashboard' });",
+      "const box = blessed.box({ top: 0, left: 0, width: '50%', height: '50%', tags: true, border: { type: 'line' }, mouse: true, keys: true });",
+      "const list = blessed.list({ parent: screen, keys: true, mouse: true, vi: true, items: ['one', 'two'] });",
+      "const form = blessed.form({ parent: screen, keys: true, mouse: true });",
+      "box.setContent('{center}{bold}Status{/bold}{/center}');",
+      "box.key(['enter', 'space'], () => { box.setContent('updated'); screen.render(); });",
+      "box.on('click', mouse => { box.setContent(`clicked ${mouse.x}`); screen.render(); });",
+      "box.on('mouseover', mouse => { box.setContent(`hover ${mouse.x}`); screen.render(); });",
+      "screen.append(box);",
+      "box.focus();",
+      "screen.key(['escape', 'q', 'C-c'], () => process.exit(0));",
+      "screen.on('resize', () => screen.render());",
+      "screen.render();",
+      "screen.screenshot();",
+      "module.exports = {screen, box, list, form};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "terminal-ui.test.tsx"), [
+      "import React from 'react';",
+      "import {render} from 'ink-testing-library';",
+      "import {App} from '../src/ink-app';",
+      "test('renders terminal UI snapshot', () => {",
+      "  const {lastFrame, stdin} = render(<App />);",
+      "  stdin.write('q');",
+      "  expect(lastFrame()).toContain('Repo status');",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        ink: "^6.0.0",
+        react: "^19.0.0",
+        blessed: "^0.1.81",
+        "ansi-escapes": "^7.0.0",
+        chalk: "^5.0.0"
+      },
+      devDependencies: {
+        "ink-testing-library": "^4.0.0",
+        vitest: "^3.0.0",
+        tsx: "^4.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "go.mod"), [
+      "module example.com/tui",
+      "go 1.24",
+      "require (",
+      "  github.com/charmbracelet/bubbletea v1.3.0",
+      "  github.com/charmbracelet/bubbles v0.21.0",
+      "  github.com/charmbracelet/lipgloss v1.1.0",
+      ")"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "terminal-ui.yml"), [
+      "name: terminal-ui",
+      "on: [push]",
+      "jobs:",
+      "  static-terminal-ui:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest terminal-ui.test.tsx",
+      "      - run: go test ./...",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: terminal-ui-snapshots",
+      "          path: reports/terminal-ui"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "terminal-ui-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      terminalSetups: Array<{ filePath: string; platform: string; renderCount: number; inputCount: number; layoutCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      screenSignals: Array<{ signal: string; readiness: string }>;
+      layoutSignals: Array<{ signal: string; readiness: string }>;
+      inputSignals: Array<{ signal: string; readiness: string }>;
+      focusSignals: Array<{ signal: string; readiness: string }>;
+      mouseSignals: Array<{ signal: string; readiness: string }>;
+      renderSignals: Array<{ signal: string; readiness: string }>;
+      lifecycleSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Terminal UI readiness Ink Box Text useInput Bubble Tea Model Init Update View tea.NewProgram Blessed screen box key mouse render");
+    expect(report.terminalSetups.some((item) => item.filePath === "src/ink-app.tsx" && item.platform === "ink" && item.renderCount > 0 && item.inputCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(report.terminalSetups.some((item) => item.filePath === "cmd/dashboard/main.go" && item.platform === "bubbletea" && item.renderCount > 0 && item.inputCount > 0)).toBe(true);
+    expect(report.terminalSetups.some((item) => item.filePath === "src/blessed-dashboard.js" && item.platform === "blessed" && item.layoutCount > 0 && item.inputCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["ink", "bubbletea", "blessed"]));
+    expect(readySignals(report.screenSignals)).toEqual(expect.arrayContaining(["screen", "program", "alt-screen", "raw-mode", "tty"]));
+    expect(readySignals(report.layoutSignals)).toEqual(expect.arrayContaining(["box", "text", "list", "form", "style", "border"]));
+    expect(readySignals(report.inputSignals)).toEqual(expect.arrayContaining(["keyboard", "use-input", "key-msg", "keypress", "stdin"]));
+    expect(readySignals(report.focusSignals)).toEqual(expect.arrayContaining(["focus", "focus-manager", "cursor", "selection"]));
+    expect(readySignals(report.mouseSignals)).toEqual(expect.arrayContaining(["mouse", "click", "hover"]));
+    expect(readySignals(report.renderSignals)).toEqual(expect.arrayContaining(["render", "view", "static-output", "transform", "ansi"]));
+    expect(readySignals(report.lifecycleSignals)).toEqual(expect.arrayContaining(["init", "update", "exit", "resize", "tick", "batch-sequence"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["ink-testing-library", "go-test", "snapshot", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["ink", "blessed", "bubbletea", "bubbles", "lipgloss"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("useInput"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records terminal UI readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "terminal-ui-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "terminal-ui-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "terminal-ui-readiness.html"))).resolves.toBeUndefined();
+    const terminalMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "terminal-ui-readiness.md"), "utf8");
+    expect(terminalMarkdown).toContain("Terminal UI Readiness");
+    expect(terminalMarkdown).toContain("Ink");
+    const terminalHtml = await fs.readFile(path.join(result.session.outputPaths.html, "terminal-ui-readiness.html"), "utf8");
+    expect(terminalHtml).toContain("terminal-ui-readiness-card");
+    expect(terminalHtml).toContain("data-source-pattern=\"Terminal UI\"");
+    expect(terminalHtml).toContain("RepoTutor records terminal UI readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

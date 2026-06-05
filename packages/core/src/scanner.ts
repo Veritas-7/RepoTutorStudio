@@ -165,6 +165,7 @@ import {
   SecurityHeadersReadinessReport,
   GraphqlReadinessReport,
   CliReadinessReport,
+  TerminalUiReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
@@ -369,6 +370,7 @@ export interface AnalysisBundle {
   securityHeadersReadinessReport: SecurityHeadersReadinessReport;
   graphqlReadinessReport: GraphqlReadinessReport;
   cliReadinessReport: CliReadinessReport;
+  terminalUiReadinessReport: TerminalUiReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -573,6 +575,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const securityHeadersReadinessReport = await buildSecurityHeadersReadinessReport(walk);
   const graphqlReadinessReport = await buildGraphqlReadinessReport(walk);
   const cliReadinessReport = await buildCliReadinessReport(walk);
+  const terminalUiReadinessReport = await buildTerminalUiReadinessReport(walk);
   const llmReadinessReport = await buildLlmReadinessReport(walk);
   const llmEvalReadinessReport = await buildLlmEvalReadinessReport(walk);
   const llmObservabilityReadinessReport = await buildLlmObservabilityReadinessReport(walk);
@@ -607,7 +610,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -40377,6 +40380,332 @@ function cliReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: Re
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/cli-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildTerminalUiReadinessReport(walk: WalkResult): Promise<TerminalUiReadinessReport> {
+  const sourceFiles = await terminalUiReadinessSourceFiles(walk);
+  const terminalSetups = terminalUiReadinessSetups(sourceFiles);
+  const frameworkSignals = terminalUiReadinessFrameworkSignals(sourceFiles);
+  const screenSignals = terminalUiReadinessScreenSignals(sourceFiles);
+  const layoutSignals = terminalUiReadinessLayoutSignals(sourceFiles);
+  const inputSignals = terminalUiReadinessInputSignals(sourceFiles);
+  const focusSignals = terminalUiReadinessFocusSignals(sourceFiles);
+  const mouseSignals = terminalUiReadinessMouseSignals(sourceFiles);
+  const renderSignals = terminalUiReadinessRenderSignals(sourceFiles);
+  const lifecycleSignals = terminalUiReadinessLifecycleSignals(sourceFiles);
+  const testSignals = terminalUiReadinessTestSignals(sourceFiles);
+  const packageSignals = terminalUiReadinessPackageSignals(sourceFiles);
+
+  const hasFramework = frameworkSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasScreen = screenSignals.some((item) => item.readiness === "ready") || terminalSetups.some((item) => item.screenCount > 0 || item.rawModeCount > 0 || item.altScreenCount > 0);
+  const hasLayout = layoutSignals.some((item) => item.readiness === "ready") || terminalSetups.some((item) => item.layoutCount > 0 || item.componentCount > 0 || item.widgetCount > 0);
+  const hasInput = inputSignals.some((item) => item.readiness === "ready") || terminalSetups.some((item) => item.inputCount > 0);
+  const hasRender = renderSignals.some((item) => item.readiness === "ready") || terminalSetups.some((item) => item.renderCount > 0);
+  const hasTests = testSignals.some((item) => item.readiness === "ready") || terminalSetups.some((item) => item.testCount > 0);
+
+  const riskQueue: TerminalUiReadinessReport["riskQueue"] = [];
+  if (!hasFramework && !hasScreen && !hasLayout) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the terminal UI framework, screen/program object, or component layout before claiming TUI readiness.",
+      why: "Ink/Bubble Tea/Blessed-style readiness starts with a terminal renderer plus a screen or component tree learners can trace.",
+      relatedHref: "html/terminal-ui-readiness.html"
+    });
+  }
+  if ((hasLayout || hasInput || hasRender) && !hasScreen) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace the terminal screen, program, raw-mode, alternate-screen, or TTY boundary.",
+      why: "Terminal widgets and key handlers can behave differently when raw mode, alternate screen, stdout, stdin, or terminal dimensions are absent.",
+      relatedHref: "html/terminal-ui-readiness.html"
+    });
+  }
+  if ((hasFramework || hasLayout || hasScreen) && !hasInput) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record keyboard input, stdin handling, key message dispatch, paste handling, or quit shortcuts.",
+      why: "A TUI is incomplete unless learners can see how user input flows into state updates.",
+      relatedHref: "html/terminal-ui-readiness.html"
+    });
+  }
+  if ((hasFramework || hasLayout || hasInput) && !hasRender) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Identify the render(), View(), screen.render(), snapshot, or ANSI output boundary.",
+      why: "Learners need to connect state changes to terminal output and repaint behavior.",
+      relatedHref: "html/terminal-ui-readiness.html"
+    });
+  }
+  if ((hasFramework || hasScreen || hasInput || hasRender) && !hasTests) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add snapshot, render-to-string, PTY, or framework-supported tests for terminal UI output.",
+      why: "TUI regressions often appear in key handling, screen size, ANSI output, or alternate-screen behavior that unit tests should make visible.",
+      relatedHref: "html/terminal-ui-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify terminal UI behavior with trusted local tests or manual review outside RepoTutor.",
+    why: "RepoTutor records terminal UI readiness only; it does not start TUI programs, enter raw mode, switch alternate screens, capture keyboard or mouse input, resize terminals, spawn pseudo-terminals, write ANSI control sequences, or run the analyzed project's tests.",
+    relatedHref: "html/terminal-ui-readiness.html"
+  });
+
+  return {
+    summary: `Ink/Bubble Tea/Blessed-style terminal UI readiness report: setup ${terminalSetups.length}개, framework signal ${frameworkSignals.length}개, input signal ${inputSignals.length}개, render signal ${renderSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Terminal UI readiness Ink Box Text useInput Bubble Tea Model Init Update View tea.NewProgram Blessed screen box key mouse render",
+    terminalSetups,
+    frameworkSignals,
+    screenSignals,
+    layoutSignals,
+    inputSignals,
+    focusSignals,
+    mouseSignals,
+    renderSignals,
+    lifecycleSignals,
+    testSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"render\\(|<Box|<Text|useInput|useStdin|useStdout|useFocus|ink-testing-library\" src app packages test", purpose: "Find Ink component trees, input hooks, stream hooks, focus hooks, and render/test boundaries." },
+      { command: "rg \"tea\\.NewProgram|Init\\(|Update\\(|View\\(|tea\\.KeyMsg|tea\\.MouseMsg|tea\\.WindowSizeMsg|WithAltScreen|WithMouse\" .", purpose: "Trace Bubble Tea program startup, model lifecycle, keyboard/mouse/resize handling, and alternate-screen use." },
+      { command: "rg \"blessed\\.screen|blessed\\.box|screen\\.key|\\.key\\(|\\.on\\('click|\\.on\\('mouse|screen\\.render|setContent\" src app packages test", purpose: "Inventory Blessed screens, widgets, input handlers, mouse handlers, and repaint boundaries." },
+      { command: "rg \"setRawMode|isTTY|stdin|stdout|alternateBuffer|normalBuffer|ansi|screenshot|lastFrame|renderToString\" .", purpose: "Review raw-mode, TTY, stream, ANSI, screenshot, and snapshot assumptions." },
+      { command: "pnpm test", purpose: "Run trusted local tests that cover terminal rendering, snapshots, and key handling." }
+    ],
+    learnerNextSteps: [
+      "먼저 Ink, Bubble Tea, Blessed, curses, ratatui 같은 TUI framework entry를 찾으세요.",
+      "screen/program/render/View 경계와 stdin/stdout/raw-mode/alternate-screen/TTY 조건을 분리해 읽으세요.",
+      "Box/Text/list/form/table/viewport/style/border 같은 layout/widget 신호를 따라 화면 구조를 요약하세요.",
+      "useInput, KeyMsg, keypress, stdin, paste, quit shortcut 등 입력이 상태 업데이트로 이어지는 흐름을 확인하세요.",
+      "focus, cursor, selection, mouse, click, hover, resize, tick, batch/sequence 같은 상호작용과 lifecycle 신호를 표시하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 raw mode, alternate screen, terminal size, keyboard/mouse behavior는 원본 프로젝트 테스트나 수동 검증에서 별도 확인하세요."
+    ]
+  };
+}
+
+type TerminalUiReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function terminalUiReadinessSourceFiles(walk: WalkResult): Promise<TerminalUiReadinessSourceFile[]> {
+  const files: TerminalUiReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !terminalUiReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!terminalUiReadinessPathSignal(file.relPath) && !terminalUiReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function terminalUiReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return terminalUiReadinessPathSignal(filePath)
+    || /^(package\.json|go\.mod|Cargo\.toml)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|go|rs|py|json|md|mdx|ya?ml|toml)$/i.test(filePath);
+}
+
+function terminalUiReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(tui|terminal|term|screen|console|cli|cmd|ui|widgets?|views?|components?|ink|bubbletea|blessed|ratatui|curses|tests?)(\/|\.|-|_|$)|package\.json$|go\.mod$|Cargo\.toml$/i.test(filePath);
+}
+
+function terminalUiReadinessContentSignal(text: string): boolean {
+  return /\b(render\s*\(|<Box|<Text|useInput|useStdin|useStdout|useFocus|useFocusManager|ink-testing-library|tea\.NewProgram|func\s*\([^)]*\)\s*(Init|Update|View)\s*\(|tea\.(KeyMsg|MouseMsg|WindowSizeMsg|Batch|Sequence|Tick)|WithAltScreen|WithMouse|lipgloss|blessed\.screen|blessed\.(box|list|form|table)|screen\.render|setContent|setRawMode|isTTY|alternateBuffer|normalBuffer|screenshot)\b|"(ink|blessed|ink-testing-library)"|github\.com\/charmbracelet\/(bubbletea|bubbles|lipgloss)|ratatui|ncurses/i.test(text);
+}
+
+function terminalUiReadinessSetups(sourceFiles: TerminalUiReadinessSourceFile[]): TerminalUiReadinessReport["terminalSetups"] {
+  const rows: TerminalUiReadinessReport["terminalSetups"] = [];
+  for (const source of sourceFiles) {
+    const componentCount = countMatches(source.text, /<\s*(Box|Text|Static|Transform|Spacer|Newline)\b|blessed\.(box|list|form|table|textarea|textbox|button|terminal)\s*\(|bubbles\/(list|spinner|textarea|textinput|viewport|table)|ratatui::widgets|Widget\b/gi);
+    const screenCount = countMatches(source.text, /\b(blessed\.screen|screen\s*=|tea\.NewProgram|Program\{|render\s*\(|process\.(stdin|stdout)|useStdin|useStdout|TTY|terminal|screen\.program)\b/gi);
+    const renderCount = countMatches(source.text, /(render\s*\(|screen\.render|View\s*\(|tea\.NewView|lastFrame|renderToString|screenshot|stdout\.write|program\.write)/gi);
+    const layoutCount = countMatches(source.text, /\b(Box|Text|Static|Transform|flexDirection|borderStyle|width\s*[:=]|height\s*[:=]|blessed\.(box|list|form|table)|lipgloss\.NewStyle|Border|JoinVertical|JoinHorizontal|viewport|table)\b/gi);
+    const inputCount = countMatches(source.text, /\b(useInput|usePaste|stdin|setRawMode|KeyMsg|keypress|screen\.key|\.key\s*\(|keys\s*:|key\.|tea\.MouseMsg|on\(['"`](keypress|key|mouse|click)|input\.on\(['"`]data)\b/gi);
+    const focusCount = countMatches(source.text, /\b(useFocus|useFocusManager|focusNext|focusPrevious|focus\s*\(|blur|cursor|selected|selection|isFocused|showCursor|hideCursor)\b/gi);
+    const mouseCount = countMatches(source.text, /\b(mouse|click|hover|mouseover|mouseout|mousemove|mousedown|mouseup|drag|wheel|WithMouse|enableMouse|setMouse)\b/gi);
+    const rawModeCount = countMatches(source.text, /\b(setRawMode|isRawModeSupported|raw mode|raw-mode|TTY|isTTY|enterRawMode|rawMode)\b/gi);
+    const altScreenCount = countMatches(source.text, /\b(WithAltScreen|alternateBuffer|normalBuffer|altscreen|alt-screen|EnterAlternateScreen|LeaveAlternateScreen)\b/gi);
+    const resizeCount = countMatches(source.text, /\b(WindowSizeMsg|resize|terminal-size|columns|rows|width|height|SIGWINCH)\b/gi);
+    const styleCount = countMatches(source.text, /\b(color=|backgroundColor|bold|italic|underline|border|style|lipgloss|chalk|ansi|SGR|Foreground|Background|Render)\b/gi);
+    const widgetCount = countMatches(source.text, /\b(list|spinner|textarea|textinput|viewport|table|form|button|checkbox|radio|progress|box|terminal)\b/gi);
+    const testCount = countMatches(source.text, /\b(ink-testing-library|lastFrame|snapshot|renderToString|go test|vitest|mocha|pty|screenshot|upload-artifact|expect\s*\()\b/gi);
+    const hasSetupSignal = componentCount + screenCount + renderCount + layoutCount + inputCount + focusCount + mouseCount + rawModeCount + altScreenCount + resizeCount + styleCount + widgetCount + testCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: terminalUiReadinessPlatform(source),
+      componentCount,
+      screenCount,
+      renderCount,
+      layoutCount,
+      inputCount,
+      focusCount,
+      mouseCount,
+      rawModeCount,
+      altScreenCount,
+      resizeCount,
+      styleCount,
+      widgetCount,
+      testCount,
+      readiness: (screenCount > 0 || componentCount > 0) && renderCount > 0 && inputCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains components ${componentCount}, screens ${screenCount}, renders ${renderCount}, layouts ${layoutCount}, inputs ${inputCount}, focus ${focusCount}, mouse ${mouseCount}, raw ${rawModeCount}, alt-screen ${altScreenCount}, resize ${resizeCount}, style ${styleCount}, widgets ${widgetCount}, tests ${testCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function terminalUiReadinessPlatform(source: TerminalUiReadinessSourceFile): TerminalUiReadinessReport["terminalSetups"][number]["platform"] {
+  if (/\b(from ["']ink["']|require\(["']ink["']\)|<Box|<Text|useInput|ink-testing-library)\b/i.test(source.text)) return "ink";
+  if (/github\.com\/charmbracelet\/bubbletea|tea\.NewProgram|tea\.(Model|Msg|Cmd|KeyMsg|MouseMsg|WindowSizeMsg)|func\s*\([^)]*\)\s*(Init|Update|View)\s*\(/i.test(source.text)) return "bubbletea";
+  if (/blessed\.screen|require\(["']blessed["']\)|from ["']blessed["']|blessed\.(box|list|form|table|program)/i.test(source.text)) return "blessed";
+  if (/\b(curses|ncurses|urwid|blessed\.Terminal)\b/i.test(source.text)) return "curses";
+  if (/\b(ratatui|tui-rs|crossterm|termion|Terminal<CrosstermBackend)\b/i.test(source.text)) return "ratatui";
+  if (/terminal|TTY|stdin|stdout|ansi|keypress|screen\.render|setRawMode/i.test(source.text) || terminalUiReadinessPathSignal(source.filePath)) return "custom";
+  return "unknown";
+}
+
+function terminalUiReadinessFrameworkSignals(sourceFiles: TerminalUiReadinessSourceFile[]): TerminalUiReadinessReport["frameworkSignals"] {
+  const specs: Array<{ signal: TerminalUiReadinessReport["frameworkSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ink", pattern: /"ink"|from ["']ink["']|require\(["']ink["']\)|<Box|<Text|useInput/i, evidence: "Ink evidence was detected." },
+    { signal: "bubbletea", pattern: /github\.com\/charmbracelet\/bubbletea|tea\.NewProgram|tea\.(Model|Msg|Cmd|KeyMsg|MouseMsg)/i, evidence: "Bubble Tea evidence was detected." },
+    { signal: "blessed", pattern: /"blessed"|blessed\.screen|blessed\.(box|list|form|table|program)/i, evidence: "Blessed evidence was detected." },
+    { signal: "curses", pattern: /\b(curses|ncurses|urwid)\b/i, evidence: "curses-style evidence was detected." },
+    { signal: "ratatui", pattern: /\b(ratatui|tui-rs|crossterm|termion)\b/i, evidence: "Ratatui/crossterm evidence was detected." },
+    { signal: "custom", pattern: /process\.(stdin|stdout)|setRawMode|readline|ansi-escapes|keypress|terminal-size/i, evidence: "custom terminal IO evidence was detected." }
+  ];
+  return terminalUiReadinessSignalFromSpecs(sourceFiles, specs, "framework", "signal");
+}
+
+function terminalUiReadinessScreenSignals(sourceFiles: TerminalUiReadinessSourceFile[]): TerminalUiReadinessReport["screenSignals"] {
+  const specs: Array<{ signal: TerminalUiReadinessReport["screenSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "screen", pattern: /blessed\.screen|screen\s*=|Screen\.|new\s+Screen|screen\.render/i, evidence: "screen object evidence was detected." },
+    { signal: "program", pattern: /tea\.NewProgram|Program\{|blessed\.program|screen\.program|new\s+Program/i, evidence: "program lifecycle evidence was detected." },
+    { signal: "alt-screen", pattern: /WithAltScreen|alternateBuffer|normalBuffer|altscreen|alt-screen|EnterAlternateScreen|LeaveAlternateScreen/i, evidence: "alternate-screen evidence was detected." },
+    { signal: "raw-mode", pattern: /setRawMode|raw mode|raw-mode|isRawModeSupported|enterRawMode|rawMode/i, evidence: "raw-mode evidence was detected." },
+    { signal: "tty", pattern: /\bTTY\b|isTTY|OpenTTY|stdin|stdout|process\.(stdin|stdout)/i, evidence: "TTY/stdin/stdout evidence was detected." },
+    { signal: "terminal-size", pattern: /WindowSizeMsg|terminal-size|stdout\.columns|stdout\.rows|program\.cols|program\.rows|SIGWINCH/i, evidence: "terminal size evidence was detected." }
+  ];
+  return terminalUiReadinessSignalFromSpecs(sourceFiles, specs, "screen", "signal");
+}
+
+function terminalUiReadinessLayoutSignals(sourceFiles: TerminalUiReadinessSourceFile[]): TerminalUiReadinessReport["layoutSignals"] {
+  const specs: Array<{ signal: TerminalUiReadinessReport["layoutSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "box", pattern: /<Box|blessed\.box|box\s*=|Box::|widgets::Block/i, evidence: "box/container evidence was detected." },
+    { signal: "text", pattern: /<Text|setContent|setText|Text::|Paragraph::|tea\.NewView/i, evidence: "text content evidence was detected." },
+    { signal: "list", pattern: /blessed\.list|bubbles\/list|list\.Model|List::|selectable list/i, evidence: "list widget evidence was detected." },
+    { signal: "form", pattern: /blessed\.form|textinput|textarea|form\s*=|Input::|TextArea/i, evidence: "form/input widget evidence was detected." },
+    { signal: "style", pattern: /lipgloss\.NewStyle|style\s*[:=]|chalk|color=|backgroundColor|Foreground|Background|ansi/i, evidence: "terminal styling evidence was detected." },
+    { signal: "border", pattern: /borderStyle|border\s*[:=]|Border|RoundedBorder|NormalBorder|line.*border/i, evidence: "border/frame evidence was detected." },
+    { signal: "table", pattern: /blessed\.table|bubbles\/table|table\.Model|Table::|DataTable/i, evidence: "table widget evidence was detected." },
+    { signal: "viewport", pattern: /viewport|scrollable|Scrollable|blessed\.scrollablebox|Scroll/i, evidence: "viewport/scroll evidence was detected." }
+  ];
+  return terminalUiReadinessSignalFromSpecs(sourceFiles, specs, "layout", "signal");
+}
+
+function terminalUiReadinessInputSignals(sourceFiles: TerminalUiReadinessSourceFile[]): TerminalUiReadinessReport["inputSignals"] {
+  const specs: Array<{ signal: TerminalUiReadinessReport["inputSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "keyboard", pattern: /key\.|key\s*\(|screen\.key|keys\s*:|KeyMsg|keyboard|ctrl\+c|escape|enter/i, evidence: "keyboard input evidence was detected." },
+    { signal: "use-input", pattern: /useInput\s*\(/i, evidence: "Ink useInput evidence was detected." },
+    { signal: "key-msg", pattern: /tea\.KeyMsg|KeyMsg|msg\.String\(\)|key\.String/i, evidence: "Bubble Tea key message evidence was detected." },
+    { signal: "keypress", pattern: /keypress|on\(['"`]key|on\(['"`]keypress|\.key\s*\(/i, evidence: "keypress event evidence was detected." },
+    { signal: "stdin", pattern: /useStdin|process\.stdin|stdin|input\.on\(['"`]data|WithInput/i, evidence: "stdin/input stream evidence was detected." },
+    { signal: "paste", pattern: /usePaste|bracketed paste|paste/i, evidence: "paste-mode evidence was detected." }
+  ];
+  return terminalUiReadinessSignalFromSpecs(sourceFiles, specs, "input", "signal");
+}
+
+function terminalUiReadinessFocusSignals(sourceFiles: TerminalUiReadinessSourceFile[]): TerminalUiReadinessReport["focusSignals"] {
+  const specs: Array<{ signal: TerminalUiReadinessReport["focusSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "focus", pattern: /useFocus|\.focus\s*\(|focus\s*:|isFocused|on\(['"`]focus/i, evidence: "focus evidence was detected." },
+    { signal: "focus-manager", pattern: /useFocusManager|focusNext|focusPrevious|focusManager/i, evidence: "focus manager evidence was detected." },
+    { signal: "cursor", pattern: /cursor|showCursor|hideCursor|Cursor|setCursor|cursorStyle/i, evidence: "cursor evidence was detected." },
+    { signal: "selection", pattern: /selected|selection|selectedIndex|activeTab|choice|highlight/i, evidence: "selection evidence was detected." },
+    { signal: "blur", pattern: /blur|on\(['"`]blur|FocusBlur|focus\/blur/i, evidence: "blur evidence was detected." }
+  ];
+  return terminalUiReadinessSignalFromSpecs(sourceFiles, specs, "focus", "signal");
+}
+
+function terminalUiReadinessMouseSignals(sourceFiles: TerminalUiReadinessSourceFile[]): TerminalUiReadinessReport["mouseSignals"] {
+  const specs: Array<{ signal: TerminalUiReadinessReport["mouseSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "mouse", pattern: /mouse|MouseMsg|WithMouse|enableMouse|setMouse/i, evidence: "mouse support evidence was detected." },
+    { signal: "click", pattern: /click|on\(['"`]click|mousedown|mouseup/i, evidence: "click evidence was detected." },
+    { signal: "hover", pattern: /hover|mouseover|mouseout|mousemove|onMouse|OnMouse/i, evidence: "hover/move evidence was detected." },
+    { signal: "drag", pattern: /drag|draggable|dragOffset/i, evidence: "drag evidence was detected." },
+    { signal: "wheel", pattern: /wheel|mousewheel|scroll/i, evidence: "wheel/scroll evidence was detected." }
+  ];
+  return terminalUiReadinessSignalFromSpecs(sourceFiles, specs, "mouse", "signal");
+}
+
+function terminalUiReadinessRenderSignals(sourceFiles: TerminalUiReadinessSourceFile[]): TerminalUiReadinessReport["renderSignals"] {
+  const specs: Array<{ signal: TerminalUiReadinessReport["renderSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "render", pattern: /\brender\s*\(|screen\.render|renderer\.render|Render\(/i, evidence: "render evidence was detected." },
+    { signal: "view", pattern: /\bView\s*\(|tea\.NewView|\.View\(\)|view\s*\(/i, evidence: "view function evidence was detected." },
+    { signal: "static-output", pattern: /<Static|Static\s*\(|static output|completed tasks/i, evidence: "static output evidence was detected." },
+    { signal: "transform", pattern: /<Transform|transform\s*[:=]|Transform\s*\(/i, evidence: "output transform evidence was detected." },
+    { signal: "ansi", pattern: /ansi|SGR|chalk|escape|ansi-escapes|Foreground|Background|color=/i, evidence: "ANSI/color evidence was detected." },
+    { signal: "snapshot", pattern: /snapshot|lastFrame|renderToString|screenshot|golden|expect\s*\(/i, evidence: "snapshot/render assertion evidence was detected." }
+  ];
+  return terminalUiReadinessSignalFromSpecs(sourceFiles, specs, "render", "signal");
+}
+
+function terminalUiReadinessLifecycleSignals(sourceFiles: TerminalUiReadinessSourceFile[]): TerminalUiReadinessReport["lifecycleSignals"] {
+  const specs: Array<{ signal: TerminalUiReadinessReport["lifecycleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "init", pattern: /\bInit\s*\(|initialModel|newModel|useEffect|componentDidMount/i, evidence: "init evidence was detected." },
+    { signal: "update", pattern: /\bUpdate\s*\(|setState|useState|dispatch|update\s*\(/i, evidence: "update/state evidence was detected." },
+    { signal: "exit", pattern: /useApp|exit\s*\(|tea\.Quit|process\.exit|Ctrl\+C|C-c|escape/i, evidence: "exit evidence was detected." },
+    { signal: "resize", pattern: /WindowSizeMsg|resize|SIGWINCH|terminal-size|columns|rows/i, evidence: "resize evidence was detected." },
+    { signal: "tick", pattern: /tea\.Tick|time\.Tick|setInterval|setTimeout|spinner\.Tick|frame/i, evidence: "tick/timer evidence was detected." },
+    { signal: "batch-sequence", pattern: /tea\.Batch|tea\.Sequence|Batch\(|Sequence\(|cmds\s*\.\.\./i, evidence: "batch/sequence command evidence was detected." },
+    { signal: "suspend", pattern: /suspend|SIGTSTP|ctrl-z|Suspend/i, evidence: "suspend/resume evidence was detected." }
+  ];
+  return terminalUiReadinessSignalFromSpecs(sourceFiles, specs, "lifecycle", "signal");
+}
+
+function terminalUiReadinessTestSignals(sourceFiles: TerminalUiReadinessSourceFile[]): TerminalUiReadinessReport["testSignals"] {
+  const specs: Array<{ signal: TerminalUiReadinessReport["testSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ink-testing-library", pattern: /ink-testing-library|lastFrame|stdin\.write/i, evidence: "Ink testing evidence was detected." },
+    { signal: "go-test", pattern: /go test|_test\.go|testing\.T|go\s+test/i, evidence: "Go test evidence was detected." },
+    { signal: "snapshot", pattern: /snapshot|lastFrame|renderToString|screenshot|golden|expect\s*\(/i, evidence: "snapshot assertion evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|artifacts?|terminal-ui-snapshots|screenshots/i, evidence: "artifact upload evidence was detected." },
+    { signal: "pty-test", pattern: /node-pty|pty|expect|vttest|pseudoterminal|pseudo terminal/i, evidence: "PTY test evidence was detected." }
+  ];
+  return terminalUiReadinessSignalFromSpecs(sourceFiles, specs, "test", "signal");
+}
+
+function terminalUiReadinessPackageSignals(sourceFiles: TerminalUiReadinessSourceFile[]): TerminalUiReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: TerminalUiReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ink", pattern: /"ink"|from ["']ink["']|require\(["']ink["']\)|<Box|<Text/i, evidence: "Ink package evidence was detected." },
+    { signal: "blessed", pattern: /"blessed"|require\(["']blessed["']\)|blessed\.screen/i, evidence: "Blessed package evidence was detected." },
+    { signal: "bubbletea", pattern: /github\.com\/charmbracelet\/bubbletea|charm\.land\/bubbletea|tea\.NewProgram/i, evidence: "Bubble Tea package evidence was detected." },
+    { signal: "bubbles", pattern: /github\.com\/charmbracelet\/bubbles|charm\.land\/bubbles|bubbles\/(list|spinner|textarea|textinput|viewport|table)/i, evidence: "Bubbles package evidence was detected." },
+    { signal: "lipgloss", pattern: /github\.com\/charmbracelet\/lipgloss|charm\.land\/lipgloss|lipgloss\.NewStyle/i, evidence: "Lip Gloss package evidence was detected." },
+    { signal: "ratatui", pattern: /\bratatui\b|tui-rs|crossterm|termion/i, evidence: "Ratatui/crossterm package evidence was detected." },
+    { signal: "ncurses", pattern: /\bncurses\b|\bcurses\b|urwid/i, evidence: "ncurses/curses package evidence was detected." }
+  ];
+  return terminalUiReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function terminalUiReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: TerminalUiReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/terminal-ui-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
