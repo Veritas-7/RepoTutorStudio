@@ -7729,6 +7729,62 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 264:
   - `3bd9503` IaC drift readiness report
 
+- 2026-06-05: AutoResearch Upgrade 265 candidate selected:
+  DAST readiness from `zaproxy/zaproxy`
+  (`https://github.com/zaproxy/zaproxy`; ignored clone HEAD
+  `7f05893c7f4223697c870f942888d73d1d1033e7`),
+  `projectdiscovery/nuclei`
+  (`https://github.com/projectdiscovery/nuclei`; ignored clone HEAD
+  `20cbf0bd73893c1270582c9778b6b26a5cb11206`), and
+  `secureCodeBox/secureCodeBox`
+  (`https://github.com/secureCodeBox/secureCodeBox`; ignored clone HEAD
+  `10f06d568af8245fdfd3522cafaa5a6ee1f32c59`). Static source inspection only;
+  `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented OWASP ZAP/nuclei/secureCodeBox-style DAST readiness
+  report: `DastReadinessReportSchema`,
+  `analysis/dast-readiness-report.json`, `markdown/dast-readiness.md`,
+  `html/dast-readiness.html`, static DAST setup detection, target/scanner/
+  crawl/active-scan/auth/template/safety/output/CI/package signals, OWASP ZAP
+  baseline/full/API scan, spider/ajaxSpider/context/auth/scan-policy coverage,
+  nuclei `-dast`, templates, workflows, severity, tags, exclusions, rate-limit,
+  SARIF/JSON output coverage, secureCodeBox ScanType/parser/hook/finding/
+  DefectDojo/lurker/scheduled scan coverage, Playwright/browser target hints,
+  static-only traffic guardrail, recommended inspection commands,
+  manifest/session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target dast-readiness`.
+- 2026-06-05: RED/GREEN DAST readiness smoke recorded:
+  pre-implementation gap check had no `DastReadinessReportSchema` and no
+  `dast-readiness` target (`dast_gap_exit=1`). GREEN fixture detected workflow,
+  package-script, ZAP, nuclei, secureCodeBox, Playwright, base URL, URL list,
+  OpenAPI, GraphQL, Swagger, sitemap, staging environment, spider, ajaxSpider,
+  headless browser, follow redirects, ZAP active scan, nuclei DAST mode,
+  fuzzing, attack policy, baseline/full scan, context/login/header/cookie/token/
+  user auth, nuclei templates/workflows/severity/tags/exclusions/signatures,
+  rate-limit, scope, timeout, concurrency, safe methods, allowlist, JSON, SARIF,
+  JUnit/XML, HTML, Markdown, artifact upload, GitHub Actions, schedule,
+  pull_request, package signals, recommended commands, traffic guardrail, and
+  all three new artifacts.
+- 2026-06-05: Verification for Upgrade 265:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - focused DAST readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 72/72 tests
+  - `pnpm test`: PASS, 72/72 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 163/163 audit checks across 13 reports,
+    `dastOk: true`
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~73.62 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 265:
+  - `629f74c` DAST readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
