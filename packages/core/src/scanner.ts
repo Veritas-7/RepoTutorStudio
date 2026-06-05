@@ -55,6 +55,7 @@ import {
   TestImpactReadinessReport,
   TestReportingReadinessReport,
   SnapshotReadinessReport,
+  PropertyBasedTestingReadinessReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
   AccessibilityReport,
@@ -210,6 +211,7 @@ export interface AnalysisBundle {
   testImpactReadinessReport: TestImpactReadinessReport;
   testReportingReadinessReport: TestReportingReadinessReport;
   snapshotReadinessReport: SnapshotReadinessReport;
+  propertyBasedTestingReadinessReport: PropertyBasedTestingReadinessReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
   accessibilityReport: AccessibilityReport;
@@ -365,6 +367,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const testImpactReadinessReport = await buildTestImpactReadinessReport(walk);
   const testReportingReadinessReport = await buildTestReportingReadinessReport(walk);
   const snapshotReadinessReport = await buildSnapshotReadinessReport(walk);
+  const propertyBasedTestingReadinessReport = await buildPropertyBasedTestingReadinessReport(walk);
   const integrationTestEnvironmentReadinessReport = await buildIntegrationTestEnvironmentReadinessReport(walk, runtimeEnvironmentReport);
   const chaosEngineeringReadinessReport = await buildChaosEngineeringReadinessReport(walk);
   const accessibilityReport = await buildAccessibilityReport(walk, e2eReport);
@@ -460,7 +463,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -7874,6 +7877,262 @@ function snapshotSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/snapshot-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildPropertyBasedTestingReadinessReport(walk: WalkResult): Promise<PropertyBasedTestingReadinessReport> {
+  const sourceFiles = await propertyBasedTestingSourceFiles(walk);
+  const propertySetups = propertyBasedTestingSetupRows(sourceFiles);
+  const generatorSignals = propertyBasedTestingGeneratorSignals(sourceFiles);
+  const runnerSignals = propertyBasedTestingRunnerSignals(sourceFiles);
+  const reproductionSignals = propertyBasedTestingReproductionSignals(sourceFiles);
+  const statefulSignals = propertyBasedTestingStatefulSignals(sourceFiles);
+  const ciSignals = propertyBasedTestingCiSignals(sourceFiles);
+  const packageSignals = propertyBasedTestingPackageSignals(sourceFiles);
+  const hasProperty = propertySetups.some((item) => item.propertyCount > 0 || item.readiness === "ready");
+  const hasGenerator = generatorSignals.some((item) => item.readiness === "ready");
+  const hasReproduction = reproductionSignals.some((item) => item.readiness === "ready");
+  const hasCi = ciSignals.some((item) => ["github-actions", "property-script", "num-runs", "max-examples", "tries"].includes(item.signal) && item.readiness === "ready");
+
+  const riskQueue: PropertyBasedTestingReadinessReport["riskQueue"] = [];
+  if (!hasProperty && !hasGenerator) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add at least one property-based test with an explicit generator before claiming generative coverage.",
+      why: "fast-check, Hypothesis, jqwik, QuickCheck, and proptest all need properties paired with generated inputs.",
+      relatedHref: "html/property-based-testing-readiness.html"
+    });
+  }
+  if (hasProperty && !hasReproduction) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record seed, path, falsifying example, or example database policy for failing generated cases.",
+      why: "Property-based failures are only actionable when the smallest counterexample can be replayed deterministically.",
+      relatedHref: "html/property-based-testing-readiness.html"
+    });
+  }
+  if (hasProperty && !hasCi) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Expose property-test run counts and CI commands before enforcing the suite.",
+      why: "Generated tests can be slow or flaky without bounded numRuns, max_examples, tries, seed, and runner policy.",
+      relatedHref: "html/property-based-testing-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the original project test command before treating this as property-based test evidence.",
+    why: "RepoTutor records static readiness only; it does not generate inputs, shrink failures, or replay counterexamples.",
+    relatedHref: "html/property-based-testing-readiness.html"
+  });
+
+  return {
+    summary: `Property-based testing readiness report: setup ${propertySetups.length}개, generator signal ${generatorSignals.filter((item) => item.readiness === "ready").length}개, reproduction signal ${reproductionSignals.filter((item) => item.readiness === "ready").length}개, CI signal ${ciSignals.filter((item) => item.readiness === "ready").length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Property-based testing fast-check Hypothesis jqwik generators arbitraries strategies shrinking seeds counterexamples stateful CI",
+    propertySetups,
+    generatorSignals,
+    runnerSignals,
+    reproductionSignals,
+    statefulSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx vitest run --runInBand", purpose: "Run Vitest property tests with a bounded worker surface before increasing generated case counts." },
+      { command: "npx jest --show-seed --runInBand", purpose: "Run Jest tests while exposing seed data for fast-check replay." },
+      { command: "pytest -q --hypothesis-show-statistics", purpose: "Run Hypothesis tests and print generation statistics." },
+      { command: "mvn test -Djqwik.failures.runfirst=true", purpose: "Run jqwik through the JUnit Platform and prioritize previous falsifying samples." },
+      { command: "rg \"fc\\.property|fc\\.assert|@given|strategies as st|@Property|@ForAll|RuleBasedStateMachine|modelRun\" .", purpose: "Locate static property-based testing evidence." }
+    ],
+    learnerNextSteps: [
+      "property와 generator가 같은 테스트 경계 안에 있는지 먼저 확인하세요.",
+      "counterexample, seed, path, example database 같은 재현 수단이 실패 메시지나 설정에 남는지 보세요.",
+      "numRuns, max_examples, tries 같은 실행량 설정이 로컬과 CI에서 의도적으로 다르게 관리되는지 확인하세요.",
+      "stateful/model-based property는 원본 테스트에서 실제 상태 전이가 재현 가능한지 별도 실행으로 검증해야 합니다."
+    ]
+  };
+}
+
+type PropertyBasedTestingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function propertyBasedTestingSourceFiles(walk: WalkResult): Promise<PropertyBasedTestingSourceFile[]> {
+  const files: PropertyBasedTestingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !propertyBasedTestingInspectablePath(file.relPath)) continue;
+    const pathCandidate = propertyBasedTestingPathSignal(file.relPath);
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!pathCandidate && !propertyBasedTestingContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 180) break;
+  }
+  return files;
+}
+
+function propertyBasedTestingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|pytest\.ini|tox\.ini|pom\.xml|build\.gradle|build\.gradle\.kts|junit-platform\.properties|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(^|\/)(test|tests|spec|specs|properties|property-tests?|stateful|model)(\/|$)/i.test(filePath)
+    || /\.(test|spec)\.[cm]?[jt]sx?$/i.test(filePath)
+    || /\.(js|ts|jsx|tsx|py|java|kt|scala|rs|hs|toml|xml|ya?ml|md|json)$/i.test(filePath);
+}
+
+function propertyBasedTestingPathSignal(filePath: string): boolean {
+  return /(^|\/)(property-tests?|properties|stateful|model-based|hypothesis|fast-check|jqwik|quickcheck|proptest)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function propertyBasedTestingContentSignal(text: string): boolean {
+  return /(fast-check|@fast-check\/jest|fc\.property|fc\.assert|fc\.check|fc\.configureGlobal|numRuns|replayPath|@given|strategies as st|hypothesis\.strategies|settings\(|max_examples|derandomize|example database|Falsifying example|RuleBasedStateMachine|@Property|@ForAll|Arbitraries|@Provide|junit-platform|QuickCheck|proptest!|proptest::|modelRun|commands\()/i.test(text);
+}
+
+function propertyBasedTestingSetupRows(sourceFiles: PropertyBasedTestingSourceFile[]): PropertyBasedTestingReadinessReport["propertySetups"] {
+  const rows: PropertyBasedTestingReadinessReport["propertySetups"] = [];
+  for (const source of sourceFiles) {
+    const propertyCount = countMatches(source.text, /fc\.property|fc\.asyncProperty|@given\s*\(|@Property\b|property\s*\(|quickCheck|QuickCheck|proptest!|proptest::/g);
+    const generatorCount = countMatches(source.text, /fc\.(integer|string|boolean|array|record|tuple|oneof|constant|dictionary|option|letrec|anything)|strategies as st|hypothesis\.strategies|st\.(integers|text|lists|dictionaries|builds|from_type|composite|data)|Arbitraries\.|@ForAll|@Provide|Gen\.|Strategy|any::<|prop::/g);
+    const assertionCount = countMatches(source.text, /fc\.assert|fc\.check|assert |expect\(|should|Assertions\.|assertThat|assertEquals|assertTrue|prop_assert|prop_assert_eq/g);
+    const shrinkCount = countMatches(source.text, /shrink|shrinking|counterexample|smallest|minimal|falsifying example|RunDetails|afterFailure|ShrinkingMode/gi);
+    const seedCount = countMatches(source.text, /seed|--show-seed|replayPath|path:|derandomize|random seed|whenFixedSeed|jqwik\.seed|HYPOTHESIS_SEED/gi);
+    const runCount = countMatches(source.text, /numRuns|max_examples|settings\(|tries\s*=|@PropertyDefaults|iterations|cases|runs per test|100 inputs|1000 tries/gi);
+    const statefulCount = countMatches(source.text, /modelRun|commands\(|fc\.commands|RuleBasedStateMachine|stateful|state machine|ActionChain|Stateful Testing|run_state_machine_as_test/gi);
+    const exampleCount = countMatches(source.text, /example database|@example|example\(|\.example|failures\.runfirst|Falsifying example|counterexample|reproduce_failure/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|GitHub Actions|pull_request|CI\s*[:=]|runs-on|matrix|pytest|vitest|jest|mvn test|gradle test|cargo test|pnpm test|npm test/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = propertyCount + generatorCount + assertionCount + shrinkCount + seedCount + runCount + statefulCount + exampleCount + ciCount;
+    if (totalSignals === 0 && !propertyBasedTestingPathSignal(source.filePath)) continue;
+    const readiness = propertyCount > 0 && generatorCount > 0 && assertionCount > 0 && (seedCount > 0 || shrinkCount > 0 || exampleCount > 0)
+      ? "ready"
+      : totalSignals > 0
+        ? "partial"
+        : "missing";
+    rows.push({
+      filePath: source.filePath,
+      ecosystem: propertyBasedTestingEcosystem(source.filePath, source.text),
+      propertyCount,
+      generatorCount,
+      assertionCount,
+      shrinkCount,
+      seedCount,
+      runCount,
+      statefulCount,
+      exampleCount,
+      ciCount,
+      readiness,
+      evidence: `${source.filePath} contains ${totalSignals} property-based testing readiness signal(s).`,
+      sourceHref: source.sourceHref
+    });
+  }
+  const order = { ready: 0, partial: 1, missing: 2 };
+  return rows.sort((a, b) => order[a.readiness] - order[b.readiness] || a.filePath.localeCompare(b.filePath)).slice(0, 90);
+}
+
+function propertyBasedTestingEcosystem(filePath: string, text: string): PropertyBasedTestingReadinessReport["propertySetups"][number]["ecosystem"] {
+  if (/fast-check|@fast-check\/jest|fc\.property|fc\.assert|fc\.check/i.test(text) || /fast-check/i.test(filePath)) return "fast-check";
+  if (/hypothesis|@given|strategies as st|hypothesis\.strategies|RuleBasedStateMachine/i.test(text) || /hypothesis/i.test(filePath)) return "hypothesis";
+  if (/jqwik|@Property|@ForAll|Arbitraries\.|@Provide|junit-platform/i.test(text) || /jqwik/i.test(filePath)) return "jqwik";
+  if (/QuickCheck|quickCheck|quickcheck/i.test(text) || /quickcheck/i.test(filePath)) return "quickcheck";
+  if (/proptest!|proptest::|prop_assert/i.test(text) || /proptest/i.test(filePath)) return "proptest";
+  return propertyBasedTestingContentSignal(text) ? "custom" : "unknown";
+}
+
+function propertyBasedTestingGeneratorSignals(sourceFiles: PropertyBasedTestingSourceFile[]): PropertyBasedTestingReadinessReport["generatorSignals"] {
+  const specs: Array<{ signal: PropertyBasedTestingReadinessReport["generatorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "fast-check-arbitraries", pattern: /fc\.(integer|string|boolean|array|record|tuple|oneof|dictionary|letrec|anything)|Arbitrary/i, evidence: "fast-check arbitrary evidence was detected." },
+    { signal: "hypothesis-strategies", pattern: /strategies as st|hypothesis\.strategies|st\.(integers|text|lists|dictionaries|builds|from_type|data)/i, evidence: "Hypothesis strategy evidence was detected." },
+    { signal: "jqwik-arbitraries", pattern: /Arbitraries\.|@ForAll|@Provide|Arbitrary</i, evidence: "jqwik arbitrary evidence was detected." },
+    { signal: "custom-generators", pattern: /fc\.letrec|@composite|st\.composite|@Provide|generator|arbitrary/i, evidence: "custom generator evidence was detected." },
+    { signal: "composite-generators", pattern: /st\.composite|@composite|fc\.record|fc\.tuple|Combinators\.|flatMap|chain\(/i, evidence: "composite generator evidence was detected." },
+    { signal: "filtered-generators", pattern: /\.filter\(|assume\(|Assume\.that|suchThat|withAssumptions/i, evidence: "filtered or assumption-based generator evidence was detected." },
+    { signal: "recursive-generators", pattern: /fc\.letrec|recursive|memo|deferred|LazyArbitrary|st\.recursive/i, evidence: "recursive generator evidence was detected." }
+  ];
+  return propertyBasedTestingSignalFromSpecs(sourceFiles, specs, "generator", "signal");
+}
+
+function propertyBasedTestingRunnerSignals(sourceFiles: PropertyBasedTestingSourceFile[]): PropertyBasedTestingReadinessReport["runnerSignals"] {
+  const specs: Array<{ signal: PropertyBasedTestingReadinessReport["runnerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "fc-assert", pattern: /fc\.assert|assert\(\s*fc\./i, evidence: "fc.assert evidence was detected." },
+    { signal: "fc-check", pattern: /fc\.check|check\(\s*fc\./i, evidence: "fc.check evidence was detected." },
+    { signal: "hypothesis-given", pattern: /@given\s*\(/i, evidence: "Hypothesis @given evidence was detected." },
+    { signal: "jqwik-property", pattern: /@Property\b/i, evidence: "jqwik @Property evidence was detected." },
+    { signal: "pytest", pattern: /pytest|pyproject\.toml|pytest\.ini/i, evidence: "pytest runner evidence was detected." },
+    { signal: "vitest", pattern: /vitest|vi\.|describe\(|it\(|test\(/i, evidence: "Vitest runner evidence was detected." },
+    { signal: "jest", pattern: /jest|@jest\/globals|describe\(|it\(|test\(/i, evidence: "Jest runner evidence was detected." },
+    { signal: "junit-platform", pattern: /junit-platform|org\.junit|mvn test|gradle test/i, evidence: "JUnit Platform evidence was detected." }
+  ];
+  return propertyBasedTestingSignalFromSpecs(sourceFiles, specs, "runner", "signal");
+}
+
+function propertyBasedTestingReproductionSignals(sourceFiles: PropertyBasedTestingSourceFile[]): PropertyBasedTestingReadinessReport["reproductionSignals"] {
+  const specs: Array<{ signal: PropertyBasedTestingReadinessReport["reproductionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "seed", pattern: /seed|--show-seed|random seed|jqwik\.seed|HYPOTHESIS_SEED/i, evidence: "seed evidence was detected." },
+    { signal: "path", pattern: /path:\s*["']?[0-9:]|counterexamplePath|failure path/i, evidence: "failure path evidence was detected." },
+    { signal: "replay-path", pattern: /replayPath|replay path/i, evidence: "fast-check replayPath evidence was detected." },
+    { signal: "counterexample", pattern: /counterexample|RunDetails|Counterexample/i, evidence: "counterexample evidence was detected." },
+    { signal: "example-database", pattern: /example database|\.hypothesis|database_file|HYPOTHESIS_STORAGE_DIRECTORY/i, evidence: "Hypothesis example database evidence was detected." },
+    { signal: "falsifying-example", pattern: /Falsifying example|falsified|failure sample|failures\.runfirst/i, evidence: "falsifying example evidence was detected." },
+    { signal: "shrinking", pattern: /shrink|shrinking|ShrinkingMode|smallest|minimal failing/i, evidence: "shrinking evidence was detected." }
+  ];
+  return propertyBasedTestingSignalFromSpecs(sourceFiles, specs, "reproduction", "signal");
+}
+
+function propertyBasedTestingStatefulSignals(sourceFiles: PropertyBasedTestingSourceFile[]): PropertyBasedTestingReadinessReport["statefulSignals"] {
+  const specs: Array<{ signal: PropertyBasedTestingReadinessReport["statefulSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "model-run", pattern: /modelRun|model-based|model based/i, evidence: "model-run evidence was detected." },
+    { signal: "commands", pattern: /fc\.commands|commands\(|Command<|ICommand/i, evidence: "command model evidence was detected." },
+    { signal: "rule-based-state-machine", pattern: /RuleBasedStateMachine|run_state_machine_as_test|rule\(/i, evidence: "Hypothesis state machine evidence was detected." },
+    { signal: "state-machine", pattern: /state machine|stateful testing|Stateful Testing|ActionSequence/i, evidence: "stateful testing evidence was detected." },
+    { signal: "action-chain", pattern: /ActionChain|ActionChainArbitrary|action chain/i, evidence: "jqwik ActionChain evidence was detected." }
+  ];
+  return propertyBasedTestingSignalFromSpecs(sourceFiles, specs, "stateful", "signal");
+}
+
+function propertyBasedTestingCiSignals(sourceFiles: PropertyBasedTestingSourceFile[]): PropertyBasedTestingReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: PropertyBasedTestingReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /^\.github\/workflows\/|GitHub Actions|actions\/checkout/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "property-script", pattern: /property|pbt|hypothesis|fast-check|jqwik/i, evidence: "property-test script evidence was detected." },
+    { signal: "num-runs", pattern: /numRuns|--numRuns|FC_NUM_RUNS/i, evidence: "fast-check numRuns evidence was detected." },
+    { signal: "max-examples", pattern: /max_examples|HYPOTHESIS_PROFILE|settings\(/i, evidence: "Hypothesis max_examples evidence was detected." },
+    { signal: "tries", pattern: /tries\s*=|jqwik\.tries|@PropertyDefaults/i, evidence: "jqwik tries evidence was detected." },
+    { signal: "seed-policy", pattern: /seed|--show-seed|derandomize|whenFixedSeed|jqwik\.seed/i, evidence: "seed policy evidence was detected." },
+    { signal: "artifact", pattern: /upload-artifact|failure artifact|counterexample artifact|test-results|reports?\//i, evidence: "failure artifact evidence was detected." }
+  ];
+  return propertyBasedTestingSignalFromSpecs(sourceFiles, specs, "ci", "signal");
+}
+
+function propertyBasedTestingPackageSignals(sourceFiles: PropertyBasedTestingSourceFile[]): PropertyBasedTestingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: PropertyBasedTestingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "fast-check", pattern: /"fast-check"|fast-check/i, evidence: "fast-check package evidence was detected." },
+    { signal: "@fast-check/jest", pattern: /"@fast-check\/jest"|@fast-check\/jest/i, evidence: "@fast-check/jest package evidence was detected." },
+    { signal: "hypothesis", pattern: /hypothesis/i, evidence: "Hypothesis package evidence was detected." },
+    { signal: "pytest", pattern: /pytest/i, evidence: "pytest package evidence was detected." },
+    { signal: "jqwik", pattern: /jqwik/i, evidence: "jqwik package evidence was detected." },
+    { signal: "quickcheck", pattern: /quickcheck|QuickCheck/i, evidence: "QuickCheck package evidence was detected." },
+    { signal: "proptest", pattern: /proptest/i, evidence: "proptest package evidence was detected." }
+  ];
+  return propertyBasedTestingSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function propertyBasedTestingSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: PropertyBasedTestingSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(source.filePath) || spec.pattern.test(source.text) || spec.pattern.test(haystack);
+    });
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/property-based-testing-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
