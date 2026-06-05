@@ -11130,6 +11130,93 @@ export const TabsAccordionReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CheckboxRadioSwitchReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  checkboxRadioSwitchSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["radix", "headless-ui", "ariakit", "custom", "unknown"]),
+    checkboxCount: z.number().int().nonnegative(),
+    radioCount: z.number().int().nonnegative(),
+    switchCount: z.number().int().nonnegative(),
+    providerCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    indicatorCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    formCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["radix-checkbox", "radix-radio-group", "radix-switch", "headless-checkbox", "headless-radio-group", "headless-switch", "ariakit-checkbox", "ariakit-radio", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  controlSignals: z.array(z.object({
+    signal: z.enum(["checkbox", "radio-group", "switch", "menu-checkbox", "menu-radio", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "provider", "group", "item", "indicator", "thumb", "label", "description", "hidden-input", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["checked", "default-checked", "on-checked-change", "on-change", "value", "default-value", "set-value", "indeterminate", "data-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  formSignals: z.array(z.object({
+    signal: z.enum(["name", "form", "required", "disabled", "hidden-input", "field", "value", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["click", "keyboard", "space-key", "arrow-keys", "roving-focus", "focus", "disabled-control", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-checkbox", "role-radio", "role-switch", "aria-checked", "aria-label", "aria-labelledby", "aria-describedby", "focus-management", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "user-event", "role-test", "keyboard-test", "attribute-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@radix-ui/react-checkbox", "@radix-ui/react-radio-group", "@radix-ui/react-switch", "@headlessui/react", "@ariakit/react", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -14194,6 +14281,7 @@ export type PopoverTooltipReadinessReport = z.infer<typeof PopoverTooltipReadine
 export type MenuDropdownReadinessReport = z.infer<typeof MenuDropdownReadinessReportSchema>;
 export type ToastSnackbarReadinessReport = z.infer<typeof ToastSnackbarReadinessReportSchema>;
 export type TabsAccordionReadinessReport = z.infer<typeof TabsAccordionReadinessReportSchema>;
+export type CheckboxRadioSwitchReadinessReport = z.infer<typeof CheckboxRadioSwitchReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

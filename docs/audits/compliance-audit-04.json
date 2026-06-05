@@ -1,6 +1,6 @@
 {
   "iteration": 4,
-  "createdAt": "2026-06-05T21:57:38.699Z",
+  "createdAt": "2026-06-05T22:18:05.504Z",
   "checks": [
     {
       "name": "project setup",
@@ -1124,6 +1124,13 @@
     },
     {
       "name": "Tabs accordion readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Checkbox radio switch readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

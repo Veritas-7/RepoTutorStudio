@@ -23039,6 +23039,192 @@ describe("RepoTutor core pipeline", () => {
     expect(tabsHtml).toContain("RepoTutor records tabs/accordion/disclosure readiness only");
   });
 
+  it("detects checkbox radio and switch readiness without toggling controls", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-checkbox-radio-switch-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-checkbox-radio-switch-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "radix-checkbox-radio-switch.tsx"), [
+      "import * as Checkbox from '@radix-ui/react-checkbox';",
+      "import * as RadioGroup from '@radix-ui/react-radio-group';",
+      "import * as Switch from '@radix-ui/react-switch';",
+      "import { useState } from 'react';",
+      "export function RadixSelectionControls() {",
+      "  const [checked, setChecked] = useState<boolean | 'indeterminate'>('indeterminate');",
+      "  const [radio, setRadio] = useState('email');",
+      "  const [enabled, setEnabled] = useState(false);",
+      "  return (",
+      "    <form id=\"preferences\">",
+      "      <Checkbox.Root name=\"terms\" form=\"preferences\" required checked={checked} defaultChecked=\"indeterminate\" onCheckedChange={setChecked} disabled={false} aria-label=\"Accept terms\" data-state={checked === true ? 'checked' : 'indeterminate'}>",
+      "        <Checkbox.Indicator forceMount>check</Checkbox.Indicator>",
+      "      </Checkbox.Root>",
+      "      <RadioGroup.Root name=\"contact\" form=\"preferences\" value={radio} defaultValue=\"email\" onValueChange={setRadio} orientation=\"horizontal\" rovingFocus disabled={false} required>",
+      "        <RadioGroup.Item value=\"email\" aria-label=\"Email\" data-state={radio === 'email' ? 'checked' : 'unchecked'}>",
+      "          <RadioGroup.Indicator forceMount />",
+      "        </RadioGroup.Item>",
+      "        <RadioGroup.Item value=\"sms\" aria-label=\"SMS\" disabled>",
+      "          <RadioGroup.Indicator />",
+      "        </RadioGroup.Item>",
+      "      </RadioGroup.Root>",
+      "      <Switch.Root name=\"alerts\" form=\"preferences\" checked={enabled} defaultChecked={false} onCheckedChange={setEnabled} required aria-label=\"Enable alerts\" data-state={enabled ? 'checked' : 'unchecked'}>",
+      "        <Switch.Thumb />",
+      "      </Switch.Root>",
+      "    </form>",
+      "  );",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "headless-checkbox-radio-switch.tsx"), [
+      "import { Checkbox, Description, Field, Label, RadioGroup, Switch } from '@headlessui/react';",
+      "import { useState } from 'react';",
+      "export function HeadlessSelectionControls() {",
+      "  const [checked, setChecked] = useState(false);",
+      "  const [radio, setRadio] = useState('weekly');",
+      "  const [enabled, setEnabled] = useState(true);",
+      "  return (",
+      "    <Field disabled={false}>",
+      "      <Label id=\"newsletter-label\">Newsletter</Label>",
+      "      <Description id=\"newsletter-description\">Choose communication preferences</Description>",
+      "      <Checkbox name=\"newsletter\" form=\"preferences\" checked={checked} defaultChecked={false} indeterminate={false} onChange={setChecked} aria-labelledby=\"newsletter-label\" aria-describedby=\"newsletter-description\" data-headlessui-state={checked ? 'checked' : 'unchecked'} />",
+      "      <RadioGroup value={radio} defaultValue=\"weekly\" onChange={setRadio} disabled={false} aria-label=\"Frequency\">",
+      "        <RadioGroup.Label>Frequency</RadioGroup.Label>",
+      "        <RadioGroup.Option value=\"weekly\" disabled={false}>Weekly</RadioGroup.Option>",
+      "        <RadioGroup.Option value=\"daily\" disabled>Daily</RadioGroup.Option>",
+      "      </RadioGroup>",
+      "      <Switch.Group>",
+      "        <Switch.Label>Enable alerts</Switch.Label>",
+      "        <Switch checked={enabled} defaultChecked onChange={setEnabled} name=\"alerts\" form=\"preferences\" aria-label=\"Enable alerts\" />",
+      "        <Switch.Description>Uses role switch with aria-checked.</Switch.Description>",
+      "      </Switch.Group>",
+      "    </Field>",
+      "  );",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "ariakit-checkbox-radio.tsx"), [
+      "import * as Ariakit from '@ariakit/react';",
+      "export function AriakitSelectionControls() {",
+      "  const checkbox = Ariakit.useCheckboxStore({ defaultValue: ['email'] });",
+      "  return (",
+      "    <Ariakit.CheckboxProvider defaultValue={['email']} setValue={() => {}}>",
+      "      <Ariakit.Checkbox store={checkbox} name=\"channels\" value=\"email\" aria-label=\"Email channel\" render={<button />} />",
+      "      <Ariakit.CheckboxCheck store={checkbox} checked />",
+      "      <Ariakit.RadioProvider defaultValue=\"email\" setValue={() => {}}>",
+      "        <Ariakit.RadioGroup aria-label=\"Contact method\">",
+      "          <Ariakit.Radio value=\"email\" aria-label=\"Email\" />",
+      "          <Ariakit.Radio value=\"sms\" disabled aria-label=\"SMS\" />",
+      "        </Ariakit.RadioGroup>",
+      "      </Ariakit.RadioProvider>",
+      "      <Ariakit.MenuButton aria-label=\"Filter channels\">Filter</Ariakit.MenuButton>",
+      "      <Ariakit.Menu>",
+      "        <Ariakit.MenuItemCheckbox name=\"channels\" value=\"email\" checked>Menu email</Ariakit.MenuItemCheckbox>",
+      "        <Ariakit.MenuItemRadio name=\"channel\" value=\"sms\" defaultChecked>Menu sms</Ariakit.MenuItemRadio>",
+      "      </Ariakit.Menu>",
+      "    </Ariakit.CheckboxProvider>",
+      "  );",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "test", "checkbox-radio-switch.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { RadixSelectionControls } from '../src/radix-checkbox-radio-switch';",
+      "describe('checkbox radio switch behavior', () => {",
+      "  it('keeps roles keyboard toggles and attributes testable', async () => {",
+      "    render(<RadixSelectionControls />);",
+      "    expect(screen.getByRole('checkbox', { name: /accept terms/i })).toHaveAttribute('aria-checked', 'mixed');",
+      "    expect(screen.getByRole('radio', { name: /email/i })).toHaveAttribute('aria-checked', 'true');",
+      "    expect(screen.getByRole('switch', { name: /enable alerts/i })).toHaveAttribute('aria-checked', 'false');",
+      "    await userEvent.keyboard('{Space}{ArrowRight}{ArrowLeft}{Tab}');",
+      "    await userEvent.click(screen.getByRole('switch', { name: /enable alerts/i }));",
+      "  });",
+      "});"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "checkbox-radio-switch.yml"), [
+      "name: checkbox radio switch",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest run test/checkbox-radio-switch.spec.tsx",
+      "      - run: pnpm playwright test checkbox-radio-switch.spec.tsx",
+      "      - run: pnpm cypress run --spec test/checkbox-radio-switch.spec.tsx",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: checkbox-radio-switch-traces",
+      "          path: reports/checkbox-radio-switch"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@ariakit/react": "latest",
+        "@headlessui/react": "latest",
+        "@radix-ui/react-checkbox": "latest",
+        "@radix-ui/react-radio-group": "latest",
+        "@radix-ui/react-switch": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "@types/react": "latest",
+        "cypress": "latest",
+        "playwright": "latest",
+        "typescript": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "checkbox-radio-switch-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      checkboxRadioSwitchSetups: Array<{ filePath: string; framework: string; checkboxCount: number; radioCount: number; switchCount: number; providerCount: number; itemCount: number; indicatorCount: number; stateCount: number; formCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      controlSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      formSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Checkbox/radio/switch readiness Radix Checkbox RadioGroup Switch Headless UI Checkbox RadioGroup Switch Ariakit Checkbox Radio checked defaultChecked indeterminate aria-checked form tests");
+    expect(report.checkboxRadioSwitchSetups.some((item) => item.filePath === "src/radix-checkbox-radio-switch.tsx" && item.framework === "radix" && item.checkboxCount > 0 && item.radioCount > 0 && item.switchCount > 0 && item.itemCount > 0 && item.indicatorCount > 0 && item.stateCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.checkboxRadioSwitchSetups.some((item) => item.filePath === "src/headless-checkbox-radio-switch.tsx" && item.framework === "headless-ui" && item.checkboxCount > 0 && item.radioCount > 0 && item.switchCount > 0 && item.providerCount > 0 && item.stateCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.checkboxRadioSwitchSetups.some((item) => item.filePath === "src/ariakit-checkbox-radio.tsx" && item.framework === "ariakit" && item.checkboxCount > 0 && item.radioCount > 0 && item.providerCount > 0 && item.itemCount > 0 && item.stateCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["radix-checkbox", "radix-radio-group", "radix-switch", "headless-checkbox", "headless-radio-group", "headless-switch", "ariakit-checkbox", "ariakit-radio"]));
+    expect(readySignals(report.controlSignals)).toEqual(expect.arrayContaining(["checkbox", "radio-group", "switch", "menu-checkbox", "menu-radio"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "provider", "group", "item", "indicator", "thumb", "label", "description", "hidden-input"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["checked", "default-checked", "on-checked-change", "on-change", "value", "default-value", "set-value", "indeterminate", "data-state"]));
+    expect(readySignals(report.formSignals)).toEqual(expect.arrayContaining(["name", "form", "required", "disabled", "hidden-input", "field", "value"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["click", "keyboard", "space-key", "arrow-keys", "roving-focus", "focus", "disabled-control"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-checkbox", "role-radio", "role-switch", "aria-checked", "aria-label", "aria-labelledby", "aria-describedby", "focus-management"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "cypress", "testing-library", "user-event", "role-test", "keyboard-test", "attribute-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@radix-ui/react-checkbox", "@radix-ui/react-radio-group", "@radix-ui/react-switch", "@headlessui/react", "@ariakit/react", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@radix-ui/react-checkbox"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records checkbox/radio/switch readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "checkbox-radio-switch-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "checkbox-radio-switch-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "checkbox-radio-switch-readiness.html"))).resolves.toBeUndefined();
+    const controlsMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "checkbox-radio-switch-readiness.md"), "utf8");
+    expect(controlsMarkdown).toContain("Checkbox Radio Switch Readiness");
+    expect(controlsMarkdown).toContain("@headlessui/react");
+    const controlsHtml = await fs.readFile(path.join(result.session.outputPaths.html, "checkbox-radio-switch-readiness.html"), "utf8");
+    expect(controlsHtml).toContain("checkbox-radio-switch-readiness-card");
+    expect(controlsHtml).toContain("data-source-pattern=\"CheckboxRadioSwitch\"");
+    expect(controlsHtml).toContain("RepoTutor records checkbox/radio/switch readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
