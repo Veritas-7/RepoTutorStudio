@@ -90,6 +90,7 @@ import type {
   GitHooksReport,
   TaskRunnerReport,
   DependencyUpdateReport,
+  DependencyReviewReadinessReport,
   LintReadinessReport,
   FormatReadinessReport,
   CommitConventionReport,
@@ -270,6 +271,7 @@ export interface StudyHtmlInput {
   gitHooksReport: GitHooksReport;
   taskRunnerReport: TaskRunnerReport;
   dependencyUpdateReport: DependencyUpdateReport;
+  dependencyReviewReadinessReport: DependencyReviewReadinessReport;
   lintReadinessReport: LintReadinessReport;
   formatReadinessReport: FormatReadinessReport;
   commitConventionReport: CommitConventionReport;
@@ -469,6 +471,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["git-hooks.html", "Git Hooks"],
     ["task-runner.html", "Task Runner"],
     ["dependency-updates.html", "Dependency Updates"],
+    ["dependency-review-readiness.html", "Dependency Review"],
     ["lint-readiness.html", "Lint"],
     ["format-readiness.html", "Format"],
     ["commit-conventions.html", "Commits"],
@@ -676,6 +679,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Git Hooks Readiness</h3><p>${escapeHtml(input.gitHooksReport.summary)}</p><p>Husky 패턴으로 .husky hook files, install scripts, pre-commit/pre-push policy, lint-staged, bypass signals를 정리합니다.</p><a href="git-hooks.html">Git Hooks 열기</a></article>
           <article><h3>Task Runner Readiness</h3><p>${escapeHtml(input.taskRunnerReport.summary)}</p><p>Turborepo 패턴으로 turbo.json, task graph, cache, dependsOn, env, package scripts를 정리합니다.</p><a href="task-runner.html">Task Runner 열기</a></article>
           <article><h3>Dependency Updates Readiness</h3><p>${escapeHtml(input.dependencyUpdateReport.summary)}</p><p>Renovate 패턴으로 update config, packageRules, automerge, dashboard, registry, package files를 정리합니다.</p><a href="dependency-updates.html">Dependency Updates 열기</a></article>
+          <article><h3>Dependency Review Readiness</h3><p>${escapeHtml(input.dependencyReviewReadinessReport.summary)}</p><p>Dependency Review Action, Dependabot, OSV Scanner 패턴으로 PR dependency diff, severity, license, package policy gate를 정리합니다.</p><a href="dependency-review-readiness.html">Dependency Review 열기</a></article>
           <article><h3>Lint Readiness</h3><p>${escapeHtml(input.lintReadinessReport.summary)}</p><p>ESLint 패턴으로 flat config, rules, plugins, parser, ignores, fix/cache/report options를 정리합니다.</p><a href="lint-readiness.html">Lint 열기</a></article>
           <article><h3>Format Readiness</h3><p>${escapeHtml(input.formatReadinessReport.summary)}</p><p>Prettier 패턴으로 config, ignore, options, plugins, check/write/cache workflows를 정리합니다.</p><a href="format-readiness.html">Format 열기</a></article>
           <article><h3>Commit Conventions</h3><p>${escapeHtml(input.commitConventionReport.summary)}</p><p>commitlint 패턴으로 config, rules, commit-msg hooks, CI ranges, prompt/CLI commands를 정리합니다.</p><a href="commit-conventions.html">Commits 열기</a></article>
@@ -1139,6 +1143,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "dependency-updates.html",
       title: "Dependency Updates Readiness",
       html: pageShell("Dependency Updates Readiness", "dependency-updates.html", `<section class="panel" data-source-pattern="Renovate"><h2>Dependency Updates Snapshot</h2><p>${escapeHtml(input.dependencyUpdateReport.summary)}</p><p class="muted">${escapeHtml(input.dependencyUpdateReport.sourcePattern)}</p><dl class="meta"><div><dt>configs</dt><dd>${input.dependencyUpdateReport.configFiles.length}</dd></div><div><dt>managers</dt><dd>${input.dependencyUpdateReport.managerSignals.length}</dd></div><div><dt>policies</dt><dd>${input.dependencyUpdateReport.policySignals.length}</dd></div><div><dt>package files</dt><dd>${input.dependencyUpdateReport.packageFileSignals.length}</dd></div></dl><p class="muted">RepoTutor records dependency-update readiness only. It does not query registries, create branches, open pull requests, or validate private credentials.</p></section><section class="grid"><article class="dependency-update-card"><h3>Config Files</h3>${dependencyUpdateConfigList(input.dependencyUpdateReport.configFiles)}</article><article class="dependency-update-card"><h3>Manager Signals</h3>${dependencyUpdateSignalList(input.dependencyUpdateReport.managerSignals, "signal")}</article><article class="dependency-update-card"><h3>Policy Signals</h3>${dependencyUpdateSignalList(input.dependencyUpdateReport.policySignals, "signal")}</article><article class="dependency-update-card"><h3>Workflow Signals</h3>${dependencyUpdateSignalList(input.dependencyUpdateReport.workflowSignals, "signal")}</article></section><section class="grid"><article class="dependency-update-card"><h3>Registry Signals</h3>${dependencyUpdateSignalList(input.dependencyUpdateReport.registrySignals, "signal")}</article><article class="dependency-update-card"><h3>Package File Signals</h3>${dependencyUpdateSignalList(input.dependencyUpdateReport.packageFileSignals, "signal")}</article><article class="dependency-update-card"><h3>Recommended Commands</h3>${dependencyUpdateCommandList(input.dependencyUpdateReport.recommendedCommands)}</article><article class="dependency-update-card"><h3>Risk Queue</h3>${dependencyUpdateRiskList(input.dependencyUpdateReport.riskQueue)}</article><article class="dependency-update-card"><h3>다음 확인 단계</h3>${list(input.dependencyUpdateReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "dependency-review-readiness.html",
+      title: "Dependency Review Readiness",
+      html: pageShell("Dependency Review Readiness", "dependency-review-readiness.html", `<section class="panel" data-source-pattern="Dependency Review"><h2>Dependency Review Snapshot</h2><p>${escapeHtml(input.dependencyReviewReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dependencyReviewReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dependencyReviewReadinessReport.dependencyReviewSetups.length}</dd></div><div><dt>review</dt><dd>${input.dependencyReviewReadinessReport.reviewSignals.length}</dd></div><div><dt>vulnerability</dt><dd>${input.dependencyReviewReadinessReport.vulnerabilitySignals.length}</dd></div><div><dt>licenses</dt><dd>${input.dependencyReviewReadinessReport.licenseSignals.length}</dd></div></dl><p class="muted">RepoTutor records dependency-review readiness only. It does not call GitHub APIs, query OSV.dev, contact registries, create pull requests, run actions, or perform remediation.</p></section><section class="grid"><article class="dependency-review-readiness-card"><h3>Dependency Review Setups</h3>${dependencyReviewSetupList(input.dependencyReviewReadinessReport.dependencyReviewSetups)}</article><article class="dependency-review-readiness-card"><h3>Review Signals</h3>${dependencyReviewSignalList(input.dependencyReviewReadinessReport.reviewSignals, "signal")}</article><article class="dependency-review-readiness-card"><h3>Vulnerability Signals</h3>${dependencyReviewSignalList(input.dependencyReviewReadinessReport.vulnerabilitySignals, "signal")}</article><article class="dependency-review-readiness-card"><h3>License Signals</h3>${dependencyReviewSignalList(input.dependencyReviewReadinessReport.licenseSignals, "signal")}</article></section><section class="grid"><article class="dependency-review-readiness-card"><h3>Package Policy Signals</h3>${dependencyReviewSignalList(input.dependencyReviewReadinessReport.packagePolicySignals, "signal")}</article><article class="dependency-review-readiness-card"><h3>CI Signals</h3>${dependencyReviewSignalList(input.dependencyReviewReadinessReport.ciSignals, "signal")}</article><article class="dependency-review-readiness-card"><h3>Scorecard Signals</h3>${dependencyReviewSignalList(input.dependencyReviewReadinessReport.scorecardSignals, "signal")}</article><article class="dependency-review-readiness-card"><h3>Output Signals</h3>${dependencyReviewSignalList(input.dependencyReviewReadinessReport.outputSignals, "signal")}</article></section><section class="grid"><article class="dependency-review-readiness-card"><h3>Package Signals</h3>${dependencyReviewSignalList(input.dependencyReviewReadinessReport.packageSignals, "signal")}</article><article class="dependency-review-readiness-card"><h3>Recommended Commands</h3>${dependencyReviewCommandList(input.dependencyReviewReadinessReport.recommendedCommands)}</article><article class="dependency-review-readiness-card"><h3>Risk Queue</h3>${dependencyReviewRiskList(input.dependencyReviewReadinessReport.riskQueue)}</article><article class="dependency-review-readiness-card"><h3>다음 확인 단계</h3>${list(input.dependencyReviewReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "lint-readiness.html",
@@ -1751,6 +1760,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Git Hooks Readiness", path: "html/git-hooks.html", description: "Husky식 hook file, install script, pre-commit/pre-push, bypass policy 준비도를 확인합니다." },
       { label: "Task Runner Readiness", path: "html/task-runner.html", description: "Turborepo식 config, task graph, cache, dependsOn/env, package script 준비도를 확인합니다." },
       { label: "Dependency Updates Readiness", path: "html/dependency-updates.html", description: "Renovate식 config, packageRules, automerge, dashboard, registry, package file 준비도를 확인합니다." },
+      { label: "Dependency Review Readiness", path: "html/dependency-review-readiness.html", description: "Dependency Review/Dependabot/OSV식 PR dependency diff, severity, license, package policy gate 준비도를 확인합니다." },
       { label: "Lint Readiness", path: "html/lint-readiness.html", description: "ESLint식 flat config, rules, plugins, parser, ignores, fix/cache/report 준비도를 확인합니다." },
       { label: "Format Readiness", path: "html/format-readiness.html", description: "Prettier식 config, ignore, options, plugins, check/write/cache 준비도를 확인합니다." },
       { label: "Commit Conventions", path: "html/commit-conventions.html", description: "commitlint식 config, rules, commit-msg hook, CI range, prompt/CLI 준비도를 확인합니다." },
@@ -2389,6 +2399,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "dependency-updates.html",
       goal: "Renovate식 config, packageRules, automerge, dashboard, registry, package file을 보고 자동 업데이트 정책을 확인합니다.",
       evidence: `config files ${input.dependencyUpdateReport.configFiles.length}개, package file signals ${input.dependencyUpdateReport.packageFileSignals.length}개`
+    },
+    {
+      title: "Dependency review 준비도 확인",
+      href: "dependency-review-readiness.html",
+      goal: "Dependency Review Action, Dependabot, OSV Scanner식 PR dependency diff, severity, license, package policy gate를 확인합니다.",
+      evidence: `setups ${input.dependencyReviewReadinessReport.dependencyReviewSetups.length}개, review signals ${input.dependencyReviewReadinessReport.reviewSignals.length}개, package policy signals ${input.dependencyReviewReadinessReport.packagePolicySignals.length}개`
     },
     {
       title: "Lint 준비도 확인",
@@ -5016,6 +5032,31 @@ function dependencyUpdateRiskList(items: DependencyUpdateReport["riskQueue"]): s
 }
 
 function dependencyUpdateHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function dependencyReviewSetupList(items: DependencyReviewReadinessReport["dependencyReviewSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">dependency review setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)}/${escapeHtml(item.readiness)}]<br>review ${item.reviewCount} · vulnerability ${item.vulnerabilityCount} · license ${item.licenseCount} · package policy ${item.packagePolicyCount} · diff/snapshot/scorecard/output/CI ${item.diffCount}/${item.snapshotCount}/${item.scorecardCount}/${item.outputCount}/${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dependencyReviewHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function dependencyReviewSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">dependency review signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dependencyReviewHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dependencyReviewCommandList(items: DependencyReviewReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function dependencyReviewRiskList(items: DependencyReviewReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(dependencyReviewHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dependencyReviewHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

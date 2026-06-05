@@ -95,6 +95,7 @@ import {
   GitHooksReport,
   TaskRunnerReport,
   DependencyUpdateReport,
+  DependencyReviewReadinessReport,
   LintReadinessReport,
   FormatReadinessReport,
   CommitConventionReport,
@@ -280,6 +281,7 @@ export interface AnalysisBundle {
   gitHooksReport: GitHooksReport;
   taskRunnerReport: TaskRunnerReport;
   dependencyUpdateReport: DependencyUpdateReport;
+  dependencyReviewReadinessReport: DependencyReviewReadinessReport;
   lintReadinessReport: LintReadinessReport;
   formatReadinessReport: FormatReadinessReport;
   commitConventionReport: CommitConventionReport;
@@ -465,6 +467,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitHooksReport = await buildGitHooksReport(walk);
   const taskRunnerReport = await buildTaskRunnerReport(walk);
   const dependencyUpdateReport = await buildDependencyUpdateReport(walk);
+  const dependencyReviewReadinessReport = await buildDependencyReviewReadinessReport(walk);
   const lintReadinessReport = await buildLintReadinessReport(walk);
   const formatReadinessReport = await buildFormatReadinessReport(walk);
   const commitConventionReport = await buildCommitConventionReport(walk);
@@ -550,7 +553,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -19842,6 +19845,308 @@ function dependencyUpdateSignalFromSpecs<T extends Record<K, string> & { pattern
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/dependency-updates.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDependencyReviewReadinessReport(walk: WalkResult): Promise<DependencyReviewReadinessReport> {
+  const sourceFiles = await dependencyReviewSourceFiles(walk);
+  const dependencyReviewSetups = dependencyReviewSetupsFromSources(sourceFiles);
+  const reviewSignals = dependencyReviewReviewSignals(sourceFiles);
+  const vulnerabilitySignals = dependencyReviewVulnerabilitySignals(sourceFiles);
+  const licenseSignals = dependencyReviewLicenseSignals(sourceFiles);
+  const packagePolicySignals = dependencyReviewPackagePolicySignals(sourceFiles);
+  const ciSignals = dependencyReviewCiSignals(sourceFiles);
+  const scorecardSignals = dependencyReviewScorecardSignals(sourceFiles);
+  const outputSignals = dependencyReviewOutputSignals(sourceFiles);
+  const packageSignals = dependencyReviewPackageSignals(sourceFiles);
+
+  const hasReviewGate = reviewSignals.some((item) => item.readiness === "ready")
+    || dependencyReviewSetups.some((item) => item.reviewCount > 0 || item.diffCount > 0);
+  const hasSeverityGate = vulnerabilitySignals.some((item) => ["fail-on-severity", "min-severity", "vulnerability-check"].includes(item.signal) && item.readiness === "ready")
+    || dependencyReviewSetups.some((item) => item.vulnerabilityCount > 0);
+  const hasLicensePolicy = licenseSignals.some((item) => item.readiness === "ready")
+    || dependencyReviewSetups.some((item) => item.licenseCount > 0);
+  const hasPrDiff = reviewSignals.some((item) => ["base-head-compare", "pull-request", "snapshot-warning"].includes(item.signal) && item.readiness === "ready")
+    || dependencyReviewSetups.some((item) => item.diffCount > 0 || item.snapshotCount > 0 || item.ciCount > 0);
+  const hasPackagePolicy = packagePolicySignals.some((item) => item.readiness === "ready")
+    || dependencyReviewSetups.some((item) => item.packagePolicyCount > 0);
+  const hasOutput = outputSignals.some((item) => item.readiness === "ready")
+    || dependencyReviewSetups.some((item) => item.outputCount > 0);
+
+  const riskQueue: DependencyReviewReadinessReport["riskQueue"] = [];
+  if (!hasReviewGate) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a PR dependency review gate before treating dependency changes as reviewed.",
+      why: "Dependency-review readiness needs an inspectable pull-request diff gate such as actions/dependency-review-action, dependency graph review, or OSV review workflow evidence.",
+      relatedHref: "html/dependency-review-readiness.html"
+    });
+  }
+  if (hasReviewGate && !hasSeverityGate) {
+    riskQueue.push({
+      priority: "high",
+      action: "Set a vulnerability severity threshold for dependency review failures.",
+      why: "Review gates without fail-on-severity, vulnerability-check, OSV minimum severity, or equivalent policy can surface findings without blocking risky dependency changes.",
+      relatedHref: "html/dependency-review-readiness.html"
+    });
+  }
+  if (hasReviewGate && !hasLicensePolicy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add license allow or deny policy to the dependency review workflow.",
+      why: "License policy makes dependency review useful for both security and rights review before a dependency enters the project.",
+      relatedHref: "html/dependency-review-readiness.html"
+    });
+  }
+  if (hasReviewGate && !hasPrDiff) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Tie dependency review to pull-request base/head comparison and snapshot warning handling.",
+      why: "Dependency-review-action and OSV review are most useful when the reviewed dependency diff is explicit and snapshot warning behavior is visible.",
+      relatedHref: "html/dependency-review-readiness.html"
+    });
+  }
+  if (hasReviewGate && !hasPackagePolicy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document package deny, allow, ignore, group, registry, or ecosystem-directory policy.",
+      why: "Package policy helps reviewers separate intentional exceptions from unreviewed dependency additions.",
+      relatedHref: "html/dependency-review-readiness.html"
+    });
+  }
+  if (hasReviewGate && !hasOutput) {
+    riskQueue.push({
+      priority: "low",
+      action: "Persist dependency review summaries, PR comments, SARIF, JSON, HTML, Markdown, or artifacts.",
+      why: "Dependency review output should remain inspectable after CI finishes so learners can trace why a dependency change passed or failed.",
+      relatedHref: "html/dependency-review-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run Dependency Review, Dependabot, OSV Scanner, GitHub API, registry, deps.dev, and remediation commands only in an authorized local or CI environment.",
+    why: "RepoTutor records static dependency-review readiness only and never calls GitHub APIs, OSV.dev, deps.dev, registries, creates pull requests, or runs actions.",
+    relatedHref: "html/dependency-review-readiness.html"
+  });
+
+  return {
+    summary: `Dependency review readiness report: setup ${dependencyReviewSetups.length}개, review signal ${reviewSignals.length}개, vulnerability signal ${vulnerabilitySignals.length}개, license signal ${licenseSignals.length}개, package policy signal ${packagePolicySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Dependency Review readiness actions/dependency-review-action fail-on-severity vulnerability-check license-check allow-licenses deny-licenses allow-dependencies-licenses deny-packages base-ref head-ref snapshot warnings OpenSSF scorecard Dependabot OSV Scanner lockfile license offline remediation PR summary artifact SARIF JSON HTML",
+    dependencyReviewSetups,
+    reviewSignals,
+    vulnerabilitySignals,
+    licenseSignals,
+    packagePolicySignals,
+    ciSignals,
+    scorecardSignals,
+    outputSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"actions/dependency-review-action|fail-on-severity|license-check|vulnerability-check|base-ref|head-ref|comment-summary-in-pr|retry-on-snapshot-warnings\" .github .", purpose: "Find Dependency Review Action gate, PR diff, vulnerability, license, summary, and snapshot-warning policy." },
+      { command: "rg \"allow-licenses|deny-licenses|allow-dependencies-licenses|deny-packages|SPDX|purl\" .github .", purpose: "Find license and package policy evidence used during dependency review." },
+      { command: "rg \"osv-scanner|--licenses|--offline|--download-offline-databases|--allow-no-lockfiles|--format|--json|--sarif|--min-severity|--ignore-dev\" .", purpose: "Find OSV Scanner vulnerability, license, offline, output, and guided-remediation readiness." },
+      { command: "rg \"dependabot.yml|package-ecosystem|directory|schedule|groups|ignore|allow|registries|open-pull-requests-limit|security-updates\" .github .", purpose: "Find Dependabot ecosystem, directory, grouping, ignore, registry, and security-update policy." },
+      { command: "rg \"permissions:|contents: read|pull-requests: write|security-events: write|upload-artifact|summary\" .github .", purpose: "Find CI permissions, PR comment/summary, SARIF, and artifact retention evidence." }
+    ],
+    learnerNextSteps: [
+      "Open Dependency Review Readiness and verify the PR dependency diff gate before reading broader update automation.",
+      "Check vulnerability severity, license allow/deny, and package policy together; one gate without the others leaves review gaps.",
+      "Use OSV Scanner and Dependabot signals as complementary evidence, not proof that external databases or registries were queried.",
+      "Treat all GitHub API, registry, dependency review, OSV, and remediation commands as external execution; RepoTutor only records static readiness."
+    ]
+  };
+}
+
+type DependencyReviewSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function dependencyReviewSourceFiles(walk: WalkResult): Promise<DependencyReviewSourceFile[]> {
+  const files: DependencyReviewSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !dependencyReviewInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 200_000);
+    if (!text) continue;
+    if (!dependencyReviewPathSignal(file.relPath) && !dependencyReviewContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 240) break;
+  }
+  return files;
+}
+
+function dependencyReviewInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return dependencyReviewPathSignal(filePath)
+    || /(^|\/)(README|docs?|security|polic(y|ies)|compliance|risk|scripts?|workflows?)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(package\.json|osv-scanner\.toml|dependabot\.ya?ml|Makefile|Taskfile\.ya?ml|justfile)$/i.test(base)
+    || filePath.startsWith(".github/workflows/")
+    || /\.(json|json5|ya?ml|toml|md)$/i.test(filePath);
+}
+
+function dependencyReviewPathSignal(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return filePath.startsWith(".github/workflows/")
+    || filePath === ".github/dependabot.yml"
+    || filePath === ".github/dependabot.yaml"
+    || /dependency[-_ ]?review|dependabot|osv[-_ ]?scanner|osv-scanner|dependency[-_ ]?graph|dependency[-_ ]?submission|license[-_ ]?policy|security[-_ ]?update/i.test(filePath)
+    || /^(osv-scanner\.toml|dependabot\.ya?ml)$/i.test(base);
+}
+
+function dependencyReviewContentSignal(text: string): boolean {
+  return /(actions\/dependency-review-action|dependency review|Dependency Review|fail-on-severity|vulnerability-check|license-check|allow-licenses|deny-licenses|allow-dependencies-licenses|deny-packages|base-ref|head-ref|comment-summary-in-pr|retry-on-snapshot-warnings|show-openssf-scorecard|warn-on-openssf-scorecard-level|dependency graph|dependency submission|osv-scanner|OSV Scanner|--licenses|--offline|--download-offline-databases|--allow-no-lockfiles|--min-severity|--ignore-dev|package-ecosystem|open-pull-requests-limit|security-updates)/i.test(text);
+}
+
+function dependencyReviewSetupsFromSources(sourceFiles: DependencyReviewSourceFile[]): DependencyReviewReadinessReport["dependencyReviewSetups"] {
+  const rows: DependencyReviewReadinessReport["dependencyReviewSetups"] = [];
+  for (const source of sourceFiles) {
+    const reviewCount = countMatches(source.text, /(actions\/dependency-review-action|dependency review|Dependency Review|dependency graph|dependency submission|comment-summary-in-pr|pull_request)/gi);
+    const vulnerabilityCount = countMatches(source.text, /(fail-on-severity|vulnerability-check|osv-scanner|--min-severity|--ignore-dev|security advisory|vulnerabilit|GHSA|CVE)/gi);
+    const licenseCount = countMatches(source.text, /(license-check|allow-licenses|deny-licenses|allow-dependencies-licenses|--licenses|SPDX|license scan|license policy)/gi);
+    const packagePolicyCount = countMatches(source.text, /(deny-packages|allowlist|allow:|ignore:|groups:|security-updates|package-ecosystem|directory:|registries:|open-pull-requests-limit|purl)/gi);
+    const diffCount = countMatches(source.text, /(base-ref|head-ref|base sha|head sha|base\/head|compare|pull_request|dependency diff)/gi);
+    const snapshotCount = countMatches(source.text, /(snapshot warning|snapshot warnings|retry-on-snapshot-warnings|retry-on-snapshot-warnings-timeout|dependency graph snapshot)/gi);
+    const scorecardCount = countMatches(source.text, /(show-openssf-scorecard|warn-on-openssf-scorecard-level|OpenSSF Scorecard|scorecard)/gi);
+    const outputCount = countMatches(source.text, /(summary|GITHUB_STEP_SUMMARY|comment-summary-in-pr|pr comment|sarif|json|html|markdown|upload-artifact|artifact)/gi);
+    const ciCount = countMatches(source.text, /(github actions|\.github\/workflows|pull_request|schedule:|cron:|permissions:|contents: read|pull-requests: write|security-events: write|actions\/checkout|upload-artifact)/gi);
+    const totalSignals = reviewCount + vulnerabilityCount + licenseCount + packagePolicyCount + diffCount + snapshotCount + scorecardCount + outputCount + ciCount;
+    if (totalSignals === 0 && !dependencyReviewPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: dependencyReviewTool(source),
+      reviewCount,
+      vulnerabilityCount,
+      licenseCount,
+      packagePolicyCount,
+      diffCount,
+      snapshotCount,
+      scorecardCount,
+      outputCount,
+      ciCount,
+      readiness: totalSignals >= 6 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${totalSignals} dependency-review readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.reviewCount + b.vulnerabilityCount + b.licenseCount + b.packagePolicyCount + b.diffCount + b.snapshotCount + b.outputCount + b.ciCount;
+    const aScore = a.reviewCount + a.vulnerabilityCount + a.licenseCount + a.packagePolicyCount + a.diffCount + a.snapshotCount + a.outputCount + a.ciCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 60);
+}
+
+function dependencyReviewTool(source: DependencyReviewSourceFile): DependencyReviewReadinessReport["dependencyReviewSetups"][number]["tool"] {
+  if (/package\.json$/i.test(source.filePath) || /scripts?["']?\s*:/.test(source.text)) return "package-script";
+  if (/\.github\/dependabot\.ya?ml$/i.test(source.filePath) || /dependabot/i.test(source.filePath) || /package-ecosystem|open-pull-requests-limit|security-updates/i.test(source.text)) return "dependabot";
+  if (/osv[-_ ]?scanner|osv-scanner/i.test(source.filePath) || /osv-scanner|--download-offline-databases|--allow-no-lockfiles/i.test(source.text)) return "osv-scanner";
+  if (/actions\/dependency-review-action|dependency-review-action/i.test(source.text) || /dependency[-_ ]?review/i.test(source.filePath)) return "dependency-review-action";
+  if (/\.github\/workflows/i.test(source.filePath)) return "github-actions";
+  if (/README|docs?/i.test(source.filePath)) return "readme";
+  return "unknown";
+}
+
+function dependencyReviewReviewSignals(sourceFiles: DependencyReviewSourceFile[]): DependencyReviewReadinessReport["reviewSignals"] {
+  return dependencyReviewSignalFromSpecs(sourceFiles, [
+    { signal: "dependency-review-action", pattern: /actions\/dependency-review-action|dependency-review-action/i, evidence: "Dependency Review Action evidence was detected." },
+    { signal: "dependency-graph", pattern: /dependency graph|dependency-graph|graph\/snapshots|dependencyGraph/i, evidence: "Dependency graph evidence was detected." },
+    { signal: "dependency-submission", pattern: /dependency submission|dependency-submission|dependency-submission-action/i, evidence: "Dependency submission evidence was detected." },
+    { signal: "base-head-compare", pattern: /base-ref|head-ref|base sha|head sha|base\/head|compare/i, evidence: "base/head comparison evidence was detected." },
+    { signal: "snapshot-warning", pattern: /snapshot warning|snapshot warnings|retry-on-snapshot-warnings|dependency graph snapshot/i, evidence: "snapshot warning evidence was detected." },
+    { signal: "pr-summary", pattern: /comment-summary-in-pr|pull request summary|PR summary|GITHUB_STEP_SUMMARY/i, evidence: "PR summary evidence was detected." },
+    { signal: "pull-request", pattern: /pull_request|pull request|merge_request/i, evidence: "pull-request trigger evidence was detected." }
+  ], "review");
+}
+
+function dependencyReviewVulnerabilitySignals(sourceFiles: DependencyReviewSourceFile[]): DependencyReviewReadinessReport["vulnerabilitySignals"] {
+  return dependencyReviewSignalFromSpecs(sourceFiles, [
+    { signal: "fail-on-severity", pattern: /fail-on-severity/i, evidence: "fail-on-severity evidence was detected." },
+    { signal: "vulnerability-check", pattern: /vulnerability-check|vulnerability check/i, evidence: "vulnerability-check evidence was detected." },
+    { signal: "osv-scanner", pattern: /osv-scanner|OSV Scanner/i, evidence: "OSV Scanner evidence was detected." },
+    { signal: "lockfile-scan", pattern: /lockfile|package-lock|pnpm-lock|yarn\.lock|go\.sum|Gemfile\.lock|scan source/i, evidence: "lockfile scan evidence was detected." },
+    { signal: "min-severity", pattern: /--min-severity|min_severity|min-severity/i, evidence: "minimum severity evidence was detected." },
+    { signal: "ignore-dev", pattern: /--ignore-dev|ignore dev|dev dependency/i, evidence: "dev dependency filtering evidence was detected." },
+    { signal: "offline-db", pattern: /--offline|--offline-vulnerabilities|--download-offline-databases|offline database/i, evidence: "offline vulnerability database evidence was detected." }
+  ], "vulnerability");
+}
+
+function dependencyReviewLicenseSignals(sourceFiles: DependencyReviewSourceFile[]): DependencyReviewReadinessReport["licenseSignals"] {
+  return dependencyReviewSignalFromSpecs(sourceFiles, [
+    { signal: "license-check", pattern: /license-check|license check/i, evidence: "license-check evidence was detected." },
+    { signal: "allow-licenses", pattern: /allow-licenses|allowed licenses/i, evidence: "allowed license evidence was detected." },
+    { signal: "deny-licenses", pattern: /deny-licenses|denied licenses/i, evidence: "denied license evidence was detected." },
+    { signal: "allow-dependencies-licenses", pattern: /allow-dependencies-licenses/i, evidence: "dependency-specific license exception evidence was detected." },
+    { signal: "license-scan", pattern: /--licenses|license scan|license scanning/i, evidence: "license scan evidence was detected." },
+    { signal: "spdx", pattern: /SPDX|spdx|Apache-2\.0|MIT|GPL|LGPL|AGPL/i, evidence: "SPDX/license identifier evidence was detected." }
+  ], "license");
+}
+
+function dependencyReviewPackagePolicySignals(sourceFiles: DependencyReviewSourceFile[]): DependencyReviewReadinessReport["packagePolicySignals"] {
+  return dependencyReviewSignalFromSpecs(sourceFiles, [
+    { signal: "deny-packages", pattern: /deny-packages|denied packages|blocked packages/i, evidence: "denied package evidence was detected." },
+    { signal: "allowlist", pattern: /allowlist|allow-list|allow:\s|allowed dependencies|allow-dependencies/i, evidence: "allowlist evidence was detected." },
+    { signal: "ignore", pattern: /ignore:|ignored-vulns|ignored vulnerabilities|ignore conditions|ignoredUpdates/i, evidence: "ignore policy evidence was detected." },
+    { signal: "groups", pattern: /groups:|dependency group|groupName|grouped dependencies/i, evidence: "dependency grouping evidence was detected." },
+    { signal: "security-updates", pattern: /security-updates|security updates|security update/i, evidence: "security update evidence was detected." },
+    { signal: "ecosystem-directory", pattern: /package-ecosystem|directory:|directories:/i, evidence: "ecosystem directory evidence was detected." },
+    { signal: "registries", pattern: /registries:|registry-url|registry url|private registry|npmrc|index-url/i, evidence: "registry policy evidence was detected." }
+  ], "package policy");
+}
+
+function dependencyReviewCiSignals(sourceFiles: DependencyReviewSourceFile[]): DependencyReviewReadinessReport["ciSignals"] {
+  return dependencyReviewSignalFromSpecs(sourceFiles, [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|actions\/checkout/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "pull-request", pattern: /pull_request|merge_request|pull request/i, evidence: "pull-request evidence was detected." },
+    { signal: "permissions", pattern: /permissions:|contents: read|pull-requests: write|security-events: write|actions: read/i, evidence: "workflow permissions evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|actions\/upload-artifact|artifact upload/i, evidence: "artifact upload evidence was detected." },
+    { signal: "summary-comment", pattern: /GITHUB_STEP_SUMMARY|comment-summary-in-pr|pull-requests: write|pr comment/i, evidence: "summary or comment evidence was detected." },
+    { signal: "scheduled-run", pattern: /schedule:|cron:|scheduled/i, evidence: "scheduled run evidence was detected." }
+  ], "CI");
+}
+
+function dependencyReviewScorecardSignals(sourceFiles: DependencyReviewSourceFile[]): DependencyReviewReadinessReport["scorecardSignals"] {
+  return dependencyReviewSignalFromSpecs(sourceFiles, [
+    { signal: "show-openssf-scorecard", pattern: /show-openssf-scorecard/i, evidence: "show-openssf-scorecard evidence was detected." },
+    { signal: "warn-on-openssf-scorecard-level", pattern: /warn-on-openssf-scorecard-level/i, evidence: "OpenSSF warning-level evidence was detected." },
+    { signal: "scorecard-api", pattern: /scorecard api|OpenSSF Scorecard|openssf scorecard|scorecard/i, evidence: "OpenSSF Scorecard evidence was detected." }
+  ], "scorecard");
+}
+
+function dependencyReviewOutputSignals(sourceFiles: DependencyReviewSourceFile[]): DependencyReviewReadinessReport["outputSignals"] {
+  return dependencyReviewSignalFromSpecs(sourceFiles, [
+    { signal: "summary", pattern: /summary|GITHUB_STEP_SUMMARY|Dependency Review summary/i, evidence: "summary output evidence was detected." },
+    { signal: "pr-comment", pattern: /comment-summary-in-pr|pr comment|pull request comment|pull-requests: write/i, evidence: "PR comment evidence was detected." },
+    { signal: "sarif", pattern: /sarif|security-events: write|upload-sarif/i, evidence: "SARIF output evidence was detected." },
+    { signal: "json", pattern: /\.json\b|--json|format=json|json report/i, evidence: "JSON output evidence was detected." },
+    { signal: "html", pattern: /\.html\b|--format=html|format html|html report/i, evidence: "HTML output evidence was detected." },
+    { signal: "markdown", pattern: /markdown|\.md\b|format markdown/i, evidence: "Markdown output evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|actions\/upload-artifact|artifact/i, evidence: "artifact output evidence was detected." }
+  ], "output");
+}
+
+function dependencyReviewPackageSignals(sourceFiles: DependencyReviewSourceFile[]): DependencyReviewReadinessReport["packageSignals"] {
+  return dependencyReviewSignalFromSpecs(sourceFiles, [
+    { signal: "dependency-review-action", pattern: /actions\/dependency-review-action|@actions\/dependency-review-action/i, evidence: "Dependency Review Action package/tool evidence was detected." },
+    { signal: "dependabot", pattern: /dependabot|package-ecosystem|open-pull-requests-limit/i, evidence: "Dependabot evidence was detected." },
+    { signal: "osv-scanner", pattern: /osv-scanner|OSV Scanner/i, evidence: "OSV Scanner package/tool evidence was detected." },
+    { signal: "github-action", pattern: /uses:\s*actions\/|github action|\.github\/workflows/i, evidence: "GitHub Action evidence was detected." }
+  ], "package");
+}
+
+function dependencyReviewSignalFromSpecs<const T extends readonly { signal: string; pattern: RegExp; evidence: string }[]>(
+  sourceFiles: DependencyReviewSourceFile[],
+  specs: T,
+  label: string
+): Array<{ signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/dependency-review-readiness.html"
+    };
   });
 }
 
