@@ -7971,6 +7971,60 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 268:
   - `fdb5a04` container scan readiness report
 
+- 2026-06-05: AutoResearch Upgrade 269 candidate selected:
+  fuzz readiness from `google/oss-fuzz`
+  (`https://github.com/google/oss-fuzz`; ignored clone HEAD
+  `e10cfba3561f7fd68cc9fa4341c5e8bf9f8b150d`),
+  `AFLplusplus/AFLplusplus`
+  (`https://github.com/AFLplusplus/AFLplusplus`; ignored clone HEAD
+  `82a149c3a4fcfa08373eb4837a453f8e7e1b0dde`), and
+  `CodeIntelligenceTesting/jazzer`
+  (`https://github.com/CodeIntelligenceTesting/jazzer`; ignored clone HEAD
+  `50a0e8f2c3aa0d28165b860e1c942383ba08d180`). Static source inspection
+  only; `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented OSS-Fuzz/libFuzzer/AFL++/Jazzer-style fuzz
+  readiness report: `FuzzReadinessReportSchema`,
+  `analysis/fuzz-readiness-report.json`, `markdown/fuzz-readiness.md`,
+  `html/fuzz-readiness.html`, static fuzz setup detection, harness, engine,
+  build, runtime, sanitizer, CI, and package signals, OSS-Fuzz Dockerfile,
+  `build.sh`, `project.yaml`, compiler-wrapper and `-fsanitize=fuzzer`
+  detection, corpus, dictionary, timeout, max length, bounded run, fork/job,
+  persistent-mode, reproducer/crash artifact coverage, Jazzer/JUnit,
+  cargo-fuzz, Go fuzz, Bazel `rules_fuzzing`, ClusterFuzzLite/CIFuzz,
+  static-only fuzz execution guardrail, recommended inspection commands,
+  manifest/session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target fuzz-readiness`.
+- 2026-06-05: RED/GREEN fuzz readiness smoke recorded:
+  pre-implementation precise gap check had no `FuzzReadinessReportSchema`,
+  no `fuzzReadinessReport`, and no `fuzz-readiness` target
+  (`fuzz_dedicated_gap_exit=1`). GREEN fixture detected OSS-Fuzz, libFuzzer,
+  AFL++, Jazzer, ClusterFuzzLite, Honggfuzz, Centipede, LLVMFuzzerTestOneInput,
+  `@FuzzTest`, `FuzzedDataProvider`, Go fuzz, cargo-fuzz, AFL persistent mode,
+  project/build/Docker/Bazel/Maven setup signals, corpus/dictionary/runtime
+  bounds/reproducer signals, sanitizer/coverage signals, CI/artifact coverage,
+  package signals, recommended commands, static-only execution guardrail, and
+  all three new artifacts.
+- 2026-06-05: Verification for Upgrade 269:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS after rerunning core once
+    because the first parallel run read stale HTML declarations
+  - focused fuzz readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - full pipeline Vitest: PASS, 76/76 tests
+  - `pnpm test`: PASS, 76/76 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 167/167 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~72.66 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 269:
+  - `bdfca36` fuzz readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
