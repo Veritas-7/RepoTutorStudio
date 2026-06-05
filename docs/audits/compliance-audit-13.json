@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-05T21:45:14.544Z",
+  "createdAt": "2026-06-05T21:59:12.469Z",
   "checks": [
     {
       "name": "project setup",
@@ -1117,6 +1117,13 @@
     },
     {
       "name": "Toast snackbar readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Tabs accordion readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

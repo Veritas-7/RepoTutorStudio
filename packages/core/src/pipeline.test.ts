@@ -22848,6 +22848,197 @@ describe("RepoTutor core pipeline", () => {
     expect(toastHtml).toContain("RepoTutor records toast/snackbar readiness only");
   });
 
+  it("detects tabs accordion and disclosure readiness without switching UI state", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tabs-accordion-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-tabs-accordion-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "radix-tabs-accordion.tsx"), [
+      "import * as Accordion from '@radix-ui/react-accordion';",
+      "import * as Collapsible from '@radix-ui/react-collapsible';",
+      "import * as Tabs from '@radix-ui/react-tabs';",
+      "import { useState } from 'react';",
+      "export function RadixTabsAccordionDemo() {",
+      "  const [tab, setTab] = useState('overview');",
+      "  const [open, setOpen] = useState(false);",
+      "  return (",
+      "    <section>",
+      "      <Tabs.Root value={tab} defaultValue=\"overview\" onValueChange={setTab} orientation=\"vertical\" dir=\"rtl\" activationMode=\"manual\" data-orientation=\"vertical\">",
+      "        <Tabs.List aria-label=\"Project sections\">",
+      "          <Tabs.Trigger value=\"overview\" data-state={tab === 'overview' ? 'active' : 'inactive'}>Overview</Tabs.Trigger>",
+      "          <Tabs.Trigger value=\"details\" disabled aria-disabled=\"true\">Details</Tabs.Trigger>",
+      "        </Tabs.List>",
+      "        <Tabs.Content value=\"overview\" forceMount role=\"tabpanel\" aria-labelledby=\"overview-tab\">Overview panel</Tabs.Content>",
+      "        <Tabs.Content value=\"details\" role=\"tabpanel\">Details panel</Tabs.Content>",
+      "      </Tabs.Root>",
+      "      <Accordion.Root type=\"multiple\" defaultValue={['a']} value={['a']} onValueChange={() => {}} orientation=\"horizontal\" collapsible>",
+      "        <Accordion.Item value=\"a\" data-state=\"open\">",
+      "          <Accordion.Header>",
+      "            <Accordion.Trigger aria-controls=\"panel-a\" aria-expanded=\"true\">Section A</Accordion.Trigger>",
+      "          </Accordion.Header>",
+      "          <Accordion.Content id=\"panel-a\" forceMount>Panel A</Accordion.Content>",
+      "        </Accordion.Item>",
+      "      </Accordion.Root>",
+      "      <Collapsible.Root open={open} defaultOpen={false} onOpenChange={setOpen} data-state={open ? 'open' : 'closed'}>",
+      "        <Collapsible.Trigger aria-controls=\"advanced-panel\" aria-expanded={open}>Advanced</Collapsible.Trigger>",
+      "        <Collapsible.Content id=\"advanced-panel\" forceMount>Advanced content</Collapsible.Content>",
+      "      </Collapsible.Root>",
+      "    </section>",
+      "  );",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "headless-tabs-disclosure.tsx"), [
+      "import { Disclosure, DisclosureButton, DisclosurePanel, Tab } from '@headlessui/react';",
+      "import { useState } from 'react';",
+      "export function HeadlessTabsDisclosureDemo() {",
+      "  const [selectedIndex, setSelectedIndex] = useState(0);",
+      "  return (",
+      "    <Tab.Group selectedIndex={selectedIndex} defaultIndex={0} onChange={setSelectedIndex} manual vertical>",
+      "      <Tab.List aria-label=\"Headless tabs\">",
+      "        <Tab>{({ selected }) => <button aria-selected={selected}>Summary</button>}</Tab>",
+      "        <Tab disabled>Disabled</Tab>",
+      "      </Tab.List>",
+      "      <Tab.Panels>",
+      "        <Tab.Panel data-headlessui-state=\"selected\">Summary panel</Tab.Panel>",
+      "        <Tab.Panel>Disabled panel</Tab.Panel>",
+      "      </Tab.Panels>",
+      "      <Disclosure defaultOpen>",
+      "        {({ open }) => (",
+      "          <>",
+      "            <Disclosure.Button aria-expanded={open}>Legacy disclosure</Disclosure.Button>",
+      "            <Disclosure.Panel static>Legacy panel</Disclosure.Panel>",
+      "            <DisclosureButton aria-controls=\"headless-panel\">Modern disclosure</DisclosureButton>",
+      "            <DisclosurePanel id=\"headless-panel\" transition data-open={open}>Modern panel</DisclosurePanel>",
+      "          </>",
+      "        )}",
+      "      </Disclosure>",
+      "    </Tab.Group>",
+      "  );",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "ariakit-tabs-disclosure.tsx"), [
+      "import * as Ariakit from '@ariakit/react';",
+      "import { useState } from 'react';",
+      "export function AriakitTabsDisclosureDemo() {",
+      "  const [selectedId, setSelectedId] = useState('overview');",
+      "  const [open, setOpen] = useState(false);",
+      "  return (",
+      "    <Ariakit.TabProvider selectedId={selectedId} defaultSelectedId=\"overview\" setSelectedId={setSelectedId} orientation=\"horizontal\">",
+      "      <Ariakit.TabList aria-label=\"Ariakit tabs\">",
+      "        <Ariakit.Tab id=\"overview\" aria-controls=\"overview-panel\">Overview</Ariakit.Tab>",
+      "        <Ariakit.Tab id=\"settings\" disabled accessibleWhenDisabled>Settings</Ariakit.Tab>",
+      "      </Ariakit.TabList>",
+      "      <Ariakit.TabPanel tabId=\"overview\" id=\"overview-panel\" unmountOnHide scrollRestoration>Overview panel</Ariakit.TabPanel>",
+      "      <Ariakit.TabPanel tabId=\"settings\">Settings panel</Ariakit.TabPanel>",
+      "      <Ariakit.DisclosureProvider open={open} defaultOpen setOpen={setOpen}>",
+      "        <Ariakit.Disclosure aria-controls=\"ariakit-disclosure\" aria-expanded={open}>Toggle</Ariakit.Disclosure>",
+      "        <Ariakit.DisclosureContent id=\"ariakit-disclosure\" unmountOnHide alwaysVisible data-open={open}>Content</Ariakit.DisclosureContent>",
+      "      </Ariakit.DisclosureProvider>",
+      "    </Ariakit.TabProvider>",
+      "  );",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "test", "tabs-accordion.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { RadixTabsAccordionDemo } from '../src/radix-tabs-accordion';",
+      "describe('tabs accordion disclosure behavior', () => {",
+      "  it('keeps roles keyboard navigation and ARIA attributes testable', async () => {",
+      "    render(<RadixTabsAccordionDemo />);",
+      "    expect(screen.getByRole('tablist', { name: /project sections/i })).toBeTruthy();",
+      "    await userEvent.keyboard('{ArrowDown}{Home}{End}{Tab}');",
+      "    await userEvent.click(screen.getByRole('button', { name: /advanced/i }));",
+      "    expect(screen.getByRole('tabpanel', { name: /overview/i })).toBeTruthy();",
+      "    expect(screen.getByRole('button', { name: /section a/i })).toHaveAttribute('aria-expanded', 'true');",
+      "  });",
+      "});"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "tabs-accordion.yml"), [
+      "name: tabs accordion",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest run test/tabs-accordion.spec.tsx",
+      "      - run: pnpm playwright test tabs-accordion.spec.tsx",
+      "      - run: pnpm cypress run --spec test/tabs-accordion.spec.tsx",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: tabs-accordion-traces",
+      "          path: reports/tabs-accordion"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@ariakit/react": "latest",
+        "@headlessui/react": "latest",
+        "@radix-ui/react-accordion": "latest",
+        "@radix-ui/react-collapsible": "latest",
+        "@radix-ui/react-tabs": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "@types/react": "latest",
+        "cypress": "latest",
+        "playwright": "latest",
+        "typescript": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "tabs-accordion-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      tabsAccordionSetups: Array<{ filePath: string; framework: string; rootCount: number; listCount: number; triggerCount: number; contentCount: number; itemCount: number; panelCount: number; stateCount: number; keyboardCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      orientationSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Tabs/accordion readiness Radix Tabs Accordion Collapsible Headless UI Tab Disclosure Ariakit Tab Disclosure keyboard orientation controlled state accessibility tests");
+    expect(report.tabsAccordionSetups.some((item) => item.filePath === "src/radix-tabs-accordion.tsx" && item.framework === "radix" && item.rootCount > 0 && item.listCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.panelCount > 0 && item.stateCount > 0 && item.keyboardCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.tabsAccordionSetups.some((item) => item.filePath === "src/headless-tabs-disclosure.tsx" && item.framework === "headless-ui" && item.rootCount > 0 && item.listCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.panelCount > 0 && item.stateCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.tabsAccordionSetups.some((item) => item.filePath === "src/ariakit-tabs-disclosure.tsx" && item.framework === "ariakit" && item.rootCount > 0 && item.listCount > 0 && item.triggerCount > 0 && item.contentCount > 0 && item.panelCount > 0 && item.stateCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["radix-tabs", "radix-accordion", "radix-collapsible", "headless-tabs", "headless-disclosure", "ariakit-tabs", "ariakit-disclosure"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "list", "trigger", "content", "item", "header", "panel", "provider", "disclosure-button", "disclosure-panel"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["controlled-value", "default-value", "selected-index", "selected-id", "open-state", "default-open", "on-change", "data-state", "force-mount", "unmount-on-hide"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["keyboard-navigation", "arrow-keys", "home-end", "tab-key", "click", "manual-activation", "automatic-activation", "roving-focus", "disabled-item"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-tablist", "role-tab", "role-tabpanel", "aria-selected", "aria-controls", "aria-expanded", "aria-orientation", "aria-label", "focus-management"]));
+    expect(readySignals(report.orientationSignals)).toEqual(expect.arrayContaining(["horizontal", "vertical", "activation-mode", "dir", "rtl", "collapsible", "multiple"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "cypress", "testing-library", "user-event", "role-test", "keyboard-test", "attribute-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@radix-ui/react-tabs", "@radix-ui/react-accordion", "@radix-ui/react-collapsible", "@headlessui/react", "@ariakit/react", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@radix-ui/react-tabs"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records tabs/accordion/disclosure readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "tabs-accordion-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "tabs-accordion-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "tabs-accordion-readiness.html"))).resolves.toBeUndefined();
+    const tabsMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "tabs-accordion-readiness.md"), "utf8");
+    expect(tabsMarkdown).toContain("Tabs Accordion Readiness");
+    expect(tabsMarkdown).toContain("@headlessui/react");
+    const tabsHtml = await fs.readFile(path.join(result.session.outputPaths.html, "tabs-accordion-readiness.html"), "utf8");
+    expect(tabsHtml).toContain("tabs-accordion-readiness-card");
+    expect(tabsHtml).toContain("data-source-pattern=\"TabsAccordion\"");
+    expect(tabsHtml).toContain("RepoTutor records tabs/accordion/disclosure readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
