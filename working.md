@@ -8192,6 +8192,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 272:
   - `d5aa777` debug readiness report
 
+- 2026-06-05: AutoResearch Upgrade 273 candidate selected:
+  crash reporting readiness from `getsentry/sentry-javascript`
+  (`https://github.com/getsentry/sentry-javascript`; ignored clone HEAD
+  `983fbac4a8036454a931b137672e2f725ec04707`),
+  `bugsnag/bugsnag-js`
+  (`https://github.com/bugsnag/bugsnag-js`; ignored clone HEAD
+  `f7f961bc6959ec3478ec074bfecaeabd4e5a3769`), and `rollbar/rollbar.js`
+  (`https://github.com/rollbar/rollbar.js`; ignored clone HEAD
+  `bcc8174eaeb25eae710855a619fff8a1247f5506`). Static source inspection
+  only; `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Sentry/Bugsnag/Rollbar-style crash reporting
+  readiness report: `CrashReportingReadinessReportSchema`,
+  `analysis/crash-reporting-readiness-report.json`,
+  `markdown/crash-reporting-readiness.md`,
+  `html/crash-reporting-readiness.html`, static crash setup detection,
+  capture, release, symbolication, context, privacy, delivery, workflow, and
+  package signals, Sentry/Bugsnag/Rollbar setup detection, release/dist/
+  appVersion/code_version/environment/commit/deploy identity detection, source
+  map upload/debug ID/artifact bundle/dSYM/ProGuard/stacktrace symbolication
+  detection, breadcrumb/session/user/tags/severity/fingerprint context
+  detection, beforeSend/onError/scrub/PII/truncation/sampling/rate-limit
+  privacy coverage, CI release command/artifact upload/sourcemap/crash smoke
+  workflow coverage, static-only crash reporting guardrail, recommended
+  inspection commands, manifest/session-verification coverage, learning-path
+  linkage, HTML page/nav entry, CLI help/list-target coverage, dedicated audit
+  coverage, and `open --target crash-reporting-readiness`.
+- 2026-06-05: RED/GREEN crash reporting readiness smoke recorded:
+  pre-implementation precise gap checks had no
+  `CrashReportingReadinessReportSchema`, no `crashReportingReadinessReport`,
+  and no `crash-reporting-readiness` target. GREEN fixture detected Sentry,
+  Bugsnag, Rollbar, package-script, workflow, and symbol-file setup rows;
+  exception, unhandled exception, unhandled rejection, native crash, manual
+  notify, and event pipeline capture signals; release, dist/build,
+  environment, commit, and deploy identity signals; source map upload, debug
+  ID, artifact bundle, dSYM, ProGuard mapping, and stacktrace linking signals;
+  context, privacy, delivery, workflow, package, recommended command,
+  static-only guardrail, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 273:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused crash reporting readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - full pipeline Vitest: PASS, 80/80 tests
+  - `pnpm test`: PASS, 80/80 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 171/171 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~81.43 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 273:
+  - `adc3215` crash reporting readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
