@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-05T14:03:52.436Z",
+  "createdAt": "2026-06-05T14:19:21.479Z",
   "checks": [
     {
       "name": "project setup",
@@ -263,6 +263,13 @@
     },
     {
       "name": "SLO readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "cost readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

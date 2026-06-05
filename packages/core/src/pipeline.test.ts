@@ -46,6 +46,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "crash-reporting-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "incident-response-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "slo-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "cost-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
@@ -221,6 +222,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "crash-reporting-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "incident-response-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "slo-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "cost-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
@@ -399,6 +401,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "crash-reporting-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "incident-response-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "slo-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "cost-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "load-testing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
@@ -1335,6 +1338,26 @@ describe("RepoTutor core pipeline", () => {
     expect(sloMarkdown).toContain("# SLO Readiness");
     expect(sloMarkdown).toContain("## Indicator Signals");
     expect(sloMarkdown).toContain("## Rule Signals");
+    const costText = await fs.readFile(path.join(result.session.outputPaths.analysis, "cost-readiness-report.json"), "utf8");
+    expect(costText).toContain("Cost readiness Infracost OpenCost Kubecost FinOps cost allocation cloud cost budget pricing Prometheus");
+    expect(costText).toContain("\"costSetups\"");
+    expect(costText).toContain("\"estimateSignals\"");
+    expect(costText).toContain("\"allocationSignals\"");
+    expect(costText).toContain("\"pricingSignals\"");
+    expect(costText).toContain("\"budgetSignals\"");
+    expect(costText).toContain("\"observabilitySignals\"");
+    expect(costText).toContain("\"workflowSignals\"");
+    expect(costText).toContain("\"packageSignals\"");
+    expect(costText).toContain("RepoTutor records static cost readiness only");
+    const costHtml = await fs.readFile(path.join(result.session.outputPaths.html, "cost-readiness.html"), "utf8");
+    expect(costHtml).toContain("Cost Readiness");
+    expect(costHtml).toContain("cost-readiness-card");
+    expect(costHtml).toContain("data-source-pattern=\"Cost\"");
+    expect(costHtml).toContain("does not run Infracost");
+    const costMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "cost-readiness.md"), "utf8");
+    expect(costMarkdown).toContain("# Cost Readiness");
+    expect(costMarkdown).toContain("## Allocation Signals");
+    expect(costMarkdown).toContain("## Observability Signals");
     const loadTestingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"), "utf8");
     expect(loadTestingText).toContain("k6 Artillery Locust load testing scenarios phases thresholds checks ensure HttpUser headless distributed reports");
     expect(loadTestingText).toContain("\"loadTestSetups\"");
@@ -3820,6 +3843,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/crash-reporting-readiness.html");
     expect(exportManifestText).toContain("html/incident-response-readiness.html");
     expect(exportManifestText).toContain("html/slo-readiness.html");
+    expect(exportManifestText).toContain("html/cost-readiness.html");
     expect(exportManifestText).toContain("html/load-testing-readiness.html");
     expect(exportManifestText).toContain("html/benchmark-readiness.html");
     expect(exportManifestText).toContain("html/e2e.html");
@@ -4017,6 +4041,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("crash-reporting-readiness.html");
     expect(learningPathHtml).toContain("incident-response-readiness.html");
     expect(learningPathHtml).toContain("slo-readiness.html");
+    expect(learningPathHtml).toContain("cost-readiness.html");
     expect(learningPathHtml).toContain("load-testing-readiness.html");
     expect(learningPathHtml).toContain("benchmark-readiness.html");
     expect(learningPathHtml).toContain("e2e.html");
@@ -6740,6 +6765,204 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "slo-readiness.html"), "utf8");
     expect(html).toContain("slo-readiness-card");
     expect(html).toContain("does not evaluate PromQL");
+  });
+
+  it("detects cost readiness without querying billing systems", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-cost-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-cost-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "finops"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "helm", "kubecost"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "prometheus"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "cost-readiness-study",
+      version: "1.0.0",
+      scripts: {
+        "cost:breakdown": "infracost breakdown --path infra --usage-file finops/infracost-usage.yml --format json --out-file reports/infracost.json",
+        "cost:diff": "infracost diff --config-file finops/infracost.yml --format json --out-file reports/infracost-diff.json && infracost comment github --path reports/infracost-diff.json",
+        "cost:allocation": "kubectl cost namespace --window 7d"
+      },
+      dependencies: {
+        infracost: "latest",
+        opencost: "latest",
+        kubecost: "latest",
+        prometheus: "latest",
+        grafana: "latest",
+        helm: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "finops", "infracost.yml"), [
+      "version: 0.1",
+      "projects:",
+      "  - path: ../infra",
+      "    usage_file: infracost-usage.yml",
+      "    dependency_paths:",
+      "      - ../infra/modules",
+      "policy_checks:",
+      "  enabled: true",
+      "  policySha: abc123",
+      "thresholds:",
+      "  monthly_cost: 500",
+      "# infracost breakdown and infracost diff post pull request comment with baseline cost, total change, and new monthly cost"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "finops", "infracost-usage.yml"), [
+      "version: 0.1",
+      "resource_usage:",
+      "  aws_instance.web:",
+      "    monthly_cpu_credit_hrs: 40",
+      "    operating_system: linux"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "finops", "opencost.md"), [
+      "# OpenCost allocation",
+      "Use OpenCost get_allocation_costs with window: 7d and aggregate: namespace,node,service,label:team.",
+      "The API mirrors /allocation/compute?aggregate=namespace&window=7d and CloudCost provider/service/region aggregation.",
+      "Set PROMETHEUS_SERVER_ENDPOINT to Thanos Query for HA Prometheus.",
+      "Metrics include node_total_hourly_cost, container_cpu_allocation, and container_memory_allocation_bytes.",
+      "OpenCost MCP is opt-in with opencost.mcp.enabled=true and MCP_SERVER_ENABLED=true.",
+      "kubectl cost namespace validates the CLI path."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "helm", "kubecost", "Chart.yaml"), [
+      "apiVersion: v2",
+      "name: kubecost",
+      "version: 1.0.0"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "helm", "kubecost", "values.yaml"), [
+      "global:",
+      "  notifications:",
+      "    alertConfigs:",
+      "      globalSlackWebhookUrl: https://hooks.slack.com/services/example",
+      "      globalAlertEmails:",
+      "        - finops@example.com",
+      "      alerts:",
+      "        - type: budget",
+      "          window: 1h",
+      "          ownerContact: finops@example.com",
+      "          slackWebhookUrl: https://hooks.slack.com/services/team",
+      "kubecostProductConfigs:",
+      "  budgets:",
+      "    budgetsConfig:",
+      "      - budgetType: allocations",
+      "        filters:",
+      "          label:",
+      "            - team:payments",
+      "        threshold: 1000",
+      "        emails:",
+      "          - budget-alert@example.com",
+      "  labelMappingConfigs:",
+      "    owner_label: owner",
+      "    team_label: team",
+      "    department_label: dept",
+      "    product_label: product",
+      "    environment_label: env",
+      "  savingsRecommendationsAllowLists:",
+      "    aws:",
+      "      nodeGroups:",
+      "        - payments",
+      "  savingsProfiles:",
+      "    requestSizing:",
+      "      enabled: true",
+      "  costEventsAudit:",
+      "    enabled: true",
+      "  forecasting:",
+      "    enabled: true",
+      "cloudCost:",
+      "  enabled: true",
+      "  cloudIntegrationSecret: cloud-integration",
+      "  cloudIntegrationJSON: '{\"aws\": {\"athena\": true}}'",
+      "networkCosts:",
+      "  enabled: true",
+      "  prometheusScrape: true",
+      "persistentVolume:",
+      "  enabled: true",
+      "  size: 32Gi",
+      "enterpriseCustomPricing:",
+      "  enabled: true",
+      "  configMapName: kubecost-enterprise-pricing",
+      "kubecost:",
+      "  customPrices:",
+      "    enabled: true",
+      "    CSV: pricing.csv"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "prometheus", "cost-rules.yaml"), [
+      "groups:",
+      "  - name: cost-allocation",
+      "    rules:",
+      "      - record: namespace:node_total_hourly_cost:sum",
+      "        expr: sum by (namespace) (node_total_hourly_cost)",
+      "      - record: namespace:container_cpu_allocation:sum",
+      "        expr: sum by (namespace,pod) (container_cpu_allocation)",
+      "      - alert: CostBudgetExceeded",
+      "        expr: namespace:node_total_hourly_cost:sum > 1000",
+      "        labels:",
+      "          severity: warning",
+      "          team: finops",
+      "        annotations:",
+      "          dashboard: https://grafana.example.com/d/cost"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "cost.yml"), [
+      "name: cost",
+      "on: [pull_request]",
+      "jobs:",
+      "  infracost:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: infracost breakdown --path infra --usage-file finops/infracost-usage.yml --format json --out-file infracost-base.json",
+      "        env:",
+      "          INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}",
+      "      - run: infracost diff --config-file finops/infracost.yml --format json --out-file infracost-diff.json",
+      "      - run: infracost comment github --path infracost-diff.json --behavior update",
+      "      - run: helm upgrade --install kubecost ./helm/kubecost --dry-run",
+      "      - run: kubectl cost namespace --window 7d"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "cost-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      costSetups: Array<{ filePath: string; platform: string; estimateCount: number; diffCount: number; allocationCount: number; pricingCount: number; cloudCostCount: number; budgetCount: number; alertCount: number; labelCount: number; prometheusCount: number; dashboardCount: number; workflowCount: number }>;
+      estimateSignals: Array<{ signal: string; readiness: string }>;
+      allocationSignals: Array<{ signal: string; readiness: string }>;
+      pricingSignals: Array<{ signal: string; readiness: string }>;
+      budgetSignals: Array<{ signal: string; readiness: string }>;
+      observabilitySignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Cost readiness Infracost OpenCost Kubecost FinOps cost allocation cloud cost budget pricing Prometheus");
+    expect(report.costSetups.length).toBeGreaterThan(0);
+    expect(report.costSetups.some((item) => item.platform === "infracost" && item.estimateCount > 0 && item.diffCount > 0)).toBe(true);
+    expect(report.costSetups.some((item) => item.platform === "opencost" && item.allocationCount > 0 && item.prometheusCount > 0)).toBe(true);
+    expect(report.costSetups.some((item) => item.platform === "kubecost" && item.budgetCount > 0 && item.cloudCostCount > 0 && item.alertCount > 0)).toBe(true);
+    expect(report.costSetups.some((item) => item.platform === "workflow" && item.workflowCount > 0 && item.diffCount > 0)).toBe(true);
+    expect(readySignals(report.estimateSignals)).toEqual(expect.arrayContaining(["infracost-breakdown", "infracost-diff", "usage-file", "config-file", "monthly-cost", "policy-check"]));
+    expect(readySignals(report.allocationSignals)).toEqual(expect.arrayContaining(["namespace", "pod", "node", "service", "label", "cloud-cost", "asset"]));
+    expect(readySignals(report.pricingSignals)).toEqual(expect.arrayContaining(["custom-pricing", "pricing-csv", "cloud-provider", "aws"]));
+    expect(readySignals(report.budgetSignals)).toEqual(expect.arrayContaining(["budget-config", "threshold", "forecast", "savings", "rightsizing", "cost-events"]));
+    expect(readySignals(report.observabilitySignals)).toEqual(expect.arrayContaining(["prometheus-endpoint", "metrics", "recording-rules", "grafana", "thanos", "network-costs", "persistent-volume"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["pull-request-comment", "github-actions", "ci-cost-diff", "helm-install", "kubectl-cost", "mcp"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["infracost", "opencost", "kubecost", "prometheus", "grafana", "helm"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.map((item) => item.action)).toContain("RepoTutor records static cost readiness only; it does not run Infracost, query OpenCost/Kubecost, contact Prometheus/Grafana, inspect cloud bills, or calculate spend.");
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual([
+      "rg \"infracost (breakdown|diff|scan|inspect)|INFRACOST_API_KEY|usage-file|config-file\" .",
+      "rg \"OpenCost|Kubecost|cost allocation|allocation/compute|get_allocation_costs|aggregate=|kubectl cost\" .",
+      "rg \"cloudCost|CloudCost|customPrices|pricing.csv|cloudIntegration|AWS|Azure|GCP\" .",
+      "rg \"budget|budgetsConfig|threshold|forecast|savings|rightsizing|alertConfigs|Slack|Teams\" .",
+      "rg \"PROMETHEUS_SERVER_ENDPOINT|node_total_hourly_cost|container_cpu_allocation|Grafana|Thanos|networkCosts\" ."
+    ]);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "cost-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "cost-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "cost-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "cost-readiness.md"), "utf8");
+    expect(markdown).toContain("# Cost Readiness");
+    expect(markdown).toContain("## Allocation Signals");
+    expect(markdown).toContain("## Observability Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "cost-readiness.html"), "utf8");
+    expect(html).toContain("cost-readiness-card");
+    expect(html).toContain("does not run Infracost");
   });
 
   it("detects load testing readiness without running load toolchains", async () => {

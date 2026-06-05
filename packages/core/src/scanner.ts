@@ -57,6 +57,7 @@ import {
   CrashReportingReadinessReport,
   IncidentResponseReadinessReport,
   SloReadinessReport,
+  CostReadinessReport,
   LoadTestingReadinessReport,
   BenchmarkReadinessReport,
   E2eReport,
@@ -251,6 +252,7 @@ export interface AnalysisBundle {
   crashReportingReadinessReport: CrashReportingReadinessReport;
   incidentResponseReadinessReport: IncidentResponseReadinessReport;
   sloReadinessReport: SloReadinessReport;
+  costReadinessReport: CostReadinessReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
@@ -445,6 +447,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const crashReportingReadinessReport = await buildCrashReportingReadinessReport(walk);
   const incidentResponseReadinessReport = await buildIncidentResponseReadinessReport(walk);
   const sloReadinessReport = await buildSloReadinessReport(walk);
+  const costReadinessReport = await buildCostReadinessReport(walk);
   const loadTestingReadinessReport = await buildLoadTestingReadinessReport(walk);
   const benchmarkReadinessReport = await buildBenchmarkReadinessReport(walk);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
@@ -577,7 +580,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -8720,6 +8723,317 @@ function sloSignalFromSpecs<T extends string>(
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/slo-readiness.html"
+    };
+  });
+}
+
+async function buildCostReadinessReport(walk: WalkResult): Promise<CostReadinessReport> {
+  const sourceFiles = await costSourceFiles(walk);
+  const costSetups = costSetupRows(sourceFiles);
+  const estimateSignals = costEstimateSignals(sourceFiles);
+  const allocationSignals = costAllocationSignals(sourceFiles);
+  const pricingSignals = costPricingSignals(sourceFiles);
+  const budgetSignals = costBudgetSignals(sourceFiles);
+  const observabilitySignals = costObservabilitySignals(sourceFiles);
+  const workflowSignals = costWorkflowSignals(sourceFiles);
+  const packageSignals = costPackageSignals(sourceFiles);
+
+  const hasSetup = costSetups.length > 0 || packageSignals.some((item) => item.readiness === "ready");
+  const hasEstimate = estimateSignals.some((item) => item.readiness === "ready") || costSetups.some((item) => item.estimateCount + item.diffCount > 0);
+  const hasAllocation = allocationSignals.some((item) => item.readiness === "ready") || costSetups.some((item) => item.allocationCount > 0);
+  const hasPricing = pricingSignals.some((item) => item.readiness === "ready") || costSetups.some((item) => item.pricingCount + item.cloudCostCount > 0);
+  const hasBudget = budgetSignals.some((item) => item.readiness === "ready") || costSetups.some((item) => item.budgetCount + item.alertCount > 0);
+  const hasObservability = observabilitySignals.some((item) => item.readiness === "ready") || costSetups.some((item) => item.prometheusCount + item.dashboardCount > 0);
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready") || costSetups.some((item) => item.workflowCount > 0);
+
+  const riskQueue: CostReadinessReport["riskQueue"] = [];
+  if (!hasSetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add static cost tooling evidence before claiming cost readiness.",
+      why: "Cost readiness needs Infracost, OpenCost, Kubecost, Prometheus cost metrics, Helm values, or workflow evidence instead of generic budget prose.",
+      relatedHref: "html/cost-readiness.html"
+    });
+  }
+  if (hasSetup && !hasEstimate) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add pre-deploy cost estimate or diff evidence.",
+      why: "Infracost-style breakdown/diff output helps reviewers see monthly cost changes before infrastructure changes land.",
+      relatedHref: "html/cost-readiness.html"
+    });
+  }
+  if (hasSetup && !hasAllocation) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add allocation dimensions such as namespace, pod, node, service, controller, or label.",
+      why: "FinOps review needs ownership and allocation views, not only total spend.",
+      relatedHref: "html/cost-readiness.html"
+    });
+  }
+  if (hasSetup && !hasPricing) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document cloud provider, custom pricing, or cloud cost integration inputs.",
+      why: "OpenCost/Kubecost-style allocation depends on pricing sources and cloud bill integration boundaries.",
+      relatedHref: "html/cost-readiness.html"
+    });
+  }
+  if (hasSetup && !hasBudget) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add budget, alert, forecast, savings, or rightsizing evidence.",
+      why: "Cost visibility becomes operational when thresholds and savings workflows route action to owners.",
+      relatedHref: "html/cost-readiness.html"
+    });
+  }
+  if (hasSetup && !hasObservability) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect cost readiness to Prometheus metrics, Grafana dashboards, or network/PV cost signals.",
+      why: "Runtime allocation needs scrapeable metrics and dashboard/query surfaces for cost review.",
+      relatedHref: "html/cost-readiness.html"
+    });
+  }
+  if (hasSetup && !hasWorkflow) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add CI, PR comment, Helm install, kubectl cost, or MCP workflow evidence.",
+      why: "Cost checks are most useful when they appear in deployment and review workflows.",
+      relatedHref: "html/cost-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "RepoTutor records static cost readiness only; it does not run Infracost, query OpenCost/Kubecost, contact Prometheus/Grafana, inspect cloud bills, or calculate spend.",
+    why: "Actual cost correctness requires authorized cloud billing, cluster metrics, and FinOps review workflows.",
+    relatedHref: "html/cost-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Infracost/OpenCost/Kubecost-style cost readiness report: setup ${costSetups.length} files, estimate signals ${estimateSignals.length}, allocation signals ${allocationSignals.length}, budget signals ${budgetSignals.length} were mapped from static evidence.`,
+    sourcePattern: "Cost readiness Infracost OpenCost Kubecost FinOps cost allocation cloud cost budget pricing Prometheus",
+    costSetups,
+    estimateSignals,
+    allocationSignals,
+    pricingSignals,
+    budgetSignals,
+    observabilitySignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"infracost (breakdown|diff|scan|inspect)|INFRACOST_API_KEY|usage-file|config-file\" .", purpose: "Find Infracost estimate, diff, API key, usage-file, and config-file evidence." },
+      { command: "rg \"OpenCost|Kubecost|cost allocation|allocation/compute|get_allocation_costs|aggregate=|kubectl cost\" .", purpose: "Find OpenCost/Kubecost allocation API and CLI surfaces." },
+      { command: "rg \"cloudCost|CloudCost|customPrices|pricing.csv|cloudIntegration|AWS|Azure|GCP\" .", purpose: "Review cloud-cost integration and pricing source evidence." },
+      { command: "rg \"budget|budgetsConfig|threshold|forecast|savings|rightsizing|alertConfigs|Slack|Teams\" .", purpose: "Review budget, forecast, savings, rightsizing, and alert routing evidence." },
+      { command: "rg \"PROMETHEUS_SERVER_ENDPOINT|node_total_hourly_cost|container_cpu_allocation|Grafana|Thanos|networkCosts\" .", purpose: "Review Prometheus, Grafana, Thanos, and network-cost observability evidence." }
+    ],
+    learnerNextSteps: [
+      "Start by finding whether the repo has pre-deploy cost estimates, runtime allocation tooling, or both.",
+      "Map allocation dimensions to owners: namespace, pod, node, service, controller, team label, and cloud account.",
+      "Check pricing inputs such as cloud provider billing integration, custom pricing CSV, or on-prem pricing.",
+      "Review budgets, threshold alerts, forecasts, savings, and rightsizing workflows next to dashboards.",
+      "This report is static readiness only. Real cost review requires authorized billing data, cluster metrics, and FinOps approval."
+    ]
+  };
+}
+
+type CostSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function costSourceFiles(walk: WalkResult): Promise<CostSourceFile[]> {
+  const files: CostSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !costInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!costPathSignal(file.relPath) && !costContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 360) break;
+  }
+  return files;
+}
+
+function costInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|go\.mod|requirements.*\.txt|pyproject\.toml|Chart\.ya?ml|values.*\.ya?ml|README\.md|infracost.*\.ya?ml)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(^|\/)(cost|costs|finops|billing|budget|budgets|infracost|opencost|kubecost|cloudcost|cloud-cost|pricing|prometheus|grafana|dashboards?|alerts?|monitoring|helm|charts?|k8s|kubernetes|terraform|tofu|infra|ops|deploy|docs?)(\/|\.|-|_|$)/i.test(filePath)
+    || /\.(ya?ml|json|jsonnet|toml|md|tf|hcl|js|ts|mjs|cjs|py|go|sh|conf|ini|csv)$/i.test(filePath);
+}
+
+function costPathSignal(filePath: string): boolean {
+  return /(infracost|opencost|kubecost|finops|cloudcost|cloud-cost|cost-analyzer|cost-allocation|pricing|budget)/i.test(filePath);
+}
+
+function costContentSignal(text: string): boolean {
+  return /(Infracost|infracost\s+(breakdown|diff|scan|inspect)|OpenCost|opencost|Kubecost|kubecost|cost allocation|allocation\/compute|get_allocation_costs|CloudCost|cloudCost|node_total_hourly_cost|container_cpu_allocation|container_memory_allocation|PROMETHEUS_SERVER_ENDPOINT|customPrices|pricing\.csv|budgetsConfig|networkCosts)/i.test(text);
+}
+
+function costSetupRows(sourceFiles: CostSourceFile[]): CostReadinessReport["costSetups"] {
+  const rows: CostReadinessReport["costSetups"] = [];
+  for (const source of sourceFiles) {
+    const haystack = `${source.filePath}\n${source.text}`;
+    const estimateCount = countMatches(source.text, /infracost\s+(breakdown|scan|inspect)|cost estimate|cost estimates?|monthly cost|resource-level breakdown|cost drivers/gi);
+    const diffCount = countMatches(source.text, /infracost\s+(diff|comment|upload)|cost diff|baseline cost|new monthly cost|total change|pull request comment|PR comment/gi);
+    const allocationCount = countMatches(source.text, /cost allocation|allocation\/compute|get_allocation_costs|aggregate=|aggregate\s*:|namespace|pod|node|controller|service|label:/gi);
+    const pricingCount = countMatches(source.text, /custom pricing|customPrices|pricing\.csv|pricing_schema|cloud provider|AWS|Azure|GCP|on-prem|provider pricing/gi);
+    const cloudCostCount = countMatches(source.text, /CloudCost|cloudCost|CLOUD_COST|cloudIntegration|cloud integration|billing export|cloud bill/gi);
+    const budgetCount = countMatches(source.text, /budgetsConfig|budgetType|budget\b|threshold|forecast|savings|rightsizing|right-sizing|costEvents|cost events/gi);
+    const alertCount = countMatches(source.text, /alertConfigs|alerts?\s*:|Slack|slackWebhook|Teams|msTeamsWebhook|ownerContact|globalAlertEmails|budget-alert/gi);
+    const labelCount = countMatches(source.text, /labelMappingConfigs|owner_label|team_label|department_label|product_label|environment_label|labels\s*:|tags\s*:|defaultTags|sharedNamespaces|sharedLabelValues/gi);
+    const prometheusCount = countMatches(source.text, /PROMETHEUS_SERVER_ENDPOINT|Prometheus|prometheus|metrics|node_total_hourly_cost|container_cpu_allocation|container_memory_allocation|recording rules?|Thanos|Cortex|Mimir/gi);
+    const dashboardCount = countMatches(source.text, /Grafana|grafana|dashboard|reports?|cloudCostReports|assetReports|saved reports|kubecost UI/gi);
+    const workflowCount = countMatches(haystack, /\.github\/workflows|GitHub Actions|pull_request|runs-on|helm install|helm upgrade|kubectl cost|mcp\.enabled|MCP_SERVER_ENABLED|infracost\s+(diff|comment|upload)/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = estimateCount + diffCount + allocationCount + pricingCount + cloudCostCount + budgetCount + alertCount + labelCount + prometheusCount + dashboardCount + workflowCount;
+    if (totalSignals === 0 && !costPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: costPlatform(source),
+      estimateCount,
+      diffCount,
+      allocationCount,
+      pricingCount,
+      cloudCostCount,
+      budgetCount,
+      alertCount,
+      labelCount,
+      prometheusCount,
+      dashboardCount,
+      workflowCount,
+      readiness: (estimateCount + diffCount > 0 || allocationCount > 0) && (pricingCount + cloudCostCount > 0 || prometheusCount > 0) && (budgetCount + alertCount + workflowCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains estimates ${estimateCount}, diffs ${diffCount}, allocations ${allocationCount}, pricing ${pricingCount}, cloud cost ${cloudCostCount}, budgets ${budgetCount}, alerts ${alertCount}, labels ${labelCount}, Prometheus ${prometheusCount}, dashboards ${dashboardCount}, workflows ${workflowCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.estimateCount + b.diffCount + b.allocationCount + b.pricingCount + b.cloudCostCount + b.budgetCount + b.alertCount + b.prometheusCount + b.workflowCount;
+    const aScore = a.estimateCount + a.diffCount + a.allocationCount + a.pricingCount + a.cloudCostCount + a.budgetCount + a.alertCount + a.prometheusCount + a.workflowCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 100);
+}
+
+function costPlatform(source: CostSourceFile): CostReadinessReport["costSetups"][number]["platform"] {
+  const haystack = `${source.filePath}\n${source.text}`;
+  if (/^\.github\/workflows\//i.test(source.filePath)) return "workflow";
+  if (/Infracost|infracost/i.test(haystack)) return "infracost";
+  if (/Kubecost|kubecost|cost-analyzer/i.test(haystack)) return "kubecost";
+  if (/OpenCost|opencost|get_allocation_costs|allocation\/compute/i.test(haystack)) return "opencost";
+  if (/PROMETHEUS_SERVER_ENDPOINT|node_total_hourly_cost|container_cpu_allocation|Prometheus|prometheus/i.test(haystack)) return "prometheus";
+  if (/Chart\.ya?ml|values.*\.ya?ml|helm install|helm upgrade/i.test(haystack)) return "helm";
+  if (/\.tf$|terraform|tofu/i.test(source.filePath) || /terraform|tofu/i.test(source.text)) return "terraform";
+  if (/cost|budget|pricing|billing/i.test(haystack)) return "custom";
+  return "unknown";
+}
+
+function costEstimateSignals(sourceFiles: CostSourceFile[]): CostReadinessReport["estimateSignals"] {
+  const specs: Array<{ signal: CostReadinessReport["estimateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "infracost-breakdown", pattern: /infracost\s+breakdown|resource-level breakdown|cost drivers/i, evidence: "Infracost breakdown evidence was detected." },
+    { signal: "infracost-diff", pattern: /infracost\s+(diff|comment|upload)|cost diff|baseline cost|new monthly cost|total change/i, evidence: "Infracost diff/comment evidence was detected." },
+    { signal: "usage-file", pattern: /usage-file|infracost-usage\.ya?ml|usage costs/i, evidence: "usage-file evidence was detected." },
+    { signal: "config-file", pattern: /config-file|infracost.*\.ya?ml|projects:\s*|dependency_paths/i, evidence: "config-file evidence was detected." },
+    { signal: "monthly-cost", pattern: /monthly cost|MonthlyCost|new monthly cost/i, evidence: "monthly cost output evidence was detected." },
+    { signal: "policy-check", pattern: /policy checks?|cost policy|policyOutput|PolicyCheck|policySha/i, evidence: "cost policy check evidence was detected." }
+  ];
+  return costSignalFromSpecs(sourceFiles, specs, "estimate");
+}
+
+function costAllocationSignals(sourceFiles: CostSourceFile[]): CostReadinessReport["allocationSignals"] {
+  const specs: Array<{ signal: CostReadinessReport["allocationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "namespace", pattern: /aggregate=namespace|namespace costs|namespace\b/i, evidence: "namespace allocation evidence was detected." },
+    { signal: "pod", pattern: /aggregate=pod|pod cost|pod\b/i, evidence: "pod allocation evidence was detected." },
+    { signal: "node", pattern: /aggregate=.*node|node_total_hourly_cost|\bnode\b/i, evidence: "node allocation evidence was detected." },
+    { signal: "controller", pattern: /controller kind|controllername|controller\b/i, evidence: "controller allocation evidence was detected." },
+    { signal: "service", pattern: /aggregate=.*service|service cost|\bservice\b/i, evidence: "service allocation evidence was detected." },
+    { signal: "label", pattern: /label:|labelMappingConfigs|owner_label|team_label|department_label|product_label|environment_label/i, evidence: "label allocation evidence was detected." },
+    { signal: "cloud-cost", pattern: /CloudCost|cloudCost|cloud costs?|provider.*service.*region/i, evidence: "cloud-cost allocation evidence was detected." },
+    { signal: "asset", pattern: /asset costs?|assets_data|node costs?|persistentVolume|persistent volumes?|PV cost/i, evidence: "asset cost evidence was detected." }
+  ];
+  return costSignalFromSpecs(sourceFiles, specs, "allocation");
+}
+
+function costPricingSignals(sourceFiles: CostSourceFile[]): CostReadinessReport["pricingSignals"] {
+  const specs: Array<{ signal: CostReadinessReport["pricingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "custom-pricing", pattern: /custom pricing|customPrices|enterprise pricing|custom CSV pricing/i, evidence: "custom pricing evidence was detected." },
+    { signal: "pricing-csv", pattern: /pricing\.csv|pricing_schema|CSV pricing/i, evidence: "pricing CSV evidence was detected." },
+    { signal: "cloud-provider", pattern: /cloud provider|provider pricing|billing API|cloudIntegration|cloud integration/i, evidence: "cloud provider pricing evidence was detected." },
+    { signal: "aws", pattern: /\bAWS\b|amazon-web-services|aws\.json|s3|athena/i, evidence: "AWS cost/pricing evidence was detected." },
+    { signal: "azure", pattern: /\bAzure\b|azure-cloud-services|azure\.json|billingexports/i, evidence: "Azure cost/pricing evidence was detected." },
+    { signal: "gcp", pattern: /\bGCP\b|Google Cloud|gcp-cloud-services|gcp\.json/i, evidence: "GCP cost/pricing evidence was detected." },
+    { signal: "on-prem", pattern: /on-prem|on prem|custom CSV pricing|airgapped|OTC/i, evidence: "on-prem pricing evidence was detected." }
+  ];
+  return costSignalFromSpecs(sourceFiles, specs, "pricing");
+}
+
+function costBudgetSignals(sourceFiles: CostSourceFile[]): CostReadinessReport["budgetSignals"] {
+  const specs: Array<{ signal: CostReadinessReport["budgetSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "budget-config", pattern: /budgetsConfig|budgetType|budgets?\s*:|budget config/i, evidence: "budget config evidence was detected." },
+    { signal: "threshold", pattern: /threshold|limit|amount|percent/i, evidence: "threshold evidence was detected." },
+    { signal: "forecast", pattern: /forecast|forecasting|modeling/i, evidence: "forecast evidence was detected." },
+    { signal: "savings", pattern: /savings|Savings Insights|savingsRecommendations|allowlist/i, evidence: "savings recommendation evidence was detected." },
+    { signal: "rightsizing", pattern: /rightsizing|right-sizing|requestSizing|container-request-rightsizing/i, evidence: "rightsizing evidence was detected." },
+    { signal: "cost-events", pattern: /costEvents|cost events|actions\.config|cost event/i, evidence: "cost events evidence was detected." }
+  ];
+  return costSignalFromSpecs(sourceFiles, specs, "budget");
+}
+
+function costObservabilitySignals(sourceFiles: CostSourceFile[]): CostReadinessReport["observabilitySignals"] {
+  const specs: Array<{ signal: CostReadinessReport["observabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "prometheus-endpoint", pattern: /PROMETHEUS_SERVER_ENDPOINT|prometheus.*endpoint|prometheus\.server/i, evidence: "Prometheus endpoint evidence was detected." },
+    { signal: "metrics", pattern: /node_total_hourly_cost|container_cpu_allocation|container_memory_allocation|\/metrics|cost metrics/i, evidence: "cost metrics evidence was detected." },
+    { signal: "recording-rules", pattern: /recording rules?|PrometheusRule|rules:\s*/i, evidence: "recording rule evidence was detected." },
+    { signal: "grafana", pattern: /Grafana|grafana|dashboard/i, evidence: "Grafana/dashboard evidence was detected." },
+    { signal: "thanos", pattern: /Thanos|Cortex|Mimir|global query endpoint/i, evidence: "global Prometheus query endpoint evidence was detected." },
+    { signal: "network-costs", pattern: /networkCosts|network costs|network-costs/i, evidence: "network cost evidence was detected." },
+    { signal: "persistent-volume", pattern: /persistentVolume|persistent volumes?|PV cost|PVC/i, evidence: "persistent volume cost evidence was detected." }
+  ];
+  return costSignalFromSpecs(sourceFiles, specs, "observability");
+}
+
+function costWorkflowSignals(sourceFiles: CostSourceFile[]): CostReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: CostReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "pull-request-comment", pattern: /pull request|PR comment|infracost\s+comment|comment on.*pull requests?/i, evidence: "pull request cost comment evidence was detected." },
+    { signal: "github-actions", pattern: /\.github\/workflows|GitHub Actions|runs-on|pull_request/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "ci-cost-diff", pattern: /infracost\s+(diff|upload)|cost diff|cost estimate.*CI|CI\/CD integrations/i, evidence: "CI cost diff evidence was detected." },
+    { signal: "helm-install", pattern: /helm repo add|helm install|helm upgrade|Chart\.ya?ml|values\.ya?ml/i, evidence: "Helm install evidence was detected." },
+    { signal: "kubectl-cost", pattern: /kubectl cost|kubectl-cost/i, evidence: "kubectl cost evidence was detected." },
+    { signal: "mcp", pattern: /mcp\.enabled|MCP_SERVER_ENABLED|OpenCost MCP|get_allocation_costs/i, evidence: "OpenCost MCP evidence was detected." }
+  ];
+  return costSignalFromSpecs(sourceFiles, specs, "workflow");
+}
+
+function costPackageSignals(sourceFiles: CostSourceFile[]): CostReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: CostReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "infracost", pattern: /Infracost|infracost/i, evidence: "Infracost evidence was detected." },
+    { signal: "opencost", pattern: /OpenCost|opencost|github\.com\/opencost\/opencost/i, evidence: "OpenCost evidence was detected." },
+    { signal: "kubecost", pattern: /Kubecost|kubecost|cost-analyzer/i, evidence: "Kubecost evidence was detected." },
+    { signal: "prometheus", pattern: /Prometheus|prometheus|PROMETHEUS_SERVER_ENDPOINT/i, evidence: "Prometheus evidence was detected." },
+    { signal: "grafana", pattern: /Grafana|grafana/i, evidence: "Grafana evidence was detected." },
+    { signal: "helm", pattern: /helm install|helm upgrade|Chart\.ya?ml|values\.ya?ml/i, evidence: "Helm evidence was detected." }
+  ];
+  return costSignalFromSpecs(sourceFiles, specs, "package");
+}
+
+function costSignalFromSpecs<T extends string>(
+  sourceFiles: CostSourceFile[],
+  specs: Array<{ signal: T; pattern: RegExp; evidence: string }>,
+  label: string
+): Array<{ signal: T; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(haystack);
+    });
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/cost-readiness.html"
     };
   });
 }

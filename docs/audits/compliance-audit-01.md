@@ -1,6 +1,6 @@
 # Compliance Audit 1
 
-Created: 2026-06-05T14:02:16.928Z
+Created: 2026-06-05T14:17:48.440Z
 
 Status: PASS
 
@@ -227,6 +227,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - SLO readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - cost readiness report
 
 - missing files: none
 - missing strings: none
