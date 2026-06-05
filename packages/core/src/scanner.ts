@@ -78,6 +78,7 @@ import {
   FeatureStoreReadinessReport,
   ModelRegistryReadinessReport,
   ExperimentTrackingReadinessReport,
+  ModelMonitoringReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -244,6 +245,7 @@ export interface AnalysisBundle {
   featureStoreReadinessReport: FeatureStoreReadinessReport;
   modelRegistryReadinessReport: ModelRegistryReadinessReport;
   experimentTrackingReadinessReport: ExperimentTrackingReadinessReport;
+  modelMonitoringReadinessReport: ModelMonitoringReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -410,6 +412,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const featureStoreReadinessReport = await buildFeatureStoreReadinessReport(walk);
   const modelRegistryReadinessReport = await buildModelRegistryReadinessReport(walk);
   const experimentTrackingReadinessReport = await buildExperimentTrackingReadinessReport(walk);
+  const modelMonitoringReadinessReport = await buildModelMonitoringReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
   const coverageReadinessReport = await buildCoverageReadinessReport(walk);
@@ -493,7 +496,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -14567,6 +14570,305 @@ function experimentTrackingSignalFromSpecs<T extends Record<K, string> & { patte
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/experiment-tracking-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildModelMonitoringReadinessReport(walk: WalkResult): Promise<ModelMonitoringReadinessReport> {
+  const sourceFiles = await modelMonitoringSourceFiles(walk);
+  const modelMonitoringSetups = modelMonitoringSetupsFromSources(sourceFiles);
+  const datasetSignals = modelMonitoringDatasetSignals(sourceFiles);
+  const driftSignals = modelMonitoringDriftSignals(sourceFiles);
+  const qualitySignals = modelMonitoringQualitySignals(sourceFiles);
+  const performanceSignals = modelMonitoringPerformanceSignals(sourceFiles);
+  const reportingSignals = modelMonitoringReportingSignals(sourceFiles);
+  const alertSignals = modelMonitoringAlertSignals(sourceFiles);
+  const ciSignals = modelMonitoringCiSignals(sourceFiles);
+  const packageSignals = modelMonitoringPackageSignals(sourceFiles);
+
+  const hasDataset = datasetSignals.filter((item) => item.readiness === "ready").length >= 4 || modelMonitoringSetups.some((item) => item.referenceCount > 0 && item.currentCount > 0);
+  const hasDrift = driftSignals.filter((item) => item.readiness === "ready").length >= 2 || modelMonitoringSetups.some((item) => item.driftCount > 0);
+  const hasQuality = qualitySignals.filter((item) => item.readiness === "ready").length >= 2 || modelMonitoringSetups.some((item) => item.qualityCount > 0);
+  const hasPerformance = performanceSignals.filter((item) => item.readiness === "ready").length >= 2 || modelMonitoringSetups.some((item) => item.performanceCount > 0);
+  const hasReporting = reportingSignals.filter((item) => item.readiness === "ready").length >= 2 || modelMonitoringSetups.some((item) => item.reportCount > 0);
+  const hasAlerts = alertSignals.filter((item) => item.readiness === "ready").length >= 2 || modelMonitoringSetups.some((item) => item.alertCount + item.scheduleCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || modelMonitoringSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: ModelMonitoringReadinessReport["riskQueue"] = [];
+  if (!hasDataset) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add reference/current or reference/analysis data slices plus prediction, target, schema, segment, or timestamp columns.",
+      why: "Model monitoring cannot separate baseline behavior from live behavior without explicit data periods and model-output columns.",
+      relatedHref: "html/model-monitoring-readiness.html"
+    });
+  }
+  if (hasDataset && !hasDrift) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add data, prediction, target, concept, univariate, or multivariate drift checks.",
+      why: "Monitoring is incomplete if it records data but never evaluates distribution or behavior changes.",
+      relatedHref: "html/model-monitoring-readiness.html"
+    });
+  }
+  if (hasDrift && !hasQuality) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add missing-value, outlier, data-quality, schema-validation, constraint, or validator checks.",
+      why: "Drift findings are harder to trust when schema and input-quality regressions are not tracked separately.",
+      relatedHref: "html/model-monitoring-readiness.html"
+    });
+  }
+  if (hasDrift && !hasPerformance) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add classification, regression, estimated-performance, realized-performance, or threshold evidence.",
+      why: "Operational monitoring should connect drift to model performance impact, especially when labels arrive late.",
+      relatedHref: "html/model-monitoring-readiness.html"
+    });
+  }
+  if ((hasDrift || hasPerformance) && !hasReporting) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Persist monitoring reports, test suites, dashboards, snapshots, workspaces, or exported artifacts.",
+      why: "Monitoring evidence needs a durable report surface for learner review and CI artifacts.",
+      relatedHref: "html/model-monitoring-readiness.html"
+    });
+  }
+  if (hasReporting && !hasAlerts) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add alert, threshold, notification, monitor, or schedule evidence.",
+      why: "Reports are useful for audits, but monitoring should also flag abnormal drift or performance changes.",
+      relatedHref: "html/model-monitoring-readiness.html"
+    });
+  }
+  if ((hasReporting || hasAlerts) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Run monitoring smoke commands, drift tests, threshold assertions, and report uploads in CI.",
+      why: "Monitoring instrumentation should be checked automatically instead of only during ad hoc notebooks.",
+      relatedHref: "html/model-monitoring-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Model monitoring readiness report: monitoring setup ${modelMonitoringSetups.length}개, drift signal ${driftSignals.length}개, quality signal ${qualitySignals.length}개, CI signal ${ciSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Model monitoring readiness Evidently whylogs WhyLabs NannyML reference current analysis drift data quality performance report dashboard snapshot alert threshold CI",
+    modelMonitoringSetups,
+    datasetSignals,
+    driftSignals,
+    qualitySignals,
+    performanceSignals,
+    reportingSignals,
+    alertSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"reference_data|current_data|analysis_df|reference period|prediction|target|timestamp|segment\" .", purpose: "Find baseline/live data slices and monitored model-output columns." },
+      { command: "rg \"DataDriftPreset|ColumnDriftMetric|UnivariateDriftCalculator|DataReconstructionDriftCalculator|target distribution|concept drift\" .", purpose: "Find drift detection evidence across data, prediction, target, and concept signals." },
+      { command: "rg \"DataQualityPreset|missing|outlier|DatasetSchema|constraints|Validator|Condition\" .", purpose: "Find data-quality, schema, constraint, and validator evidence." },
+      { command: "rg \"CBPE|DLE|PerformanceCalculator|ClassificationPreset|RegressionPreset|realized performance|estimated performance|threshold\" .", purpose: "Find monitored model-performance and threshold evidence." },
+      { command: "rg \"monitoring-report|drift-report|snapshot|dashboard|upload-artifact|pytest .*drift|jq .*threshold\" .github workflows .", purpose: "Find report persistence, CI drift tests, and threshold assertion evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 reference/current 또는 reference/analysis 데이터가 분리되어 있고 prediction, target, timestamp, segment 정보가 있는지 확인하세요.",
+      "Evidently, whylogs/WhyLabs, NannyML 또는 custom monitoring 코드가 data/prediction/target/concept drift를 계산하는지 확인하세요.",
+      "missing value, outlier, schema validation, constraints, validators 같은 data quality gate가 drift와 분리되어 있는지 확인하세요.",
+      "classification/regression metric, CBPE/DLE 같은 estimated performance, realized performance, threshold/alert가 연결되는지 확인하세요.",
+      "report, test suite, dashboard, snapshot, workspace, export artifact와 CI smoke/drift/threshold command가 남는지 확인하세요."
+    ]
+  };
+}
+
+type ModelMonitoringSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function modelMonitoringSourceFiles(walk: WalkResult): Promise<ModelMonitoringSourceFile[]> {
+  const rows: ModelMonitoringSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!modelMonitoringInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!modelMonitoringPathSignal(file.relPath) && !modelMonitoringContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 260);
+}
+
+function modelMonitoringInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements\.txt|setup\.py|setup\.cfg|monitoring\.py|monitor\.py|drift\.py|quality\.py|performance\.py|workflow\.ya?ml)$/i.test(base)
+    || /(^|\/)(evidently|whylogs|whylabs|nannyml|monitoring|monitor|drift|quality|performance|alerts|reports|model-monitoring)(\/|\.|-|_|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/[^/]+\.(ya?ml)$/i.test(filePath)
+    || /\.(json|ya?ml|toml|txt|ts|tsx|js|jsx|mjs|cjs|md|rst|sql|py|go|java|scala|kt|rs|ipynb)$/i.test(filePath);
+}
+
+function modelMonitoringPathSignal(filePath: string): boolean {
+  return /(^|\/)(evidently|whylogs|whylabs|nannyml|monitoring|monitor|drift|quality|performance|alerts|reports|model-monitoring)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(monitoring\.py|monitor\.py|drift\.py|quality\.py|performance\.py)$/i.test(path.basename(filePath));
+}
+
+function modelMonitoringContentSignal(text: string): boolean {
+  return /Evidently|DataDriftPreset|DatasetDriftMetric|ColumnDriftMetric|why\.log|DatasetProfileView|WhyLabs|NannyML|CBPE|DLE|UnivariateDriftCalculator|DataReconstructionDriftCalculator|PerformanceCalculator|reference_data|current_data|analysis_df|concept drift|model monitoring|data drift|prediction drift/i.test(text);
+}
+
+function modelMonitoringSetupsFromSources(sourceFiles: ModelMonitoringSourceFile[]): ModelMonitoringReadinessReport["modelMonitoringSetups"] {
+  const rows: ModelMonitoringReadinessReport["modelMonitoringSetups"] = [];
+  for (const source of sourceFiles) {
+    const referenceCount = countMatches(source.text, /reference_data|reference data|reference_df|reference period|baseline|ref_data|fit\(\s*reference|adult_ref|evi_ref_data/gi);
+    const currentCount = countMatches(source.text, /current_data|current data|current_df|analysis_df|analysis data|analysis period|production|prod_data|run\([^,\n]+,\s*(?:current|analysis|prod)/gi);
+    const driftCount = countMatches(source.text, /DataDriftPreset|DatasetDriftMetric|ColumnDriftMetric|ColumnDataDrift|drift|UnivariateDriftCalculator|DataReconstructionDriftCalculator|DomainClassifier|TargetDistributionCalculator|concept drift|training-serving skew/gi);
+    const qualityCount = countMatches(source.text, /DataQualityPreset|data quality|missing values?|missing_count|outlier|unseen value|schema validation|DatasetSchema|ColumnSchema|constraints?|Validator|Condition/gi);
+    const performanceCount = countMatches(source.text, /ClassificationPreset|RegressionPreset|ModelQuality|PerformanceCalculator|CBPE|DLE|Confidence-Based Performance|performance estimation|realized performance|estimated performance|metric|roc_auc|accuracy|f1|mae|rmse/gi);
+    const reportCount = countMatches(source.text, /Report\(|TestSuite|report\.run|snapshot|dashboard|workspace|save_html|as_html|json\(|to_json|writer\(|upload|monitoring-report|drift-report/gi);
+    const alertCount = countMatches(source.text, /alert|threshold|upper_threshold|lower_threshold|notification|monitor|abnormal|failed test|raise_alert/gi);
+    const scheduleCount = countMatches(source.text, /schedule|cron|workflow_dispatch|on:\s*\[|daily|hourly|monitoring job|scheduled/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github actions|uses: actions\/|pytest .*drift|monitoring smoke|drift test|threshold assertion|upload-artifact|monitoring-report|drift-report|jq .*threshold/gi);
+    const totalSignals = referenceCount + currentCount + driftCount + qualityCount + performanceCount + reportCount + alertCount + scheduleCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: modelMonitoringTool(source),
+      referenceCount,
+      currentCount,
+      driftCount,
+      qualityCount,
+      performanceCount,
+      reportCount,
+      alertCount,
+      scheduleCount,
+      ciCount,
+      readiness: referenceCount > 0 && currentCount > 0 && driftCount > 0 && qualityCount > 0 && performanceCount > 0 && reportCount > 0 && (alertCount + scheduleCount + ciCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} model monitoring readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.referenceCount + b.currentCount + b.driftCount + b.qualityCount + b.performanceCount + b.reportCount + b.alertCount + b.scheduleCount + b.ciCount) - (a.referenceCount + a.currentCount + a.driftCount + a.qualityCount + a.performanceCount + a.reportCount + a.alertCount + a.scheduleCount + a.ciCount))
+    .slice(0, 70);
+}
+
+function modelMonitoringTool(source: ModelMonitoringSourceFile): ModelMonitoringReadinessReport["modelMonitoringSetups"][number]["tool"] {
+  if (/nannyml/i.test(source.filePath) || /NannyML|CBPE|DLE|UnivariateDriftCalculator|DataReconstructionDriftCalculator|PerformanceCalculator/i.test(source.text)) return "nannyml";
+  if (/whylogs|whylabs/i.test(source.filePath) || /why\.log|DatasetProfileView|WhyLabs|DatasetSchema|ColumnSchema|constraints?|Validator|Condition/i.test(source.text)) return "whylogs";
+  if (/evidently/i.test(source.filePath) || /Evidently|DataDriftPreset|ColumnDriftMetric|DatasetDriftMetric|Report\(|TestSuite|DataQualityPreset|ClassificationPreset|RegressionPreset/i.test(source.text)) return "evidently";
+  if (/monitoring|monitor|drift|quality|performance|alerts/i.test(source.filePath) || /model monitoring|data drift|prediction drift|monitoring report/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function modelMonitoringDatasetSignals(sourceFiles: ModelMonitoringSourceFile[]): ModelMonitoringReadinessReport["datasetSignals"] {
+  const specs: Array<{ signal: ModelMonitoringReadinessReport["datasetSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "reference-data", pattern: /reference_data|reference data|reference_df|reference period|baseline|fit\(\s*reference/i, evidence: "reference data evidence was detected." },
+    { signal: "current-data", pattern: /current_data|current data|current_df|production|prod_data|report\.run\([^,\n]+,\s*current/i, evidence: "current/live data evidence was detected." },
+    { signal: "analysis-data", pattern: /analysis_df|analysis data|analysis period|calculate\(\s*analysis/i, evidence: "analysis-period data evidence was detected." },
+    { signal: "column-schema", pattern: /ColumnMapping|column_mapping|DatasetSchema|ColumnSchema|schema|column_names|feature_column_names|features=/i, evidence: "column schema evidence was detected." },
+    { signal: "prediction-column", pattern: /prediction|predicted|y_pred|y_pred_proba|prediction_column|model output|model_output/i, evidence: "prediction column evidence was detected." },
+    { signal: "target-column", pattern: /target|y_true|actual|ground_truth|target_column|label/i, evidence: "target/label column evidence was detected." },
+    { signal: "segment", pattern: /segment|segmentation|partition|slice|chunk|groupby|chunk_size/i, evidence: "segment/chunk evidence was detected." },
+    { signal: "timestamp", pattern: /timestamp|time_column|timestamp_column_name|data_timestamp|created_at|datetime/i, evidence: "timestamp evidence was detected." }
+  ];
+  return modelMonitoringSignalFromSpecs(sourceFiles, specs, "dataset", "signal");
+}
+
+function modelMonitoringDriftSignals(sourceFiles: ModelMonitoringSourceFile[]): ModelMonitoringReadinessReport["driftSignals"] {
+  const specs: Array<{ signal: ModelMonitoringReadinessReport["driftSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "data-drift", pattern: /DataDriftPreset|DatasetDriftMetric|ColumnDriftMetric|ColumnDataDrift|data drift|dataset drift/i, evidence: "data drift evidence was detected." },
+    { signal: "prediction-drift", pattern: /prediction drift|model output drift|output drift|predicted.*drift|y_pred.*drift/i, evidence: "prediction drift evidence was detected." },
+    { signal: "target-drift", pattern: /target.*drift|TargetDistributionCalculator|target distribution|label.*drift/i, evidence: "target drift evidence was detected." },
+    { signal: "concept-drift", pattern: /concept drift|performance degradation|training-serving skew|serving skew/i, evidence: "concept drift evidence was detected." },
+    { signal: "univariate-drift", pattern: /UnivariateDriftCalculator|univariate|KS test|Hellinger|Wasserstein|Jensen-Shannon/i, evidence: "univariate drift evidence was detected." },
+    { signal: "multivariate-drift", pattern: /DataReconstructionDriftCalculator|multivariate|reconstruction error|DomainClassifier|PCA/i, evidence: "multivariate drift evidence was detected." }
+  ];
+  return modelMonitoringSignalFromSpecs(sourceFiles, specs, "drift", "signal");
+}
+
+function modelMonitoringQualitySignals(sourceFiles: ModelMonitoringSourceFile[]): ModelMonitoringReadinessReport["qualitySignals"] {
+  const specs: Array<{ signal: ModelMonitoringReadinessReport["qualitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "missing-values", pattern: /missing values?|missing_count|null_count|nan|isnull|not_null/i, evidence: "missing-value evidence was detected." },
+    { signal: "outliers", pattern: /outlier|out of range|range check|unexpected value|unseen value/i, evidence: "outlier/unseen-value evidence was detected." },
+    { signal: "data-quality", pattern: /DataQualityPreset|data quality|quality metric|quality check|DataQuality/i, evidence: "data quality evidence was detected." },
+    { signal: "schema-validation", pattern: /schema validation|DatasetSchema|ColumnSchema|ColumnMapping|schema|type check|column type/i, evidence: "schema validation evidence was detected." },
+    { signal: "constraints", pattern: /constraints?|SummaryConstraint|ValueConstraint|threshold constraint|expectation/i, evidence: "constraint evidence was detected." },
+    { signal: "validators", pattern: /Validator|Condition|validation result|test preset|TestSuite|validate/i, evidence: "validator evidence was detected." }
+  ];
+  return modelMonitoringSignalFromSpecs(sourceFiles, specs, "quality", "signal");
+}
+
+function modelMonitoringPerformanceSignals(sourceFiles: ModelMonitoringSourceFile[]): ModelMonitoringReadinessReport["performanceSignals"] {
+  const specs: Array<{ signal: ModelMonitoringReadinessReport["performanceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "classification", pattern: /ClassificationPreset|classification|roc_auc|average_precision|precision|recall|f1|accuracy/i, evidence: "classification performance evidence was detected." },
+    { signal: "regression", pattern: /RegressionPreset|regression|rmse|mae|mape|r2|mean absolute/i, evidence: "regression performance evidence was detected." },
+    { signal: "estimated-performance", pattern: /CBPE|DLE|Confidence-Based Performance|Direct Loss Estimation|performance estimation|estimated performance/i, evidence: "estimated performance evidence was detected." },
+    { signal: "realized-performance", pattern: /PerformanceCalculator|realized performance|actual performance|y_true|target values|delayed target/i, evidence: "realized performance evidence was detected." },
+    { signal: "threshold", pattern: /threshold|upper_threshold|lower_threshold|ConstantThreshold|StandardDeviationThreshold|alert flag/i, evidence: "performance threshold evidence was detected." }
+  ];
+  return modelMonitoringSignalFromSpecs(sourceFiles, specs, "performance", "signal");
+}
+
+function modelMonitoringReportingSignals(sourceFiles: ModelMonitoringSourceFile[]): ModelMonitoringReadinessReport["reportingSignals"] {
+  const specs: Array<{ signal: ModelMonitoringReadinessReport["reportingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "report", pattern: /Report\(|report\.run|monitoring-report|drift-report|as_report|report json/i, evidence: "report evidence was detected." },
+    { signal: "test-suite", pattern: /TestSuite|TestPreset|DataDriftTestPreset|test_report|failed test|suite/i, evidence: "test-suite evidence was detected." },
+    { signal: "dashboard", pattern: /dashboard|Dashboard|panel|plot\(|visualize|charts?/i, evidence: "dashboard/visualization evidence was detected." },
+    { signal: "snapshot", pattern: /snapshot|Snapshot|add_snapshot|load_model|profile view|DatasetProfileView/i, evidence: "snapshot/profile evidence was detected." },
+    { signal: "workspace", pattern: /workspace|Workspace|project\.id|WhyLabs|remote project|monitoring workspace/i, evidence: "workspace evidence was detected." },
+    { signal: "export", pattern: /save_html|as_html|to_json|json\(|export|writer\(|upload|upload-artifact/i, evidence: "export evidence was detected." }
+  ];
+  return modelMonitoringSignalFromSpecs(sourceFiles, specs, "reporting", "signal");
+}
+
+function modelMonitoringAlertSignals(sourceFiles: ModelMonitoringSourceFile[]): ModelMonitoringReadinessReport["alertSignals"] {
+  const specs: Array<{ signal: ModelMonitoringReadinessReport["alertSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "alert", pattern: /alert|alerts?|raise_alert|failed test|abnormal/i, evidence: "alert evidence was detected." },
+    { signal: "threshold", pattern: /threshold|upper_threshold|lower_threshold|thresholds|threshold assertion/i, evidence: "threshold evidence was detected." },
+    { signal: "notification", pattern: /notification|notify|slack|email|webhook|pager/i, evidence: "notification evidence was detected." },
+    { signal: "monitor", pattern: /monitoring|monitor|monitoring job|model monitor/i, evidence: "monitor evidence was detected." },
+    { signal: "schedule", pattern: /schedule|cron|workflow_dispatch|daily|hourly|on:\s*\[|scheduled/i, evidence: "schedule evidence was detected." }
+  ];
+  return modelMonitoringSignalFromSpecs(sourceFiles, specs, "alert", "signal");
+}
+
+function modelMonitoringCiSignals(sourceFiles: ModelMonitoringSourceFile[]): ModelMonitoringReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: ModelMonitoringReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|uses: actions\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "monitoring-smoke-command", pattern: /python .*monitor|python .*drift|monitoring smoke|model monitor|nannyml|evidently|whylogs/i, evidence: "monitoring smoke command evidence was detected." },
+    { signal: "drift-test-command", pattern: /pytest .*drift|drift test|DataDriftTestPreset|test.*drift|--drift-test/i, evidence: "drift test command evidence was detected." },
+    { signal: "report-upload", pattern: /upload-artifact|monitoring-report|drift-report|profile\.bin|snapshot|dashboard|nannyml-results/i, evidence: "report upload evidence was detected." },
+    { signal: "threshold-assertion-command", pattern: /threshold assertion|jq .*threshold|jq .*drift|assert .*threshold|assert .*drift/i, evidence: "threshold assertion command evidence was detected." }
+  ];
+  return modelMonitoringSignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function modelMonitoringPackageSignals(sourceFiles: ModelMonitoringSourceFile[]): ModelMonitoringReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ModelMonitoringReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "evidently", pattern: /evidently|Evidently|DataDriftPreset|Report\(|ColumnDriftMetric/i, evidence: "Evidently package/API evidence was detected." },
+    { signal: "whylogs", pattern: /whylogs|why\.log|DatasetProfileView|DatasetSchema|ColumnSchema/i, evidence: "whylogs package/API evidence was detected." },
+    { signal: "whylabs", pattern: /whylabs|WhyLabs|WhyLabsWriter|writer\(["']whylabs["']\)/i, evidence: "WhyLabs package/API evidence was detected." },
+    { signal: "nannyml", pattern: /nannyml|NannyML|CBPE|DLE|UnivariateDriftCalculator|PerformanceCalculator/i, evidence: "NannyML package/API evidence was detected." },
+    { signal: "custom", pattern: /model monitoring|monitoring report|drift report|monitoring client|drift detector/i, evidence: "custom monitoring evidence was detected." }
+  ];
+  return modelMonitoringSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function modelMonitoringSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ModelMonitoringSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/model-monitoring-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }

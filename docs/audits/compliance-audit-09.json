@@ -1,6 +1,6 @@
 {
   "iteration": 9,
-  "createdAt": "2026-06-05T05:09:51.837Z",
+  "createdAt": "2026-06-05T05:30:03.132Z",
   "checks": [
     {
       "name": "project setup",
@@ -410,6 +410,13 @@
     },
     {
       "name": "experiment tracking readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "model monitoring readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

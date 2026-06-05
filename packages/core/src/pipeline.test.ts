@@ -67,6 +67,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-store-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-registry-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "experiment-tracking-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-monitoring-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
@@ -214,6 +215,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-store-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-registry-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "experiment-tracking-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-monitoring-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ci-cd.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
@@ -364,6 +366,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-store-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "model-registry-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "experiment-tracking-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "model-monitoring-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ci-cd.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
@@ -541,6 +544,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/feature-store-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/model-registry-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/experiment-tracking-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/model-monitoring-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ci-cd.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/coverage-readiness.html\"");
@@ -3296,6 +3300,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/feature-store-readiness.html");
     expect(exportManifestText).toContain("html/model-registry-readiness.html");
     expect(exportManifestText).toContain("html/experiment-tracking-readiness.html");
+    expect(exportManifestText).toContain("html/model-monitoring-readiness.html");
     expect(exportManifestText).toContain("html/ci-cd.html");
     expect(exportManifestText).toContain("html/unit-tests.html");
     expect(exportManifestText).toContain("html/coverage-readiness.html");
@@ -3465,6 +3470,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("feature-store-readiness.html");
     expect(learningPathHtml).toContain("model-registry-readiness.html");
     expect(learningPathHtml).toContain("experiment-tracking-readiness.html");
+    expect(learningPathHtml).toContain("model-monitoring-readiness.html");
     expect(learningPathHtml).toContain("ci-cd.html");
     expect(learningPathHtml).toContain("unit-tests.html");
     expect(learningPathHtml).toContain("coverage-readiness.html");
@@ -7863,6 +7869,185 @@ describe("RepoTutor core pipeline", () => {
     const experimentTrackingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "experiment-tracking-readiness.html"), "utf8");
     expect(experimentTrackingHtml).toContain("experiment-tracking-readiness-card");
     expect(experimentTrackingHtml).toContain("data-source-pattern=\"ExperimentTracking\"");
+  });
+
+  it("detects model monitoring readiness without running monitoring SDKs or drift jobs", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-model-monitoring-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-model-monitoring-source-"));
+    await fs.mkdir(path.join(sourceRoot, "evidently"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "whylogs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "nannyml"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "name = \"model-monitoring-fixture\"",
+      "description = \"Evidently whylogs WhyLabs NannyML model monitoring static readiness fixture\"",
+      "dependencies = [\"evidently\", \"whylogs\", \"whylabs-client\", \"nannyml\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "evidently", "monitoring.py"), [
+      "from evidently import Report",
+      "from evidently.presets import DataDriftPreset, DataQualityPreset, ClassificationPreset, RegressionPreset",
+      "from evidently.legacy.metrics import DatasetDriftMetric",
+      "from evidently.metrics import ColumnDriftMetric",
+      "from evidently.test_suite import TestSuite",
+      "from evidently.tests import DataDriftTestPreset",
+      "reference_data = load_reference_data()",
+      "current_data = load_current_data()",
+      "prediction_column = \"prediction\"",
+      "target_column = \"target\"",
+      "timestamp_column = \"timestamp\"",
+      "segments = current_data.groupby(\"segment\")",
+      "report = Report([DataDriftPreset(), DataQualityPreset(), ClassificationPreset(), RegressionPreset(), DatasetDriftMetric(), ColumnDriftMetric(column_name=prediction_column)])",
+      "snapshot = report.run(reference_data, current_data)",
+      "test_suite = TestSuite(tests=[DataDriftTestPreset()])",
+      "test_report = test_suite.run(reference_data=reference_data, current_data=current_data)",
+      "workspace = \"monitoring workspace dashboard\"",
+      "snapshot.json()",
+      "snapshot.save_html(\"drift-report.html\")",
+      "alert = \"alert threshold notification if failed test abnormal drift\"",
+      "threshold_assertion = \"jq '.drift < 0.1' monitoring-report.json\"",
+      "drift_comment = \"prediction drift target distribution target drift model output drift\"",
+      "custom_monitor = \"model monitor dashboard snapshot export\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "whylogs", "profile.py"), [
+      "import whylogs as why",
+      "from whylogs.core import DatasetProfileView",
+      "from whylogs.core.schema import DatasetSchema, ColumnSchema",
+      "from whylogs.core.constraints import ConstraintsBuilder, MetricsSelector, Condition",
+      "from whylogs.experimental.core.validators import Validator",
+      "reference_df = load_reference_df()",
+      "analysis_df = load_analysis_df()",
+      "schema = DatasetSchema(types={\"prediction\": float, \"target\": int, \"timestamp\": str}, columns={\"segment\": ColumnSchema()})",
+      "reference_profile = why.log(reference_df, schema=schema).profile().view()",
+      "current_profile = why.log(analysis_df, schema=schema).profile().view()",
+      "profile_view = DatasetProfileView.merge(reference_profile, current_profile)",
+      "constraints = ConstraintsBuilder(profile_view)",
+      "constraints.add_constraint(MetricsSelector.mean(\"prediction\") < 0.8)",
+      "validator = Validator(name=\"missing values outlier schema validation data quality Condition\", conditions=[Condition()])",
+      "writer = current_profile.writer(\"whylabs\")",
+      "writer.write()",
+      "reference_profile.writer(\"whylabs_reference\").write()",
+      "drift = \"detect data drift concept drift training-serving skew model performance degradation missing values outliers\"",
+      "profile_view.serialize()",
+      "segment = \"segmentation partition chunk\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "nannyml", "monitor.py"), [
+      "import nannyml as nml",
+      "from nannyml.drift.univariate import UnivariateDriftCalculator",
+      "from nannyml.drift.multivariate.data_reconstruction import DataReconstructionDriftCalculator",
+      "from nannyml.performance_estimation.confidence_based import CBPE",
+      "from nannyml.performance_estimation.direct_loss_estimation import DLE",
+      "from nannyml.performance_calculation import PerformanceCalculator",
+      "from nannyml.thresholds import ConstantThreshold, StandardDeviationThreshold",
+      "reference = load_reference()",
+      "analysis = load_analysis()",
+      "feature_column_names = [\"age\", \"amount\"]",
+      "y_pred = \"prediction\"",
+      "y_pred_proba = \"prediction_score\"",
+      "y_true = \"target\"",
+      "timestamp_column_name = \"timestamp\"",
+      "univariate = UnivariateDriftCalculator(column_names=feature_column_names, timestamp_column_name=timestamp_column_name, thresholds={\"amount\": ConstantThreshold(upper=0.2)})",
+      "univariate.fit(reference)",
+      "univariate_results = univariate.calculate(analysis)",
+      "multivariate = DataReconstructionDriftCalculator(column_names=feature_column_names, chunk_size=500, threshold=StandardDeviationThreshold())",
+      "multivariate.fit(reference)",
+      "multivariate_results = multivariate.calculate(analysis)",
+      "cbpe = CBPE(metrics=[\"roc_auc\", \"accuracy\", \"f1\"], y_pred_proba=y_pred_proba, y_pred=y_pred, y_true=y_true, problem_type=\"classification_binary\")",
+      "cbpe.fit(reference)",
+      "estimated_performance = cbpe.estimate(analysis)",
+      "dle = DLE(metrics=[\"rmse\", \"mae\"], y_pred=y_pred, y_true=y_true, feature_column_names=feature_column_names)",
+      "dle.fit(reference)",
+      "estimated_regression = dle.estimate(analysis)",
+      "realized = PerformanceCalculator(metrics=[\"roc_auc\", \"precision\", \"recall\"], y_pred=y_pred, y_true=y_true)",
+      "realized_performance = realized.calculate(analysis)",
+      "alerts = \"upper_threshold lower_threshold alert flag notification monitor schedule daily\"",
+      "univariate_results.to_df().to_json(\"nannyml-results.json\")"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "model-monitoring.yml"), [
+      "name: model-monitoring",
+      "on: [push, schedule, workflow_dispatch]",
+      "jobs:",
+      "  monitoring:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: python evidently/monitoring.py",
+      "      - run: python whylogs/profile.py",
+      "      - run: python nannyml/monitor.py",
+      "      - run: pytest tests/model_monitoring --drift-test",
+      "      - run: jq '.drift < 0.1 and .threshold < 0.2' monitoring-report.json",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: monitoring-report",
+      "          path: |",
+      "            monitoring-report.json",
+      "            drift-report.html",
+      "            whylogs-profile.bin",
+      "            nannyml-results"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "model-monitoring-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      modelMonitoringSetups: Array<{ tool: string; referenceCount: number; currentCount: number; driftCount: number; qualityCount: number; performanceCount: number; reportCount: number; alertCount: number; scheduleCount: number; ciCount: number }>;
+      datasetSignals: Array<{ signal: string; readiness: string }>;
+      driftSignals: Array<{ signal: string; readiness: string }>;
+      qualitySignals: Array<{ signal: string; readiness: string }>;
+      performanceSignals: Array<{ signal: string; readiness: string }>;
+      reportingSignals: Array<{ signal: string; readiness: string }>;
+      alertSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (tool: string) => report.modelMonitoringSetups
+      .filter((item) => item.tool === tool)
+      .reduce((totals, item) => ({
+        referenceCount: totals.referenceCount + item.referenceCount,
+        currentCount: totals.currentCount + item.currentCount,
+        driftCount: totals.driftCount + item.driftCount,
+        qualityCount: totals.qualityCount + item.qualityCount,
+        performanceCount: totals.performanceCount + item.performanceCount,
+        reportCount: totals.reportCount + item.reportCount,
+        alertCount: totals.alertCount + item.alertCount,
+        scheduleCount: totals.scheduleCount + item.scheduleCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { referenceCount: 0, currentCount: 0, driftCount: 0, qualityCount: 0, performanceCount: 0, reportCount: 0, alertCount: 0, scheduleCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Model monitoring readiness Evidently whylogs WhyLabs NannyML reference current analysis drift data quality performance report dashboard snapshot alert threshold CI");
+    expect(setupTotals("evidently").driftCount).toBeGreaterThan(0);
+    expect(setupTotals("evidently").reportCount).toBeGreaterThan(0);
+    expect(setupTotals("whylogs").qualityCount).toBeGreaterThan(0);
+    expect(setupTotals("whylogs").reportCount).toBeGreaterThan(0);
+    expect(setupTotals("nannyml").performanceCount).toBeGreaterThan(0);
+    expect(setupTotals("nannyml").alertCount).toBeGreaterThan(0);
+    expect(report.modelMonitoringSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.datasetSignals)).toEqual(expect.arrayContaining(["reference-data", "current-data", "analysis-data", "column-schema", "prediction-column", "target-column", "segment", "timestamp"]));
+    expect(readySignals(report.driftSignals)).toEqual(expect.arrayContaining(["data-drift", "prediction-drift", "target-drift", "concept-drift", "univariate-drift", "multivariate-drift"]));
+    expect(readySignals(report.qualitySignals)).toEqual(expect.arrayContaining(["missing-values", "outliers", "data-quality", "schema-validation", "constraints", "validators"]));
+    expect(readySignals(report.performanceSignals)).toEqual(expect.arrayContaining(["classification", "regression", "estimated-performance", "realized-performance", "threshold"]));
+    expect(readySignals(report.reportingSignals)).toEqual(expect.arrayContaining(["report", "test-suite", "dashboard", "snapshot", "workspace", "export"]));
+    expect(readySignals(report.alertSignals)).toEqual(expect.arrayContaining(["alert", "threshold", "notification", "monitor", "schedule"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "monitoring-smoke-command", "drift-test-command", "report-upload", "threshold-assertion-command"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["evidently", "whylogs", "whylabs", "nannyml", "custom"]));
+    expect(report.riskQueue).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"reference_data|current_data|analysis_df|reference period|prediction|target|timestamp|segment\" .",
+      "rg \"DataDriftPreset|ColumnDriftMetric|UnivariateDriftCalculator|DataReconstructionDriftCalculator|target distribution|concept drift\" .",
+      "rg \"monitoring-report|drift-report|snapshot|dashboard|upload-artifact|pytest .*drift|jq .*threshold\" .github workflows ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-monitoring-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-monitoring-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "model-monitoring-readiness.html"))).resolves.toBeUndefined();
+    const modelMonitoringMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "model-monitoring-readiness.md"), "utf8");
+    expect(modelMonitoringMarkdown).toContain("Dataset Signals");
+    expect(modelMonitoringMarkdown).toContain("Drift Signals");
+    expect(modelMonitoringMarkdown).toContain("Performance Signals");
+    const modelMonitoringHtml = await fs.readFile(path.join(result.session.outputPaths.html, "model-monitoring-readiness.html"), "utf8");
+    expect(modelMonitoringHtml).toContain("model-monitoring-readiness-card");
+    expect(modelMonitoringHtml).toContain("data-source-pattern=\"ModelMonitoring\"");
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {

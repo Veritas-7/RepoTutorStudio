@@ -3485,6 +3485,86 @@ export const ExperimentTrackingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ModelMonitoringReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  modelMonitoringSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["evidently", "whylogs", "nannyml", "custom", "unknown"]),
+    referenceCount: z.number().int().nonnegative(),
+    currentCount: z.number().int().nonnegative(),
+    driftCount: z.number().int().nonnegative(),
+    qualityCount: z.number().int().nonnegative(),
+    performanceCount: z.number().int().nonnegative(),
+    reportCount: z.number().int().nonnegative(),
+    alertCount: z.number().int().nonnegative(),
+    scheduleCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  datasetSignals: z.array(z.object({
+    signal: z.enum(["reference-data", "current-data", "analysis-data", "column-schema", "prediction-column", "target-column", "segment", "timestamp", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  driftSignals: z.array(z.object({
+    signal: z.enum(["data-drift", "prediction-drift", "target-drift", "concept-drift", "univariate-drift", "multivariate-drift", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  qualitySignals: z.array(z.object({
+    signal: z.enum(["missing-values", "outliers", "data-quality", "schema-validation", "constraints", "validators", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  performanceSignals: z.array(z.object({
+    signal: z.enum(["classification", "regression", "estimated-performance", "realized-performance", "threshold", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reportingSignals: z.array(z.object({
+    signal: z.enum(["report", "test-suite", "dashboard", "snapshot", "workspace", "export", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  alertSignals: z.array(z.object({
+    signal: z.enum(["alert", "threshold", "notification", "monitor", "schedule", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "monitoring-smoke-command", "drift-test-command", "report-upload", "threshold-assertion-command", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["evidently", "whylogs", "whylabs", "nannyml", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CiCdReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -9323,6 +9403,7 @@ export type DataCatalogReadinessReport = z.infer<typeof DataCatalogReadinessRepo
 export type FeatureStoreReadinessReport = z.infer<typeof FeatureStoreReadinessReportSchema>;
 export type ModelRegistryReadinessReport = z.infer<typeof ModelRegistryReadinessReportSchema>;
 export type ExperimentTrackingReadinessReport = z.infer<typeof ExperimentTrackingReadinessReportSchema>;
+export type ModelMonitoringReadinessReport = z.infer<typeof ModelMonitoringReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type CoverageReadinessReport = z.infer<typeof CoverageReadinessReportSchema>;
