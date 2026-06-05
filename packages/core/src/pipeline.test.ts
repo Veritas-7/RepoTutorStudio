@@ -28,6 +28,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "license-rights-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "sbom-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "security-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "sast-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "scorecard-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "provenance-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "advisory-report.json"))).resolves.toBeUndefined();
@@ -190,6 +191,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "license-rights.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "sbom.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "security-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "sast-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "scorecard.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "provenance.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "advisories.md"))).resolves.toBeUndefined();
@@ -355,6 +357,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "license-rights.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "sbom.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "security-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "sast-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "scorecard.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "provenance.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "advisories.html"))).resolves.toBeUndefined();
@@ -547,6 +550,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/license-rights.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/sbom.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/security-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/sast-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/scorecard.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/provenance.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/advisories.html\"");
@@ -922,6 +926,24 @@ describe("RepoTutor core pipeline", () => {
     expect(securityReadinessMarkdown).toContain("Source pattern: Trivy");
     expect(securityReadinessMarkdown).toContain("## Scanner Targets");
     expect(securityReadinessMarkdown).toContain("## Action Queue");
+    const sastReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "sast-readiness-report.json"), "utf8");
+    expect(sastReadinessText).toContain("SAST readiness Semgrep rules pattern pattern-either metavariable CodeQL init analyze queries security-extended security-and-quality qlpack SonarQube sonar-project.properties sonar.sources sonar.exclusions quality gate Snyk Code SARIF upload-sarif code scanning");
+    expect(sastReadinessText).toContain("\"sastSetups\"");
+    expect(sastReadinessText).toContain("\"toolSignals\"");
+    expect(sastReadinessText).toContain("\"ruleSignals\"");
+    expect(sastReadinessText).toContain("\"querySignals\"");
+    expect(sastReadinessText).toContain("\"outputSignals\"");
+    expect(sastReadinessText).toContain("RepoTutor records SAST readiness only");
+    const sastReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "sast-readiness.html"), "utf8");
+    expect(sastReadinessHtml).toContain("SAST Readiness");
+    expect(sastReadinessHtml).toContain("sast-readiness-card");
+    expect(sastReadinessHtml).toContain("data-source-pattern=\"SAST\"");
+    expect(sastReadinessHtml).toContain("SAST Snapshot");
+    const sastReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "sast-readiness.md"), "utf8");
+    expect(sastReadinessMarkdown).toContain("# SAST Readiness");
+    expect(sastReadinessMarkdown).toContain("Source pattern: SAST");
+    expect(sastReadinessMarkdown).toContain("## Rule Signals");
+    expect(sastReadinessMarkdown).toContain("## Output Signals");
     const scorecardText = await fs.readFile(path.join(result.session.outputPaths.analysis, "scorecard-report.json"), "utf8");
     expect(scorecardText).toContain("OpenSSF Scorecard checks score 0-10 risk remediation structured results policy measurement");
     expect(scorecardText).toContain("\"aggregateScore\"");
@@ -3495,6 +3517,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/license-rights.html");
     expect(exportManifestText).toContain("html/sbom.html");
     expect(exportManifestText).toContain("html/security-readiness.html");
+    expect(exportManifestText).toContain("html/sast-readiness.html");
     expect(exportManifestText).toContain("html/scorecard.html");
     expect(exportManifestText).toContain("html/provenance.html");
     expect(exportManifestText).toContain("html/advisories.html");
@@ -3679,6 +3702,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("license-rights.html");
     expect(learningPathHtml).toContain("sbom.html");
     expect(learningPathHtml).toContain("security-readiness.html");
+    expect(learningPathHtml).toContain("sast-readiness.html");
     expect(learningPathHtml).toContain("scorecard.html");
     expect(learningPathHtml).toContain("provenance.html");
     expect(learningPathHtml).toContain("advisories.html");
@@ -10175,6 +10199,207 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "admission-policy-readiness.html"), "utf8");
     expect(html).toContain("admission-policy-readiness-card");
     expect(html).toContain("data-source-pattern=\"AdmissionPolicy\"");
+  });
+
+  it("detects SAST readiness without running analyzers or uploading findings", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-sast-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-sast-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "codeql", "custom"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "security", "semgrep"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "sast:semgrep": "semgrep ci --config security/semgrep --sarif --output reports/semgrep-results.sarif",
+        "sast:snyk": "snyk code test --sarif-file-output reports/snyk-results.sarif",
+        "sast:codeql": "codeql database analyze db .github/codeql/custom --format=sarif-latest --output=reports/codeql-results.sarif",
+        "sast:sonar": "sonar-scanner -Dsonar.qualitygate.wait=true"
+      },
+      devDependencies: {
+        semgrep: "^1.100.0",
+        snyk: "^1.1290.0",
+        "eslint-plugin-security": "^3.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "security", "semgrep", "custom.yml"), [
+      "rules:",
+      "  - id: repo-tutor.detect-dangerous-eval",
+      "    languages: [javascript, typescript, python, go]",
+      "    severity: ERROR",
+      "    message: Avoid dynamic eval in request handlers.",
+      "    mode: taint",
+      "    pattern-sources:",
+      "      - pattern: req.body",
+      "    pattern-sinks:",
+      "      - pattern: eval($X)",
+      "    patterns:",
+      "      - pattern-either:",
+      "          - pattern: eval($X)",
+      "          - pattern-regex: dangerous_.*",
+      "      - metavariable-regex:",
+      "          metavariable: $X",
+      "          regex: .+",
+      "    paths:",
+      "      include:",
+      "        - src/",
+      "      exclude:",
+      "        - dist/",
+      "        - generated/",
+      "    metadata:",
+      "      baseline-ref: origin/main",
+      "      severity-threshold: HIGH",
+      "      fail-threshold: medium"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".semgrepignore"), [
+      "generated/",
+      "dist/",
+      "vendor/",
+      "node_modules/",
+      "nosemgrep suppressions are tracked in review"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "codeql", "codeql.yml"), [
+      "name: repo-tutor-codeql",
+      "paths:",
+      "  - src",
+      "  - packages/app",
+      "paths-ignore:",
+      "  - generated/**",
+      "  - dist/**",
+      "queries:",
+      "  - uses: security-extended",
+      "  - uses: security-and-quality",
+      "  - uses: ./.github/codeql/custom",
+      "packs:",
+      "  - codeql/javascript-queries",
+      "baseline-ref: origin/main",
+      "monorepo packages/ projectBaseDir",
+      "test-scope tests/ sonar.tests"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "codeql", "custom", "qlpack.yml"), [
+      "name: repo-tutor/custom-queries",
+      "version: 0.0.1",
+      "dependencies:",
+      "  codeql/javascript-all: \"*\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "codeql", "custom", "unsafe-eval.ql"), [
+      "import javascript",
+      "from CallExpr call",
+      "where call.getCalleeName() = \"eval\"",
+      "select call, \"Avoid eval in request handlers\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "sonar-project.properties"), [
+      "sonar.projectKey=repo-tutor",
+      "sonar.sources=src,packages/app",
+      "sonar.tests=tests",
+      "sonar.exclusions=generated/**,dist/**,vendor/**",
+      "sonar.coverage.exclusions=**/*.generated.ts",
+      "sonar.issue.ignore.multicriteria=e1",
+      "sonar.qualitygate.wait=true",
+      "quality gate fail-threshold severity-threshold new code baseline"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "sast.yml"), [
+      "name: SAST",
+      "on:",
+      "  pull_request:",
+      "  push:",
+      "jobs:",
+      "  sast:",
+      "    runs-on: ubuntu-latest",
+      "    strategy:",
+      "      matrix:",
+      "        language: [javascript-typescript, python, go]",
+      "        project: [packages/app]",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: semgrep ci --config security/semgrep --sarif --output semgrep-results.sarif",
+      "      - uses: github/codeql-action/init@v3",
+      "        with:",
+      "          languages: javascript-typescript, python, go",
+      "          config-file: .github/codeql/codeql.yml",
+      "          queries: security-extended,security-and-quality,./.github/codeql/custom",
+      "      - uses: github/codeql-action/analyze@v3",
+      "        with:",
+      "          upload: false",
+      "      - uses: github/codeql-action/upload-sarif@v3",
+      "        with:",
+      "          sarif_file: semgrep-results.sarif",
+      "      - uses: SonarSource/sonarqube-scan-action@v5",
+      "        with:",
+      "          args: -Dsonar.qualitygate.wait=true -Dsonar.sources=src -Dsonar.exclusions=generated/**",
+      "      - run: snyk code test --sarif-file-output snyk-results.sarif",
+      "      - run: echo '{}' > sast-readiness-report.json && echo '{}' > semgrep-results.json && echo '<html>sonar report</html>' > sonar-report.html && echo '<testsuite />' > sast-junit.xml",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: sast-artifacts",
+      "          path: |",
+      "            sast-readiness-report.json",
+      "            semgrep-results.sarif",
+      "            snyk-results.sarif",
+      "            sonar-report.html",
+      "            sast-junit.xml",
+      "            code-scanning.sarif",
+      "      - run: echo 'diff-aware only_changed changed files quality gate code scanning security-events upload-artifact SARIF JSON JUnit HTML'"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "app.ts"), [
+      "export function handler(req: { body: string }) {",
+      "  // nosemgrep: repo-tutor.detect-dangerous-eval",
+      "  return eval(req.body);",
+      "}"
+    ].join("\n"));
+
+    const result = await runStudy({
+      source: sourceRoot,
+      sourceBaseDir: sourceRoot,
+      studiesRoot,
+      mode: "standard",
+      level: "junior",
+      enableCodex: false
+    });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "sast-readiness-report.json"), "utf8")) as {
+      sastSetups: Array<{ tool: string; readiness: string; ruleCount: number; queryCount: number; outputCount: number; ciCount: number }>;
+      toolSignals: Array<{ signal: string; readiness: string }>;
+      ruleSignals: Array<{ signal: string; readiness: string }>;
+      querySignals: Array<{ signal: string; readiness: string }>;
+      languageSignals: Array<{ signal: string; readiness: string }>;
+      scopeSignals: Array<{ signal: string; readiness: string }>;
+      baselineSignals: Array<{ signal: string; readiness: string }>;
+      outputSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = (items: Array<{ signal: string; readiness: string }>) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sastSetups.map((item) => item.tool)).toEqual(expect.arrayContaining(["semgrep", "workflow", "codeql", "sonarqube", "package-script"]));
+    expect(report.sastSetups.some((item) => item.tool === "semgrep" && item.ruleCount > 0)).toBe(true);
+    expect(report.sastSetups.some((item) => item.readiness === "ready" && item.outputCount > 0 && item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.toolSignals)).toEqual(expect.arrayContaining(["semgrep", "codeql", "sonarqube", "snyk-code", "eslint-security"]));
+    expect(readySignals(report.ruleSignals)).toEqual(expect.arrayContaining(["semgrep-rule", "pattern", "pattern-either", "pattern-regex", "metavariable", "severity", "message", "taint-mode"]));
+    expect(readySignals(report.querySignals)).toEqual(expect.arrayContaining(["codeql-query", "query-suite", "query-pack", "security-extended", "security-and-quality", "qlpack", "custom-query"]));
+    expect(readySignals(report.languageSignals)).toEqual(expect.arrayContaining(["javascript-typescript", "python", "go", "multi-language"]));
+    expect(readySignals(report.scopeSignals)).toEqual(expect.arrayContaining(["paths", "paths-ignore", "exclusions", "generated-code", "test-scope", "monorepo"]));
+    expect(readySignals(report.baselineSignals)).toEqual(expect.arrayContaining(["baseline-ref", "diff-aware", "pr-scan", "fail-threshold", "severity-threshold", "quality-gate"]));
+    expect(readySignals(report.outputSignals)).toEqual(expect.arrayContaining(["sarif", "json", "junit", "html", "code-scanning", "artifact-upload"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "semgrep-ci", "codeql-init", "codeql-analyze", "sonar-scan-action", "snyk-code", "upload-sarif"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["semgrep", "codeql-action", "codeql-cli", "sonar-scanner", "sonarqube-scan-action", "snyk"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"semgrep ci|semgrep scan|p/ci|rules:|pattern-either|metavariable|mode: taint\" .",
+      "rg \"github/codeql-action/(init|analyze)|codeql.yml|queries:|security-extended|security-and-quality|qlpack.yml|\\\\.ql\" .github .",
+      "rg \"sonar-project.properties|sonar.sources|sonar.exclusions|sonar-scanner|SonarSource/sonarqube-scan-action|sonar.qualitygate.wait\" .",
+      "rg \"snyk code test|SARIF|upload-sarif|code-scanning|upload-artifact|sast-readiness-report\" .github .",
+      "rg \"nosemgrep|\\\\.semgrepignore|paths-ignore|baseline|severity|quality gate|fail-threshold\" ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "sast-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "sast-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "sast-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "sast-readiness.md"), "utf8");
+    expect(markdown).toContain("Rule Signals");
+    expect(markdown).toContain("Query Signals");
+    expect(markdown).toContain("Output Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "sast-readiness.html"), "utf8");
+    expect(html).toContain("sast-readiness-card");
+    expect(html).toContain("data-source-pattern=\"SAST\"");
   });
 
   it("detects API gateway readiness without starting gateways or proxying traffic", async () => {

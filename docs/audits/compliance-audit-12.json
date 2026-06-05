@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-05T09:55:39.607Z",
+  "createdAt": "2026-06-05T10:16:08.204Z",
   "checks": [
     {
       "name": "project setup",
@@ -137,6 +137,13 @@
     },
     {
       "name": "security readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "sast readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
