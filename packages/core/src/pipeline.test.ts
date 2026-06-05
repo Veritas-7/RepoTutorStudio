@@ -102,6 +102,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "service-mesh-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ingress-controller-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "dns-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "certificate-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"))).resolves.toBeUndefined();
@@ -260,6 +261,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "service-mesh-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ingress-controller-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "dns-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "certificate-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "cache-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "logging-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-flag-readiness.md"))).resolves.toBeUndefined();
@@ -421,6 +423,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "service-mesh-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ingress-controller-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "dns-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "certificate-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "cache-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "logging-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-flag-readiness.html"))).resolves.toBeUndefined();
@@ -609,6 +612,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/service-mesh-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ingress-controller-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/dns-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/certificate-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/cache-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/logging-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-flag-readiness.html\"");
@@ -2224,6 +2228,33 @@ describe("RepoTutor core pipeline", () => {
     expect(dnsReadinessMarkdown).toContain("## Provider Signals");
     expect(dnsReadinessMarkdown).toContain("## CoreDNS Signals");
     expect(dnsReadinessMarkdown).toContain("## Ownership Signals");
+    const certificateReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "certificate-readiness-report.json"), "utf8");
+    expect(certificateReadinessText).toContain("Certificate readiness cert-manager step-ca CertMagic ACME Certificate Issuer ClusterIssuer CertificateRequest Order Challenge DNS01 HTTP01 TLS-ALPN renewBefore duration privateKey rotation Secret cainjector trust-manager root intermediate CRL OCSP cmctl step ca renew");
+    expect(certificateReadinessText).toContain("\"certificateSetups\"");
+    expect(certificateReadinessText).toContain("\"platformSignals\"");
+    expect(certificateReadinessText).toContain("\"resourceSignals\"");
+    expect(certificateReadinessText).toContain("\"issuerSignals\"");
+    expect(certificateReadinessText).toContain("\"challengeSignals\"");
+    expect(certificateReadinessText).toContain("\"lifecycleSignals\"");
+    expect(certificateReadinessText).toContain("\"trustSignals\"");
+    expect(certificateReadinessText).toContain("\"revocationSignals\"");
+    expect(certificateReadinessText).toContain("\"automationSignals\"");
+    expect(certificateReadinessText).toContain("\"observabilitySignals\"");
+    expect(certificateReadinessText).toContain("\"ciSignals\"");
+    expect(certificateReadinessText).toContain("\"packageSignals\"");
+    const certificateReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "certificate-readiness.html"), "utf8");
+    expect(certificateReadinessHtml).toContain("Certificate Readiness");
+    expect(certificateReadinessHtml).toContain("certificate-readiness-card");
+    expect(certificateReadinessHtml).toContain("data-source-pattern=\"Certificate\"");
+    expect(certificateReadinessHtml).toContain("Issuer Signals");
+    expect(certificateReadinessHtml).toContain("Lifecycle Signals");
+    expect(certificateReadinessHtml).toContain("Trust Signals");
+    const certificateReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "certificate-readiness.md"), "utf8");
+    expect(certificateReadinessMarkdown).toContain("# Certificate Readiness");
+    expect(certificateReadinessMarkdown).toContain("Source pattern: Certificate readiness");
+    expect(certificateReadinessMarkdown).toContain("## Issuer Signals");
+    expect(certificateReadinessMarkdown).toContain("## Lifecycle Signals");
+    expect(certificateReadinessMarkdown).toContain("## Trust Signals");
     const cacheReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"), "utf8");
     expect(cacheReadinessText).toContain("Node Redis createClient connect get set EX NX expire ttl del mGet mSet scanIterator multi watch clientSideCache RESP socket reconnect isReady");
     expect(cacheReadinessText).toContain("\"cacheSetups\"");
@@ -3525,6 +3556,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/service-mesh-readiness.html");
     expect(exportManifestText).toContain("html/ingress-controller-readiness.html");
     expect(exportManifestText).toContain("html/dns-readiness.html");
+    expect(exportManifestText).toContain("html/certificate-readiness.html");
     expect(exportManifestText).toContain("html/cache-readiness.html");
     expect(exportManifestText).toContain("html/logging-readiness.html");
     expect(exportManifestText).toContain("html/feature-flag-readiness.html");
@@ -3705,6 +3737,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("service-mesh-readiness.html");
     expect(learningPathHtml).toContain("ingress-controller-readiness.html");
     expect(learningPathHtml).toContain("dns-readiness.html");
+    expect(learningPathHtml).toContain("certificate-readiness.html");
     expect(learningPathHtml).toContain("cache-readiness.html");
     expect(learningPathHtml).toContain("logging-readiness.html");
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
@@ -9473,6 +9506,222 @@ describe("RepoTutor core pipeline", () => {
     const dnsHtml = await fs.readFile(path.join(result.session.outputPaths.html, "dns-readiness.html"), "utf8");
     expect(dnsHtml).toContain("dns-readiness-card");
     expect(dnsHtml).toContain("data-source-pattern=\"DNS\"");
+  });
+
+  it("detects certificate readiness without requesting certificates or contacting CA servers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-certificate-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-certificate-source-"));
+    await fs.mkdir(path.join(sourceRoot, "cert-manager"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "step-ca"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "certmagic"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "cert-manager": "^1.16.0",
+        "github.com/smallstep/certificates": "^0.29.0",
+        "github.com/caddyserver/certmagic": "^0.24.0",
+        "github.com/go-acme/lego": "^4.20.0",
+        "crypto/x509": "^1.0.0",
+        openssl: "^3.0.0"
+      },
+      scripts: {
+        "cert:render": "helm template cert-manager ./cert-manager && kubeconform -summary cert-manager",
+        "cert:check": "cmctl check api && cmctl status certificate app-tls",
+        "step:smoke": "step ca certificate app.example.com app.crt app.key && step ca renew app.crt app.key && step ca revoke app.crt",
+        "certmagic:test": "go test ./... # certmagic test ManageSync"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "cert-manager", "certificates.yaml"), [
+      "apiVersion: cert-manager.io/v1",
+      "kind: ClusterIssuer",
+      "metadata: { name: letsencrypt-prod }",
+      "spec:",
+      "  acme:",
+      "    server: https://acme-v02.api.letsencrypt.org/directory",
+      "    email: ops@example.com",
+      "    externalAccountBinding:",
+      "      keyID: eab-key",
+      "    solvers:",
+      "      - dns01:",
+      "          cloudflare:",
+      "            apiTokenSecretRef: { name: cloudflare-token, key: token }",
+      "      - http01:",
+      "          ingress: { class: nginx }",
+      "      - tls-alpn-01: {}",
+      "  ca: { secretName: root-ca }",
+      "  selfSigned: {}",
+      "  vault: { path: pki/sign/example-dot-com }",
+      "---",
+      "apiVersion: cert-manager.io/v1",
+      "kind: Issuer",
+      "metadata: { name: step-ca-issuer }",
+      "spec: { external: { group: certmanager.step.sm, kind: StepIssuer, name: step-ca } }",
+      "---",
+      "apiVersion: cert-manager.io/v1",
+      "kind: Certificate",
+      "metadata: { name: app-tls }",
+      "spec:",
+      "  secretName: app-tls-secret",
+      "  duration: 2160h",
+      "  renewBefore: 360h",
+      "  revisionHistoryLimit: 3",
+      "  issuerRef: { name: letsencrypt-prod, kind: ClusterIssuer }",
+      "  dnsNames: [app.example.com]",
+      "  privateKey:",
+      "    algorithm: ECDSA",
+      "    size: 256",
+      "    rotationPolicy: Always",
+      "  keystores:",
+      "    pkcs12: { create: true }",
+      "    jks: { create: true }",
+      "  status:",
+      "    conditions:",
+      "      - type: Ready",
+      "        status: \"True\"",
+      "        reason: CertificateReady",
+      "---",
+      "kind: CertificateRequest",
+      "metadata: { name: app-tls-request }",
+      "---",
+      "kind: Order",
+      "metadata: { name: app-order }",
+      "---",
+      "kind: Challenge",
+      "metadata: { name: app-dns01 }",
+      "---",
+      "kind: CertificateSigningRequest",
+      "metadata: { name: app-csr }",
+      "---",
+      "kind: Secret",
+      "metadata: { name: app-tls-secret }",
+      "data: { tls.crt: redacted, tls.key: redacted, ca.crt: redacted }",
+      "---",
+      "kind: Ingress",
+      "metadata:",
+      "  annotations:",
+      "    cert-manager.io/cluster-issuer: letsencrypt-prod",
+      "# DNS01 Self Check recursive nameserver --dns01-recursive-nameservers",
+      "# cainjector inject-ca caBundle trust-manager root CA intermediate bootstrap install root",
+      "# CRL OCSP revoke short-lived passive revocation must-staple",
+      "# metrics Prometheus events logs health webhook readiness expiration alert approver-policy",
+      "# github-actions helm template kubeconform cmctl step-ca smoke certmagic test upload-artifact certificate-readiness-report.json"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "step-ca", "ca-config.yaml"), [
+      "step-ca:",
+      "  provisioners:",
+      "    - type: ACME",
+      "      name: acme",
+      "    - type: JWK",
+      "      name: deployer",
+      "    - type: OIDC",
+      "      name: oidc",
+      "  root: root certificate root CA",
+      "  intermediate: online intermediate CA",
+      "  database: postgres",
+      "  authority:",
+      "    claims:",
+      "      defaultTLSCertDuration: 24h",
+      "      maxTLSCertDuration: 24h",
+      "  revocation: CRL OCSP revoke passive revocation short-lived certificates",
+      "  bootstrap: step ca bootstrap",
+      "  installRoot: step certificate install root",
+      "  renew: step ca renew app.crt app.key",
+      "  health: health ready metrics Prometheus Web Admin UI history issuance"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "certmagic", "automation.go"), [
+      "package certs",
+      "import (",
+      "  \"crypto/x509\"",
+      "  \"github.com/caddyserver/certmagic\"",
+      ")",
+      "func configure() {",
+      "  _ = x509.Certificate{}",
+      "  cfg := certmagic.NewDefault()",
+      "  cfg.Storage = certmagic.FileStorage{Path: \"./certs\"}",
+      "  cfg.OnDemand = &certmagic.OnDemandConfig{}",
+      "  cfg.MustStaple = true",
+      "  cfg.ManageSync(nil, []string{\"app.example.com\"})",
+      "  cfg.ManageAsync(nil, []string{\"api.example.com\"})",
+      "  // certificate cache certCache cacheCertificate OCSP OCSPCheckInterval issuer Storage ACME lego TLS-ALPN-01",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "certificate-readiness.yml"), [
+      "name: certificate readiness",
+      "on: [push]",
+      "jobs:",
+      "  certificates:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: helm template cert-manager ./cert-manager && helm lint ./cert-manager",
+      "      - run: kubeconform -summary cert-manager && kubectl apply --dry-run=server -f cert-manager",
+      "      - run: cmctl check api && cmctl status certificate app-tls && cmctl inspect secret app-tls-secret",
+      "      - run: step ca certificate app.example.com app.crt app.key && step ca renew app.crt app.key && step ca revoke app.crt",
+      "      - run: go test ./... # certmagic test",
+      "      - run: openssl x509 -in app.crt -noout -dates && echo '{}' > certificate-readiness-report.json && echo '{}' > certificate-smoke.json && echo '{}' > issuer-check.json && echo '{}' > renewal-check.json",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          path: |",
+      "            certificate-readiness-report.json",
+      "            certificate-smoke.json",
+      "            issuer-check.json",
+      "            renewal-check.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "certificate-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      certificateSetups: Array<{ platform: string; resourceCount: number; issuerCount: number; challengeCount: number; renewalCount: number; secretCount: number; keyCount: number; trustCount: number; revocationCount: number; observabilityCount: number; ciCount: number }>;
+      platformSignals: Array<{ signal: string; readiness: string }>;
+      resourceSignals: Array<{ signal: string; readiness: string }>;
+      issuerSignals: Array<{ signal: string; readiness: string }>;
+      challengeSignals: Array<{ signal: string; readiness: string }>;
+      lifecycleSignals: Array<{ signal: string; readiness: string }>;
+      trustSignals: Array<{ signal: string; readiness: string }>;
+      revocationSignals: Array<{ signal: string; readiness: string }>;
+      automationSignals: Array<{ signal: string; readiness: string }>;
+      observabilitySignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("Certificate readiness cert-manager step-ca CertMagic ACME Certificate Issuer ClusterIssuer CertificateRequest Order Challenge DNS01 HTTP01 TLS-ALPN renewBefore duration privateKey rotation Secret cainjector trust-manager root intermediate CRL OCSP cmctl step ca renew");
+    expect(report.certificateSetups.length).toBeGreaterThan(0);
+    expect(report.certificateSetups.map((item) => item.platform)).toEqual(expect.arrayContaining(["cert-manager", "step-ca", "certmagic"]));
+    expect(report.certificateSetups.some((item) => item.resourceCount > 0 && item.issuerCount > 0 && item.challengeCount > 0 && item.renewalCount > 0 && item.secretCount > 0 && item.keyCount > 0)).toBe(true);
+    expect(report.certificateSetups.some((item) => item.trustCount > 0 && item.revocationCount > 0 && item.observabilityCount > 0 && item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.platformSignals)).toEqual(expect.arrayContaining(["cert-manager", "step-ca", "certmagic", "acme", "vault", "custom"]));
+    expect(readySignals(report.resourceSignals)).toEqual(expect.arrayContaining(["certificate", "certificate-request", "issuer", "cluster-issuer", "order", "challenge", "csr", "secret", "ingress"]));
+    expect(readySignals(report.issuerSignals)).toEqual(expect.arrayContaining(["acme", "ca", "self-signed", "vault", "step-ca", "lets-encrypt", "external"]));
+    expect(readySignals(report.challengeSignals)).toEqual(expect.arrayContaining(["dns01", "http01", "tls-alpn-01", "solver", "eab", "self-check"]));
+    expect(readySignals(report.lifecycleSignals)).toEqual(expect.arrayContaining(["duration", "renew-before", "revision-history", "private-key-rotation", "keystore", "status-conditions", "on-demand", "cache"]));
+    expect(readySignals(report.trustSignals)).toEqual(expect.arrayContaining(["root-ca", "intermediate-ca", "ca-bundle", "cainjector", "trust-manager", "bootstrap", "install-root"]));
+    expect(readySignals(report.revocationSignals)).toEqual(expect.arrayContaining(["crl", "ocsp", "revoke", "short-lived", "passive-revocation", "must-staple"]));
+    expect(readySignals(report.automationSignals)).toEqual(expect.arrayContaining(["cmctl", "step-ca-renew", "certmagic-manage", "storage", "issuer-config", "solver-config", "policy"]));
+    expect(readySignals(report.observabilitySignals)).toEqual(expect.arrayContaining(["metrics", "prometheus", "events", "logs", "health", "webhook", "readiness", "expiration-alert"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "helm-template", "kubeconform", "cmctl-check", "step-ca-smoke", "certmagic-tests", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["cert-manager", "step-ca", "certmagic", "lego", "x509", "openssl"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"kind: (Certificate|CertificateRequest|Issuer|ClusterIssuer|Order|Challenge)|cert-manager.io|secretName|renewBefore|duration|privateKey\" .",
+      "rg \"ACME|DNS01|HTTP01|TLS-ALPN-01|solver|challenge|externalAccountBinding|EAB|self check|nameservers\" .",
+      "rg \"step-ca|step ca renew|provisioner|root certificate|intermediate|bootstrap|install root|revoke|CRL|OCSP\" .",
+      "rg \"CertMagic|certmagic|OnDemand|storage|cache|OCSP|must-staple|ManageSync|ManageAsync|issuer\" .",
+      "rg \"cmctl|helm template|kubeconform|certificate smoke|step-ca smoke|certmagic test|expiration|upload-artifact\" .github ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "certificate-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "certificate-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "certificate-readiness.html"))).resolves.toBeUndefined();
+    const certificateMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "certificate-readiness.md"), "utf8");
+    expect(certificateMarkdown).toContain("Issuer Signals");
+    expect(certificateMarkdown).toContain("Lifecycle Signals");
+    expect(certificateMarkdown).toContain("Trust Signals");
+    const certificateHtml = await fs.readFile(path.join(result.session.outputPaths.html, "certificate-readiness.html"), "utf8");
+    expect(certificateHtml).toContain("certificate-readiness-card");
+    expect(certificateHtml).toContain("data-source-pattern=\"Certificate\"");
   });
 
   it("detects feature store readiness without running feature store backends", async () => {

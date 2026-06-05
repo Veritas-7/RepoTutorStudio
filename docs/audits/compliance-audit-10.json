@@ -1,6 +1,6 @@
 {
   "iteration": 10,
-  "createdAt": "2026-06-05T08:50:26.305Z",
+  "createdAt": "2026-06-05T09:03:31.448Z",
   "checks": [
     {
       "name": "project setup",
@@ -655,6 +655,13 @@
     },
     {
       "name": "dns readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "certificate readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

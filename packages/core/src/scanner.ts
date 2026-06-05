@@ -113,6 +113,7 @@ import {
   ServiceMeshReadinessReport,
   IngressControllerReadinessReport,
   DnsReadinessReport,
+  CertificateReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -290,6 +291,7 @@ export interface AnalysisBundle {
   serviceMeshReadinessReport: ServiceMeshReadinessReport;
   ingressControllerReadinessReport: IngressControllerReadinessReport;
   dnsReadinessReport: DnsReadinessReport;
+  certificateReadinessReport: CertificateReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -467,6 +469,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const serviceMeshReadinessReport = await buildServiceMeshReadinessReport(walk);
   const ingressControllerReadinessReport = await buildIngressControllerReadinessReport(walk);
   const dnsReadinessReport = await buildDnsReadinessReport(walk);
+  const certificateReadinessReport = await buildCertificateReadinessReport(walk);
   const cacheReadinessReport = await buildCacheReadinessReport(walk);
   const loggingReadinessReport = await buildLoggingReadinessReport(walk);
   const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
@@ -526,7 +529,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -25319,6 +25322,301 @@ function dnsReadinessSignalFromSpecs<const T extends readonly { signal: string; 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/dns-readiness.html"
+    } as { signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildCertificateReadinessReport(walk: WalkResult): Promise<CertificateReadinessReport> {
+  const sourceFiles = await certificateReadinessSourceFiles(walk);
+  const certificateSetups = certificateReadinessSetups(sourceFiles);
+  const platformSignals = certificateReadinessPlatformSignals(sourceFiles);
+  const resourceSignals = certificateReadinessResourceSignals(sourceFiles);
+  const issuerSignals = certificateReadinessIssuerSignals(sourceFiles);
+  const challengeSignals = certificateReadinessChallengeSignals(sourceFiles);
+  const lifecycleSignals = certificateReadinessLifecycleSignals(sourceFiles);
+  const trustSignals = certificateReadinessTrustSignals(sourceFiles);
+  const revocationSignals = certificateReadinessRevocationSignals(sourceFiles);
+  const automationSignals = certificateReadinessAutomationSignals(sourceFiles);
+  const observabilitySignals = certificateReadinessObservabilitySignals(sourceFiles);
+  const ciSignals = certificateReadinessCiSignals(sourceFiles);
+  const packageSignals = certificateReadinessPackageSignals(sourceFiles);
+
+  const hasPlatform = platformSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasResource = resourceSignals.some((item) => item.readiness === "ready") || certificateSetups.some((item) => item.resourceCount > 0);
+  const hasIssuer = issuerSignals.some((item) => item.readiness === "ready") || certificateSetups.some((item) => item.issuerCount > 0);
+  const hasChallenge = challengeSignals.some((item) => item.readiness === "ready") || certificateSetups.some((item) => item.challengeCount > 0);
+  const hasRenewal = lifecycleSignals.some((item) => item.readiness === "ready") || certificateSetups.some((item) => item.renewalCount > 0);
+  const hasTrust = trustSignals.some((item) => item.readiness === "ready") || certificateSetups.some((item) => item.trustCount > 0);
+  const hasRevocation = revocationSignals.some((item) => item.readiness === "ready") || certificateSetups.some((item) => item.revocationCount > 0);
+  const hasObservability = observabilitySignals.some((item) => item.readiness === "ready") || certificateSetups.some((item) => item.observabilityCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || certificateSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: CertificateReadinessReport["riskQueue"] = [];
+  if (!hasPlatform && !hasResource) riskQueue.push({ priority: "high", action: "Document the certificate authority, certificate manager, or certificate resource before claiming certificate readiness.", why: "Certificate readiness starts with visible cert-manager, step-ca, CertMagic, ACME, issuer, certificate, or secret evidence.", relatedHref: "html/certificate-readiness.html" });
+  if (hasResource && !hasIssuer) riskQueue.push({ priority: "high", action: "Pair certificate resources with issuer or CA ownership evidence.", why: "Certificates without issuer evidence cannot be tied to renewal, trust, or key custody boundaries.", relatedHref: "html/certificate-readiness.html" });
+  if (hasIssuer && !hasChallenge) riskQueue.push({ priority: "medium", action: "Map ACME challenge, solver, or external account binding evidence for automated issuance.", why: "Automated issuance depends on DNS01, HTTP01, TLS-ALPN-01, solver, self-check, or EAB configuration.", relatedHref: "html/certificate-readiness.html" });
+  if ((hasPlatform || hasResource) && !hasRenewal) riskQueue.push({ priority: "medium", action: "Add renewal and lifecycle evidence such as duration, renewBefore, private key rotation, keystore, status, or cache policy.", why: "Certificate outages usually come from expiry, failed renewal, key rotation, or cache/storage drift.", relatedHref: "html/certificate-readiness.html" });
+  if (hasIssuer && !hasTrust) riskQueue.push({ priority: "medium", action: "Document trust distribution through root/intermediate CA, CA bundle, cainjector, trust-manager, bootstrap, or install-root flow.", why: "Issued certificates are only usable when relying parties receive the correct trust anchor.", relatedHref: "html/certificate-readiness.html" });
+  if (hasIssuer && !hasRevocation) riskQueue.push({ priority: "low", action: "Add revocation or short-lived certificate evidence such as CRL, OCSP, revoke, passive revocation, or must-staple.", why: "Revocation and short-lived validity reduce blast radius when a key or certificate is compromised.", relatedHref: "html/certificate-readiness.html" });
+  if ((hasPlatform || hasRenewal) && !hasObservability) riskQueue.push({ priority: "low", action: "Add certificate metrics, events, logs, webhook health, readiness, or expiration alert evidence.", why: "Certificate failures need visible expiry and controller/CA health signals before runtime incidents.", relatedHref: "html/certificate-readiness.html" });
+  if ((hasPlatform || hasIssuer) && !hasCi) riskQueue.push({ priority: "low", action: "Add certificate CI checks for Helm render, kubeconform, cmctl, step-ca smoke, CertMagic tests, and artifact upload.", why: "Static readiness is stronger when CI records issuer, solver, renewal, and trust checks.", relatedHref: "html/certificate-readiness.html" });
+  riskQueue.push({ priority: "low", action: "Run certificate manager, CA, ACME, DNS, TLS, and revocation commands only in a trusted sandbox after reviewing this static map.", why: "RepoTutor records certificate readiness only; it does not request certificates, mutate issuers, contact ACME/CA servers, read private keys, rotate secrets, start step-ca, or run TLS handshakes.", relatedHref: "html/certificate-readiness.html" });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Certificate readiness report: setup ${certificateSetups.length}개, platform signal ${platformSignals.length}개, issuer signal ${issuerSignals.length}개, lifecycle signal ${lifecycleSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Certificate readiness cert-manager step-ca CertMagic ACME Certificate Issuer ClusterIssuer CertificateRequest Order Challenge DNS01 HTTP01 TLS-ALPN renewBefore duration privateKey rotation Secret cainjector trust-manager root intermediate CRL OCSP cmctl step ca renew",
+    certificateSetups,
+    platformSignals,
+    resourceSignals,
+    issuerSignals,
+    challengeSignals,
+    lifecycleSignals,
+    trustSignals,
+    revocationSignals,
+    automationSignals,
+    observabilitySignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"kind: (Certificate|CertificateRequest|Issuer|ClusterIssuer|Order|Challenge)|cert-manager.io|secretName|renewBefore|duration|privateKey\" .", purpose: "Inventory cert-manager resources, issuer references, secret outputs, renewal windows, and private key policy." },
+      { command: "rg \"ACME|DNS01|HTTP01|TLS-ALPN-01|solver|challenge|externalAccountBinding|EAB|self check|nameservers\" .", purpose: "Trace ACME challenge, solver, self-check, and EAB readiness." },
+      { command: "rg \"step-ca|step ca renew|provisioner|root certificate|intermediate|bootstrap|install root|revoke|CRL|OCSP\" .", purpose: "Review CA, provisioner, trust distribution, renewal, and revocation evidence." },
+      { command: "rg \"CertMagic|certmagic|OnDemand|storage|cache|OCSP|must-staple|ManageSync|ManageAsync|issuer\" .", purpose: "Find CertMagic automation, storage, cache, OCSP, and on-demand issuance signals." },
+      { command: "rg \"cmctl|helm template|kubeconform|certificate smoke|step-ca smoke|certmagic test|expiration|upload-artifact\" .github .", purpose: "Check CI, smoke, expiry alert, and artifact evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 certificate source of truth가 cert-manager resource, step-ca authority, CertMagic automation, ACME client, 또는 custom issuer 중 어디인지 찾으세요.",
+      "Certificate/CertificateRequest가 있다면 Issuer/ClusterIssuer, secretName, duration, renewBefore, privateKey rotation을 함께 확인하세요.",
+      "ACME issuer는 DNS01/HTTP01/TLS-ALPN-01 solver, self-check, EAB, challenge/order 흐름이 어떤 blast radius를 갖는지 확인하세요.",
+      "CA 기반 흐름은 root/intermediate trust, CA bundle injection, bootstrap/install-root, revocation/OCSP/CRL 또는 short-lived certificate 정책을 확인하세요.",
+      "CertMagic 기반 흐름은 storage, cache, issuer, on-demand issuance, OCSP staple, renewal worker가 운영 환경에서 안전한지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 인증서 발급, CA/ACME 호출, private key rotation, TLS handshake, revocation 테스트는 안전한 sandbox에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type CertificateReadinessSourceFile = { filePath: string; text: string; sourceHref: string };
+
+async function certificateReadinessSourceFiles(walk: WalkResult): Promise<CertificateReadinessSourceFile[]> {
+  const files: CertificateReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !certificateReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!certificateReadinessPathSignal(file.relPath) && !certificateReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function certificateReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return certificateReadinessPathSignal(filePath)
+    || /^(package\.json|go\.mod|go\.sum|pyproject\.toml|requirements\.txt|Dockerfile|Chart\.ya?ml|values\.ya?ml|kustomization\.ya?ml)$/i.test(base)
+    || /\.(json|ya?ml|toml|tf|hcl|cue|rego|md|mdx|txt|pem|crt|csr|key|conf|sh|bash|go|py|ts|tsx|js|jsx|mjs|cjs|rst)$/i.test(filePath);
+}
+
+function certificateReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(cert|certs|certificate|certificates|tls|ssl|pki|acme|issuer|clusterissuer|step-ca|stepca|certmagic|cainjector|trust-manager|ocsp|crl)(\/|\.|-|_|$)|\.github\/workflows|Chart\.ya?ml|values\.ya?ml/i.test(filePath);
+}
+
+function certificateReadinessContentSignal(text: string): boolean {
+  return /(cert-manager|cert-manager\.io|kind:\s*(Certificate|CertificateRequest|Issuer|ClusterIssuer|Order|Challenge)|ACME|DNS01|HTTP01|TLS-ALPN|renewBefore|privateKey|secretName|cainjector|trust-manager|step-ca|step ca renew|CertMagic|certmagic|OCSP|CRL|cmctl|x509|openssl)/i.test(text);
+}
+
+function certificateReadinessSetups(sourceFiles: CertificateReadinessSourceFile[]): CertificateReadinessReport["certificateSetups"] {
+  const rows: CertificateReadinessReport["certificateSetups"] = [];
+  for (const source of sourceFiles) {
+    const resourceCount = countMatches(source.text, /kind:\s*(Certificate|CertificateRequest|Issuer|ClusterIssuer|Order|Challenge)|cert-manager\.io|CertificateRequest|tls\.crt|tls\.key|CertificateSigningRequest/gi);
+    const issuerCount = countMatches(source.text, /Issuer|ClusterIssuer|issuerRef|ACME|step-ca|Certificate Authority|CA\b|selfSigned|Vault|Let's Encrypt|letsencrypt|CertMagic|issuer/gi);
+    const challengeCount = countMatches(source.text, /DNS01|HTTP01|TLS-ALPN-01|solver|challenge|Order|externalAccountBinding|EAB|self[- ]?check|recursive nameserver/gi);
+    const renewalCount = countMatches(source.text, /renewBefore|duration|renewal|renew|NotAfter|expiration|expires|privateKey.*rotation|rotationPolicy|revisionHistoryLimit|keystore|jks|pkcs12|OnDemand|cache/gi);
+    const secretCount = countMatches(source.text, /secretName|Secret|tls\.crt|tls\.key|ca\.crt|secretRef|private key|credential|keyFile|certFile/gi);
+    const keyCount = countMatches(source.text, /privateKey|keyAlgorithm|keySize|rotationPolicy|HSM|KMS|TPM|JWK|RSA|ECDSA|Ed25519|pkcs12|jks/gi);
+    const trustCount = countMatches(source.text, /root certificate|root CA|intermediate|caBundle|cainjector|trust-manager|inject-ca|bootstrap|install root|federation|trust anchor/gi);
+    const revocationCount = countMatches(source.text, /CRL|OCSP|revoke|revocation|short-lived|passive revocation|must-staple|staple/gi);
+    const observabilityCount = countMatches(source.text, /metrics?|Prometheus|events?|logs?|health|ready|readiness|webhook|expiration alert|expiry|cmctl status|CertificateReady/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\/|helm template|kubeconform|cmctl|step-ca smoke|certmagic test|go test|openssl x509|upload-artifact|certificate-readiness-report\.json/gi);
+    const hasSetupSignal = resourceCount + issuerCount + challengeCount + renewalCount + secretCount + keyCount + trustCount + revocationCount + observabilityCount + ciCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: certificateReadinessPlatform(source),
+      resourceCount,
+      issuerCount,
+      challengeCount,
+      renewalCount,
+      secretCount,
+      keyCount,
+      trustCount,
+      revocationCount,
+      observabilityCount,
+      ciCount,
+      readiness: resourceCount > 0 && issuerCount > 0 && renewalCount > 0 && (secretCount > 0 || trustCount > 0) ? "ready" : "partial",
+      evidence: `${source.filePath} contains resources ${resourceCount}, issuers ${issuerCount}, challenges ${challengeCount}, renewal ${renewalCount}, secrets ${secretCount}, keys ${keyCount}, trust ${trustCount}, revocation ${revocationCount}, observability ${observabilityCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => (b.resourceCount + b.issuerCount + b.renewalCount + b.trustCount + b.ciCount) - (a.resourceCount + a.issuerCount + a.renewalCount + a.trustCount + a.ciCount) || a.filePath.localeCompare(b.filePath)).slice(0, 100);
+}
+
+function certificateReadinessPlatform(source: CertificateReadinessSourceFile): CertificateReadinessReport["certificateSetups"][number]["platform"] {
+  if (/cert-manager/i.test(source.filePath) || /cert-manager|cert-manager\.io/i.test(source.text)) return "cert-manager";
+  if (/step-ca|stepca|smallstep/i.test(source.filePath) || /step-ca|smallstep|provisioner/i.test(source.text)) return "step-ca";
+  if (/certmagic/i.test(source.filePath) || /CertMagic|certmagic/i.test(source.text)) return "certmagic";
+  if (/acme/i.test(source.filePath) || /\bACME\b|DNS01|HTTP01|TLS-ALPN/i.test(source.text)) return "acme";
+  if (/cert|certificate|tls|pki/i.test(source.filePath) || /certificate|x509|openssl/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function certificateReadinessPlatformSignals(sourceFiles: CertificateReadinessSourceFile[]): CertificateReadinessReport["platformSignals"] {
+  return certificateReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "cert-manager", pattern: /cert-manager|cert-manager\.io/i, evidence: "cert-manager evidence was detected." },
+    { signal: "step-ca", pattern: /step-ca|smallstep|provisioner|online certificate authority/i, evidence: "step-ca evidence was detected." },
+    { signal: "certmagic", pattern: /CertMagic|certmagic|ManageSync|ManageAsync/i, evidence: "CertMagic evidence was detected." },
+    { signal: "acme", pattern: /\bACME\b|RFC8555|DNS01|HTTP01|TLS-ALPN/i, evidence: "ACME evidence was detected." },
+    { signal: "vault", pattern: /HashiCorp Vault|Vault Issuer|vault:/i, evidence: "Vault issuer evidence was detected." },
+    { signal: "custom", pattern: /custom certificate|custom issuer|openssl|x509|Certificate Authority/i, evidence: "custom certificate authority evidence was detected." }
+  ], "platform", "signal");
+}
+
+function certificateReadinessResourceSignals(sourceFiles: CertificateReadinessSourceFile[]): CertificateReadinessReport["resourceSignals"] {
+  return certificateReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "certificate", pattern: /kind:\s*Certificate\b|\bCertificate\b.*secretName/i, evidence: "Certificate resource evidence was detected." },
+    { signal: "certificate-request", pattern: /kind:\s*CertificateRequest\b|CertificateRequests?/i, evidence: "CertificateRequest evidence was detected." },
+    { signal: "issuer", pattern: /kind:\s*Issuer\b|issuerRef/i, evidence: "Issuer evidence was detected." },
+    { signal: "cluster-issuer", pattern: /kind:\s*ClusterIssuer\b|ClusterIssuer/i, evidence: "ClusterIssuer evidence was detected." },
+    { signal: "order", pattern: /kind:\s*Order\b|\bOrder\b.*ACME/i, evidence: "ACME Order evidence was detected." },
+    { signal: "challenge", pattern: /kind:\s*Challenge\b|\bChallenge\b.*solver/i, evidence: "ACME Challenge evidence was detected." },
+    { signal: "csr", pattern: /CertificateSigningRequest|\bCSR\b|x509 CertificateRequest/i, evidence: "CSR evidence was detected." },
+    { signal: "secret", pattern: /secretName|kind:\s*Secret\b|tls\.crt|tls\.key|ca\.crt/i, evidence: "Secret output evidence was detected." },
+    { signal: "ingress", pattern: /cert-manager\.io\/cluster-issuer|cert-manager\.io\/issuer|kind:\s*Ingress\b|ingressShim/i, evidence: "Ingress certificate automation evidence was detected." }
+  ], "resource", "signal");
+}
+
+function certificateReadinessIssuerSignals(sourceFiles: CertificateReadinessSourceFile[]): CertificateReadinessReport["issuerSignals"] {
+  return certificateReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "acme", pattern: /\bACME\b|server:\s*https?:\/\/.*acme|RFC8555/i, evidence: "ACME issuer evidence was detected." },
+    { signal: "ca", pattern: /\bCA\b|caBundle|ca\.crt|Certificate Authority|issuer certificate/i, evidence: "CA issuer evidence was detected." },
+    { signal: "self-signed", pattern: /selfSigned|SelfSigned|self-signed/i, evidence: "self-signed issuer evidence was detected." },
+    { signal: "vault", pattern: /Vault|vault:/i, evidence: "Vault issuer evidence was detected." },
+    { signal: "step-ca", pattern: /step-ca|smallstep|provisioner/i, evidence: "step-ca issuer evidence was detected." },
+    { signal: "lets-encrypt", pattern: /Let's Encrypt|letsencrypt|acme-v02\.api\.letsencrypt\.org/i, evidence: "Let's Encrypt evidence was detected." },
+    { signal: "external", pattern: /external issuer|ExternalIssuer|issuer kind.*external|approver-policy/i, evidence: "external issuer evidence was detected." }
+  ], "issuer", "signal");
+}
+
+function certificateReadinessChallengeSignals(sourceFiles: CertificateReadinessSourceFile[]): CertificateReadinessReport["challengeSignals"] {
+  return certificateReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "dns01", pattern: /DNS01|dns-01|dns01/i, evidence: "DNS01 challenge evidence was detected." },
+    { signal: "http01", pattern: /HTTP01|http-01|http01|ingress solver/i, evidence: "HTTP01 challenge evidence was detected." },
+    { signal: "tls-alpn-01", pattern: /TLS-ALPN-01|tls-alpn-01|TLSALPN/i, evidence: "TLS-ALPN-01 challenge evidence was detected." },
+    { signal: "solver", pattern: /solver|solvers:|ACMEHTTP01|dnsNameserver/i, evidence: "solver config evidence was detected." },
+    { signal: "eab", pattern: /externalAccountBinding|External Account Binding|\bEAB\b/i, evidence: "EAB evidence was detected." },
+    { signal: "self-check", pattern: /self[- ]?check|recursive nameserver|--dns01-recursive-nameservers|DNS01 Self Check/i, evidence: "self-check evidence was detected." }
+  ], "challenge", "signal");
+}
+
+function certificateReadinessLifecycleSignals(sourceFiles: CertificateReadinessSourceFile[]): CertificateReadinessReport["lifecycleSignals"] {
+  return certificateReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "duration", pattern: /\bduration\b|validity|lifetime|NotAfter/i, evidence: "duration/validity evidence was detected." },
+    { signal: "renew-before", pattern: /renewBefore|renew before|renewal window|RenewalWindow/i, evidence: "renewBefore evidence was detected." },
+    { signal: "revision-history", pattern: /revisionHistoryLimit|history limit/i, evidence: "revision history evidence was detected." },
+    { signal: "private-key-rotation", pattern: /rotationPolicy|privateKey.*rotation|RotatePrivateKey|key rotation/i, evidence: "private key rotation evidence was detected." },
+    { signal: "keystore", pattern: /keystores?|pkcs12|jks|PKCS#12/i, evidence: "keystore evidence was detected." },
+    { signal: "status-conditions", pattern: /status:\s|conditions:|CertificateReady|Ready=True|Issuing|Renewing/i, evidence: "status condition evidence was detected." },
+    { signal: "on-demand", pattern: /OnDemand|on-demand|on demand/i, evidence: "on-demand issuance evidence was detected." },
+    { signal: "cache", pattern: /certificate cache|certCache|cacheCertificate|OCSPCheckInterval|Storage/i, evidence: "certificate cache/storage evidence was detected." }
+  ], "lifecycle", "signal");
+}
+
+function certificateReadinessTrustSignals(sourceFiles: CertificateReadinessSourceFile[]): CertificateReadinessReport["trustSignals"] {
+  return certificateReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "root-ca", pattern: /root certificate|root CA|rootX509|trusted root/i, evidence: "root CA evidence was detected." },
+    { signal: "intermediate-ca", pattern: /intermediate|online intermediate|issuer certificate/i, evidence: "intermediate CA evidence was detected." },
+    { signal: "ca-bundle", pattern: /caBundle|ca\.crt|CA bundle/i, evidence: "CA bundle evidence was detected." },
+    { signal: "cainjector", pattern: /cainjector|inject-ca/i, evidence: "cainjector evidence was detected." },
+    { signal: "trust-manager", pattern: /trust-manager|trust manager/i, evidence: "trust-manager evidence was detected." },
+    { signal: "bootstrap", pattern: /bootstrap|ca bootstrap|trust anchor/i, evidence: "bootstrap evidence was detected." },
+    { signal: "install-root", pattern: /install root|root install|certificate install|distribute root/i, evidence: "install-root evidence was detected." }
+  ], "trust", "signal");
+}
+
+function certificateReadinessRevocationSignals(sourceFiles: CertificateReadinessSourceFile[]): CertificateReadinessReport["revocationSignals"] {
+  return certificateReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "crl", pattern: /\bCRL\b|certificate revocation list/i, evidence: "CRL evidence was detected." },
+    { signal: "ocsp", pattern: /\bOCSP\b|staple|stapling/i, evidence: "OCSP evidence was detected." },
+    { signal: "revoke", pattern: /\brevoke\b|revoked|revocation/i, evidence: "revoke evidence was detected." },
+    { signal: "short-lived", pattern: /short-lived|short lived|short validity|short lifetime/i, evidence: "short-lived certificate evidence was detected." },
+    { signal: "passive-revocation", pattern: /passive revocation|passive-revocation/i, evidence: "passive revocation evidence was detected." },
+    { signal: "must-staple", pattern: /must-staple|MustStaple|tlsfeature/i, evidence: "must-staple evidence was detected." }
+  ], "revocation", "signal");
+}
+
+function certificateReadinessAutomationSignals(sourceFiles: CertificateReadinessSourceFile[]): CertificateReadinessReport["automationSignals"] {
+  return certificateReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "cmctl", pattern: /\bcmctl\b|kubectl cert-manager/i, evidence: "cmctl evidence was detected." },
+    { signal: "step-ca-renew", pattern: /step ca renew|step-ca.*renew|ca\/renew/i, evidence: "step-ca renew evidence was detected." },
+    { signal: "certmagic-manage", pattern: /ManageSync|ManageAsync|CertMagic|certmagic/i, evidence: "CertMagic manage evidence was detected." },
+    { signal: "storage", pattern: /Storage|storage|certificates stored|asset storage|secretName/i, evidence: "certificate storage evidence was detected." },
+    { signal: "issuer-config", pattern: /issuerRef|Issuer|ClusterIssuer|provisioner|issuer config/i, evidence: "issuer config evidence was detected." },
+    { signal: "solver-config", pattern: /solvers:|solver|DNS01|HTTP01|TLS-ALPN/i, evidence: "solver config evidence was detected." },
+    { signal: "policy", pattern: /approver-policy|policy|nameConstraints|allowed|authorization/i, evidence: "certificate policy evidence was detected." }
+  ], "automation", "signal");
+}
+
+function certificateReadinessObservabilitySignals(sourceFiles: CertificateReadinessSourceFile[]): CertificateReadinessReport["observabilitySignals"] {
+  return certificateReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "metrics", pattern: /\bmetrics?\b|certificate_expiration|certmanager_certificate/i, evidence: "certificate metrics evidence was detected." },
+    { signal: "prometheus", pattern: /Prometheus|prometheus|ServiceMonitor|PodMonitor/i, evidence: "Prometheus evidence was detected." },
+    { signal: "events", pattern: /\bevents?\b|Kubernetes Events|Normal\s+Issuing|CertificateReady/i, evidence: "certificate event evidence was detected." },
+    { signal: "logs", pattern: /\blogs?\b|log-level|zap\.Logger/i, evidence: "certificate log evidence was detected." },
+    { signal: "health", pattern: /\bhealth\b|healthz|livenessProbe/i, evidence: "health evidence was detected." },
+    { signal: "webhook", pattern: /webhook|ValidatingWebhook|MutatingWebhook|startupapicheck/i, evidence: "webhook evidence was detected." },
+    { signal: "readiness", pattern: /\bready\b|readinessProbe|Ready=True|startupapicheck/i, evidence: "readiness evidence was detected." },
+    { signal: "expiration-alert", pattern: /expiration alert|expiry alert|expires|NotAfter|certificate_expiration/i, evidence: "expiration alert evidence was detected." }
+  ], "observability", "signal");
+}
+
+function certificateReadinessCiSignals(sourceFiles: CertificateReadinessSourceFile[]): CertificateReadinessReport["ciSignals"] {
+  return certificateReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "github-actions", pattern: /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\//i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "helm-template", pattern: /helm template|helm lint/i, evidence: "Helm template/lint evidence was detected." },
+    { signal: "kubeconform", pattern: /kubeconform|kubectl.*dry-run/i, evidence: "Kubernetes manifest validation evidence was detected." },
+    { signal: "cmctl-check", pattern: /cmctl check|cmctl status|cmctl inspect/i, evidence: "cmctl check evidence was detected." },
+    { signal: "step-ca-smoke", pattern: /step-ca smoke|step ca certificate|step ca renew|step ca revoke/i, evidence: "step-ca smoke evidence was detected." },
+    { signal: "certmagic-tests", pattern: /certmagic test|go test.*certmagic|ManageSync.*test/i, evidence: "CertMagic test evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|certificate-readiness-report\.json|certificate-smoke\.json|issuer-check\.json|renewal-check\.json/i, evidence: "certificate artifact upload evidence was detected." }
+  ], "CI", "signal");
+}
+
+function certificateReadinessPackageSignals(sourceFiles: CertificateReadinessSourceFile[]): CertificateReadinessReport["packageSignals"] {
+  return certificateReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "cert-manager", pattern: /cert-manager|cert-manager\.io|quay\.io\/jetstack/i, evidence: "cert-manager package/image evidence was detected." },
+    { signal: "step-ca", pattern: /step-ca|smallstep\/certificates|github\.com\/smallstep\/certificates/i, evidence: "step-ca package evidence was detected." },
+    { signal: "certmagic", pattern: /certmagic|github\.com\/caddyserver\/certmagic/i, evidence: "CertMagic package evidence was detected." },
+    { signal: "lego", pattern: /go-acme\/lego|\blego\b/i, evidence: "lego ACME client evidence was detected." },
+    { signal: "x509", pattern: /crypto\/x509|\bx509\b/i, evidence: "x509 package evidence was detected." },
+    { signal: "openssl", pattern: /openssl|OpenSSL/i, evidence: "OpenSSL evidence was detected." }
+  ], "package", "signal");
+}
+
+function certificateReadinessSignalFromSpecs<const T extends readonly { signal: string; pattern: RegExp; evidence: string }[]>(
+  sourceFiles: CertificateReadinessSourceFile[],
+  specs: T,
+  label: string,
+  labelKey: "signal"
+): Array<{ signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/certificate-readiness.html"
     } as { signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

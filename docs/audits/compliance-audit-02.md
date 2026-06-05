@@ -1,6 +1,6 @@
 # Compliance Audit 2
 
-Created: 2026-06-05T08:49:25.597Z
+Created: 2026-06-05T09:02:27.559Z
 
 Status: PASS
 
@@ -563,6 +563,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - dns readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - certificate readiness report
 
 - missing files: none
 - missing strings: none
