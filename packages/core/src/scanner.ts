@@ -122,6 +122,7 @@ import {
   EmailReadinessReport,
   QueueReadinessReport,
   EventStreamReadinessReport,
+  SchemaRegistryReadinessReport,
   StreamProcessingReadinessReport,
   PipelineOrchestrationReadinessReport,
   ServiceMeshReadinessReport,
@@ -318,6 +319,7 @@ export interface AnalysisBundle {
   emailReadinessReport: EmailReadinessReport;
   queueReadinessReport: QueueReadinessReport;
   eventStreamReadinessReport: EventStreamReadinessReport;
+  schemaRegistryReadinessReport: SchemaRegistryReadinessReport;
   streamProcessingReadinessReport: StreamProcessingReadinessReport;
   pipelineOrchestrationReadinessReport: PipelineOrchestrationReadinessReport;
   serviceMeshReadinessReport: ServiceMeshReadinessReport;
@@ -514,6 +516,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const emailReadinessReport = await buildEmailReadinessReport(walk);
   const queueReadinessReport = await buildQueueReadinessReport(walk);
   const eventStreamReadinessReport = await buildEventStreamReadinessReport(walk);
+  const schemaRegistryReadinessReport = await buildSchemaRegistryReadinessReport(walk);
   const streamProcessingReadinessReport = await buildStreamProcessingReadinessReport(walk);
   const pipelineOrchestrationReadinessReport = await buildPipelineOrchestrationReadinessReport(walk);
   const serviceMeshReadinessReport = await buildServiceMeshReadinessReport(walk);
@@ -583,7 +586,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -27779,6 +27782,292 @@ function eventStreamReadinessSignalFromSpecs<T extends Record<K, string> & { pat
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/event-stream-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildSchemaRegistryReadinessReport(walk: WalkResult): Promise<SchemaRegistryReadinessReport> {
+  const sourceFiles = await schemaRegistryReadinessSourceFiles(walk);
+  const registrySetups = schemaRegistryReadinessSetups(sourceFiles);
+  const registrySignals = schemaRegistryReadinessRegistrySignals(sourceFiles);
+  const schemaFormatSignals = schemaRegistryReadinessFormatSignals(sourceFiles);
+  const identitySignals = schemaRegistryReadinessIdentitySignals(sourceFiles);
+  const compatibilitySignals = schemaRegistryReadinessCompatibilitySignals(sourceFiles);
+  const governanceSignals = schemaRegistryReadinessGovernanceSignals(sourceFiles);
+  const workflowSignals = schemaRegistryReadinessWorkflowSignals(sourceFiles);
+  const packageSignals = schemaRegistryReadinessPackageSignals(sourceFiles);
+
+  const hasRegistry = registrySignals.some((item) => item.readiness === "ready") || registrySetups.length > 0 || packageSignals.some((item) => item.readiness === "ready");
+  const hasFormat = schemaFormatSignals.some((item) => item.readiness === "ready") || registrySetups.some((item) => item.formatCount > 0);
+  const hasIdentity = identitySignals.some((item) => item.readiness === "ready") || registrySetups.some((item) => item.subjectCount + item.artifactCount + item.versionCount > 0);
+  const hasCompatibility = compatibilitySignals.some((item) => item.readiness === "ready") || registrySetups.some((item) => item.compatibilityCount > 0);
+  const hasGovernance = governanceSignals.some((item) => item.readiness === "ready") || registrySetups.some((item) => item.governanceCount > 0);
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready") || registrySetups.some((item) => item.workflowCount > 0);
+
+  const riskQueue: SchemaRegistryReadinessReport["riskQueue"] = [];
+  if (!hasRegistry) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add schema registry or Buf module evidence before claiming schema registry readiness.",
+      why: "Schema registry readiness starts from a concrete Confluent, Apicurio, Buf, or compatible registry surface.",
+      relatedHref: "html/schema-registry-readiness.html"
+    });
+  }
+  if (hasRegistry && !hasFormat) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record the schema formats governed by the registry.",
+      why: "Consumers need to know whether Avro, Protobuf, JSON Schema, OpenAPI, or AsyncAPI contracts are covered.",
+      relatedHref: "html/schema-registry-readiness.html"
+    });
+  }
+  if (hasFormat && !hasCompatibility) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add compatibility or breaking-change checks for registered schemas.",
+      why: "Schema evolution is unsafe unless compatibility checks or Buf breaking policies are visible before producer changes ship.",
+      relatedHref: "html/schema-registry-readiness.html"
+    });
+  }
+  if (hasRegistry && !hasIdentity) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document subject, artifact, group, version, ID, and reference identity strategy.",
+      why: "Schema reuse and compatibility scope depend on subject naming, artifact identity, versioning, and references.",
+      relatedHref: "html/schema-registry-readiness.html"
+    });
+  }
+  if (hasCompatibility && !hasGovernance) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Pair compatibility checks with lint, validity, mode, or dependency policy.",
+      why: "Registries are more reliable when compatibility is backed by explicit rules and module governance.",
+      relatedHref: "html/schema-registry-readiness.html"
+    });
+  }
+  if ((hasRegistry || hasFormat) && !hasWorkflow) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add CI commands for registration, compatibility, lint, breaking, generation, or publication.",
+      why: "Static registry readiness is stronger when CI records schema checks as reproducible artifacts.",
+      relatedHref: "html/schema-registry-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run registry and Buf commands only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor records schema registry readiness only; it does not start registries, register schemas, change compatibility config, run Buf, publish modules, or call registry APIs.",
+    relatedHref: "html/schema-registry-readiness.html"
+  });
+
+  return {
+    summary: `Schema registry readiness report: setup ${registrySetups.length}개, registry signal ${registrySignals.length}개, format signal ${schemaFormatSignals.length}개, compatibility signal ${compatibilitySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Schema registry readiness Confluent Apicurio Buf subject artifact version compatibility Avro Protobuf JSON Schema lint breaking generate push",
+    registrySetups,
+    registrySignals,
+    schemaFormatSignals,
+    identitySignals,
+    compatibilitySignals,
+    governanceSignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"schema.registry.url|Schema Registry|/subjects/.*/versions|/compatibility/subjects|schema-compatibility-check\" .", purpose: "Find Confluent-compatible registry URLs, subject registration, versioning, and compatibility checks." },
+      { command: "rg \"Apicurio Registry|/apis/ccompat|/groups/.*/artifacts|artifactId|groupId|contentId|globalId|validity|rules\" .", purpose: "Inventory Apicurio ccompat, group/artifact identity, ID mapping, validity, and rules evidence." },
+      { command: "rg \"buf.yaml|buf.gen.yaml|buf.lock|buf lint|buf breaking|buf generate|buf push|breaking:\" .", purpose: "Review Buf module, lint, breaking, generation, dependency lock, and publication workflow." },
+      { command: "rg \"Avro|Protobuf|proto3|JSON Schema|OpenAPI|AsyncAPI|references|SchemaReference\" .", purpose: "Map schema formats and reference/import relationships." },
+      { command: "rg \"KafkaAvroSerializer|KafkaProtobufSerializer|KafkaJsonSchemaSerializer|@bufbuild/buf|protoc|upload-artifact\" package.json pom.xml build.gradle .github .", purpose: "Check serializer packages, Buf/protoc tooling, and schema readiness artifact uploads." }
+    ],
+    learnerNextSteps: [
+      "먼저 Confluent, Apicurio, Buf 중 어떤 registry surface가 있는지 확인하고 registry URL 또는 module boundary를 표시하세요.",
+      "subject, artifactId, groupId, version, schema ID, contentId, globalId, reference 전략을 구분해 compatibility scope를 정리하세요.",
+      "Avro, Protobuf, JSON Schema, OpenAPI, AsyncAPI 중 실제로 등록되는 schema format을 producer/consumer 코드와 연결하세요.",
+      "compatibility endpoint, schema-compatibility-check, buf breaking, lint, validity rule, mode 정책이 CI에서 재현되는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 registry API 호출, schema registration, compatibility config 변경, Buf publish는 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type SchemaRegistryReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function schemaRegistryReadinessSourceFiles(walk: WalkResult): Promise<SchemaRegistryReadinessSourceFile[]> {
+  const files: SchemaRegistryReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !schemaRegistryReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!schemaRegistryReadinessPathSignal(file.relPath) && !schemaRegistryReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function schemaRegistryReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return schemaRegistryReadinessPathSignal(filePath)
+    || /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|build\.gradle|settings\.gradle|pom\.xml|docker-compose\.ya?ml|compose\.ya?ml|Dockerfile|buf\.ya?ml|buf\.gen\.ya?ml|buf\.lock|\.env\.example|\.env\.sample)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|java|kt|scala|py|go|rs|json|md|mdx|ya?ml|toml|properties|conf|env|proto|avsc)$/i.test(filePath);
+}
+
+function schemaRegistryReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(schema[-_]?registry|schemaregistry|schemas?|avro|protobuf|proto|apicurio|buf|ccompat|registry|kafka|contracts?)(\/|\.|-|_|$)|buf\.(yaml|gen\.yaml|lock)$|\.github\/workflows|docker-compose|compose\.ya?ml/i.test(filePath);
+}
+
+function schemaRegistryReadinessContentSignal(text: string): boolean {
+  return /\b(Confluent Schema Registry|Schema Registry|schema\.registry\.url|schema-registry-start|schema-compatibility-check|\/subjects\/|\/compatibility\/subjects|Apicurio Registry|\/apis\/ccompat|\/groups\/.*\/artifacts|artifactId|groupId|contentId|globalId|Buf Schema Registry|buf\.yaml|buf lint|buf breaking|buf generate|buf push|Avro|Protobuf|proto3|JSON Schema|OpenAPI|AsyncAPI|SchemaReference|KafkaAvroSerializer|KafkaProtobufSerializer|KafkaJsonSchemaSerializer)\b/i.test(text);
+}
+
+function schemaRegistryReadinessSetups(sourceFiles: SchemaRegistryReadinessSourceFile[]): SchemaRegistryReadinessReport["registrySetups"] {
+  const rows: SchemaRegistryReadinessReport["registrySetups"] = [];
+  for (const source of sourceFiles) {
+    const subjectCount = countMatches(source.text, /\/subjects?\/|\bsubjects?\b|\bsubject(Name|s)?\b|SubjectNameStrategy|TopicNameStrategy|RecordNameStrategy/gi);
+    const artifactCount = countMatches(source.text, /\/artifacts?\b|\bartifact(Id|Type)?\b|ApicurioRegistry|artifact[-_ ]?id/gi);
+    const versionCount = countMatches(source.text, /\/versions?\b|\bversions?\b|\bversionId\b|\blatest\b|\bschemaVersion\b|\bbuf\.lock\b/gi);
+    const compatibilityCount = countMatches(source.text, /\bcompatibility\b|\bBACKWARD(_TRANSITIVE)?\b|\bFORWARD(_TRANSITIVE)?\b|\bFULL(_TRANSITIVE)?\b|\bNONE\b|\bbuf breaking\b|\bbreaking:/gi);
+    const formatCount = countMatches(source.text, /\bAvro\b|\bPROTOBUF\b|\bProtobuf\b|\bproto3\b|\bJSON Schema\b|\bJSONSchema\b|\bOpenAPI\b|\bAsyncAPI\b|\.avsc\b|\.proto\b|\bbuf\.yaml\b/gi);
+    const referenceCount = countMatches(source.text, /\breferences?\b|\bSchemaReference\b|\bimports?\b|\bdeps:\b|\bbuf\.lock\b/gi);
+    const configCount = countMatches(source.text, /\bschema\.registry\.url\b|\bkafkastore\.|\blisteners=|\bbuf\.ya?ml\b|\bbuf\.gen\.ya?ml\b|\bapicurio\.|\bccompat\b|\bmode\b|\brules\b/gi);
+    const governanceCount = countMatches(source.text, /\bcompatibility(Level)?\b|\bvalidity\b|\brules\b|\bbuf lint\b|\bbreaking:\b|\bmanaged:\b|\bdeps:\b|\bbuf\.lock\b|\bREADWRITE\b|\bREADONLY\b|\bIMPORT\b/gi);
+    const workflowCount = countMatches(source.text, /\.github\/workflows|github[-_ ]?actions|buf lint|buf breaking|buf generate|buf push|schema-compatibility-check|curl .*\/subjects|upload-artifact|register.*schema/gi);
+    const hasSetupSignal = subjectCount + artifactCount + versionCount + compatibilityCount + formatCount + referenceCount + configCount + governanceCount + workflowCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      provider: schemaRegistryReadinessProvider(source),
+      subjectCount,
+      artifactCount,
+      versionCount,
+      compatibilityCount,
+      formatCount,
+      referenceCount,
+      configCount,
+      governanceCount,
+      workflowCount,
+      readiness: (subjectCount + artifactCount > 0) && compatibilityCount > 0 && formatCount > 0 ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains subjects ${subjectCount}, artifacts ${artifactCount}, versions ${versionCount}, compatibility ${compatibilityCount}, formats ${formatCount}, references ${referenceCount}, config ${configCount}, governance ${governanceCount}, workflow ${workflowCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function schemaRegistryReadinessProvider(source: SchemaRegistryReadinessSourceFile): SchemaRegistryReadinessReport["registrySetups"][number]["provider"] {
+  if (/Apicurio|apicurio|\/apis\/ccompat|\/groups\/.*\/artifacts/i.test(source.filePath) || /Apicurio Registry|io\.apicurio|\/apis\/ccompat|\/groups\/.*\/artifacts|artifactId|groupId/i.test(source.text)) return "apicurio";
+  if (/buf\.yaml|buf\.gen\.yaml|buf\.lock|bufbuild|Buf Schema Registry/i.test(source.filePath) || /Buf Schema Registry|buf\.build\/|buf lint|buf breaking|buf generate|buf push|buf\.yaml/i.test(source.text)) return "buf";
+  if (/confluent|schema-registry|schemaregistry/i.test(source.filePath) || /Confluent Schema Registry|io\.confluent\.kafka\.schemaregistry|schema\.registry\.url|kafkastore\.topic|schema-registry-start|\/subjects\/.*\/versions/i.test(source.text)) return "confluent";
+  if (/KafkaAvroSerializer|KafkaProtobufSerializer|KafkaJsonSchemaSerializer|kafka/i.test(source.filePath) || /KafkaAvroSerializer|KafkaProtobufSerializer|KafkaJsonSchemaSerializer|schema\.registry\.url/i.test(source.text)) return "kafka";
+  if (/schema registry|schema[-_ ]?contract|registry/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function schemaRegistryReadinessRegistrySignals(sourceFiles: SchemaRegistryReadinessSourceFile[]): SchemaRegistryReadinessReport["registrySignals"] {
+  const specs: Array<{ signal: SchemaRegistryReadinessReport["registrySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "confluent-schema-registry", pattern: /Confluent Schema Registry|io\.confluent\.kafka\.schemaregistry|schema\.registry\.url|kafkastore\.topic|\/subjects\/.*\/versions|schema-registry-start/i, evidence: "Confluent-compatible Schema Registry evidence was detected." },
+    { signal: "apicurio-registry", pattern: /Apicurio Registry|io\.apicurio|ApicurioRegistry|\/apis\/registry|\/groups\/.*\/artifacts|artifactId|groupId/i, evidence: "Apicurio Registry evidence was detected." },
+    { signal: "buf-schema-registry", pattern: /Buf Schema Registry|buf\.build\/|buf push|BSR|buf\.yaml/i, evidence: "Buf Schema Registry or module evidence was detected." },
+    { signal: "schema-registry-url", pattern: /schema\.registry\.url|SCHEMA_REGISTRY_URL|schema_registry_url|schemaRegistryUrl/i, evidence: "schema registry URL evidence was detected." },
+    { signal: "ccompat-api", pattern: /\/apis\/ccompat\/v[78]|Confluent.*compatible|ccompat/i, evidence: "Confluent compatibility API evidence was detected." }
+  ];
+  return schemaRegistryReadinessSignalFromSpecs(sourceFiles, specs, "registry", "signal");
+}
+
+function schemaRegistryReadinessFormatSignals(sourceFiles: SchemaRegistryReadinessSourceFile[]): SchemaRegistryReadinessReport["schemaFormatSignals"] {
+  const specs: Array<{ signal: SchemaRegistryReadinessReport["schemaFormatSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "avro", pattern: /\bAvro\b|\bSchema\.AVRO\b|\.avsc\b|avroSchema|kafka-avro-serializer|KafkaAvroSerializer/i, evidence: "Avro schema evidence was detected." },
+    { signal: "protobuf", pattern: /\bProtobuf\b|\bPROTOBUF\b|\bproto3\b|\.proto\b|\bbuf\.yaml\b|\bprotoc\b|KafkaProtobufSerializer/i, evidence: "Protobuf schema evidence was detected." },
+    { signal: "json-schema", pattern: /\bJSON Schema\b|\bJSONSchema\b|\bSchema\.JSON\b|\.schema\.json\b|kafka-json-schema-serializer|KafkaJsonSchemaSerializer/i, evidence: "JSON Schema evidence was detected." },
+    { signal: "openapi", pattern: /\bOpenAPI\b|\bopenapi:\b|\bswagger\b/i, evidence: "OpenAPI schema evidence was detected." },
+    { signal: "asyncapi", pattern: /\bAsyncAPI\b|\basyncapi:\b/i, evidence: "AsyncAPI schema evidence was detected." }
+  ];
+  return schemaRegistryReadinessSignalFromSpecs(sourceFiles, specs, "schema format", "signal");
+}
+
+function schemaRegistryReadinessIdentitySignals(sourceFiles: SchemaRegistryReadinessSourceFile[]): SchemaRegistryReadinessReport["identitySignals"] {
+  const specs: Array<{ signal: SchemaRegistryReadinessReport["identitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "subject", pattern: /\/subjects?\/|\bsubject(Name|s)?\b|TopicNameStrategy|RecordNameStrategy|SubjectNameStrategy/i, evidence: "subject identity evidence was detected." },
+    { signal: "artifact-id", pattern: /\bartifactId\b|artifact-id|artifact_id/i, evidence: "artifact ID evidence was detected." },
+    { signal: "group-id", pattern: /\bgroupId\b|group-id|group_id/i, evidence: "group ID evidence was detected." },
+    { signal: "version", pattern: /\/versions?\b|\bversionId\b|\blatest\b|\bschemaVersion\b|\bbuf\.lock\b/i, evidence: "version identity evidence was detected." },
+    { signal: "schema-id", pattern: /\bschema ID\b|\bschemaId\b|\bschemas\/ids\b|RegisterSchemaResponse/i, evidence: "schema ID evidence was detected." },
+    { signal: "content-id", pattern: /\bcontentId\b|content-id/i, evidence: "content ID evidence was detected." },
+    { signal: "global-id", pattern: /\bglobalId\b|global-id/i, evidence: "global ID evidence was detected." },
+    { signal: "references", pattern: /\breferences?\b|\bSchemaReference\b|\bimports?\b|\bdeps:\b/i, evidence: "schema references or imports evidence was detected." }
+  ];
+  return schemaRegistryReadinessSignalFromSpecs(sourceFiles, specs, "identity", "signal");
+}
+
+function schemaRegistryReadinessCompatibilitySignals(sourceFiles: SchemaRegistryReadinessSourceFile[]): SchemaRegistryReadinessReport["compatibilitySignals"] {
+  const specs: Array<{ signal: SchemaRegistryReadinessReport["compatibilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "backward", pattern: /\bBACKWARD(_TRANSITIVE)?\b|default.*BACKWARD/i, evidence: "BACKWARD compatibility evidence was detected." },
+    { signal: "forward", pattern: /\bFORWARD(_TRANSITIVE)?\b/i, evidence: "FORWARD compatibility evidence was detected." },
+    { signal: "full", pattern: /\bFULL(_TRANSITIVE)?\b/i, evidence: "FULL compatibility evidence was detected." },
+    { signal: "transitive", pattern: /\bTRANSITIVE\b/i, evidence: "transitive compatibility evidence was detected." },
+    { signal: "none", pattern: /\bNONE\b|compatibility.*none/i, evidence: "NONE compatibility evidence was detected." },
+    { signal: "compatibility-check", pattern: /\/compatibility\/subjects|testCompatibility|schema-compatibility-check|compatibility check/i, evidence: "compatibility check evidence was detected." },
+    { signal: "breaking-check", pattern: /buf breaking|breaking:\s*|protoc-gen-buf-breaking/i, evidence: "Buf breaking-change check evidence was detected." }
+  ];
+  return schemaRegistryReadinessSignalFromSpecs(sourceFiles, specs, "compatibility", "signal");
+}
+
+function schemaRegistryReadinessGovernanceSignals(sourceFiles: SchemaRegistryReadinessSourceFile[]): SchemaRegistryReadinessReport["governanceSignals"] {
+  const specs: Array<{ signal: SchemaRegistryReadinessReport["governanceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "compatibility-rule", pattern: /compatibility.*rule|CompatibilityLevel|compatibilityLevel|rules.*compatibility/i, evidence: "compatibility rule evidence was detected." },
+    { signal: "validity-rule", pattern: /validity.*rule|VALIDITY|rule.*valid|content validity/i, evidence: "validity rule evidence was detected." },
+    { signal: "mode", pattern: /\bREADWRITE\b|\bREADONLY\b|\bIMPORT\b|\/mode\b|mode:/i, evidence: "registry mode evidence was detected." },
+    { signal: "lint", pattern: /buf lint|lint:\s*|protoc-gen-buf-lint/i, evidence: "schema lint evidence was detected." },
+    { signal: "breaking-policy", pattern: /breaking:\s*|breaking.*use|-\s*(FILE|PACKAGE|WIRE_JSON|WIRE)\b/i, evidence: "breaking policy evidence was detected." },
+    { signal: "managed-mode", pattern: /managed:\s*|managed mode/i, evidence: "Buf managed mode evidence was detected." },
+    { signal: "dependency-lock", pattern: /buf\.lock|deps:\s*|dependency resolution|module dependencies/i, evidence: "schema dependency lock evidence was detected." }
+  ];
+  return schemaRegistryReadinessSignalFromSpecs(sourceFiles, specs, "governance", "signal");
+}
+
+function schemaRegistryReadinessWorkflowSignals(sourceFiles: SchemaRegistryReadinessSourceFile[]): SchemaRegistryReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: SchemaRegistryReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "schema-register-command", pattern: /curl .*\/subjects\/.*\/versions|registerWithResponse|registerSchema|schema registry.*register|create_artifact/i, evidence: "schema registration command evidence was detected." },
+    { signal: "compatibility-command", pattern: /schema-compatibility-check|curl .*\/compatibility\/subjects|testCompatibility/i, evidence: "compatibility command evidence was detected." },
+    { signal: "buf-lint", pattern: /buf lint|protoc-gen-buf-lint/i, evidence: "Buf lint command evidence was detected." },
+    { signal: "buf-breaking", pattern: /buf breaking|protoc-gen-buf-breaking/i, evidence: "Buf breaking command evidence was detected." },
+    { signal: "buf-generate", pattern: /buf generate|buf\.gen\.ya?ml/i, evidence: "Buf generate command evidence was detected." },
+    { signal: "buf-push", pattern: /buf push/i, evidence: "Buf push command evidence was detected." },
+    { signal: "github-actions", pattern: /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\//i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|schema-registry-report\.json|buf-breaking\.json|compatibility-report\.json|schema-readiness\.json/i, evidence: "schema readiness artifact upload evidence was detected." }
+  ];
+  return schemaRegistryReadinessSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function schemaRegistryReadinessPackageSignals(sourceFiles: SchemaRegistryReadinessSourceFile[]): SchemaRegistryReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: SchemaRegistryReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "schema-registry-client", pattern: /@kafkajs\/confluent-schema-registry|io\.confluent:kafka-schema-registry-client|schema[-_]?registry.*client|schemaregistry.*client/i, evidence: "schema registry client package evidence was detected." },
+    { signal: "kafka-avro-serializer", pattern: /kafka-avro-serializer|KafkaAvroSerializer/i, evidence: "Kafka Avro serializer package evidence was detected." },
+    { signal: "kafka-protobuf-serializer", pattern: /kafka-protobuf-serializer|KafkaProtobufSerializer/i, evidence: "Kafka Protobuf serializer package evidence was detected." },
+    { signal: "kafka-json-schema-serializer", pattern: /kafka-json-schema-serializer|KafkaJsonSchemaSerializer/i, evidence: "Kafka JSON Schema serializer package evidence was detected." },
+    { signal: "apicurio-client", pattern: /apicurio.*client|io\.apicurio.*registry|apicurio-registry-client/i, evidence: "Apicurio client package evidence was detected." },
+    { signal: "buf-cli", pattern: /@bufbuild\/buf|bufbuild\/buf|buf CLI|buf\.build/i, evidence: "Buf CLI package evidence was detected." },
+    { signal: "protoc", pattern: /\bprotoc\b|protoc-gen-|google\.protobuf/i, evidence: "protoc or protoc plugin evidence was detected." }
+  ];
+  return schemaRegistryReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function schemaRegistryReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: SchemaRegistryReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/schema-registry-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

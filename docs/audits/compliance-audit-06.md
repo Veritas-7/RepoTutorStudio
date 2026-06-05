@@ -1,6 +1,6 @@
 # Compliance Audit 6
 
-Created: 2026-06-05T14:35:51.575Z
+Created: 2026-06-05T14:54:50.137Z
 
 Status: PASS
 
@@ -617,6 +617,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - event stream readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - schema registry readiness report
 
 - missing files: none
 - missing strings: none
