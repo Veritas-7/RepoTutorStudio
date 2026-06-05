@@ -9154,6 +9154,65 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 289:
   - `5f2a507` drag-and-drop readiness report
 
+- 2026-06-06: AutoResearch Upgrade 290 candidate selected:
+  rich text editor readiness from new ignored `ueberdosis/tiptap` clone
+  (`https://github.com/ueberdosis/tiptap.git`; ignored clone HEAD
+  `dec826412c73eee20131d73986916f7e420c1aaf`), new ignored
+  `ProseMirror/prosemirror` clone (`https://github.com/ProseMirror/prosemirror.git`;
+  ignored clone HEAD `c7f2f1d7bde70728dfedaa68ca8f5fc3dffa17cc`), and new
+  ignored `facebook/lexical` clone (`https://github.com/facebook/lexical.git`;
+  ignored clone HEAD `2b8bb5bb596cf1649cca8a07c9f690bfbef47cc1`). Static
+  source inspection only; `git ls-files research/external-src` returned `0`,
+  and `git status --ignored=matching --short research/external-src` showed the
+  clones only under ignored `research/external-src/`.
+- 2026-06-06: Implemented Tiptap/ProseMirror/Lexical-style rich text editor
+  readiness report: `RichTextEditorReadinessReportSchema`,
+  `analysis/rich-text-editor-readiness-report.json`,
+  `markdown/rich-text-editor-readiness.md`,
+  `html/rich-text-editor-readiness.html`, static rich text editor setup
+  detection, framework, schema, render, command, state, extension,
+  collaboration, accessibility, test, and package signals, Tiptap `useEditor`,
+  `EditorContent`, `BubbleMenu`, `FloatingMenu`, `StarterKit`, `Node.create`,
+  `Mark.create`, `editor.chain`, `editor.commands`, `getJSON`, `getHTML`, and
+  collaboration evidence, ProseMirror `EditorState`, `EditorView`, `Schema`,
+  `DOMParser`, `DOMSerializer`, `Plugin`, `keymap`, `inputRules`, `history`,
+  and transaction evidence, Lexical `LexicalComposer`, `RichTextPlugin`,
+  `ContentEditable`, `HistoryPlugin`, `OnChangePlugin`, `FORMAT_TEXT_COMMAND`,
+  `editor.update`, `editor.dispatchCommand`, `createCommand`, `$getRoot`, and
+  `$getSelection` evidence, static-only rich text editor guardrail,
+  recommended inspection commands, manifest and session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target rich-text-editor-readiness`.
+- 2026-06-06: RED/GREEN rich text editor readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/rich-text-editor-readiness-report.json` did not exist. GREEN
+  fixture detected Tiptap, ProseMirror, and Lexical setup rows; StarterKit,
+  schema, node, mark, nodes, EditorContent, EditorView, ContentEditable,
+  RichTextPlugin, chain, commands, dispatch-command, format-text, keymap,
+  EditorState, transaction, update, selection, JSON/HTML serialization,
+  extension-create, node-create, mark-create, plugin, history, collaboration,
+  awareness, Yjs, role=textbox, aria-label, keyboard, placeholder, Vitest,
+  Playwright, Testing Library, keyboard tests, input tests, artifact upload,
+  packages, recommended command, static-only guardrail, and all three new
+  artifacts.
+- 2026-06-06: Verification for Upgrade 290:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused rich text editor readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 97/97 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 188/188 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~83.64 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 290:
+  - `5de500d` rich text editor readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
