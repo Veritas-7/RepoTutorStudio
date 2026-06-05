@@ -7093,6 +7093,60 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 253:
   - `a17f07b` event stream readiness report
 
+- 2026-06-05: AutoResearch Upgrade 254 candidate selected:
+  stream processing job readiness from `apache/flink`
+  (`https://github.com/apache/flink`; ignored clone HEAD `c3ec569`),
+  `apache/beam` (`https://github.com/apache/beam`; ignored clone HEAD
+  `c01ceea`), and `apache/spark`
+  (`https://github.com/apache/spark`; ignored clone HEAD `b2580fc`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Flink/Beam/Spark-style
+  stream-processing-readiness report:
+  `StreamProcessingReadinessReportSchema`,
+  `analysis/stream-processing-readiness-report.json`,
+  `markdown/stream-processing-readiness.md`,
+  `html/stream-processing-readiness.html`, static stream processing setup
+  detection, Flink/Beam/Spark/custom engine signals, job/source/transform/
+  window/watermark/state/checkpoint/sink/deployment/monitoring/CI/package
+  signals, static-only risk queue, recommended inspection commands,
+  manifest/session-verification coverage, learning-path linkage, HTML
+  page/nav entry, CLI help/list-target coverage, dedicated audit coverage,
+  and `open --target stream-processing-readiness`.
+- 2026-06-05: RED/GREEN stream-processing-readiness smoke recorded:
+  old behavior at `5a6d2af` had no
+  `StreamProcessingReadinessReportSchema` and no
+  `stream-processing-readiness` CLI target (`schema_exit=1`,
+  `target_exit=1`). GREEN fixture detected Flink
+  `StreamExecutionEnvironment`, `DataStream`, `env.execute`,
+  `enableCheckpointing`, `CheckpointingMode.EXACTLY_ONCE`,
+  `WatermarkStrategy`, tumbling/sliding/session windows, keyed state,
+  `ValueState`, `MapState`, `RocksDB`, `KafkaSource`, `KafkaSink`,
+  `TwoPhaseCommitSinkFunction`, savepoint/restart/deployment/monitoring
+  signals; Beam `Pipeline`, `PCollection`, `ParDo`, `DoFn`, `GroupByKey`,
+  `FixedWindows`, `SlidingWindows`, `Sessions`, triggers, state/timer specs,
+  `FlinkRunner`, `SparkRunner`, `KafkaIO`, `PubsubIO`, `BigQueryIO`;
+  Spark Structured Streaming `readStream`, `writeStream`, `StreamingQuery`,
+  `withWatermark`, `checkpointLocation`, `foreachBatch`, `OutputMode`,
+  `stateStore`, group-state and `StreamingQueryListener`; CI stream-job,
+  checkpoint, window, and sink smoke commands, artifact upload, package
+  signals, recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 254:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused stream-processing-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 61/61 tests
+  - `pnpm test`: PASS, 61/61 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 152/152 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~99.47 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 254:
+  - `481301b` stream processing readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
