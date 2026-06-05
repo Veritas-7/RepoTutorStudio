@@ -20116,6 +20116,176 @@ describe("RepoTutor core pipeline", () => {
     expect(notebookHtml).toContain("RepoTutor records notebook readiness only");
   });
 
+  it("detects markdown code rendering readiness without rendering markdown or highlighting code", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-markdown-code-rendering-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-markdown-code-rendering-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "react-markdown-viewer.tsx"), [
+      "import Markdown, { MarkdownHooks } from 'react-markdown';",
+      "import remarkGfm from 'remark-gfm';",
+      "import rehypeRaw from 'rehype-raw';",
+      "import rehypeSanitize from 'rehype-sanitize';",
+      "",
+      "const allowedElements = ['pre', 'code', 'a', 'table'];",
+      "const disallowedElements = ['script', 'iframe'];",
+      "const urlTransform = (url: string) => url.startsWith('javascript:') ? '' : url;",
+      "",
+      "export function MarkdownCodeViewer({ body }: { body: string }) {",
+      "  return (",
+      "    <Markdown",
+      "      remarkPlugins={[remarkGfm]}",
+      "      rehypePlugins={[rehypeRaw, rehypeSanitize]}",
+      "      allowedElements={allowedElements}",
+      "      disallowedElements={disallowedElements}",
+      "      skipHtml",
+      "      urlTransform={urlTransform}",
+      "      components={{",
+      "        pre(props) { return <pre aria-label=\"code block wrapper\" {...props} />; },",
+      "        code({ className, children, ...props }) {",
+      "          const match = /language-(\\w+)/.exec(className || '');",
+      "          return <code aria-label={`code block ${match?.[1] ?? 'text'}`} tabIndex={0} className={className} {...props}>{children}</code>;",
+      "        }",
+      "      }}",
+      "    >{body}</Markdown>",
+      "  );",
+      "}",
+      "",
+      "export function HookedMarkdown({ body }: { body: string }) {",
+      "  return <MarkdownHooks remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>{body}</MarkdownHooks>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "shiki-highlighter.ts"), [
+      "import { bundledLanguages, bundledThemes, codeToHtml, codeToTokens, createHighlighter } from 'shiki';",
+      "import { transformerNotationDiff, transformerNotationFocus, transformerNotationHighlight } from '@shikijs/transformers';",
+      "",
+      "const transformers = [transformerNotationDiff(), transformerNotationHighlight(), transformerNotationFocus()];",
+      "export async function renderWithShiki(source: string) {",
+      "  const html = await codeToHtml(source, { lang: 'typescript', theme: 'github-dark', transformers });",
+      "  const highlighter = await createHighlighter({ themes: ['github-dark', 'github-light'], langs: ['typescript', 'tsx', 'markdown'] });",
+      "  const tokens = await codeToTokens(source, { lang: 'typescript', theme: 'github-dark' });",
+      "  return { html, tokens, themed: highlighter.codeToHtml(source, { lang: 'tsx', theme: 'github-light' }), bundledLanguages, bundledThemes };",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "prism-renderer.ts"), [
+      "import Prism from 'prismjs';",
+      "import 'prismjs/components/prism-typescript';",
+      "import 'prismjs/plugins/line-numbers/prism-line-numbers';",
+      "import 'prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard';",
+      "import 'prismjs/plugins/toolbar/prism-toolbar';",
+      "",
+      "export function prismRender(code: string, element: HTMLElement) {",
+      "  element.className = 'language-typescript line-numbers';",
+      "  const html = Prism.highlight(code, Prism.languages.typescript, 'typescript');",
+      "  Prism.highlightElement(element);",
+      "  Prism.highlightAll();",
+      "  const token = new Prism.Token('keyword', 'const', undefined, 'const x = 1');",
+      "  return { html, token, stringified: Prism.Token.stringify(token, 'typescript') };",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "markdown-code-rendering.spec.ts"), [
+      "import { getByLabelText, getByText } from '@testing-library/dom';",
+      "import { describe, expect, it } from 'vitest';",
+      "",
+      "describe('markdown code rendering contracts', () => {",
+      "  it('captures sanitized code-block DOM contracts without rendering markdown or highlighting code', () => {",
+      "    const host = document.createElement('section');",
+      "    host.innerHTML = '<pre><code class=\"language-ts\" aria-label=\"code block\" tabindex=\"0\">const safe = true</code></pre>';",
+      "    document.body.append(host);",
+      "    const malicious = '<script>alert(\"xss\")</script>';",
+      "    const policy = ['rehypeSanitize', 'skipHtml', 'urlTransform', 'xss', malicious].join(':');",
+      "    expect(getByLabelText(document.body, 'code block')).toBeTruthy();",
+      "    expect(getByText(document.body, 'const safe = true')).toBeTruthy();",
+      "    expect(policy).toContain('rehypeSanitize');",
+      "    expect(policy).toMatchInlineSnapshot('\"rehypeSanitize:skipHtml:urlTransform:xss:<script>alert(\\\\\"xss\\\\\")</script>\"');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        test: "vitest markdown-code-rendering.spec.ts",
+        "test:e2e": "playwright test markdown-code-rendering.spec.ts"
+      },
+      dependencies: {
+        react: "^19.0.0",
+        "react-markdown": "^10.0.0",
+        "remark-gfm": "^4.0.0",
+        "rehype-raw": "^7.0.0",
+        "rehype-sanitize": "^6.0.0",
+        shiki: "^3.0.0",
+        "@shikijs/transformers": "^3.0.0",
+        prismjs: "^1.30.0",
+        "@mdx-js/react": "^3.0.0"
+      },
+      devDependencies: {
+        "@testing-library/dom": "^10.4.0",
+        vitest: "^3.0.0",
+        playwright: "^1.50.0",
+        typescript: "^5.8.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "markdown-code-rendering.yml"), [
+      "name: markdown-code-rendering",
+      "on: [push]",
+      "jobs:",
+      "  static-markdown-code-rendering:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest markdown-code-rendering.spec.ts",
+      "      - run: npx playwright test markdown-code-rendering.spec.ts",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: markdown-code-rendering-traces",
+      "          path: reports/markdown-code-rendering"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "markdown-code-rendering-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      markdownCodeRenderingSetups: Array<{ filePath: string; platform: string; rendererCount: number; parserCount: number; highlightCount: number; pluginCount: number; securityCount: number; themeCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      rendererSignals: Array<{ signal: string; readiness: string }>;
+      parserSignals: Array<{ signal: string; readiness: string }>;
+      highlightSignals: Array<{ signal: string; readiness: string }>;
+      pluginSignals: Array<{ signal: string; readiness: string }>;
+      securitySignals: Array<{ signal: string; readiness: string }>;
+      themeSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Markdown code rendering readiness react-markdown components remarkPlugins rehypePlugins Shiki codeToHtml createHighlighter Prism highlight language classes tests");
+    expect(report.markdownCodeRenderingSetups.some((item) => item.filePath === "src/react-markdown-viewer.tsx" && item.platform === "react-markdown" && item.rendererCount > 0 && item.parserCount > 0 && item.securityCount > 0 && item.accessibilityCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(report.markdownCodeRenderingSetups.some((item) => item.filePath === "src/shiki-highlighter.ts" && item.platform === "shiki" && item.highlightCount > 0 && item.pluginCount > 0 && item.themeCount > 0)).toBe(true);
+    expect(report.markdownCodeRenderingSetups.some((item) => item.filePath === "src/prism-renderer.ts" && item.platform === "prism" && item.highlightCount > 0 && item.pluginCount > 0)).toBe(true);
+    expect(readySignals(report.rendererSignals)).toEqual(expect.arrayContaining(["react-markdown", "markdown-hooks", "components-map", "code-component", "pre-code"]));
+    expect(readySignals(report.parserSignals)).toEqual(expect.arrayContaining(["remark-plugins", "remark-gfm", "remark-rehype", "rehype-plugins", "rehype-raw"]));
+    expect(readySignals(report.highlightSignals)).toEqual(expect.arrayContaining(["shiki-code-to-html", "create-highlighter", "code-to-tokens", "prism-highlight", "highlight-element", "language-class"]));
+    expect(readySignals(report.pluginSignals)).toEqual(expect.arrayContaining(["rehype-sanitize", "transformers", "line-numbers", "copy-to-clipboard", "toolbar"]));
+    expect(readySignals(report.securitySignals)).toEqual(expect.arrayContaining(["skip-html", "allowed-elements", "disallowed-elements", "url-transform", "rehype-sanitize", "raw-html-risk", "xss"]));
+    expect(readySignals(report.themeSignals)).toEqual(expect.arrayContaining(["theme", "themes", "bundled-themes", "langs", "bundled-languages"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["pre-code", "aria-label", "tabindex", "keyboard", "copy-button"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "testing-library", "snapshot-test", "security-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["react-markdown", "remark-gfm", "rehype-raw", "rehype-sanitize", "shiki", "@shikijs/transformers", "prismjs", "@mdx-js/react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("react-markdown"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records markdown/code rendering readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "markdown-code-rendering-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "markdown-code-rendering-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "markdown-code-rendering-readiness.html"))).resolves.toBeUndefined();
+    const markdownCodeMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "markdown-code-rendering-readiness.md"), "utf8");
+    expect(markdownCodeMarkdown).toContain("Markdown Code Rendering Readiness");
+    expect(markdownCodeMarkdown).toContain("react-markdown");
+    const markdownCodeHtml = await fs.readFile(path.join(result.session.outputPaths.html, "markdown-code-rendering-readiness.html"), "utf8");
+    expect(markdownCodeHtml).toContain("markdown-code-rendering-readiness-card");
+    expect(markdownCodeHtml).toContain("data-source-pattern=\"Markdown Code Rendering\"");
+    expect(markdownCodeHtml).toContain("RepoTutor records markdown/code rendering readiness only");
+  });
+
   it("detects map visualization readiness without opening canvases or fetching tiles", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-map-readiness-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-map-source-"));

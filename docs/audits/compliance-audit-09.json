@@ -1,6 +1,6 @@
 {
   "iteration": 9,
-  "createdAt": "2026-06-05T19:00:27.091Z",
+  "createdAt": "2026-06-05T19:16:42.335Z",
   "checks": [
     {
       "name": "project setup",
@@ -935,6 +935,13 @@
     },
     {
       "name": "chart visualization readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Markdown code rendering readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -153,6 +153,7 @@ import {
   PdfGenerationReadinessReport,
   SpreadsheetReadinessReport,
   ChartVisualizationReadinessReport,
+  MarkdownCodeRenderingReadinessReport,
   NotebookReadinessReport,
   MapVisualizationReadinessReport,
   DiagramRenderingReadinessReport,
@@ -363,6 +364,7 @@ export interface AnalysisBundle {
   pdfGenerationReadinessReport: PdfGenerationReadinessReport;
   spreadsheetReadinessReport: SpreadsheetReadinessReport;
   chartVisualizationReadinessReport: ChartVisualizationReadinessReport;
+  markdownCodeRenderingReadinessReport: MarkdownCodeRenderingReadinessReport;
   notebookReadinessReport: NotebookReadinessReport;
   mapVisualizationReadinessReport: MapVisualizationReadinessReport;
   diagramRenderingReadinessReport: DiagramRenderingReadinessReport;
@@ -573,6 +575,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const pdfGenerationReadinessReport = await buildPdfGenerationReadinessReport(walk);
   const spreadsheetReadinessReport = await buildSpreadsheetReadinessReport(walk);
   const chartVisualizationReadinessReport = await buildChartVisualizationReadinessReport(walk);
+  const markdownCodeRenderingReadinessReport = await buildMarkdownCodeRenderingReadinessReport(walk);
   const notebookReadinessReport = await buildNotebookReadinessReport(walk);
   const mapVisualizationReadinessReport = await buildMapVisualizationReadinessReport(walk);
   const diagramRenderingReadinessReport = await buildDiagramRenderingReadinessReport(walk);
@@ -625,7 +628,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, dragAndDropReadinessReport, richTextEditorReadinessReport, commandPaletteReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, markdownCodeRenderingReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, dragAndDropReadinessReport, richTextEditorReadinessReport, commandPaletteReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -37021,6 +37024,325 @@ function chartVisualizationReadinessSignalFromSpecs<T extends Record<K, string> 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/chart-visualization-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildMarkdownCodeRenderingReadinessReport(walk: WalkResult): Promise<MarkdownCodeRenderingReadinessReport> {
+  const sourceFiles = await markdownCodeRenderingReadinessSourceFiles(walk);
+  const markdownCodeRenderingSetups = markdownCodeRenderingReadinessSetups(sourceFiles);
+  const rendererSignals = markdownCodeRenderingReadinessRendererSignals(sourceFiles);
+  const parserSignals = markdownCodeRenderingReadinessParserSignals(sourceFiles);
+  const highlightSignals = markdownCodeRenderingReadinessHighlightSignals(sourceFiles);
+  const pluginSignals = markdownCodeRenderingReadinessPluginSignals(sourceFiles);
+  const securitySignals = markdownCodeRenderingReadinessSecuritySignals(sourceFiles);
+  const themeSignals = markdownCodeRenderingReadinessThemeSignals(sourceFiles);
+  const accessibilitySignals = markdownCodeRenderingReadinessAccessibilitySignals(sourceFiles);
+  const testSignals = markdownCodeRenderingReadinessTestSignals(sourceFiles);
+  const packageSignals = markdownCodeRenderingReadinessPackageSignals(sourceFiles);
+
+  const hasPackage = packageSignals.some((item) => item.readiness === "ready");
+  const hasSetup = markdownCodeRenderingSetups.some((item) => item.readiness !== "missing");
+  const hasRenderer = rendererSignals.some((item) => item.readiness === "ready") || markdownCodeRenderingSetups.some((item) => item.rendererCount > 0);
+  const hasParser = parserSignals.some((item) => item.readiness === "ready") || markdownCodeRenderingSetups.some((item) => item.parserCount > 0);
+  const hasHighlight = highlightSignals.some((item) => item.readiness === "ready") || markdownCodeRenderingSetups.some((item) => item.highlightCount > 0);
+  const hasSecurity = securitySignals.some((item) => item.readiness === "ready") || markdownCodeRenderingSetups.some((item) => item.securityCount > 0);
+  const hasTest = testSignals.some((item) => item.readiness === "ready") || markdownCodeRenderingSetups.some((item) => item.testCount > 0);
+
+  const riskQueue: MarkdownCodeRenderingReadinessReport["riskQueue"] = [];
+  if (!hasPackage && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the Markdown renderer, parser, sanitizer, highlighter, or code-block strategy before claiming Markdown/code rendering readiness.",
+      why: "Markdown/code rendering readiness starts with explicit renderer, parser, syntax highlighting, security, or package evidence.",
+      relatedHref: "html/markdown-code-rendering-readiness.html"
+    });
+  }
+  if ((hasPackage || hasSetup) && !hasRenderer) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair Markdown package evidence with concrete renderer components or custom code/pre mappings.",
+      why: "A Markdown dependency alone does not prove that Markdown body and code blocks are rendered through traceable components.",
+      relatedHref: "html/markdown-code-rendering-readiness.html"
+    });
+  }
+  if ((hasRenderer || hasPackage) && !hasParser) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document remark/rehype/MDX parser plugins and the allowed Markdown feature surface.",
+      why: "Parser plugins define tables, raw HTML, frontmatter, and MDX behavior learners need to inspect.",
+      relatedHref: "html/markdown-code-rendering-readiness.html"
+    });
+  }
+  if ((hasRenderer || hasPackage) && !hasHighlight) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add Shiki, Prism, highlight.js, or explicit language-class code-block highlighting evidence.",
+      why: "Code lessons need a visible syntax-highlighting boundary and language-class handling.",
+      relatedHref: "html/markdown-code-rendering-readiness.html"
+    });
+  }
+  if ((hasRenderer || hasPackage) && !hasSecurity) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add skipHtml, allowedElements, disallowedElements, urlTransform, rehype-sanitize, or raw HTML risk review evidence.",
+      why: "Markdown rendering can expose raw HTML, links, and XSS risks unless the sanitizer boundary is explicit.",
+      relatedHref: "html/markdown-code-rendering-readiness.html"
+    });
+  }
+  if ((hasRenderer || hasHighlight || hasPackage) && !hasTest) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add static DOM, sanitizer, snapshot, or browser smoke tests for Markdown code blocks.",
+      why: "Markdown/code rendering changes are visual and security-sensitive, so tests should cover code block DOM contracts and sanitizer policy.",
+      relatedHref: "html/markdown-code-rendering-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run representative Markdown rendering and syntax-highlighting tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor records markdown/code rendering readiness only; it does not render Markdown, execute highlighters, parse raw HTML, mutate DOM, load themes, copy code, or run the analyzed project's tests.",
+    relatedHref: "html/markdown-code-rendering-readiness.html"
+  });
+
+  return {
+    summary: `Markdown/code rendering readiness report: setup ${markdownCodeRenderingSetups.length}개, renderer signal ${rendererSignals.length}개, highlight signal ${highlightSignals.length}개, security signal ${securitySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Markdown code rendering readiness react-markdown components remarkPlugins rehypePlugins Shiki codeToHtml createHighlighter Prism highlight language classes tests",
+    markdownCodeRenderingSetups,
+    rendererSignals,
+    parserSignals,
+    highlightSignals,
+    pluginSignals,
+    securitySignals,
+    themeSignals,
+    accessibilitySignals,
+    testSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"react-markdown|MarkdownHooks|components|remarkPlugins|rehypePlugins|MDXProvider\" src app packages", purpose: "Inventory Markdown renderer entry points, component maps, and parser plugins." },
+      { command: "rg \"allowedElements|disallowedElements|skipHtml|urlTransform|rehype-sanitize|rehypeRaw|xss\" src app packages", purpose: "Review raw HTML, link, sanitizer, and XSS policy boundaries." },
+      { command: "rg \"codeToHtml|createHighlighter|codeToTokens|Prism\\.highlight|highlightElement|language-\" src app packages", purpose: "Trace syntax highlighter setup, code-block language extraction, and DOM highlighting." },
+      { command: "rg \"theme|themes|bundledThemes|langs|bundledLanguages|line-numbers|copy-to-clipboard|toolbar\" src app packages", purpose: "Check theme, language bundle, and code-block plugin behavior." },
+      { command: "npx vitest run", purpose: "Run local tests that cover Markdown code-block DOM contracts, sanitizer policy, snapshots, and accessibility." }
+    ],
+    learnerNextSteps: [
+      "react-markdown, MDXProvider, MarkdownHooks, components map, pre/code override 지점을 먼저 찾으세요.",
+      "remarkPlugins, remark-gfm, remark-rehype, rehypePlugins, rehype-raw 신호로 Markdown feature surface를 확인하세요.",
+      "skipHtml, allowedElements, disallowedElements, urlTransform, rehype-sanitize, raw HTML/XSS 신호로 보안 경계를 확인하세요.",
+      "Shiki codeToHtml/createHighlighter/codeToTokens 또는 Prism highlight/highlightElement/language-* 신호로 syntax highlighting 경계를 추적하세요.",
+      "theme, themes, bundledThemes, langs, bundledLanguages, transformers, line-numbers, copy-to-clipboard 신호로 코드 블록 UI 옵션을 점검하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 Markdown 렌더링, syntax highlighter 실행, raw HTML parsing, DOM mutation, copy button 동작은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type MarkdownCodeRenderingReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function markdownCodeRenderingReadinessSourceFiles(walk: WalkResult): Promise<MarkdownCodeRenderingReadinessSourceFile[]> {
+  const files: MarkdownCodeRenderingReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !markdownCodeRenderingReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!markdownCodeRenderingReadinessPathSignal(file.relPath) && !markdownCodeRenderingReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function markdownCodeRenderingReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return markdownCodeRenderingReadinessPathSignal(filePath)
+    || /^(markdown|mdx|renderer|viewer|highlighter|syntax|code-block|codeblock|prism|shiki|remark|rehype|package\.json)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml|toml|css)$/i.test(filePath);
+}
+
+function markdownCodeRenderingReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(markdown|mdx|remark|rehype|shiki|prism|highlight|syntax|code-block|codeblock|renderer|viewer|content)(\/|\.|-|_|$)/i.test(filePath);
+}
+
+function markdownCodeRenderingReadinessContentSignal(text: string): boolean {
+  return /(react-markdown|MarkdownHooks|remarkPlugins|rehypePlugins|rehypeSanitize|codeToHtml|createHighlighter|codeToTokens|Prism\.highlight|highlightElement|highlightAll|language-|@mdx-js\/react|MDXProvider|prismjs|shiki)/i.test(text);
+}
+
+function markdownCodeRenderingReadinessSetups(sourceFiles: MarkdownCodeRenderingReadinessSourceFile[]): MarkdownCodeRenderingReadinessReport["markdownCodeRenderingSetups"] {
+  const rows: MarkdownCodeRenderingReadinessReport["markdownCodeRenderingSetups"] = [];
+  for (const source of sourceFiles) {
+    const rendererCount = countMatches(source.text, /(react-markdown|<Markdown|MarkdownHooks|components\s*=|components\s*:|code\s*\(|pre\s*\(|MDXProvider|markdown renderer|renderMarkdown)/gi);
+    const parserCount = countMatches(source.text, /(remarkPlugins|remarkGfm|remark-gfm|remark-rehype|rehypePlugins|rehypeRaw|rehype-raw|frontmatter|mdx)/gi);
+    const highlightCount = countMatches(source.text, /(codeToHtml|createHighlighter|codeToTokens|Prism\.highlight|highlightElement|highlightAll|language-|Token|stringify|highlight\.js|hljs\.highlight)/gi);
+    const pluginCount = countMatches(source.text, /(rehypeSanitize|rehype-sanitize|transformers|transformerNotation|line-numbers|copy-to-clipboard|toolbar|show-language|katex|math)/gi);
+    const securityCount = countMatches(source.text, /(skipHtml|allowedElements|disallowedElements|urlTransform|rehypeSanitize|rehype-sanitize|rehypeRaw|rehype-raw|raw html|xss|sanitize|script)/gi);
+    const themeCount = countMatches(source.text, /(theme\s*:|theme=|themes|bundledThemes|bundled-themes|langs|bundledLanguages|bundled-languages|github-dark|github-light|css-theme|prism-theme)/gi);
+    const accessibilityCount = countMatches(source.text, /(<pre|<code|aria-label|tabIndex|tabindex|keyboard|copy-to-clipboard|copy button|screen-reader|sr-only)/gi);
+    const testCount = countMatches(source.text, /(vitest|playwright|testing-library|describe\s*\(|it\s*\(|expect\s*\(|toMatchInlineSnapshot|snapshot|xss|upload-artifact|markdown-code-rendering-traces)/gi);
+    const hasSetupSignal = rendererCount + parserCount + highlightCount + pluginCount + securityCount + themeCount + accessibilityCount + testCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: markdownCodeRenderingReadinessPlatform(source),
+      rendererCount,
+      parserCount,
+      highlightCount,
+      pluginCount,
+      securityCount,
+      themeCount,
+      accessibilityCount,
+      testCount,
+      readiness: (rendererCount > 0 && parserCount > 0 && securityCount > 0 && accessibilityCount > 0) || (highlightCount > 0 && (pluginCount > 0 || themeCount > 0)) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains renderer ${rendererCount}, parser ${parserCount}, highlight ${highlightCount}, plugins ${pluginCount}, security ${securityCount}, theme ${themeCount}, accessibility ${accessibilityCount}, tests ${testCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function markdownCodeRenderingReadinessPlatform(source: MarkdownCodeRenderingReadinessSourceFile): MarkdownCodeRenderingReadinessReport["markdownCodeRenderingSetups"][number]["platform"] {
+  if (/react-markdown|MarkdownHooks|<Markdown|remarkPlugins|rehypePlugins/i.test(source.text)) return "react-markdown";
+  if (/shiki|codeToHtml|createHighlighter|codeToTokens|bundledLanguages|bundledThemes/i.test(source.text)) return "shiki";
+  if (/prismjs|Prism\.highlight|highlightElement|highlightAll|prism-/i.test(source.text)) return "prism";
+  if (/highlight\.js|hljs\.highlight|from ['"]highlight\.js/i.test(source.text)) return "highlightjs";
+  if (/@mdx-js\/react|MDXProvider|\.mdx/i.test(source.text) || /\.mdx$/i.test(source.filePath)) return "mdx";
+  if (/markdown|code block|syntax|highlight/i.test(source.text) || markdownCodeRenderingReadinessPathSignal(source.filePath)) return "custom";
+  return "unknown";
+}
+
+function markdownCodeRenderingReadinessRendererSignals(sourceFiles: MarkdownCodeRenderingReadinessSourceFile[]): MarkdownCodeRenderingReadinessReport["rendererSignals"] {
+  const specs: Array<{ signal: MarkdownCodeRenderingReadinessReport["rendererSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "react-markdown", pattern: /react-markdown|<Markdown\b/i, evidence: "react-markdown evidence was detected." },
+    { signal: "markdown-hooks", pattern: /MarkdownHooks/i, evidence: "MarkdownHooks evidence was detected." },
+    { signal: "components-map", pattern: /components\s*=|components\s*:/i, evidence: "components map evidence was detected." },
+    { signal: "code-component", pattern: /\bcode\s*\(|<code\b|className[\s\S]{0,80}language-/i, evidence: "code component evidence was detected." },
+    { signal: "pre-code", pattern: /<pre\b|\bpre\s*\(|<code\b|\bcode\s*\(/i, evidence: "pre/code element evidence was detected." },
+    { signal: "mdx-provider", pattern: /MDXProvider|@mdx-js\/react/i, evidence: "MDX provider evidence was detected." },
+    { signal: "custom-renderer", pattern: /renderMarkdown|markdown renderer|markdownToHtml/i, evidence: "custom renderer evidence was detected." }
+  ];
+  return markdownCodeRenderingReadinessSignalFromSpecs(sourceFiles, specs, "renderer", "signal");
+}
+
+function markdownCodeRenderingReadinessParserSignals(sourceFiles: MarkdownCodeRenderingReadinessSourceFile[]): MarkdownCodeRenderingReadinessReport["parserSignals"] {
+  const specs: Array<{ signal: MarkdownCodeRenderingReadinessReport["parserSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "remark-plugins", pattern: /remarkPlugins/i, evidence: "remarkPlugins evidence was detected." },
+    { signal: "remark-gfm", pattern: /remarkGfm|remark-gfm/i, evidence: "remark-gfm evidence was detected." },
+    { signal: "remark-rehype", pattern: /remark-rehype|remarkRehype|rehypePlugins/i, evidence: "remark-rehype evidence was detected." },
+    { signal: "rehype-plugins", pattern: /rehypePlugins/i, evidence: "rehypePlugins evidence was detected." },
+    { signal: "rehype-raw", pattern: /rehypeRaw|rehype-raw/i, evidence: "rehype-raw evidence was detected." },
+    { signal: "frontmatter", pattern: /frontmatter|gray-matter|remark-frontmatter/i, evidence: "frontmatter evidence was detected." },
+    { signal: "mdx", pattern: /@mdx-js|MDXProvider|\.mdx/i, evidence: "MDX evidence was detected." }
+  ];
+  return markdownCodeRenderingReadinessSignalFromSpecs(sourceFiles, specs, "parser", "signal");
+}
+
+function markdownCodeRenderingReadinessHighlightSignals(sourceFiles: MarkdownCodeRenderingReadinessSourceFile[]): MarkdownCodeRenderingReadinessReport["highlightSignals"] {
+  const specs: Array<{ signal: MarkdownCodeRenderingReadinessReport["highlightSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "shiki-code-to-html", pattern: /codeToHtml/i, evidence: "Shiki codeToHtml evidence was detected." },
+    { signal: "create-highlighter", pattern: /createHighlighter/i, evidence: "createHighlighter evidence was detected." },
+    { signal: "code-to-tokens", pattern: /codeToTokens/i, evidence: "codeToTokens evidence was detected." },
+    { signal: "prism-highlight", pattern: /Prism\.highlight/i, evidence: "Prism.highlight evidence was detected." },
+    { signal: "highlight-element", pattern: /highlightElement|highlightAll/i, evidence: "highlightElement/highlightAll evidence was detected." },
+    { signal: "language-class", pattern: /language-[A-Za-z0-9_-]+|language-\$|language-\(|language-\{/i, evidence: "language-* class evidence was detected." },
+    { signal: "token-stream", pattern: /Token|stringify|TokenStream/i, evidence: "token stream evidence was detected." },
+    { signal: "highlightjs-highlight", pattern: /highlight\.js|hljs\.highlight|hljs\.highlightElement/i, evidence: "highlight.js evidence was detected." }
+  ];
+  return markdownCodeRenderingReadinessSignalFromSpecs(sourceFiles, specs, "highlight", "signal");
+}
+
+function markdownCodeRenderingReadinessPluginSignals(sourceFiles: MarkdownCodeRenderingReadinessSourceFile[]): MarkdownCodeRenderingReadinessReport["pluginSignals"] {
+  const specs: Array<{ signal: MarkdownCodeRenderingReadinessReport["pluginSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "rehype-sanitize", pattern: /rehypeSanitize|rehype-sanitize/i, evidence: "rehype-sanitize evidence was detected." },
+    { signal: "transformers", pattern: /transformers|transformerNotation/i, evidence: "Shiki transformer evidence was detected." },
+    { signal: "line-numbers", pattern: /line-numbers|prism-line-numbers/i, evidence: "line-numbers plugin evidence was detected." },
+    { signal: "copy-to-clipboard", pattern: /copy-to-clipboard|copy button|prism-copy-to-clipboard/i, evidence: "copy-to-clipboard plugin evidence was detected." },
+    { signal: "toolbar", pattern: /toolbar|prism-toolbar/i, evidence: "toolbar plugin evidence was detected." },
+    { signal: "show-language", pattern: /show-language|showLanguage/i, evidence: "show-language plugin evidence was detected." },
+    { signal: "math-katex", pattern: /katex|remark-math|rehype-katex/i, evidence: "math/KaTeX plugin evidence was detected." }
+  ];
+  return markdownCodeRenderingReadinessSignalFromSpecs(sourceFiles, specs, "plugin", "signal");
+}
+
+function markdownCodeRenderingReadinessSecuritySignals(sourceFiles: MarkdownCodeRenderingReadinessSourceFile[]): MarkdownCodeRenderingReadinessReport["securitySignals"] {
+  const specs: Array<{ signal: MarkdownCodeRenderingReadinessReport["securitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "skip-html", pattern: /skipHtml/i, evidence: "skipHtml evidence was detected." },
+    { signal: "allowed-elements", pattern: /allowedElements/i, evidence: "allowedElements evidence was detected." },
+    { signal: "disallowed-elements", pattern: /disallowedElements/i, evidence: "disallowedElements evidence was detected." },
+    { signal: "url-transform", pattern: /urlTransform/i, evidence: "urlTransform evidence was detected." },
+    { signal: "rehype-sanitize", pattern: /rehypeSanitize|rehype-sanitize/i, evidence: "rehype-sanitize evidence was detected." },
+    { signal: "raw-html-risk", pattern: /rehypeRaw|rehype-raw|raw html|dangerouslySetInnerHTML/i, evidence: "raw HTML risk evidence was detected." },
+    { signal: "xss", pattern: /xss|javascript:|<script|sanitize/i, evidence: "XSS/sanitizer evidence was detected." }
+  ];
+  return markdownCodeRenderingReadinessSignalFromSpecs(sourceFiles, specs, "security", "signal");
+}
+
+function markdownCodeRenderingReadinessThemeSignals(sourceFiles: MarkdownCodeRenderingReadinessSourceFile[]): MarkdownCodeRenderingReadinessReport["themeSignals"] {
+  const specs: Array<{ signal: MarkdownCodeRenderingReadinessReport["themeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "theme", pattern: /\btheme\s*:|\btheme=|github-dark|github-light/i, evidence: "theme evidence was detected." },
+    { signal: "themes", pattern: /\bthemes\b/i, evidence: "themes evidence was detected." },
+    { signal: "bundled-themes", pattern: /bundledThemes|bundled-themes/i, evidence: "bundled themes evidence was detected." },
+    { signal: "langs", pattern: /\blangs\b|lang\s*:/i, evidence: "language list evidence was detected." },
+    { signal: "bundled-languages", pattern: /bundledLanguages|bundled-languages/i, evidence: "bundled languages evidence was detected." },
+    { signal: "css-theme", pattern: /prism-theme|shiki-theme|\.css|code-theme/i, evidence: "CSS theme evidence was detected." }
+  ];
+  return markdownCodeRenderingReadinessSignalFromSpecs(sourceFiles, specs, "theme", "signal");
+}
+
+function markdownCodeRenderingReadinessAccessibilitySignals(sourceFiles: MarkdownCodeRenderingReadinessSourceFile[]): MarkdownCodeRenderingReadinessReport["accessibilitySignals"] {
+  const specs: Array<{ signal: MarkdownCodeRenderingReadinessReport["accessibilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "pre-code", pattern: /<pre\b|<code\b|\bpre\s*\(|\bcode\s*\(/i, evidence: "pre/code evidence was detected." },
+    { signal: "aria-label", pattern: /aria-label/i, evidence: "aria-label evidence was detected." },
+    { signal: "tabindex", pattern: /tabIndex|tabindex/i, evidence: "tabindex evidence was detected." },
+    { signal: "keyboard", pattern: /keyboard|keydown|tabIndex|tabindex/i, evidence: "keyboard focus evidence was detected." },
+    { signal: "copy-button", pattern: /copy-to-clipboard|copy button|clipboard/i, evidence: "copy button evidence was detected." },
+    { signal: "screen-reader", pattern: /screen-reader|sr-only|aria-live/i, evidence: "screen-reader evidence was detected." }
+  ];
+  return markdownCodeRenderingReadinessSignalFromSpecs(sourceFiles, specs, "accessibility", "signal");
+}
+
+function markdownCodeRenderingReadinessTestSignals(sourceFiles: MarkdownCodeRenderingReadinessSourceFile[]): MarkdownCodeRenderingReadinessReport["testSignals"] {
+  const specs: Array<{ signal: MarkdownCodeRenderingReadinessReport["testSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vitest", pattern: /vitest|from ["']vitest["']/i, evidence: "Vitest evidence was detected." },
+    { signal: "playwright", pattern: /playwright|npx playwright/i, evidence: "Playwright evidence was detected." },
+    { signal: "testing-library", pattern: /testing-library|getByText|getByLabelText|getByRole/i, evidence: "Testing Library evidence was detected." },
+    { signal: "snapshot-test", pattern: /toMatchInlineSnapshot|snapshot/i, evidence: "snapshot test evidence was detected." },
+    { signal: "security-test", pattern: /xss|<script|rehypeSanitize|skipHtml|urlTransform/i, evidence: "security test evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|markdown-code-rendering-traces|trace|screenshot/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return markdownCodeRenderingReadinessSignalFromSpecs(sourceFiles, specs, "test", "signal");
+}
+
+function markdownCodeRenderingReadinessPackageSignals(sourceFiles: MarkdownCodeRenderingReadinessSourceFile[]): MarkdownCodeRenderingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: MarkdownCodeRenderingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "react-markdown", pattern: /["@']react-markdown["@']|from ["']react-markdown["']/i, evidence: "react-markdown package evidence was detected." },
+    { signal: "remark-gfm", pattern: /["@']remark-gfm["@']|from ["']remark-gfm["']/i, evidence: "remark-gfm package evidence was detected." },
+    { signal: "rehype-raw", pattern: /["@']rehype-raw["@']|from ["']rehype-raw["']/i, evidence: "rehype-raw package evidence was detected." },
+    { signal: "rehype-sanitize", pattern: /["@']rehype-sanitize["@']|from ["']rehype-sanitize["']/i, evidence: "rehype-sanitize package evidence was detected." },
+    { signal: "shiki", pattern: /["@']shiki["@']|from ["']shiki["']/i, evidence: "Shiki package evidence was detected." },
+    { signal: "@shikijs/transformers", pattern: /["@']@shikijs\/transformers["@']|from ["']@shikijs\/transformers["']/i, evidence: "@shikijs/transformers package evidence was detected." },
+    { signal: "prismjs", pattern: /["@']prismjs["@']|from ["']prismjs["']|prismjs\//i, evidence: "PrismJS package evidence was detected." },
+    { signal: "@mdx-js/react", pattern: /["@']@mdx-js\/react["@']|from ["']@mdx-js\/react["']/i, evidence: "@mdx-js/react package evidence was detected." },
+    { signal: "highlight.js", pattern: /["@']highlight\.js["@']|from ["']highlight\.js["']/i, evidence: "highlight.js package evidence was detected." }
+  ];
+  return markdownCodeRenderingReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function markdownCodeRenderingReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: MarkdownCodeRenderingReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/markdown-code-rendering-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
