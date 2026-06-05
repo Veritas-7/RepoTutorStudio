@@ -111,6 +111,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "email-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "queue-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "event-stream-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-connector-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "schema-registry-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "stream-processing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "pipeline-orchestration-readiness-report.json"))).resolves.toBeUndefined();
@@ -289,6 +290,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "email-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "queue-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "event-stream-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-connector-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "schema-registry-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "stream-processing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "pipeline-orchestration-readiness.md"))).resolves.toBeUndefined();
@@ -470,6 +472,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "email-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "queue-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "event-stream-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-connector-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "schema-registry-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "stream-processing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "pipeline-orchestration-readiness.html"))).resolves.toBeUndefined();
@@ -675,6 +678,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/email-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/queue-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/event-stream-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/data-connector-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/schema-registry-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/stream-processing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/pipeline-orchestration-readiness.html\"");
@@ -2455,6 +2459,28 @@ describe("RepoTutor core pipeline", () => {
     expect(eventStreamReadinessMarkdown).toContain("Source pattern: Event stream readiness");
     expect(eventStreamReadinessMarkdown).toContain("## Schema Signals");
     expect(eventStreamReadinessMarkdown).toContain("## Ops Signals");
+    const dataConnectorReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "data-connector-readiness-report.json"), "utf8");
+    expect(dataConnectorReadinessText).toContain("Data connector readiness Debezium Kafka Connect Airbyte SourceConnector SinkConnector connector.class tasks.max plugin.path transforms predicates offset.storage.topic status.storage.topic CDC snapshot schema history sync catalog state");
+    expect(dataConnectorReadinessText).toContain("\"connectorSetups\"");
+    expect(dataConnectorReadinessText).toContain("\"platformSignals\"");
+    expect(dataConnectorReadinessText).toContain("\"connectorKindSignals\"");
+    expect(dataConnectorReadinessText).toContain("\"configSignals\"");
+    expect(dataConnectorReadinessText).toContain("\"stateSignals\"");
+    expect(dataConnectorReadinessText).toContain("\"transformSignals\"");
+    expect(dataConnectorReadinessText).toContain("\"opsSignals\"");
+    expect(dataConnectorReadinessText).toContain("\"workflowSignals\"");
+    expect(dataConnectorReadinessText).toContain("\"packageSignals\"");
+    const dataConnectorReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-connector-readiness.html"), "utf8");
+    expect(dataConnectorReadinessHtml).toContain("Data Connector Readiness");
+    expect(dataConnectorReadinessHtml).toContain("data-connector-readiness-card");
+    expect(dataConnectorReadinessHtml).toContain("data-source-pattern=\"DataConnector\"");
+    expect(dataConnectorReadinessHtml).toContain("Config Signals");
+    expect(dataConnectorReadinessHtml).toContain("State Signals");
+    const dataConnectorReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-connector-readiness.md"), "utf8");
+    expect(dataConnectorReadinessMarkdown).toContain("# Data Connector Readiness");
+    expect(dataConnectorReadinessMarkdown).toContain("Source pattern: Data connector readiness");
+    expect(dataConnectorReadinessMarkdown).toContain("## Config Signals");
+    expect(dataConnectorReadinessMarkdown).toContain("## State Signals");
     const schemaRegistryReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "schema-registry-readiness-report.json"), "utf8");
     expect(schemaRegistryReadinessText).toContain("Schema registry readiness Confluent Apicurio Buf subject artifact version compatibility Avro Protobuf JSON Schema lint breaking generate push");
     expect(schemaRegistryReadinessText).toContain("\"registrySetups\"");
@@ -3956,6 +3982,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/email-readiness.html");
     expect(exportManifestText).toContain("html/queue-readiness.html");
     expect(exportManifestText).toContain("html/event-stream-readiness.html");
+    expect(exportManifestText).toContain("html/data-connector-readiness.html");
     expect(exportManifestText).toContain("html/schema-registry-readiness.html");
     expect(exportManifestText).toContain("html/stream-processing-readiness.html");
     expect(exportManifestText).toContain("html/pipeline-orchestration-readiness.html");
@@ -4156,6 +4183,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("email-readiness.html");
     expect(learningPathHtml).toContain("queue-readiness.html");
     expect(learningPathHtml).toContain("event-stream-readiness.html");
+    expect(learningPathHtml).toContain("data-connector-readiness.html");
     expect(learningPathHtml).toContain("schema-registry-readiness.html");
     expect(learningPathHtml).toContain("stream-processing-readiness.html");
     expect(learningPathHtml).toContain("pipeline-orchestration-readiness.html");
@@ -10433,6 +10461,214 @@ describe("RepoTutor core pipeline", () => {
     const eventStreamHtml = await fs.readFile(path.join(result.session.outputPaths.html, "event-stream-readiness.html"), "utf8");
     expect(eventStreamHtml).toContain("event-stream-readiness-card");
     expect(eventStreamHtml).toContain("data-source-pattern=\"EventStream\"");
+  });
+
+  it("detects data connector readiness without creating connectors or running syncs", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-connector-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-connector-source-"));
+    await fs.mkdir(path.join(sourceRoot, "connect"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "debezium"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "airbyte"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "main", "java"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "connect:distributed": "connect-distributed.sh connect/connect-distributed.properties",
+        "connect:register": "curl -X POST http://localhost:8083/connectors",
+        "airbyte:check": "airbyte-api sources list",
+        "airbyte:sync": "airbyte-api connections sync",
+        "connector:report": "node scripts/connector-report.js"
+      },
+      dependencies: {
+        "airbyte-api": "1.0.0",
+        "airbyte-cdk": "1.0.0"
+      },
+      devDependencies: {
+        "custom-connector-sdk": "0.1.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "build.gradle"), [
+      "dependencies {",
+      "  implementation(\"org.apache.kafka:connect-api:3.9.0\")",
+      "  implementation(\"org.apache.kafka:connect-json:3.9.0\")",
+      "  implementation(\"io.debezium:debezium-connector-postgres:3.0.0\")",
+      "  implementation(\"io.debezium:debezium-connector-mysql:3.0.0\")",
+      "  implementation(\"io.debezium:debezium-embedded:3.0.0\")",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "connect", "connect-distributed.properties"), [
+      "bootstrap.servers=localhost:9092",
+      "group.id=connect-cluster",
+      "plugin.path=/usr/share/java,/opt/connectors",
+      "key.converter=org.apache.kafka.connect.json.JsonConverter",
+      "value.converter=org.apache.kafka.connect.json.JsonConverter",
+      "offset.storage.topic=connect-offsets",
+      "config.storage.topic=connect-configs",
+      "status.storage.topic=connect-status"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "connect", "connect-standalone.properties"), [
+      "bootstrap.servers=localhost:9092",
+      "plugin.path=/usr/share/java,/opt/connectors",
+      "key.converter=org.apache.kafka.connect.json.JsonConverter",
+      "value.converter=org.apache.kafka.connect.json.JsonConverter",
+      "offset.storage.file.filename=/tmp/connect.offsets"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "connect", "orders-source.properties"), [
+      "name=orders-source",
+      "connector.class=FileStreamSource",
+      "tasks.max=2",
+      "# connect-distributed worker configuration bootstrap.servers group.id plugin.path",
+      "topics=orders.raw",
+      "topics.regex=orders.*",
+      "transforms=MakeMap,InsertSource,Route,Mask,Extract,Flattened",
+      "transforms.MakeMap.type=org.apache.kafka.connect.transforms.HoistField$Value",
+      "transforms.InsertSource.type=org.apache.kafka.connect.transforms.InsertField$Value",
+      "transforms.Route.type=org.apache.kafka.connect.transforms.RegexRouter",
+      "transforms.Mask.type=org.apache.kafka.connect.transforms.MaskField$Value",
+      "transforms.Extract.type=org.apache.kafka.connect.transforms.ExtractField$Key",
+      "transforms.Flattened.type=org.apache.kafka.connect.transforms.Flatten$Value",
+      "predicates=IsOrders",
+      "predicates.IsOrders.type=org.apache.kafka.connect.transforms.predicates.TopicNameMatches",
+      "errors.deadletterqueue.topic.name=orders.dlq",
+      "errors.tolerance=all"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "debezium", "postgres-source.json"), JSON.stringify({
+      name: "orders-postgres-cdc",
+      config: {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "tasks.max": "1",
+        "topic.prefix": "orders",
+        "snapshot.mode": "initial",
+        "schema.history.internal.kafka.topic": "schema-history.orders",
+        "slot.name": "orders_slot",
+        "publication.name": "orders_publication",
+        "database.include.list": "orders",
+        "table.include.list": "orders.public.order_events"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "airbyte", "connection.json"), JSON.stringify({
+      sourceId: "src-orders",
+      destinationId: "dst-warehouse",
+      connectionId: "conn-orders",
+      sourceDefinition: "postgres-source",
+      destinationDefinition: "snowflake-destination",
+      configuredCatalog: { streams: [{ name: "orders", syncMode: "incremental", cursor: ["updated_at"] }] },
+      syncMode: "incremental",
+      cursor: "updated_at",
+      state: { type: "AirbyteStateMessage", checkpoint: "2026-06-05T00:00:00Z" },
+      checkpoint: true,
+      checkpoint_target_interval_seconds: 300,
+      normalization: "basic",
+      dbt: "orders_dbt_project"
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "java", "ConnectorSmoke.java"), [
+      "import io.debezium.engine.DebeziumEngine;",
+      "import io.debezium.engine.format.Json;",
+      "import org.apache.kafka.connect.source.SourceConnector;",
+      "import org.apache.kafka.connect.sink.SinkConnector;",
+      "class ConnectorSmoke {",
+      "  SourceConnector sourceConnector;",
+      "  SinkConnector sinkConnector;",
+      "  DebeziumEngine<Json> embeddedEngine;",
+      "  String custom = \"custom connector data connector CDC change data capture DebeziumEngine EmbeddedEngine connector sdk\";",
+      "  String rest = \"Kafka Connect REST API GET /connectors POST /connectors PUT /connectors/{name}/pause PUT /connectors/{name}/resume POST /connectors/{name}/restart GET /connectors/{name}/status GET /connectors/{name}/tasks/{taskid}/status DELETE /connectors/{name}/offsets PATCH /connectors/{name}/offsets\";",
+      "  String operations = \"connector status task status pause resume restart offset reset retry backoff health metrics JMX Prometheus monitoring\";",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docker-compose.yml"), [
+      "services:",
+      "  connect:",
+      "    image: apache/kafka:latest",
+      "    command: connect-distributed.sh /etc/kafka/connect-distributed.properties",
+      "  airbyte:",
+      "    image: airbyte/server:latest"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "data-connector.yml"), [
+      "name: data connector readiness",
+      "on: [push]",
+      "jobs:",
+      "  connector:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: connect-distributed.sh config/connect-distributed.properties",
+      "      - run: connect-standalone.sh config/connect-standalone.properties connect/orders-source.properties",
+      "      - run: curl -X POST http://localhost:8083/connectors",
+      "      - run: curl -X GET http://localhost:8083/connectors/orders/status",
+      "      - run: curl -X POST http://localhost:8083/connectors/orders/restart",
+      "      - run: curl -X PATCH http://localhost:8083/connectors/orders/offsets",
+      "      - run: curl -X POST https://api.airbyte.com/api/public/v1/sources",
+      "      - run: Airflow Dagster Kestra orchestrate Airbyte syncs with docker compose",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          path: |",
+      "            connector-readiness-report.json",
+      "            connect-status.json",
+      "            airbyte-sync-report.json",
+      "            debezium-report.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "data-connector-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      connectorSetups: Array<{ platform: string; sourceCount: number; sinkCount: number; workerCount: number; configCount: number; offsetCount: number; stateCount: number; transformCount: number; errorCount: number; apiCount: number; workflowCount: number }>;
+      platformSignals: Array<{ signal: string; readiness: string }>;
+      connectorKindSignals: Array<{ signal: string; readiness: string }>;
+      configSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      transformSignals: Array<{ signal: string; readiness: string }>;
+      opsSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (platform: string) => report.connectorSetups
+      .filter((item) => item.platform === platform)
+      .reduce((totals, item) => ({
+        sourceCount: totals.sourceCount + item.sourceCount,
+        sinkCount: totals.sinkCount + item.sinkCount,
+        workerCount: totals.workerCount + item.workerCount,
+        configCount: totals.configCount + item.configCount,
+        offsetCount: totals.offsetCount + item.offsetCount,
+        stateCount: totals.stateCount + item.stateCount,
+        transformCount: totals.transformCount + item.transformCount,
+        errorCount: totals.errorCount + item.errorCount,
+        apiCount: totals.apiCount + item.apiCount,
+        workflowCount: totals.workflowCount + item.workflowCount
+      }), { sourceCount: 0, sinkCount: 0, workerCount: 0, configCount: 0, offsetCount: 0, stateCount: 0, transformCount: 0, errorCount: 0, apiCount: 0, workflowCount: 0 });
+
+    expect(report.sourcePattern).toBe("Data connector readiness Debezium Kafka Connect Airbyte SourceConnector SinkConnector connector.class tasks.max plugin.path transforms predicates offset.storage.topic status.storage.topic CDC snapshot schema history sync catalog state");
+    expect(setupTotals("kafka-connect").sourceCount).toBeGreaterThan(0);
+    expect(setupTotals("kafka-connect").workerCount).toBeGreaterThan(0);
+    expect(setupTotals("debezium").configCount).toBeGreaterThan(0);
+    expect(setupTotals("airbyte").stateCount).toBeGreaterThan(0);
+    expect(report.connectorSetups.some((item) => item.workflowCount > 0)).toBe(true);
+    expect(readySignals(report.platformSignals)).toEqual(expect.arrayContaining(["kafka-connect", "debezium", "airbyte", "custom"]));
+    expect(readySignals(report.connectorKindSignals)).toEqual(expect.arrayContaining(["source-connector", "sink-connector", "cdc-connector", "elt-connection", "embedded-engine"]));
+    expect(readySignals(report.configSignals)).toEqual(expect.arrayContaining(["connector-class", "tasks-max", "plugin-path", "converters", "topics", "topics-regex", "snapshot-mode", "schema-history", "database-include-list", "table-include-list", "slot-name", "publication-name", "source-definition", "destination-definition", "connection-id"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["offset-storage-file", "offset-storage-topic", "config-storage-topic", "status-storage-topic", "airbyte-state", "cursor", "incremental-sync", "checkpoint"]));
+    expect(readySignals(report.transformSignals)).toEqual(expect.arrayContaining(["smt-transform", "predicate", "regex-router", "mask-field", "extract-field", "hoist-field", "flatten", "normalization", "dbt"]));
+    expect(readySignals(report.opsSignals)).toEqual(expect.arrayContaining(["rest-api", "connector-status", "task-status", "pause-resume", "restart", "offset-reset", "dead-letter-queue", "errors-tolerance", "retry", "health-metrics"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["connect-standalone", "connect-distributed", "curl-connectors", "airbyte-api", "orchestrator", "docker-compose", "github-actions", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["kafka-connect-api", "connect-json", "debezium-connector", "debezium-embedded", "airbyte-cdk", "airbyte-api", "custom"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"connector.class|tasks.max|plugin.path|connect-distributed|connect-standalone|/connectors\" .",
+      "rg \"Airbyte|sourceId|destinationId|connectionId|configuredCatalog|syncMode|cursor|state|checkpoint\" .",
+      "rg \"errors.deadletterqueue|errors.tolerance|offset.storage|status.storage|config.storage|restart|pause|resume|tasks/.*/status|upload-artifact\" .github ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-connector-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-connector-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-connector-readiness.html"))).resolves.toBeUndefined();
+    const dataConnectorMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-connector-readiness.md"), "utf8");
+    expect(dataConnectorMarkdown).toContain("Config Signals");
+    expect(dataConnectorMarkdown).toContain("State Signals");
+    expect(dataConnectorMarkdown).toContain("Transform Signals");
+    const dataConnectorHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-connector-readiness.html"), "utf8");
+    expect(dataConnectorHtml).toContain("data-connector-readiness-card");
+    expect(dataConnectorHtml).toContain("data-source-pattern=\"DataConnector\"");
   });
 
   it("detects schema registry readiness without starting registries or publishing modules", async () => {

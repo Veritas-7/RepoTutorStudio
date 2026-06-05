@@ -1,6 +1,6 @@
 # Compliance Audit 4
 
-Created: 2026-06-05T14:54:33.644Z
+Created: 2026-06-05T15:14:33.077Z
 
 Status: PASS
 
@@ -617,6 +617,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - event stream readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - data connector readiness report
 
 - missing files: none
 - missing strings: none

@@ -1,6 +1,6 @@
 {
   "iteration": 6,
-  "createdAt": "2026-06-05T14:54:50.137Z",
+  "createdAt": "2026-06-05T15:14:52.094Z",
   "checks": [
     {
       "name": "project setup",
@@ -718,6 +718,13 @@
     },
     {
       "name": "event stream readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "data connector readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

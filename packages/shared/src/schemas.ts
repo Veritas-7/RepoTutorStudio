@@ -6685,6 +6685,87 @@ export const SchemaRegistryReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DataConnectorReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  connectorSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["kafka-connect", "debezium", "airbyte", "custom", "unknown"]),
+    sourceCount: z.number().int().nonnegative(),
+    sinkCount: z.number().int().nonnegative(),
+    workerCount: z.number().int().nonnegative(),
+    configCount: z.number().int().nonnegative(),
+    offsetCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    transformCount: z.number().int().nonnegative(),
+    errorCount: z.number().int().nonnegative(),
+    apiCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  platformSignals: z.array(z.object({
+    signal: z.enum(["kafka-connect", "debezium", "airbyte", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  connectorKindSignals: z.array(z.object({
+    signal: z.enum(["source-connector", "sink-connector", "cdc-connector", "elt-connection", "embedded-engine", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["connector-class", "tasks-max", "plugin-path", "converters", "topics", "topics-regex", "snapshot-mode", "schema-history", "database-include-list", "table-include-list", "slot-name", "publication-name", "source-definition", "destination-definition", "connection-id", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["offset-storage-file", "offset-storage-topic", "config-storage-topic", "status-storage-topic", "airbyte-state", "cursor", "incremental-sync", "checkpoint", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  transformSignals: z.array(z.object({
+    signal: z.enum(["smt-transform", "predicate", "regex-router", "mask-field", "extract-field", "hoist-field", "flatten", "normalization", "dbt", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  opsSignals: z.array(z.object({
+    signal: z.enum(["rest-api", "connector-status", "task-status", "pause-resume", "restart", "offset-reset", "dead-letter-queue", "errors-tolerance", "retry", "health-metrics", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["connect-standalone", "connect-distributed", "curl-connectors", "airbyte-api", "orchestrator", "docker-compose", "github-actions", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["kafka-connect-api", "connect-json", "debezium-connector", "debezium-embedded", "airbyte-cdk", "airbyte-api", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const StreamProcessingReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -12132,6 +12213,7 @@ export type EmailReadinessReport = z.infer<typeof EmailReadinessReportSchema>;
 export type QueueReadinessReport = z.infer<typeof QueueReadinessReportSchema>;
 export type EventStreamReadinessReport = z.infer<typeof EventStreamReadinessReportSchema>;
 export type SchemaRegistryReadinessReport = z.infer<typeof SchemaRegistryReadinessReportSchema>;
+export type DataConnectorReadinessReport = z.infer<typeof DataConnectorReadinessReportSchema>;
 export type StreamProcessingReadinessReport = z.infer<typeof StreamProcessingReadinessReportSchema>;
 export type PipelineOrchestrationReadinessReport = z.infer<typeof PipelineOrchestrationReadinessReportSchema>;
 export type ServiceMeshReadinessReport = z.infer<typeof ServiceMeshReadinessReportSchema>;
