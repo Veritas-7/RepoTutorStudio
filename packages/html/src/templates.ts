@@ -217,6 +217,7 @@ import type { TabsAccordionReadinessReport } from "@repotutor/shared";
 import type { CheckboxRadioSwitchReadinessReport } from "@repotutor/shared";
 import type { SliderProgressReadinessReport } from "@repotutor/shared";
 import type { SelectComboboxReadinessReport } from "@repotutor/shared";
+import type { ToolbarToggleReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -395,6 +396,7 @@ export interface StudyHtmlInput {
   checkboxRadioSwitchReadinessReport: CheckboxRadioSwitchReadinessReport;
   sliderProgressReadinessReport: SliderProgressReadinessReport;
   selectComboboxReadinessReport: SelectComboboxReadinessReport;
+  toolbarToggleReadinessReport: ToolbarToggleReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -614,6 +616,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["checkbox-radio-switch-readiness.html", "Checkbox Radio Switch"],
     ["slider-progress-readiness.html", "Slider Progress"],
     ["select-combobox-readiness.html", "Select Combobox"],
+    ["toolbar-toggle-readiness.html", "Toolbar Toggle"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1703,6 +1706,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Select Combobox Readiness", "select-combobox-readiness.html", `<section class="panel" data-source-pattern="SelectCombobox"><h2>Select Combobox Snapshot</h2><p>${escapeHtml(input.selectComboboxReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.selectComboboxReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.selectComboboxReadinessReport.selectComboboxSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.selectComboboxReadinessReport.frameworkSignals.length}</dd></div><div><dt>state</dt><dd>${input.selectComboboxReadinessReport.stateSignals.length}</dd></div><div><dt>accessibility</dt><dd>${input.selectComboboxReadinessReport.accessibilitySignals.length}</dd></div><div><dt>form</dt><dd>${input.selectComboboxReadinessReport.formSignals.length}</dd></div><div><dt>tests</dt><dd>${input.selectComboboxReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records select/combobox/listbox readiness only; it does not open popups, type queries, move active options, select values, submit forms, mutate stores, or run analyzed project tests.</p></section><section class="grid"><article class="select-combobox-readiness-card"><h3>Select Combobox Setups</h3>${selectComboboxReadinessSetupList(input.selectComboboxReadinessReport.selectComboboxSetups)}</article><article class="select-combobox-readiness-card"><h3>Framework Signals</h3>${selectComboboxReadinessSignalList(input.selectComboboxReadinessReport.frameworkSignals, "signal")}</article><article class="select-combobox-readiness-card"><h3>Structure Signals</h3>${selectComboboxReadinessSignalList(input.selectComboboxReadinessReport.structureSignals, "signal")}</article><article class="select-combobox-readiness-card"><h3>State Signals</h3>${selectComboboxReadinessSignalList(input.selectComboboxReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="select-combobox-readiness-card"><h3>Interaction Signals</h3>${selectComboboxReadinessSignalList(input.selectComboboxReadinessReport.interactionSignals, "signal")}</article><article class="select-combobox-readiness-card"><h3>Accessibility Signals</h3>${selectComboboxReadinessSignalList(input.selectComboboxReadinessReport.accessibilitySignals, "signal")}</article><article class="select-combobox-readiness-card"><h3>Form Signals</h3>${selectComboboxReadinessSignalList(input.selectComboboxReadinessReport.formSignals, "signal")}</article><article class="select-combobox-readiness-card"><h3>Test Signals</h3>${selectComboboxReadinessSignalList(input.selectComboboxReadinessReport.testSignals, "signal")}</article></section><section class="grid"><article class="select-combobox-readiness-card"><h3>Package Signals</h3>${selectComboboxReadinessSignalList(input.selectComboboxReadinessReport.packageSignals, "signal")}</article><article class="select-combobox-readiness-card"><h3>Recommended Commands</h3>${selectComboboxReadinessCommandList(input.selectComboboxReadinessReport.recommendedCommands)}</article><article class="select-combobox-readiness-card"><h3>Risk Queue</h3>${selectComboboxReadinessRiskList(input.selectComboboxReadinessReport.riskQueue)}</article><article class="select-combobox-readiness-card"><h3>다음 확인 단계</h3>${list(input.selectComboboxReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "toolbar-toggle-readiness.html",
+      title: "Toolbar Toggle Readiness",
+      html: pageShell("Toolbar Toggle Readiness", "toolbar-toggle-readiness.html", `<section class="panel" data-source-pattern="ToolbarToggle"><h2>Toolbar Toggle Snapshot</h2><p>${escapeHtml(input.toolbarToggleReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.toolbarToggleReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.toolbarToggleReadinessReport.toolbarToggleSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.toolbarToggleReadinessReport.frameworkSignals.length}</dd></div><div><dt>state</dt><dd>${input.toolbarToggleReadinessReport.stateSignals.length}</dd></div><div><dt>focus</dt><dd>${input.toolbarToggleReadinessReport.focusSignals.length}</dd></div><div><dt>accessibility</dt><dd>${input.toolbarToggleReadinessReport.accessibilitySignals.length}</dd></div><div><dt>tests</dt><dd>${input.toolbarToggleReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records toolbar/toggle readiness only; it does not click buttons, toggle pressed state, move focus, dispatch keyboard events, mutate stores, submit forms, or run analyzed project tests.</p></section><section class="grid"><article class="toolbar-toggle-readiness-card"><h3>Toolbar Toggle Setups</h3>${toolbarToggleReadinessSetupList(input.toolbarToggleReadinessReport.toolbarToggleSetups)}</article><article class="toolbar-toggle-readiness-card"><h3>Framework Signals</h3>${toolbarToggleReadinessSignalList(input.toolbarToggleReadinessReport.frameworkSignals, "signal")}</article><article class="toolbar-toggle-readiness-card"><h3>Structure Signals</h3>${toolbarToggleReadinessSignalList(input.toolbarToggleReadinessReport.structureSignals, "signal")}</article><article class="toolbar-toggle-readiness-card"><h3>State Signals</h3>${toolbarToggleReadinessSignalList(input.toolbarToggleReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="toolbar-toggle-readiness-card"><h3>Focus Signals</h3>${toolbarToggleReadinessSignalList(input.toolbarToggleReadinessReport.focusSignals, "signal")}</article><article class="toolbar-toggle-readiness-card"><h3>Orientation Signals</h3>${toolbarToggleReadinessSignalList(input.toolbarToggleReadinessReport.orientationSignals, "signal")}</article><article class="toolbar-toggle-readiness-card"><h3>Accessibility Signals</h3>${toolbarToggleReadinessSignalList(input.toolbarToggleReadinessReport.accessibilitySignals, "signal")}</article><article class="toolbar-toggle-readiness-card"><h3>Test Signals</h3>${toolbarToggleReadinessSignalList(input.toolbarToggleReadinessReport.testSignals, "signal")}</article></section><section class="grid"><article class="toolbar-toggle-readiness-card"><h3>Package Signals</h3>${toolbarToggleReadinessSignalList(input.toolbarToggleReadinessReport.packageSignals, "signal")}</article><article class="toolbar-toggle-readiness-card"><h3>Recommended Commands</h3>${toolbarToggleReadinessCommandList(input.toolbarToggleReadinessReport.recommendedCommands)}</article><article class="toolbar-toggle-readiness-card"><h3>Risk Queue</h3>${toolbarToggleReadinessRiskList(input.toolbarToggleReadinessReport.riskQueue)}</article><article class="toolbar-toggle-readiness-card"><h3>다음 확인 단계</h3>${list(input.toolbarToggleReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2128,6 +2136,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Checkbox Radio Switch Readiness", path: "html/checkbox-radio-switch-readiness.html", description: "Radix Checkbox/RadioGroup/Switch, Headless UI Checkbox/RadioGroup/Switch, Ariakit Checkbox/Radio식 state, form, accessibility 준비도를 확인합니다." },
       { label: "Slider Progress Readiness", path: "html/slider-progress-readiness.html", description: "Radix Slider/Progress와 native range/progressbar식 value, bounds, orientation, accessibility 준비도를 확인합니다." },
       { label: "Select Combobox Readiness", path: "html/select-combobox-readiness.html", description: "Radix Select, Headless UI Combobox/Listbox/Select, Ariakit Select/Combobox식 value, popup, option, form, accessibility 준비도를 확인합니다." },
+      { label: "Toolbar Toggle Readiness", path: "html/toolbar-toggle-readiness.html", description: "Radix Toolbar/Toggle/ToggleGroup와 Ariakit Toolbar식 pressed state, roving focus, orientation, accessibility 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3151,6 +3160,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "select-combobox-readiness.html",
       goal: "Radix Select, Headless UI Combobox/Listbox/Select, Ariakit Select/Combobox식 value, option, popup, ARIA 흐름을 보고 choice-control 관문을 확인합니다.",
       evidence: `select combobox setups ${input.selectComboboxReadinessReport.selectComboboxSetups.length}개, state signals ${input.selectComboboxReadinessReport.stateSignals.length}개`
+    },
+    {
+      title: "Toolbar toggle readiness 확인",
+      href: "toolbar-toggle-readiness.html",
+      goal: "Radix Toolbar/Toggle/ToggleGroup와 Ariakit Toolbar식 pressed state, roving focus, orientation, ARIA 흐름을 보고 toolbar control 관문을 확인합니다.",
+      evidence: `toolbar toggle setups ${input.toolbarToggleReadinessReport.toolbarToggleSetups.length}개, focus signals ${input.toolbarToggleReadinessReport.focusSignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -7819,6 +7834,31 @@ function selectComboboxReadinessRiskList(items: SelectComboboxReadinessReport["r
 }
 
 function selectComboboxReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function toolbarToggleReadinessSetupList(items: ToolbarToggleReadinessReport["toolbarToggleSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">toolbar toggle setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>toolbar/toggle/toggle-group/item/separator/button-link/pressed/focus/orientation/keyboard/accessibility/test ${item.toolbarCount}/${item.toggleCount}/${item.toggleGroupCount}/${item.itemCount}/${item.separatorCount}/${item.buttonLinkCount}/${item.pressedStateCount}/${item.rovingFocusCount}/${item.orientationCount}/${item.keyboardCount}/${item.accessibilityCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(toolbarToggleReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function toolbarToggleReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">toolbar toggle signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(toolbarToggleReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function toolbarToggleReadinessCommandList(items: ToolbarToggleReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function toolbarToggleReadinessRiskList(items: ToolbarToggleReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(toolbarToggleReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function toolbarToggleReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

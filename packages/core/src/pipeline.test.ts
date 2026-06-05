@@ -23524,6 +23524,136 @@ describe("RepoTutor core pipeline", () => {
     expect(selectHtml).toContain("RepoTutor records select/combobox/listbox readiness only");
   });
 
+  it("detects toolbar toggle readiness without changing pressed state", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-toolbar-toggle-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-toolbar-toggle-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "radix-toolbar-toggle.tsx"), [
+      "import * as React from 'react';",
+      "import * as Toolbar from '@radix-ui/react-toolbar';",
+      "import * as Toggle from '@radix-ui/react-toggle';",
+      "import * as ToggleGroup from '@radix-ui/react-toggle-group';",
+      "export function RadixToolbarToggleControls() {",
+      "  const [pressed, setPressed] = React.useState(false);",
+      "  return (",
+      "    <Toolbar.Root orientation=\"horizontal\" dir=\"ltr\" loop aria-label=\"Editor toolbar\">",
+      "      <Toolbar.Button type=\"button\" aria-label=\"Undo\" />",
+      "      <Toolbar.Link href=\"#help\">Help</Toolbar.Link>",
+      "      <Toolbar.Separator decorative={false} />",
+      "      <Toolbar.ToggleGroup type=\"single\" defaultValue=\"left\" value=\"left\" onValueChange={() => {}} rovingFocus orientation=\"horizontal\" disabled={false}>",
+      "        <Toolbar.ToggleItem value=\"left\" aria-label=\"Align left\" />",
+      "      </Toolbar.ToggleGroup>",
+      "      <Toggle.Root pressed={pressed} defaultPressed={false} onPressedChange={setPressed} aria-label=\"Bold\" disabled={false} data-state={pressed ? 'on' : 'off'} />",
+      "      <ToggleGroup.Root type=\"multiple\" defaultValue={[\"bold\"]} value={[\"bold\"]} onValueChange={() => {}} orientation=\"vertical\" dir=\"rtl\" loop={false} aria-label=\"Text style\">",
+      "        <ToggleGroup.Item value=\"bold\" disabled={false} aria-label=\"Bold\" />",
+      "      </ToggleGroup.Root>",
+      "    </Toolbar.Root>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "ariakit-toolbar.tsx"), [
+      "import { Toolbar, ToolbarContainer, ToolbarInput, ToolbarItem, ToolbarProvider, ToolbarSeparator, useToolbarStore } from '@ariakit/react';",
+      "export function AriakitToolbarControls() {",
+      "  const toolbar = useToolbarStore({ orientation: 'vertical', focusLoop: true, rtl: true, virtualFocus: true });",
+      "  return (",
+      "    <ToolbarProvider store={toolbar}>",
+      "      <Toolbar aria-label=\"Formatting toolbar\" aria-orientation=\"vertical\">",
+      "        <ToolbarContainer>",
+      "          <ToolbarItem as=\"button\" type=\"button\" aria-pressed=\"false\" data-active=\"false\">Italic</ToolbarItem>",
+      "          <ToolbarSeparator />",
+      "          <ToolbarInput aria-label=\"Command filter\" />",
+      "        </ToolbarContainer>",
+      "      </Toolbar>",
+      "    </ToolbarProvider>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "toolbar-toggle.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { RadixToolbarToggleControls } from '../src/radix-toolbar-toggle';",
+      "describe('toolbar toggle readiness', () => {",
+      "  it('keeps roles keyboard and pressed attributes testable', async () => {",
+      "    render(<RadixToolbarToggleControls />);",
+      "    expect(screen.getByRole('toolbar', { name: /editor toolbar/i })).toHaveAttribute('aria-orientation', 'horizontal');",
+      "    expect(screen.getByRole('button', { name: /bold/i, pressed: false })).toHaveAttribute('aria-pressed', 'false');",
+      "    await userEvent.keyboard('{ArrowRight}{ArrowLeft}{Home}{End}');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "toolbar-toggle.yml"), [
+      "name: toolbar toggle",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- toolbar-toggle",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: toolbar-toggle-traces",
+      "          path: test-results/toolbar-toggle"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@ariakit/react": "latest",
+        "@radix-ui/react-toggle": "latest",
+        "@radix-ui/react-toggle-group": "latest",
+        "@radix-ui/react-toolbar": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "toolbar-toggle-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      toolbarToggleSetups: Array<{ filePath: string; framework: string; toolbarCount: number; toggleCount: number; toggleGroupCount: number; itemCount: number; separatorCount: number; buttonLinkCount: number; pressedStateCount: number; rovingFocusCount: number; orientationCount: number; keyboardCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      focusSignals: Array<{ signal: string; readiness: string }>;
+      orientationSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Toolbar/toggle readiness Radix Toolbar Toggle ToggleGroup Ariakit Toolbar pressed aria-pressed roving focus orientation keyboard tests");
+    expect(report.toolbarToggleSetups.some((item) => item.filePath === "src/radix-toolbar-toggle.tsx" && item.framework === "radix-toolbar" && item.toolbarCount > 0 && item.toggleCount > 0 && item.toggleGroupCount > 0 && item.itemCount > 0 && item.separatorCount > 0 && item.buttonLinkCount > 0 && item.pressedStateCount > 0 && item.rovingFocusCount > 0 && item.orientationCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.toolbarToggleSetups.some((item) => item.filePath === "src/ariakit-toolbar.tsx" && item.framework === "ariakit-toolbar" && item.toolbarCount > 0 && item.itemCount > 0 && item.separatorCount > 0 && item.buttonLinkCount > 0 && item.pressedStateCount > 0 && item.rovingFocusCount > 0 && item.orientationCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["radix-toolbar", "radix-toggle", "radix-toggle-group", "ariakit-toolbar"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["toolbar-root", "toolbar-provider", "toolbar-item", "button-link", "separator", "toggle-root", "toggle-group", "toggle-item", "input-container"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["pressed", "default-pressed", "on-pressed-change", "value", "default-value", "on-value-change", "single", "multiple", "data-state", "disabled"]));
+    expect(readySignals(report.focusSignals)).toEqual(expect.arrayContaining(["roving-focus", "composite-focus", "focus-loop", "virtual-focus", "active-item", "focusable-item", "rtl-dir"]));
+    expect(readySignals(report.orientationSignals)).toEqual(expect.arrayContaining(["horizontal", "vertical", "aria-orientation", "dir", "loop"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-toolbar", "role-group", "role-radio", "aria-pressed", "aria-checked", "aria-label", "aria-disabled", "tabindex"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "role-test", "attribute-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@radix-ui/react-toolbar", "@radix-ui/react-toggle", "@radix-ui/react-toggle-group", "@ariakit/react", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@radix-ui/react-toolbar"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records toolbar/toggle readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "toolbar-toggle-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "toolbar-toggle-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "toolbar-toggle-readiness.html"))).resolves.toBeUndefined();
+    const toolbarMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "toolbar-toggle-readiness.md"), "utf8");
+    expect(toolbarMarkdown).toContain("Toolbar Toggle Readiness");
+    expect(toolbarMarkdown).toContain("@radix-ui/react-toolbar");
+    const toolbarHtml = await fs.readFile(path.join(result.session.outputPaths.html, "toolbar-toggle-readiness.html"), "utf8");
+    expect(toolbarHtml).toContain("toolbar-toggle-readiness-card");
+    expect(toolbarHtml).toContain("data-source-pattern=\"ToolbarToggle\"");
+    expect(toolbarHtml).toContain("RepoTutor records toolbar/toggle readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

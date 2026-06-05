@@ -1,6 +1,6 @@
 {
   "iteration": 4,
-  "createdAt": "2026-06-05T22:53:04.620Z",
+  "createdAt": "2026-06-05T23:08:15.848Z",
   "checks": [
     {
       "name": "project setup",
@@ -1145,6 +1145,13 @@
     },
     {
       "name": "Select combobox readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Toolbar toggle readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
