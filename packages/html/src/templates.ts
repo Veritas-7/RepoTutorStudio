@@ -35,6 +35,7 @@ import type {
   SbomReport,
   SecurityReadinessReport,
   SastReadinessReport,
+  DastReadinessReport,
   ScorecardReport,
   ProvenanceReport,
   AdvisoryReport,
@@ -213,6 +214,7 @@ export interface StudyHtmlInput {
   sbomReport: SbomReport;
   securityReadinessReport: SecurityReadinessReport;
   sastReadinessReport: SastReadinessReport;
+  dastReadinessReport: DastReadinessReport;
   scorecardReport: ScorecardReport;
   provenanceReport: ProvenanceReport;
   advisoryReport: AdvisoryReport;
@@ -411,6 +413,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["sbom.html", "SBOM"],
     ["security-readiness.html", "Security Readiness"],
     ["sast-readiness.html", "SAST Readiness"],
+    ["dast-readiness.html", "DAST Readiness"],
     ["scorecard.html", "Project Scorecard"],
     ["provenance.html", "Provenance Readiness"],
     ["advisories.html", "Advisory Readiness"],
@@ -616,6 +619,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>SBOM</h3><p>${escapeHtml(input.sbomReport.summary)}</p><p>Syft 패턴으로 source descriptor, package artifacts, file artifacts, relationships를 inventory로 묶습니다.</p><a href="sbom.html">SBOM 열기</a></article>
           <article><h3>Security Readiness</h3><p>${escapeHtml(input.securityReadinessReport.summary)}</p><p>Trivy 패턴으로 targets, scanners, security signals, action queue를 분리합니다.</p><a href="security-readiness.html">Security Readiness 열기</a></article>
           <article><h3>SAST Readiness</h3><p>${escapeHtml(input.sastReadinessReport.summary)}</p><p>Semgrep, CodeQL, SonarQube, Snyk Code 패턴으로 rule, query, scope, baseline, SARIF 준비도를 정리합니다.</p><a href="sast-readiness.html">SAST 열기</a></article>
+          <article><h3>DAST Readiness</h3><p>${escapeHtml(input.dastReadinessReport.summary)}</p><p>OWASP ZAP, nuclei, secureCodeBox 패턴으로 target, crawl, active scan, auth, safety, output 준비도를 정리합니다.</p><a href="dast-readiness.html">DAST 열기</a></article>
           <article><h3>Project Scorecard</h3><p>${escapeHtml(input.scorecardReport.summary)}</p><p>OpenSSF Scorecard 패턴으로 checks, risk, policy findings, remediation queue를 정리합니다.</p><a href="scorecard.html">Project Scorecard 열기</a></article>
           <article><h3>Provenance Readiness</h3><p>${escapeHtml(input.provenanceReport.summary)}</p><p>Cosign 패턴으로 signature material, bundle, attestation, identity requirement를 정리합니다.</p><a href="provenance.html">Provenance Readiness 열기</a></article>
           <article><h3>Advisory Query Readiness</h3><p>${escapeHtml(input.advisoryReport.summary)}</p><p>OSV-Scanner 패턴으로 package advisory query target, lockfile, ignore policy를 정리합니다.</p><a href="advisories.html">Advisory Readiness 열기</a></article>
@@ -856,6 +860,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "sast-readiness.html",
       title: "SAST Readiness",
       html: pageShell("SAST Readiness", "sast-readiness.html", `<section class="panel" data-source-pattern="SAST"><h2>SAST Snapshot</h2><p>${escapeHtml(input.sastReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.sastReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.sastReadinessReport.sastSetups.length}</dd></div><div><dt>tools</dt><dd>${input.sastReadinessReport.toolSignals.length}</dd></div><div><dt>rules</dt><dd>${input.sastReadinessReport.ruleSignals.length}</dd></div><div><dt>queries</dt><dd>${input.sastReadinessReport.querySignals.length}</dd></div><div><dt>outputs</dt><dd>${input.sastReadinessReport.outputSignals.length}</dd></div></dl><p class="muted">RepoTutor records SAST readiness only. It does not execute analyzers, compile code, upload findings, contact SaaS scanners, or change code scanning settings.</p></section><section class="grid"><article class="sast-readiness-card"><h3>SAST Setups</h3>${sastReadinessSetupList(input.sastReadinessReport.sastSetups)}</article><article class="sast-readiness-card"><h3>Tool Signals</h3>${sastReadinessSignalList(input.sastReadinessReport.toolSignals, "signal")}</article><article class="sast-readiness-card"><h3>Rule Signals</h3>${sastReadinessSignalList(input.sastReadinessReport.ruleSignals, "signal")}</article><article class="sast-readiness-card"><h3>Query Signals</h3>${sastReadinessSignalList(input.sastReadinessReport.querySignals, "signal")}</article></section><section class="grid"><article class="sast-readiness-card"><h3>Language Signals</h3>${sastReadinessSignalList(input.sastReadinessReport.languageSignals, "signal")}</article><article class="sast-readiness-card"><h3>Scope Signals</h3>${sastReadinessSignalList(input.sastReadinessReport.scopeSignals, "signal")}</article><article class="sast-readiness-card"><h3>Baseline Signals</h3>${sastReadinessSignalList(input.sastReadinessReport.baselineSignals, "signal")}</article><article class="sast-readiness-card"><h3>Output Signals</h3>${sastReadinessSignalList(input.sastReadinessReport.outputSignals, "signal")}</article></section><section class="grid"><article class="sast-readiness-card"><h3>CI Signals</h3>${sastReadinessSignalList(input.sastReadinessReport.ciSignals, "signal")}</article><article class="sast-readiness-card"><h3>Package Signals</h3>${sastReadinessSignalList(input.sastReadinessReport.packageSignals, "signal")}</article><article class="sast-readiness-card"><h3>Recommended Commands</h3>${sastReadinessCommandList(input.sastReadinessReport.recommendedCommands)}</article><article class="sast-readiness-card"><h3>Risk Queue</h3>${sastReadinessRiskList(input.sastReadinessReport.riskQueue)}</article><article class="sast-readiness-card"><h3>다음 확인 단계</h3>${list(input.sastReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "dast-readiness.html",
+      title: "DAST Readiness",
+      html: pageShell("DAST Readiness", "dast-readiness.html", `<section class="panel" data-source-pattern="DAST"><h2>DAST Snapshot</h2><p>${escapeHtml(input.dastReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dastReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dastReadinessReport.dastSetups.length}</dd></div><div><dt>scanners</dt><dd>${input.dastReadinessReport.scannerSignals.length}</dd></div><div><dt>crawl</dt><dd>${input.dastReadinessReport.crawlSignals.length}</dd></div><div><dt>active</dt><dd>${input.dastReadinessReport.activeScanSignals.length}</dd></div><div><dt>safety</dt><dd>${input.dastReadinessReport.safetySignals.length}</dd></div><div><dt>outputs</dt><dd>${input.dastReadinessReport.outputSignals.length}</dd></div></dl><p class="muted">RepoTutor records DAST readiness only; it does not launch browsers, send HTTP traffic, crawl targets, run active scans, fuzz endpoints, authenticate sessions, trigger webhooks, or upload findings.</p></section><section class="grid"><article class="dast-readiness-card"><h3>DAST Setups</h3>${dastReadinessSetupList(input.dastReadinessReport.dastSetups)}</article><article class="dast-readiness-card"><h3>Target Signals</h3>${dastReadinessSignalList(input.dastReadinessReport.targetSignals, "signal")}</article><article class="dast-readiness-card"><h3>Scanner Signals</h3>${dastReadinessSignalList(input.dastReadinessReport.scannerSignals, "signal")}</article><article class="dast-readiness-card"><h3>Crawl Signals</h3>${dastReadinessSignalList(input.dastReadinessReport.crawlSignals, "signal")}</article></section><section class="grid"><article class="dast-readiness-card"><h3>Active Scan Signals</h3>${dastReadinessSignalList(input.dastReadinessReport.activeScanSignals, "signal")}</article><article class="dast-readiness-card"><h3>Auth Signals</h3>${dastReadinessSignalList(input.dastReadinessReport.authSignals, "signal")}</article><article class="dast-readiness-card"><h3>Template Signals</h3>${dastReadinessSignalList(input.dastReadinessReport.templateSignals, "signal")}</article><article class="dast-readiness-card"><h3>Safety Signals</h3>${dastReadinessSignalList(input.dastReadinessReport.safetySignals, "signal")}</article><article class="dast-readiness-card"><h3>Output Signals</h3>${dastReadinessSignalList(input.dastReadinessReport.outputSignals, "signal")}</article><article class="dast-readiness-card"><h3>CI Signals</h3>${dastReadinessSignalList(input.dastReadinessReport.ciSignals, "signal")}</article><article class="dast-readiness-card"><h3>Package Signals</h3>${dastReadinessSignalList(input.dastReadinessReport.packageSignals, "signal")}</article><article class="dast-readiness-card"><h3>Recommended Commands</h3>${dastReadinessCommandList(input.dastReadinessReport.recommendedCommands)}</article><article class="dast-readiness-card"><h3>Risk Queue</h3>${dastReadinessRiskList(input.dastReadinessReport.riskQueue)}</article><article class="dast-readiness-card"><h3>다음 확인 단계</h3>${list(input.dastReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "scorecard.html",
@@ -1678,6 +1687,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "SBOM", path: "html/sbom.html", description: "Syft식 package artifact, file artifact, relationship inventory를 확인합니다." },
       { label: "Security Readiness", path: "html/security-readiness.html", description: "Trivy식 scan target, scanner coverage, security signal, action queue를 확인합니다." },
       { label: "SAST Readiness", path: "html/sast-readiness.html", description: "Semgrep/CodeQL/SonarQube/Snyk Code식 rule, query, scope, baseline, SARIF 준비도를 확인합니다." },
+      { label: "DAST Readiness", path: "html/dast-readiness.html", description: "OWASP ZAP/nuclei/secureCodeBox식 target, crawl, active scan, auth, safety, output 준비도를 확인합니다." },
       { label: "Project Scorecard", path: "html/scorecard.html", description: "OpenSSF Scorecard식 check, risk, policy finding, remediation queue를 확인합니다." },
       { label: "Provenance Readiness", path: "html/provenance.html", description: "Cosign식 signature material, bundle, attestation, identity requirement를 확인합니다." },
       { label: "Advisory Query Readiness", path: "html/advisories.html", description: "OSV-Scanner식 package advisory query target, lockfile, policy control 준비도를 확인합니다." },
@@ -2039,6 +2049,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "sast-readiness.html",
       goal: "Semgrep/CodeQL/SonarQube/Snyk Code식 rule, query, scope, baseline, SARIF 관문을 확인합니다.",
       evidence: `SAST setups ${input.sastReadinessReport.sastSetups.length}개, output signals ${input.sastReadinessReport.outputSignals.length}개`
+    },
+    {
+      title: "DAST readiness 확인",
+      href: "dast-readiness.html",
+      goal: "OWASP ZAP/nuclei/secureCodeBox식 target, crawl, active scan, auth, safety, output 흐름을 확인합니다.",
+      evidence: `DAST setups ${input.dastReadinessReport.dastSetups.length}개, active scan signals ${input.dastReadinessReport.activeScanSignals.length}개`
     },
     {
       title: "Project scorecard risk queue 확인",
@@ -3288,6 +3304,31 @@ function sastReadinessRiskList(items: SastReadinessReport["riskQueue"]): string 
 }
 
 function sastReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function dastReadinessSetupList(items: DastReadinessReport["dastSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">DAST setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)}/${escapeHtml(item.readiness)}]<br>target/crawl/active/auth/template/safety/output/CI/findings ${item.targetCount}/${item.crawlerCount}/${item.activeScanCount}/${item.authCount}/${item.templateCount}/${item.safetyCount}/${item.outputCount}/${item.ciCount}/${item.findingCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dastReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function dastReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">DAST signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dastReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dastReadinessCommandList(items: DastReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function dastReadinessRiskList(items: DastReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(dastReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dastReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

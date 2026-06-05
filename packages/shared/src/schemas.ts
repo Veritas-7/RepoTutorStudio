@@ -1091,6 +1091,98 @@ export const SastReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DastReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  dastSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["zap", "nuclei", "securecodebox", "playwright", "workflow", "package-script", "readme", "unknown"]),
+    targetCount: z.number().int().nonnegative(),
+    crawlerCount: z.number().int().nonnegative(),
+    activeScanCount: z.number().int().nonnegative(),
+    authCount: z.number().int().nonnegative(),
+    templateCount: z.number().int().nonnegative(),
+    safetyCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    findingCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  targetSignals: z.array(z.object({
+    signal: z.enum(["base-url", "url-list", "openapi", "graphql", "swagger", "sitemap", "environment", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scannerSignals: z.array(z.object({
+    signal: z.enum(["zap", "nuclei", "securecodebox", "playwright", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  crawlSignals: z.array(z.object({
+    signal: z.enum(["spider", "ajax-spider", "headless", "follow-redirects", "sitemap", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  activeScanSignals: z.array(z.object({
+    signal: z.enum(["zap-active-scan", "nuclei-dast", "fuzzing", "attack-policy", "baseline", "full-scan", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  authSignals: z.array(z.object({
+    signal: z.enum(["context", "login", "headers", "cookies", "token", "user", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  templateSignals: z.array(z.object({
+    signal: z.enum(["nuclei-template", "workflow", "severity", "tags", "exclude", "signature", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["rate-limit", "scope", "timeout", "concurrency", "safe-methods", "allowlist", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["json", "sarif", "junit", "html", "markdown", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "scheduled-run", "pull-request", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["zap", "nuclei", "securecodebox", "playwright", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ScorecardReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -10920,6 +11012,7 @@ export type LicenseRightsReport = z.infer<typeof LicenseRightsReportSchema>;
 export type SbomReport = z.infer<typeof SbomReportSchema>;
 export type SecurityReadinessReport = z.infer<typeof SecurityReadinessReportSchema>;
 export type SastReadinessReport = z.infer<typeof SastReadinessReportSchema>;
+export type DastReadinessReport = z.infer<typeof DastReadinessReportSchema>;
 export type ScorecardReport = z.infer<typeof ScorecardReportSchema>;
 export type ProvenanceReport = z.infer<typeof ProvenanceReportSchema>;
 export type AdvisoryReport = z.infer<typeof AdvisoryReportSchema>;
