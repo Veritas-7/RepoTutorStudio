@@ -1994,6 +1994,89 @@ export const DebugReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CrashReportingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  crashSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["sentry", "bugsnag", "rollbar", "source-map-config", "symbol-file-config", "package-script", "workflow", "native-crash", "unknown"]),
+    eventCount: z.number().int().nonnegative(),
+    releaseCount: z.number().int().nonnegative(),
+    sourceMapCount: z.number().int().nonnegative(),
+    debugIdCount: z.number().int().nonnegative(),
+    symbolCount: z.number().int().nonnegative(),
+    stacktraceCount: z.number().int().nonnegative(),
+    breadcrumbCount: z.number().int().nonnegative(),
+    sessionCount: z.number().int().nonnegative(),
+    privacyCount: z.number().int().nonnegative(),
+    alertCount: z.number().int().nonnegative(),
+    artifactCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  captureSignals: z.array(z.object({
+    signal: z.enum(["exception-capture", "unhandled-exception", "unhandled-rejection", "native-crash", "manual-notify", "event-pipeline", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  releaseSignals: z.array(z.object({
+    signal: z.enum(["release-version", "dist-build", "environment-stage", "commit-sha", "deploy-tracking", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  symbolicationSignals: z.array(z.object({
+    signal: z.enum(["source-map-upload", "debug-id", "artifact-bundle", "dsym", "proguard-mapping", "stacktrace-linking", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  contextSignals: z.array(z.object({
+    signal: z.enum(["breadcrumbs", "sessions", "user-context", "tags-metadata", "severity-level", "fingerprint-grouping", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  privacySignals: z.array(z.object({
+    signal: z.enum(["before-send", "on-error-filter", "scrub-fields", "pii-toggle", "payload-truncation", "sampling-rate-limit", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  deliverySignals: z.array(z.object({
+    signal: z.enum(["dsn-access-token", "notify-endpoint", "sessions-endpoint", "offline-queue", "retry-rate-limit", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["ci-upload", "release-command", "artifact-upload", "sourcemap-test", "crash-smoke-test", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@sentry/*", "@bugsnag/js", "rollbar", "sentry-cli", "bugsnag-source-maps", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LoadTestingReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -11579,6 +11662,7 @@ export type PerformanceReport = z.infer<typeof PerformanceReportSchema>;
 export type ProfilingReadinessReport = z.infer<typeof ProfilingReadinessReportSchema>;
 export type TracingReadinessReport = z.infer<typeof TracingReadinessReportSchema>;
 export type DebugReadinessReport = z.infer<typeof DebugReadinessReportSchema>;
+export type CrashReportingReadinessReport = z.infer<typeof CrashReportingReadinessReportSchema>;
 export type LoadTestingReadinessReport = z.infer<typeof LoadTestingReadinessReportSchema>;
 export type BenchmarkReadinessReport = z.infer<typeof BenchmarkReadinessReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;

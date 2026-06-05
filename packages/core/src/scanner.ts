@@ -54,6 +54,7 @@ import {
   ProfilingReadinessReport,
   TracingReadinessReport,
   DebugReadinessReport,
+  CrashReportingReadinessReport,
   LoadTestingReadinessReport,
   BenchmarkReadinessReport,
   E2eReport,
@@ -245,6 +246,7 @@ export interface AnalysisBundle {
   profilingReadinessReport: ProfilingReadinessReport;
   tracingReadinessReport: TracingReadinessReport;
   debugReadinessReport: DebugReadinessReport;
+  crashReportingReadinessReport: CrashReportingReadinessReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
@@ -436,6 +438,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const profilingReadinessReport = await buildProfilingReadinessReport(walk);
   const tracingReadinessReport = await buildTracingReadinessReport(walk);
   const debugReadinessReport = await buildDebugReadinessReport(walk);
+  const crashReportingReadinessReport = await buildCrashReportingReadinessReport(walk);
   const loadTestingReadinessReport = await buildLoadTestingReadinessReport(walk);
   const benchmarkReadinessReport = await buildBenchmarkReadinessReport(walk);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
@@ -568,7 +571,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -7770,6 +7773,310 @@ function debugSignalFromSpecs<T extends string>(
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/debug-readiness.html"
+    };
+  });
+}
+
+async function buildCrashReportingReadinessReport(walk: WalkResult): Promise<CrashReportingReadinessReport> {
+  const sourceFiles = await crashReportingSourceFiles(walk);
+  const crashSetups = crashReportingSetupRows(sourceFiles);
+  const captureSignals = crashCaptureSignals(sourceFiles);
+  const releaseSignals = crashReleaseSignals(sourceFiles);
+  const symbolicationSignals = crashSymbolicationSignals(sourceFiles);
+  const contextSignals = crashContextSignals(sourceFiles);
+  const privacySignals = crashPrivacySignals(sourceFiles);
+  const deliverySignals = crashDeliverySignals(sourceFiles);
+  const workflowSignals = crashWorkflowSignals(sourceFiles);
+  const packageSignals = crashPackageSignals(sourceFiles);
+
+  const hasCapture = captureSignals.some((item) => item.readiness === "ready")
+    || crashSetups.some((item) => item.eventCount + item.stacktraceCount > 0);
+  const hasRelease = releaseSignals.some((item) => item.readiness === "ready")
+    || crashSetups.some((item) => item.releaseCount > 0);
+  const hasSymbolication = symbolicationSignals.some((item) => item.readiness === "ready")
+    || crashSetups.some((item) => item.sourceMapCount + item.debugIdCount + item.symbolCount > 0);
+  const hasPrivacy = privacySignals.some((item) => item.readiness === "ready")
+    || crashSetups.some((item) => item.privacyCount > 0);
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready")
+    || crashSetups.some((item) => item.artifactCount + item.ciCount > 0);
+
+  const riskQueue: CrashReportingReadinessReport["riskQueue"] = [];
+  if (!hasCapture) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document crash/event capture before claiming crash reporting readiness.",
+      why: "Crash reporting needs visible Sentry, Bugsnag, Rollbar, native crash, unhandled exception, or manual notify evidence.",
+      relatedHref: "html/crash-reporting-readiness.html"
+    });
+  }
+  if (hasCapture && !hasRelease) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Attach release, dist, environment, appVersion, code_version, commit SHA, or deploy tracking to crash events.",
+      why: "Crash reports are hard to reproduce unless events can be tied to a specific build or release.",
+      relatedHref: "html/crash-reporting-readiness.html"
+    });
+  }
+  if (hasRelease && !hasSymbolication) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add source map, debug ID, artifact bundle, dSYM, ProGuard mapping, or symbolication upload evidence.",
+      why: "Release identity alone does not make minified JavaScript, native frames, or obfuscated mobile stacks readable.",
+      relatedHref: "html/crash-reporting-readiness.html"
+    });
+  }
+  if (hasCapture && !hasPrivacy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document beforeSend, onError, scrub fields, PII toggles, payload truncation, sampling, or rate limits.",
+      why: "Crash payloads often include user, request, stack, and metadata fields that need explicit privacy controls.",
+      relatedHref: "html/crash-reporting-readiness.html"
+    });
+  }
+  if (hasSymbolication && !hasWorkflow) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add CI release commands or artifact upload evidence for source maps and symbol files.",
+      why: "Symbolication evidence is fragile unless the release workflow uploads and preserves the needed artifacts.",
+      relatedHref: "html/crash-reporting-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "RepoTutor records static crash reporting readiness only; it does not send crash events, upload source maps, upload symbols, contact Sentry/Bugsnag/Rollbar, or inspect production incidents.",
+    why: "Crash event delivery, artifact upload, and production incident review must run only through authorized release or test workflows.",
+    relatedHref: "html/crash-reporting-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Sentry/Bugsnag/Rollbar-style crash reporting readiness report: setup ${crashSetups.length} files, capture signals ${captureSignals.length}, release signals ${releaseSignals.length}, symbolication signals ${symbolicationSignals.length} were mapped from static evidence.`,
+    sourcePattern: "Crash reporting readiness Sentry Bugsnag Rollbar release source maps debug IDs dSYM ProGuard stacktrace breadcrumbs sessions privacy alerts",
+    crashSetups,
+    captureSignals,
+    releaseSignals,
+    symbolicationSignals,
+    contextSignals,
+    privacySignals,
+    deliverySignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"Sentry.init|captureException|Bugsnag.start|Bugsnag.notify|new Rollbar|Rollbar\\.(error|critical|warning)\" .", purpose: "Find crash capture setup without sending crash events." },
+      { command: "rg \"release|dist|appVersion|code_version|releaseStage|environment|commit|deploy\" .", purpose: "Find release, environment, and deploy identity attached to crash reports." },
+      { command: "rg \"sourcemap|source map|sourceMap|debugId|debug_id|artifact bundle|dSYM|ProGuard|mapping.txt|symbolication\" .", purpose: "Find source map, debug ID, symbol, dSYM, ProGuard, and symbolication evidence." },
+      { command: "rg \"beforeSend|onError|scrubFields|scrubPaths|sendDefaultPii|dataCollection|payload truncation|maxEvents|maxItems|sampleRate\" .", purpose: "Find privacy filtering, payload scrubbing, truncation, sampling, and rate-limit evidence." }
+    ],
+    learnerNextSteps: [
+      "Start with event capture, then verify release identity is attached to every crash event.",
+      "Check source maps, debug IDs, artifact bundles, dSYM uploads, ProGuard mapping files, and stacktrace linking before trusting symbolicated frames.",
+      "Review breadcrumbs, sessions, tags, user context, severity, and fingerprinting to understand crash context.",
+      "Confirm beforeSend, onError, scrub fields, PII toggles, payload truncation, sampling, and rate limiting before production use.",
+      "This report is static readiness only. Real crash delivery and artifact upload claims need an authorized release or test workflow."
+    ]
+  };
+}
+
+type CrashReportingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function crashReportingSourceFiles(walk: WalkResult): Promise<CrashReportingSourceFile[]> {
+  const files: CrashReportingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !crashReportingInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!crashReportingPathSignal(file.relPath) && !crashReportingContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 360) break;
+  }
+  return files;
+}
+
+function crashReportingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|sentry\..*|bugsnag\..*|rollbar\..*|vite\.config\..*|webpack\.config\..*|next\.config\..*|metro\.config\..*|app\.json|app\.config\..*|Info\.plist|proguard-rules\.pro|mapping\.txt|Dockerfile|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(js|ts|mjs|cjs|json|ya?ml|toml|md|py|go|sh|conf|ini|plist|properties|gradle)$/i.test(filePath);
+}
+
+function crashReportingPathSignal(filePath: string): boolean {
+  return /(sentry|bugsnag|rollbar|crash|sourcemap|source-map|symbolicat|dsym|proguard|mapping|release)/i.test(filePath);
+}
+
+function crashReportingContentSignal(text: string): boolean {
+  return /(Sentry\.init|captureException|beforeSend|sentry-cli|withSentryConfig|Bugsnag\.start|Bugsnag\.notify|onError|onSession|Rollbar|code_version|scrubFields|sourceMap|debugId|debug_id|dSYM|ProGuard|stacktrace|breadcrumbs|releaseStage|appVersion|notifyReleaseStages)/i.test(text);
+}
+
+function crashReportingSetupRows(sourceFiles: CrashReportingSourceFile[]): CrashReportingReadinessReport["crashSetups"] {
+  const rows: CrashReportingReadinessReport["crashSetups"] = [];
+  for (const source of sourceFiles) {
+    const haystack = `${source.filePath}\n${source.text}`;
+    const eventCount = countMatches(source.text, /captureException|captureMessage|Bugsnag\.notify|Rollbar\.(error|critical|warning|info)|notify\(|uncaughtException|unhandledRejection|native crash|crash/gi);
+    const releaseCount = countMatches(source.text, /release|dist|appVersion|code_version|releaseStage|environment|deploy|commit|HEROKU_BUILD_COMMIT|notifyReleaseStages/gi);
+    const sourceMapCount = countMatches(source.text, /sourceMap|source map|sourcemap|sentry-cli.*sourcemaps|upload.*source.*map|withSentryConfig/gi);
+    const debugIdCount = countMatches(source.text, /debug id|debugId|debug_id|artifact bundle|artifact-bundle/gi);
+    const symbolCount = countMatches(source.text, /dSYM|dsym|ProGuard|mapping\.txt|symbolicat|symbolication|symbol file|native symbol|upload.*symbols/gi);
+    const stacktraceCount = countMatches(source.text, /stacktrace|stack trace|trace\.frames|trace_chain|frames|exception/gi);
+    const breadcrumbCount = countMatches(source.text, /breadcrumb|breadcrumbs|leaveBreadcrumb/gi);
+    const sessionCount = countMatches(source.text, /session|sessions|onSession|startSession|autoTrackSessions/gi);
+    const privacyCount = countMatches(source.text, /beforeSend|onError|scrubFields|scrubPaths|sendDefaultPii|PII|dataCollection|payload truncation|truncate|maxEvents|maxItems|sampleRate/gi);
+    const alertCount = countMatches(source.text, /alert|notification|notifyReleaseStages|severity|level|critical|warning|error/gi);
+    const artifactCount = countMatches(source.text, /artifact|upload-artifact|build artifact|source maps|dSYM|mapping\.txt|debug files/gi);
+    const ciCount = countMatches(haystack, /\.github\/workflows|upload-artifact|CI|pull_request|schedule|runs-on|SENTRY_AUTH_TOKEN|BUGSNAG_API_KEY|ROLLBAR_ACCESS_TOKEN/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = eventCount + releaseCount + sourceMapCount + debugIdCount + symbolCount + stacktraceCount + breadcrumbCount + sessionCount + privacyCount + alertCount + artifactCount + ciCount;
+    if (totalSignals === 0 && !crashReportingPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: crashReportingPlatform(source),
+      eventCount,
+      releaseCount,
+      sourceMapCount,
+      debugIdCount,
+      symbolCount,
+      stacktraceCount,
+      breadcrumbCount,
+      sessionCount,
+      privacyCount,
+      alertCount,
+      artifactCount,
+      ciCount,
+      readiness: (eventCount > 0 || stacktraceCount > 0) && releaseCount > 0 && (sourceMapCount + debugIdCount + symbolCount > 0) && privacyCount > 0 ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains event ${eventCount}, release ${releaseCount}, source map ${sourceMapCount}, debug ID ${debugIdCount}, symbols ${symbolCount}, stacktrace ${stacktraceCount}, breadcrumbs ${breadcrumbCount}, sessions ${sessionCount}, privacy ${privacyCount}, alerts ${alertCount}, artifacts ${artifactCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.eventCount + b.releaseCount + b.sourceMapCount + b.debugIdCount + b.symbolCount + b.privacyCount + b.artifactCount + b.ciCount;
+    const aScore = a.eventCount + a.releaseCount + a.sourceMapCount + a.debugIdCount + a.symbolCount + a.privacyCount + a.artifactCount + a.ciCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 100);
+}
+
+function crashReportingPlatform(source: CrashReportingSourceFile): CrashReportingReadinessReport["crashSetups"][number]["platform"] {
+  const haystack = `${source.filePath}\n${source.text}`;
+  if (/^\.github\/workflows\//i.test(source.filePath)) return "workflow";
+  if (path.basename(source.filePath) === "package.json" && /(sentry|bugsnag|rollbar|sourcemap|source-map|release)/i.test(source.text)) return "package-script";
+  if (/dSYM|dsym|ProGuard|mapping\.txt|symbolicat|symbolication|Info\.plist|proguard-rules\.pro/i.test(haystack)) return "symbol-file-config";
+  if (/sourceMap|source map|sourcemap|debugId|debug_id|artifact bundle|artifact-bundle/i.test(haystack)) return "source-map-config";
+  if (/Bugsnag\.start|Bugsnag\.notify|@bugsnag\/js|bugsnag-source-maps/i.test(haystack)) return "bugsnag";
+  if (/Rollbar|code_version|rollbar/i.test(haystack)) return "rollbar";
+  if (/Sentry\.init|captureException|@sentry\/|sentry-cli|withSentryConfig/i.test(haystack)) return "sentry";
+  if (/native crash|crash dump|dSYM|ProGuard|symbol file/i.test(haystack)) return "native-crash";
+  return "unknown";
+}
+
+function crashCaptureSignals(sourceFiles: CrashReportingSourceFile[]): CrashReportingReadinessReport["captureSignals"] {
+  const specs: Array<{ signal: CrashReportingReadinessReport["captureSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "exception-capture", pattern: /captureException|Bugsnag\.notify|Rollbar\.(error|critical|warning|info)|exception/i, evidence: "exception capture evidence was detected." },
+    { signal: "unhandled-exception", pattern: /uncaughtException|captureUncaught|uncaught exceptions|UnhandledException/i, evidence: "unhandled exception evidence was detected." },
+    { signal: "unhandled-rejection", pattern: /unhandledRejection|captureUnhandledRejections|unhandled rejection/i, evidence: "unhandled rejection evidence was detected." },
+    { signal: "native-crash", pattern: /native crash|dSYM|dsym|ProGuard|crash dump|symbol file/i, evidence: "native crash or native symbol evidence was detected." },
+    { signal: "manual-notify", pattern: /Bugsnag\.notify|Rollbar\.(error|critical|warning|info)|captureMessage|notify\(/i, evidence: "manual notify evidence was detected." },
+    { signal: "event-pipeline", pattern: /beforeSend|onError|transform\(payload\)|payload|event pipeline|Event/i, evidence: "event pipeline evidence was detected." }
+  ];
+  return crashReportingSignalFromSpecs(sourceFiles, specs, "capture");
+}
+
+function crashReleaseSignals(sourceFiles: CrashReportingSourceFile[]): CrashReportingReadinessReport["releaseSignals"] {
+  const specs: Array<{ signal: CrashReportingReadinessReport["releaseSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "release-version", pattern: /\brelease\b|appVersion|code_version/i, evidence: "release version evidence was detected." },
+    { signal: "dist-build", pattern: /\bdist\b|buildUUID|build artifact|build id/i, evidence: "dist/build identity evidence was detected." },
+    { signal: "environment-stage", pattern: /environment|releaseStage|notifyReleaseStages|production|staging/i, evidence: "environment or release-stage evidence was detected." },
+    { signal: "commit-sha", pattern: /commit|COMMIT_SHA|HEROKU_BUILD_COMMIT|GITHUB_SHA/i, evidence: "commit SHA evidence was detected." },
+    { signal: "deploy-tracking", pattern: /deploy|deployment|release command|release:sentry|release:bugsnag|release:rollbar/i, evidence: "deploy tracking evidence was detected." }
+  ];
+  return crashReportingSignalFromSpecs(sourceFiles, specs, "release");
+}
+
+function crashSymbolicationSignals(sourceFiles: CrashReportingSourceFile[]): CrashReportingReadinessReport["symbolicationSignals"] {
+  const specs: Array<{ signal: CrashReportingReadinessReport["symbolicationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "source-map-upload", pattern: /sourcemap|source map|sourceMap|sentry-cli.*sourcemaps|upload.*source.*map|bugsnag-source-maps|rollbar-sourcemap|withSentryConfig/i, evidence: "source map upload evidence was detected." },
+    { signal: "debug-id", pattern: /debug id|debugId|debug_id/i, evidence: "debug ID evidence was detected." },
+    { signal: "artifact-bundle", pattern: /artifact bundle|artifact-bundle|debug files|build artifact/i, evidence: "artifact bundle evidence was detected." },
+    { signal: "dsym", pattern: /dSYM|dsym/i, evidence: "dSYM evidence was detected." },
+    { signal: "proguard-mapping", pattern: /ProGuard|mapping\.txt|proguard-rules/i, evidence: "ProGuard mapping evidence was detected." },
+    { signal: "stacktrace-linking", pattern: /stacktrace|stack trace|trace\.frames|trace_chain|symbolication|frames/i, evidence: "stacktrace linking evidence was detected." }
+  ];
+  return crashReportingSignalFromSpecs(sourceFiles, specs, "symbolication");
+}
+
+function crashContextSignals(sourceFiles: CrashReportingSourceFile[]): CrashReportingReadinessReport["contextSignals"] {
+  const specs: Array<{ signal: CrashReportingReadinessReport["contextSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "breadcrumbs", pattern: /breadcrumb|breadcrumbs|leaveBreadcrumb|addBreadcrumb/i, evidence: "breadcrumb evidence was detected." },
+    { signal: "sessions", pattern: /session|sessions|onSession|startSession|autoTrackSessions/i, evidence: "session evidence was detected." },
+    { signal: "user-context", pattern: /setUser|user context|user:/i, evidence: "user context evidence was detected." },
+    { signal: "tags-metadata", pattern: /setTag|tags|metadata|addMetadata|context/i, evidence: "tags or metadata evidence was detected." },
+    { signal: "severity-level", pattern: /severity|level|critical|warning|error/i, evidence: "severity or level evidence was detected." },
+    { signal: "fingerprint-grouping", pattern: /fingerprint|grouping|group by/i, evidence: "fingerprint or grouping evidence was detected." }
+  ];
+  return crashReportingSignalFromSpecs(sourceFiles, specs, "context");
+}
+
+function crashPrivacySignals(sourceFiles: CrashReportingSourceFile[]): CrashReportingReadinessReport["privacySignals"] {
+  const specs: Array<{ signal: CrashReportingReadinessReport["privacySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "before-send", pattern: /beforeSend/i, evidence: "beforeSend privacy evidence was detected." },
+    { signal: "on-error-filter", pattern: /onError|return false|filter/i, evidence: "onError/filter evidence was detected." },
+    { signal: "scrub-fields", pattern: /scrubFields|scrubPaths|scrub fields|scrub paths|authorization|password/i, evidence: "scrub field/path evidence was detected." },
+    { signal: "pii-toggle", pattern: /sendDefaultPii|PII|personally identifiable|dataCollection/i, evidence: "PII toggle evidence was detected." },
+    { signal: "payload-truncation", pattern: /payload truncation|truncate|truncation|max payload|maxEvents|maxItems/i, evidence: "payload truncation evidence was detected." },
+    { signal: "sampling-rate-limit", pattern: /sampleRate|tracesSampleRate|itemsPerMinute|maxItems|rate limit|rateLimiter/i, evidence: "sampling or rate-limit evidence was detected." }
+  ];
+  return crashReportingSignalFromSpecs(sourceFiles, specs, "privacy");
+}
+
+function crashDeliverySignals(sourceFiles: CrashReportingSourceFile[]): CrashReportingReadinessReport["deliverySignals"] {
+  const specs: Array<{ signal: CrashReportingReadinessReport["deliverySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dsn-access-token", pattern: /dsn|accessToken|SENTRY_AUTH_TOKEN|BUGSNAG_API_KEY|ROLLBAR_ACCESS_TOKEN/i, evidence: "DSN/API key/access-token reference was detected." },
+    { signal: "notify-endpoint", pattern: /notify endpoint|notifyEndpoint|endpoints:\s*{[^}]*notify|\/notify/i, evidence: "notify endpoint evidence was detected." },
+    { signal: "sessions-endpoint", pattern: /sessions endpoint|sessionsEndpoint|endpoints:\s*{[^}]*sessions|\/sessions/i, evidence: "sessions endpoint evidence was detected." },
+    { signal: "offline-queue", pattern: /offline queue|queue|replay|send attempts|retry/i, evidence: "offline queue or retry evidence was detected." },
+    { signal: "retry-rate-limit", pattern: /retry|rate limit|rateLimiter|itemsPerMinute|maxItems/i, evidence: "retry or rate-limit evidence was detected." }
+  ];
+  return crashReportingSignalFromSpecs(sourceFiles, specs, "delivery");
+}
+
+function crashWorkflowSignals(sourceFiles: CrashReportingSourceFile[]): CrashReportingReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: CrashReportingReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ci-upload", pattern: /\.github\/workflows|runs-on|CI|SENTRY_AUTH_TOKEN|BUGSNAG_API_KEY|ROLLBAR_ACCESS_TOKEN/i, evidence: "CI upload workflow evidence was detected." },
+    { signal: "release-command", pattern: /release:sentry|release:bugsnag|release:rollbar|sentry-cli|bugsnag-source-maps|rollbar-sourcemap/i, evidence: "release command evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|artifact|build artifact|debug files/i, evidence: "artifact upload evidence was detected." },
+    { signal: "sourcemap-test", pattern: /sourcemap test|source map test|sourceMap test/i, evidence: "sourcemap test evidence was detected." },
+    { signal: "crash-smoke-test", pattern: /crash smoke test|smoke test.*crash|crash.*smoke/i, evidence: "crash smoke test evidence was detected." }
+  ];
+  return crashReportingSignalFromSpecs(sourceFiles, specs, "workflow");
+}
+
+function crashPackageSignals(sourceFiles: CrashReportingSourceFile[]): CrashReportingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: CrashReportingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@sentry/*", pattern: /@sentry\/|Sentry\.init|sentry-cli/i, evidence: "Sentry package/setup evidence was detected." },
+    { signal: "@bugsnag/js", pattern: /@bugsnag\/js|Bugsnag\.start|Bugsnag\.notify/i, evidence: "Bugsnag package/setup evidence was detected." },
+    { signal: "rollbar", pattern: /"rollbar"|new Rollbar|Rollbar\./i, evidence: "Rollbar package/setup evidence was detected." },
+    { signal: "sentry-cli", pattern: /sentry-cli/i, evidence: "sentry-cli evidence was detected." },
+    { signal: "bugsnag-source-maps", pattern: /bugsnag-source-maps|@bugsnag\/source-maps/i, evidence: "Bugsnag source-map upload package evidence was detected." }
+  ];
+  return crashReportingSignalFromSpecs(sourceFiles, specs, "package");
+}
+
+function crashReportingSignalFromSpecs<T extends string>(
+  sourceFiles: CrashReportingSourceFile[],
+  specs: Array<{ signal: T; pattern: RegExp; evidence: string }>,
+  label: string
+): Array<{ signal: T; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(haystack);
+    });
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/crash-reporting-readiness.html"
     };
   });
 }
