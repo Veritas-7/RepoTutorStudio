@@ -8025,6 +8025,60 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 269:
   - `bdfca36` fuzz readiness report
 
+- 2026-06-05: AutoResearch Upgrade 270 candidate selected:
+  profiling readiness from `clinicjs/node-clinic`
+  (`https://github.com/clinicjs/node-clinic`; ignored clone HEAD
+  `19262605b5647d34e660294e93c0cee62ea3a746`),
+  `benfred/py-spy`
+  (`https://github.com/benfred/py-spy`; ignored clone HEAD
+  `32080cc0c22bc23938541dfa7dabb6090e40be14`), and
+  `grafana/pyroscope`
+  (`https://github.com/grafana/pyroscope`; ignored clone HEAD
+  `680fa85b3045a3e5e30dcd65ecec22dd5dc037ef`). Static source inspection
+  only; `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Clinic.js/py-spy/Pyroscope/pprof-style profiling
+  readiness report: `ProfilingReadinessReportSchema`,
+  `analysis/profiling-readiness-report.json`,
+  `markdown/profiling-readiness.md`, `html/profiling-readiness.html`,
+  static profiling setup detection, target, mode, output, runtime, safety, and
+  package signals, Clinic.js doctor/bubbleprof/flame/heapprofiler detection,
+  py-spy top/record/dump detection, Pyroscope continuous profiling metadata,
+  pprof and HTTP pprof detection, profiler permission and data-retention
+  guardrails, recommended static inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target profiling-readiness`.
+- 2026-06-05: RED/GREEN profiling readiness smoke recorded:
+  pre-implementation precise gap checks had no
+  `ProfilingReadinessReportSchema`, no `profilingReadinessReport`, and no
+  `profiling-readiness` target (`profiling_gap_exit=1`). GREEN fixture detected
+  workflow, package-script, Clinic.js, py-spy, Pyroscope, and pprof setup
+  rows; Node, Python, Go pprof, HTTP pprof, Kubernetes pod, and container
+  targets; Clinic.js doctor/bubbleprof/flame/heapprofiler, py-spy
+  top/record/dump, Pyroscope agent, and pprof modes; HTML, flamegraph,
+  speedscope, raw, pprof, JSON, profilecli, and Grafana dashboard outputs;
+  runtime, safety, package, recommended command, static-only guardrail, and all
+  three new artifacts.
+- 2026-06-05: Verification for Upgrade 270:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused profiling readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - full pipeline Vitest: PASS, 77/77 tests
+  - `pnpm test`: PASS, 77/77 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 168/168 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~71.46 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 270:
+  - `9501280` profiling readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
