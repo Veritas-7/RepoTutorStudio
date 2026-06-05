@@ -72,6 +72,7 @@ import {
   DatabaseReadinessReport,
   DatabaseMigrationReadinessReport,
   DatabaseOrmReadinessReport,
+  DataQualityReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -232,6 +233,7 @@ export interface AnalysisBundle {
   databaseReadinessReport: DatabaseReadinessReport;
   databaseMigrationReadinessReport: DatabaseMigrationReadinessReport;
   databaseOrmReadinessReport: DatabaseOrmReadinessReport;
+  dataQualityReadinessReport: DataQualityReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -392,6 +394,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const databaseReadinessReport = await buildDatabaseReadinessReport(walk);
   const databaseMigrationReadinessReport = await buildDatabaseMigrationReadinessReport(walk);
   const databaseOrmReadinessReport = await buildDatabaseOrmReadinessReport(walk);
+  const dataQualityReadinessReport = await buildDataQualityReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
   const coverageReadinessReport = await buildCoverageReadinessReport(walk);
@@ -475,7 +478,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -12810,6 +12813,308 @@ function databaseOrmReadinessSignalFromSpecs<T extends Record<K, string> & { pat
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/database-orm-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDataQualityReadinessReport(walk: WalkResult): Promise<DataQualityReadinessReport> {
+  const sourceFiles = await dataQualitySourceFiles(walk);
+  const dataQualitySetups = dataQualitySetupsFromSources(sourceFiles);
+  const expectationSignals = dataQualityExpectationSignals(sourceFiles);
+  const sodaSignals = dataQualitySodaSignals(sourceFiles);
+  const dbtSignals = dataQualityDbtSignals(sourceFiles);
+  const qualityDimensionSignals = dataQualityDimensionSignals(sourceFiles);
+  const resultSignals = dataQualityResultSignals(sourceFiles);
+  const ciSignals = dataQualityCiSignals(sourceFiles);
+  const packageSignals = dataQualityPackageSignals(sourceFiles);
+
+  const hasExpectations = expectationSignals.some((item) => item.readiness === "ready") || dataQualitySetups.some((item) => item.expectationCount > 0);
+  const hasSodaOrDbt = sodaSignals.some((item) => item.readiness === "ready") || dbtSignals.some((item) => item.readiness === "ready");
+  const hasSchema = qualityDimensionSignals.some((item) => item.signal === "schema" && item.readiness === "ready") || dataQualitySetups.some((item) => item.schemaTestCount > 0);
+  const hasFreshness = qualityDimensionSignals.some((item) => item.signal === "freshness" && item.readiness === "ready") || dataQualitySetups.some((item) => item.freshnessCount > 0);
+  const hasResults = resultSignals.some((item) => item.readiness === "ready") || dataQualitySetups.some((item) => item.resultCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || dataQualitySetups.some((item) => item.ciCount > 0);
+  const hasThresholds = sodaSignals.some((item) => item.signal === "fail-warn-threshold" && item.readiness === "ready") || dbtSignals.some((item) => item.signal === "severity" && item.readiness === "ready") || expectationSignals.some((item) => item.signal === "mostly" && item.readiness === "ready");
+  const hasFailedRows = resultSignals.some((item) => ["failed-rows", "run-results", "validation-result"].includes(item.signal) && item.readiness === "ready") || dbtSignals.some((item) => item.signal === "store-failures" && item.readiness === "ready");
+
+  const riskQueue: DataQualityReadinessReport["riskQueue"] = [];
+  if (!hasExpectations && !hasSodaOrDbt) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document data quality checks before claiming data quality readiness.",
+      why: "Learners need traceable expectations, SodaCL checks, dbt data tests, or an equivalent validation layer.",
+      relatedHref: "html/data-quality-readiness.html"
+    });
+  }
+  if ((hasExpectations || hasSodaOrDbt) && !hasSchema) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Cover schema and column contract checks such as expected columns, types, not_null, unique, and relationships.",
+      why: "Quality checks without schema coverage can miss breaking contract changes in tabular data.",
+      relatedHref: "html/data-quality-readiness.html"
+    });
+  }
+  if ((hasExpectations || hasSodaOrDbt) && !hasFreshness) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add freshness or recency checks for source and model data.",
+      why: "Correct-looking stale data is a common data quality failure mode.",
+      relatedHref: "html/data-quality-readiness.html"
+    });
+  }
+  if ((hasExpectations || hasSodaOrDbt) && !hasThresholds) {
+    riskQueue.push({
+      priority: "low",
+      action: "Document fail/warn thresholds such as mostly, severity, warn_if, error_if, or Soda thresholds.",
+      why: "Thresholds explain when a quality signal becomes a blocking failure versus a warning.",
+      relatedHref: "html/data-quality-readiness.html"
+    });
+  }
+  if ((hasExpectations || hasSodaOrDbt) && !hasResults) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Persist validation results, run results, failed rows, data docs, or CI artifacts.",
+      why: "Data quality checks are hard to review if the repository never records outputs or failed-row evidence.",
+      relatedHref: "html/data-quality-readiness.html"
+    });
+  }
+  if (hasResults && !hasFailedRows) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record failed-row or unexpected-row retrieval where safe.",
+      why: "Debugging data quality issues is faster when learners can trace sample failures or stored failure tables.",
+      relatedHref: "html/data-quality-readiness.html"
+    });
+  }
+  if ((hasExpectations || hasSodaOrDbt) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Run data quality checks in CI or scheduled jobs.",
+      why: "Quality contracts need repeatable execution, not one-off local checks.",
+      relatedHref: "html/data-quality-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Data quality readiness report: data quality setup ${dataQualitySetups.length}개, expectation signal ${expectationSignals.length}개, Soda signal ${sodaSignals.length}개, dbt signal ${dbtSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Data quality readiness Great Expectations SodaCL Soda Core dbt data_tests schema.yml ExpectationSuite Checkpoint Validator BatchRequest expectations unexpected rows result_format checks for row_count missing_count duplicate_count freshness not_null unique accepted_values relationships severity store_failures CI",
+    dataQualitySetups,
+    expectationSignals,
+    sodaSignals,
+    dbtSignals,
+    qualityDimensionSignals,
+    resultSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"ExpectationSuite|Checkpoint|Validator|BatchRequest|expect_column_values|unexpected|result_format\" .", purpose: "Find Great Expectations suites, validators, checkpoints, expectation calls, and validation output settings." },
+      { command: "rg \"checks for|SodaCL|row_count|missing_count|duplicate_count|freshness|fail|warn|threshold\" .", purpose: "Find SodaCL/Soda Core checks, dimensions, and thresholds." },
+      { command: "rg \"data_tests|tests:|not_null|unique|accepted_values|relationships|freshness|store_failures|severity\" .", purpose: "Find dbt data tests, schema YAML tests, source freshness, severity, and failed-row storage." },
+      { command: "dbt test --select state:modified+", purpose: "Run dbt data tests for changed resources when the target repository is a dbt project." },
+      { command: "soda scan -d <data-source> -c configuration.yml checks.yml", purpose: "Run Soda checks when SodaCL configuration is present." }
+    ],
+    learnerNextSteps: [
+      "먼저 Great Expectations suite/checkpoint, SodaCL checks, dbt data_tests 중 어떤 품질 레이어가 있는지 찾으세요.",
+      "completeness, uniqueness, validity, schema, freshness, volume 같은 품질 차원이 실제 check로 커버되는지 확인하세요.",
+      "mostly, fail/warn threshold, severity, warn_if/error_if 같은 실패 기준을 추적하세요.",
+      "validation_result, run_results, failed rows, data docs, artifact upload이 남는지 확인하세요.",
+      "CI나 scheduled job에서 품질 검사가 반복 실행되는지 마지막에 확인하세요."
+    ]
+  };
+}
+
+type DataQualitySourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function dataQualitySourceFiles(walk: WalkResult): Promise<DataQualitySourceFile[]> {
+  const rows: DataQualitySourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!dataQualityInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!dataQualityPathSignal(file.relPath) && !dataQualityContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 240);
+}
+
+function dataQualityInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements\.txt|dbt_project\.ya?ml|schema\.ya?ml|sources?\.ya?ml|checks?\.ya?ml|scan\.ya?ml|configuration\.ya?ml|great_expectations\.ya?ml)$/i.test(base)
+    || /(^|\/)(great_expectations|gx|expectations?|checkpoints?|validations?|data_docs|data-quality|data_quality|quality|soda|sodacl|dbt|models|seeds|snapshots|tests)(\/|\.|-|_|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/[^/]+\.(ya?ml)$/i.test(filePath)
+    || /\.(json|ya?ml|toml|txt|ts|tsx|js|jsx|mjs|cjs|md|sql|py|rb|go|rs)$/i.test(filePath);
+}
+
+function dataQualityPathSignal(filePath: string): boolean {
+  return /(^|\/)(great_expectations|gx|expectations?|checkpoints?|validations?|data_docs|data-quality|data_quality|quality|soda|sodacl|dbt|models|seeds|snapshots|tests)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(dbt_project\.ya?ml|schema\.ya?ml|sources?\.ya?ml|checks?\.ya?ml|scan\.ya?ml|configuration\.ya?ml|great_expectations\.ya?ml)$/i.test(path.basename(filePath));
+}
+
+function dataQualityContentSignal(text: string): boolean {
+  return /ExpectationSuite|Checkpoint|Validator|BatchRequest|expect_column_values|expect_table|unexpected_count|result_format|DataDocs|SodaCL|checks for|row_count|missing_count|duplicate_count|freshness|dbt test|data_tests|not_null|accepted_values|relationships|store_failures|warn_if|error_if|great_expectations|soda-core|dbt-core/i.test(text);
+}
+
+function dataQualitySetupsFromSources(sourceFiles: DataQualitySourceFile[]): DataQualityReadinessReport["dataQualitySetups"] {
+  const rows: DataQualityReadinessReport["dataQualitySetups"] = [];
+  for (const source of sourceFiles) {
+    const suiteCount = countMatches(source.text, /ExpectationSuite|expectation_suite|suite_name|expectation suite|great_expectations\.yml|schema\.ya?ml/gi);
+    const expectationCount = countMatches(source.text, /expect_column_values|expect_table|expectation|expectations|not_null|unique|accepted_values|relationships|row_count|missing_count|duplicate_count|validity|freshness/gi);
+    const checkpointCount = countMatches(source.text, /Checkpoint|checkpoint|ValidationDefinition|validation definition|RunCheckpointAction/gi);
+    const scanCount = countMatches(source.text, /SodaCL|checks for|soda scan|Scan\(|dbt test|dbt build|data_tests|tests:|scan\.ya?ml|checks\.ya?ml/gi);
+    const schemaTestCount = countMatches(source.text, /schema check|schema:|schema\.ya?ml|not_null|unique|relationships|accepted_values|expected columns|column type|data type/gi);
+    const freshnessCount = countMatches(source.text, /freshness|source freshness|loaded_at_field|loaded_at_query|warn_after|error_after|recency|stale|SLA/gi);
+    const resultCount = countMatches(source.text, /validation_result|ValidationResult|run_results|unexpected_count|unexpected_list|failed rows|failed_rows|store_failures|data docs|DataDocs|junit|sarif|artifact/gi);
+    const ciCount = countMatches(source.text, /github actions|\.github\/workflows|dbt test|soda scan|great_expectations checkpoint|gx checkpoint|quality scan|upload-artifact|schedule/gi);
+    const totalSignals = suiteCount + expectationCount + checkpointCount + scanCount + schemaTestCount + freshnessCount + resultCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: dataQualityTool(source),
+      suiteCount,
+      expectationCount,
+      checkpointCount,
+      scanCount,
+      schemaTestCount,
+      freshnessCount,
+      resultCount,
+      ciCount,
+      readiness: (expectationCount + scanCount + schemaTestCount) > 0 && (resultCount + ciCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} data quality readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.suiteCount + b.expectationCount + b.checkpointCount + b.scanCount + b.schemaTestCount + b.freshnessCount + b.resultCount + b.ciCount) - (a.suiteCount + a.expectationCount + a.checkpointCount + a.scanCount + a.schemaTestCount + a.freshnessCount + a.resultCount + a.ciCount))
+    .slice(0, 60);
+}
+
+function dataQualityTool(source: DataQualitySourceFile): DataQualityReadinessReport["dataQualitySetups"][number]["tool"] {
+  if (/great_expectations|\/gx\/|expectation|checkpoint/i.test(source.filePath) || /great_expectations|ExpectationSuite|Checkpoint|Validator|BatchRequest/i.test(source.text)) return "great-expectations";
+  if (/soda|sodacl|checks?\.ya?ml|scan\.ya?ml/i.test(source.filePath) || /SodaCL|checks for|soda scan|soda-core/i.test(source.text)) return "soda-core";
+  if (/dbt_project|(^|\/)(models|seeds|snapshots|dbt)(\/|$)|schema\.ya?ml/i.test(source.filePath) || /dbt test|data_tests|not_null|accepted_values|relationships|dbt-core/i.test(source.text)) return "dbt";
+  if (/pandera/i.test(source.filePath) || /pandera|DataFrameSchema|Check\(/i.test(source.text)) return "pandera";
+  if (/deequ/i.test(source.filePath) || /deequ|VerificationSuite|CheckLevel/i.test(source.text)) return "deequ";
+  if (/quality|validation|checks?/i.test(source.filePath) || /quality|validation|checks?/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function dataQualityExpectationSignals(sourceFiles: DataQualitySourceFile[]): DataQualityReadinessReport["expectationSignals"] {
+  const specs: Array<{ signal: DataQualityReadinessReport["expectationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "expectation-suite", pattern: /ExpectationSuite|expectation_suite|suite_name|expectation suite/i, evidence: "Great Expectations suite evidence was detected." },
+    { signal: "validator", pattern: /Validator|context\.get_validator|validator\./i, evidence: "Great Expectations validator evidence was detected." },
+    { signal: "checkpoint", pattern: /Checkpoint|checkpoint|run_checkpoint|RunCheckpointAction/i, evidence: "checkpoint evidence was detected." },
+    { signal: "batch-request", pattern: /BatchRequest|batch_request|batch definition|BatchDefinition/i, evidence: "batch request/definition evidence was detected." },
+    { signal: "expect-column-values", pattern: /expect_column_values|expect.*column.*values/i, evidence: "column expectation evidence was detected." },
+    { signal: "expect-table", pattern: /expect_table|expect.*table|expect_table_row_count|expect_table_columns/i, evidence: "table expectation evidence was detected." },
+    { signal: "mostly", pattern: /\bmostly\b|mostly=/i, evidence: "mostly threshold evidence was detected." },
+    { signal: "result-format", pattern: /result_format|COMPLETE|SUMMARY|BOOLEAN_ONLY|unexpected_index_column_names/i, evidence: "result_format evidence was detected." },
+    { signal: "unexpected-rows", pattern: /unexpected_count|unexpected_list|unexpected_index_list|unexpected_index_query|partial_unexpected/i, evidence: "unexpected row evidence was detected." }
+  ];
+  return dataQualitySignalFromSpecs(sourceFiles, specs, "expectation", "signal");
+}
+
+function dataQualitySodaSignals(sourceFiles: DataQualitySourceFile[]): DataQualityReadinessReport["sodaSignals"] {
+  const specs: Array<{ signal: DataQualityReadinessReport["sodaSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "sodacl", pattern: /SodaCL|soda-core|soda_cloud|soda scan/i, evidence: "SodaCL/Soda Core evidence was detected." },
+    { signal: "checks-for", pattern: /checks for|checks:\s*$/im, evidence: "checks-for block evidence was detected." },
+    { signal: "row-count", pattern: /row_count|row count|row_count between|rows? must/i, evidence: "row count check evidence was detected." },
+    { signal: "missing-count", pattern: /missing_count|missing percent|missing_count\(|no missing|not null/i, evidence: "missing/completeness evidence was detected." },
+    { signal: "duplicate-count", pattern: /duplicate_count|duplicate percent|duplicate_count\(|duplicate rows/i, evidence: "duplicate/uniqueness evidence was detected." },
+    { signal: "freshness", pattern: /freshness|freshness\(|days? old|hours? old/i, evidence: "freshness evidence was detected." },
+    { signal: "fail-warn-threshold", pattern: /\bfail\b|\bwarn\b|threshold|between|must be|should be/i, evidence: "fail/warn threshold evidence was detected." },
+    { signal: "scan-command", pattern: /soda scan|Scan\(|scan\.execute|scan\.set_data_source_name/i, evidence: "Soda scan command/API evidence was detected." },
+    { signal: "data-source", pattern: /data_source|datasource|configuration\.ya?ml|connection|warehouse|database/i, evidence: "data source configuration evidence was detected." }
+  ];
+  return dataQualitySignalFromSpecs(sourceFiles, specs, "Soda", "signal");
+}
+
+function dataQualityDbtSignals(sourceFiles: DataQualitySourceFile[]): DataQualityReadinessReport["dbtSignals"] {
+  const specs: Array<{ signal: DataQualityReadinessReport["dbtSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "data-tests", pattern: /data_tests|tests:\s*$/im, evidence: "dbt data tests evidence was detected." },
+    { signal: "schema-yml", pattern: /schema\.ya?ml|models:\s*$/im, evidence: "dbt schema YAML evidence was detected." },
+    { signal: "not-null", pattern: /not_null|not null/i, evidence: "dbt not_null test evidence was detected." },
+    { signal: "unique", pattern: /-\s*unique\b|unique_key|unique_combination_of_columns/i, evidence: "dbt unique test evidence was detected." },
+    { signal: "accepted-values", pattern: /accepted_values|accepted values|values:/i, evidence: "dbt accepted_values test evidence was detected." },
+    { signal: "relationships", pattern: /relationships|to:\s*ref\(|field:/i, evidence: "dbt relationships test evidence was detected." },
+    { signal: "source-freshness", pattern: /source freshness|freshness:|loaded_at_field|loaded_at_query|warn_after|error_after/i, evidence: "dbt source/model freshness evidence was detected." },
+    { signal: "severity", pattern: /severity:|warn_if|error_if|warn_after|error_after/i, evidence: "dbt severity/threshold evidence was detected." },
+    { signal: "store-failures", pattern: /store_failures|store_failures_as|failed rows|failures table/i, evidence: "dbt stored failures evidence was detected." }
+  ];
+  return dataQualitySignalFromSpecs(sourceFiles, specs, "dbt", "signal");
+}
+
+function dataQualityDimensionSignals(sourceFiles: DataQualitySourceFile[]): DataQualityReadinessReport["qualityDimensionSignals"] {
+  const specs: Array<{ signal: DataQualityReadinessReport["qualityDimensionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "completeness", pattern: /completeness|not_null|missing_count|missing percent|expect_column_values_to_not_be_null/i, evidence: "completeness evidence was detected." },
+    { signal: "uniqueness", pattern: /uniqueness|unique|duplicate_count|duplicate percent|expect_column_values_to_be_unique/i, evidence: "uniqueness evidence was detected." },
+    { signal: "validity", pattern: /validity|accepted_values|expect_column_values_to_be_in_set|expect_column_values_to_match_regex|valid values/i, evidence: "validity evidence was detected." },
+    { signal: "freshness", pattern: /freshness|recency|loaded_at|stale|SLA/i, evidence: "freshness evidence was detected." },
+    { signal: "schema", pattern: /schema|columns:|data_type|column type|relationships|expected columns/i, evidence: "schema contract evidence was detected." },
+    { signal: "volume", pattern: /row_count|row count|volume|expect_table_row_count/i, evidence: "volume evidence was detected." },
+    { signal: "distribution", pattern: /distribution|quantile|mean|median|stddev|expect_column_mean|expect_column_quantile/i, evidence: "distribution evidence was detected." },
+    { signal: "anomaly", pattern: /anomaly|anomalies|anomaly detection|seasonality|spike|drift/i, evidence: "anomaly/drift evidence was detected." }
+  ];
+  return dataQualitySignalFromSpecs(sourceFiles, specs, "quality dimension", "signal");
+}
+
+function dataQualityResultSignals(sourceFiles: DataQualitySourceFile[]): DataQualityReadinessReport["resultSignals"] {
+  const specs: Array<{ signal: DataQualityReadinessReport["resultSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "validation-result", pattern: /ValidationResult|validation_result|ExpectationSuiteValidationResult|validation results/i, evidence: "validation result evidence was detected." },
+    { signal: "run-results", pattern: /run_results|run-results|target\/run_results\.json|dbt_results/i, evidence: "run results evidence was detected." },
+    { signal: "failed-rows", pattern: /failed rows|failed_rows|unexpected_index_list|unexpected_index_query|store_failures/i, evidence: "failed/unexpected row evidence was detected." },
+    { signal: "data-docs", pattern: /DataDocs|data docs|docs generate|UpdateDataDocsAction/i, evidence: "data docs evidence was detected." },
+    { signal: "junit", pattern: /junit|junitxml|JUnit/i, evidence: "JUnit output evidence was detected." },
+    { signal: "sarif", pattern: /sarif|SARIF/i, evidence: "SARIF output evidence was detected." },
+    { signal: "artifact", pattern: /artifact|upload-artifact|validation report|quality report|soda report/i, evidence: "artifact evidence was detected." }
+  ];
+  return dataQualitySignalFromSpecs(sourceFiles, specs, "result", "signal");
+}
+
+function dataQualityCiSignals(sourceFiles: DataQualitySourceFile[]): DataQualityReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: DataQualityReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|uses: actions\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "quality-scan-command", pattern: /quality scan|data quality|validation scan|dq check/i, evidence: "generic quality scan command evidence was detected." },
+    { signal: "dbt-test-command", pattern: /dbt test|dbt build|dbt source freshness/i, evidence: "dbt test/build/freshness command evidence was detected." },
+    { signal: "gx-checkpoint-command", pattern: /great_expectations checkpoint|gx checkpoint|run_checkpoint|Checkpoint/i, evidence: "Great Expectations checkpoint command evidence was detected." },
+    { signal: "soda-scan-command", pattern: /soda scan|soda-core|SodaCL/i, evidence: "Soda scan command evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|validation-result|run_results|data docs|quality report|soda report/i, evidence: "artifact upload/output evidence was detected." }
+  ];
+  return dataQualitySignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function dataQualityPackageSignals(sourceFiles: DataQualitySourceFile[]): DataQualityReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DataQualityReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "great-expectations", pattern: /great_expectations|great-expectations|ExpectationSuite|Checkpoint/i, evidence: "Great Expectations package/API evidence was detected." },
+    { signal: "soda-core", pattern: /soda-core|soda_core|SodaCL|soda scan/i, evidence: "Soda Core package/API evidence was detected." },
+    { signal: "dbt-core", pattern: /dbt-core|dbt_project|dbt test|data_tests/i, evidence: "dbt Core package/API evidence was detected." },
+    { signal: "dbt-expectations", pattern: /dbt-expectations|dbt_expectations/i, evidence: "dbt-expectations package evidence was detected." },
+    { signal: "dbt-utils", pattern: /dbt-utils|dbt_utils/i, evidence: "dbt-utils package evidence was detected." },
+    { signal: "pandera", pattern: /pandera|DataFrameSchema|Check\(/i, evidence: "Pandera package/API evidence was detected." },
+    { signal: "deequ", pattern: /deequ|VerificationSuite|CheckLevel/i, evidence: "Deequ package/API evidence was detected." },
+    { signal: "pydantic", pattern: /pydantic|BaseModel|Field\(/i, evidence: "Pydantic schema evidence was detected." }
+  ];
+  return dataQualitySignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function dataQualitySignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DataQualitySourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/data-quality-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }
 

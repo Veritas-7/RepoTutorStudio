@@ -61,6 +61,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-migration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-orm-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-quality-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
@@ -202,6 +203,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-migration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-orm-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-quality-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ci-cd.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
@@ -346,6 +348,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-migration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-orm-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-quality-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ci-cd.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
@@ -517,6 +520,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/database-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/database-migration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/database-orm-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/data-quality-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ci-cd.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/coverage-readiness.html\"");
@@ -3266,6 +3270,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/database-readiness.html");
     expect(exportManifestText).toContain("html/database-migration-readiness.html");
     expect(exportManifestText).toContain("html/database-orm-readiness.html");
+    expect(exportManifestText).toContain("html/data-quality-readiness.html");
     expect(exportManifestText).toContain("html/ci-cd.html");
     expect(exportManifestText).toContain("html/unit-tests.html");
     expect(exportManifestText).toContain("html/coverage-readiness.html");
@@ -3429,6 +3434,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("database-readiness.html");
     expect(learningPathHtml).toContain("database-migration-readiness.html");
     expect(learningPathHtml).toContain("database-orm-readiness.html");
+    expect(learningPathHtml).toContain("data-quality-readiness.html");
     expect(learningPathHtml).toContain("ci-cd.html");
     expect(learningPathHtml).toContain("unit-tests.html");
     expect(learningPathHtml).toContain("coverage-readiness.html");
@@ -6779,6 +6785,210 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-orm-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-orm-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-orm-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects data quality readiness without running warehouse checks", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-quality-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-quality-source-"));
+    await fs.mkdir(path.join(sourceRoot, "great_expectations", "expectations"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "great_expectations", "checkpoints"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "soda"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "models", "staging"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "dbt-core": "1.10.0",
+        "dbt-expectations": "0.10.0",
+        "dbt-utils": "1.3.0",
+        "great-expectations": "1.5.0",
+        "soda-core": "3.5.0",
+        pandera: "0.23.0",
+        pydeequ: "1.4.0",
+        pydantic: "2.11.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "great_expectations", "expectations", "orders_suite.json"), JSON.stringify({
+      expectation_suite_name: "orders_suite",
+      meta: {
+        kind: "ExpectationSuite",
+        result_format: {
+          result_format: "COMPLETE",
+          unexpected_index_column_names: ["order_id"]
+        }
+      },
+      expectations: [
+        { expectation_type: "expect_column_values_to_not_be_null", kwargs: { column: "customer_id", mostly: 0.99 } },
+        { expectation_type: "expect_column_values_to_be_unique", kwargs: { column: "order_id" } },
+        { expectation_type: "expect_column_values_to_be_between", kwargs: { column: "amount", min_value: 0, max_value: 10000 } },
+        { expectation_type: "expect_column_values_to_be_in_set", kwargs: { column: "status", value_set: ["paid", "pending"] } },
+        { expectation_type: "expect_table_row_count_to_be_between", kwargs: { min_value: 1, max_value: 100000 } }
+      ]
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "great_expectations", "checkpoints", "orders_checkpoint.yml"), [
+      "name: orders_checkpoint",
+      "class_name: Checkpoint",
+      "config_version: 1.0",
+      "validations:",
+      "  - batch_request:",
+      "      datasource_name: warehouse",
+      "      data_asset_name: orders",
+      "      class_name: BatchRequest",
+      "    expectation_suite_name: orders_suite",
+      "action_list:",
+      "  - name: store_validation_result",
+      "    action:",
+      "      class_name: StoreValidationResultAction",
+      "      ValidationResult: ExpectationSuiteValidationResult",
+      "  - name: update_data_docs",
+      "    action:",
+      "      class_name: UpdateDataDocsAction",
+      "result_format:",
+      "  result_format: COMPLETE",
+      "  unexpected_index_column_names: [order_id]",
+      "unexpected_count: 0",
+      "unexpected_list: []",
+      "unexpected_index_list: []",
+      "unexpected_index_query: select * from orders where status is null",
+      "data docs: generated"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "soda", "checks.yml"), [
+      "checks for orders:",
+      "  - row_count between 1 and 100000:",
+      "      fail: when outside range",
+      "  - missing_count(customer_id) = 0",
+      "  - duplicate_count(order_id) = 0",
+      "  - freshness(order_loaded_at) < 1d:",
+      "      warn: when > 12h",
+      "  - schema:",
+      "      warn: when required column missing",
+      "  - invalid_count(status) = 0:",
+      "      valid values: [paid, pending]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "models", "staging", "schema.yml"), [
+      "version: 2",
+      "sources:",
+      "  - name: raw",
+      "    freshness:",
+      "      warn_after: {count: 12, period: hour}",
+      "      error_after: {count: 24, period: hour}",
+      "    loaded_at_field: order_loaded_at",
+      "models:",
+      "  - name: stg_orders",
+      "    data_tests:",
+      "      - dbt_expectations.expect_table_row_count_to_be_between:",
+      "          min_value: 1",
+      "          max_value: 100000",
+      "    columns:",
+      "      - name: order_id",
+      "        tests:",
+      "          - not_null",
+      "          - unique",
+      "      - name: status",
+      "        tests:",
+      "          - accepted_values:",
+      "              values: [paid, pending]",
+      "              severity: warn",
+      "              warn_if: '>0'",
+      "              error_if: '>10'",
+      "              store_failures: true",
+      "      - name: customer_id",
+      "        tests:",
+      "          - relationships:",
+      "              to: ref('dim_customers')",
+      "              field: customer_id"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "data-quality.yml"), [
+      "name: Data quality",
+      "on:",
+      "  schedule:",
+      "    - cron: '0 * * * *'",
+      "jobs:",
+      "  data-quality:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: dbt test --select state:modified+",
+      "      - run: dbt source freshness",
+      "      - run: gx checkpoint run orders_checkpoint",
+      "      - run: soda scan -d warehouse -c configuration.yml soda/checks.yml",
+      "      - run: echo 'data quality validation scan quality report junit sarif'",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: data quality report",
+      "          path: |",
+      "            target/run_results.json",
+      "            great_expectations/uncommitted/data_docs",
+      "            quality-report.sarif",
+      "            junit.xml"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "data-quality.md"), [
+      "# Data quality",
+      "Completeness, uniqueness, validity, freshness, schema, volume, distribution, and anomaly coverage are reviewed.",
+      "validation_result, run_results, failed rows, failed_rows, data docs, JUnit, SARIF, and artifact upload are retained."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "data-quality-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      dataQualitySetups: Array<{ tool: string; suiteCount: number; expectationCount: number; checkpointCount: number; scanCount: number; schemaTestCount: number; freshnessCount: number; resultCount: number; ciCount: number }>;
+      expectationSignals: Array<{ signal: string; readiness: string }>;
+      sodaSignals: Array<{ signal: string; readiness: string }>;
+      dbtSignals: Array<{ signal: string; readiness: string }>;
+      qualityDimensionSignals: Array<{ signal: string; readiness: string }>;
+      resultSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (tool: string) => report.dataQualitySetups
+      .filter((item) => item.tool === tool)
+      .reduce((totals, item) => ({
+        suiteCount: totals.suiteCount + item.suiteCount,
+        expectationCount: totals.expectationCount + item.expectationCount,
+        checkpointCount: totals.checkpointCount + item.checkpointCount,
+        scanCount: totals.scanCount + item.scanCount,
+        schemaTestCount: totals.schemaTestCount + item.schemaTestCount,
+        freshnessCount: totals.freshnessCount + item.freshnessCount,
+        resultCount: totals.resultCount + item.resultCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { suiteCount: 0, expectationCount: 0, checkpointCount: 0, scanCount: 0, schemaTestCount: 0, freshnessCount: 0, resultCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Data quality readiness Great Expectations SodaCL Soda Core dbt data_tests schema.yml ExpectationSuite Checkpoint Validator BatchRequest expectations unexpected rows result_format checks for row_count missing_count duplicate_count freshness not_null unique accepted_values relationships severity store_failures CI");
+    expect(setupTotals("great-expectations").suiteCount).toBeGreaterThan(0);
+    expect(setupTotals("great-expectations").expectationCount).toBeGreaterThan(0);
+    expect(setupTotals("great-expectations").checkpointCount).toBeGreaterThan(0);
+    expect(setupTotals("soda-core").scanCount).toBeGreaterThan(0);
+    expect(setupTotals("soda-core").freshnessCount).toBeGreaterThan(0);
+    expect(setupTotals("dbt").schemaTestCount).toBeGreaterThan(0);
+    expect(report.dataQualitySetups.some((item) => item.resultCount > 0)).toBe(true);
+    expect(report.dataQualitySetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.expectationSignals)).toEqual(expect.arrayContaining(["expectation-suite", "checkpoint", "batch-request", "expect-column-values", "expect-table", "mostly", "result-format", "unexpected-rows"]));
+    expect(readySignals(report.sodaSignals)).toEqual(expect.arrayContaining(["sodacl", "checks-for", "row-count", "missing-count", "duplicate-count", "freshness", "fail-warn-threshold", "scan-command", "data-source"]));
+    expect(readySignals(report.dbtSignals)).toEqual(expect.arrayContaining(["data-tests", "schema-yml", "not-null", "unique", "accepted-values", "relationships", "source-freshness", "severity", "store-failures"]));
+    expect(readySignals(report.qualityDimensionSignals)).toEqual(expect.arrayContaining(["completeness", "uniqueness", "validity", "freshness", "schema", "volume", "distribution", "anomaly"]));
+    expect(readySignals(report.resultSignals)).toEqual(expect.arrayContaining(["validation-result", "run-results", "failed-rows", "data-docs", "junit", "sarif", "artifact"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "quality-scan-command", "dbt-test-command", "gx-checkpoint-command", "soda-scan-command", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["great-expectations", "soda-core", "dbt-core", "dbt-expectations", "dbt-utils", "pandera", "deequ", "pydantic"]));
+    expect(report.riskQueue).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"ExpectationSuite|Checkpoint|Validator|BatchRequest|expect_column_values|unexpected|result_format\" .",
+      "rg \"checks for|SodaCL|row_count|missing_count|duplicate_count|freshness|fail|warn|threshold\" .",
+      "dbt test --select state:modified+",
+      "soda scan -d <data-source> -c configuration.yml checks.yml"
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-quality-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-quality-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-quality-readiness.html"))).resolves.toBeUndefined();
+    const dataQualityMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-quality-readiness.md"), "utf8");
+    expect(dataQualityMarkdown).toContain("Great Expectations Signals");
+    expect(dataQualityMarkdown).toContain("Soda Signals");
+    expect(dataQualityMarkdown).toContain("dbt Signals");
+    const dataQualityHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-quality-readiness.html"), "utf8");
+    expect(dataQualityHtml).toContain("data-quality-readiness-card");
+    expect(dataQualityHtml).toContain("data-source-pattern=\"DataQuality\"");
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {
