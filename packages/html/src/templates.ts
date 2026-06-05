@@ -169,6 +169,7 @@ import type {
   BuildToolReadinessReport,
   StylingReadinessReport,
   VisualRegressionReadinessReport,
+  IncidentResponseReadinessReport,
   InfrastructureReadinessReport,
   IacDriftReadinessReport,
   DeploymentReadinessReport,
@@ -237,6 +238,7 @@ export interface StudyHtmlInput {
   tracingReadinessReport: TracingReadinessReport;
   debugReadinessReport: DebugReadinessReport;
   crashReportingReadinessReport: CrashReportingReadinessReport;
+  incidentResponseReadinessReport: IncidentResponseReadinessReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
@@ -444,6 +446,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["tracing-readiness.html", "Tracing"],
     ["debug-readiness.html", "Debugging"],
     ["crash-reporting-readiness.html", "Crash Reporting"],
+    ["incident-response-readiness.html", "Incident Response"],
     ["load-testing-readiness.html", "Load Testing"],
     ["benchmark-readiness.html", "Benchmarks"],
     ["e2e.html", "E2E"],
@@ -658,6 +661,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Tracing Readiness</h3><p>${escapeHtml(input.tracingReadinessReport.summary)}</p><p>OpenTelemetry/Jaeger/Zipkin/Tempo 패턴으로 instrumentation, propagation, exporter, sampling, backend, quality 준비도를 정리합니다.</p><a href="tracing-readiness.html">Tracing 열기</a></article>
           <article><h3>Debug Readiness</h3><p>${escapeHtml(input.debugReadinessReport.summary)}</p><p>VS Code js-debug/debugpy/Delve/DAP 패턴으로 launch, attach, breakpoint, source map, path mapping, remote, log 준비도를 정리합니다.</p><a href="debug-readiness.html">Debugging 열기</a></article>
           <article><h3>Crash Reporting Readiness</h3><p>${escapeHtml(input.crashReportingReadinessReport.summary)}</p><p>Sentry/Bugsnag/Rollbar 패턴으로 crash capture, release identity, source maps, symbols, privacy, alert 준비도를 정리합니다.</p><a href="crash-reporting-readiness.html">Crash Reporting 열기</a></article>
+          <article><h3>Incident Response Readiness</h3><p>${escapeHtml(input.incidentResponseReadinessReport.summary)}</p><p>PagerDuty/Grafana OnCall/FireHydrant 패턴으로 alert routing, escalation, schedules, runbooks, status pages, postmortems 준비도를 정리합니다.</p><a href="incident-response-readiness.html">Incident Response 열기</a></article>
           <article><h3>Load Testing Readiness</h3><p>${escapeHtml(input.loadTestingReadinessReport.summary)}</p><p>k6/Artillery/Locust 패턴으로 profile, protocol, SLO gates, data, execution, reports 준비도를 정리합니다.</p><a href="load-testing-readiness.html">Load Testing 열기</a></article>
           <article><h3>Benchmark Readiness</h3><p>${escapeHtml(input.benchmarkReadinessReport.summary)}</p><p>Tinybench/Benchmark.js/Hyperfine 패턴으로 suite, timing, comparison, reports, CI 준비도를 정리합니다.</p><a href="benchmark-readiness.html">Benchmarks 열기</a></article>
           <article><h3>E2E Readiness</h3><p>${escapeHtml(input.e2eReport.summary)}</p><p>Playwright 패턴으로 browser projects, locators, assertions, traces/reporters, webServer/baseURL 준비도를 정리합니다.</p><a href="e2e.html">E2E 열기</a></article>
@@ -967,6 +971,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "crash-reporting-readiness.html",
       title: "Crash Reporting Readiness",
       html: pageShell("Crash Reporting Readiness", "crash-reporting-readiness.html", `<section class="panel" data-source-pattern="Crash"><h2>Crash Reporting Snapshot</h2><p>${escapeHtml(input.crashReportingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.crashReportingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.crashReportingReadinessReport.crashSetups.length}</dd></div><div><dt>capture</dt><dd>${input.crashReportingReadinessReport.captureSignals.length}</dd></div><div><dt>release</dt><dd>${input.crashReportingReadinessReport.releaseSignals.length}</dd></div><div><dt>symbols</dt><dd>${input.crashReportingReadinessReport.symbolicationSignals.length}</dd></div><div><dt>privacy</dt><dd>${input.crashReportingReadinessReport.privacySignals.length}</dd></div><div><dt>workflow</dt><dd>${input.crashReportingReadinessReport.workflowSignals.length}</dd></div></dl><p class="muted">RepoTutor records static crash reporting readiness only; it does not send crash events, upload source maps, upload symbols, contact Sentry/Bugsnag/Rollbar, or inspect production incidents.</p></section><section class="grid"><article class="crash-reporting-readiness-card"><h3>Crash Setups</h3>${crashReportingSetupList(input.crashReportingReadinessReport.crashSetups)}</article><article class="crash-reporting-readiness-card"><h3>Capture Signals</h3>${crashReportingSignalList(input.crashReportingReadinessReport.captureSignals, "signal")}</article><article class="crash-reporting-readiness-card"><h3>Release Signals</h3>${crashReportingSignalList(input.crashReportingReadinessReport.releaseSignals, "signal")}</article><article class="crash-reporting-readiness-card"><h3>Symbolication Signals</h3>${crashReportingSignalList(input.crashReportingReadinessReport.symbolicationSignals, "signal")}</article></section><section class="grid"><article class="crash-reporting-readiness-card"><h3>Context Signals</h3>${crashReportingSignalList(input.crashReportingReadinessReport.contextSignals, "signal")}</article><article class="crash-reporting-readiness-card"><h3>Privacy Signals</h3>${crashReportingSignalList(input.crashReportingReadinessReport.privacySignals, "signal")}</article><article class="crash-reporting-readiness-card"><h3>Delivery Signals</h3>${crashReportingSignalList(input.crashReportingReadinessReport.deliverySignals, "signal")}</article><article class="crash-reporting-readiness-card"><h3>Workflow Signals</h3>${crashReportingSignalList(input.crashReportingReadinessReport.workflowSignals, "signal")}</article><article class="crash-reporting-readiness-card"><h3>Package Signals</h3>${crashReportingSignalList(input.crashReportingReadinessReport.packageSignals, "signal")}</article><article class="crash-reporting-readiness-card"><h3>Recommended Commands</h3>${crashReportingCommandList(input.crashReportingReadinessReport.recommendedCommands)}</article><article class="crash-reporting-readiness-card"><h3>Risk Queue</h3>${crashReportingRiskList(input.crashReportingReadinessReport.riskQueue)}</article><article class="crash-reporting-readiness-card"><h3>다음 확인 단계</h3>${list(input.crashReportingReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "incident-response-readiness.html",
+      title: "Incident Response Readiness",
+      html: pageShell("Incident Response Readiness", "incident-response-readiness.html", `<section class="panel" data-source-pattern="Incident"><h2>Incident Response Snapshot</h2><p>${escapeHtml(input.incidentResponseReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.incidentResponseReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.incidentResponseReadinessReport.incidentSetups.length}</dd></div><div><dt>intake</dt><dd>${input.incidentResponseReadinessReport.intakeSignals.length}</dd></div><div><dt>on-call</dt><dd>${input.incidentResponseReadinessReport.onCallSignals.length}</dd></div><div><dt>runbooks</dt><dd>${input.incidentResponseReadinessReport.runbookSignals.length}</dd></div><div><dt>lifecycle</dt><dd>${input.incidentResponseReadinessReport.lifecycleSignals.length}</dd></div><div><dt>governance</dt><dd>${input.incidentResponseReadinessReport.governanceSignals.length}</dd></div></dl><p class="muted">RepoTutor records static incident-response readiness only; it does not page responders, create incidents, change on-call schedules, contact PagerDuty/Grafana OnCall/FireHydrant, or publish status pages.</p></section><section class="grid"><article class="incident-response-readiness-card"><h3>Incident Setups</h3>${incidentResponseSetupList(input.incidentResponseReadinessReport.incidentSetups)}</article><article class="incident-response-readiness-card"><h3>Intake Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.intakeSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Triage Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.triageSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>On-Call Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.onCallSignals, "signal")}</article></section><section class="grid"><article class="incident-response-readiness-card"><h3>Communication Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.communicationSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Runbook Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.runbookSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Lifecycle Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.lifecycleSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Governance Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.governanceSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Workflow Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.workflowSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Package Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.packageSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Recommended Commands</h3>${incidentResponseCommandList(input.incidentResponseReadinessReport.recommendedCommands)}</article><article class="incident-response-readiness-card"><h3>Risk Queue</h3>${incidentResponseRiskList(input.incidentResponseReadinessReport.riskQueue)}</article><article class="incident-response-readiness-card"><h3>다음 확인 단계</h3>${list(input.incidentResponseReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "load-testing-readiness.html",
@@ -1774,6 +1783,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Tracing Readiness", path: "html/tracing-readiness.html", description: "OpenTelemetry/Jaeger/Zipkin/Tempo식 instrumentation, propagation, exporter, sampling, backend, quality 준비도를 확인합니다." },
       { label: "Debug Readiness", path: "html/debug-readiness.html", description: "VS Code js-debug/debugpy/Delve/DAP식 launch, attach, breakpoint, source map, path mapping, remote, log 준비도를 확인합니다." },
       { label: "Crash Reporting Readiness", path: "html/crash-reporting-readiness.html", description: "Sentry/Bugsnag/Rollbar식 crash capture, release identity, source map, symbolication, privacy, alert 준비도를 확인합니다." },
+      { label: "Incident Response Readiness", path: "html/incident-response-readiness.html", description: "PagerDuty/Grafana OnCall/FireHydrant식 alert routing, escalation, schedules, runbooks, status pages, postmortems 준비도를 확인합니다." },
       { label: "Load Testing Readiness", path: "html/load-testing-readiness.html", description: "k6/Artillery/Locust식 load profile, protocol, SLO gate, report 준비도를 확인합니다." },
       { label: "Benchmark Readiness", path: "html/benchmark-readiness.html", description: "Tinybench/Benchmark.js/Hyperfine식 suite, timing, comparison, report, CI 준비도를 확인합니다." },
       { label: "E2E Readiness", path: "html/e2e.html", description: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다." },
@@ -2219,6 +2229,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "crash-reporting-readiness.html",
       goal: "Sentry, Bugsnag, Rollbar식 crash capture, release identity, source map, symbolication, privacy, alert 준비도를 확인합니다.",
       evidence: `crash setups ${input.crashReportingReadinessReport.crashSetups.length}개, capture signals ${input.crashReportingReadinessReport.captureSignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Incident response readiness 확인",
+      href: "incident-response-readiness.html",
+      goal: "PagerDuty, Grafana OnCall, FireHydrant식 intake, on-call escalation, runbook, communication, postmortem 준비도를 확인합니다.",
+      evidence: `incident setups ${input.incidentResponseReadinessReport.incidentSetups.length}개, on-call signals ${input.incidentResponseReadinessReport.onCallSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Load testing readiness 확인",
@@ -3935,6 +3951,31 @@ function crashReportingRiskList(items: CrashReportingReadinessReport["riskQueue"
 }
 
 function crashReportingHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function incidentResponseSetupList(items: IncidentResponseReadinessReport["incidentSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">incident response setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)} / ${escapeHtml(item.readiness)}]<br>incident/routes/escalation/schedule ${item.incidentCount}/${item.alertRouteCount}/${item.escalationCount}/${item.scheduleCount}<br>notify/runbook/status/roles ${item.notificationCount}/${item.runbookCount}/${item.statusPageCount}/${item.roleCount}<br>severity/timeline/postmortem/automation/CI ${item.severityCount}/${item.timelineCount}/${item.postmortemCount}/${item.automationCount}/${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(incidentResponseHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function incidentResponseSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">incident response signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(incidentResponseHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function incidentResponseCommandList(items: IncidentResponseReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function incidentResponseRiskList(items: IncidentResponseReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(incidentResponseHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function incidentResponseHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

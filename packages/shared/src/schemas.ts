@@ -2077,6 +2077,96 @@ export const CrashReportingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const IncidentResponseReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  incidentSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["pagerduty", "grafana-oncall", "firehydrant", "runbook", "status-page", "workflow", "terraform", "unknown"]),
+    incidentCount: z.number().int().nonnegative(),
+    alertRouteCount: z.number().int().nonnegative(),
+    escalationCount: z.number().int().nonnegative(),
+    scheduleCount: z.number().int().nonnegative(),
+    notificationCount: z.number().int().nonnegative(),
+    runbookCount: z.number().int().nonnegative(),
+    statusPageCount: z.number().int().nonnegative(),
+    roleCount: z.number().int().nonnegative(),
+    severityCount: z.number().int().nonnegative(),
+    timelineCount: z.number().int().nonnegative(),
+    postmortemCount: z.number().int().nonnegative(),
+    automationCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  intakeSignals: z.array(z.object({
+    signal: z.enum(["alert-route", "signal-rule", "webhook", "email-ingest", "manual-incident", "deduplication", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  triageSignals: z.array(z.object({
+    signal: z.enum(["severity", "priority", "incident-type", "service-ownership", "team-assignment", "deduplication", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  onCallSignals: z.array(z.object({
+    signal: z.enum(["schedule", "rotation", "handoff", "escalation-policy", "override", "follow-the-sun", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  communicationSignals: z.array(z.object({
+    signal: z.enum(["slack", "chatops", "phone", "sms", "email", "status-page", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runbookSignals: z.array(z.object({
+    signal: z.enum(["runbook", "automatic-step", "manual-step", "owner", "attachment-rule", "private-incident", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lifecycleSignals: z.array(z.object({
+    signal: z.enum(["acknowledge", "resolve", "timeline", "retrospective", "postmortem", "incident-role", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  governanceSignals: z.array(z.object({
+    signal: z.enum(["terraform-provider", "api-token", "audit-log", "access-control", "restricted-runbook", "enterprise-tier", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["ci-validate", "terraform-plan", "import", "drift-detection", "incident-drill", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["pagerduty-provider", "grafana-oncall", "firehydrant-provider", "slack-sdk", "twilio", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LoadTestingReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -11663,6 +11753,7 @@ export type ProfilingReadinessReport = z.infer<typeof ProfilingReadinessReportSc
 export type TracingReadinessReport = z.infer<typeof TracingReadinessReportSchema>;
 export type DebugReadinessReport = z.infer<typeof DebugReadinessReportSchema>;
 export type CrashReportingReadinessReport = z.infer<typeof CrashReportingReadinessReportSchema>;
+export type IncidentResponseReadinessReport = z.infer<typeof IncidentResponseReadinessReportSchema>;
 export type LoadTestingReadinessReport = z.infer<typeof LoadTestingReadinessReportSchema>;
 export type BenchmarkReadinessReport = z.infer<typeof BenchmarkReadinessReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;
