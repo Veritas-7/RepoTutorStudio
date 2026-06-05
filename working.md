@@ -7909,6 +7909,68 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 267:
   - `6113291` dependency review readiness report
 
+- 2026-06-05: AutoResearch Upgrade 268 candidate selected:
+  container scan readiness from `aquasecurity/trivy`
+  (`https://github.com/aquasecurity/trivy`; ignored clone HEAD
+  `c8d1d0d113b0bd3a058f566ede786b18ff94f75e`), `anchore/grype`
+  (`https://github.com/anchore/grype`; ignored clone HEAD
+  `024e26b9c93c98861db438076a1df0eb6e911c8d`), and
+  `goodwithtech/dockle`
+  (`https://github.com/goodwithtech/dockle`; ignored clone HEAD
+  `182a5d1b5df8c1437b45aa6c41cca36c7f131bad`). Static source inspection
+  only; `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Trivy/Grype/Dockle-style container scan readiness
+  report: `ContainerScanReadinessReportSchema`,
+  `analysis/container-scan-readiness-report.json`,
+  `markdown/container-scan-readiness.md`,
+  `html/container-scan-readiness.html`, static container-scan setup detection,
+  target/scanner/gate/output/policy/registry/CI/package signals, image,
+  filesystem, SBOM, Dockerfile, Kubernetes, tar input, registry target
+  coverage, vulnerability/misconfig/secret/license/CIS scanner coverage,
+  `exit-code`, `severity`, `ignore-unfixed`, `only-fixed`, `fail-on`,
+  `exit-level`, and ignore-policy gate coverage, JSON/SARIF/CycloneDX/SPDX/
+  table/template/GitHub/artifact output coverage, `.trivyignore`,
+  `.grype.yaml`, `.dockleignore`, VEX, accept-key, sensitive-file, offline DB,
+  registry token, Docker host, Podman, private registry, platform, GitHub
+  Actions, pull_request, Docker build, SARIF upload, permissions, Trivy
+  Action, Grype, Dockle Action, Docker, and Syft coverage, static-only
+  Docker/registry/scanner DB/SARIF guardrail, recommended inspection commands,
+  manifest/session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target container-scan-readiness`.
+- 2026-06-05: RED/GREEN container scan readiness smoke recorded:
+  pre-implementation precise gap check had no `ContainerScanReadinessReportSchema`,
+  no `ContainerImageScanReadiness`, and no `container-scan-readiness` target
+  (`container_scan_precise_gap_exit=1`). GREEN fixture detected Trivy, Grype,
+  Dockle, package-script setup, image/filesystem/SBOM/Dockerfile/Kubernetes/
+  tar/registry targets, vulnerability/misconfig/secret/license/CIS scan
+  coverage, all gate signals, JSON/SARIF/CycloneDX/SPDX/table/template/GitHub/
+  artifact outputs, ignore/VEX/offline/sensitive-file policy, registry/Docker
+  host/Podman/platform signals, GitHub Actions, pull_request, Docker build,
+  SARIF upload, workflow permissions, Syft package signal, recommended
+  commands, static-only execution guardrail, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 268:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS after rerunning HTML once
+    because the first parallel run started before refreshed shared declarations
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused container scan readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - full pipeline Vitest: PASS, 75/75 tests
+  - `pnpm test`: PASS, 75/75 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 166/166 audit checks across 13 reports,
+    `containerScanOk: true`
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~76.51 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 268:
+  - `fdb5a04` container scan readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
