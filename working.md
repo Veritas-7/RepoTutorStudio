@@ -9665,6 +9665,73 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 297:
   - `d69e410` popover tooltip readiness report
 
+- 2026-06-06: AutoResearch Upgrade 298 candidate selected:
+  menu/dropdown readiness from existing ignored `radix-ui/primitives` clone
+  (`https://github.com/radix-ui/primitives.git`; ignored clone HEAD
+  `65db6fb91c16b636f05afe51e735f066a17031c3`), existing ignored
+  `tailwindlabs/headlessui` clone (`https://github.com/tailwindlabs/headlessui.git`;
+  ignored clone HEAD `eea57cf46fd6767ed1059012f7073b88eb159fba`), and existing
+  ignored `ariakit/ariakit` clone (`https://github.com/ariakit/ariakit.git`;
+  ignored clone HEAD `eb5a29ed20dce2c5aa63c38591efb43a5d0ef754`). Static
+  source inspection only; no external source was executed. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Radix DropdownMenu/ContextMenu/Menubar/NavigationMenu,
+  Headless UI Menu/Listbox/Combobox, and Ariakit Menu/Select/Combobox readiness
+  report: `MenuDropdownReadinessReportSchema`,
+  `analysis/menu-dropdown-readiness-report.json`,
+  `markdown/menu-dropdown-readiness.md`,
+  `html/menu-dropdown-readiness.html`, static setup detection, framework,
+  structure, selection, positioning, interaction, accessibility, state, test,
+  and package signals, Radix trigger/content/item/group/label/separator/
+  checkbox/radio/indicator/submenu/arrow/viewport evidence, Headless UI
+  `MenuButton`, `MenuItems`, `MenuItem`, `Listbox`, `Combobox`, active option,
+  close callback, selected/active render props, and `data-headlessui-state`
+  evidence, Ariakit stores/providers/buttons/items/checkbox/radio/select/
+  combobox/arrow/placement/dismissal evidence, static-only menu/dropdown
+  guardrail, recommended inspection commands, manifest and session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/list-target
+  coverage, dedicated audit coverage, and `open --target
+  menu-dropdown-readiness`.
+- 2026-06-06: RED/GREEN menu/dropdown readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/menu-dropdown-readiness-report.json` did not exist. GREEN fixture
+  detected Radix DropdownMenu, ContextMenu, Menubar, NavigationMenu, Headless UI
+  Menu/Listbox/Combobox, and Ariakit Menu/Select/Combobox signals; root,
+  trigger button, portal, content, item, group, label, separator, checkbox item,
+  radio item, indicator, submenu, arrow, viewport, value/on-value-change,
+  checked/on-checked-change, radio group, selected and multiple selection,
+  side, align, side offset, collision boundary, Popper-style positioning,
+  anchor, viewport, floating panel, click, context menu, hover/open-on-pointer,
+  typeahead, roving focus, keyboard navigation, Escape, outside click, Tab
+  close, menu/menuitem/listbox/option roles, ARIA wiring, open/defaultOpen/
+  onOpenChange, disabled, data-state/highlighted/disabled state, Vitest,
+  Playwright, Cypress, Testing Library, keyboard/role/pointer tests, artifact
+  upload, packages, recommended command, static-only guardrail, and all three
+  new artifacts without opening menus or dispatching analyzed project events.
+  Follow-up focused runs corrected Headless UI versus Ariakit `MenuButton`
+  classification, Radix Popper-style positioning detection, and hover surface
+  detection for Menubar/NavigationMenu/SubTrigger.
+- 2026-06-06: Verification for Upgrade 298:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused menu/dropdown readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 105/105 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 196/196 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~91.40 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 298:
+  - `af6b748` menu dropdown readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
