@@ -7383,6 +7383,65 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 258:
   - `1038be7` DNS readiness report
 
+- 2026-06-05: AutoResearch Upgrade 259 candidate selected:
+  certificate lifecycle readiness from `cert-manager/cert-manager`
+  (`https://github.com/cert-manager/cert-manager`; ignored clone HEAD
+  `59c5f5361a5b1cd2d0ca84cd9983a3beac3846bd`),
+  `smallstep/certificates`
+  (`https://github.com/smallstep/certificates`; ignored clone HEAD
+  `268b413e0a14936d1a5149cd18a8cd52531d8dd9`), and
+  `caddyserver/certmagic`
+  (`https://github.com/caddyserver/certmagic`; ignored clone HEAD
+  `74755932cf58b64e7a4907c02774740b2146806d`). Static source inspection
+  only; `git ls-files` for all three external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented cert-manager/step-ca/CertMagic-style certificate
+  readiness report:
+  `CertificateReadinessReportSchema`,
+  `analysis/certificate-readiness-report.json`,
+  `markdown/certificate-readiness.md`,
+  `html/certificate-readiness.html`, static certificate setup detection,
+  platform/resource/issuer/challenge/lifecycle/trust/revocation/automation/
+  observability/CI/package signals, ACME DNS01/HTTP01/TLS-ALPN/EAB/
+  self-check coverage, duration/renewBefore/privateKey rotation/keystore/
+  status/cache coverage, root/intermediate/CA bundle/cainjector/
+  trust-manager/bootstrap/install-root coverage, CRL/OCSP/revoke/
+  short-lived/passive-revocation/must-staple coverage, static-only risk
+  queue, recommended inspection commands, manifest/session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/list-target
+  coverage, dedicated audit coverage, and `open --target certificate-readiness`.
+- 2026-06-05: RED/GREEN certificate-readiness smoke recorded:
+  old behavior at `ed4fede` had no `CertificateReadinessReportSchema` and no
+  `certificate-readiness` CLI target (`schema_exit=1`, `target_exit=1`).
+  GREEN fixture detected cert-manager `Certificate`, `CertificateRequest`,
+  `Issuer`, `ClusterIssuer`, `Order`, `Challenge`, CSR, TLS secret, Ingress
+  annotations, ACME, CA, self-signed, Vault, step-ca, Let's Encrypt, external
+  issuer, DNS01/HTTP01/TLS-ALPN solver, EAB, self-check, duration,
+  renewBefore, revisionHistoryLimit, private key rotation, PKCS12/JKS
+  keystores, status conditions, on-demand/cache lifecycle, root/intermediate
+  CA, caBundle, cainjector, trust-manager, bootstrap/install-root, CRL, OCSP,
+  revoke, short-lived/passive revocation, must-staple, cmctl, step ca renew,
+  CertMagic ManageSync/ManageAsync/storage, policy, metrics, Prometheus,
+  events/logs/health/webhook/readiness/expiration alert, CI helm/kubeconform/
+  cmctl/step-ca/CertMagic/OpenSSL/artifact signals, package signals,
+  recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 259:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused certificate readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 66/66 tests
+  - `pnpm test`: PASS, 66/66 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 157/157 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~88.72 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 259:
+  - `18279c8` certificate readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
