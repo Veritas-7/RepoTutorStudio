@@ -7672,6 +7672,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 263:
   - `234c1c7` SAST readiness report
 
+- 2026-06-05: AutoResearch Upgrade 264 candidate selected:
+  IaC drift readiness from `snyk/driftctl`
+  (`https://github.com/snyk/driftctl`; ignored clone HEAD
+  `f0f755c7b311f518318084765bf6e63ce7d9685f`),
+  `pulumi/pulumi`
+  (`https://github.com/pulumi/pulumi`; ignored clone HEAD
+  `62dc6d4711f902dbaab8e766174b620233fbcdd3`), and
+  `gruntwork-io/terragrunt`
+  (`https://github.com/gruntwork-io/terragrunt`; ignored clone HEAD
+  `f5944c10b8030771b997b85b4f1f51bceead3a0e`). Static source inspection only;
+  `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented driftctl/Terraform/OpenTofu/Pulumi/Terragrunt-style
+  IaC drift readiness report: `IacDriftReadinessReportSchema`,
+  `analysis/iac-drift-readiness-report.json`,
+  `markdown/iac-drift-readiness.md`,
+  `html/iac-drift-readiness.html`, static drift setup detection, tool/state/
+  inventory/refresh/plan/drift/remediation/output/CI/package signals,
+  driftctl scan/from-tfstate/to-cloud/output/ignore coverage, Terraform/
+  OpenTofu plan/detailed-exitcode/refresh-only/state-pull/show-json/import
+  coverage, Pulumi refresh/preview/stack-export/import coverage, Terragrunt
+  run-all plan coverage, Infracost cost-diff evidence, static-only sandbox risk
+  queue, recommended inspection commands, manifest/session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/list-target
+  coverage, dedicated audit coverage, and `open --target iac-drift-readiness`.
+- 2026-06-05: RED/GREEN IaC drift readiness smoke recorded:
+  old behavior at `8753e21` had no `IacDriftReadinessReportSchema` and no
+  `iac-drift-readiness` target (`iac_drift_gap_exit=1`). GREEN fixture detected
+  driftctl, Terraform, OpenTofu, Pulumi, Terragrunt, cloud provider, tfstate,
+  remote state, backend, workspace, stack, state lock, import, provider,
+  account, region, resource address, asset inventory, cloud control,
+  refresh-only, refresh, Pulumi refresh, state pull, drift scan, plan,
+  detailed-exitcode, out-plan, Pulumi preview, Terragrunt plan, cost diff,
+  changed, missing, unmanaged, drift, ignore-rules, exit-code, summary,
+  import, state rm, state mv, Pulumi import, apply-gated/manual review, JSON,
+  SARIF, Markdown, HTML, artifact upload, GitHub Actions, schedule,
+  pull_request, package signals, recommended commands, sandbox guardrail, and
+  all three new artifacts.
+- 2026-06-05: Verification for Upgrade 264:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - focused IaC drift readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 71/71 tests
+  - `pnpm test`: PASS, 71/71 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 162/162 audit checks across 13 reports,
+    `iacDriftOk: true`
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~75.95 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 264:
+  - `3bd9503` IaC drift readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
