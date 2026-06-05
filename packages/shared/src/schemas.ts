@@ -11389,6 +11389,89 @@ export const SelectComboboxReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ToolbarToggleReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  toolbarToggleSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["radix-toolbar", "radix-toggle", "radix-toggle-group", "ariakit-toolbar", "custom", "unknown"]),
+    toolbarCount: z.number().int().nonnegative(),
+    toggleCount: z.number().int().nonnegative(),
+    toggleGroupCount: z.number().int().nonnegative(),
+    itemCount: z.number().int().nonnegative(),
+    separatorCount: z.number().int().nonnegative(),
+    buttonLinkCount: z.number().int().nonnegative(),
+    pressedStateCount: z.number().int().nonnegative(),
+    rovingFocusCount: z.number().int().nonnegative(),
+    orientationCount: z.number().int().nonnegative(),
+    keyboardCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["radix-toolbar", "radix-toggle", "radix-toggle-group", "ariakit-toolbar", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["toolbar-root", "toolbar-provider", "toolbar-item", "button-link", "separator", "toggle-root", "toggle-group", "toggle-item", "input-container", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["pressed", "default-pressed", "on-pressed-change", "value", "default-value", "on-value-change", "single", "multiple", "data-state", "disabled", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  focusSignals: z.array(z.object({
+    signal: z.enum(["roving-focus", "composite-focus", "focus-loop", "virtual-focus", "active-item", "focusable-item", "rtl-dir", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  orientationSignals: z.array(z.object({
+    signal: z.enum(["horizontal", "vertical", "aria-orientation", "dir", "loop", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-toolbar", "role-group", "role-radio", "aria-pressed", "aria-checked", "aria-label", "aria-disabled", "tabindex", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "role-test", "attribute-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@radix-ui/react-toolbar", "@radix-ui/react-toggle", "@radix-ui/react-toggle-group", "@ariakit/react", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -14456,6 +14539,7 @@ export type TabsAccordionReadinessReport = z.infer<typeof TabsAccordionReadiness
 export type CheckboxRadioSwitchReadinessReport = z.infer<typeof CheckboxRadioSwitchReadinessReportSchema>;
 export type SliderProgressReadinessReport = z.infer<typeof SliderProgressReadinessReportSchema>;
 export type SelectComboboxReadinessReport = z.infer<typeof SelectComboboxReadinessReportSchema>;
+export type ToolbarToggleReadinessReport = z.infer<typeof ToolbarToggleReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
