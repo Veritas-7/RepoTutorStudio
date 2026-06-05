@@ -8310,6 +8310,62 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 274:
   - `98b8344` incident response readiness report
 
+- 2026-06-05: AutoResearch Upgrade 275 candidate selected:
+  SLO readiness from `OpenSLO/OpenSLO`
+  (`https://github.com/OpenSLO/OpenSLO`; ignored clone HEAD
+  `e74b589cc98b98a5413611176d659a72318e7519`),
+  `slok/sloth`
+  (`https://github.com/slok/sloth`; ignored clone HEAD
+  `8a3be4fab79defa4448d09d91b48422615980b05`), and
+  `pyrra-dev/pyrra`
+  (`https://github.com/pyrra-dev/pyrra`; ignored clone HEAD
+  `25bac00a6c478211326eed4aa46583d1b9466ca8`). Static source inspection
+  only; `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented OpenSLO/Sloth/Pyrra-style SLO readiness report:
+  `SloReadinessReportSchema`, `analysis/slo-readiness-report.json`,
+  `markdown/slo-readiness.md`, `html/slo-readiness.html`, static SLO setup
+  detection, spec, indicator, objective, alert, rule, governance, workflow,
+  and package signals, OpenSLO `kind: SLO`/`kind: SLI` detection,
+  ratioMetric/thresholdMetric/latency/availability/raw-ratio SLI detection,
+  target/targetPercent/timeWindow/window/budgetingMethod/error-budget
+  detection, burn-rate/multi-window/page/ticket/Prometheus alert detection,
+  recording rule, Prometheus Operator, PromQL window template, ruleOutput, and
+  generic-rules detection, service/team/labels/runbook/dashboard/validation
+  governance coverage, static-only SLO guardrail, recommended inspection
+  commands, manifest and session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit
+  coverage, and `open --target slo-readiness`.
+- 2026-06-05: RED/GREEN SLO readiness smoke recorded:
+  pre-implementation precise gap checks had no `SloReadinessReportSchema`, no
+  `sloReadinessReport`, and no `slo-readiness` target. GREEN fixture detected
+  OpenSLO, Sloth, Pyrra, PrometheusRule, and workflow setup rows; OpenSLO,
+  Sloth spec, Pyrra CRD, Prometheus rule, and YAML manifest signals; ratio,
+  threshold, latency, availability, error query, total query, and raw ratio
+  indicators; target, targetPercent, time window, budgeting method, composite
+  weight, and error budget objectives; burn-rate, multi-window, page/ticket,
+  Prometheus alert, alert-after, alert labels, recording rule, Prometheus
+  Operator, PromQL window template, ruleOutput, generic-rules, governance,
+  workflow, package, recommended command, static-only guardrail, and all three
+  new artifacts.
+- 2026-06-05: Verification for Upgrade 275:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused SLO readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - full pipeline Vitest: PASS, 82/82 tests
+  - `pnpm test`: PASS, 82/82 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 173/173 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~78.98 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 275:
+  - `70a0b0b` SLO readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
