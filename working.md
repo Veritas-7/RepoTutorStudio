@@ -10047,6 +10047,66 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 303:
   - `ef7d67e` select combobox readiness report
 
+- 2026-06-06: AutoResearch Upgrade 304 candidate selected:
+  toolbar/toggle readiness from existing ignored `radix-ui/primitives` clone
+  (`https://github.com/radix-ui/primitives.git`; ignored clone HEAD
+  `65db6fb91c16b636f05afe51e735f066a17031c3`) and existing ignored
+  `ariakit/ariakit` clone (`https://github.com/ariakit/ariakit.git`; ignored
+  clone HEAD `eb5a29ed20dce2c5aa63c38591efb43a5d0ef754`). Static source
+  inspection only; no external source was executed. `git ls-files
+  research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented Radix Toolbar/Toggle/ToggleGroup and Ariakit Toolbar
+  readiness report: `ToolbarToggleReadinessReportSchema`,
+  `analysis/toolbar-toggle-readiness-report.json`,
+  `markdown/toolbar-toggle-readiness.md`,
+  `html/toolbar-toggle-readiness.html`, static setup detection, framework,
+  structure, state, focus, orientation, accessibility, test, and package
+  signals, Radix toolbar root/button/link/separator/toggle group/toggle item
+  evidence, Radix toggle pressed/defaultPressed/onPressedChange/data-state
+  evidence, Radix toggle-group single/multiple/value/defaultValue/onValueChange
+  evidence, Ariakit toolbar provider/store/item/separator/input/composite focus
+  evidence, roving/composite/focusLoop/virtualFocus/active/focusable/RTL
+  evidence, role toolbar/group/radio and aria-pressed/checked/label/disabled/
+  orientation/tabindex evidence, static-only toolbar/toggle guardrail,
+  recommended inspection commands, manifest and session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target toolbar-toggle-readiness`.
+- 2026-06-06: RED/GREEN toolbar/toggle readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/toolbar-toggle-readiness-report.json` did not exist. GREEN fixture
+  detected Radix Toolbar/Toggle/ToggleGroup and Ariakit Toolbar signals;
+  toolbar root/provider/item, button/link, separator, toggle root/group/item,
+  input/container, pressed/defaultPressed/onPressedChange, value/defaultValue/
+  onValueChange, single/multiple, data-state, disabled, roving focus, composite
+  focus, focusLoop, virtualFocus, active item, focusable item, RTL dir,
+  horizontal/vertical orientation, aria-orientation, dir, loop, role toolbar/
+  group/radio, aria-pressed, aria-checked, aria-label, aria-disabled, tabindex,
+  Vitest, Testing Library, user-event, role/keyboard/attribute tests, artifact
+  upload, packages, recommended command, static-only guardrail, and all three
+  new artifacts without clicking buttons, toggling pressed state, moving focus,
+  dispatching keyboard events, mutating stores, submitting forms, or running
+  analyzed project tests.
+- 2026-06-06: Verification for Upgrade 304:
+  - `git diff --check`: PASS
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused toolbar/toggle readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 111/111 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 202/202 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~79.87 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 304:
+  - `c9a7c52` toolbar toggle readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
