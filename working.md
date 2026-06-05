@@ -9400,6 +9400,70 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 293:
   - `08d74f1` guided tour readiness report
 
+- 2026-06-06: AutoResearch Upgrade 294 candidate selected: data table/grid
+  readiness from new ignored `TanStack/table` clone
+  (`https://github.com/TanStack/table.git`; ignored clone HEAD
+  `f906d2d81f393b48051ed7ebca08400f952435a7`), new ignored
+  `ag-grid/ag-grid` clone (`https://github.com/ag-grid/ag-grid.git`; ignored
+  clone HEAD `45be8779440bcf6d4b5f7b0332aea5699e3a3d8b`), and new ignored
+  `adazzle/react-data-grid` clone
+  (`https://github.com/adazzle/react-data-grid.git`; ignored clone HEAD
+  `4b223f18fa7fdc8bcb325d2cc5e53d3a6cb12a72`). Static source inspection
+  only; `git ls-files research/external-src` returned no tracked files, and
+  `git status --ignored=matching --short research/external-src` showed only
+  ignored `research/external-src/`.
+- 2026-06-06: Implemented TanStack Table/AG Grid/React Data Grid-style data
+  table readiness report: `DataTableReadinessReportSchema`,
+  `analysis/data-table-readiness-report.json`,
+  `markdown/data-table-readiness.md`, `html/data-table-readiness.html`, static
+  setup detection, framework, column, row model, interaction, state,
+  virtualization, editing, accessibility, test, and package signals, TanStack
+  `useReactTable`, `ColumnDef`, `createColumnHelper`, `flexRender`, core,
+  sorted, filtered, pagination, grouped, and expanded row model evidence, AG
+  Grid `AgGridReact`, `GridOptions`, `columnDefs`, `rowData`,
+  `defaultColDef`, server-side row model, selection, pagination, renderer,
+  editor, getter, formatter, and grid option evidence, React Data Grid
+  `DataGrid`, `TreeDataGrid`, `SelectColumn`, `renderTextEditor`,
+  `rowKeyGetter`, `onRowsChange`, `selectedRows`, `sortColumns`, grouping,
+  virtualization, and edit-cell evidence, static-only data table guardrail,
+  recommended inspection commands, manifest and session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target data-table-readiness`.
+- 2026-06-06: RED/GREEN data table readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/data-table-readiness-report.json` did not exist. GREEN fixture
+  detected TanStack Table, AG Grid, and React Data Grid setup rows; column
+  definitions/helpers/accessors/renderers/headers/visibility/pinning/sizing,
+  row data and row-model signals, sorting, filtering, pagination, row
+  selection, column reorder, row expansion, faceting, controlled state,
+  state-change handlers, row selection/sorting/pagination state, rows-change
+  handling, virtualizer/virtual rows/viewport/row height, editable cells,
+  cell editors, edit-cell renderers, value getters/formatters, grid/row/
+  columnheader/gridcell roles, ARIA row/column counts and indices, aria-sort,
+  keyboard navigation, Vitest, Playwright, Cypress, Testing Library, role and
+  keyboard tests, artifact upload, packages, recommended command, static-only
+  guardrail, and all three new artifacts. A follow-up focused run fixed an
+  AG Grid platform false positive by tightening TanStack `ColumnDef` matching
+  so `columnDefs` no longer classifies AG Grid as TanStack.
+- 2026-06-06: Verification for Upgrade 294:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused data table readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 101/101 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 192/192 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked output empty and ignored
+    status `!! research/external-src/`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~85.93 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 294:
+  - `cc41733` data table readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
