@@ -3565,6 +3565,99 @@ export const ModelMonitoringReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ModelServingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  modelServingSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["kserve", "seldon", "triton", "bentoml", "custom", "unknown"]),
+    inferenceServiceCount: z.number().int().nonnegative(),
+    runtimeCount: z.number().int().nonnegative(),
+    modelRepositoryCount: z.number().int().nonnegative(),
+    protocolCount: z.number().int().nonnegative(),
+    routingCount: z.number().int().nonnegative(),
+    autoscalingCount: z.number().int().nonnegative(),
+    healthCount: z.number().int().nonnegative(),
+    resourceCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  platformSignals: z.array(z.object({
+    signal: z.enum(["inference-service", "serving-runtime", "seldon-deployment", "triton-server", "model-repository", "custom-server", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  runtimeSignals: z.array(z.object({
+    signal: z.enum(["predictor", "transformer", "explainer", "backend", "model-format", "gpu", "batching", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  protocolSignals: z.array(z.object({
+    signal: z.enum(["rest", "grpc", "v2-protocol", "http-health", "predict-endpoint", "metadata-endpoint", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  routingSignals: z.array(z.object({
+    signal: z.enum(["canary", "traffic-split", "shadow", "inference-graph", "gateway", "load-balancing", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scalingSignals: z.array(z.object({
+    signal: z.enum(["autoscaling", "min-replicas", "max-replicas", "scale-to-zero", "hpa", "concurrency", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  healthSignals: z.array(z.object({
+    signal: z.enum(["readiness-probe", "liveness-probe", "startup-probe", "health-endpoint", "model-ready", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resourceSignals: z.array(z.object({
+    signal: z.enum(["cpu", "memory", "gpu", "node-selector", "tolerations", "service-account", "storage-uri", "secret", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observabilitySignals: z.array(z.object({
+    signal: z.enum(["metrics", "logging", "tracing", "prometheus", "access-log", "request-id", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "deploy-command", "inference-smoke-command", "health-check-command", "manifest-apply", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["kserve", "seldon", "triton", "bentoml", "kubernetes", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CiCdReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -9404,6 +9497,7 @@ export type FeatureStoreReadinessReport = z.infer<typeof FeatureStoreReadinessRe
 export type ModelRegistryReadinessReport = z.infer<typeof ModelRegistryReadinessReportSchema>;
 export type ExperimentTrackingReadinessReport = z.infer<typeof ExperimentTrackingReadinessReportSchema>;
 export type ModelMonitoringReadinessReport = z.infer<typeof ModelMonitoringReadinessReportSchema>;
+export type ModelServingReadinessReport = z.infer<typeof ModelServingReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type CoverageReadinessReport = z.infer<typeof CoverageReadinessReportSchema>;

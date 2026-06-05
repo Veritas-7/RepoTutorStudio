@@ -68,6 +68,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-registry-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "experiment-tracking-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-monitoring-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-serving-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
@@ -216,6 +217,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-registry-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "experiment-tracking-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-monitoring-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-serving-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ci-cd.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
@@ -367,6 +369,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "model-registry-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "experiment-tracking-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "model-monitoring-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "model-serving-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ci-cd.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
@@ -545,6 +548,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/model-registry-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/experiment-tracking-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/model-monitoring-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/model-serving-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ci-cd.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/coverage-readiness.html\"");
@@ -3301,6 +3305,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/model-registry-readiness.html");
     expect(exportManifestText).toContain("html/experiment-tracking-readiness.html");
     expect(exportManifestText).toContain("html/model-monitoring-readiness.html");
+    expect(exportManifestText).toContain("html/model-serving-readiness.html");
     expect(exportManifestText).toContain("html/ci-cd.html");
     expect(exportManifestText).toContain("html/unit-tests.html");
     expect(exportManifestText).toContain("html/coverage-readiness.html");
@@ -3471,6 +3476,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("model-registry-readiness.html");
     expect(learningPathHtml).toContain("experiment-tracking-readiness.html");
     expect(learningPathHtml).toContain("model-monitoring-readiness.html");
+    expect(learningPathHtml).toContain("model-serving-readiness.html");
     expect(learningPathHtml).toContain("ci-cd.html");
     expect(learningPathHtml).toContain("unit-tests.html");
     expect(learningPathHtml).toContain("coverage-readiness.html");
@@ -8048,6 +8054,249 @@ describe("RepoTutor core pipeline", () => {
     const modelMonitoringHtml = await fs.readFile(path.join(result.session.outputPaths.html, "model-monitoring-readiness.html"), "utf8");
     expect(modelMonitoringHtml).toContain("model-monitoring-readiness-card");
     expect(modelMonitoringHtml).toContain("data-source-pattern=\"ModelMonitoring\"");
+  });
+
+  it("detects model serving readiness without running inference services or smoke probes", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-model-serving-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-model-serving-source-"));
+    await fs.mkdir(path.join(sourceRoot, "kserve"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "seldon"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "triton", "model_repository", "fraud", "1"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "name = \"model-serving-fixture\"",
+      "description = \"KServe Seldon Triton BentoML custom model server predict endpoint model serving static readiness fixture\"",
+      "dependencies = [\"kserve\", \"seldon-core\", \"tritonclient[grpc]\", \"bentoml\", \"kubernetes\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "kserve", "inferenceservice.yaml"), [
+      "apiVersion: serving.kserve.io/v1beta1",
+      "kind: InferenceService",
+      "metadata:",
+      "  name: fraud",
+      "  annotations:",
+      "    autoscaling.knative.dev/minScale: \"1\"",
+      "    autoscaling.knative.dev/maxScale: \"5\"",
+      "    autoscaling.knative.dev/scale-to-zero: \"true\"",
+      "    prometheus.io/scrape: \"true\"",
+      "spec:",
+      "  predictor:",
+      "    minReplicas: 1",
+      "    maxReplicas: 5",
+      "    containerConcurrency: 8",
+      "    scaleTarget: 16",
+      "    serviceAccountName: fraud-serving",
+      "    imagePullSecrets:",
+      "      - name: registry-secret",
+      "    nodeSelector:",
+      "      accelerator: nvidia",
+      "    tolerations:",
+      "      - key: gpu",
+      "        operator: Exists",
+      "    model:",
+      "      modelFormat:",
+      "        name: sklearn",
+      "      storageUri: s3://models/fraud",
+      "      secretName: model-store-secret",
+      "      protocolVersion: v2",
+      "      resources:",
+      "        requests:",
+      "          cpu: \"1\"",
+      "          memory: 2Gi",
+      "          nvidia.com/gpu: \"1\"",
+      "    readinessProbe:",
+      "      httpGet:",
+      "        path: /v2/health/ready",
+      "        port: 8080",
+      "    livenessProbe:",
+      "      httpGet:",
+      "        path: /health",
+      "        port: 8080",
+      "    startupProbe:",
+      "      httpGet:",
+      "        path: /healthz",
+      "        port: 8080",
+      "  transformer:",
+      "    containers:",
+      "      - image: fraud-transformer",
+      "  explainer:",
+      "    alibi:",
+      "      type: AnchorTabular",
+      "  canaryTrafficPercent: 20",
+      "status:",
+      "  conditions:",
+      "    - type: ModelReady",
+      "      status: \"True\"",
+      "---",
+      "apiVersion: serving.kserve.io/v1alpha1",
+      "kind: ServingRuntime",
+      "metadata:",
+      "  name: fraud-runtime",
+      "spec:",
+      "  supportedModelFormats:",
+      "    - name: sklearn",
+      "  containers:",
+      "    - image: kserve/sklearnserver:latest",
+      "---",
+      "apiVersion: serving.kserve.io/v1alpha1",
+      "kind: ClusterServingRuntime",
+      "metadata:",
+      "  name: fraud-cluster-runtime"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "seldon", "deployment.yaml"), [
+      "apiVersion: machinelearning.seldon.io/v1",
+      "kind: SeldonDeployment",
+      "metadata:",
+      "  name: fraud-seldon",
+      "spec:",
+      "  predictors:",
+      "    - name: default",
+      "      replicas: 2",
+      "      minReplicas: 1",
+      "      maxReplicas: 4",
+      "      traffic: 80",
+      "      shadow: true",
+      "      graph:",
+      "        name: fraud-model",
+      "        implementation: TRITON_SERVER",
+      "        modelUri: gs://models/fraud",
+      "        serviceType: MODEL",
+      "        endpoint:",
+      "          type: REST",
+      "        children:",
+      "          - name: fraud-transformer",
+      "            implementation: MLSERVER",
+      "      explainer:",
+      "        type: anchor_tabular",
+      "      componentSpecs:",
+      "        - spec:",
+      "            containers:",
+      "              - name: fraud-model",
+      "                resources:",
+      "                  requests:",
+      "                    cpu: \"500m\"",
+      "                    memory: 1Gi",
+      "                readinessProbe:",
+      "                  httpGet:",
+      "                    path: /health",
+      "                    port: 9000",
+      "                livenessProbe:",
+      "                  httpGet:",
+      "                    path: /health",
+      "                    port: 9000",
+      "  annotations:",
+      "    autoscaling: HorizontalPodAutoscaler HPA autoscaling/v2",
+      "    ambassador: gateway ambassador traffic split load balancing fallback",
+      "    inferenceGraph: InferenceGraph"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "triton", "model_repository", "fraud", "config.pbtxt"), [
+      "name: \"fraud\"",
+      "platform: \"onnxruntime_onnx\"",
+      "backend: \"onnxruntime\"",
+      "max_batch_size: 32",
+      "dynamic_batching { preferred_batch_size: [4, 8] }",
+      "sequence_batching { max_sequence_idle_microseconds: 1000 }",
+      "instance_group [ { kind: KIND_GPU count: 1 } ]",
+      "input [ { name: \"features\" data_type: TYPE_FP32 dims: [8] } ]",
+      "output [ { name: \"score\" data_type: TYPE_FP32 dims: [1] } ]",
+      "ensemble_scheduling { step [ { model_name: \"fraud\" } ] }",
+      "model_repository = \"/models\"",
+      "TRITONSERVER_ServerInferAsync inference request ModelInfer",
+      "REST HTTP /v2/models/fraud/infer /v2/models/fraud/metadata /metadata",
+      "gRPC inference.GRPCInferenceService/ModelInfer grpc-port 8001",
+      "metrics /metrics metrics-port prometheus logging tracing OpenTelemetry access log request id"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "model-serving.yml"), [
+      "name: model-serving",
+      "on: [push]",
+      "jobs:",
+      "  serving:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: kubectl apply -f kserve/inferenceservice.yaml",
+      "      - run: helm upgrade --install seldon-core seldon-core-operator",
+      "      - run: tritonserver --model-repository=/models --strict-model-config=true --model-control-mode=poll --http-port=8000 --grpc-port=8001 --metrics-port=8002",
+      "      - run: curl -f http://localhost:8000/v2/health/ready",
+      "      - run: curl -X POST http://localhost:8000/v2/models/fraud/infer",
+      "      - run: curl -X POST http://localhost:8080/predict",
+      "      - run: grpcurl localhost:8001 inference.GRPCInferenceService/ModelInfer",
+      "      - run: kubectl rollout status inferenceservice/fraud",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: model-serving-report",
+      "          path: |",
+      "            serving-report.json",
+      "            triton-logs",
+      "            inference-report"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "model-serving-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      modelServingSetups: Array<{ tool: string; inferenceServiceCount: number; runtimeCount: number; modelRepositoryCount: number; protocolCount: number; routingCount: number; autoscalingCount: number; healthCount: number; resourceCount: number; observabilityCount: number; ciCount: number }>;
+      platformSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      protocolSignals: Array<{ signal: string; readiness: string }>;
+      routingSignals: Array<{ signal: string; readiness: string }>;
+      scalingSignals: Array<{ signal: string; readiness: string }>;
+      healthSignals: Array<{ signal: string; readiness: string }>;
+      resourceSignals: Array<{ signal: string; readiness: string }>;
+      observabilitySignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (tool: string) => report.modelServingSetups
+      .filter((item) => item.tool === tool)
+      .reduce((totals, item) => ({
+        inferenceServiceCount: totals.inferenceServiceCount + item.inferenceServiceCount,
+        runtimeCount: totals.runtimeCount + item.runtimeCount,
+        modelRepositoryCount: totals.modelRepositoryCount + item.modelRepositoryCount,
+        protocolCount: totals.protocolCount + item.protocolCount,
+        routingCount: totals.routingCount + item.routingCount,
+        autoscalingCount: totals.autoscalingCount + item.autoscalingCount,
+        healthCount: totals.healthCount + item.healthCount,
+        resourceCount: totals.resourceCount + item.resourceCount,
+        observabilityCount: totals.observabilityCount + item.observabilityCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { inferenceServiceCount: 0, runtimeCount: 0, modelRepositoryCount: 0, protocolCount: 0, routingCount: 0, autoscalingCount: 0, healthCount: 0, resourceCount: 0, observabilityCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Model serving readiness KServe Seldon Triton InferenceService ServingRuntime SeldonDeployment tritonserver model repository REST gRPC autoscaling health probes routing CI");
+    expect(setupTotals("kserve").inferenceServiceCount).toBeGreaterThan(0);
+    expect(setupTotals("kserve").runtimeCount).toBeGreaterThan(0);
+    expect(setupTotals("seldon").routingCount).toBeGreaterThan(0);
+    expect(setupTotals("triton").protocolCount).toBeGreaterThan(0);
+    expect(setupTotals("triton").observabilityCount).toBeGreaterThan(0);
+    expect(report.modelServingSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.platformSignals)).toEqual(expect.arrayContaining(["inference-service", "serving-runtime", "seldon-deployment", "triton-server", "model-repository", "custom-server"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["predictor", "transformer", "explainer", "backend", "model-format", "gpu", "batching"]));
+    expect(readySignals(report.protocolSignals)).toEqual(expect.arrayContaining(["rest", "grpc", "v2-protocol", "http-health", "predict-endpoint", "metadata-endpoint"]));
+    expect(readySignals(report.routingSignals)).toEqual(expect.arrayContaining(["canary", "traffic-split", "shadow", "inference-graph", "gateway", "load-balancing"]));
+    expect(readySignals(report.scalingSignals)).toEqual(expect.arrayContaining(["autoscaling", "min-replicas", "max-replicas", "scale-to-zero", "hpa", "concurrency"]));
+    expect(readySignals(report.healthSignals)).toEqual(expect.arrayContaining(["readiness-probe", "liveness-probe", "startup-probe", "health-endpoint", "model-ready"]));
+    expect(readySignals(report.resourceSignals)).toEqual(expect.arrayContaining(["cpu", "memory", "gpu", "node-selector", "tolerations", "service-account", "storage-uri", "secret"]));
+    expect(readySignals(report.observabilitySignals)).toEqual(expect.arrayContaining(["metrics", "logging", "tracing", "prometheus", "access-log", "request-id"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "deploy-command", "inference-smoke-command", "health-check-command", "manifest-apply", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["kserve", "seldon", "triton", "bentoml", "kubernetes", "custom"]));
+    expect(report.riskQueue).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"InferenceService|ServingRuntime|SeldonDeployment|tritonserver|bentoml serve|model server\" .",
+      "rg \"REST|gRPC|/v2/models|/predict|/metadata|protocolVersion\" .",
+      "rg \"readinessProbe|livenessProbe|startupProbe|/health|ModelReady|curl .*predict|grpcurl|kubectl apply|upload-artifact\" .github workflows ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-serving-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-serving-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "model-serving-readiness.html"))).resolves.toBeUndefined();
+    const modelServingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "model-serving-readiness.md"), "utf8");
+    expect(modelServingMarkdown).toContain("Platform Signals");
+    expect(modelServingMarkdown).toContain("Protocol Signals");
+    expect(modelServingMarkdown).toContain("Health Signals");
+    const modelServingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "model-serving-readiness.html"), "utf8");
+    expect(modelServingHtml).toContain("model-serving-readiness-card");
+    expect(modelServingHtml).toContain("data-source-pattern=\"ModelServing\"");
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {

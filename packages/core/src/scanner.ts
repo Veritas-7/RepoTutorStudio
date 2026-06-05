@@ -79,6 +79,7 @@ import {
   ModelRegistryReadinessReport,
   ExperimentTrackingReadinessReport,
   ModelMonitoringReadinessReport,
+  ModelServingReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -246,6 +247,7 @@ export interface AnalysisBundle {
   modelRegistryReadinessReport: ModelRegistryReadinessReport;
   experimentTrackingReadinessReport: ExperimentTrackingReadinessReport;
   modelMonitoringReadinessReport: ModelMonitoringReadinessReport;
+  modelServingReadinessReport: ModelServingReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -413,6 +415,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const modelRegistryReadinessReport = await buildModelRegistryReadinessReport(walk);
   const experimentTrackingReadinessReport = await buildExperimentTrackingReadinessReport(walk);
   const modelMonitoringReadinessReport = await buildModelMonitoringReadinessReport(walk);
+  const modelServingReadinessReport = await buildModelServingReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
   const coverageReadinessReport = await buildCoverageReadinessReport(walk);
@@ -496,7 +499,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -14869,6 +14872,367 @@ function modelMonitoringSignalFromSpecs<T extends Record<K, string> & { pattern:
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/model-monitoring-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildModelServingReadinessReport(walk: WalkResult): Promise<ModelServingReadinessReport> {
+  const sourceFiles = await modelServingSourceFiles(walk);
+  const modelServingSetups = modelServingSetupsFromSources(sourceFiles);
+  const platformSignals = modelServingPlatformSignals(sourceFiles);
+  const runtimeSignals = modelServingRuntimeSignals(sourceFiles);
+  const protocolSignals = modelServingProtocolSignals(sourceFiles);
+  const routingSignals = modelServingRoutingSignals(sourceFiles);
+  const scalingSignals = modelServingScalingSignals(sourceFiles);
+  const healthSignals = modelServingHealthSignals(sourceFiles);
+  const resourceSignals = modelServingResourceSignals(sourceFiles);
+  const observabilitySignals = modelServingObservabilitySignals(sourceFiles);
+  const ciSignals = modelServingCiSignals(sourceFiles);
+  const packageSignals = modelServingPackageSignals(sourceFiles);
+
+  const hasPlatform = platformSignals.filter((item) => item.readiness === "ready").length >= 2 || modelServingSetups.some((item) => item.inferenceServiceCount > 0);
+  const hasRuntime = runtimeSignals.filter((item) => item.readiness === "ready").length >= 3 || modelServingSetups.some((item) => item.runtimeCount > 0);
+  const hasRepository = platformSignals.some((item) => item.signal === "model-repository" && item.readiness === "ready") || modelServingSetups.some((item) => item.modelRepositoryCount > 0);
+  const hasProtocol = protocolSignals.filter((item) => item.readiness === "ready").length >= 2 || modelServingSetups.some((item) => item.protocolCount > 0);
+  const hasRouting = routingSignals.some((item) => item.readiness === "ready") || modelServingSetups.some((item) => item.routingCount > 0);
+  const hasScaling = scalingSignals.filter((item) => item.readiness === "ready").length >= 2 || modelServingSetups.some((item) => item.autoscalingCount > 0);
+  const hasHealth = healthSignals.filter((item) => item.readiness === "ready").length >= 2 || modelServingSetups.some((item) => item.healthCount > 0);
+  const hasResources = resourceSignals.filter((item) => item.readiness === "ready").length >= 3 || modelServingSetups.some((item) => item.resourceCount > 0);
+  const hasObservability = observabilitySignals.filter((item) => item.readiness === "ready").length >= 2 || modelServingSetups.some((item) => item.observabilityCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || modelServingSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: ModelServingReadinessReport["riskQueue"] = [];
+  if (!hasPlatform) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add KServe InferenceService, SeldonDeployment, Triton server, Bento service, or custom model-server evidence before claiming serving readiness.",
+      why: "Model serving readiness needs a concrete online inference platform or service boundary, not only registered artifacts.",
+      relatedHref: "html/model-serving-readiness.html"
+    });
+  }
+  if (hasPlatform && !hasRuntime) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record predictor, transformer, explainer, backend, model format, GPU, or batching runtime configuration.",
+      why: "Inference services are not reproducible if the serving runtime, backend, and batching model are implicit.",
+      relatedHref: "html/model-serving-readiness.html"
+    });
+  }
+  if (hasPlatform && !hasRepository) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record storage URI, model URI, model repository path, config.pbtxt, PVC, S3, GCS, or equivalent model artifact location.",
+      why: "A serving endpoint cannot be rebuilt reliably without a durable model repository or artifact pointer.",
+      relatedHref: "html/model-serving-readiness.html"
+    });
+  }
+  if (hasRuntime && !hasProtocol) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document REST, gRPC, V2 protocol, health, predict, or metadata endpoint contracts.",
+      why: "Learners need protocol evidence to understand how clients call the serving endpoint.",
+      relatedHref: "html/model-serving-readiness.html"
+    });
+  }
+  if (hasRuntime && !hasHealth) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add readiness, liveness, startup, /health, /v2/health/ready, or ModelReady checks.",
+      why: "Serving systems need explicit health checks so deploys and smoke tests can fail before bad endpoints receive traffic.",
+      relatedHref: "html/model-serving-readiness.html"
+    });
+  }
+  if (hasRuntime && !hasScaling) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add autoscaling, min/max replicas, scale-to-zero, HPA, or concurrency settings.",
+      why: "Production inference behavior depends on replica and concurrency controls under changing load.",
+      relatedHref: "html/model-serving-readiness.html"
+    });
+  }
+  if (hasRuntime && !hasRouting) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add canary, traffic split, shadow, inference graph, gateway, or load-balancing evidence.",
+      why: "Serving readiness should show how traffic is routed during rollout and fallback scenarios.",
+      relatedHref: "html/model-serving-readiness.html"
+    });
+  }
+  if (hasRuntime && !hasResources) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record CPU, memory, GPU, node selector, toleration, service account, storage URI, or secret resource settings.",
+      why: "Serving runtimes need resource and identity constraints to be repeatable across clusters.",
+      relatedHref: "html/model-serving-readiness.html"
+    });
+  }
+  if ((hasProtocol || hasHealth) && !hasObservability) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add metrics, logging, tracing, Prometheus, access log, or request ID evidence.",
+      why: "Online inference needs request-level observability for incident response and model-performance diagnosis.",
+      relatedHref: "html/model-serving-readiness.html"
+    });
+  }
+  if ((hasHealth || hasScaling || hasRouting) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Run manifest apply, deployment rollout, inference smoke, health check, and artifact upload commands in CI.",
+      why: "Serving readiness should be checked automatically before learner-facing reports trust an endpoint configuration.",
+      relatedHref: "html/model-serving-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Model serving readiness report: serving setup ${modelServingSetups.length}개, platform signal ${platformSignals.length}개, protocol signal ${protocolSignals.length}개, health signal ${healthSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Model serving readiness KServe Seldon Triton InferenceService ServingRuntime SeldonDeployment tritonserver model repository REST gRPC autoscaling health probes routing CI",
+    modelServingSetups,
+    platformSignals,
+    runtimeSignals,
+    protocolSignals,
+    routingSignals,
+    scalingSignals,
+    healthSignals,
+    resourceSignals,
+    observabilitySignals,
+    ciSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"InferenceService|ServingRuntime|SeldonDeployment|tritonserver|bentoml serve|model server\" .", purpose: "Find online inference platform or model-server definitions." },
+      { command: "rg \"storageUri|modelUri|model_repository|config.pbtxt|s3://|gs://|pvc\" .", purpose: "Find durable model repository, artifact, and runtime config pointers." },
+      { command: "rg \"REST|gRPC|/v2/models|/predict|/metadata|protocolVersion\" .", purpose: "Find REST, gRPC, V2, prediction, and metadata endpoint contracts." },
+      { command: "rg \"canary|traffic|shadow|InferenceGraph|gateway|autoscaling|minReplicas|maxReplicas|concurrency\" .", purpose: "Find traffic routing and autoscaling rollout evidence." },
+      { command: "rg \"readinessProbe|livenessProbe|startupProbe|/health|ModelReady|curl .*predict|grpcurl|kubectl apply|upload-artifact\" .github workflows .", purpose: "Find serving health checks, inference smoke tests, manifest apply commands, and CI artifacts." }
+    ],
+    learnerNextSteps: [
+      "먼저 KServe InferenceService, SeldonDeployment, Triton server, Bento service 또는 custom model server가 있는지 확인하세요.",
+      "predictor, transformer, explainer, backend, model format, GPU, batching 같은 serving runtime 구성이 명시되어 있는지 확인하세요.",
+      "storageUri, modelUri, model_repository, config.pbtxt, S3/GCS/PVC처럼 모델 artifact 위치가 재현 가능한지 확인하세요.",
+      "REST, gRPC, V2 protocol, predict, metadata, health endpoint가 client contract와 smoke test로 연결되는지 확인하세요.",
+      "canary/traffic/shadow routing, autoscaling, health probes, resources, observability, CI manifest apply와 inference smoke evidence가 남는지 확인하세요."
+    ]
+  };
+}
+
+type ModelServingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function modelServingSourceFiles(walk: WalkResult): Promise<ModelServingSourceFile[]> {
+  const rows: ModelServingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!modelServingInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!modelServingPathSignal(file.relPath) && !modelServingContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 280);
+}
+
+function modelServingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements\.txt|setup\.py|setup\.cfg|service\.py|server\.py|model-serving\.ya?ml|model_serving\.ya?ml|inferenceservice\.ya?ml|servingruntime\.ya?ml|seldondeployment\.ya?ml|config\.pbtxt|workflow\.ya?ml)$/i.test(base)
+    || /(^|\/)(kserve|seldon|triton|triton-server|bentoml|bento|inference|serving|model-serving|model_serving|model-server|model_server|predictor|predict|runtime|models|model_repository|model-repository)(\/|\.|-|_|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/[^/]+\.(ya?ml)$/i.test(filePath)
+    || /\.(json|ya?ml|toml|txt|ts|tsx|js|jsx|mjs|cjs|md|rst|proto|pbtxt|py|go|java|scala|kt|rs|sh|Dockerfile)$/i.test(filePath);
+}
+
+function modelServingPathSignal(filePath: string): boolean {
+  return /(^|\/)(kserve|seldon|triton|triton-server|bentoml|bento|inference|serving|model-serving|model_serving|model-server|model_server|predictor|predict|runtime|models|model_repository|model-repository)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(service\.py|server\.py|model-serving\.ya?ml|model_serving\.ya?ml|inferenceservice\.ya?ml|servingruntime\.ya?ml|seldondeployment\.ya?ml|config\.pbtxt)$/i.test(path.basename(filePath));
+}
+
+function modelServingContentSignal(text: string): boolean {
+  return /KServe|InferenceService|ServingRuntime|ClusterServingRuntime|SeldonDeployment|seldon|tritonserver|TRITONSERVER|model_repository|config\.pbtxt|bentoml serve|model server|PredictorSpec|predictor/i.test(text);
+}
+
+function modelServingSetupsFromSources(sourceFiles: ModelServingSourceFile[]): ModelServingReadinessReport["modelServingSetups"] {
+  const rows: ModelServingReadinessReport["modelServingSetups"] = [];
+  for (const source of sourceFiles) {
+    const inferenceServiceCount = countMatches(source.text, /InferenceService|LLMInferenceService|SeldonDeployment|inference service|tritonserver|bentoml serve|model server|model-service/gi);
+    const runtimeCount = countMatches(source.text, /ServingRuntime|ClusterServingRuntime|runtime|PredictorSpec|predictor|Transformer|Explainer|backend|platform|instance_group|model format|dynamic_batching|sequence_batching/gi);
+    const modelRepositoryCount = countMatches(source.text, /storageUri|modelUri|model_uri|model_repository|model-repository|config\.pbtxt|models:\/|s3:\/\/|gs:\/\/|pvc|PersistentVolumeClaim|model_path|model repository/gi);
+    const protocolCount = countMatches(source.text, /REST|gRPC|grpc|HTTP|protocolVersion|v2 protocol|\/v2\/models|\/predict|\/metadata|ModelInfer|inference\.GRPCInferenceService/gi);
+    const routingCount = countMatches(source.text, /canary|traffic|trafficPercent|shadow|InferenceGraph|gateway|ambassador|load balancing|load-balancing|fallback|split/gi);
+    const autoscalingCount = countMatches(source.text, /autoscaling|minReplicas|maxReplicas|scale-to-zero|concurrency|HPA|HorizontalPodAutoscaler|replicas|containerConcurrency|scaleTarget/gi);
+    const healthCount = countMatches(source.text, /readinessProbe|livenessProbe|startupProbe|\/health|ready|ModelReady|health-check|\/v2\/health\/ready|healthz/gi);
+    const resourceCount = countMatches(source.text, /resources:|cpu|memory|nvidia\.com\/gpu|nodeSelector|tolerations|serviceAccount|serviceAccountName|secret|storageUri|envFrom/gi);
+    const observabilityCount = countMatches(source.text, /metrics|prometheus|logging|tracing|OpenTelemetry|access log|access_log|request id|request_id|\/metrics/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github actions|uses: actions\/|kubectl apply|helm upgrade|kserve|seldon|tritonserver|curl .*predict|curl .*health|grpcurl|health check|upload-artifact|rollout status/gi);
+    const totalSignals = inferenceServiceCount + runtimeCount + modelRepositoryCount + protocolCount + routingCount + autoscalingCount + healthCount + resourceCount + observabilityCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: modelServingTool(source),
+      inferenceServiceCount,
+      runtimeCount,
+      modelRepositoryCount,
+      protocolCount,
+      routingCount,
+      autoscalingCount,
+      healthCount,
+      resourceCount,
+      observabilityCount,
+      ciCount,
+      readiness: inferenceServiceCount > 0 && runtimeCount > 0 && modelRepositoryCount > 0 && protocolCount > 0 && healthCount > 0 && (routingCount + autoscalingCount + ciCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} model serving readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.inferenceServiceCount + b.runtimeCount + b.modelRepositoryCount + b.protocolCount + b.routingCount + b.autoscalingCount + b.healthCount + b.resourceCount + b.observabilityCount + b.ciCount) - (a.inferenceServiceCount + a.runtimeCount + a.modelRepositoryCount + a.protocolCount + a.routingCount + a.autoscalingCount + a.healthCount + a.resourceCount + a.observabilityCount + a.ciCount))
+    .slice(0, 80);
+}
+
+function modelServingTool(source: ModelServingSourceFile): ModelServingReadinessReport["modelServingSetups"][number]["tool"] {
+  if (/triton|model_repository|config\.pbtxt/i.test(source.filePath) || /tritonserver|TRITONSERVER|config\.pbtxt|model_repository|inference\.GRPCInferenceService/i.test(source.text)) return "triton";
+  if (/seldon/i.test(source.filePath) || /SeldonDeployment|seldon|MLSERVER|SKLEARN_SERVER|TRITON_SERVER/i.test(source.text)) return "seldon";
+  if (/kserve|inferenceservice|servingruntime/i.test(source.filePath) || /KServe|InferenceService|ServingRuntime|ClusterServingRuntime|serving\.kserve\.io/i.test(source.text)) return "kserve";
+  if (/bentoml|bento/i.test(source.filePath) || /BentoML|bentoml serve|bentoml deploy|BentoCloud/i.test(source.text)) return "bentoml";
+  if (/serving|inference|model-server|predict/i.test(source.filePath) || /model server|inference service|predict endpoint|prediction service/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function modelServingPlatformSignals(sourceFiles: ModelServingSourceFile[]): ModelServingReadinessReport["platformSignals"] {
+  const specs: Array<{ signal: ModelServingReadinessReport["platformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "inference-service", pattern: /InferenceService|LLMInferenceService|inference service|serving\.kserve\.io/i, evidence: "KServe/inference service evidence was detected." },
+    { signal: "serving-runtime", pattern: /ServingRuntime|ClusterServingRuntime|serving runtime|PredictorSpec/i, evidence: "serving runtime evidence was detected." },
+    { signal: "seldon-deployment", pattern: /SeldonDeployment|machinelearning\.seldon\.io|seldon/i, evidence: "Seldon deployment evidence was detected." },
+    { signal: "triton-server", pattern: /tritonserver|TRITONSERVER|Triton Inference Server/i, evidence: "Triton server evidence was detected." },
+    { signal: "model-repository", pattern: /model_repository|model-repository|config\.pbtxt|storageUri|modelUri|s3:\/\/|gs:\/\/|pvc/i, evidence: "model repository/artifact pointer evidence was detected." },
+    { signal: "custom-server", pattern: /model server|prediction service|predict endpoint|FastAPI|Flask|bentoml serve/i, evidence: "custom model-server evidence was detected." }
+  ];
+  return modelServingSignalFromSpecs(sourceFiles, specs, "platform", "signal");
+}
+
+function modelServingRuntimeSignals(sourceFiles: ModelServingSourceFile[]): ModelServingReadinessReport["runtimeSignals"] {
+  const specs: Array<{ signal: ModelServingReadinessReport["runtimeSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "predictor", pattern: /predictor|PredictorSpec|predictors:/i, evidence: "predictor evidence was detected." },
+    { signal: "transformer", pattern: /transformer|Transformer/i, evidence: "transformer evidence was detected." },
+    { signal: "explainer", pattern: /explainer|Explainer/i, evidence: "explainer evidence was detected." },
+    { signal: "backend", pattern: /backend|implementation:|TRITON_SERVER|MLSERVER|SKLEARN_SERVER|platform:/i, evidence: "backend implementation evidence was detected." },
+    { signal: "model-format", pattern: /model format|modelFormat|onnx|tensorflow|pytorch|sklearn|xgboost|platform:/i, evidence: "model format evidence was detected." },
+    { signal: "gpu", pattern: /nvidia\.com\/gpu|KIND_GPU|gpu|cuda/i, evidence: "GPU serving evidence was detected." },
+    { signal: "batching", pattern: /dynamic_batching|sequence_batching|max_batch_size|batching|containerConcurrency/i, evidence: "batching/concurrency evidence was detected." }
+  ];
+  return modelServingSignalFromSpecs(sourceFiles, specs, "runtime", "signal");
+}
+
+function modelServingProtocolSignals(sourceFiles: ModelServingSourceFile[]): ModelServingReadinessReport["protocolSignals"] {
+  const specs: Array<{ signal: ModelServingReadinessReport["protocolSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "rest", pattern: /REST|http-port|HTTP|curl .*http/i, evidence: "REST/HTTP protocol evidence was detected." },
+    { signal: "grpc", pattern: /gRPC|grpc|grpc-port|grpcurl|GRPCInferenceService/i, evidence: "gRPC protocol evidence was detected." },
+    { signal: "v2-protocol", pattern: /protocolVersion:\s*v2|v2 protocol|\/v2\/models|\/v2\/health\/ready/i, evidence: "V2 inference protocol evidence was detected." },
+    { signal: "http-health", pattern: /\/health|\/v2\/health\/ready|healthz|ready endpoint/i, evidence: "HTTP health endpoint evidence was detected." },
+    { signal: "predict-endpoint", pattern: /\/predict|\/infer|ModelInfer|predict endpoint|inference request/i, evidence: "predict/infer endpoint evidence was detected." },
+    { signal: "metadata-endpoint", pattern: /\/metadata|\/v2\/models|model metadata|ModelMetadata/i, evidence: "metadata endpoint evidence was detected." }
+  ];
+  return modelServingSignalFromSpecs(sourceFiles, specs, "protocol", "signal");
+}
+
+function modelServingRoutingSignals(sourceFiles: ModelServingSourceFile[]): ModelServingReadinessReport["routingSignals"] {
+  const specs: Array<{ signal: ModelServingReadinessReport["routingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "canary", pattern: /canary|canaryTrafficPercent/i, evidence: "canary rollout evidence was detected." },
+    { signal: "traffic-split", pattern: /traffic|trafficPercent|traffic split|split traffic/i, evidence: "traffic split evidence was detected." },
+    { signal: "shadow", pattern: /shadow|shadowDeployment|mirror traffic/i, evidence: "shadow serving evidence was detected." },
+    { signal: "inference-graph", pattern: /InferenceGraph|graph:|children:/i, evidence: "inference graph evidence was detected." },
+    { signal: "gateway", pattern: /gateway|ambassador|ingress|virtualservice/i, evidence: "gateway/ingress evidence was detected." },
+    { signal: "load-balancing", pattern: /load balancing|load-balancing|loadBalancer|fallback/i, evidence: "load-balancing/fallback evidence was detected." }
+  ];
+  return modelServingSignalFromSpecs(sourceFiles, specs, "routing", "signal");
+}
+
+function modelServingScalingSignals(sourceFiles: ModelServingSourceFile[]): ModelServingReadinessReport["scalingSignals"] {
+  const specs: Array<{ signal: ModelServingReadinessReport["scalingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "autoscaling", pattern: /autoscaling|autoscaler|scaleTarget|scaleMetric/i, evidence: "autoscaling evidence was detected." },
+    { signal: "min-replicas", pattern: /minReplicas|min-replicas|replicas:\s*[1-9]/i, evidence: "minimum replica evidence was detected." },
+    { signal: "max-replicas", pattern: /maxReplicas|max-replicas/i, evidence: "maximum replica evidence was detected." },
+    { signal: "scale-to-zero", pattern: /scale-to-zero|scaleToZero|minReplicas:\s*0/i, evidence: "scale-to-zero evidence was detected." },
+    { signal: "hpa", pattern: /HorizontalPodAutoscaler|HPA|autoscaling\/v2/i, evidence: "HPA evidence was detected." },
+    { signal: "concurrency", pattern: /containerConcurrency|concurrency|targetConcurrency|max_batch_size/i, evidence: "concurrency/batch-size evidence was detected." }
+  ];
+  return modelServingSignalFromSpecs(sourceFiles, specs, "scaling", "signal");
+}
+
+function modelServingHealthSignals(sourceFiles: ModelServingSourceFile[]): ModelServingReadinessReport["healthSignals"] {
+  const specs: Array<{ signal: ModelServingReadinessReport["healthSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "readiness-probe", pattern: /readinessProbe|readiness probe/i, evidence: "readiness probe evidence was detected." },
+    { signal: "liveness-probe", pattern: /livenessProbe|liveness probe/i, evidence: "liveness probe evidence was detected." },
+    { signal: "startup-probe", pattern: /startupProbe|startup probe/i, evidence: "startup probe evidence was detected." },
+    { signal: "health-endpoint", pattern: /\/health|\/v2\/health\/ready|healthz|health check/i, evidence: "health endpoint evidence was detected." },
+    { signal: "model-ready", pattern: /ModelReady|model ready|ready:\s*true|rollout status/i, evidence: "model ready/rollout evidence was detected." }
+  ];
+  return modelServingSignalFromSpecs(sourceFiles, specs, "health", "signal");
+}
+
+function modelServingResourceSignals(sourceFiles: ModelServingSourceFile[]): ModelServingReadinessReport["resourceSignals"] {
+  const specs: Array<{ signal: ModelServingReadinessReport["resourceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "cpu", pattern: /cpu|requests:|limits:/i, evidence: "CPU resource evidence was detected." },
+    { signal: "memory", pattern: /memory|requests:|limits:/i, evidence: "memory resource evidence was detected." },
+    { signal: "gpu", pattern: /nvidia\.com\/gpu|KIND_GPU|gpu/i, evidence: "GPU resource evidence was detected." },
+    { signal: "node-selector", pattern: /nodeSelector|node selector/i, evidence: "node selector evidence was detected." },
+    { signal: "tolerations", pattern: /tolerations|taint/i, evidence: "toleration evidence was detected." },
+    { signal: "service-account", pattern: /serviceAccount|serviceAccountName|service account/i, evidence: "service account evidence was detected." },
+    { signal: "storage-uri", pattern: /storageUri|modelUri|model_repository|s3:\/\/|gs:\/\/|pvc/i, evidence: "storage URI evidence was detected." },
+    { signal: "secret", pattern: /secret|secretName|imagePullSecrets|envFrom/i, evidence: "secret reference evidence was detected." }
+  ];
+  return modelServingSignalFromSpecs(sourceFiles, specs, "resource", "signal");
+}
+
+function modelServingObservabilitySignals(sourceFiles: ModelServingSourceFile[]): ModelServingReadinessReport["observabilitySignals"] {
+  const specs: Array<{ signal: ModelServingReadinessReport["observabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "metrics", pattern: /metrics|\/metrics|metrics-port/i, evidence: "metrics evidence was detected." },
+    { signal: "logging", pattern: /logging|logger|loglevel|log level/i, evidence: "logging evidence was detected." },
+    { signal: "tracing", pattern: /tracing|OpenTelemetry|otel|trace/i, evidence: "tracing evidence was detected." },
+    { signal: "prometheus", pattern: /prometheus|ServiceMonitor|prometheus\.io/i, evidence: "Prometheus evidence was detected." },
+    { signal: "access-log", pattern: /access log|access_log|request log/i, evidence: "access log evidence was detected." },
+    { signal: "request-id", pattern: /request id|request_id|correlation id|trace id/i, evidence: "request ID evidence was detected." }
+  ];
+  return modelServingSignalFromSpecs(sourceFiles, specs, "observability", "signal");
+}
+
+function modelServingCiSignals(sourceFiles: ModelServingSourceFile[]): ModelServingReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: ModelServingReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|uses: actions\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "deploy-command", pattern: /helm upgrade|kubectl apply|bentoml deploy|tritonserver --model-repository/i, evidence: "deploy command evidence was detected." },
+    { signal: "inference-smoke-command", pattern: /curl .*\/predict|curl .*\/infer|grpcurl .*ModelInfer|inference smoke|serving smoke/i, evidence: "inference smoke command evidence was detected." },
+    { signal: "health-check-command", pattern: /curl .*\/health|\/v2\/health\/ready|health check|rollout status/i, evidence: "health check command evidence was detected." },
+    { signal: "manifest-apply", pattern: /kubectl apply|kustomize build|helm upgrade|manifest apply/i, evidence: "manifest apply evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|serving-report|model-serving-report|triton-logs|inference-report/i, evidence: "serving artifact upload evidence was detected." }
+  ];
+  return modelServingSignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function modelServingPackageSignals(sourceFiles: ModelServingSourceFile[]): ModelServingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ModelServingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kserve", pattern: /kserve|KServe|serving\.kserve\.io|InferenceService|ServingRuntime/i, evidence: "KServe package/API evidence was detected." },
+    { signal: "seldon", pattern: /seldon|SeldonDeployment|machinelearning\.seldon\.io|MLSERVER/i, evidence: "Seldon package/API evidence was detected." },
+    { signal: "triton", pattern: /triton|tritonserver|TRITONSERVER|config\.pbtxt|tritonclient/i, evidence: "Triton package/API evidence was detected." },
+    { signal: "bentoml", pattern: /bentoml|BentoML|bentoml serve|BentoCloud/i, evidence: "BentoML serving evidence was detected." },
+    { signal: "kubernetes", pattern: /kubernetes|kubectl|autoscaling\/v2|HorizontalPodAutoscaler|readinessProbe/i, evidence: "Kubernetes serving evidence was detected." },
+    { signal: "custom", pattern: /model server|inference service|prediction service|predict endpoint/i, evidence: "custom serving evidence was detected." }
+  ];
+  return modelServingSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function modelServingSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ModelServingSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/model-serving-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }
