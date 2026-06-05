@@ -6252,6 +6252,51 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 237:
   - `3a02979` property based testing readiness report
 
+- 2026-06-05: AutoResearch Upgrade 238 candidate selected:
+  test data readiness from `thoughtbot/factory_bot`
+  (`https://github.com/thoughtbot/factory_bot`; ignored clone HEAD `5d39953`),
+  `FactoryBoy/factory_boy` (`https://github.com/FactoryBoy/factory_boy`;
+  ignored clone HEAD `ae9f2f4`), and `faker-js/faker`
+  (`https://github.com/faker-js/faker`; ignored clone HEAD `03a1682`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Factory Bot/factory_boy/Faker-style
+  test-data-readiness report: `TestDataReadinessReportSchema`,
+  `analysis/test-data-readiness-report.json`,
+  `markdown/test-data-readiness.md`, `html/test-data-readiness.html`,
+  static factory/fixture/seed setup detection, factory, relationship,
+  generation, reproducibility, lifecycle, CI, package signals, static-only
+  risk queue, recommended factory lint/pytest/Faker commands,
+  manifest/session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target test-data-readiness`.
+- 2026-06-05: RED/GREEN test-data-readiness smoke recorded:
+  old behavior at `ba1c3fc` had no `TestDataReadinessReportSchema` and no
+  `test-data-readiness` CLI target (`schema-missing`, `cli-missing`). GREEN
+  fixture detected Factory Bot definitions, traits, associations, transient
+  parameters, callbacks, `create_list`, `build_stubbed`, `attributes_for`,
+  `FactoryBot.lint`, `FactoryBot.rewind_sequences`; factory_boy `Factory`,
+  `SubFactory`, `Sequence`, `LazyAttribute`, `Faker`, fuzzy attributes,
+  post-generation hooks, batch create, sequence reset; faker-js `faker.seed`,
+  `setDefaultRefDate`, `generateMersenne32Randomizer`, locale-backed `Faker`,
+  person/internet/date/helper calls; fixture files, seed scripts, database
+  cleaner/reset, GitHub Actions matrix/artifact policy, package signals,
+  recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 238:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused test-data-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 45/45 tests
+  - `pnpm test`: PASS, 45/45 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 136/136 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 238:
+  - `1614053` test data readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
