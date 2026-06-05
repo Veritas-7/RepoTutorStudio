@@ -10037,6 +10037,97 @@ export const AnimationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DragAndDropReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  dragAndDropSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["dnd-kit", "react-dnd", "sortablejs", "native-html5", "custom", "unknown"]),
+    providerCount: z.number().int().nonnegative(),
+    draggableCount: z.number().int().nonnegative(),
+    droppableCount: z.number().int().nonnegative(),
+    sortableCount: z.number().int().nonnegative(),
+    sensorCount: z.number().int().nonnegative(),
+    feedbackCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  librarySignals: z.array(z.object({
+    signal: z.enum(["dnd-kit", "react-dnd", "sortablejs", "native-html5", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  providerSignals: z.array(z.object({
+    signal: z.enum(["dnd-context", "dnd-provider", "backend", "sortable-create", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sensorSignals: z.array(z.object({
+    signal: z.enum(["pointer-sensor", "keyboard-sensor", "touch-backend", "html5-backend", "test-backend", "activation-constraint", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  draggableSignals: z.array(z.object({
+    signal: z.enum(["use-draggable", "use-drag", "drag-ref", "dragstart", "draggable-attribute", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  droppableSignals: z.array(z.object({
+    signal: z.enum(["use-droppable", "use-drop", "drop-ref", "drop-handler", "can-drop", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sortableSignals: z.array(z.object({
+    signal: z.enum(["sortable-context", "use-sortable", "array-move", "sortable-create", "on-end", "on-update", "group", "swap-threshold", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  feedbackSignals: z.array(z.object({
+    signal: z.enum(["drag-overlay", "ghost-class", "chosen-class", "drag-class", "monitor", "collect", "preview", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["keyboard", "screen-reader-instructions", "aria-live", "aria-grabbed", "role", "handle", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "pointer-event", "drag-event", "test-backend", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@dnd-kit/core", "@dnd-kit/sortable", "@dnd-kit/utilities", "react-dnd", "react-dnd-html5-backend", "react-dnd-touch-backend", "react-dnd-test-backend", "sortablejs", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -13089,6 +13180,7 @@ export type CliReadinessReport = z.infer<typeof CliReadinessReportSchema>;
 export type TerminalUiReadinessReport = z.infer<typeof TerminalUiReadinessReportSchema>;
 export type StateMachineReadinessReport = z.infer<typeof StateMachineReadinessReportSchema>;
 export type AnimationReadinessReport = z.infer<typeof AnimationReadinessReportSchema>;
+export type DragAndDropReadinessReport = z.infer<typeof DragAndDropReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

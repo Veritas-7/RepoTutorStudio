@@ -1,6 +1,6 @@
 {
   "iteration": 8,
-  "createdAt": "2026-06-05T18:11:12.460Z",
+  "createdAt": "2026-06-05T18:24:14.327Z",
   "checks": [
     {
       "name": "project setup",
@@ -1040,6 +1040,13 @@
     },
     {
       "name": "Animation readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Drag and drop readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

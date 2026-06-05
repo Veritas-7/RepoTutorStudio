@@ -159,6 +159,7 @@ import type {
   TerminalUiReadinessReport,
   StateMachineReadinessReport,
   AnimationReadinessReport,
+  DragAndDropReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
@@ -365,6 +366,7 @@ export interface StudyHtmlInput {
   terminalUiReadinessReport: TerminalUiReadinessReport;
   stateMachineReadinessReport: StateMachineReadinessReport;
   animationReadinessReport: AnimationReadinessReport;
+  dragAndDropReadinessReport: DragAndDropReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -570,6 +572,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["terminal-ui-readiness.html", "Terminal UI"],
     ["state-machine-readiness.html", "State Machine"],
     ["animation-readiness.html", "Animation"],
+    ["drag-and-drop-readiness.html", "Drag and Drop"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1584,6 +1587,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Animation Readiness", "animation-readiness.html", `<section class="panel" data-source-pattern="Animation"><h2>Animation Snapshot</h2><p>${escapeHtml(input.animationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.animationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.animationReadinessReport.animationSetups.length}</dd></div><div><dt>libraries</dt><dd>${input.animationReadinessReport.librarySignals.length}</dd></div><div><dt>timing</dt><dd>${input.animationReadinessReport.timingSignals.length}</dd></div><div><dt>tests</dt><dd>${input.animationReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records animation readiness only; it does not start timelines, tick animation frames, query live computed styles, call requestAnimationFrame callbacks, read live getAnimations results, or execute analyzed project tests.</p></section><section class="grid"><article class="animation-readiness-card"><h3>Animation Setups</h3>${animationReadinessSetupList(input.animationReadinessReport.animationSetups)}</article><article class="animation-readiness-card"><h3>Library Signals</h3>${animationReadinessSignalList(input.animationReadinessReport.librarySignals, "signal")}</article><article class="animation-readiness-card"><h3>Declaration Signals</h3>${animationReadinessSignalList(input.animationReadinessReport.declarationSignals, "signal")}</article><article class="animation-readiness-card"><h3>Timing Signals</h3>${animationReadinessSignalList(input.animationReadinessReport.timingSignals, "signal")}</article></section><section class="grid"><article class="animation-readiness-card"><h3>Interaction Signals</h3>${animationReadinessSignalList(input.animationReadinessReport.interactionSignals, "signal")}</article><article class="animation-readiness-card"><h3>Layout Signals</h3>${animationReadinessSignalList(input.animationReadinessReport.layoutSignals, "signal")}</article><article class="animation-readiness-card"><h3>Accessibility Signals</h3>${animationReadinessSignalList(input.animationReadinessReport.accessibilitySignals, "signal")}</article><article class="animation-readiness-card"><h3>Runtime Signals</h3>${animationReadinessSignalList(input.animationReadinessReport.runtimeSignals, "signal")}</article></section><section class="grid"><article class="animation-readiness-card"><h3>Test Signals</h3>${animationReadinessSignalList(input.animationReadinessReport.testSignals, "signal")}</article><article class="animation-readiness-card"><h3>Package Signals</h3>${animationReadinessSignalList(input.animationReadinessReport.packageSignals, "signal")}</article><article class="animation-readiness-card"><h3>Recommended Commands</h3>${animationReadinessCommandList(input.animationReadinessReport.recommendedCommands)}</article><article class="animation-readiness-card"><h3>Risk Queue</h3>${animationReadinessRiskList(input.animationReadinessReport.riskQueue)}</article><article class="animation-readiness-card"><h3>다음 확인 단계</h3>${list(input.animationReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "drag-and-drop-readiness.html",
+      title: "Drag And Drop Readiness",
+      html: pageShell("Drag And Drop Readiness", "drag-and-drop-readiness.html", `<section class="panel" data-source-pattern="Drag and Drop"><h2>Drag And Drop Snapshot</h2><p>${escapeHtml(input.dragAndDropReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dragAndDropReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dragAndDropReadinessReport.dragAndDropSetups.length}</dd></div><div><dt>providers</dt><dd>${input.dragAndDropReadinessReport.providerSignals.length}</dd></div><div><dt>sortable</dt><dd>${input.dragAndDropReadinessReport.sortableSignals.length}</dd></div><div><dt>tests</dt><dd>${input.dragAndDropReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records drag-and-drop readiness only; it does not dispatch pointer, keyboard, dragstart, dragover, drop, touch, or mouse events, create DataTransfer payloads, mount DnD providers, read live DOM geometry, or execute analyzed project tests.</p></section><section class="grid"><article class="drag-and-drop-readiness-card"><h3>Drag And Drop Setups</h3>${dragAndDropReadinessSetupList(input.dragAndDropReadinessReport.dragAndDropSetups)}</article><article class="drag-and-drop-readiness-card"><h3>Library Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.librarySignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Provider Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.providerSignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Sensor Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.sensorSignals, "signal")}</article></section><section class="grid"><article class="drag-and-drop-readiness-card"><h3>Draggable Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.draggableSignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Droppable Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.droppableSignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Sortable Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.sortableSignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Feedback Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.feedbackSignals, "signal")}</article></section><section class="grid"><article class="drag-and-drop-readiness-card"><h3>Accessibility Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.accessibilitySignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Test Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.testSignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Package Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.packageSignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Recommended Commands</h3>${dragAndDropReadinessCommandList(input.dragAndDropReadinessReport.recommendedCommands)}</article><article class="drag-and-drop-readiness-card"><h3>Risk Queue</h3>${dragAndDropReadinessRiskList(input.dragAndDropReadinessReport.riskQueue)}</article><article class="drag-and-drop-readiness-card"><h3>다음 확인 단계</h3>${list(input.dragAndDropReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2012,6 +2020,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Terminal UI Readiness", path: "html/terminal-ui-readiness.html", description: "Ink/Bubble Tea/Blessed식 screen, layout, input, focus, mouse, render, lifecycle 준비도를 확인합니다." },
       { label: "State Machine Readiness", path: "html/state-machine-readiness.html", description: "XState/Robot/Zag식 machine, state, transition, action, guard, actor 준비도를 확인합니다." },
       { label: "Animation Readiness", path: "html/animation-readiness.html", description: "Motion/React Spring/GSAP식 declaration, timing, interaction, layout, reduced-motion 준비도를 확인합니다." },
+      { label: "Drag And Drop Readiness", path: "html/drag-and-drop-readiness.html", description: "DnD Kit/React DnD/SortableJS식 provider, sensor, drag source, drop target, sortable, accessibility 준비도를 확인합니다." },
       { label: "LLM Readiness", path: "html/llm-readiness.html", description: "LangChain.js식 model, prompt, tool, RAG, structured output, streaming 준비도를 확인합니다." },
       { label: "LLM Eval Readiness", path: "html/llm-eval-readiness.html", description: "promptfoo/OpenAI eval/OpenEvals식 prompt, provider, dataset, judge, red-team 준비도를 확인합니다." },
       { label: "LLM Observability Readiness", path: "html/llm-observability-readiness.html", description: "Langfuse/Phoenix/Helicone식 trace, session, token/cost, feedback, gateway 준비도를 확인합니다." },
@@ -3037,6 +3046,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "animation-readiness.html",
       goal: "Motion/React Spring/GSAP식 declaration, timing, interaction, layout, reduced-motion 흐름을 보고 animation contract를 확인합니다.",
       evidence: `Animation setups ${input.animationReadinessReport.animationSetups.length}개, timing signals ${input.animationReadinessReport.timingSignals.length}개`
+    },
+    {
+      title: "Drag and drop readiness 확인",
+      href: "drag-and-drop-readiness.html",
+      goal: "DnD Kit/React DnD/SortableJS식 provider, sensor, drag source, drop target, sortable 흐름을 보고 drag-and-drop contract를 확인합니다.",
+      evidence: `Drag-and-drop setups ${input.dragAndDropReadinessReport.dragAndDropSetups.length}개, sortable signals ${input.dragAndDropReadinessReport.sortableSignals.length}개`
     },
     {
       title: "LLM readiness 확인",
@@ -7234,6 +7249,31 @@ function animationReadinessRiskList(items: AnimationReadinessReport["riskQueue"]
 }
 
 function animationReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function dragAndDropReadinessSetupList(items: DragAndDropReadinessReport["dragAndDropSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">drag-and-drop setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)}/${escapeHtml(item.readiness)}]<br>provider/draggable/droppable/sortable/sensor/feedback/accessibility/test ${item.providerCount}/${item.draggableCount}/${item.droppableCount}/${item.sortableCount}/${item.sensorCount}/${item.feedbackCount}/${item.accessibilityCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dragAndDropReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function dragAndDropReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">drag-and-drop signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dragAndDropReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dragAndDropReadinessCommandList(items: DragAndDropReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function dragAndDropReadinessRiskList(items: DragAndDropReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(dragAndDropReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dragAndDropReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

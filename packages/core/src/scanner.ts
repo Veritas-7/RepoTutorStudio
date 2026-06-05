@@ -168,6 +168,7 @@ import {
   TerminalUiReadinessReport,
   StateMachineReadinessReport,
   AnimationReadinessReport,
+  DragAndDropReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
@@ -375,6 +376,7 @@ export interface AnalysisBundle {
   terminalUiReadinessReport: TerminalUiReadinessReport;
   stateMachineReadinessReport: StateMachineReadinessReport;
   animationReadinessReport: AnimationReadinessReport;
+  dragAndDropReadinessReport: DragAndDropReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -582,6 +584,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const terminalUiReadinessReport = await buildTerminalUiReadinessReport(walk);
   const stateMachineReadinessReport = await buildStateMachineReadinessReport(walk);
   const animationReadinessReport = await buildAnimationReadinessReport(walk);
+  const dragAndDropReadinessReport = await buildDragAndDropReadinessReport(walk);
   const llmReadinessReport = await buildLlmReadinessReport(walk);
   const llmEvalReadinessReport = await buildLlmEvalReadinessReport(walk);
   const llmObservabilityReadinessReport = await buildLlmObservabilityReadinessReport(walk);
@@ -616,7 +619,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, dragAndDropReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -41333,6 +41336,317 @@ function animationReadinessSignalFromSpecs<T extends Record<K, string> & { patte
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/animation-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDragAndDropReadinessReport(walk: WalkResult): Promise<DragAndDropReadinessReport> {
+  const sourceFiles = await dragAndDropReadinessSourceFiles(walk);
+  const dragAndDropSetups = dragAndDropReadinessSetups(sourceFiles);
+  const librarySignals = dragAndDropReadinessLibrarySignals(sourceFiles);
+  const providerSignals = dragAndDropReadinessProviderSignals(sourceFiles);
+  const sensorSignals = dragAndDropReadinessSensorSignals(sourceFiles);
+  const draggableSignals = dragAndDropReadinessDraggableSignals(sourceFiles);
+  const droppableSignals = dragAndDropReadinessDroppableSignals(sourceFiles);
+  const sortableSignals = dragAndDropReadinessSortableSignals(sourceFiles);
+  const feedbackSignals = dragAndDropReadinessFeedbackSignals(sourceFiles);
+  const accessibilitySignals = dragAndDropReadinessAccessibilitySignals(sourceFiles);
+  const testSignals = dragAndDropReadinessTestSignals(sourceFiles);
+  const packageSignals = dragAndDropReadinessPackageSignals(sourceFiles);
+
+  const hasLibrary = librarySignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasProvider = providerSignals.some((item) => item.readiness === "ready") || dragAndDropSetups.some((item) => item.providerCount > 0);
+  const hasDragSource = draggableSignals.some((item) => item.readiness === "ready") || dragAndDropSetups.some((item) => item.draggableCount > 0);
+  const hasDropTarget = droppableSignals.some((item) => item.readiness === "ready") || dragAndDropSetups.some((item) => item.droppableCount > 0);
+  const hasKeyboard = accessibilitySignals.some((item) => item.signal === "keyboard" && item.readiness === "ready")
+    || sensorSignals.some((item) => item.signal === "keyboard-sensor" && item.readiness === "ready");
+  const hasTests = testSignals.some((item) => item.readiness === "ready") || dragAndDropSetups.some((item) => item.testCount > 0);
+
+  const riskQueue: DragAndDropReadinessReport["riskQueue"] = [];
+  if (!hasLibrary && !hasProvider) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document a drag-and-drop boundary such as DnD Kit, React DnD, SortableJS, native HTML5 drag events, or a custom adapter.",
+      why: "Drag-and-drop readiness starts with an explicit provider, backend, sortable binding, or event contract learners can inspect.",
+      relatedHref: "html/drag-and-drop-readiness.html"
+    });
+  }
+  if (hasDragSource && !hasDropTarget) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair draggable sources with visible droppable targets, accept/canDrop rules, or drop handlers.",
+      why: "Drag sources alone do not explain where items can land or how a drop result is produced.",
+      relatedHref: "html/drag-and-drop-readiness.html"
+    });
+  }
+  if ((hasDragSource || hasDropTarget) && !hasKeyboard) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add keyboard sensor, keyboard drag instructions, or accessible handle semantics.",
+      why: "Drag-and-drop interactions often become mouse-only unless keyboard and screen-reader behavior is explicit.",
+      relatedHref: "html/drag-and-drop-readiness.html"
+    });
+  }
+  if ((hasProvider || hasDragSource || hasDropTarget) && !hasTests) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add deterministic tests for pointer, keyboard, dragstart/drop, backend, or reorder outcomes.",
+      why: "Drag-and-drop regressions are usually interaction-state regressions and need explicit event or backend test evidence.",
+      relatedHref: "html/drag-and-drop-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify real drag behavior with trusted local browser, backend, or manual interaction checks outside RepoTutor.",
+    why: "RepoTutor records drag-and-drop readiness only; it does not dispatch pointer, keyboard, dragstart, dragover, drop, touch, or mouse events, create DataTransfer payloads, mount DnD providers, read live DOM geometry, or execute analyzed project tests.",
+    relatedHref: "html/drag-and-drop-readiness.html"
+  });
+
+  return {
+    summary: `DnD Kit/React DnD/SortableJS-style drag-and-drop readiness report: setup ${dragAndDropSetups.length}개, provider signal ${providerSignals.length}개, sortable signal ${sortableSignals.length}개, test signal ${testSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Drag and drop readiness DnD Kit DndContext useDraggable useDroppable React DnD DndProvider useDrag useDrop SortableJS onEnd keyboard tests",
+    dragAndDropSetups,
+    librarySignals,
+    providerSignals,
+    sensorSignals,
+    draggableSignals,
+    droppableSignals,
+    sortableSignals,
+    feedbackSignals,
+    accessibilitySignals,
+    testSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"DndContext|useDraggable|useDroppable|useSortable|SortableContext|DragOverlay|PointerSensor|KeyboardSensor\" src app packages test", purpose: "Find DnD Kit providers, hooks, overlays, sortable contexts, and sensors." },
+      { command: "rg \"DndProvider|useDrag|useDrop|useDragLayer|HTML5Backend|TouchBackend|TestBackend|monitor|collect\" src app packages test", purpose: "Find React DnD providers, hooks, backends, monitors, and collect functions." },
+      { command: "rg \"Sortable\\.create|new Sortable|onEnd|onUpdate|onMove|group:|handle:|ghostClass|chosenClass|dragClass\" src app packages test", purpose: "Find SortableJS bindings, reorder handlers, grouping, handles, and drag feedback classes." },
+      { command: "rg \"KeyboardSensor|screenReaderInstructions|aria-live|aria-grabbed|role=|handle\" src app packages test", purpose: "Review keyboard and accessibility support for drag interactions." },
+      { command: "rg \"fireEvent|pointerDown|dragStart|drop|DataTransfer|playwright|TestBackend|upload-artifact\" src app packages test .github", purpose: "Check deterministic drag tests and trace artifact evidence." },
+      { command: "pnpm test", purpose: "Run trusted local tests that cover drag sources, drop targets, sorting, and keyboard flows." }
+    ],
+    learnerNextSteps: [
+      "먼저 DnD Kit, React DnD, SortableJS, native HTML5 drag event 중 어떤 경계가 있는지 찾으세요.",
+      "DndContext, DndProvider, Sortable.create 같은 provider/binding 지점부터 읽으면 전체 상호작용 범위가 보입니다.",
+      "useDraggable/useDrag와 useDroppable/useDrop를 짝지어 drag source와 drop target 규칙을 분리하세요.",
+      "PointerSensor, KeyboardSensor, HTML5Backend, TouchBackend, TestBackend는 입력 장치와 테스트 경계를 설명합니다.",
+      "SortableContext, useSortable, arrayMove, onEnd, onUpdate, group, swapThreshold는 reorder 정책을 설명합니다.",
+      "DragOverlay, ghostClass, chosenClass, monitor, collect, preview 신호는 drag 중 피드백 상태입니다.",
+      "이 리포트는 정적 readiness입니다. 실제 pointer/drop 이벤트, DataTransfer, DOM geometry, browser playback은 원본 프로젝트 테스트나 수동 검증에서 확인하세요."
+    ]
+  };
+}
+
+type DragAndDropReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function dragAndDropReadinessSourceFiles(walk: WalkResult): Promise<DragAndDropReadinessSourceFile[]> {
+  const files: DragAndDropReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !dragAndDropReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!dragAndDropReadinessPathSignal(file.relPath) && !dragAndDropReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function dragAndDropReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return dragAndDropReadinessPathSignal(filePath)
+    || /^(package\.json|pnpm-lock\.yaml|yarn\.lock|package-lock\.json|playwright\.config\.[cm]?[jt]s|cypress\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|astro|css|scss|sass|less|json|md|mdx|ya?ml)$/i.test(filePath);
+}
+
+function dragAndDropReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(dnd|drag|drop|sortable|sort|reorder|kanban|board|interaction|e2e|tests?)(\/|\.|-|_|$)|package\.json$|workflow/i.test(filePath);
+}
+
+function dragAndDropReadinessContentSignal(text: string): boolean {
+  return /(DndContext|DragDropProvider|DndProvider|useDraggable|useDroppable|useSortable|SortableContext|DragOverlay|PointerSensor|KeyboardSensor|closestCenter|arrayMove|useDrag|useDrop|useDragLayer|HTML5Backend|TouchBackend|TestBackend|Sortable\.create|new Sortable|onEnd|onUpdate|onMove|ghostClass|chosenClass|dragClass|dragstart|DataTransfer|aria-grabbed|screenReaderInstructions)/i.test(text);
+}
+
+function dragAndDropReadinessSetups(sourceFiles: DragAndDropReadinessSourceFile[]): DragAndDropReadinessReport["dragAndDropSetups"] {
+  const rows: DragAndDropReadinessReport["dragAndDropSetups"] = [];
+  for (const source of sourceFiles) {
+    const providerCount = countMatches(source.text, /(DndContext|DragDropProvider|DndProvider|Sortable\.create|new\s+Sortable|backend\s*=|backend\s*:)/gi);
+    const draggableCount = countMatches(source.text, /(useDraggable|useDrag\s*\(|dragRef|connectDragSource|draggable\s*=|draggable\s*=\s*true|dragstart|onDragStart|setActivatorNodeRef)/gi);
+    const droppableCount = countMatches(source.text, /(useDroppable|useDrop\s*\(|dropRef|connectDropTarget|drop\s*:|onDrop|canDrop|accept\s*:|fireEvent\.drop)/gi);
+    const sortableCount = countMatches(source.text, /(SortableContext|useSortable|arrayMove|Sortable\.create|new\s+Sortable|onEnd|onUpdate|onMove|swapThreshold|group\s*:|toArray\s*\()/gi);
+    const sensorCount = countMatches(source.text, /(useSensor|useSensors|PointerSensor|KeyboardSensor|TouchSensor|MouseSensor|HTML5Backend|TouchBackend|TestBackend|activationConstraint|pointerdown|pointerDown|dragStart)/gi);
+    const feedbackCount = countMatches(source.text, /(DragOverlay|ghostClass|chosenClass|dragClass|useDragLayer|monitor\.|collect\s*:|previewRef|isDragging|isDropTarget|data-can-drop)/gi);
+    const accessibilityCount = countMatches(source.text, /(KeyboardSensor|screenReaderInstructions|aria-live|aria-grabbed|aria-describedby|role=|role\s*:|handle\s*:|handleRef|keyboard)/gi);
+    const testCount = countMatches(source.text, /(vitest|playwright|cypress|describe\s*\(|it\s*\(|expect\s*\(|testing-library|fireEvent|pointerDown|dragStart|DataTransfer|TestBackend|upload-artifact|dnd-traces)/gi);
+    const hasSetupSignal = providerCount + draggableCount + droppableCount + sortableCount + sensorCount + feedbackCount + accessibilityCount + testCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: dragAndDropReadinessPlatform(source),
+      providerCount,
+      draggableCount,
+      droppableCount,
+      sortableCount,
+      sensorCount,
+      feedbackCount,
+      accessibilityCount,
+      testCount,
+      readiness: (providerCount + sortableCount > 0) && (draggableCount + droppableCount + sortableCount > 0) && (sensorCount + accessibilityCount + testCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains providers ${providerCount}, draggables ${draggableCount}, droppables ${droppableCount}, sortable ${sortableCount}, sensors ${sensorCount}, feedback ${feedbackCount}, accessibility ${accessibilityCount}, tests ${testCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function dragAndDropReadinessPlatform(source: DragAndDropReadinessSourceFile): DragAndDropReadinessReport["dragAndDropSetups"][number]["platform"] {
+  if (/@dnd-kit\/|DndContext|DragDropProvider|useDraggable|useDroppable|useSortable|SortableContext|DragOverlay|PointerSensor|KeyboardSensor/i.test(source.text)) return "dnd-kit";
+  if (/from ["']react-dnd["']|["']react-dnd["']|DndProvider|useDrag\s*\(|useDrop\s*\(|HTML5Backend|TouchBackend|TestBackend/i.test(source.text)) return "react-dnd";
+  if (/["']sortablejs["']|Sortable\.create|new\s+Sortable|ghostClass|chosenClass|swapThreshold/i.test(source.text)) return "sortablejs";
+  if (/dragstart|dragover|drop|DataTransfer|draggable\s*=/i.test(source.text)) return "native-html5";
+  if (/drag|drop|sortable|reorder/i.test(source.text) || dragAndDropReadinessPathSignal(source.filePath)) return "custom";
+  return "unknown";
+}
+
+function dragAndDropReadinessLibrarySignals(sourceFiles: DragAndDropReadinessSourceFile[]): DragAndDropReadinessReport["librarySignals"] {
+  const specs: Array<{ signal: DragAndDropReadinessReport["librarySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dnd-kit", pattern: /@dnd-kit\/|DndContext|DragDropProvider|useDraggable|useDroppable|useSortable|SortableContext/i, evidence: "DnD Kit evidence was detected." },
+    { signal: "react-dnd", pattern: /from ["']react-dnd["']|["']react-dnd["']|DndProvider|useDrag\s*\(|useDrop\s*\(/i, evidence: "React DnD evidence was detected." },
+    { signal: "sortablejs", pattern: /["']sortablejs["']|Sortable\.create|new\s+Sortable/i, evidence: "SortableJS evidence was detected." },
+    { signal: "native-html5", pattern: /dragstart|dragover|DataTransfer|draggable\s*=|ondrop|onDrop/i, evidence: "native HTML5 drag/drop evidence was detected." },
+    { signal: "custom", pattern: /reorder|drag\s+and\s+drop|dragDrop|dropTarget/i, evidence: "custom drag-and-drop evidence was detected." }
+  ];
+  return dragAndDropReadinessSignalFromSpecs(sourceFiles, specs, "library", "signal");
+}
+
+function dragAndDropReadinessProviderSignals(sourceFiles: DragAndDropReadinessSourceFile[]): DragAndDropReadinessReport["providerSignals"] {
+  const specs: Array<{ signal: DragAndDropReadinessReport["providerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dnd-context", pattern: /DndContext|DragDropProvider/i, evidence: "DndContext/DragDropProvider evidence was detected." },
+    { signal: "dnd-provider", pattern: /DndProvider/i, evidence: "React DnD provider evidence was detected." },
+    { signal: "backend", pattern: /backend\s*=|backend\s*:|HTML5Backend|TouchBackend|TestBackend/i, evidence: "backend evidence was detected." },
+    { signal: "sortable-create", pattern: /Sortable\.create|new\s+Sortable/i, evidence: "SortableJS create evidence was detected." }
+  ];
+  return dragAndDropReadinessSignalFromSpecs(sourceFiles, specs, "provider", "signal");
+}
+
+function dragAndDropReadinessSensorSignals(sourceFiles: DragAndDropReadinessSourceFile[]): DragAndDropReadinessReport["sensorSignals"] {
+  const specs: Array<{ signal: DragAndDropReadinessReport["sensorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "pointer-sensor", pattern: /PointerSensor|pointerdown|pointerDown|pointermove|pointerup/i, evidence: "pointer sensor/event evidence was detected." },
+    { signal: "keyboard-sensor", pattern: /KeyboardSensor|keyboardCodes|keyDown|keydown|keyboard/i, evidence: "keyboard sensor/event evidence was detected." },
+    { signal: "touch-backend", pattern: /TouchBackend|TouchSensor|touchstart|touchmove/i, evidence: "touch backend/sensor evidence was detected." },
+    { signal: "html5-backend", pattern: /HTML5Backend|dragstart|DataTransfer/i, evidence: "HTML5 backend evidence was detected." },
+    { signal: "test-backend", pattern: /TestBackend|react-dnd-test-backend/i, evidence: "test backend evidence was detected." },
+    { signal: "activation-constraint", pattern: /activationConstraint|delay\s*:|distance\s*:/i, evidence: "activation constraint evidence was detected." }
+  ];
+  return dragAndDropReadinessSignalFromSpecs(sourceFiles, specs, "sensor", "signal");
+}
+
+function dragAndDropReadinessDraggableSignals(sourceFiles: DragAndDropReadinessSourceFile[]): DragAndDropReadinessReport["draggableSignals"] {
+  const specs: Array<{ signal: DragAndDropReadinessReport["draggableSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "use-draggable", pattern: /useDraggable/i, evidence: "useDraggable evidence was detected." },
+    { signal: "use-drag", pattern: /useDrag\s*\(/i, evidence: "useDrag evidence was detected." },
+    { signal: "drag-ref", pattern: /dragRef|connectDragSource|setActivatorNodeRef|setNodeRef/i, evidence: "drag ref evidence was detected." },
+    { signal: "dragstart", pattern: /dragstart|dragStart|onDragStart|fireEvent\.dragStart/i, evidence: "dragstart evidence was detected." },
+    { signal: "draggable-attribute", pattern: /draggable\s*=|draggable\s*=\s*true/i, evidence: "draggable attribute evidence was detected." }
+  ];
+  return dragAndDropReadinessSignalFromSpecs(sourceFiles, specs, "draggable", "signal");
+}
+
+function dragAndDropReadinessDroppableSignals(sourceFiles: DragAndDropReadinessSourceFile[]): DragAndDropReadinessReport["droppableSignals"] {
+  const specs: Array<{ signal: DragAndDropReadinessReport["droppableSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "use-droppable", pattern: /useDroppable/i, evidence: "useDroppable evidence was detected." },
+    { signal: "use-drop", pattern: /useDrop\s*\(/i, evidence: "useDrop evidence was detected." },
+    { signal: "drop-ref", pattern: /dropRef|connectDropTarget|setNodeRef/i, evidence: "drop ref evidence was detected." },
+    { signal: "drop-handler", pattern: /drop\s*:|onDrop|fireEvent\.drop|\.drop\s*\(/i, evidence: "drop handler evidence was detected." },
+    { signal: "can-drop", pattern: /canDrop|accept\s*:|isOver|isDropTarget/i, evidence: "canDrop/accept evidence was detected." }
+  ];
+  return dragAndDropReadinessSignalFromSpecs(sourceFiles, specs, "droppable", "signal");
+}
+
+function dragAndDropReadinessSortableSignals(sourceFiles: DragAndDropReadinessSourceFile[]): DragAndDropReadinessReport["sortableSignals"] {
+  const specs: Array<{ signal: DragAndDropReadinessReport["sortableSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "sortable-context", pattern: /SortableContext/i, evidence: "SortableContext evidence was detected." },
+    { signal: "use-sortable", pattern: /useSortable/i, evidence: "useSortable evidence was detected." },
+    { signal: "array-move", pattern: /arrayMove|arraySwap|move\s*\(/i, evidence: "array move evidence was detected." },
+    { signal: "sortable-create", pattern: /Sortable\.create|new\s+Sortable/i, evidence: "SortableJS create evidence was detected." },
+    { signal: "on-end", pattern: /onEnd|onDragEnd/i, evidence: "drag end/reorder evidence was detected." },
+    { signal: "on-update", pattern: /onUpdate/i, evidence: "update handler evidence was detected." },
+    { signal: "group", pattern: /group\s*:/i, evidence: "sortable group evidence was detected." },
+    { signal: "swap-threshold", pattern: /swapThreshold|invertedSwapThreshold/i, evidence: "swap threshold evidence was detected." }
+  ];
+  return dragAndDropReadinessSignalFromSpecs(sourceFiles, specs, "sortable", "signal");
+}
+
+function dragAndDropReadinessFeedbackSignals(sourceFiles: DragAndDropReadinessSourceFile[]): DragAndDropReadinessReport["feedbackSignals"] {
+  const specs: Array<{ signal: DragAndDropReadinessReport["feedbackSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "drag-overlay", pattern: /DragOverlay/i, evidence: "DragOverlay evidence was detected." },
+    { signal: "ghost-class", pattern: /ghostClass|sortable-ghost/i, evidence: "ghost class evidence was detected." },
+    { signal: "chosen-class", pattern: /chosenClass|sortable-chosen/i, evidence: "chosen class evidence was detected." },
+    { signal: "drag-class", pattern: /dragClass|sortable-drag/i, evidence: "drag class evidence was detected." },
+    { signal: "monitor", pattern: /monitor\.|DragSourceMonitor|DropTargetMonitor|useDragLayer/i, evidence: "monitor evidence was detected." },
+    { signal: "collect", pattern: /collect\s*:/i, evidence: "collect function evidence was detected." },
+    { signal: "preview", pattern: /previewRef|DragPreview|connectDragPreview/i, evidence: "drag preview evidence was detected." }
+  ];
+  return dragAndDropReadinessSignalFromSpecs(sourceFiles, specs, "feedback", "signal");
+}
+
+function dragAndDropReadinessAccessibilitySignals(sourceFiles: DragAndDropReadinessSourceFile[]): DragAndDropReadinessReport["accessibilitySignals"] {
+  const specs: Array<{ signal: DragAndDropReadinessReport["accessibilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "keyboard", pattern: /KeyboardSensor|keyboard|keyDown|keydown/i, evidence: "keyboard drag evidence was detected." },
+    { signal: "screen-reader-instructions", pattern: /screenReaderInstructions|screen reader|announcements/i, evidence: "screen reader instruction evidence was detected." },
+    { signal: "aria-live", pattern: /aria-live/i, evidence: "aria-live evidence was detected." },
+    { signal: "aria-grabbed", pattern: /aria-grabbed/i, evidence: "aria-grabbed evidence was detected." },
+    { signal: "role", pattern: /role=|role\s*:/i, evidence: "role evidence was detected." },
+    { signal: "handle", pattern: /handle\s*:|handleRef|setActivatorNodeRef|\.handle/i, evidence: "drag handle evidence was detected." }
+  ];
+  return dragAndDropReadinessSignalFromSpecs(sourceFiles, specs, "accessibility", "signal");
+}
+
+function dragAndDropReadinessTestSignals(sourceFiles: DragAndDropReadinessSourceFile[]): DragAndDropReadinessReport["testSignals"] {
+  const specs: Array<{ signal: DragAndDropReadinessReport["testSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vitest", pattern: /\bvitest\b|describe\s*\(|it\s*\(|expect\s*\(/i, evidence: "Vitest evidence was detected." },
+    { signal: "playwright", pattern: /\bplaywright\b|@playwright\/test|npx playwright/i, evidence: "Playwright evidence was detected." },
+    { signal: "cypress", pattern: /\bcypress\b|cy\.|cypress\/integration/i, evidence: "Cypress evidence was detected." },
+    { signal: "testing-library", pattern: /@testing-library|fireEvent|userEvent/i, evidence: "Testing Library evidence was detected." },
+    { signal: "pointer-event", pattern: /pointerDown|pointerdown|pointerMove|pointerUp|PointerEvent/i, evidence: "pointer event test evidence was detected." },
+    { signal: "drag-event", pattern: /dragStart|dragstart|fireEvent\.drop|DataTransfer|drop\s*\(/i, evidence: "drag/drop event test evidence was detected." },
+    { signal: "test-backend", pattern: /TestBackend|react-dnd-test-backend/i, evidence: "test backend evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|dnd-traces|drag-traces|screenshot|trace/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return dragAndDropReadinessSignalFromSpecs(sourceFiles, specs, "test", "signal");
+}
+
+function dragAndDropReadinessPackageSignals(sourceFiles: DragAndDropReadinessSourceFile[]): DragAndDropReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DragAndDropReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@dnd-kit/core", pattern: /["@']@dnd-kit\/core["@']|from ["']@dnd-kit\/core["']/i, evidence: "DnD Kit core package evidence was detected." },
+    { signal: "@dnd-kit/sortable", pattern: /["@']@dnd-kit\/sortable["@']|from ["']@dnd-kit\/sortable["']/i, evidence: "DnD Kit sortable package evidence was detected." },
+    { signal: "@dnd-kit/utilities", pattern: /["@']@dnd-kit\/utilities["@']|from ["']@dnd-kit\/utilities["']/i, evidence: "DnD Kit utilities package evidence was detected." },
+    { signal: "react-dnd", pattern: /["@']react-dnd["@']|from ["']react-dnd["']/i, evidence: "React DnD package evidence was detected." },
+    { signal: "react-dnd-html5-backend", pattern: /["@']react-dnd-html5-backend["@']|from ["']react-dnd-html5-backend["']/i, evidence: "React DnD HTML5 backend package evidence was detected." },
+    { signal: "react-dnd-touch-backend", pattern: /["@']react-dnd-touch-backend["@']|from ["']react-dnd-touch-backend["']/i, evidence: "React DnD touch backend package evidence was detected." },
+    { signal: "react-dnd-test-backend", pattern: /["@']react-dnd-test-backend["@']|from ["']react-dnd-test-backend["']/i, evidence: "React DnD test backend package evidence was detected." },
+    { signal: "sortablejs", pattern: /["@']sortablejs["@']|from ["']sortablejs["']/i, evidence: "SortableJS package evidence was detected." }
+  ];
+  return dragAndDropReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function dragAndDropReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DragAndDropReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/drag-and-drop-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
