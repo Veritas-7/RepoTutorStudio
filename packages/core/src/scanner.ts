@@ -169,6 +169,7 @@ import {
   StateMachineReadinessReport,
   AnimationReadinessReport,
   DragAndDropReadinessReport,
+  RichTextEditorReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
@@ -377,6 +378,7 @@ export interface AnalysisBundle {
   stateMachineReadinessReport: StateMachineReadinessReport;
   animationReadinessReport: AnimationReadinessReport;
   dragAndDropReadinessReport: DragAndDropReadinessReport;
+  richTextEditorReadinessReport: RichTextEditorReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -585,6 +587,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const stateMachineReadinessReport = await buildStateMachineReadinessReport(walk);
   const animationReadinessReport = await buildAnimationReadinessReport(walk);
   const dragAndDropReadinessReport = await buildDragAndDropReadinessReport(walk);
+  const richTextEditorReadinessReport = await buildRichTextEditorReadinessReport(walk);
   const llmReadinessReport = await buildLlmReadinessReport(walk);
   const llmEvalReadinessReport = await buildLlmEvalReadinessReport(walk);
   const llmObservabilityReadinessReport = await buildLlmObservabilityReadinessReport(walk);
@@ -619,7 +622,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, dragAndDropReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, dragAndDropReadinessReport, richTextEditorReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -41647,6 +41650,333 @@ function dragAndDropReadinessSignalFromSpecs<T extends Record<K, string> & { pat
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/drag-and-drop-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildRichTextEditorReadinessReport(walk: WalkResult): Promise<RichTextEditorReadinessReport> {
+  const sourceFiles = await richTextEditorReadinessSourceFiles(walk);
+  const richTextEditorSetups = richTextEditorReadinessSetups(sourceFiles);
+  const frameworkSignals = richTextEditorReadinessFrameworkSignals(sourceFiles);
+  const schemaSignals = richTextEditorReadinessSchemaSignals(sourceFiles);
+  const renderSignals = richTextEditorReadinessRenderSignals(sourceFiles);
+  const commandSignals = richTextEditorReadinessCommandSignals(sourceFiles);
+  const stateSignals = richTextEditorReadinessStateSignals(sourceFiles);
+  const extensionSignals = richTextEditorReadinessExtensionSignals(sourceFiles);
+  const collaborationSignals = richTextEditorReadinessCollaborationSignals(sourceFiles);
+  const accessibilitySignals = richTextEditorReadinessAccessibilitySignals(sourceFiles);
+  const testSignals = richTextEditorReadinessTestSignals(sourceFiles);
+  const packageSignals = richTextEditorReadinessPackageSignals(sourceFiles);
+
+  const hasFramework = frameworkSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasRender = renderSignals.some((item) => item.readiness === "ready") || richTextEditorSetups.some((item) => item.renderCount > 0);
+  const hasSchema = schemaSignals.some((item) => item.readiness === "ready") || richTextEditorSetups.some((item) => item.schemaCount > 0);
+  const hasCommands = commandSignals.some((item) => item.readiness === "ready") || richTextEditorSetups.some((item) => item.commandCount > 0);
+  const hasState = stateSignals.some((item) => item.readiness === "ready") || richTextEditorSetups.some((item) => item.stateCount > 0);
+  const hasAccessibility = accessibilitySignals.some((item) => item.readiness === "ready") || richTextEditorSetups.some((item) => item.accessibilityCount > 0);
+  const hasTests = testSignals.some((item) => item.readiness === "ready") || richTextEditorSetups.some((item) => item.testCount > 0);
+
+  const riskQueue: RichTextEditorReadinessReport["riskQueue"] = [];
+  if (!hasFramework && !hasRender) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document a rich text editor boundary such as Tiptap, ProseMirror, Lexical, contenteditable, or a custom adapter.",
+      why: "Rich text editor readiness starts with a visible editor mount, document model, or editable DOM boundary learners can inspect.",
+      relatedHref: "html/rich-text-editor-readiness.html"
+    });
+  }
+  if (hasRender && !hasSchema) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Trace the document schema, node, mark, extension, or custom node registration for the editor.",
+      why: "Rendering an editor is not enough to explain which document shapes and formatting features it accepts.",
+      relatedHref: "html/rich-text-editor-readiness.html"
+    });
+  }
+  if (hasRender && !hasCommands) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document command, toolbar, keyboard shortcut, input-rule, or dispatch paths for formatting changes.",
+      why: "Learners need to see how bold, link, list, undo/redo, and insert actions flow into editor state.",
+      relatedHref: "html/rich-text-editor-readiness.html"
+    });
+  }
+  if (hasRender && !hasState) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add editor state, transaction, onChange, selection, JSON, or HTML serialization evidence.",
+      why: "Rich text editors are state machines around structured documents, so state and serialization boundaries must be visible.",
+      relatedHref: "html/rich-text-editor-readiness.html"
+    });
+  }
+  if (hasRender && !hasAccessibility) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add role=textbox, aria-label, placeholder, focus, and keyboard evidence near the editable surface.",
+      why: "Rich text editing can become inaccessible unless editable focus and keyboard semantics are explicit.",
+      relatedHref: "html/rich-text-editor-readiness.html"
+    });
+  }
+  if (hasRender && !hasTests) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add deterministic tests for keyboard formatting, input events, serialization, toolbar commands, or editor-state snapshots.",
+      why: "Editor regressions usually surface in command/state transitions and need tests that do not rely only on manual typing.",
+      relatedHref: "html/rich-text-editor-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify live editor behavior with trusted local browser or original project tests outside RepoTutor.",
+    why: "RepoTutor records rich text editor readiness only; it does not mount Tiptap, ProseMirror, Lexical, or contenteditable editors, dispatch keyboard/input/composition events, mutate documents, execute commands, sync Yjs state, serialize live documents, or run analyzed project tests.",
+    relatedHref: "html/rich-text-editor-readiness.html"
+  });
+
+  return {
+    summary: `Tiptap/ProseMirror/Lexical-style rich text editor readiness report: setup ${richTextEditorSetups.length}개, framework signal ${frameworkSignals.length}개, command signal ${commandSignals.length}개, test signal ${testSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Rich text editor readiness Tiptap useEditor EditorContent ProseMirror EditorState EditorView LexicalComposer RichTextPlugin ContentEditable commands keyboard tests",
+    richTextEditorSetups,
+    frameworkSignals,
+    schemaSignals,
+    renderSignals,
+    commandSignals,
+    stateSignals,
+    extensionSignals,
+    collaborationSignals,
+    accessibilitySignals,
+    testSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"useEditor|EditorContent|BubbleMenu|FloatingMenu|StarterKit|\\.chain\\(\\)|editor\\.commands\" src app packages test", purpose: "Find Tiptap editor mounts, menus, starter kit/extensions, chains, and command calls." },
+      { command: "rg \"EditorState|EditorView|Schema|DOMParser|DOMSerializer|Plugin|keymap|inputRules|history\" src app packages test", purpose: "Find ProseMirror state, view, schema, parser/serializer, plugins, keymaps, input rules, and history." },
+      { command: "rg \"LexicalComposer|RichTextPlugin|ContentEditable|HistoryPlugin|OnChangePlugin|FORMAT_TEXT_COMMAND|editor\\.dispatchCommand|editor\\.update\" src app packages test", purpose: "Find Lexical composer, rich text plugin, contenteditable surface, state, commands, and update paths." },
+      { command: "rg \"role=.*textbox|aria-label|placeholder|keyboard|userEvent\\.keyboard|fireEvent\\.input|execCommand\" src app packages test", purpose: "Review accessibility, keyboard, and deterministic input test evidence." },
+      { command: "rg \"Collaboration|awareness|Y\\.Doc|yjs|provider\" src app packages test", purpose: "Check collaboration and CRDT readiness around editor document state." },
+      { command: "pnpm test", purpose: "Run trusted local tests that cover editor commands, state transitions, serialization, and accessibility flows." }
+    ],
+    learnerNextSteps: [
+      "먼저 Tiptap, ProseMirror, Lexical, contenteditable 중 어떤 editor boundary가 있는지 찾으세요.",
+      "EditorContent, EditorView, RichTextPlugin, ContentEditable 같은 render surface부터 읽으면 실제 편집 영역이 보입니다.",
+      "Schema, StarterKit, nodes, marks, Node.create, Mark.create, DecoratorNode는 문서 모델과 확장 가능 범위를 설명합니다.",
+      "editor.chain, editor.commands, dispatchCommand, keymap, inputRules는 사용자의 toolbar/keyboard 액션이 상태로 들어가는 경로입니다.",
+      "EditorState, Transaction, editor.update, selection, getJSON, getHTML, onChange는 저장/동기화/검증 경계를 설명합니다.",
+      "Collaboration, awareness, Y.Doc, provider 신호는 다중 사용자 문서 동기화와 충돌 가능성을 설명합니다.",
+      "이 리포트는 정적 readiness입니다. 실제 typing, composition, selection, clipboard, undo/redo, collaboration sync는 원본 프로젝트 테스트나 수동 검증에서 확인하세요."
+    ]
+  };
+}
+
+type RichTextEditorReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function richTextEditorReadinessSourceFiles(walk: WalkResult): Promise<RichTextEditorReadinessSourceFile[]> {
+  const files: RichTextEditorReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !richTextEditorReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!richTextEditorReadinessPathSignal(file.relPath) && !richTextEditorReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function richTextEditorReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return richTextEditorReadinessPathSignal(filePath)
+    || /^(package\.json|pnpm-lock\.yaml|yarn\.lock|package-lock\.json|playwright\.config\.[cm]?[jt]s|cypress\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|astro|css|scss|sass|less|json|md|mdx|ya?ml)$/i.test(filePath);
+}
+
+function richTextEditorReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(editor|rich[-_ ]?text|contenteditable|tiptap|prosemirror|lexical|composer|toolbar|format|document|collab|collaboration|tests?|e2e)(\/|\.|-|_|$)|package\.json$|workflow/i.test(filePath);
+}
+
+function richTextEditorReadinessContentSignal(text: string): boolean {
+  return /(useEditor|EditorContent|BubbleMenu|FloatingMenu|StarterKit|@tiptap\/|EditorState|EditorView|prosemirror-|DOMParser\.fromSchema|DOMSerializer\.fromSchema|keymap|inputRules|LexicalComposer|RichTextPlugin|ContentEditable|useLexicalComposerContext|FORMAT_TEXT_COMMAND|editor\.dispatchCommand|editor\.update|contenteditable|execCommand|Y\.Doc|Collaboration|awareness)/i.test(text);
+}
+
+function richTextEditorReadinessSetups(sourceFiles: RichTextEditorReadinessSourceFile[]): RichTextEditorReadinessReport["richTextEditorSetups"] {
+  const rows: RichTextEditorReadinessReport["richTextEditorSetups"] = [];
+  for (const source of sourceFiles) {
+    const schemaCount = countMatches(source.text, /(StarterKit|new\s+Schema|schema\s*=|Schema\(|Node\.create|Mark\.create|TextNode|ElementNode|DecoratorNode|nodes\s*:|marks\s*:)/gi);
+    const renderCount = countMatches(source.text, /(EditorContent|EditorView|ContentEditable|contenteditable|RichTextPlugin|BubbleMenu|FloatingMenu|LexicalComposer)/gi);
+    const commandCount = countMatches(source.text, /(chain\s*\(|editor\.commands|dispatchCommand|FORMAT_TEXT_COMMAND|createCommand|registerCommand|keymap\s*\(|inputRules\s*\(|execCommand|toggleBold|setLink|undo|redo)/gi);
+    const stateCount = countMatches(source.text, /(EditorState|Transaction|dispatchTransaction|updateState|editor\.update|OnChangePlugin|onChange|onUpdate|\$getSelection|\$getRoot|getJSON|getHTML|toJSON|selection)/gi);
+    const extensionCount = countMatches(source.text, /(extensions\s*:|Extension\.create|Node\.create|Mark\.create|Plugin\s*\(|new\s+Plugin|history\s*\(|Placeholder|Link\.configure|exampleSetup|HistoryPlugin)/gi);
+    const collaborationCount = countMatches(source.text, /(Collaboration|awareness|Y\.Doc|yjs|provider|collab|collaboration)/gi);
+    const accessibilityCount = countMatches(source.text, /(role\s*=\s*["']textbox|role:\s*["']textbox|aria-label|placeholder|AutoFocusPlugin|focus\s*\(|keyboard|userEvent\.keyboard)/gi);
+    const testCount = countMatches(source.text, /(vitest|playwright|cypress|describe\s*\(|it\s*\(|expect\s*\(|testing-library|userEvent\.keyboard|fireEvent\.input|execCommand|upload-artifact|rich-text-editor-traces)/gi);
+    const hasSetupSignal = schemaCount + renderCount + commandCount + stateCount + extensionCount + collaborationCount + accessibilityCount + testCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: richTextEditorReadinessPlatform(source),
+      schemaCount,
+      renderCount,
+      commandCount,
+      stateCount,
+      extensionCount,
+      collaborationCount,
+      accessibilityCount,
+      testCount,
+      readiness: renderCount > 0 && stateCount > 0 && (commandCount + schemaCount + extensionCount > 0) && (accessibilityCount + testCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains schema ${schemaCount}, render ${renderCount}, commands ${commandCount}, state ${stateCount}, extensions ${extensionCount}, collaboration ${collaborationCount}, accessibility ${accessibilityCount}, tests ${testCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function richTextEditorReadinessPlatform(source: RichTextEditorReadinessSourceFile): RichTextEditorReadinessReport["richTextEditorSetups"][number]["platform"] {
+  if (/@tiptap\/|useEditor|EditorContent|StarterKit|BubbleMenu|FloatingMenu/i.test(source.text)) return "tiptap";
+  if (/LexicalComposer|RichTextPlugin|@lexical\/|FORMAT_TEXT_COMMAND|useLexicalComposerContext|editor\.dispatchCommand/i.test(source.text)) return "lexical";
+  if (/prosemirror-|EditorState|EditorView|DOMParser\.fromSchema|DOMSerializer\.fromSchema|new\s+Schema|exampleSetup/i.test(source.text)) return "prosemirror";
+  if (/contenteditable|execCommand/i.test(source.text)) return "contenteditable";
+  if (/rich[-_ ]?text|editor|format/i.test(source.text) || richTextEditorReadinessPathSignal(source.filePath)) return "custom";
+  return "unknown";
+}
+
+function richTextEditorReadinessFrameworkSignals(sourceFiles: RichTextEditorReadinessSourceFile[]): RichTextEditorReadinessReport["frameworkSignals"] {
+  const specs: Array<{ signal: RichTextEditorReadinessReport["frameworkSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tiptap", pattern: /@tiptap\/|useEditor|EditorContent|StarterKit/i, evidence: "Tiptap evidence was detected." },
+    { signal: "prosemirror", pattern: /prosemirror-|EditorState|EditorView|DOMParser\.fromSchema|new\s+Schema/i, evidence: "ProseMirror evidence was detected." },
+    { signal: "lexical", pattern: /@lexical\/|LexicalComposer|RichTextPlugin|FORMAT_TEXT_COMMAND/i, evidence: "Lexical evidence was detected." },
+    { signal: "contenteditable", pattern: /contenteditable|ContentEditable|execCommand/i, evidence: "contenteditable evidence was detected." },
+    { signal: "custom", pattern: /rich[-_ ]?text|editor|toolbar|format/i, evidence: "custom editor evidence was detected." }
+  ];
+  return richTextEditorReadinessSignalFromSpecs(sourceFiles, specs, "framework", "signal");
+}
+
+function richTextEditorReadinessSchemaSignals(sourceFiles: RichTextEditorReadinessSourceFile[]): RichTextEditorReadinessReport["schemaSignals"] {
+  const specs: Array<{ signal: RichTextEditorReadinessReport["schemaSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "starter-kit", pattern: /StarterKit/i, evidence: "StarterKit evidence was detected." },
+    { signal: "schema", pattern: /new\s+Schema|schema\s*=|Schema\(|schema\s+as\s+basicSchema/i, evidence: "schema evidence was detected." },
+    { signal: "node", pattern: /Node\.create|ElementNode|TextNode|\bnodes\s*:/i, evidence: "node evidence was detected." },
+    { signal: "mark", pattern: /Mark\.create|\bmarks\s*:|toggleBold|toggleItalic|toggleStrike/i, evidence: "mark evidence was detected." },
+    { signal: "nodes", pattern: /\bnodes\s*:|TextNode|ElementNode|DecoratorNode/i, evidence: "node registry evidence was detected." },
+    { signal: "decorator-node", pattern: /DecoratorNode/i, evidence: "DecoratorNode evidence was detected." }
+  ];
+  return richTextEditorReadinessSignalFromSpecs(sourceFiles, specs, "schema", "signal");
+}
+
+function richTextEditorReadinessRenderSignals(sourceFiles: RichTextEditorReadinessSourceFile[]): RichTextEditorReadinessReport["renderSignals"] {
+  const specs: Array<{ signal: RichTextEditorReadinessReport["renderSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "editor-content", pattern: /EditorContent/i, evidence: "EditorContent evidence was detected." },
+    { signal: "editor-view", pattern: /EditorView/i, evidence: "EditorView evidence was detected." },
+    { signal: "contenteditable", pattern: /ContentEditable|contenteditable/i, evidence: "contenteditable evidence was detected." },
+    { signal: "rich-text-plugin", pattern: /RichTextPlugin/i, evidence: "RichTextPlugin evidence was detected." },
+    { signal: "bubble-menu", pattern: /BubbleMenu/i, evidence: "BubbleMenu evidence was detected." },
+    { signal: "floating-menu", pattern: /FloatingMenu/i, evidence: "FloatingMenu evidence was detected." }
+  ];
+  return richTextEditorReadinessSignalFromSpecs(sourceFiles, specs, "render", "signal");
+}
+
+function richTextEditorReadinessCommandSignals(sourceFiles: RichTextEditorReadinessSourceFile[]): RichTextEditorReadinessReport["commandSignals"] {
+  const specs: Array<{ signal: RichTextEditorReadinessReport["commandSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "chain", pattern: /\.chain\s*\(|chain\s*\(\)/i, evidence: "chain command evidence was detected." },
+    { signal: "commands", pattern: /editor\.commands|commands\s*:/i, evidence: "editor command evidence was detected." },
+    { signal: "dispatch-command", pattern: /dispatchCommand|registerCommand|createCommand/i, evidence: "dispatch command evidence was detected." },
+    { signal: "format-text", pattern: /FORMAT_TEXT_COMMAND|toggleBold|toggleItalic|toggleStrike|formatBold/i, evidence: "format text command evidence was detected." },
+    { signal: "keymap", pattern: /keymap\s*\(|prosemirror-keymap/i, evidence: "keymap evidence was detected." },
+    { signal: "input-rule", pattern: /inputRules\s*\(|prosemirror-inputrules/i, evidence: "input rule evidence was detected." },
+    { signal: "exec-command", pattern: /execCommand/i, evidence: "execCommand evidence was detected." }
+  ];
+  return richTextEditorReadinessSignalFromSpecs(sourceFiles, specs, "command", "signal");
+}
+
+function richTextEditorReadinessStateSignals(sourceFiles: RichTextEditorReadinessSourceFile[]): RichTextEditorReadinessReport["stateSignals"] {
+  const specs: Array<{ signal: RichTextEditorReadinessReport["stateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "editor-state", pattern: /EditorState|useEditorState|editorState/i, evidence: "editor state evidence was detected." },
+    { signal: "transaction", pattern: /Transaction|dispatchTransaction|\.apply\s*\(|updateState/i, evidence: "transaction evidence was detected." },
+    { signal: "update", pattern: /editor\.update|onUpdate|updateState/i, evidence: "update evidence was detected." },
+    { signal: "selection", pattern: /\$getSelection|selection/i, evidence: "selection evidence was detected." },
+    { signal: "json-html", pattern: /getJSON|getHTML|toJSON|serializeFragment|DOMSerializer/i, evidence: "JSON/HTML serialization evidence was detected." },
+    { signal: "on-change", pattern: /OnChangePlugin|onChange/i, evidence: "onChange evidence was detected." }
+  ];
+  return richTextEditorReadinessSignalFromSpecs(sourceFiles, specs, "state", "signal");
+}
+
+function richTextEditorReadinessExtensionSignals(sourceFiles: RichTextEditorReadinessSourceFile[]): RichTextEditorReadinessReport["extensionSignals"] {
+  const specs: Array<{ signal: RichTextEditorReadinessReport["extensionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "extension-create", pattern: /Extension\.create|extensions\s*:/i, evidence: "extension registration evidence was detected." },
+    { signal: "node-create", pattern: /Node\.create/i, evidence: "Node.create evidence was detected." },
+    { signal: "mark-create", pattern: /Mark\.create/i, evidence: "Mark.create evidence was detected." },
+    { signal: "plugin", pattern: /new\s+Plugin|Plugin\s*\(|plugins\s*:/i, evidence: "plugin evidence was detected." },
+    { signal: "history", pattern: /history\s*\(|HistoryPlugin|prosemirror-history/i, evidence: "history evidence was detected." },
+    { signal: "placeholder", pattern: /Placeholder|placeholder/i, evidence: "placeholder evidence was detected." },
+    { signal: "link", pattern: /Link\.configure|setLink|extension-link/i, evidence: "link extension evidence was detected." }
+  ];
+  return richTextEditorReadinessSignalFromSpecs(sourceFiles, specs, "extension", "signal");
+}
+
+function richTextEditorReadinessCollaborationSignals(sourceFiles: RichTextEditorReadinessSourceFile[]): RichTextEditorReadinessReport["collaborationSignals"] {
+  const specs: Array<{ signal: RichTextEditorReadinessReport["collaborationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "collaboration", pattern: /Collaboration|collaboration/i, evidence: "collaboration evidence was detected." },
+    { signal: "awareness", pattern: /awareness/i, evidence: "awareness evidence was detected." },
+    { signal: "yjs", pattern: /Y\.Doc|from ["']yjs["']|["']yjs["']/i, evidence: "Yjs evidence was detected." },
+    { signal: "provider", pattern: /provider/i, evidence: "collaboration provider evidence was detected." }
+  ];
+  return richTextEditorReadinessSignalFromSpecs(sourceFiles, specs, "collaboration", "signal");
+}
+
+function richTextEditorReadinessAccessibilitySignals(sourceFiles: RichTextEditorReadinessSourceFile[]): RichTextEditorReadinessReport["accessibilitySignals"] {
+  const specs: Array<{ signal: RichTextEditorReadinessReport["accessibilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "role-textbox", pattern: /role\s*=\s*["']textbox|role:\s*["']textbox|role=["']textbox/i, evidence: "role=textbox evidence was detected." },
+    { signal: "aria-label", pattern: /aria-label|ariaLabel/i, evidence: "aria-label evidence was detected." },
+    { signal: "keyboard", pattern: /keyboard|userEvent\.keyboard|keymap|keydown|keyDown/i, evidence: "keyboard evidence was detected." },
+    { signal: "placeholder", pattern: /placeholder/i, evidence: "placeholder evidence was detected." },
+    { signal: "focus", pattern: /focus\s*\(|AutoFocusPlugin|autofocus|autoFocus/i, evidence: "focus evidence was detected." }
+  ];
+  return richTextEditorReadinessSignalFromSpecs(sourceFiles, specs, "accessibility", "signal");
+}
+
+function richTextEditorReadinessTestSignals(sourceFiles: RichTextEditorReadinessSourceFile[]): RichTextEditorReadinessReport["testSignals"] {
+  const specs: Array<{ signal: RichTextEditorReadinessReport["testSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vitest", pattern: /\bvitest\b|describe\s*\(|it\s*\(|expect\s*\(/i, evidence: "Vitest evidence was detected." },
+    { signal: "playwright", pattern: /\bplaywright\b|@playwright\/test|npx playwright/i, evidence: "Playwright evidence was detected." },
+    { signal: "cypress", pattern: /\bcypress\b|cy\.|cypress\/integration/i, evidence: "Cypress evidence was detected." },
+    { signal: "testing-library", pattern: /@testing-library|fireEvent|userEvent/i, evidence: "Testing Library evidence was detected." },
+    { signal: "keyboard-test", pattern: /userEvent\.keyboard|fireEvent\.keyDown|keydown|keyDown/i, evidence: "keyboard test evidence was detected." },
+    { signal: "input-test", pattern: /fireEvent\.input|inputType|execCommand|contenteditable/i, evidence: "input test evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|rich-text-editor-traces|editor-traces|screenshot|trace/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return richTextEditorReadinessSignalFromSpecs(sourceFiles, specs, "test", "signal");
+}
+
+function richTextEditorReadinessPackageSignals(sourceFiles: RichTextEditorReadinessSourceFile[]): RichTextEditorReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: RichTextEditorReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@tiptap/react", pattern: /["@']@tiptap\/react["@']|from ["']@tiptap\/react["']/i, evidence: "Tiptap React package evidence was detected." },
+    { signal: "@tiptap/starter-kit", pattern: /["@']@tiptap\/starter-kit["@']|from ["']@tiptap\/starter-kit["']/i, evidence: "Tiptap StarterKit package evidence was detected." },
+    { signal: "@tiptap/core", pattern: /["@']@tiptap\/core["@']|from ["']@tiptap\/core["']/i, evidence: "Tiptap core package evidence was detected." },
+    { signal: "prosemirror-state", pattern: /["@']prosemirror-state["@']|from ["']prosemirror-state["']/i, evidence: "ProseMirror state package evidence was detected." },
+    { signal: "prosemirror-view", pattern: /["@']prosemirror-view["@']|from ["']prosemirror-view["']/i, evidence: "ProseMirror view package evidence was detected." },
+    { signal: "prosemirror-model", pattern: /["@']prosemirror-model["@']|from ["']prosemirror-model["']/i, evidence: "ProseMirror model package evidence was detected." },
+    { signal: "lexical", pattern: /["@']lexical["@']|from ["']lexical["']/i, evidence: "Lexical package evidence was detected." },
+    { signal: "@lexical/react", pattern: /["@']@lexical\/react["@']|from ["']@lexical\/react\//i, evidence: "Lexical React package evidence was detected." },
+    { signal: "yjs", pattern: /["@']yjs["@']|from ["']yjs["']/i, evidence: "Yjs package evidence was detected." }
+  ];
+  return richTextEditorReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function richTextEditorReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: RichTextEditorReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/rich-text-editor-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

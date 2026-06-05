@@ -160,6 +160,7 @@ import type {
   StateMachineReadinessReport,
   AnimationReadinessReport,
   DragAndDropReadinessReport,
+  RichTextEditorReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
@@ -367,6 +368,7 @@ export interface StudyHtmlInput {
   stateMachineReadinessReport: StateMachineReadinessReport;
   animationReadinessReport: AnimationReadinessReport;
   dragAndDropReadinessReport: DragAndDropReadinessReport;
+  richTextEditorReadinessReport: RichTextEditorReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -573,6 +575,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["state-machine-readiness.html", "State Machine"],
     ["animation-readiness.html", "Animation"],
     ["drag-and-drop-readiness.html", "Drag and Drop"],
+    ["rich-text-editor-readiness.html", "Rich Text Editor"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1590,6 +1593,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "drag-and-drop-readiness.html",
       title: "Drag And Drop Readiness",
       html: pageShell("Drag And Drop Readiness", "drag-and-drop-readiness.html", `<section class="panel" data-source-pattern="Drag and Drop"><h2>Drag And Drop Snapshot</h2><p>${escapeHtml(input.dragAndDropReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dragAndDropReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dragAndDropReadinessReport.dragAndDropSetups.length}</dd></div><div><dt>providers</dt><dd>${input.dragAndDropReadinessReport.providerSignals.length}</dd></div><div><dt>sortable</dt><dd>${input.dragAndDropReadinessReport.sortableSignals.length}</dd></div><div><dt>tests</dt><dd>${input.dragAndDropReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records drag-and-drop readiness only; it does not dispatch pointer, keyboard, dragstart, dragover, drop, touch, or mouse events, create DataTransfer payloads, mount DnD providers, read live DOM geometry, or execute analyzed project tests.</p></section><section class="grid"><article class="drag-and-drop-readiness-card"><h3>Drag And Drop Setups</h3>${dragAndDropReadinessSetupList(input.dragAndDropReadinessReport.dragAndDropSetups)}</article><article class="drag-and-drop-readiness-card"><h3>Library Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.librarySignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Provider Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.providerSignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Sensor Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.sensorSignals, "signal")}</article></section><section class="grid"><article class="drag-and-drop-readiness-card"><h3>Draggable Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.draggableSignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Droppable Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.droppableSignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Sortable Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.sortableSignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Feedback Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.feedbackSignals, "signal")}</article></section><section class="grid"><article class="drag-and-drop-readiness-card"><h3>Accessibility Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.accessibilitySignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Test Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.testSignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Package Signals</h3>${dragAndDropReadinessSignalList(input.dragAndDropReadinessReport.packageSignals, "signal")}</article><article class="drag-and-drop-readiness-card"><h3>Recommended Commands</h3>${dragAndDropReadinessCommandList(input.dragAndDropReadinessReport.recommendedCommands)}</article><article class="drag-and-drop-readiness-card"><h3>Risk Queue</h3>${dragAndDropReadinessRiskList(input.dragAndDropReadinessReport.riskQueue)}</article><article class="drag-and-drop-readiness-card"><h3>다음 확인 단계</h3>${list(input.dragAndDropReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "rich-text-editor-readiness.html",
+      title: "Rich Text Editor Readiness",
+      html: pageShell("Rich Text Editor Readiness", "rich-text-editor-readiness.html", `<section class="panel" data-source-pattern="Rich Text Editor"><h2>Rich Text Editor Snapshot</h2><p>${escapeHtml(input.richTextEditorReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.richTextEditorReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.richTextEditorReadinessReport.richTextEditorSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.richTextEditorReadinessReport.frameworkSignals.length}</dd></div><div><dt>commands</dt><dd>${input.richTextEditorReadinessReport.commandSignals.length}</dd></div><div><dt>tests</dt><dd>${input.richTextEditorReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records rich text editor readiness only; it does not mount Tiptap, ProseMirror, Lexical, or contenteditable editors, dispatch keyboard/input/composition events, mutate documents, execute commands, sync Yjs state, serialize live documents, or run analyzed project tests.</p></section><section class="grid"><article class="rich-text-editor-readiness-card"><h3>Rich Text Editor Setups</h3>${richTextEditorReadinessSetupList(input.richTextEditorReadinessReport.richTextEditorSetups)}</article><article class="rich-text-editor-readiness-card"><h3>Framework Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.frameworkSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Schema Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.schemaSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Render Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.renderSignals, "signal")}</article></section><section class="grid"><article class="rich-text-editor-readiness-card"><h3>Command Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.commandSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>State Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.stateSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Extension Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.extensionSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Collaboration Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.collaborationSignals, "signal")}</article></section><section class="grid"><article class="rich-text-editor-readiness-card"><h3>Accessibility Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.accessibilitySignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Test Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.testSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Package Signals</h3>${richTextEditorReadinessSignalList(input.richTextEditorReadinessReport.packageSignals, "signal")}</article><article class="rich-text-editor-readiness-card"><h3>Recommended Commands</h3>${richTextEditorReadinessCommandList(input.richTextEditorReadinessReport.recommendedCommands)}</article><article class="rich-text-editor-readiness-card"><h3>Risk Queue</h3>${richTextEditorReadinessRiskList(input.richTextEditorReadinessReport.riskQueue)}</article><article class="rich-text-editor-readiness-card"><h3>다음 확인 단계</h3>${list(input.richTextEditorReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "llm-readiness.html",
@@ -7274,6 +7282,31 @@ function dragAndDropReadinessRiskList(items: DragAndDropReadinessReport["riskQue
 }
 
 function dragAndDropReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function richTextEditorReadinessSetupList(items: RichTextEditorReadinessReport["richTextEditorSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">rich text editor setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)}/${escapeHtml(item.readiness)}]<br>schema/render/command/state/extension/collaboration/accessibility/test ${item.schemaCount}/${item.renderCount}/${item.commandCount}/${item.stateCount}/${item.extensionCount}/${item.collaborationCount}/${item.accessibilityCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(richTextEditorReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function richTextEditorReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">rich text editor signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(richTextEditorReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function richTextEditorReadinessCommandList(items: RichTextEditorReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function richTextEditorReadinessRiskList(items: RichTextEditorReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(richTextEditorReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function richTextEditorReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

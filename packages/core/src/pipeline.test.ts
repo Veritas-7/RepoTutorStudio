@@ -21063,6 +21063,229 @@ describe("RepoTutor core pipeline", () => {
     expect(dndHtml).toContain("RepoTutor records drag-and-drop readiness only");
   });
 
+  it("detects rich text editor readiness without mounting editors or mutating documents", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-editor-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-editor-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "tiptap-editor.tsx"), [
+      "import { BubbleMenu, EditorContent, FloatingMenu, useEditor, useEditorState } from '@tiptap/react';",
+      "import StarterKit from '@tiptap/starter-kit';",
+      "import Link from '@tiptap/extension-link';",
+      "import Placeholder from '@tiptap/extension-placeholder';",
+      "import Collaboration from '@tiptap/extension-collaboration';",
+      "import { Mark, Node } from '@tiptap/core';",
+      "import * as Y from 'yjs';",
+      "",
+      "const ydoc = new Y.Doc();",
+      "const awareness = { clientID: 1 };",
+      "",
+      "export function TiptapEditor({ content }: { content: string }) {",
+      "  const editor = useEditor({",
+      "    extensions: [",
+      "      StarterKit.configure({ history: false }),",
+      "      Link.configure({ openOnClick: false, autolink: true }),",
+      "      Placeholder.configure({ placeholder: 'Write a lesson...' }),",
+      "      Collaboration.configure({ document: ydoc, field: 'body' }),",
+      "      Node.create({ name: 'callout' }),",
+      "      Mark.create({ name: 'highlight' })",
+      "    ],",
+      "    content,",
+      "    editorProps: { attributes: { role: 'textbox', 'aria-label': 'Rich text editor' } },",
+      "    onUpdate: ({ editor }) => editor.getJSON()",
+      "  });",
+      "  const state = useEditorState({ editor, selector: ({ editor }) => ({ canBold: editor.can().chain().focus().toggleBold().run(), json: editor.getJSON(), html: editor.getHTML() }) });",
+      "  if (!editor) return null;",
+      "  editor.chain().focus().toggleBold().toggleItalic().toggleStrike().toggleBulletList().toggleCode().setLink({ href: 'https://example.com' }).run();",
+      "  editor.commands.setContent(content);",
+      "  void state;",
+      "  void awareness;",
+      "  return <><EditorContent editor={editor} /><BubbleMenu editor={editor}>format</BubbleMenu><FloatingMenu editor={editor}>insert</FloatingMenu></>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "prosemirror-setup.ts"), [
+      "import { Schema, DOMParser, DOMSerializer } from 'prosemirror-model';",
+      "import { EditorState, Plugin, Transaction } from 'prosemirror-state';",
+      "import { EditorView, Decoration, DecorationSet } from 'prosemirror-view';",
+      "import { keymap } from 'prosemirror-keymap';",
+      "import { inputRules } from 'prosemirror-inputrules';",
+      "import { history, undo, redo } from 'prosemirror-history';",
+      "import { exampleSetup } from 'prosemirror-example-setup';",
+      "import { schema as basicSchema } from 'prosemirror-schema-basic';",
+      "",
+      "export function mountProseMirror(place: HTMLElement, doc: HTMLElement) {",
+      "  const schema = new Schema({ nodes: basicSchema.spec.nodes, marks: basicSchema.spec.marks });",
+      "  const parsed = DOMParser.fromSchema(schema).parse(doc);",
+      "  const plugins = [",
+      "    keymap({ 'Mod-z': undo, 'Mod-y': redo }),",
+      "    inputRules({ rules: [] }),",
+      "    history(),",
+      "    ...exampleSetup({ schema }),",
+      "    new Plugin({ props: { decorations: () => DecorationSet.create(parsed, [Decoration.inline(0, 1, { class: 'selection' })]) } })",
+      "  ];",
+      "  const state = EditorState.create({ doc: parsed, schema, plugins });",
+      "  const view = new EditorView(place, {",
+      "    state,",
+      "    dispatchTransaction(transaction: Transaction) {",
+      "      const nextState = view.state.apply(transaction);",
+      "      view.updateState(nextState);",
+      "    },",
+      "    attributes: { role: 'textbox', 'aria-label': 'ProseMirror editor' }",
+      "  });",
+      "  DOMSerializer.fromSchema(schema).serializeFragment(view.state.doc.content);",
+      "  return view;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "lexical-composer.tsx"), [
+      "import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';",
+      "import { LexicalComposer } from '@lexical/react/LexicalComposer';",
+      "import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';",
+      "import { ContentEditable } from '@lexical/react/LexicalContentEditable';",
+      "import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';",
+      "import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';",
+      "import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';",
+      "import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';",
+      "import { $getRoot, $getSelection, COMMAND_PRIORITY_EDITOR, DecoratorNode, ElementNode, FORMAT_TEXT_COMMAND, TextNode, createCommand } from 'lexical';",
+      "",
+      "const INSERT_CALLOUT_COMMAND = createCommand<string>('INSERT_CALLOUT_COMMAND');",
+      "",
+      "function ToolbarPlugin() {",
+      "  const [editor] = useLexicalComposerContext();",
+      "  editor.update(() => {",
+      "    const root = $getRoot();",
+      "    const selection = $getSelection();",
+      "    void root;",
+      "    void selection;",
+      "  });",
+      "  editor.registerCommand(INSERT_CALLOUT_COMMAND, () => true, COMMAND_PRIORITY_EDITOR);",
+      "  editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');",
+      "  return null;",
+      "}",
+      "",
+      "export function LexicalEditor() {",
+      "  const initialConfig = { namespace: 'RepoTutorRichText', nodes: [TextNode, ElementNode, DecoratorNode], onError(error: Error) { throw error; } };",
+      "  return <LexicalComposer initialConfig={initialConfig}><RichTextPlugin contentEditable={<ContentEditable role=\"textbox\" aria-label=\"Lexical editor\" />} placeholder={<span>Write a note</span>} ErrorBoundary={LexicalErrorBoundary} /><HistoryPlugin /><OnChangePlugin onChange={(editorState) => editorState.toJSON()} /><AutoFocusPlugin /><ToolbarPlugin /></LexicalComposer>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "rich-text-editor.spec.ts"), [
+      "import { fireEvent, getByRole } from '@testing-library/dom';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { createEditor } from 'lexical';",
+      "import { EditorState } from 'prosemirror-state';",
+      "",
+      "describe('rich text editor contracts', () => {",
+      "  it('captures deterministic keyboard and input contracts without mounting app editors', async () => {",
+      "    const host = document.createElement('div');",
+      "    host.setAttribute('contenteditable', 'true');",
+      "    host.setAttribute('role', 'textbox');",
+      "    host.setAttribute('aria-label', 'Rich text editor');",
+      "    document.body.append(host);",
+      "    await userEvent.keyboard('{Control>}b{/Control}');",
+      "    fireEvent.input(host, { inputType: 'formatBold', data: 'hello' });",
+      "    document.execCommand?.('bold');",
+      "    void createEditor;",
+      "    void EditorState;",
+      "    expect(getByRole(document.body, 'textbox')).toBe(host);",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        test: "vitest rich-text-editor.spec.ts",
+        "test:e2e": "playwright test rich-text-editor.spec.ts"
+      },
+      dependencies: {
+        "@tiptap/core": "^2.11.5",
+        "@tiptap/react": "^2.11.5",
+        "@tiptap/starter-kit": "^2.11.5",
+        "@tiptap/extension-link": "^2.11.5",
+        "@tiptap/extension-placeholder": "^2.11.5",
+        "@tiptap/extension-collaboration": "^2.11.5",
+        "prosemirror-model": "^1.24.1",
+        "prosemirror-state": "^1.4.3",
+        "prosemirror-view": "^1.38.1",
+        "prosemirror-keymap": "^1.2.3",
+        "prosemirror-inputrules": "^1.4.0",
+        "prosemirror-history": "^1.4.1",
+        "prosemirror-example-setup": "^1.2.3",
+        "prosemirror-schema-basic": "^1.2.3",
+        lexical: "^0.27.2",
+        "@lexical/react": "^0.27.2",
+        react: "^19.0.0",
+        yjs: "^13.6.27"
+      },
+      devDependencies: {
+        "@testing-library/dom": "^10.4.0",
+        "@testing-library/user-event": "^14.6.1",
+        vitest: "^3.0.0",
+        playwright: "^1.50.0",
+        typescript: "^5.8.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "rich-text-editor.yml"), [
+      "name: rich-text-editor",
+      "on: [push]",
+      "jobs:",
+      "  static-rich-text-editor:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest rich-text-editor.spec.ts",
+      "      - run: npx playwright test rich-text-editor.spec.ts",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: rich-text-editor-traces",
+      "          path: reports/rich-text-editor"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "rich-text-editor-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      richTextEditorSetups: Array<{ filePath: string; platform: string; schemaCount: number; renderCount: number; commandCount: number; stateCount: number; extensionCount: number; collaborationCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      renderSignals: Array<{ signal: string; readiness: string }>;
+      commandSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      extensionSignals: Array<{ signal: string; readiness: string }>;
+      collaborationSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Rich text editor readiness Tiptap useEditor EditorContent ProseMirror EditorState EditorView LexicalComposer RichTextPlugin ContentEditable commands keyboard tests");
+    expect(report.richTextEditorSetups.some((item) => item.filePath === "src/tiptap-editor.tsx" && item.platform === "tiptap" && item.renderCount > 0 && item.commandCount > 0 && item.stateCount > 0 && item.extensionCount > 0 && item.collaborationCount > 0 && item.accessibilityCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(report.richTextEditorSetups.some((item) => item.filePath === "src/prosemirror-setup.ts" && item.platform === "prosemirror" && item.schemaCount > 0 && item.renderCount > 0 && item.commandCount > 0 && item.stateCount > 0 && item.extensionCount > 0)).toBe(true);
+    expect(report.richTextEditorSetups.some((item) => item.filePath === "src/lexical-composer.tsx" && item.platform === "lexical" && item.renderCount > 0 && item.commandCount > 0 && item.stateCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["tiptap", "prosemirror", "lexical"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["starter-kit", "schema", "node", "mark", "nodes"]));
+    expect(readySignals(report.renderSignals)).toEqual(expect.arrayContaining(["editor-content", "editor-view", "contenteditable", "rich-text-plugin"]));
+    expect(readySignals(report.commandSignals)).toEqual(expect.arrayContaining(["chain", "commands", "dispatch-command", "format-text", "keymap"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["editor-state", "transaction", "update", "selection", "json-html"]));
+    expect(readySignals(report.extensionSignals)).toEqual(expect.arrayContaining(["extension-create", "node-create", "mark-create", "plugin", "history"]));
+    expect(readySignals(report.collaborationSignals)).toEqual(expect.arrayContaining(["collaboration", "awareness", "yjs"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-textbox", "aria-label", "keyboard", "placeholder"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "testing-library", "keyboard-test", "input-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@tiptap/react", "@tiptap/starter-kit", "prosemirror-state", "prosemirror-view", "lexical", "@lexical/react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("LexicalComposer"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records rich text editor readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "rich-text-editor-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "rich-text-editor-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "rich-text-editor-readiness.html"))).resolves.toBeUndefined();
+    const editorMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "rich-text-editor-readiness.md"), "utf8");
+    expect(editorMarkdown).toContain("Rich Text Editor Readiness");
+    expect(editorMarkdown).toContain("Tiptap");
+    const editorHtml = await fs.readFile(path.join(result.session.outputPaths.html, "rich-text-editor-readiness.html"), "utf8");
+    expect(editorHtml).toContain("rich-text-editor-readiness-card");
+    expect(editorHtml).toContain("data-source-pattern=\"Rich Text Editor\"");
+    expect(editorHtml).toContain("RepoTutor records rich text editor readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

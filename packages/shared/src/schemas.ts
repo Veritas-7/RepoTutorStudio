@@ -10128,6 +10128,97 @@ export const DragAndDropReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const RichTextEditorReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  richTextEditorSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["tiptap", "prosemirror", "lexical", "contenteditable", "custom", "unknown"]),
+    schemaCount: z.number().int().nonnegative(),
+    renderCount: z.number().int().nonnegative(),
+    commandCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    extensionCount: z.number().int().nonnegative(),
+    collaborationCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["tiptap", "prosemirror", "lexical", "contenteditable", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  schemaSignals: z.array(z.object({
+    signal: z.enum(["starter-kit", "schema", "node", "mark", "nodes", "decorator-node", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  renderSignals: z.array(z.object({
+    signal: z.enum(["editor-content", "editor-view", "contenteditable", "rich-text-plugin", "bubble-menu", "floating-menu", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  commandSignals: z.array(z.object({
+    signal: z.enum(["chain", "commands", "dispatch-command", "format-text", "keymap", "input-rule", "exec-command", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["editor-state", "transaction", "update", "selection", "json-html", "on-change", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  extensionSignals: z.array(z.object({
+    signal: z.enum(["extension-create", "node-create", "mark-create", "plugin", "history", "placeholder", "link", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  collaborationSignals: z.array(z.object({
+    signal: z.enum(["collaboration", "awareness", "yjs", "provider", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-textbox", "aria-label", "keyboard", "placeholder", "focus", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "keyboard-test", "input-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@tiptap/react", "@tiptap/starter-kit", "@tiptap/core", "prosemirror-state", "prosemirror-view", "prosemirror-model", "lexical", "@lexical/react", "yjs", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -13181,6 +13272,7 @@ export type TerminalUiReadinessReport = z.infer<typeof TerminalUiReadinessReport
 export type StateMachineReadinessReport = z.infer<typeof StateMachineReadinessReportSchema>;
 export type AnimationReadinessReport = z.infer<typeof AnimationReadinessReportSchema>;
 export type DragAndDropReadinessReport = z.infer<typeof DragAndDropReadinessReportSchema>;
+export type RichTextEditorReadinessReport = z.infer<typeof RichTextEditorReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
