@@ -8136,6 +8136,62 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 271:
   - `916908e` tracing readiness report
 
+- 2026-06-05: AutoResearch Upgrade 272 candidate selected:
+  debug readiness from `microsoft/vscode-js-debug`
+  (`https://github.com/microsoft/vscode-js-debug`; ignored clone HEAD
+  `2df2f9d0d6492673ea71008c92b0e51717a310f9`),
+  `microsoft/debugpy`
+  (`https://github.com/microsoft/debugpy`; ignored clone HEAD
+  `858b05c08555cfc54efa7cf90e70184c7495b38e`), and `go-delve/delve`
+  (`https://github.com/go-delve/delve`; ignored clone HEAD
+  `b17af91dec79ddb2d1fcc08fa13c10d13de77b83`). Static source inspection
+  only; `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented VS Code js-debug/debugpy/Delve/DAP-style debug
+  readiness report: `DebugReadinessReportSchema`,
+  `analysis/debug-readiness-report.json`, `markdown/debug-readiness.md`,
+  `html/debug-readiness.html`, static debug setup detection, adapter, mode,
+  breakpoint, mapping, runtime, remote, diagnostic, and package signals,
+  `launch.json`/DAP/debug adapter detection, launch and attach mode detection,
+  debugpy listen/connect/wait-for-client detection, Delve headless/listen/
+  multiclient/log-output detection, breakpoint/logpoint/function/exception/
+  hit-condition detection, source map/sourceMapPathOverrides/skipFiles/
+  smartStep/pathMappings/cwd/webRoot coverage, remote attach/PID/subprocess/
+  container/SSH/WSL safety review coverage, static-only debugger guardrail,
+  recommended inspection commands, manifest/session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target debug-readiness`.
+- 2026-06-05: RED/GREEN debug readiness smoke recorded:
+  pre-implementation precise gap checks had no `DebugReadinessReportSchema`,
+  no `debugReadinessReport`, and no `debug-readiness` target. GREEN fixture
+  detected launch-config, package-script, debugpy, Delve, and workflow setup
+  rows; DAP, js-debug, debugpy, Delve, Chrome/Node inspector adapter signals;
+  launch, attach, remote attach, headless, listen, connect, wait-for-client
+  modes; line, conditional, logpoint, function, exception, and hit-condition
+  breakpoint signals; source map, override, skipFiles, smartStep,
+  pathMappings, cwd/webRoot mapping signals; Node, browser, Python, pytest,
+  Go Delve, core dump, native attach runtime signals; remote, diagnostic,
+  package, recommended command, static-only guardrail, and all three new
+  artifacts.
+- 2026-06-05: Verification for Upgrade 272:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused debug readiness Vitest command: PASS, pipeline file 1/1 focused
+    test
+  - `pnpm -w typecheck`: PASS
+  - full pipeline Vitest: PASS, 79/79 tests
+  - `pnpm test`: PASS, 79/79 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 170/170 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~77.89 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 272:
+  - `d5aa777` debug readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
