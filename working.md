@@ -7557,6 +7557,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 261:
   - `365e1a5` admission policy readiness report
 
+- 2026-06-05: AutoResearch Upgrade 262 candidate selected:
+  API gateway readiness from `Kong/kong`
+  (`https://github.com/Kong/kong`; ignored clone HEAD
+  `6e6c302000a3a55bd9e761644af8a95aa863a8b2`),
+  `TykTechnologies/tyk`
+  (`https://github.com/TykTechnologies/tyk`; ignored clone HEAD
+  `29ae8f574ab0f2e775e2ed213b6ce627ec110001`), and
+  `krakend/krakend-ce`
+  (`https://github.com/krakend/krakend-ce`; ignored clone HEAD
+  `08ff6b10412cc93f3ca488c24b98ac18554fd085`). Static source inspection only;
+  `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Kong/Tyk/KrakenD-style API gateway readiness report:
+  `ApiGatewayReadinessReportSchema`,
+  `analysis/api-gateway-readiness-report.json`,
+  `markdown/api-gateway-readiness.md`,
+  `html/api-gateway-readiness.html`, static API gateway setup detection,
+  gateway/route/upstream/auth/plugin/traffic-policy/observability/validation/
+  CI/package signals, Kong Service/Route/Plugin/Consumer/Upstream/Target/
+  key-auth/JWT/ACL/rate-limiting/decK coverage, Tyk `api_definition`,
+  `listen_path`, `target_url`, `auth_configs`, keyless/JWT/quota/analytics
+  coverage, KrakenD endpoint/backend/extra_config/qos/ratelimit/telemetry/
+  plugin/check coverage, cloud API Gateway IaC hints, static-only risk queue,
+  recommended inspection commands, manifest/session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target api-gateway-readiness`.
+- 2026-06-05: RED/GREEN API gateway readiness smoke recorded:
+  old behavior at `b839148` had no `ApiGatewayReadinessReportSchema` and no
+  `api-gateway-readiness` target (`gap_exit=1`). GREEN fixture detected Kong,
+  Tyk, KrakenD, cloud API Gateway, reverse proxy, service, route, endpoint,
+  listen_path, path/method, host, strip path, upstream, target, backend, load
+  balancing, health check, timeout, circuit breaker, key-auth, JWT, OAuth2,
+  OIDC, ACL, mTLS, auth_configs, keyless, plugins, custom middleware, request/
+  response transformers, CORS, cache, CEL, Lua, rate limiting, quota, throttle,
+  retry, proxy cache, Prometheus, metrics, analytics, tracing, logs, health,
+  status, decK validate/diff/sync/dump, Tyk sync, krakend check/test-plugin,
+  gateway tests, OpenAPI validation, GitHub Actions/artifact upload,
+  docker-compose/Helm/Kubernetes deployment signals, package signals,
+  recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 262:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - focused API gateway readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 69/69 tests
+  - `pnpm test`: PASS, 69/69 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 160/160 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~84.52 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 262:
+  - `d48f8d6` API gateway readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
