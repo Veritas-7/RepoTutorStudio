@@ -1,6 +1,6 @@
 # Compliance Audit 5
 
-Created: 2026-06-05T15:14:42.670Z
+Created: 2026-06-05T15:35:23.014Z
 
 Status: PASS
 
@@ -623,6 +623,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - data connector readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - semantic layer readiness report
 
 - missing files: none
 - missing strings: none

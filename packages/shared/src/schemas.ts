@@ -6766,6 +6766,100 @@ export const DataConnectorReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SemanticLayerReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  semanticLayerSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["metricflow", "dbt-semantic-layer", "cube", "custom", "unknown"]),
+    semanticModelCount: z.number().int().nonnegative(),
+    metricCount: z.number().int().nonnegative(),
+    measureCount: z.number().int().nonnegative(),
+    dimensionCount: z.number().int().nonnegative(),
+    entityCount: z.number().int().nonnegative(),
+    joinCount: z.number().int().nonnegative(),
+    savedQueryCount: z.number().int().nonnegative(),
+    apiCount: z.number().int().nonnegative(),
+    cacheCount: z.number().int().nonnegative(),
+    accessCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  platformSignals: z.array(z.object({
+    signal: z.enum(["metricflow", "dbt-semantic-layer", "cube", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  modelSignals: z.array(z.object({
+    signal: z.enum(["semantic-model", "cube", "view", "sql-table", "ref-model", "time-spine", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  metricSignals: z.array(z.object({
+    signal: z.enum(["simple-metric", "ratio-metric", "derived-metric", "cumulative-metric", "filtered-metric", "measure", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dimensionSignals: z.array(z.object({
+    signal: z.enum(["time-dimension", "categorical-dimension", "dimension-reference", "entity-path", "granularity", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  entitySignals: z.array(z.object({
+    signal: z.enum(["primary-entity", "foreign-entity", "unique-entity", "entity-relationship", "join", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  querySignals: z.array(z.object({
+    signal: z.enum(["saved-query", "metricflow-query", "explain-sql", "display-plan", "sql-api", "rest-api", "graphql-api", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  cacheSignals: z.array(z.object({
+    signal: z.enum(["pre-aggregation", "rollup", "refresh-key", "partition-granularity", "incremental-refresh", "cache-engine", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessSignals: z.array(z.object({
+    signal: z.enum(["access-policy", "row-level-security", "member-security", "security-context", "query-rewrite", "compile-context", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["mf-tutorial", "validate-configs", "list-metrics", "list-dimensions", "query-command", "github-actions", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["metricflow", "dbt-metricflow", "dbt-semantic-interfaces", "cubejs-server", "cube-client", "cube", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const StreamProcessingReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -12214,6 +12308,7 @@ export type QueueReadinessReport = z.infer<typeof QueueReadinessReportSchema>;
 export type EventStreamReadinessReport = z.infer<typeof EventStreamReadinessReportSchema>;
 export type SchemaRegistryReadinessReport = z.infer<typeof SchemaRegistryReadinessReportSchema>;
 export type DataConnectorReadinessReport = z.infer<typeof DataConnectorReadinessReportSchema>;
+export type SemanticLayerReadinessReport = z.infer<typeof SemanticLayerReadinessReportSchema>;
 export type StreamProcessingReadinessReport = z.infer<typeof StreamProcessingReadinessReportSchema>;
 export type PipelineOrchestrationReadinessReport = z.infer<typeof PipelineOrchestrationReadinessReportSchema>;
 export type ServiceMeshReadinessReport = z.infer<typeof ServiceMeshReadinessReportSchema>;

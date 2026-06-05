@@ -1,6 +1,6 @@
 {
   "iteration": 10,
-  "createdAt": "2026-06-05T15:15:27.955Z",
+  "createdAt": "2026-06-05T15:36:07.160Z",
   "checks": [
     {
       "name": "project setup",
@@ -725,6 +725,13 @@
     },
     {
       "name": "data connector readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "semantic layer readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
