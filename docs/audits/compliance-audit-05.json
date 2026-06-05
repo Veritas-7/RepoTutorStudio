@@ -1,6 +1,6 @@
 {
   "iteration": 5,
-  "createdAt": "2026-06-05T10:15:09.346Z",
+  "createdAt": "2026-06-05T10:33:22.798Z",
   "checks": [
     {
       "name": "project setup",
@@ -942,6 +942,13 @@
     },
     {
       "name": "Infrastructure readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "IaC drift readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

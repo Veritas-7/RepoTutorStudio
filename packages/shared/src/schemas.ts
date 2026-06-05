@@ -9651,6 +9651,98 @@ export const InfrastructureReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const IacDriftReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  driftSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["driftctl", "terraform", "opentofu", "pulumi", "terragrunt", "package-script", "workflow", "readme", "unknown"]),
+    inventoryCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    refreshCount: z.number().int().nonnegative(),
+    planCount: z.number().int().nonnegative(),
+    driftCount: z.number().int().nonnegative(),
+    ignoreCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    remediationCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  toolSignals: z.array(z.object({
+    signal: z.enum(["driftctl", "terraform", "opentofu", "pulumi", "terragrunt", "cloud-provider", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["tfstate", "remote-state", "backend", "workspace", "stack", "state-lock", "import", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  inventorySignals: z.array(z.object({
+    signal: z.enum(["provider", "account", "region", "resource-address", "asset-inventory", "cloud-control", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  refreshSignals: z.array(z.object({
+    signal: z.enum(["refresh-only", "refresh", "pulumi-refresh", "state-pull", "drift-scan", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  planSignals: z.array(z.object({
+    signal: z.enum(["plan", "detailed-exitcode", "out-plan", "pulumi-preview", "terragrunt-plan", "cost-diff", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  driftSignals: z.array(z.object({
+    signal: z.enum(["changed", "missing", "unmanaged", "drift", "ignore-rules", "exit-code", "summary", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  remediationSignals: z.array(z.object({
+    signal: z.enum(["import", "state-rm", "state-mv", "pulumi-import", "apply-gated", "manual-review", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["json", "sarif", "markdown", "html", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "scheduled-run", "pull-request", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["driftctl", "terraform", "opentofu", "pulumi", "terragrunt", "infracost", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const DeploymentReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -10954,6 +11046,7 @@ export type BuildToolReadinessReport = z.infer<typeof BuildToolReadinessReportSc
 export type StylingReadinessReport = z.infer<typeof StylingReadinessReportSchema>;
 export type VisualRegressionReadinessReport = z.infer<typeof VisualRegressionReadinessReportSchema>;
 export type InfrastructureReadinessReport = z.infer<typeof InfrastructureReadinessReportSchema>;
+export type IacDriftReadinessReport = z.infer<typeof IacDriftReadinessReportSchema>;
 export type DeploymentReadinessReport = z.infer<typeof DeploymentReadinessReportSchema>;
 export type ServerlessReadinessReport = z.infer<typeof ServerlessReadinessReportSchema>;
 export type MobileReadinessReport = z.infer<typeof MobileReadinessReportSchema>;
