@@ -7442,6 +7442,60 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 259:
   - `18279c8` certificate readiness report
 
+- 2026-06-05: AutoResearch Upgrade 260 candidate selected:
+  Helm/chart readiness from `helm/helm`
+  (`https://github.com/helm/helm`; ignored clone HEAD
+  `827a960ec10ef8202edd8201ce8c140199c23160`),
+  `helm/chart-testing`
+  (`https://github.com/helm/chart-testing`; ignored clone HEAD
+  `46294a64da052ee68a06c8097c8e4e243692e874`), and
+  `helm/chart-releaser`
+  (`https://github.com/helm/chart-releaser`; ignored clone HEAD
+  `8c52c9ebf905bf875c021226faf8c03a97126602`). Static source inspection
+  only; `git ls-files` for all three external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Helm/chart-testing/chart-releaser-style Helm
+  readiness report:
+  `HelmReadinessReportSchema`, `analysis/helm-readiness-report.json`,
+  `markdown/helm-readiness.md`, `html/helm-readiness.html`, static Helm setup
+  detection, chart/template/values/dependency/validation/release/security/CI/
+  package signals, Chart.yaml/values.yaml/templates/_helpers.tpl/
+  values.schema.json/Chart.lock coverage, helm lint/template/install/upgrade/
+  rollback/test/package/push/verify coverage, chart-testing ct lint/install,
+  chart-releaser cr upload/index, OCI/provenance/signing/keyring/digest
+  coverage, static-only risk queue, recommended inspection commands,
+  manifest/session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target helm-readiness`.
+- 2026-06-05: RED/GREEN Helm readiness smoke recorded:
+  old behavior at `a1f05c9` had no `HelmReadinessReportSchema` and no
+  `helm-readiness` CLI/test target (`schema_exit=1`, `target_exit=1`).
+  GREEN fixture detected application and library Chart.yaml files,
+  values.yaml, values.schema.json, environment values, templates,
+  _helpers.tpl, include/tpl/lookup/required/Capabilities/hooks, dependencies,
+  repositories, conditions, aliases, Chart.lock, helm dependency build/update,
+  helm lint/template/dry-run/install/upgrade/rollback/test/package/push/
+  verify, kubeconform, ct lint/install, helm-unittest, chart-releaser upload/
+  index, repo index, OCI registry, provenance/signing/keyring/digest,
+  GitHub Actions/artifact upload, package signals, recommended commands, and
+  all three new artifacts.
+- 2026-06-05: Verification for Upgrade 260:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused Helm readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 67/67 tests
+  - `pnpm test`: PASS, 67/67 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 158/158 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~78 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 260:
+  - `b01f5d9` Helm readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
