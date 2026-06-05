@@ -1,6 +1,6 @@
 {
   "iteration": 9,
-  "createdAt": "2026-06-05T19:52:00.122Z",
+  "createdAt": "2026-06-05T20:06:22.087Z",
   "checks": [
     {
       "name": "project setup",
@@ -1082,6 +1082,13 @@
     },
     {
       "name": "Data table readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Calendar readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

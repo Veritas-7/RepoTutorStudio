@@ -22021,6 +22021,159 @@ describe("RepoTutor core pipeline", () => {
     expect(dataTableHtml).toContain("RepoTutor records data table readiness only");
   });
 
+  it("detects calendar readiness without rendering calendars or mutating dates", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-calendar-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-calendar-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "fullcalendar-schedule.tsx"), [
+      "import FullCalendar from '@fullcalendar/react';",
+      "import dayGridPlugin from '@fullcalendar/daygrid';",
+      "import timeGridPlugin from '@fullcalendar/timegrid';",
+      "import interactionPlugin from '@fullcalendar/interaction';",
+      "import listPlugin from '@fullcalendar/list';",
+      "import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';",
+      "const events = [{ id: 'demo', title: 'Planning', start: '2026-06-05T09:00:00', end: '2026-06-05T10:00:00', resourceId: 'room-a' }];",
+      "const resources = [{ id: 'room-a', title: 'Room A' }];",
+      "export function OpsCalendar() {",
+      "  return <FullCalendar aria-label=\"Operations calendar\" plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, resourceTimeGridPlugin]} initialView=\"timeGridWeek\" headerToolbar={{ left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay' }} events={events} eventSources={[{ events }]} resources={resources} resourceAreaHeaderContent=\"Rooms\" selectable selectMirror editable droppable timeZone=\"Asia/Seoul\" locale=\"ko\" slotDuration=\"00:30:00\" validRange={{ start: '2026-01-01', end: '2026-12-31' }} eventClick={(info) => info.event.id} dateClick={(info) => info.dateStr} select={(info) => info.startStr} eventDrop={(info) => info.event.id} eventResize={(info) => info.endDelta} eventContent={(arg) => <strong>{arg.event.title}</strong>} eventClassNames={() => ['tracked-event']} viewDidMount={(arg) => arg.view.type} />;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "react-big-calendar-schedule.tsx"), [
+      "import moment from 'moment';",
+      "import { Calendar, Views, dateFnsLocalizer, momentLocalizer } from 'react-big-calendar';",
+      "import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';",
+      "const localizer = momentLocalizer(moment);",
+      "const dndLocalizer = dateFnsLocalizer({ format: () => '', parse: () => new Date(), startOfWeek: () => 1, getDay: (date) => date.getDay(), locales: {} });",
+      "const DnDCalendar = withDragAndDrop(Calendar);",
+      "const events = [{ id: 1, title: 'Review', start: new Date(), end: new Date(), resourceId: 'team-a' }];",
+      "const resources = [{ id: 'team-a', title: 'Team A' }];",
+      "export function TeamCalendar() {",
+      "  return <DnDCalendar aria-label=\"Team calendar\" localizer={localizer} culture=\"ko\" events={events} resources={resources} resourceAccessor=\"resourceId\" resourceIdAccessor=\"id\" resourceTitleAccessor=\"title\" startAccessor=\"start\" endAccessor=\"end\" titleAccessor=\"title\" defaultDate={new Date('2026-06-05')} defaultView={Views.WEEK} views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]} selectable popup toolbar formats={{ dayFormat: 'EEE d' }} messages={{ today: 'Today', previous: 'Back', next: 'Next' }} components={{ event: ({ title }) => <span>{title}</span> }} onSelectEvent={(event) => event.id} onSelectSlot={(slot) => slot.start} onNavigate={(date) => date.toISOString()} onView={(view) => view} onEventDrop={({ event }) => event.id} onEventResize={({ event }) => event.id} draggableAccessor={() => true} resizable dayLayoutAlgorithm=\"no-overlap\" min={new Date('2026-06-05T08:00:00')} max={new Date('2026-06-05T18:00:00')} scrollToTime={new Date('2026-06-05T09:00:00')} />;",
+      "}",
+      "void dndLocalizer;"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "day-picker-calendar.tsx"), [
+      "import { useState } from 'react';",
+      "import { type DateRange, type Matcher, DayPicker } from 'react-day-picker';",
+      "export function BookingDatePicker() {",
+      "  const [range, setRange] = useState<DateRange | undefined>({ from: new Date('2026-06-05'), to: new Date('2026-06-07') });",
+      "  const disabled: Matcher[] = [{ before: new Date('2026-01-01') }, { after: new Date('2026-12-31') }, { dayOfWeek: [0] }];",
+      "  return <section aria-label=\"Booking calendar\"><DayPicker mode=\"range\" selected={range} onSelect={setRange} disabled={disabled} modifiers={{ booked: [new Date('2026-06-10')] }} modifiersClassNames={{ booked: 'is-booked' }} captionLayout=\"dropdown\" navLayout=\"after\" numberOfMonths={2} startMonth={new Date('2026-01-01')} endMonth={new Date('2026-12-01')} weekStartsOn={1} ISOWeek timeZone=\"Asia/Seoul\" required showOutsideDays showWeekNumber footer=\"Select arrival and departure\" labels={{ labelDayButton: (date) => `Choose ${date.toDateString()}` }} />;</section>;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "test", "calendar.spec.tsx"), [
+      "import { render, screen, fireEvent } from '@testing-library/react';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { BookingDatePicker } from '../src/day-picker-calendar';",
+      "describe('calendar accessibility and keyboard behavior', () => {",
+      "  it('keeps calendar roles and navigation keyboard reachable', () => {",
+      "    render(<BookingDatePicker />);",
+      "    expect(screen.getByLabelText(/booking calendar/i)).toBeTruthy();",
+      "    expect(screen.getByRole('grid')).toBeTruthy();",
+      "    expect(screen.getByRole('button', { name: /next/i })).toBeTruthy();",
+      "    fireEvent.keyDown(screen.getByRole('grid'), { key: 'ArrowRight' });",
+      "  });",
+      "});"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "calendar.yml"), [
+      "name: calendar",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest run test/calendar.spec.tsx",
+      "      - run: pnpm playwright test calendar.spec.tsx",
+      "      - run: pnpm cypress run --spec test/calendar.spec.tsx",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: calendar-traces",
+      "          path: reports/calendar"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@fullcalendar/core": "latest",
+        "@fullcalendar/daygrid": "latest",
+        "@fullcalendar/interaction": "latest",
+        "@fullcalendar/list": "latest",
+        "@fullcalendar/react": "latest",
+        "@fullcalendar/resource-timegrid": "latest",
+        "@fullcalendar/timegrid": "latest",
+        "date-fns": "latest",
+        "moment": "latest",
+        "react": "latest",
+        "react-big-calendar": "latest",
+        "react-day-picker": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@types/react": "latest",
+        "cypress": "latest",
+        "playwright": "latest",
+        "typescript": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "calendar-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      calendarSetups: Array<{ filePath: string; platform: string; viewCount: number; eventCount: number; selectionCount: number; navigationCount: number; localizationCount: number; resourceCount: number; dragDropCount: number; rangeCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      viewSignals: Array<{ signal: string; readiness: string }>;
+      eventSignals: Array<{ signal: string; readiness: string }>;
+      selectionSignals: Array<{ signal: string; readiness: string }>;
+      navigationSignals: Array<{ signal: string; readiness: string }>;
+      localizationSignals: Array<{ signal: string; readiness: string }>;
+      resourceSignals: Array<{ signal: string; readiness: string }>;
+      dragDropSignals: Array<{ signal: string; readiness: string }>;
+      rangeConstraintSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Calendar readiness FullCalendar react-big-calendar React DayPicker events views selection navigation localization resources drag drop date ranges accessibility tests");
+    expect(report.calendarSetups.some((item) => item.filePath === "src/fullcalendar-schedule.tsx" && item.platform === "fullcalendar" && item.viewCount > 0 && item.eventCount > 0 && item.selectionCount > 0 && item.navigationCount > 0 && item.localizationCount > 0 && item.resourceCount > 0 && item.dragDropCount > 0 && item.rangeCount > 0)).toBe(true);
+    expect(report.calendarSetups.some((item) => item.filePath === "src/react-big-calendar-schedule.tsx" && item.platform === "react-big-calendar" && item.viewCount > 0 && item.eventCount > 0 && item.selectionCount > 0 && item.navigationCount > 0 && item.localizationCount > 0 && item.resourceCount > 0 && item.dragDropCount > 0 && item.rangeCount > 0)).toBe(true);
+    expect(report.calendarSetups.some((item) => item.filePath === "src/day-picker-calendar.tsx" && item.platform === "react-day-picker" && item.viewCount > 0 && item.selectionCount > 0 && item.navigationCount > 0 && item.localizationCount > 0 && item.rangeCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["fullcalendar", "react-big-calendar", "react-day-picker"]));
+    expect(readySignals(report.viewSignals)).toEqual(expect.arrayContaining(["initial-view", "day-grid", "time-grid", "list-view", "month-view", "week-view", "agenda-view", "number-of-months"]));
+    expect(readySignals(report.eventSignals)).toEqual(expect.arrayContaining(["events", "event-click", "date-click", "event-content", "event-class-names", "event-source", "event-accessors"]));
+    expect(readySignals(report.selectionSignals)).toEqual(expect.arrayContaining(["selectable", "select-callback", "on-select-slot", "on-select-event", "selected-date", "on-select-date", "selection-mode"]));
+    expect(readySignals(report.navigationSignals)).toEqual(expect.arrayContaining(["header-toolbar", "toolbar", "today-button", "prev-next", "default-date", "date-range-navigation", "caption-layout", "nav-layout"]));
+    expect(readySignals(report.localizationSignals)).toEqual(expect.arrayContaining(["time-zone", "locale", "localizer", "moment-localizer", "date-fns-localizer", "week-starts-on", "formats-messages"]));
+    expect(readySignals(report.resourceSignals)).toEqual(expect.arrayContaining(["resources", "resource-accessor", "resource-id", "resource-title", "resource-time-grid"]));
+    expect(readySignals(report.dragDropSignals)).toEqual(expect.arrayContaining(["interaction-plugin", "editable-events", "event-drop", "event-resize", "with-drag-and-drop", "draggable-accessor"]));
+    expect(readySignals(report.rangeConstraintSignals)).toEqual(expect.arrayContaining(["valid-range", "min-max-time", "disabled-dates", "date-range", "start-end-month", "modifiers", "matcher"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["calendar-label", "grid-role", "aria-label", "keyboard-navigation", "button-labels", "focus-management"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "cypress", "testing-library", "keyboard-test", "role-test", "timezone-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@fullcalendar/react", "@fullcalendar/core", "react-big-calendar", "react-day-picker", "date-fns"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("FullCalendar"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records calendar readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "calendar-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "calendar-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "calendar-readiness.html"))).resolves.toBeUndefined();
+    const calendarMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "calendar-readiness.md"), "utf8");
+    expect(calendarMarkdown).toContain("Calendar Readiness");
+    expect(calendarMarkdown).toContain("@fullcalendar/react");
+    const calendarHtml = await fs.readFile(path.join(result.session.outputPaths.html, "calendar-readiness.html"), "utf8");
+    expect(calendarHtml).toContain("calendar-readiness-card");
+    expect(calendarHtml).toContain("data-source-pattern=\"Calendar\"");
+    expect(calendarHtml).toContain("RepoTutor records calendar readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
