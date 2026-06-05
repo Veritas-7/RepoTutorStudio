@@ -9763,6 +9763,102 @@ export const CliReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const TerminalUiReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  terminalSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["ink", "bubbletea", "blessed", "curses", "ratatui", "custom", "unknown"]),
+    componentCount: z.number().int().nonnegative(),
+    screenCount: z.number().int().nonnegative(),
+    renderCount: z.number().int().nonnegative(),
+    layoutCount: z.number().int().nonnegative(),
+    inputCount: z.number().int().nonnegative(),
+    focusCount: z.number().int().nonnegative(),
+    mouseCount: z.number().int().nonnegative(),
+    rawModeCount: z.number().int().nonnegative(),
+    altScreenCount: z.number().int().nonnegative(),
+    resizeCount: z.number().int().nonnegative(),
+    styleCount: z.number().int().nonnegative(),
+    widgetCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["ink", "bubbletea", "blessed", "curses", "ratatui", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  screenSignals: z.array(z.object({
+    signal: z.enum(["screen", "program", "alt-screen", "raw-mode", "tty", "terminal-size", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  layoutSignals: z.array(z.object({
+    signal: z.enum(["box", "text", "list", "form", "style", "border", "table", "viewport", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  inputSignals: z.array(z.object({
+    signal: z.enum(["keyboard", "use-input", "key-msg", "keypress", "stdin", "paste", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  focusSignals: z.array(z.object({
+    signal: z.enum(["focus", "focus-manager", "cursor", "selection", "blur", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  mouseSignals: z.array(z.object({
+    signal: z.enum(["mouse", "click", "hover", "drag", "wheel", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  renderSignals: z.array(z.object({
+    signal: z.enum(["render", "view", "static-output", "transform", "ansi", "snapshot", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lifecycleSignals: z.array(z.object({
+    signal: z.enum(["init", "update", "exit", "resize", "tick", "batch-sequence", "suspend", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["ink-testing-library", "go-test", "snapshot", "artifact-upload", "pty-test", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["ink", "blessed", "bubbletea", "bubbles", "lipgloss", "ratatui", "ncurses", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -12812,6 +12908,7 @@ export type EnvValidationReadinessReport = z.infer<typeof EnvValidationReadiness
 export type SecurityHeadersReadinessReport = z.infer<typeof SecurityHeadersReadinessReportSchema>;
 export type GraphqlReadinessReport = z.infer<typeof GraphqlReadinessReportSchema>;
 export type CliReadinessReport = z.infer<typeof CliReadinessReportSchema>;
+export type TerminalUiReadinessReport = z.infer<typeof TerminalUiReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
