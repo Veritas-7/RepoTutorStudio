@@ -47,6 +47,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "incident-response-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "slo-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "cost-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "progressive-delivery-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
@@ -223,6 +224,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "incident-response-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "slo-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "cost-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "progressive-delivery-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
@@ -402,6 +404,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "incident-response-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "slo-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "cost-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "progressive-delivery-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "load-testing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
@@ -1358,6 +1361,26 @@ describe("RepoTutor core pipeline", () => {
     expect(costMarkdown).toContain("# Cost Readiness");
     expect(costMarkdown).toContain("## Allocation Signals");
     expect(costMarkdown).toContain("## Observability Signals");
+    const progressiveDeliveryText = await fs.readFile(path.join(result.session.outputPaths.analysis, "progressive-delivery-readiness-report.json"), "utf8");
+    expect(progressiveDeliveryText).toContain("Progressive delivery readiness Argo Rollouts Flagger Kayenta canary blue-green traffic routing analysis promotion abort");
+    expect(progressiveDeliveryText).toContain("\"rolloutSetups\"");
+    expect(progressiveDeliveryText).toContain("\"strategySignals\"");
+    expect(progressiveDeliveryText).toContain("\"trafficSignals\"");
+    expect(progressiveDeliveryText).toContain("\"analysisSignals\"");
+    expect(progressiveDeliveryText).toContain("\"safetySignals\"");
+    expect(progressiveDeliveryText).toContain("\"notificationSignals\"");
+    expect(progressiveDeliveryText).toContain("\"workflowSignals\"");
+    expect(progressiveDeliveryText).toContain("\"packageSignals\"");
+    expect(progressiveDeliveryText).toContain("RepoTutor records static progressive delivery readiness only");
+    const progressiveDeliveryHtml = await fs.readFile(path.join(result.session.outputPaths.html, "progressive-delivery-readiness.html"), "utf8");
+    expect(progressiveDeliveryHtml).toContain("Progressive Delivery Readiness");
+    expect(progressiveDeliveryHtml).toContain("progressive-delivery-readiness-card");
+    expect(progressiveDeliveryHtml).toContain("data-source-pattern=\"Progressive Delivery\"");
+    expect(progressiveDeliveryHtml).toContain("does not apply Rollouts");
+    const progressiveDeliveryMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "progressive-delivery-readiness.md"), "utf8");
+    expect(progressiveDeliveryMarkdown).toContain("# Progressive Delivery Readiness");
+    expect(progressiveDeliveryMarkdown).toContain("## Traffic Signals");
+    expect(progressiveDeliveryMarkdown).toContain("## Analysis Signals");
     const loadTestingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"), "utf8");
     expect(loadTestingText).toContain("k6 Artillery Locust load testing scenarios phases thresholds checks ensure HttpUser headless distributed reports");
     expect(loadTestingText).toContain("\"loadTestSetups\"");
@@ -3844,6 +3867,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/incident-response-readiness.html");
     expect(exportManifestText).toContain("html/slo-readiness.html");
     expect(exportManifestText).toContain("html/cost-readiness.html");
+    expect(exportManifestText).toContain("html/progressive-delivery-readiness.html");
     expect(exportManifestText).toContain("html/load-testing-readiness.html");
     expect(exportManifestText).toContain("html/benchmark-readiness.html");
     expect(exportManifestText).toContain("html/e2e.html");
@@ -4042,6 +4066,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("incident-response-readiness.html");
     expect(learningPathHtml).toContain("slo-readiness.html");
     expect(learningPathHtml).toContain("cost-readiness.html");
+    expect(learningPathHtml).toContain("progressive-delivery-readiness.html");
     expect(learningPathHtml).toContain("load-testing-readiness.html");
     expect(learningPathHtml).toContain("benchmark-readiness.html");
     expect(learningPathHtml).toContain("e2e.html");
@@ -6963,6 +6988,286 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "cost-readiness.html"), "utf8");
     expect(html).toContain("cost-readiness-card");
     expect(html).toContain("does not run Infracost");
+  });
+
+  it("detects progressive delivery readiness without touching rollout controllers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-progressive-delivery-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-progressive-delivery-source-"));
+    await fs.mkdir(path.join(sourceRoot, "rollouts"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "flagger"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "kayenta"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "progressive-delivery-study",
+      version: "1.0.0",
+      scripts: {
+        "rollout:status": "kubectl argo rollouts get rollout orders -n prod",
+        "rollout:promote": "kubectl argo rollouts promote orders -n prod",
+        "rollout:abort": "kubectl argo rollouts abort orders -n prod",
+        "rollout:retry": "kubectl argo rollouts retry rollout/orders -n prod"
+      },
+      dependencies: {
+        "argo-rollouts": "latest",
+        flagger: "latest",
+        kayenta: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "rollouts", "orders-rollout.yaml"), [
+      "apiVersion: argoproj.io/v1alpha1",
+      "kind: Rollout",
+      "metadata:",
+      "  name: orders",
+      "spec:",
+      "  progressDeadlineSeconds: 600",
+      "  progressDeadlineAbort: true",
+      "  strategy:",
+      "    canary:",
+      "      stableService: orders-stable",
+      "      canaryService: orders-canary",
+      "      abortScaleDownDelaySeconds: 30",
+      "      trafficRouting:",
+      "        istio:",
+      "          virtualService:",
+      "            name: orders-vsvc",
+      "            routes: [primary]",
+      "      steps:",
+      "        - setWeight: 20",
+      "        - pause: { duration: 5m }",
+      "        - analysis:",
+      "            templates:",
+      "              - templateName: orders-success-rate",
+      "        - setWeight: 50",
+      "---",
+      "apiVersion: argoproj.io/v1alpha1",
+      "kind: Rollout",
+      "metadata:",
+      "  name: orders-bluegreen",
+      "spec:",
+      "  strategy:",
+      "    blueGreen:",
+      "      activeService: orders-active",
+      "      previewService: orders-preview",
+      "      previewReplicaCount: 2",
+      "      autoPromotionEnabled: false",
+      "      scaleDownDelaySeconds: 30",
+      "---",
+      "apiVersion: argoproj.io/v1alpha1",
+      "kind: AnalysisTemplate",
+      "metadata:",
+      "  name: orders-success-rate",
+      "spec:",
+      "  metrics:",
+      "    - name: success-rate",
+      "      interval: 1m",
+      "      successCondition: result[0] >= 0.99",
+      "      failureCondition: result[0] < 0.95",
+      "      failureLimit: 2",
+      "      provider:",
+      "        prometheus:",
+      "          address: http://prometheus.monitoring.svc:9090",
+      "          query: sum(rate(http_requests_total{status!~\"5..\"}[5m])) / sum(rate(http_requests_total[5m]))",
+      "---",
+      "apiVersion: argoproj.io/v1alpha1",
+      "kind: Experiment",
+      "metadata:",
+      "  name: orders-experiment",
+      "spec:",
+      "  templates:",
+      "    - name: baseline",
+      "      replicas: 1",
+      "    - name: canary",
+      "      replicas: 1",
+      "---",
+      "apiVersion: argoproj.io/v1alpha1",
+      "kind: AnalysisRun",
+      "metadata:",
+      "  name: orders-success-rate-run",
+      "status:",
+      "  phase: Successful",
+      "  message: Canary analysis completed successfully"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "flagger", "orders-canary.yaml"), [
+      "apiVersion: flagger.app/v1beta1",
+      "kind: Canary",
+      "metadata:",
+      "  name: orders",
+      "spec:",
+      "  provider: istio",
+      "  targetRef:",
+      "    apiVersion: apps/v1",
+      "    kind: Deployment",
+      "    name: orders",
+      "  service:",
+      "    port: 80",
+      "    gateways: [mesh]",
+      "  analysis:",
+      "    interval: 15s",
+      "    threshold: 5",
+      "    maxWeight: 50",
+      "    stepWeight: 5",
+      "    stepWeights: [5, 10, 20, 30, 40, 50]",
+      "    metrics:",
+      "      - name: request-success-rate",
+      "        thresholdRange:",
+      "          min: 99",
+      "        interval: 1m",
+      "      - name: request-duration",
+      "        templateRef:",
+      "          name: latency",
+      "        thresholdRange:",
+      "          max: 500",
+      "        interval: 30s",
+      "    webhooks:",
+      "      - name: load-test",
+      "        type: rollout",
+      "        url: http://flagger-loadtester.test/",
+      "      - name: gate",
+      "        type: confirm-promotion",
+      "        url: http://gate.test/approve",
+      "    alerts:",
+      "      - name: slack-alert",
+      "        severity: error",
+      "        providerRef:",
+      "          name: slack",
+      "---",
+      "apiVersion: flagger.app/v1beta1",
+      "kind: MetricTemplate",
+      "metadata:",
+      "  name: latency",
+      "spec:",
+      "  provider:",
+      "    type: prometheus",
+      "    address: http://prometheus.monitoring:9090",
+      "  query: histogram_quantile(0.99, sum(rate(request_duration_seconds_bucket[{{ interval }}])) by (le))",
+      "---",
+      "apiVersion: flagger.app/v1beta1",
+      "kind: AlertProvider",
+      "metadata:",
+      "  name: slack",
+      "spec:",
+      "  type: slack",
+      "  channel: '#deployments'",
+      "  username: flagger",
+      "---",
+      "apiVersion: split.smi-spec.io/v1alpha3",
+      "kind: TrafficSplit",
+      "metadata:",
+      "  name: orders",
+      "spec:",
+      "  service: orders",
+      "  backends:",
+      "    - service: orders-primary",
+      "      weight: 90",
+      "    - service: orders-canary",
+      "      weight: 10",
+      "---",
+      "apiVersion: networking.k8s.io/v1",
+      "kind: Ingress",
+      "metadata:",
+      "  name: orders-canary",
+      "  annotations:",
+      "    nginx.ingress.kubernetes.io/canary: \"true\"",
+      "    nginx.ingress.kubernetes.io/canary-weight: \"10\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "kayenta", "canary-config.json"), JSON.stringify({
+      name: "orders-kayenta",
+      description: "Kayenta automated canary analysis for orders",
+      judge: {
+        name: "NetflixACAJudge-v1.0",
+        judgeConfigurations: {}
+      },
+      metrics: [
+        {
+          name: "errors",
+          query: "sum:trace.http.request.errors{service:orders}.as_count()",
+          analysisConfigurations: {
+            canary: {
+              direction: "increase"
+            }
+          }
+        }
+      ],
+      scoreThresholds: {
+        marginal: 75,
+        pass: 95
+      },
+      pipeline: [
+        { type: "metricSetMixer", controlScope: "baseline", experimentScope: "canary" },
+        { type: "canaryJudge", canaryConfigId: "orders-kayenta", metricSetPairListId: "mixed", metricsAccountName: "datadog-prod" }
+      ],
+      baseline: "orders-stable",
+      experiment: "orders-canary",
+      controlScope: { scope: "baseline" },
+      experimentScope: { scope: "canary" },
+      Datadog: true
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "progressive-delivery.yml"), [
+      "name: progressive-delivery",
+      "on: [pull_request]",
+      "jobs:",
+      "  rollout:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: helm upgrade --install argo-rollouts argo/argo-rollouts --namespace argo-rollouts --wait",
+      "      - run: kubectl apply --dry-run=server -f rollouts/orders-rollout.yaml",
+      "      - run: kubectl argo rollouts get rollout orders -n prod --watch=false > rollout-report.txt",
+      "      - run: kubectl argo rollouts promote orders -n prod",
+      "      - run: kubectl argo rollouts abort orders -n prod || true",
+      "      - run: kubectl argo rollouts retry rollout/orders -n prod || true",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: rollout report",
+      "          path: rollout-report.txt"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "progressive-delivery-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      rolloutSetups: Array<{ platform: string; strategyCount: number; trafficRoutingCount: number; analysisCount: number; promotionCount: number; abortCount: number; workflowCount: number }>;
+      strategySignals: Array<{ signal: string; readiness: string }>;
+      trafficSignals: Array<{ signal: string; readiness: string }>;
+      analysisSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      notificationSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Progressive delivery readiness Argo Rollouts Flagger Kayenta canary blue-green traffic routing analysis promotion abort");
+    expect(report.rolloutSetups.length).toBeGreaterThan(0);
+    expect(report.rolloutSetups.some((item) => item.platform === "argo-rollouts" && item.strategyCount > 0 && item.trafficRoutingCount > 0 && item.analysisCount > 0)).toBe(true);
+    expect(report.rolloutSetups.some((item) => item.platform === "flagger" && item.strategyCount > 0 && item.trafficRoutingCount > 0 && item.analysisCount > 0)).toBe(true);
+    expect(report.rolloutSetups.some((item) => item.platform === "kayenta" && item.analysisCount > 0)).toBe(true);
+    expect(report.rolloutSetups.some((item) => item.platform === "workflow" && item.workflowCount > 0 && item.promotionCount > 0 && item.abortCount > 0)).toBe(true);
+    expect(readySignals(report.strategySignals)).toEqual(expect.arrayContaining(["rollout-crd", "canary-crd", "blue-green", "canary-steps", "experiment", "traffic-routing"]));
+    expect(readySignals(report.trafficSignals)).toEqual(expect.arrayContaining(["set-weight", "step-weight", "max-weight", "traffic-split", "service-mesh", "ingress"]));
+    expect(readySignals(report.analysisSignals)).toEqual(expect.arrayContaining(["analysis-template", "metric-template", "kayenta-judge", "prometheus-query", "datadog-query", "webhook-check", "threshold-range", "score-threshold"]));
+    expect(readySignals(report.safetySignals)).toEqual(expect.arrayContaining(["manual-promotion", "auto-promotion", "abort-on-failure", "pause-step", "rollback", "progress-deadline", "failure-threshold"]));
+    expect(readySignals(report.notificationSignals)).toEqual(expect.arrayContaining(["slack", "webhook", "alert-provider", "analysis-run-status"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["kubectl-plugin", "promote-command", "abort-command", "retry-command", "helm-install", "github-actions", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["argo-rollouts", "flagger", "kayenta", "prometheus", "istio"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.map((item) => item.action)).toContain("RepoTutor records static progressive delivery readiness only; it does not apply Rollouts or Canaries, shift traffic, query metrics, promote, abort, or roll back releases.");
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual([
+      "rg \"apiVersion: argoproj.io|kind: Rollout|AnalysisTemplate|AnalysisRun|Experiment\" .",
+      "rg \"kind: Canary|flagger.app|MetricTemplate|AlertProvider|thresholdRange|stepWeight|maxWeight\" .",
+      "rg \"trafficRouting|setWeight|stepWeights|VirtualService|TrafficSplit|HTTPRoute|Ingress|Gateway\" .",
+      "rg \"Kayenta|canaryJudge|scoreThresholds|baseline|experiment|controlScope|experimentScope\" .",
+      "rg \"promote|abort|pause|rollback|failureThreshold|manualPromotion|kubectl argo rollouts\" .github . scripts deploy"
+    ]);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "progressive-delivery-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "progressive-delivery-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "progressive-delivery-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "progressive-delivery-readiness.md"), "utf8");
+    expect(markdown).toContain("# Progressive Delivery Readiness");
+    expect(markdown).toContain("## Traffic Signals");
+    expect(markdown).toContain("## Analysis Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "progressive-delivery-readiness.html"), "utf8");
+    expect(html).toContain("progressive-delivery-readiness-card");
+    expect(html).toContain("does not apply Rollouts");
   });
 
   it("detects load testing readiness without running load toolchains", async () => {

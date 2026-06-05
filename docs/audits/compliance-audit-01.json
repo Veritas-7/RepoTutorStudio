@@ -1,6 +1,6 @@
 {
   "iteration": 1,
-  "createdAt": "2026-06-05T14:17:48.440Z",
+  "createdAt": "2026-06-05T14:35:11.014Z",
   "checks": [
     {
       "name": "project setup",
@@ -270,6 +270,13 @@
     },
     {
       "name": "cost readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "progressive delivery readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

@@ -58,6 +58,7 @@ import {
   IncidentResponseReadinessReport,
   SloReadinessReport,
   CostReadinessReport,
+  ProgressiveDeliveryReadinessReport,
   LoadTestingReadinessReport,
   BenchmarkReadinessReport,
   E2eReport,
@@ -253,6 +254,7 @@ export interface AnalysisBundle {
   incidentResponseReadinessReport: IncidentResponseReadinessReport;
   sloReadinessReport: SloReadinessReport;
   costReadinessReport: CostReadinessReport;
+  progressiveDeliveryReadinessReport: ProgressiveDeliveryReadinessReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
@@ -448,6 +450,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const incidentResponseReadinessReport = await buildIncidentResponseReadinessReport(walk);
   const sloReadinessReport = await buildSloReadinessReport(walk);
   const costReadinessReport = await buildCostReadinessReport(walk);
+  const progressiveDeliveryReadinessReport = await buildProgressiveDeliveryReadinessReport(walk);
   const loadTestingReadinessReport = await buildLoadTestingReadinessReport(walk);
   const benchmarkReadinessReport = await buildBenchmarkReadinessReport(walk);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
@@ -580,7 +583,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -9034,6 +9037,312 @@ function costSignalFromSpecs<T extends string>(
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/cost-readiness.html"
+    };
+  });
+}
+
+async function buildProgressiveDeliveryReadinessReport(walk: WalkResult): Promise<ProgressiveDeliveryReadinessReport> {
+  const sourceFiles = await progressiveDeliverySourceFiles(walk);
+  const rolloutSetups = progressiveDeliverySetupRows(sourceFiles);
+  const strategySignals = progressiveDeliveryStrategySignals(sourceFiles);
+  const trafficSignals = progressiveDeliveryTrafficSignals(sourceFiles);
+  const analysisSignals = progressiveDeliveryAnalysisSignals(sourceFiles);
+  const safetySignals = progressiveDeliverySafetySignals(sourceFiles);
+  const notificationSignals = progressiveDeliveryNotificationSignals(sourceFiles);
+  const workflowSignals = progressiveDeliveryWorkflowSignals(sourceFiles);
+  const packageSignals = progressiveDeliveryPackageSignals(sourceFiles);
+
+  const hasSetup = rolloutSetups.length > 0 || packageSignals.some((item) => item.readiness === "ready");
+  const hasStrategy = strategySignals.some((item) => item.readiness === "ready") || rolloutSetups.some((item) => item.strategyCount + item.canaryCount + item.blueGreenCount > 0);
+  const hasTraffic = trafficSignals.some((item) => item.readiness === "ready") || rolloutSetups.some((item) => item.trafficRoutingCount > 0);
+  const hasAnalysis = analysisSignals.some((item) => item.readiness === "ready") || rolloutSetups.some((item) => item.analysisCount + item.metricCount + item.thresholdCount > 0);
+  const hasSafety = safetySignals.some((item) => item.readiness === "ready") || rolloutSetups.some((item) => item.promotionCount + item.abortCount > 0);
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready") || rolloutSetups.some((item) => item.workflowCount > 0);
+
+  const riskQueue: ProgressiveDeliveryReadinessReport["riskQueue"] = [];
+  if (!hasSetup) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add static progressive delivery manifests before claiming rollout safety readiness.",
+      why: "Progressive delivery readiness needs Argo Rollouts, Flagger, Kayenta, Spinnaker, or equivalent staged rollout evidence.",
+      relatedHref: "html/progressive-delivery-readiness.html"
+    });
+  }
+  if (hasSetup && !hasStrategy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document canary, blue-green, experiment, or rollout step strategy.",
+      why: "A rollout controller is not enough; learners need to see how traffic or workload progression is staged.",
+      relatedHref: "html/progressive-delivery-readiness.html"
+    });
+  }
+  if (hasSetup && !hasTraffic) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add traffic routing evidence such as setWeight, stepWeight, TrafficSplit, VirtualService, HTTPRoute, or ingress canary settings.",
+      why: "Progressive delivery depends on controlled exposure rather than a single all-at-once deployment.",
+      relatedHref: "html/progressive-delivery-readiness.html"
+    });
+  }
+  if (hasSetup && !hasAnalysis) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Pair staged rollout with metric analysis, thresholds, or automated canary analysis.",
+      why: "Without AnalysisTemplate, MetricTemplate, Prometheus/Datadog query, webhook check, or Kayenta judge evidence, promotion decisions are not reviewable.",
+      relatedHref: "html/progressive-delivery-readiness.html"
+    });
+  }
+  if (hasSetup && !hasSafety) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add promotion, pause, abort, rollback, failure threshold, or progress-deadline evidence.",
+      why: "Rollout safety needs explicit failure behavior, not only positive-path traffic shifting.",
+      relatedHref: "html/progressive-delivery-readiness.html"
+    });
+  }
+  if (hasSetup && !hasWorkflow) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add CI, kubectl plugin, Helm install, artifact, promote, abort, or retry workflow evidence.",
+      why: "Progressive delivery controls should be visible in review and operation workflows.",
+      relatedHref: "html/progressive-delivery-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "RepoTutor records static progressive delivery readiness only; it does not apply Rollouts or Canaries, shift traffic, query metrics, promote, abort, or roll back releases.",
+    why: "Actual rollout safety requires authorized cluster, metric backend, controller, and incident workflow verification.",
+    relatedHref: "html/progressive-delivery-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Argo Rollouts/Flagger/Kayenta-style progressive delivery readiness report: setup ${rolloutSetups.length} files, strategy signals ${strategySignals.length}, traffic signals ${trafficSignals.length}, analysis signals ${analysisSignals.length} were mapped from static evidence.`,
+    sourcePattern: "Progressive delivery readiness Argo Rollouts Flagger Kayenta canary blue-green traffic routing analysis promotion abort",
+    rolloutSetups,
+    strategySignals,
+    trafficSignals,
+    analysisSignals,
+    safetySignals,
+    notificationSignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"apiVersion: argoproj.io|kind: Rollout|AnalysisTemplate|AnalysisRun|Experiment\" .", purpose: "Find Argo Rollouts CRDs and automated analysis resources." },
+      { command: "rg \"kind: Canary|flagger.app|MetricTemplate|AlertProvider|thresholdRange|stepWeight|maxWeight\" .", purpose: "Find Flagger canary analysis, metrics, and alert provider evidence." },
+      { command: "rg \"trafficRouting|setWeight|stepWeights|VirtualService|TrafficSplit|HTTPRoute|Ingress|Gateway\" .", purpose: "Review traffic routing and staged exposure controls." },
+      { command: "rg \"Kayenta|canaryJudge|scoreThresholds|baseline|experiment|controlScope|experimentScope\" .", purpose: "Review automated canary analysis judge and baseline/experiment comparison evidence." },
+      { command: "rg \"promote|abort|pause|rollback|failureThreshold|manualPromotion|kubectl argo rollouts\" .github . scripts deploy", purpose: "Review promotion, abort, pause, rollback, and workflow controls." }
+    ],
+    learnerNextSteps: [
+      "Start by locating rollout resources and deciding whether the strategy is canary, blue-green, experiment, or custom.",
+      "Map traffic movement: setWeight, stepWeight, maxWeight, traffic split, service mesh, ingress, or Gateway API.",
+      "Check metric analysis next: AnalysisTemplate, MetricTemplate, Prometheus/Datadog query, webhook check, or Kayenta judge.",
+      "Review failure behavior: pause, abort, rollback, failure threshold, progress deadline, and manual or automatic promotion.",
+      "This report is static readiness only. Real progressive delivery verification requires authorized cluster and metrics backend checks."
+    ]
+  };
+}
+
+type ProgressiveDeliverySourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function progressiveDeliverySourceFiles(walk: WalkResult): Promise<ProgressiveDeliverySourceFile[]> {
+  const files: ProgressiveDeliverySourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !progressiveDeliveryInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!progressiveDeliveryPathSignal(file.relPath) && !progressiveDeliveryContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 360) break;
+  }
+  return files;
+}
+
+function progressiveDeliveryInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|go\.mod|requirements.*\.txt|pyproject\.toml|Chart\.ya?ml|values.*\.ya?ml|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(^|\/)(rollouts?|progressive|delivery|canary|bluegreen|blue-green|flagger|kayenta|spinnaker|analysis|traffic|istio|linkerd|nginx|gateway|mesh|prometheus|datadog|alerts?|helm|charts?|k8s|kubernetes|manifests?|deploy|ops|sre|docs?)(\/|\.|-|_|$)/i.test(filePath)
+    || /\.(ya?ml|json|jsonnet|toml|md|tf|hcl|js|ts|mjs|cjs|py|go|sh|conf|ini)$/i.test(filePath);
+}
+
+function progressiveDeliveryPathSignal(filePath: string): boolean {
+  return /(argo-rollouts?|rollouts?|flagger|kayenta|spinnaker|progressive-delivery|canary|bluegreen|blue-green|analysis-template|metric-template)/i.test(filePath);
+}
+
+function progressiveDeliveryContentSignal(text: string): boolean {
+  return /(Argo Rollouts|argoproj\.io|kind:\s*Rollout|AnalysisTemplate|AnalysisRun|kind:\s*Experiment|Flagger|flagger\.app|kind:\s*Canary|MetricTemplate|AlertProvider|Kayenta|canaryJudge|scoreThresholds|trafficRouting|setWeight|stepWeight|stepWeights|thresholdRange|manualPromotion|kubectl argo rollouts)/i.test(text);
+}
+
+function progressiveDeliverySetupRows(sourceFiles: ProgressiveDeliverySourceFile[]): ProgressiveDeliveryReadinessReport["rolloutSetups"] {
+  const rows: ProgressiveDeliveryReadinessReport["rolloutSetups"] = [];
+  for (const source of sourceFiles) {
+    const haystack = `${source.filePath}\n${source.text}`;
+    const strategyCount = countMatches(source.text, /kind:\s*Rollout|kind:\s*Canary|strategy:|canary:|blueGreen:|blue-green|blue green|experiment|progressive delivery/gi);
+    const canaryCount = countMatches(source.text, /canary:|kind:\s*Canary|Canary\b|stepWeight|stepWeights|maxWeight|setWeight|canaryService|stableService/gi);
+    const blueGreenCount = countMatches(source.text, /blueGreen:|blue-green|blue green|activeService|previewService|previewReplicaCount|autoPromotionEnabled|scaleDownDelaySeconds/gi);
+    const trafficRoutingCount = countMatches(source.text, /trafficRouting|setWeight|stepWeight|stepWeights|maxWeight|VirtualService|TrafficSplit|HTTPRoute|Gateway|Ingress|Istio|Linkerd|Nginx|ALB|SMI|ApisixRoute/gi);
+    const analysisCount = countMatches(source.text, /AnalysisTemplate|ClusterAnalysisTemplate|AnalysisRun|analysis:|MetricTemplate|canaryJudge|metricSetMixer|judge|analysisConfigurations/gi);
+    const metricCount = countMatches(source.text, /metrics:|metricName|provider:|prometheus|Prometheus|Datadog|NewRelic|Stackdriver|query:|interval:/gi);
+    const thresholdCount = countMatches(source.text, /thresholdRange|failureThreshold|consecutiveErrorLimit|successCondition|failureCondition|scoreThresholds|marginal|pass|critical|nanStrategy/gi);
+    const promotionCount = countMatches(source.text, /promote|promotion|autoPromotionEnabled|manualPromotion|kubectl argo rollouts promote|resume|promoted/gi);
+    const abortCount = countMatches(source.text, /abort|aborted|rollback|roll back|failureThreshold|kubectl argo rollouts abort|Canary failed|scale.*zero/gi);
+    const notificationCount = countMatches(source.text, /notifications|AlertProvider|alerts:|Slack|slack|MS Teams|msteams|webhook|event|analysis result/gi);
+    const workflowCount = countMatches(haystack, /\.github\/workflows|GitHub Actions|runs-on|pull_request|kubectl argo rollouts|kubectl rollout|helm install|helm upgrade|upload-artifact|rollout status|flagger|kayenta/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = strategyCount + canaryCount + blueGreenCount + trafficRoutingCount + analysisCount + metricCount + thresholdCount + promotionCount + abortCount + notificationCount + workflowCount;
+    if (totalSignals === 0 && !progressiveDeliveryPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: progressiveDeliveryPlatform(source),
+      strategyCount,
+      canaryCount,
+      blueGreenCount,
+      trafficRoutingCount,
+      analysisCount,
+      metricCount,
+      thresholdCount,
+      promotionCount,
+      abortCount,
+      notificationCount,
+      workflowCount,
+      readiness: strategyCount > 0 && trafficRoutingCount > 0 && (analysisCount + metricCount + thresholdCount > 0) && (promotionCount + abortCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains strategy ${strategyCount}, canary ${canaryCount}, blue-green ${blueGreenCount}, traffic routing ${trafficRoutingCount}, analysis ${analysisCount}, metrics ${metricCount}, thresholds ${thresholdCount}, promotion ${promotionCount}, abort ${abortCount}, notifications ${notificationCount}, workflows ${workflowCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.strategyCount + b.trafficRoutingCount + b.analysisCount + b.metricCount + b.thresholdCount + b.promotionCount + b.abortCount + b.workflowCount;
+    const aScore = a.strategyCount + a.trafficRoutingCount + a.analysisCount + a.metricCount + a.thresholdCount + a.promotionCount + a.abortCount + a.workflowCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 100);
+}
+
+function progressiveDeliveryPlatform(source: ProgressiveDeliverySourceFile): ProgressiveDeliveryReadinessReport["rolloutSetups"][number]["platform"] {
+  const haystack = `${source.filePath}\n${source.text}`;
+  if (/^\.github\/workflows\//i.test(source.filePath)) return "workflow";
+  if (/Argo Rollouts|argoproj\.io|kind:\s*Rollout|AnalysisTemplate|kubectl argo rollouts/i.test(haystack)) return "argo-rollouts";
+  if (/Flagger|flagger\.app|kind:\s*Canary|MetricTemplate|AlertProvider/i.test(haystack)) return "flagger";
+  if (/Kayenta|canaryJudge|scoreThresholds|metricSetMixer/i.test(haystack)) return "kayenta";
+  if (/Spinnaker|orca|canaryConfigId/i.test(haystack)) return "spinnaker";
+  if (/Istio|VirtualService|DestinationRule/i.test(haystack)) return "istio";
+  if (/Linkerd|TrafficSplit/i.test(haystack)) return "linkerd";
+  if (/Nginx|nginx\.ingress\.kubernetes\.io\/canary/i.test(haystack)) return "nginx";
+  if (/Gateway API|HTTPRoute|GatewayClass|kind:\s*Gateway/i.test(haystack)) return "gateway-api";
+  if (/canary|blue.?green|progressive delivery|trafficRouting/i.test(haystack)) return "custom";
+  return "unknown";
+}
+
+function progressiveDeliveryStrategySignals(sourceFiles: ProgressiveDeliverySourceFile[]): ProgressiveDeliveryReadinessReport["strategySignals"] {
+  const specs: Array<{ signal: ProgressiveDeliveryReadinessReport["strategySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "rollout-crd", pattern: /argoproj\.io|kind:\s*Rollout|AnalysisTemplate|AnalysisRun/i, evidence: "Argo Rollouts CRD evidence was detected." },
+    { signal: "canary-crd", pattern: /kind:\s*Canary|canaries\.flagger\.app|flagger\.app/i, evidence: "Flagger Canary CRD evidence was detected." },
+    { signal: "blue-green", pattern: /blueGreen:|blue-green|blue green|activeService|previewService|autoPromotionEnabled/i, evidence: "blue-green strategy evidence was detected." },
+    { signal: "canary-steps", pattern: /setWeight|stepWeight|stepWeights|maxWeight|pause:|steps:/i, evidence: "canary step evidence was detected." },
+    { signal: "experiment", pattern: /kind:\s*Experiment|experiment:|Experiment\b|baseline|experimentScope/i, evidence: "experiment strategy evidence was detected." },
+    { signal: "traffic-routing", pattern: /trafficRouting|VirtualService|TrafficSplit|HTTPRoute|Gateway|Ingress/i, evidence: "traffic routing strategy evidence was detected." }
+  ];
+  return progressiveDeliverySignalFromSpecs(sourceFiles, specs, "strategy");
+}
+
+function progressiveDeliveryTrafficSignals(sourceFiles: ProgressiveDeliverySourceFile[]): ProgressiveDeliveryReadinessReport["trafficSignals"] {
+  const specs: Array<{ signal: ProgressiveDeliveryReadinessReport["trafficSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "set-weight", pattern: /setWeight/i, evidence: "Argo setWeight evidence was detected." },
+    { signal: "step-weight", pattern: /stepWeight|stepWeights/i, evidence: "Flagger stepWeight evidence was detected." },
+    { signal: "max-weight", pattern: /maxWeight/i, evidence: "maxWeight evidence was detected." },
+    { signal: "traffic-split", pattern: /TrafficSplit|traffic split|weight:/i, evidence: "traffic split evidence was detected." },
+    { signal: "service-mesh", pattern: /Istio|Linkerd|SMI|Kuma|App Mesh|VirtualService|DestinationRule/i, evidence: "service mesh routing evidence was detected." },
+    { signal: "ingress", pattern: /Ingress|Nginx|nginx\.ingress\.kubernetes\.io\/canary|ALB|ApisixRoute/i, evidence: "ingress routing evidence was detected." },
+    { signal: "gateway-api", pattern: /Gateway API|HTTPRoute|GatewayClass|kind:\s*Gateway/i, evidence: "Gateway API routing evidence was detected." }
+  ];
+  return progressiveDeliverySignalFromSpecs(sourceFiles, specs, "traffic");
+}
+
+function progressiveDeliveryAnalysisSignals(sourceFiles: ProgressiveDeliverySourceFile[]): ProgressiveDeliveryReadinessReport["analysisSignals"] {
+  const specs: Array<{ signal: ProgressiveDeliveryReadinessReport["analysisSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "analysis-template", pattern: /AnalysisTemplate|ClusterAnalysisTemplate|AnalysisRun/i, evidence: "Argo analysis template evidence was detected." },
+    { signal: "metric-template", pattern: /MetricTemplate|metrics:\s*\n|templateRef/i, evidence: "Flagger metric template evidence was detected." },
+    { signal: "kayenta-judge", pattern: /Kayenta|canaryJudge|NetflixACAJudge|MannWhitney/i, evidence: "Kayenta judge evidence was detected." },
+    { signal: "prometheus-query", pattern: /Prometheus|prometheus|query:\s*|promql|sum\(rate|histogram_quantile/i, evidence: "Prometheus query evidence was detected." },
+    { signal: "datadog-query", pattern: /Datadog|datadog|DataDog|datadogFetch/i, evidence: "Datadog query evidence was detected." },
+    { signal: "webhook-check", pattern: /webhooks?:|webhook|pre-rollout|rollout|confirm-promotion|load-test/i, evidence: "webhook check evidence was detected." },
+    { signal: "threshold-range", pattern: /thresholdRange|threshold range|threshold:\s*|failureThreshold|consecutiveErrorLimit/i, evidence: "threshold range evidence was detected." },
+    { signal: "score-threshold", pattern: /scoreThresholds|marginal|pass|critical/i, evidence: "Kayenta score threshold evidence was detected." }
+  ];
+  return progressiveDeliverySignalFromSpecs(sourceFiles, specs, "analysis");
+}
+
+function progressiveDeliverySafetySignals(sourceFiles: ProgressiveDeliverySourceFile[]): ProgressiveDeliveryReadinessReport["safetySignals"] {
+  const specs: Array<{ signal: ProgressiveDeliveryReadinessReport["safetySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "manual-promotion", pattern: /manualPromotion|manual promotion|confirm-promotion|kubectl argo rollouts promote/i, evidence: "manual promotion evidence was detected." },
+    { signal: "auto-promotion", pattern: /autoPromotionEnabled|auto promotion|promoted|promotion finished/i, evidence: "automatic promotion evidence was detected." },
+    { signal: "abort-on-failure", pattern: /abortOnFailure|abort|aborted|Canary failed|kubectl argo rollouts abort/i, evidence: "abort-on-failure evidence was detected." },
+    { signal: "pause-step", pattern: /pause:|pause step|paused|duration:/i, evidence: "pause step evidence was detected." },
+    { signal: "rollback", pattern: /rollback|roll back|routed back|scale.*zero|primary/i, evidence: "rollback/fallback evidence was detected." },
+    { signal: "progress-deadline", pattern: /progressDeadlineSeconds|progress deadline|progressDeadlineAbort/i, evidence: "progress deadline evidence was detected." },
+    { signal: "failure-threshold", pattern: /failureThreshold|consecutiveErrorLimit|failed checks|thresholdRange/i, evidence: "failure threshold evidence was detected." }
+  ];
+  return progressiveDeliverySignalFromSpecs(sourceFiles, specs, "safety");
+}
+
+function progressiveDeliveryNotificationSignals(sourceFiles: ProgressiveDeliverySourceFile[]): ProgressiveDeliveryReadinessReport["notificationSignals"] {
+  const specs: Array<{ signal: ProgressiveDeliveryReadinessReport["notificationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "slack", pattern: /Slack|slack|slackWebhook/i, evidence: "Slack notification evidence was detected." },
+    { signal: "msteams", pattern: /MS Teams|MSTeams|msteams|teamsWebhook/i, evidence: "MS Teams notification evidence was detected." },
+    { signal: "webhook", pattern: /webhook|webhooks?:/i, evidence: "webhook notification evidence was detected." },
+    { signal: "alert-provider", pattern: /AlertProvider|alerts:\s*|alerting/i, evidence: "alert provider evidence was detected." },
+    { signal: "event", pattern: /events?|Kubernetes Events|Normal\s+Synced|Warning\s+Synced/i, evidence: "event evidence was detected." },
+    { signal: "analysis-run-status", pattern: /AnalysisRun|analysis result|Canary analysis completed|Starting canary analysis/i, evidence: "analysis status evidence was detected." }
+  ];
+  return progressiveDeliverySignalFromSpecs(sourceFiles, specs, "notification");
+}
+
+function progressiveDeliveryWorkflowSignals(sourceFiles: ProgressiveDeliverySourceFile[]): ProgressiveDeliveryReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: ProgressiveDeliveryReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kubectl-plugin", pattern: /kubectl argo rollouts|argo rollouts|kubectl plugin/i, evidence: "kubectl argo rollouts evidence was detected." },
+    { signal: "promote-command", pattern: /kubectl argo rollouts promote|rollouts promote|promote\b/i, evidence: "promote command evidence was detected." },
+    { signal: "abort-command", pattern: /kubectl argo rollouts abort|rollouts abort|abort\b/i, evidence: "abort command evidence was detected." },
+    { signal: "retry-command", pattern: /kubectl argo rollouts retry|rollouts retry|retry\b/i, evidence: "retry command evidence was detected." },
+    { signal: "helm-install", pattern: /helm repo add|helm install|helm upgrade|Chart\.ya?ml|values\.ya?ml/i, evidence: "Helm install evidence was detected." },
+    { signal: "github-actions", pattern: /\.github\/workflows|GitHub Actions|runs-on|pull_request/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|rollout report|analysis report|canary report/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return progressiveDeliverySignalFromSpecs(sourceFiles, specs, "workflow");
+}
+
+function progressiveDeliveryPackageSignals(sourceFiles: ProgressiveDeliverySourceFile[]): ProgressiveDeliveryReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ProgressiveDeliveryReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "argo-rollouts", pattern: /argo-rollouts|Argo Rollouts|argoproj\.io|kubectl argo rollouts/i, evidence: "Argo Rollouts evidence was detected." },
+    { signal: "flagger", pattern: /Flagger|flagger\.app|fluxcd\/flagger/i, evidence: "Flagger evidence was detected." },
+    { signal: "kayenta", pattern: /Kayenta|canaryJudge|kayenta-/i, evidence: "Kayenta evidence was detected." },
+    { signal: "spinnaker", pattern: /Spinnaker|orca|canaryConfigId/i, evidence: "Spinnaker evidence was detected." },
+    { signal: "prometheus", pattern: /Prometheus|prometheus|promql/i, evidence: "Prometheus evidence was detected." },
+    { signal: "istio", pattern: /Istio|VirtualService|DestinationRule/i, evidence: "Istio evidence was detected." },
+    { signal: "linkerd", pattern: /Linkerd|TrafficSplit/i, evidence: "Linkerd evidence was detected." }
+  ];
+  return progressiveDeliverySignalFromSpecs(sourceFiles, specs, "package");
+}
+
+function progressiveDeliverySignalFromSpecs<T extends string>(
+  sourceFiles: ProgressiveDeliverySourceFile[],
+  specs: Array<{ signal: T; pattern: RegExp; evidence: string }>,
+  label: string
+): Array<{ signal: T; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(haystack);
+    });
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/progressive-delivery-readiness.html"
     };
   });
 }

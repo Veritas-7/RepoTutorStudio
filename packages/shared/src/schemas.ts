@@ -2328,6 +2328,82 @@ export const CostReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ProgressiveDeliveryReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  rolloutSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["argo-rollouts", "flagger", "kayenta", "spinnaker", "istio", "linkerd", "nginx", "gateway-api", "workflow", "custom", "unknown"]),
+    strategyCount: z.number().int().nonnegative(),
+    canaryCount: z.number().int().nonnegative(),
+    blueGreenCount: z.number().int().nonnegative(),
+    trafficRoutingCount: z.number().int().nonnegative(),
+    analysisCount: z.number().int().nonnegative(),
+    metricCount: z.number().int().nonnegative(),
+    thresholdCount: z.number().int().nonnegative(),
+    promotionCount: z.number().int().nonnegative(),
+    abortCount: z.number().int().nonnegative(),
+    notificationCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  strategySignals: z.array(z.object({
+    signal: z.enum(["rollout-crd", "canary-crd", "blue-green", "canary-steps", "experiment", "traffic-routing", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  trafficSignals: z.array(z.object({
+    signal: z.enum(["set-weight", "step-weight", "max-weight", "traffic-split", "service-mesh", "ingress", "gateway-api", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  analysisSignals: z.array(z.object({
+    signal: z.enum(["analysis-template", "metric-template", "kayenta-judge", "prometheus-query", "datadog-query", "webhook-check", "threshold-range", "score-threshold", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  safetySignals: z.array(z.object({
+    signal: z.enum(["manual-promotion", "auto-promotion", "abort-on-failure", "pause-step", "rollback", "progress-deadline", "failure-threshold", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  notificationSignals: z.array(z.object({
+    signal: z.enum(["slack", "msteams", "webhook", "alert-provider", "event", "analysis-run-status", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["kubectl-plugin", "promote-command", "abort-command", "retry-command", "helm-install", "github-actions", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["argo-rollouts", "flagger", "kayenta", "spinnaker", "prometheus", "istio", "linkerd", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LoadTestingReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -11917,6 +11993,7 @@ export type CrashReportingReadinessReport = z.infer<typeof CrashReportingReadine
 export type IncidentResponseReadinessReport = z.infer<typeof IncidentResponseReadinessReportSchema>;
 export type SloReadinessReport = z.infer<typeof SloReadinessReportSchema>;
 export type CostReadinessReport = z.infer<typeof CostReadinessReportSchema>;
+export type ProgressiveDeliveryReadinessReport = z.infer<typeof ProgressiveDeliveryReadinessReportSchema>;
 export type LoadTestingReadinessReport = z.infer<typeof LoadTestingReadinessReportSchema>;
 export type BenchmarkReadinessReport = z.infer<typeof BenchmarkReadinessReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;
