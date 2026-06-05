@@ -69,6 +69,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "experiment-tracking-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-monitoring-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-serving-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-training-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
@@ -218,6 +219,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "experiment-tracking-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-monitoring-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-serving-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-training-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ci-cd.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
@@ -370,6 +372,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "experiment-tracking-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "model-monitoring-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "model-serving-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "model-training-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ci-cd.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
@@ -549,6 +552,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/experiment-tracking-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/model-monitoring-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/model-serving-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/model-training-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ci-cd.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/coverage-readiness.html\"");
@@ -3306,6 +3310,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/experiment-tracking-readiness.html");
     expect(exportManifestText).toContain("html/model-monitoring-readiness.html");
     expect(exportManifestText).toContain("html/model-serving-readiness.html");
+    expect(exportManifestText).toContain("html/model-training-readiness.html");
     expect(exportManifestText).toContain("html/ci-cd.html");
     expect(exportManifestText).toContain("html/unit-tests.html");
     expect(exportManifestText).toContain("html/coverage-readiness.html");
@@ -3477,6 +3482,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("experiment-tracking-readiness.html");
     expect(learningPathHtml).toContain("model-monitoring-readiness.html");
     expect(learningPathHtml).toContain("model-serving-readiness.html");
+    expect(learningPathHtml).toContain("model-training-readiness.html");
     expect(learningPathHtml).toContain("ci-cd.html");
     expect(learningPathHtml).toContain("unit-tests.html");
     expect(learningPathHtml).toContain("coverage-readiness.html");
@@ -8297,6 +8303,238 @@ describe("RepoTutor core pipeline", () => {
     const modelServingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "model-serving-readiness.html"), "utf8");
     expect(modelServingHtml).toContain("model-serving-readiness-card");
     expect(modelServingHtml).toContain("data-source-pattern=\"ModelServing\"");
+  });
+
+  it("detects model training readiness without running training jobs or distributed launchers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-model-training-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-model-training-source-"));
+    await fs.mkdir(path.join(sourceRoot, "lightning"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "accelerate"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "ray_train"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "name = \"fraud-training\"",
+      "version = \"0.1.0\"",
+      "description = \"custom training loop with Lightning, Accelerate, Ray Train, Torch, TensorBoard, W&B, and MLflow\"",
+      "dependencies = [\"lightning\", \"accelerate\", \"ray[train]\", \"torch\", \"tensorboard\", \"wandb\", \"mlflow\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "lightning", "train.py"), [
+      "import torch",
+      "from torch.optim import Adam",
+      "from torch.utils.data import DataLoader",
+      "from lightning import LightningDataModule, LightningModule, Trainer, seed_everything",
+      "from lightning.pytorch.callbacks import EarlyStopping, LearningRateMonitor, ModelCheckpoint, ModelSummary, TQDMProgressBar",
+      "from lightning.pytorch.loggers import MLFlowLogger, TensorBoardLogger, WandbLogger",
+      "",
+      "class FraudModule(LightningModule):",
+      "    def training_step(self, batch, batch_idx):",
+      "        loss = torch.tensor(0.1)",
+      "        self.log(\"train_loss\", loss)",
+      "        return loss",
+      "",
+      "    def validation_step(self, batch, batch_idx):",
+      "        val_loss = torch.tensor(0.2)",
+      "        self.log(\"val_loss\", val_loss)",
+      "        self.log(\"accuracy\", torch.tensor(0.9))",
+      "",
+      "    def configure_optimizers(self):",
+      "        optimizer = Adam(self.parameters(), lr=1e-3)",
+      "        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1)",
+      "        return {\"optimizer\": optimizer, \"lr_scheduler\": lr_scheduler}",
+      "",
+      "class FraudDataModule(LightningDataModule):",
+      "    def train_dataloader(self):",
+      "        return DataLoader([1, 2, 3], batch_size=32)",
+      "",
+      "    def val_dataloader(self):",
+      "        return DataLoader([4, 5, 6], batch_size=32)",
+      "",
+      "seed_everything(42)",
+      "model = FraudModule()",
+      "dm = FraudDataModule()",
+      "trainer = Trainer(",
+      "    max_epochs=3,",
+      "    max_steps=100,",
+      "    accelerator=\"gpu\",",
+      "    devices=2,",
+      "    num_nodes=2,",
+      "    strategy=\"ddp\",",
+      "    precision=\"bf16-mixed\",",
+      "    accumulate_grad_batches=4,",
+      "    deterministic=True,",
+      "    callbacks=[",
+      "        ModelCheckpoint(monitor=\"val_loss\", save_top_k=1, dirpath=\"s3://training-artifacts/checkpoints\"),",
+      "        EarlyStopping(monitor=\"val_loss\"),",
+      "        LearningRateMonitor(),",
+      "        ModelSummary(max_depth=-1),",
+      "        TQDMProgressBar(),",
+      "    ],",
+      "    logger=[TensorBoardLogger(\"tb_logs\"), WandbLogger(project=\"fraud\"), MLFlowLogger(experiment_name=\"fraud\")],",
+      "    fast_dev_run=False,",
+      "    limit_train_batches=0.1,",
+      ")",
+      "trainer.fit(model, datamodule=dm)",
+      "trainer.fit(model, datamodule=dm, ckpt_path=\"resume_from_checkpoint.ckpt\")",
+      "best_model_path = trainer.checkpoint_callback.best_model_path",
+      "# TPU XLA fp16 mixed precision multi-node custom trainer notes"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "accelerate", "train.py"), [
+      "import torch",
+      "from accelerate import Accelerator",
+      "from accelerate.state import AcceleratorState, DistributedType",
+      "from accelerate.utils import ProjectConfiguration, set_seed",
+      "from torch.utils.data import DataLoader",
+      "",
+      "set_seed(7)",
+      "accelerator = Accelerator(",
+      "    mixed_precision=\"fp16\",",
+      "    gradient_accumulation_steps=2,",
+      "    device_placement=True,",
+      "    log_with=[\"tensorboard\", \"wandb\"],",
+      "    project_config=ProjectConfiguration(project_dir=\"runs\", logging_dir=\"logs\"),",
+      ")",
+      "state = AcceleratorState()",
+      "distributed_type = DistributedType.MULTI_GPU",
+      "train_dataloader = DataLoader([1, 2, 3], batch_size=8)",
+      "eval_dataloader = DataLoader([4, 5, 6], batch_size=8)",
+      "model = torch.nn.Linear(1, 1)",
+      "optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)",
+      "lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1)",
+      "model, optimizer, train_dataloader, eval_dataloader, lr_scheduler = accelerator.prepare(model, optimizer, train_dataloader, eval_dataloader, lr_scheduler)",
+      "for batch in train_dataloader:",
+      "    with accelerator.accumulate(model):",
+      "        loss = model(torch.tensor([[1.0]])).sum()",
+      "        accelerator.backward(loss)",
+      "        accelerator.log({\"loss\": loss})",
+      "accelerator.save_state(\"checkpoint\")",
+      "accelerator.load_state(\"checkpoint\")",
+      "device = accelerator.device",
+      "# accelerate launch --num_processes 4 train.py",
+      "# DistributedType.XLA XLA bf16 TPU torchrun multi-node"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "ray_train", "train.py"), [
+      "import ray.train",
+      "from ray.train import Checkpoint, CheckpointConfig, FailureConfig, RunConfig, ScalingConfig",
+      "from ray.train.torch import TorchTrainer",
+      "from ray.train.lightning import RayDDPStrategy, RayDeepSpeedStrategy, RayFSDPStrategy, RayLightningEnvironment, RayTrainReportCallback, prepare_trainer",
+      "",
+      "def train_loop_per_worker(config):",
+      "    shard = ray.train.get_dataset_shard(\"train\")",
+      "    checkpoint = ray.train.get_checkpoint()",
+      "    loss = 0.1",
+      "    accuracy = 0.99",
+      "    ray.train.report({\"loss\": loss, \"accuracy\": accuracy}, checkpoint=Checkpoint.from_directory(\"checkpoint\"))",
+      "",
+      "trainer = TorchTrainer(",
+      "    train_loop_per_worker,",
+      "    scaling_config=ScalingConfig(num_workers=2, use_gpu=True, resources_per_worker={\"GPU\": 1}),",
+      "    run_config=RunConfig(",
+      "        storage_path=\"s3://training-artifacts\",",
+      "        checkpoint_config=CheckpointConfig(num_to_keep=2, checkpoint_score_attribute=\"val_loss\"),",
+      "        failure_config=FailureConfig(max_failures=2),",
+      "    ),",
+      "    resume_from_checkpoint=Checkpoint.from_directory(\"checkpoint\"),",
+      ")",
+      "ray_ddp = RayDDPStrategy()",
+      "ray_fsdp = RayFSDPStrategy()",
+      "ray_deepspeed = RayDeepSpeedStrategy()",
+      "ray_callback = RayTrainReportCallback()",
+      "ray_env = RayLightningEnvironment()",
+      "prepared = prepare_trainer(trainer)",
+      "# ray train distributed smoke checkpoint assertion"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "model-training.yml"), [
+      "name: model-training",
+      "on: [push]",
+      "jobs:",
+      "  training:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: python lightning/train.py --fast-dev-run",
+      "      - run: accelerate launch --num_processes 4 accelerate/train.py",
+      "      - run: torchrun --nproc_per_node=2 lightning/train.py",
+      "      - run: python ray_train/train.py --training-smoke",
+      "      - run: pytest tests/training --checkpoint assertion",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: training-report",
+      "          path: |",
+      "            training-report.json",
+      "            checkpoints",
+      "            tensorboard",
+      "            mlruns"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "model-training-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      modelTrainingSetups: Array<{ tool: string; trainerCount: number; trainingLoopCount: number; dataCount: number; optimizerCount: number; distributedCount: number; acceleratorCount: number; checkpointCount: number; callbackCount: number; metricCount: number; configCount: number; ciCount: number }>;
+      loopSignals: Array<{ signal: string; readiness: string }>;
+      dataSignals: Array<{ signal: string; readiness: string }>;
+      distributedSignals: Array<{ signal: string; readiness: string }>;
+      acceleratorSignals: Array<{ signal: string; readiness: string }>;
+      checkpointSignals: Array<{ signal: string; readiness: string }>;
+      callbackSignals: Array<{ signal: string; readiness: string }>;
+      observabilitySignals: Array<{ signal: string; readiness: string }>;
+      configSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (tool: string) => report.modelTrainingSetups
+      .filter((item) => item.tool === tool)
+      .reduce((totals, item) => ({
+        trainerCount: totals.trainerCount + item.trainerCount,
+        trainingLoopCount: totals.trainingLoopCount + item.trainingLoopCount,
+        dataCount: totals.dataCount + item.dataCount,
+        optimizerCount: totals.optimizerCount + item.optimizerCount,
+        distributedCount: totals.distributedCount + item.distributedCount,
+        acceleratorCount: totals.acceleratorCount + item.acceleratorCount,
+        checkpointCount: totals.checkpointCount + item.checkpointCount,
+        callbackCount: totals.callbackCount + item.callbackCount,
+        metricCount: totals.metricCount + item.metricCount,
+        configCount: totals.configCount + item.configCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { trainerCount: 0, trainingLoopCount: 0, dataCount: 0, optimizerCount: 0, distributedCount: 0, acceleratorCount: 0, checkpointCount: 0, callbackCount: 0, metricCount: 0, configCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Model training readiness Lightning Accelerate Ray Train Trainer LightningModule Accelerator TorchTrainer train loop checkpoint distributed precision callback metrics CI");
+    expect(setupTotals("lightning").trainerCount).toBeGreaterThan(0);
+    expect(setupTotals("lightning").checkpointCount).toBeGreaterThan(0);
+    expect(setupTotals("accelerate").trainingLoopCount).toBeGreaterThan(0);
+    expect(setupTotals("accelerate").acceleratorCount).toBeGreaterThan(0);
+    expect(setupTotals("ray").distributedCount).toBeGreaterThan(0);
+    expect(setupTotals("ray").checkpointCount).toBeGreaterThan(0);
+    expect(report.modelTrainingSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.loopSignals)).toEqual(expect.arrayContaining(["trainer", "train-loop", "fit", "training-step", "validation-step", "optimizer", "scheduler", "gradient-accumulation"]));
+    expect(readySignals(report.dataSignals)).toEqual(expect.arrayContaining(["dataloader", "datamodule", "dataset-shard", "prepare-dataloader", "batch-size", "validation-loader"]));
+    expect(readySignals(report.distributedSignals)).toEqual(expect.arrayContaining(["ddp", "fsdp", "deepspeed", "torchrun", "accelerate-launch", "ray-train", "multi-gpu", "multi-node"]));
+    expect(readySignals(report.acceleratorSignals)).toEqual(expect.arrayContaining(["gpu", "tpu", "xla", "mixed-precision", "bf16", "fp16", "device-placement"]));
+    expect(readySignals(report.checkpointSignals)).toEqual(expect.arrayContaining(["checkpoint", "resume", "save-state", "load-state", "artifact-storage", "best-model"]));
+    expect(readySignals(report.callbackSignals)).toEqual(expect.arrayContaining(["early-stopping", "lr-monitor", "model-summary", "progress-bar", "ray-report-callback", "custom-callback"]));
+    expect(readySignals(report.observabilitySignals)).toEqual(expect.arrayContaining(["metric", "logger", "tensorboard", "wandb", "mlflow", "report"]));
+    expect(readySignals(report.configSignals)).toEqual(expect.arrayContaining(["trainer-config", "scaling-config", "run-config", "project-config", "seed", "deterministic"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "training-smoke-command", "distributed-smoke-command", "checkpoint-assertion-command", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["lightning", "accelerate", "ray", "torch", "custom"]));
+    expect(report.riskQueue).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      String.raw`rg "LightningModule|Trainer\(|Accelerator\(|TorchTrainer|train_loop_per_worker|training_step|fit\(" .`,
+      "rg \"DDP|FSDP|DeepSpeed|torchrun|accelerate launch|ScalingConfig|num_workers|multi_gpu|multi-node\" .",
+      "rg \"EarlyStopping|LearningRateMonitor|TensorBoardLogger|WandbLogger|MLFlowLogger|ray.train.report|upload-artifact|training smoke\" .github workflows ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-training-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-training-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "model-training-readiness.html"))).resolves.toBeUndefined();
+    const modelTrainingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "model-training-readiness.md"), "utf8");
+    expect(modelTrainingMarkdown).toContain("Loop Signals");
+    expect(modelTrainingMarkdown).toContain("Distributed Signals");
+    expect(modelTrainingMarkdown).toContain("Checkpoint Signals");
+    const modelTrainingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "model-training-readiness.html"), "utf8");
+    expect(modelTrainingHtml).toContain("model-training-readiness-card");
+    expect(modelTrainingHtml).toContain("data-source-pattern=\"ModelTraining\"");
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {

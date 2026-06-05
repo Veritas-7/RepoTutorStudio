@@ -80,6 +80,7 @@ import {
   ExperimentTrackingReadinessReport,
   ModelMonitoringReadinessReport,
   ModelServingReadinessReport,
+  ModelTrainingReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -248,6 +249,7 @@ export interface AnalysisBundle {
   experimentTrackingReadinessReport: ExperimentTrackingReadinessReport;
   modelMonitoringReadinessReport: ModelMonitoringReadinessReport;
   modelServingReadinessReport: ModelServingReadinessReport;
+  modelTrainingReadinessReport: ModelTrainingReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -416,6 +418,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const experimentTrackingReadinessReport = await buildExperimentTrackingReadinessReport(walk);
   const modelMonitoringReadinessReport = await buildModelMonitoringReadinessReport(walk);
   const modelServingReadinessReport = await buildModelServingReadinessReport(walk);
+  const modelTrainingReadinessReport = await buildModelTrainingReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
   const coverageReadinessReport = await buildCoverageReadinessReport(walk);
@@ -499,7 +502,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -15233,6 +15236,360 @@ function modelServingSignalFromSpecs<T extends Record<K, string> & { pattern: Re
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/model-serving-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildModelTrainingReadinessReport(walk: WalkResult): Promise<ModelTrainingReadinessReport> {
+  const sourceFiles = await modelTrainingSourceFiles(walk);
+  const modelTrainingSetups = modelTrainingSetupsFromSources(sourceFiles);
+  const loopSignals = modelTrainingLoopSignals(sourceFiles);
+  const dataSignals = modelTrainingDataSignals(sourceFiles);
+  const distributedSignals = modelTrainingDistributedSignals(sourceFiles);
+  const acceleratorSignals = modelTrainingAcceleratorSignals(sourceFiles);
+  const checkpointSignals = modelTrainingCheckpointSignals(sourceFiles);
+  const callbackSignals = modelTrainingCallbackSignals(sourceFiles);
+  const observabilitySignals = modelTrainingObservabilitySignals(sourceFiles);
+  const configSignals = modelTrainingConfigSignals(sourceFiles);
+  const ciSignals = modelTrainingCiSignals(sourceFiles);
+  const packageSignals = modelTrainingPackageSignals(sourceFiles);
+
+  const hasLoop = loopSignals.filter((item) => item.readiness === "ready").length >= 4 || modelTrainingSetups.some((item) => item.trainerCount > 0 && item.trainingLoopCount > 0);
+  const hasData = dataSignals.filter((item) => item.readiness === "ready").length >= 3 || modelTrainingSetups.some((item) => item.dataCount > 0);
+  const hasDistributed = distributedSignals.filter((item) => item.readiness === "ready").length >= 2 || modelTrainingSetups.some((item) => item.distributedCount > 0);
+  const hasAccelerator = acceleratorSignals.filter((item) => item.readiness === "ready").length >= 2 || modelTrainingSetups.some((item) => item.acceleratorCount > 0);
+  const hasCheckpoint = checkpointSignals.filter((item) => item.readiness === "ready").length >= 2 || modelTrainingSetups.some((item) => item.checkpointCount > 0);
+  const hasCallbacks = callbackSignals.some((item) => item.readiness === "ready") || modelTrainingSetups.some((item) => item.callbackCount > 0);
+  const hasObservability = observabilitySignals.filter((item) => item.readiness === "ready").length >= 2 || modelTrainingSetups.some((item) => item.metricCount > 0);
+  const hasConfig = configSignals.filter((item) => item.readiness === "ready").length >= 2 || modelTrainingSetups.some((item) => item.configCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || modelTrainingSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: ModelTrainingReadinessReport["riskQueue"] = [];
+  if (!hasLoop) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a trainer, fit call, train loop, training step, optimizer, scheduler, or gradient accumulation evidence before claiming model training readiness.",
+      why: "Training readiness needs a visible training loop, not only data, model artifacts, or experiment logging.",
+      relatedHref: "html/model-training-readiness.html"
+    });
+  }
+  if (hasLoop && !hasData) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add dataloader, data module, dataset shard, prepared dataloader, batch size, or validation loader evidence.",
+      why: "Training loops are hard to reproduce when data loading and validation splits are implicit.",
+      relatedHref: "html/model-training-readiness.html"
+    });
+  }
+  if (hasLoop && !hasAccelerator) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record GPU, TPU/XLA, mixed precision, bf16/fp16, or device placement controls.",
+      why: "Training behavior and reproducibility depend on explicit accelerator and precision settings.",
+      relatedHref: "html/model-training-readiness.html"
+    });
+  }
+  if (hasLoop && !hasDistributed) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document DDP, FSDP, DeepSpeed, torchrun, accelerate launch, Ray Train, multi-GPU, or multi-node setup.",
+      why: "Scaling behavior should be visible before a learner trusts distributed training claims.",
+      relatedHref: "html/model-training-readiness.html"
+    });
+  }
+  if (hasLoop && !hasCheckpoint) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add checkpoint, resume, save_state, load_state, artifact storage, or best-model evidence.",
+      why: "Training runs should be restartable and preserve best model state.",
+      relatedHref: "html/model-training-readiness.html"
+    });
+  }
+  if (hasLoop && !hasCallbacks) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add early stopping, learning-rate monitor, model summary, progress bar, Ray report callback, or custom callback evidence.",
+      why: "Callbacks are where training safety, reporting, and learner-visible progress often live.",
+      relatedHref: "html/model-training-readiness.html"
+    });
+  }
+  if (hasLoop && !hasObservability) {
+    riskQueue.push({
+      priority: "low",
+      action: "Log metrics through a logger, TensorBoard, W&B, MLflow, Ray report, or equivalent reporting surface.",
+      why: "Training readiness should show how loss, validation metrics, and run results are observed.",
+      relatedHref: "html/model-training-readiness.html"
+    });
+  }
+  if (hasLoop && !hasConfig) {
+    riskQueue.push({
+      priority: "low",
+      action: "Record trainer, scaling, run, project, seed, or deterministic config evidence.",
+      why: "Training should be repeatable from configuration rather than hidden local defaults.",
+      relatedHref: "html/model-training-readiness.html"
+    });
+  }
+  if ((hasCheckpoint || hasDistributed || hasObservability) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Run training smoke, distributed smoke, checkpoint assertion, and artifact upload commands in CI.",
+      why: "Training readiness should be checked automatically before reports trust the training setup.",
+      relatedHref: "html/model-training-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Model training readiness report: training setup ${modelTrainingSetups.length}개, loop signal ${loopSignals.length}개, distributed signal ${distributedSignals.length}개, checkpoint signal ${checkpointSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Model training readiness Lightning Accelerate Ray Train Trainer LightningModule Accelerator TorchTrainer train loop checkpoint distributed precision callback metrics CI",
+    modelTrainingSetups,
+    loopSignals,
+    dataSignals,
+    distributedSignals,
+    acceleratorSignals,
+    checkpointSignals,
+    callbackSignals,
+    observabilitySignals,
+    configSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"LightningModule|Trainer\\(|Accelerator\\(|TorchTrainer|train_loop_per_worker|training_step|fit\\(\" .", purpose: "Find trainer definitions and training-loop entry points." },
+      { command: "rg \"DataLoader|LightningDataModule|train_dataloader|get_dataset_shard|prepare_data_loader|batch_size|validation\" .", purpose: "Find data loading, validation split, and distributed dataset evidence." },
+      { command: "rg \"DDP|FSDP|DeepSpeed|torchrun|accelerate launch|ScalingConfig|num_workers|multi_gpu|multi-node\" .", purpose: "Find distributed training and worker scaling evidence." },
+      { command: "rg \"ModelCheckpoint|save_state|load_state|resume_from_checkpoint|CheckpointConfig|best_model|checkpoint\" .", purpose: "Find checkpoint, resume, and best-model persistence evidence." },
+      { command: "rg \"EarlyStopping|LearningRateMonitor|TensorBoardLogger|WandbLogger|MLFlowLogger|ray.train.report|upload-artifact|training smoke\" .github workflows .", purpose: "Find callbacks, metrics/logging, CI smoke, and artifact upload evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 Lightning Trainer, Accelerate Accelerator, Ray TorchTrainer 또는 custom training loop가 실제 학습 진입점을 드러내는지 확인하세요.",
+      "DataLoader, LightningDataModule, Ray dataset shard, prepared dataloader, batch size, validation loader가 재현 가능하게 기록되어 있는지 확인하세요.",
+      "DDP/FSDP/DeepSpeed, torchrun, accelerate launch, Ray ScalingConfig, multi-GPU/multi-node 설정이 명시되어 있는지 확인하세요.",
+      "ModelCheckpoint, save_state/load_state, resume_from_checkpoint, CheckpointConfig, best model artifact가 남는지 확인하세요.",
+      "callbacks, metric logger, TensorBoard/W&B/MLflow/Ray report, CI training smoke, distributed smoke, checkpoint assertion, artifact upload가 연결되는지 확인하세요."
+    ]
+  };
+}
+
+type ModelTrainingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function modelTrainingSourceFiles(walk: WalkResult): Promise<ModelTrainingSourceFile[]> {
+  const rows: ModelTrainingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!modelTrainingInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!modelTrainingPathSignal(file.relPath) && !modelTrainingContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 280);
+}
+
+function modelTrainingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements\.txt|setup\.py|setup\.cfg|train\.py|training\.py|trainer\.py|lightning\.ya?ml|accelerate_config\.ya?ml|ray_train\.ya?ml|workflow\.ya?ml)$/i.test(base)
+    || /(^|\/)(lightning|pytorch-lightning|accelerate|ray|ray-train|training|trainer|train|checkpoint|callbacks|data|datasets|models)(\/|\.|-|_|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/[^/]+\.(ya?ml)$/i.test(filePath)
+    || /\.(json|ya?ml|toml|txt|ts|tsx|js|jsx|mjs|cjs|md|rst|py|sh)$/i.test(filePath);
+}
+
+function modelTrainingPathSignal(filePath: string): boolean {
+  return /(^|\/)(lightning|pytorch-lightning|accelerate|ray|ray-train|training|trainer|train|checkpoint|callbacks)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(train\.py|training\.py|trainer\.py|accelerate_config\.ya?ml|ray_train\.ya?ml)$/i.test(path.basename(filePath));
+}
+
+function modelTrainingContentSignal(text: string): boolean {
+  return /LightningModule|Trainer\(|Accelerator\(|accelerate launch|TorchTrainer|ray\.train|train_loop_per_worker|training_step|configure_optimizers|ModelCheckpoint|save_state|load_state|ScalingConfig/i.test(text);
+}
+
+function modelTrainingSetupsFromSources(sourceFiles: ModelTrainingSourceFile[]): ModelTrainingReadinessReport["modelTrainingSetups"] {
+  const rows: ModelTrainingReadinessReport["modelTrainingSetups"] = [];
+  for (const source of sourceFiles) {
+    const trainerCount = countMatches(source.text, /Trainer\(|LightningModule|Accelerator\(|TorchTrainer|ray\.train|train_loop_per_worker|trainer\.fit|\.fit\(/gi);
+    const trainingLoopCount = countMatches(source.text, /training_step|train_loop|train_loop_per_worker|for .* in .*dataloader|accelerator\.backward|loss\.backward|trainer\.fit|fit\(/gi);
+    const dataCount = countMatches(source.text, /DataLoader|LightningDataModule|train_dataloader|val_dataloader|validation_dataloader|get_dataset_shard|prepare_data_loader|prepare\(|batch_size|dataset/gi);
+    const optimizerCount = countMatches(source.text, /configure_optimizers|optimizer|lr_scheduler|scheduler|Adam|SGD|learning rate|backward|gradient/gi);
+    const distributedCount = countMatches(source.text, /DDP|FSDP|DeepSpeed|torchrun|accelerate launch|DistributedType|ScalingConfig|num_workers|multi_gpu|multi-node|num_nodes|RayDDPStrategy|RayFSDPStrategy/gi);
+    const acceleratorCount = countMatches(source.text, /accelerator|Accelerator|gpu|cuda|tpu|xla|mixed_precision|precision|bf16|fp16|device_placement|devices=/gi);
+    const checkpointCount = countMatches(source.text, /ModelCheckpoint|checkpoint|save_state|load_state|resume_from_checkpoint|CheckpointConfig|Checkpoint|best_model|artifact storage|storage_path/gi);
+    const callbackCount = countMatches(source.text, /EarlyStopping|LearningRateMonitor|ModelSummary|ProgressBar|callback|RayTrainReportCallback|callbacks=/gi);
+    const metricCount = countMatches(source.text, /metric|accuracy|loss|val_loss|logger|TensorBoardLogger|WandbLogger|MLFlowLogger|ray\.train\.report|report\(|log\(/gi);
+    const configCount = countMatches(source.text, /Trainer\(|ScalingConfig|RunConfig|ProjectConfiguration|seed_everything|deterministic|config|gradient_accumulation|accumulate_grad_batches|max_epochs|max_steps/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github actions|uses: actions\/|python .*train|accelerate launch|torchrun|ray train|training smoke|distributed smoke|pytest .*train|upload-artifact|checkpoint assertion/gi);
+    const totalSignals = trainerCount + trainingLoopCount + dataCount + optimizerCount + distributedCount + acceleratorCount + checkpointCount + callbackCount + metricCount + configCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: modelTrainingTool(source),
+      trainerCount,
+      trainingLoopCount,
+      dataCount,
+      optimizerCount,
+      distributedCount,
+      acceleratorCount,
+      checkpointCount,
+      callbackCount,
+      metricCount,
+      configCount,
+      ciCount,
+      readiness: trainerCount > 0 && trainingLoopCount > 0 && dataCount > 0 && optimizerCount > 0 && checkpointCount > 0 && metricCount > 0 && (distributedCount + acceleratorCount + ciCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} model training readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.trainerCount + b.trainingLoopCount + b.dataCount + b.optimizerCount + b.distributedCount + b.acceleratorCount + b.checkpointCount + b.callbackCount + b.metricCount + b.configCount + b.ciCount) - (a.trainerCount + a.trainingLoopCount + a.dataCount + a.optimizerCount + a.distributedCount + a.acceleratorCount + a.checkpointCount + a.callbackCount + a.metricCount + a.configCount + a.ciCount))
+    .slice(0, 80);
+}
+
+function modelTrainingTool(source: ModelTrainingSourceFile): ModelTrainingReadinessReport["modelTrainingSetups"][number]["tool"] {
+  if (/ray|ray-train/i.test(source.filePath) || /TorchTrainer|ray\.train|ScalingConfig|RunConfig|train_loop_per_worker/i.test(source.text)) return "ray";
+  if (/accelerate/i.test(source.filePath) || /Accelerator\(|accelerate launch|AcceleratorState|DistributedType|save_state|load_state/i.test(source.text)) return "accelerate";
+  if (/lightning|pytorch-lightning/i.test(source.filePath) || /LightningModule|LightningDataModule|Trainer\(|ModelCheckpoint|LearningRateMonitor/i.test(source.text)) return "lightning";
+  if (/train|training|trainer/i.test(source.filePath) || /training loop|train_dataloader|configure_optimizers/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function modelTrainingLoopSignals(sourceFiles: ModelTrainingSourceFile[]): ModelTrainingReadinessReport["loopSignals"] {
+  const specs: Array<{ signal: ModelTrainingReadinessReport["loopSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "trainer", pattern: /Trainer\(|Accelerator\(|TorchTrainer|trainer =|ray\.train/i, evidence: "trainer evidence was detected." },
+    { signal: "train-loop", pattern: /train_loop|train_loop_per_worker|for .* in .*dataloader|training loop/i, evidence: "training loop evidence was detected." },
+    { signal: "fit", pattern: /fit\(|trainer\.fit/i, evidence: "fit entrypoint evidence was detected." },
+    { signal: "training-step", pattern: /training_step|train_step|def train\(/i, evidence: "training step evidence was detected." },
+    { signal: "validation-step", pattern: /validation_step|val_step|validate|validation/i, evidence: "validation step evidence was detected." },
+    { signal: "optimizer", pattern: /configure_optimizers|optimizer|Adam|SGD/i, evidence: "optimizer evidence was detected." },
+    { signal: "scheduler", pattern: /lr_scheduler|scheduler|LearningRateMonitor/i, evidence: "scheduler evidence was detected." },
+    { signal: "gradient-accumulation", pattern: /accumulate_grad_batches|gradient_accumulation|GradientAccumulation|accumulation_steps/i, evidence: "gradient accumulation evidence was detected." }
+  ];
+  return modelTrainingSignalFromSpecs(sourceFiles, specs, "loop", "signal");
+}
+
+function modelTrainingDataSignals(sourceFiles: ModelTrainingSourceFile[]): ModelTrainingReadinessReport["dataSignals"] {
+  const specs: Array<{ signal: ModelTrainingReadinessReport["dataSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dataloader", pattern: /DataLoader|dataloader|train_dataloader/i, evidence: "dataloader evidence was detected." },
+    { signal: "datamodule", pattern: /LightningDataModule|DataModule/i, evidence: "data module evidence was detected." },
+    { signal: "dataset-shard", pattern: /get_dataset_shard|dataset shard|DatasetShard/i, evidence: "dataset shard evidence was detected." },
+    { signal: "prepare-dataloader", pattern: /prepare_data_loader|accelerator\.prepare|prepare\([^)]*dataloader/i, evidence: "prepared dataloader evidence was detected." },
+    { signal: "batch-size", pattern: /batch_size|per_device_train_batch_size|train_batch_size/i, evidence: "batch-size evidence was detected." },
+    { signal: "validation-loader", pattern: /val_dataloader|validation_dataloader|eval_dataloader|validation loader/i, evidence: "validation loader evidence was detected." }
+  ];
+  return modelTrainingSignalFromSpecs(sourceFiles, specs, "data", "signal");
+}
+
+function modelTrainingDistributedSignals(sourceFiles: ModelTrainingSourceFile[]): ModelTrainingReadinessReport["distributedSignals"] {
+  const specs: Array<{ signal: ModelTrainingReadinessReport["distributedSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ddp", pattern: /DDP|strategy=.*ddp|RayDDPStrategy/i, evidence: "DDP evidence was detected." },
+    { signal: "fsdp", pattern: /FSDP|RayFSDPStrategy|FullySharded/i, evidence: "FSDP evidence was detected." },
+    { signal: "deepspeed", pattern: /DeepSpeed|deepspeed|RayDeepSpeedStrategy/i, evidence: "DeepSpeed evidence was detected." },
+    { signal: "torchrun", pattern: /torchrun|torch\.distributed/i, evidence: "torchrun/distributed evidence was detected." },
+    { signal: "accelerate-launch", pattern: /accelerate launch/i, evidence: "accelerate launch evidence was detected." },
+    { signal: "ray-train", pattern: /TorchTrainer|ray\.train|ScalingConfig|train_loop_per_worker/i, evidence: "Ray Train evidence was detected." },
+    { signal: "multi-gpu", pattern: /multi_gpu|MULTI_GPU|devices=\s*[2-9]|num_processes|use_gpu=True|gpu/i, evidence: "multi-GPU evidence was detected." },
+    { signal: "multi-node", pattern: /num_nodes|multi-node|num_machines|node_rank/i, evidence: "multi-node evidence was detected." }
+  ];
+  return modelTrainingSignalFromSpecs(sourceFiles, specs, "distributed", "signal");
+}
+
+function modelTrainingAcceleratorSignals(sourceFiles: ModelTrainingSourceFile[]): ModelTrainingReadinessReport["acceleratorSignals"] {
+  const specs: Array<{ signal: ModelTrainingReadinessReport["acceleratorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "gpu", pattern: /gpu|cuda|accelerator=.*gpu|use_gpu=True/i, evidence: "GPU accelerator evidence was detected." },
+    { signal: "tpu", pattern: /tpu|TPU/i, evidence: "TPU evidence was detected." },
+    { signal: "xla", pattern: /xla|XLA|DistributedType\.XLA/i, evidence: "XLA evidence was detected." },
+    { signal: "mixed-precision", pattern: /mixed_precision|precision=|mixed precision/i, evidence: "mixed precision evidence was detected." },
+    { signal: "bf16", pattern: /bf16|bfloat16/i, evidence: "bf16 evidence was detected." },
+    { signal: "fp16", pattern: /fp16|precision=16|float16/i, evidence: "fp16 evidence was detected." },
+    { signal: "device-placement", pattern: /device_placement|accelerator\.device|to\(device\)/i, evidence: "device placement evidence was detected." }
+  ];
+  return modelTrainingSignalFromSpecs(sourceFiles, specs, "accelerator", "signal");
+}
+
+function modelTrainingCheckpointSignals(sourceFiles: ModelTrainingSourceFile[]): ModelTrainingReadinessReport["checkpointSignals"] {
+  const specs: Array<{ signal: ModelTrainingReadinessReport["checkpointSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "checkpoint", pattern: /ModelCheckpoint|checkpoint|CheckpointConfig|Checkpoint/i, evidence: "checkpoint evidence was detected." },
+    { signal: "resume", pattern: /resume_from_checkpoint|resume|restore/i, evidence: "resume evidence was detected." },
+    { signal: "save-state", pattern: /save_state|save_checkpoint|torch\.save|save_model/i, evidence: "save-state evidence was detected." },
+    { signal: "load-state", pattern: /load_state|load_checkpoint|load_state_dict|get_checkpoint/i, evidence: "load-state evidence was detected." },
+    { signal: "artifact-storage", pattern: /storage_path|artifact|upload-artifact|checkpoint_dir|s3:\/\//i, evidence: "artifact storage evidence was detected." },
+    { signal: "best-model", pattern: /best_model|best-checkpoint|monitor=.*val|save_top_k/i, evidence: "best-model evidence was detected." }
+  ];
+  return modelTrainingSignalFromSpecs(sourceFiles, specs, "checkpoint", "signal");
+}
+
+function modelTrainingCallbackSignals(sourceFiles: ModelTrainingSourceFile[]): ModelTrainingReadinessReport["callbackSignals"] {
+  const specs: Array<{ signal: ModelTrainingReadinessReport["callbackSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "early-stopping", pattern: /EarlyStopping|early stopping/i, evidence: "early stopping evidence was detected." },
+    { signal: "lr-monitor", pattern: /LearningRateMonitor|learning rate monitor|lr monitor/i, evidence: "learning-rate monitor evidence was detected." },
+    { signal: "model-summary", pattern: /ModelSummary|model summary/i, evidence: "model summary evidence was detected." },
+    { signal: "progress-bar", pattern: /ProgressBar|TQDMProgressBar|progress bar/i, evidence: "progress bar evidence was detected." },
+    { signal: "ray-report-callback", pattern: /RayTrainReportCallback|ray train report callback/i, evidence: "Ray report callback evidence was detected." },
+    { signal: "custom-callback", pattern: /Callback|callbacks=/i, evidence: "custom callback evidence was detected." }
+  ];
+  return modelTrainingSignalFromSpecs(sourceFiles, specs, "callback", "signal");
+}
+
+function modelTrainingObservabilitySignals(sourceFiles: ModelTrainingSourceFile[]): ModelTrainingReadinessReport["observabilitySignals"] {
+  const specs: Array<{ signal: ModelTrainingReadinessReport["observabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "metric", pattern: /metric|accuracy|loss|val_loss|f1|auc/i, evidence: "metric evidence was detected." },
+    { signal: "logger", pattern: /logger|log\(|self\.log|accelerator\.log/i, evidence: "logger evidence was detected." },
+    { signal: "tensorboard", pattern: /TensorBoardLogger|tensorboard/i, evidence: "TensorBoard evidence was detected." },
+    { signal: "wandb", pattern: /WandbLogger|wandb/i, evidence: "W&B evidence was detected." },
+    { signal: "mlflow", pattern: /MLFlowLogger|mlflow/i, evidence: "MLflow evidence was detected." },
+    { signal: "report", pattern: /ray\.train\.report|session\.report|report\(/i, evidence: "training report evidence was detected." }
+  ];
+  return modelTrainingSignalFromSpecs(sourceFiles, specs, "observability", "signal");
+}
+
+function modelTrainingConfigSignals(sourceFiles: ModelTrainingSourceFile[]): ModelTrainingReadinessReport["configSignals"] {
+  const specs: Array<{ signal: ModelTrainingReadinessReport["configSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "trainer-config", pattern: /Trainer\([^)]*(max_epochs|max_steps|precision|strategy|accelerator)|TrainerConfig/i, evidence: "trainer config evidence was detected." },
+    { signal: "scaling-config", pattern: /ScalingConfig|num_workers|resources_per_worker/i, evidence: "scaling config evidence was detected." },
+    { signal: "run-config", pattern: /RunConfig|CheckpointConfig|FailureConfig|storage_path/i, evidence: "run config evidence was detected." },
+    { signal: "project-config", pattern: /ProjectConfiguration|accelerate config|project_dir|logging_dir/i, evidence: "project config evidence was detected." },
+    { signal: "seed", pattern: /seed_everything|set_seed|manual_seed|seed=/i, evidence: "seed evidence was detected." },
+    { signal: "deterministic", pattern: /deterministic|benchmark=False|CUBLAS_WORKSPACE_CONFIG/i, evidence: "determinism evidence was detected." }
+  ];
+  return modelTrainingSignalFromSpecs(sourceFiles, specs, "config", "signal");
+}
+
+function modelTrainingCiSignals(sourceFiles: ModelTrainingSourceFile[]): ModelTrainingReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: ModelTrainingReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|uses: actions\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "training-smoke-command", pattern: /python .*train|training smoke|fast_dev_run|limit_train_batches|pytest .*train/i, evidence: "training smoke command evidence was detected." },
+    { signal: "distributed-smoke-command", pattern: /accelerate launch|torchrun|ray train|distributed smoke|num_processes|num_workers/i, evidence: "distributed smoke command evidence was detected." },
+    { signal: "checkpoint-assertion-command", pattern: /checkpoint assertion|test .*checkpoint|assert .*checkpoint|resume_from_checkpoint|load_state/i, evidence: "checkpoint assertion evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|training-report|checkpoint|tensorboard|wandb|mlruns/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return modelTrainingSignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function modelTrainingPackageSignals(sourceFiles: ModelTrainingSourceFile[]): ModelTrainingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ModelTrainingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "lightning", pattern: /lightning|pytorch-lightning|LightningModule|Trainer\(|ModelCheckpoint/i, evidence: "Lightning package/API evidence was detected." },
+    { signal: "accelerate", pattern: /accelerate|Accelerator\(|accelerate launch|AcceleratorState/i, evidence: "Accelerate package/API evidence was detected." },
+    { signal: "ray", pattern: /ray|TorchTrainer|ray\.train|ScalingConfig/i, evidence: "Ray Train package/API evidence was detected." },
+    { signal: "torch", pattern: /torch|torchrun|DataLoader|torch\.save|torch\.distributed/i, evidence: "PyTorch package/API evidence was detected." },
+    { signal: "custom", pattern: /training loop|train_dataloader|configure_optimizers|custom trainer/i, evidence: "custom training evidence was detected." }
+  ];
+  return modelTrainingSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function modelTrainingSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ModelTrainingSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/model-training-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }
