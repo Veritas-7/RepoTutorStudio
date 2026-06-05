@@ -21686,6 +21686,181 @@ describe("RepoTutor core pipeline", () => {
     expect(paletteHtml).toContain("RepoTutor records command palette readiness only");
   });
 
+  it("detects guided tour readiness without starting tours or mutating overlays", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-guided-tour-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-guided-tour-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "README.md"), "# Guided tour fixture\n");
+    await fs.writeFile(path.join(sourceRoot, "src", "react-joyride-tour.tsx"), [
+      "import Joyride, { ACTIONS, EVENTS, STATUS, type CallBackProps, type Step } from 'react-joyride';",
+      "import { useState } from 'react';",
+      "const steps: Step[] = [",
+      "  { target: '#lesson-nav', content: 'Open lesson navigation', title: 'Lesson map', placement: 'bottom', disableBeacon: true, spotlightClicks: true },",
+      "  { target: '#study-card', content: 'Inspect study cards', title: 'Study card', placement: 'right', spotlightClicks: false }",
+      "];",
+      "export function LessonJoyrideTour() {",
+      "  const [run, setRun] = useState(true);",
+      "  const [stepIndex, setStepIndex] = useState(0);",
+      "  const handleCallback = (data: CallBackProps) => {",
+      "    if (data.type === EVENTS.STEP_AFTER && data.action === ACTIONS.NEXT) setStepIndex(data.index + 1);",
+      "    if (data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED) { setRun(false); localStorage.setItem('tour-progress', data.status); }",
+      "  };",
+      "  return <Joyride steps={steps} run={run} stepIndex={stepIndex} continuous showProgress showSkipButton scrollToFirstStep disableOverlayClose callback={handleCallback} styles={{ options: { zIndex: 10000 } }} locale={{ back: 'Back', close: 'Close', last: 'Done', next: 'Next', skip: 'Skip' }} />;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "shepherd-tour.ts"), [
+      "import Shepherd from 'shepherd.js';",
+      "import 'shepherd.js/dist/css/shepherd.css';",
+      "export const tour = new Shepherd.Tour({",
+      "  useModalOverlay: true,",
+      "  defaultStepOptions: { classes: 'shepherd-theme-custom', scrollTo: true, modalOverlayOpeningPadding: 8, cancelIcon: { enabled: true } }",
+      "});",
+      "tour.addStep({",
+      "  id: 'lesson-step',",
+      "  title: 'Lesson',",
+      "  text: 'Trace the current lesson boundary',",
+      "  attachTo: { element: '#lesson-card', on: 'bottom' },",
+      "  buttons: [{ text: 'Back', action: tour.back }, { text: 'Next', action: tour.next }],",
+      "  beforeShowPromise: () => Promise.resolve(),",
+      "  advanceOn: { selector: '#lesson-card', event: 'click' },",
+      "  highlightClass: 'tour-highlight'",
+      "});",
+      "tour.on('start', () => window.dispatchEvent(new CustomEvent('tour-start')));",
+      "tour.on('show', () => window.dispatchEvent(new CustomEvent('tour-show')));",
+      "tour.on('complete', () => window.dispatchEvent(new CustomEvent('tour-complete')));",
+      "tour.on('cancel', () => window.dispatchEvent(new CustomEvent('tour-cancel')));",
+      "export const controls = { start: () => tour.start(), next: () => tour.next(), back: () => tour.back(), complete: () => tour.complete(), cancel: () => tour.cancel() };"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "driver-tour.ts"), [
+      "import { driver } from 'driver.js';",
+      "import 'driver.js/dist/driver.css';",
+      "export const driverObj = driver({",
+      "  showProgress: true,",
+      "  allowClose: false,",
+      "  overlayClickBehavior: 'nextStep',",
+      "  stagePadding: 10,",
+      "  stageRadius: 6,",
+      "  popoverClass: 'repotutor-driver-popover',",
+      "  disableActiveInteraction: true,",
+      "  smoothScroll: true,",
+      "  onNextClick: () => localStorage.setItem('tour-progress', 'next'),",
+      "  onPrevClick: () => localStorage.setItem('tour-progress', 'prev'),",
+      "  onCloseClick: () => localStorage.setItem('tour-progress', 'close'),",
+      "  onDeselected: () => localStorage.setItem('tour-progress', 'deselected'),",
+      "  onPopoverRender: () => document.body.classList.add('tour-popover-rendered'),",
+      "  steps: [{",
+      "    element: '#study-index',",
+      "    popover: { title: 'Study index', description: 'Use the index to jump between concepts', side: 'right', align: 'start', showButtons: ['next', 'previous', 'close'], onNextClick: () => localStorage.setItem('tour-progress', 'popover-next') }",
+      "  }]",
+      "});",
+      "driverObj.setConfig({ stageRadius: 4 });",
+      "driverObj.setSteps([{ element: '#summary', popover: { title: 'Summary', description: 'Review outcomes' } }]);",
+      "driverObj.highlight({ element: '#summary', popover: { title: 'Highlight', description: 'One-off highlight' } });",
+      "driverObj.drive(0);",
+      "driverObj.getActiveElement();",
+      "driverObj.destroy();"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "guided-tour.spec.ts"), [
+      "import { describe, expect, it } from 'vitest';",
+      "import { fireEvent, getByRole } from '@testing-library/dom';",
+      "describe('guided tour accessibility shell', () => {",
+      "  it('keeps dialog labels, controls, escape handling, focus trap, tab order, and a11y audit markers visible', () => {",
+      "    document.body.innerHTML = '<section><h2 id=\"tour-title\">Guided tour</h2><p id=\"tour-body\">Step details</p><div role=\"dialog\" aria-label=\"Guided tour\" aria-labelledby=\"tour-title\" aria-describedby=\"tour-body\" aria-controls=\"lesson-card\" data-shepherd-step-id=\"lesson-step\"><button>Back</button><button>Next</button><button aria-label=\"Close tour\">Close</button></div><div id=\"lesson-card\" tabindex=\"0\">Lesson card</div></section>';",
+      "    const dialog = getByRole(document.body, 'dialog');",
+      "    dialog.setAttribute('data-focus-trap', 'focusTrap enabled');",
+      "    dialog.setAttribute('data-tab-order', 'tab-order back next close');",
+      "    fireEvent.keyDown(dialog, { key: 'Escape' });",
+      "    expect(dialog.getAttribute('aria-describedby')).toBe('tour-body');",
+      "    expect(dialog.outerHTML).toContain('a11y');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        test: "vitest guided-tour.spec.ts",
+        "test:e2e": "playwright test guided-tour.spec.ts",
+        "test:cy": "cypress run --spec test/guided-tour.spec.ts"
+      },
+      dependencies: {
+        "react-joyride": "^2.9.3",
+        "shepherd.js": "^13.0.0",
+        "react-shepherd": "^4.0.0",
+        "driver.js": "^1.3.1",
+        react: "^19.0.0"
+      },
+      devDependencies: {
+        "@testing-library/dom": "^10.4.0",
+        vitest: "^3.0.0",
+        playwright: "^1.50.0",
+        cypress: "^14.0.0",
+        typescript: "^5.8.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "guided-tour.yml"), [
+      "name: guided-tour",
+      "on: [push]",
+      "jobs:",
+      "  static-guided-tour:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest guided-tour.spec.ts",
+      "      - run: npx playwright test guided-tour.spec.ts",
+      "      - run: npx cypress run --spec test/guided-tour.spec.ts",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: guided-tour-traces",
+      "          path: reports/guided-tour"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "guided-tour-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      guidedTourSetups: Array<{ filePath: string; platform: string; stepCount: number; targetCount: number; navigationCount: number; overlayCount: number; callbackCount: number; accessibilityCount: number; stateCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      stepSignals: Array<{ signal: string; readiness: string }>;
+      targetSignals: Array<{ signal: string; readiness: string }>;
+      navigationSignals: Array<{ signal: string; readiness: string }>;
+      overlaySignals: Array<{ signal: string; readiness: string }>;
+      callbackSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Guided tour readiness React Joyride Shepherd.js driver.js steps target attachTo popover overlay progress callbacks accessibility tests");
+    expect(report.guidedTourSetups.some((item) => item.filePath === "src/react-joyride-tour.tsx" && item.platform === "react-joyride" && item.stepCount > 0 && item.targetCount > 0 && item.navigationCount > 0 && item.overlayCount > 0 && item.callbackCount > 0 && item.accessibilityCount > 0 && item.stateCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(report.guidedTourSetups.some((item) => item.filePath === "src/shepherd-tour.ts" && item.platform === "shepherd" && item.stepCount > 0 && item.targetCount > 0 && item.navigationCount > 0 && item.overlayCount > 0 && item.callbackCount > 0)).toBe(true);
+    expect(report.guidedTourSetups.some((item) => item.filePath === "src/driver-tour.ts" && item.platform === "driver-js" && item.stepCount > 0 && item.targetCount > 0 && item.navigationCount > 0 && item.overlayCount > 0 && item.callbackCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["react-joyride", "shepherd", "driver-js"]));
+    expect(readySignals(report.stepSignals)).toEqual(expect.arrayContaining(["steps-array", "step-object", "title", "content-text", "placement", "popover"]));
+    expect(readySignals(report.targetSignals)).toEqual(expect.arrayContaining(["target", "attach-to", "element", "selector", "highlight", "spotlight"]));
+    expect(readySignals(report.navigationSignals)).toEqual(expect.arrayContaining(["start", "next", "back-prev", "skip-cancel-close", "complete", "progress", "continuous"]));
+    expect(readySignals(report.overlaySignals)).toEqual(expect.arrayContaining(["modal-overlay", "spotlight", "stage-padding", "stage-radius", "popover-class", "styles", "scroll"]));
+    expect(readySignals(report.callbackSignals)).toEqual(expect.arrayContaining(["callback", "on-event", "on-next-click", "on-prev-click", "on-close-click", "before-show", "analytics-event"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["dialog-role", "aria-label", "aria-labelledby", "aria-describedby", "aria-controls", "focus-trap", "keyboard-escape", "tab-order"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["run", "step-index", "status", "lifecycle", "controlled-mode", "set-steps", "local-storage-progress"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "cypress", "testing-library", "keyboard-test", "a11y-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["react-joyride", "shepherd.js", "react-shepherd", "driver.js"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("react-joyride"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records guided tour readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "guided-tour-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "guided-tour-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "guided-tour-readiness.html"))).resolves.toBeUndefined();
+    const guidedTourMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "guided-tour-readiness.md"), "utf8");
+    expect(guidedTourMarkdown).toContain("Guided Tour Readiness");
+    expect(guidedTourMarkdown).toContain("react-joyride");
+    const guidedTourHtml = await fs.readFile(path.join(result.session.outputPaths.html, "guided-tour-readiness.html"), "utf8");
+    expect(guidedTourHtml).toContain("guided-tour-readiness-card");
+    expect(guidedTourHtml).toContain("data-source-pattern=\"Guided Tour\"");
+    expect(guidedTourHtml).toContain("RepoTutor records guided tour readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

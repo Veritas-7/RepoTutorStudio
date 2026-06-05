@@ -1,6 +1,6 @@
 # Compliance Audit 6
 
-Created: 2026-06-05T19:16:12.557Z
+Created: 2026-06-05T19:30:10.589Z
 
 Status: PASS
 
@@ -917,6 +917,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Command palette readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - Guided tour readiness report
 
 - missing files: none
 - missing strings: none
