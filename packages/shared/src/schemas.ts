@@ -6008,6 +6008,105 @@ export const DnsReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const CertificateReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  certificateSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["cert-manager", "step-ca", "certmagic", "acme", "custom", "unknown"]),
+    resourceCount: z.number().int().nonnegative(),
+    issuerCount: z.number().int().nonnegative(),
+    challengeCount: z.number().int().nonnegative(),
+    renewalCount: z.number().int().nonnegative(),
+    secretCount: z.number().int().nonnegative(),
+    keyCount: z.number().int().nonnegative(),
+    trustCount: z.number().int().nonnegative(),
+    revocationCount: z.number().int().nonnegative(),
+    observabilityCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  platformSignals: z.array(z.object({
+    signal: z.enum(["cert-manager", "step-ca", "certmagic", "acme", "vault", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resourceSignals: z.array(z.object({
+    signal: z.enum(["certificate", "certificate-request", "issuer", "cluster-issuer", "order", "challenge", "csr", "secret", "ingress", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  issuerSignals: z.array(z.object({
+    signal: z.enum(["acme", "ca", "self-signed", "vault", "step-ca", "lets-encrypt", "external", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  challengeSignals: z.array(z.object({
+    signal: z.enum(["dns01", "http01", "tls-alpn-01", "solver", "eab", "self-check", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lifecycleSignals: z.array(z.object({
+    signal: z.enum(["duration", "renew-before", "revision-history", "private-key-rotation", "keystore", "status-conditions", "on-demand", "cache", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  trustSignals: z.array(z.object({
+    signal: z.enum(["root-ca", "intermediate-ca", "ca-bundle", "cainjector", "trust-manager", "bootstrap", "install-root", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  revocationSignals: z.array(z.object({
+    signal: z.enum(["crl", "ocsp", "revoke", "short-lived", "passive-revocation", "must-staple", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  automationSignals: z.array(z.object({
+    signal: z.enum(["cmctl", "step-ca-renew", "certmagic-manage", "storage", "issuer-config", "solver-config", "policy", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observabilitySignals: z.array(z.object({
+    signal: z.enum(["metrics", "prometheus", "events", "logs", "health", "webhook", "readiness", "expiration-alert", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "helm-template", "kubeconform", "cmctl-check", "step-ca-smoke", "certmagic-tests", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["cert-manager", "step-ca", "certmagic", "lego", "x509", "openssl", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CacheReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -10449,6 +10548,7 @@ export type PipelineOrchestrationReadinessReport = z.infer<typeof PipelineOrches
 export type ServiceMeshReadinessReport = z.infer<typeof ServiceMeshReadinessReportSchema>;
 export type IngressControllerReadinessReport = z.infer<typeof IngressControllerReadinessReportSchema>;
 export type DnsReadinessReport = z.infer<typeof DnsReadinessReportSchema>;
+export type CertificateReadinessReport = z.infer<typeof CertificateReadinessReportSchema>;
 export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
 export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;
