@@ -59,6 +59,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-quality-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "documentation-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-migration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
@@ -197,6 +198,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-quality.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "documentation.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-migration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ci-cd.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
@@ -338,6 +340,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "code-quality.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "documentation.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "database-migration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ci-cd.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
@@ -506,6 +509,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/code-quality.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/documentation.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/database-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/database-migration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ci-cd.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/coverage-readiness.html\"");
@@ -1464,6 +1468,30 @@ describe("RepoTutor core pipeline", () => {
     expect(databaseMarkdown).toContain("Source pattern: Prisma");
     expect(databaseMarkdown).toContain("## Schema Files");
     expect(databaseMarkdown).toContain("## Client Signals");
+    const databaseMigrationText = await fs.readFile(path.join(result.session.outputPaths.analysis, "database-migration-readiness-report.json"), "utf8");
+    expect(databaseMigrationText).toContain("Database migration readiness Flyway Liquibase Alembic");
+    expect(databaseMigrationText).toContain("\"migrationSetups\"");
+    expect(databaseMigrationText).toContain("\"fileSignals\"");
+    expect(databaseMigrationText).toContain("\"lineageSignals\"");
+    expect(databaseMigrationText).toContain("\"rollbackSignals\"");
+    expect(databaseMigrationText).toContain("\"validationSignals\"");
+    expect(databaseMigrationText).toContain("\"configSignals\"");
+    expect(databaseMigrationText).toContain("\"ciSignals\"");
+    expect(databaseMigrationText).toContain("\"packageSignals\"");
+    expect(databaseMigrationText).toContain("flyway validate");
+    expect(databaseMigrationText).toContain("liquibase updateSQL");
+    expect(databaseMigrationText).toContain("alembic current");
+    const databaseMigrationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "database-migration-readiness.html"), "utf8");
+    expect(databaseMigrationHtml).toContain("Database Migration Readiness");
+    expect(databaseMigrationHtml).toContain("database-migration-readiness-card");
+    expect(databaseMigrationHtml).toContain("data-source-pattern=\"Database Migration\"");
+    expect(databaseMigrationHtml).toContain("Migration Setups");
+    expect(databaseMigrationHtml).toContain("Validation Signals");
+    const databaseMigrationMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "database-migration-readiness.md"), "utf8");
+    expect(databaseMigrationMarkdown).toContain("# Database Migration Readiness");
+    expect(databaseMigrationMarkdown).toContain("Source pattern: Database migration readiness");
+    expect(databaseMigrationMarkdown).toContain("## Migration Setups");
+    expect(databaseMigrationMarkdown).toContain("## Validation Signals");
     const ciCdText = await fs.readFile(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"), "utf8");
     expect(ciCdText).toContain("GitHub Actions workflow syntax events jobs permissions GITHUB_TOKEN OIDC cache artifacts concurrency environments deployments");
     expect(ciCdText).toContain("\"workflowFiles\"");
@@ -3203,6 +3231,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/code-quality.html");
     expect(exportManifestText).toContain("html/documentation.html");
     expect(exportManifestText).toContain("html/database-readiness.html");
+    expect(exportManifestText).toContain("html/database-migration-readiness.html");
     expect(exportManifestText).toContain("html/ci-cd.html");
     expect(exportManifestText).toContain("html/unit-tests.html");
     expect(exportManifestText).toContain("html/coverage-readiness.html");
@@ -3363,6 +3392,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("code-quality.html");
     expect(learningPathHtml).toContain("documentation.html");
     expect(learningPathHtml).toContain("database-readiness.html");
+    expect(learningPathHtml).toContain("database-migration-readiness.html");
     expect(learningPathHtml).toContain("ci-cd.html");
     expect(learningPathHtml).toContain("unit-tests.html");
     expect(learningPathHtml).toContain("coverage-readiness.html");
@@ -6272,6 +6302,228 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-data-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-data-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "test-data-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects database migration readiness without running migration toolchains", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-db-migration-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-db-migration-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src", "main", "resources", "db", "migration"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "database", "changelog"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "alembic", "versions"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "drizzle", "meta"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "db", "migrate"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "prisma", "migrations", "20260101010101_init"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "database-migration-demo",
+      version: "1.0.0",
+      scripts: {
+        "flyway:info": "flyway info -configFiles=flyway.conf",
+        "flyway:validate": "flyway validate",
+        "flyway:repair": "flyway repair",
+        "liquibase:status": "liquibase status --verbose",
+        "liquibase:sql": "liquibase updateSQL",
+        "alembic:state": "alembic current && alembic heads && alembic check",
+        "drizzle:check": "drizzle-kit check",
+        "prisma:deploy": "prisma migrate deploy",
+        "rails:migrate": "rails db:migrate"
+      },
+      dependencies: {
+        flyway: "^0.0.1",
+        liquibase: "^4.0.0",
+        alembic: "^1.0.0",
+        "drizzle-kit": "^0.31.0",
+        "drizzle-orm": "^0.44.0",
+        typeorm: "^0.3.0",
+        knex: "^3.0.0",
+        sequelize: "^6.0.0",
+        rails: "^7.0.0",
+        prisma: "^6.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "flyway.conf"), [
+      "flyway.url=jdbc:postgresql://localhost:5432/app",
+      "flyway.locations=filesystem:src/main/resources/db/migration",
+      "flyway.cleanDisabled=true",
+      "flyway.baselineOnMigrate=true",
+      "flyway.validateOnMigrate=true",
+      "flyway.outOfOrder=false",
+      "flyway.placeholders.app_user=app"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "flyway.toml"), [
+      "locations = [\"filesystem:src/main/resources/db/migration\"]",
+      "cleanDisabled = true",
+      "baselineOnMigrate = true"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "resources", "db", "migration", "V1__create_users.sql"), [
+      "-- Flyway versioned migration, schema history table flyway_schema_history, restore point before migration",
+      "CREATE TABLE users (id bigint primary key, email text not null);",
+      "CREATE INDEX idx_users_email ON users(email);"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "resources", "db", "migration", "R__refresh_user_view.sql"), [
+      "-- repeatable migration",
+      "CREATE OR REPLACE VIEW user_emails AS SELECT email FROM users;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "main", "resources", "db", "migration", "U1__create_users.sql"), [
+      "-- Flyway undo migration executeInTransaction=false",
+      "DROP TABLE users;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "database", "changelog", "changelog.xml"), [
+      "<databaseChangeLog xmlns=\"http://www.liquibase.org/xml/ns/dbchangelog\">",
+      "  <changeSet id=\"1\" author=\"repo\" context=\"dev\" labels=\"core\" runOnChange=\"true\">",
+      "    <preConditions onFail=\"MARK_RAN\" />",
+      "    <createTable tableName=\"accounts\" />",
+      "    <validCheckSum>ANY</validCheckSum>",
+      "    <rollback><dropTable tableName=\"accounts\" /></rollback>",
+      "  </changeSet>",
+      "  <changeSet id=\"2\" author=\"repo\"><tagDatabase tag=\"v1\" /></changeSet>",
+      "  <!-- DATABASECHANGELOG DATABASECHANGELOGLOCK calculate-checksum -->",
+      "</databaseChangeLog>"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "database", "changelog", "formatted.sql"), [
+      "--liquibase formatted sql",
+      "--changeset repo:3 labels:reporting context:prod runAlways:true",
+      "ALTER TABLE accounts ADD COLUMN status text;",
+      "--rollback ALTER TABLE accounts DROP COLUMN status;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "liquibase.properties"), [
+      "changeLogFile=database/changelog/changelog.xml",
+      "url=jdbc:postgresql://localhost:5432/app",
+      "contexts=dev,prod",
+      "labels=core"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "alembic.ini"), [
+      "[alembic]",
+      "script_location = alembic",
+      "version_locations = %(here)s/alembic/versions",
+      "sqlalchemy.url = postgresql://localhost/app"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "alembic", "env.py"), [
+      "from alembic import context",
+      "def run_migrations_offline():",
+      "    context.configure(url='postgresql://localhost/app')",
+      "def run_migrations_online():",
+      "    context.configure(compare_type=True)",
+      "run_migrations_online()"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "alembic", "versions", "202601010101_add_accounts.py"), [
+      "revision = '202601010101'",
+      "down_revision = '202512312359'",
+      "branch_labels = ('core',)",
+      "depends_on = None",
+      "def upgrade():",
+      "    op.create_table('accounts')",
+      "def downgrade():",
+      "    op.drop_table('accounts')"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "drizzle", "0001_init.sql"), [
+      "-- drizzle migration --> statement-breakpoint",
+      "CREATE TABLE drizzle_users (id integer primary key);"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "drizzle", "down.sql"), [
+      "-- drizzle down migration",
+      "DROP TABLE drizzle_users;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "drizzle", "meta", "_journal.json"), JSON.stringify({
+      version: "7",
+      dialect: "postgresql",
+      entries: [{ idx: 0, version: "20260101010101", tag: "0001_init", when: 1767229261000 }]
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "db", "migrate", "20260101010101_create_widgets.rb"), [
+      "class CreateWidgets < ActiveRecord::Migration[7.1]",
+      "  disable_ddl_transaction!",
+      "  def change",
+      "    create_table :widgets",
+      "  end",
+      "  def down",
+      "    drop_table :widgets",
+      "  end",
+      "end"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "prisma", "migrations", "20260101010101_init", "migration.sql"), [
+      "-- prisma migrate deploy, migrate diff, schema drift detected",
+      "ALTER TABLE users ADD COLUMN name text;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "database-migrations.yml"), [
+      "name: database-migrations",
+      "on:",
+      "  pull_request:",
+      "  workflow_dispatch:",
+      "jobs:",
+      "  migrations:",
+      "    runs-on: ubuntu-latest",
+      "    environment: production",
+      "    services:",
+      "      postgres:",
+      "        image: postgres:16",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: flyway info -configFiles=flyway.conf",
+      "      - run: flyway validate",
+      "      - run: flyway repair",
+      "      - run: liquibase status --verbose",
+      "      - run: liquibase updateSQL > migration-dry-run.sql",
+      "      - run: alembic current && alembic heads && alembic check",
+      "      - run: drizzle-kit check",
+      "      - run: prisma migrate deploy",
+      "      - run: rails db:migrate",
+      "      - run: echo \"schema drift dry run manual approval\"",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: migration report",
+      "          path: migration-dry-run.sql"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "database-migration-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      migrationSetups: Array<{ tool: string; readiness: string; versionedCount: number; changelogCount: number; revisionCount: number; rollbackCount: number; validationCount: number; ciCount: number }>;
+      fileSignals: Array<{ signal: string; readiness: string }>;
+      lineageSignals: Array<{ signal: string; readiness: string }>;
+      rollbackSignals: Array<{ signal: string; readiness: string }>;
+      validationSignals: Array<{ signal: string; readiness: string }>;
+      configSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (tool: string) => report.migrationSetups
+      .filter((item) => item.tool === tool)
+      .reduce((totals, item) => ({
+        versionedCount: totals.versionedCount + item.versionedCount,
+        changelogCount: totals.changelogCount + item.changelogCount,
+        revisionCount: totals.revisionCount + item.revisionCount,
+        rollbackCount: totals.rollbackCount + item.rollbackCount,
+        validationCount: totals.validationCount + item.validationCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { versionedCount: 0, changelogCount: 0, revisionCount: 0, rollbackCount: 0, validationCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Database migration readiness Flyway Liquibase Alembic versioned migrations changelog changeset revision down_revision upgrade downgrade rollback validate repair info status updateSQL current heads dry-run drift CI");
+    expect(setupTotals("flyway")).toMatchObject({ versionedCount: expect.any(Number), rollbackCount: expect.any(Number), validationCount: expect.any(Number) });
+    expect(setupTotals("flyway").versionedCount).toBeGreaterThan(0);
+    expect(setupTotals("flyway").rollbackCount).toBeGreaterThan(0);
+    expect(setupTotals("flyway").validationCount).toBeGreaterThan(0);
+    expect(setupTotals("liquibase").changelogCount).toBeGreaterThan(0);
+    expect(setupTotals("liquibase").rollbackCount).toBeGreaterThan(0);
+    expect(setupTotals("alembic").revisionCount).toBeGreaterThan(0);
+    expect(setupTotals("alembic").rollbackCount).toBeGreaterThan(0);
+    expect(report.migrationSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.fileSignals)).toEqual(expect.arrayContaining(["flyway-versioned", "flyway-repeatable", "flyway-undo", "liquibase-changelog", "liquibase-formatted-sql", "alembic-revision", "drizzle-migration", "rails-migration", "sql-migration"]));
+    expect(readySignals(report.lineageSignals)).toEqual(expect.arrayContaining(["version-prefix", "repeatable-prefix", "down-revision", "heads", "branch-label", "timestamped-version", "checksum", "databasechangelog", "schema-history"]));
+    expect(readySignals(report.rollbackSignals)).toEqual(expect.arrayContaining(["liquibase-rollback", "alembic-downgrade", "flyway-undo", "rails-down-change", "drizzle-down", "transactional-ddl", "restore-point"]));
+    expect(readySignals(report.validationSignals)).toEqual(expect.arrayContaining(["flyway-validate", "flyway-repair", "flyway-info", "liquibase-status", "liquibase-update-sql", "alembic-current", "alembic-heads", "alembic-check", "drizzle-check"]));
+    expect(readySignals(report.configSignals)).toEqual(expect.arrayContaining(["flyway-conf", "flyway-toml", "liquibase-properties", "alembic-ini", "script-location", "version-locations", "database-url", "migration-path", "placeholder", "contexts-labels"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "migration-command", "dry-run", "schema-drift", "artifact-upload", "database-service", "manual-approval"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["flyway", "liquibase", "alembic", "drizzle-kit", "typeorm", "knex", "sequelize", "rails", "prisma"]));
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "flyway validate",
+      "liquibase updateSQL",
+      "alembic current && alembic heads"
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-migration-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-migration-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "database-migration-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {

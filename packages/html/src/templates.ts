@@ -65,6 +65,7 @@ import type {
   CodeQualityReport,
   DocumentationReport,
   DatabaseReadinessReport,
+  DatabaseMigrationReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -217,6 +218,7 @@ export interface StudyHtmlInput {
   codeQualityReport: CodeQualityReport;
   documentationReport: DocumentationReport;
   databaseReadinessReport: DatabaseReadinessReport;
+  databaseMigrationReadinessReport: DatabaseMigrationReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -388,6 +390,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["code-quality.html", "Code Quality"],
     ["documentation.html", "Documentation"],
     ["database-readiness.html", "Database"],
+    ["database-migration-readiness.html", "DB Migrations"],
     ["ci-cd.html", "CI/CD"],
     ["unit-tests.html", "Unit Tests"],
     ["coverage-readiness.html", "Coverage"],
@@ -578,6 +581,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Code Quality</h3><p>${escapeHtml(input.codeQualityReport.summary)}</p><p>Biome 패턴으로 formatter, linter, assist, config, CI/editor signals를 정리합니다.</p><a href="code-quality.html">Code Quality 열기</a></article>
           <article><h3>Documentation</h3><p>${escapeHtml(input.documentationReport.summary)}</p><p>Docusaurus 패턴으로 docs, blog, pages, navigation, i18n, search, build/deploy 준비도를 정리합니다.</p><a href="documentation.html">Documentation 열기</a></article>
           <article><h3>Database Readiness</h3><p>${escapeHtml(input.databaseReadinessReport.summary)}</p><p>Prisma 패턴으로 schema, datasource, migrations, generated client, seed, env 준비도를 정리합니다.</p><a href="database-readiness.html">Database 열기</a></article>
+          <article><h3>Database Migration Readiness</h3><p>${escapeHtml(input.databaseMigrationReadinessReport.summary)}</p><p>Flyway/Liquibase/Alembic 패턴으로 versioned migrations, changelog, revision, rollback, validation, CI 준비도를 정리합니다.</p><a href="database-migration-readiness.html">DB Migrations 열기</a></article>
           <article><h3>CI/CD Readiness</h3><p>${escapeHtml(input.ciCdReport.summary)}</p><p>GitHub Actions 패턴으로 workflow, trigger, job, permission, artifact/cache, deployment 준비도를 정리합니다.</p><a href="ci-cd.html">CI/CD 열기</a></article>
           <article><h3>Unit Test Readiness</h3><p>${escapeHtml(input.unitTestReport.summary)}</p><p>Vitest 패턴으로 test files, assertions, mocks, coverage, environment, reporters 준비도를 정리합니다.</p><a href="unit-tests.html">Unit Tests 열기</a></article>
           <article><h3>Coverage Readiness</h3><p>${escapeHtml(input.coverageReadinessReport.summary)}</p><p>nyc/c8/Codecov 패턴으로 instrumentation, scope, thresholds, reports, CI uploads 준비도를 정리합니다.</p><a href="coverage-readiness.html">Coverage 열기</a></article>
@@ -915,6 +919,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "database-readiness.html",
       title: "Database Readiness",
       html: pageShell("Database Readiness", "database-readiness.html", `<section class="panel" data-source-pattern="Prisma"><h2>Database Snapshot</h2><p>${escapeHtml(input.databaseReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.databaseReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>schemas</dt><dd>${input.databaseReadinessReport.schemaFiles.length}</dd></div><div><dt>datasources</dt><dd>${input.databaseReadinessReport.datasourceSignals.length}</dd></div><div><dt>migrations</dt><dd>${input.databaseReadinessReport.migrationSignals.length}</dd></div><div><dt>client</dt><dd>${input.databaseReadinessReport.clientSignals.length}</dd></div></dl><p class="muted">RepoTutor records Prisma-style readiness only. It does not connect to databases, run migrations, introspect schemas, generate clients, or seed data.</p></section><section class="grid"><article class="database-card"><h3>Schema Files</h3>${databaseSchemaList(input.databaseReadinessReport.schemaFiles)}</article><article class="database-card"><h3>Datasource Signals</h3>${databaseDatasourceList(input.databaseReadinessReport.datasourceSignals)}</article><article class="database-card"><h3>Migration Signals</h3>${databaseSignalList(input.databaseReadinessReport.migrationSignals, "signal")}</article><article class="database-card"><h3>Client Signals</h3>${databaseSignalList(input.databaseReadinessReport.clientSignals, "signal")}</article></section><section class="grid"><article class="database-card"><h3>Config Signals</h3>${databaseSignalList(input.databaseReadinessReport.configSignals, "signal")}</article><article class="database-card"><h3>Model Signals</h3>${databaseSignalList(input.databaseReadinessReport.modelSignals, "signal")}</article><article class="database-card"><h3>Recommended Commands</h3>${databaseCommandList(input.databaseReadinessReport.recommendedCommands)}</article><article class="database-card"><h3>Risk Queue</h3>${databaseRiskList(input.databaseReadinessReport.riskQueue)}</article><article class="database-card"><h3>다음 확인 단계</h3>${list(input.databaseReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "database-migration-readiness.html",
+      title: "Database Migration Readiness",
+      html: pageShell("Database Migration Readiness", "database-migration-readiness.html", `<section class="panel" data-source-pattern="Database Migration"><h2>Database Migration Snapshot</h2><p>${escapeHtml(input.databaseMigrationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.databaseMigrationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.databaseMigrationReadinessReport.migrationSetups.length}</dd></div><div><dt>files</dt><dd>${input.databaseMigrationReadinessReport.fileSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>lineage</dt><dd>${input.databaseMigrationReadinessReport.lineageSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>validation</dt><dd>${input.databaseMigrationReadinessReport.validationSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records database migration readiness only; it does not connect to databases, run migrate, update, rollback, repair, stamp, or schema drift commands.</p></section><section class="grid"><article class="database-migration-readiness-card"><h3>Migration Setups</h3>${databaseMigrationReadinessSetupList(input.databaseMigrationReadinessReport.migrationSetups)}</article><article class="database-migration-readiness-card"><h3>File Signals</h3>${databaseMigrationReadinessSignalList(input.databaseMigrationReadinessReport.fileSignals, "signal")}</article><article class="database-migration-readiness-card"><h3>Lineage Signals</h3>${databaseMigrationReadinessSignalList(input.databaseMigrationReadinessReport.lineageSignals, "signal")}</article><article class="database-migration-readiness-card"><h3>Rollback Signals</h3>${databaseMigrationReadinessSignalList(input.databaseMigrationReadinessReport.rollbackSignals, "signal")}</article></section><section class="grid"><article class="database-migration-readiness-card"><h3>Validation Signals</h3>${databaseMigrationReadinessSignalList(input.databaseMigrationReadinessReport.validationSignals, "signal")}</article><article class="database-migration-readiness-card"><h3>Config Signals</h3>${databaseMigrationReadinessSignalList(input.databaseMigrationReadinessReport.configSignals, "signal")}</article><article class="database-migration-readiness-card"><h3>CI Signals</h3>${databaseMigrationReadinessSignalList(input.databaseMigrationReadinessReport.ciSignals, "signal")}</article><article class="database-migration-readiness-card"><h3>Package Signals</h3>${databaseMigrationReadinessSignalList(input.databaseMigrationReadinessReport.packageSignals, "signal")}</article><article class="database-migration-readiness-card"><h3>Recommended Commands</h3>${databaseMigrationReadinessCommandList(input.databaseMigrationReadinessReport.recommendedCommands)}</article><article class="database-migration-readiness-card"><h3>Risk Queue</h3>${databaseMigrationReadinessRiskList(input.databaseMigrationReadinessReport.riskQueue)}</article><article class="database-migration-readiness-card"><h3>다음 확인 단계</h3>${list(input.databaseMigrationReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "ci-cd.html",
@@ -1487,6 +1496,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Code Quality", path: "html/code-quality.html", description: "Biome식 formatter, linter, assist, config, CI/editor 준비도를 확인합니다." },
       { label: "Documentation Readiness", path: "html/documentation.html", description: "Docusaurus식 docs, blog, pages, navigation, i18n, search, build/deploy 준비도를 확인합니다." },
       { label: "Database Readiness", path: "html/database-readiness.html", description: "Prisma식 schema, datasource, migration, generated client, seed/env 준비도를 확인합니다." },
+      { label: "Database Migration Readiness", path: "html/database-migration-readiness.html", description: "Flyway/Liquibase/Alembic식 versioned migration, changelog, revision, rollback, validation 준비도를 확인합니다." },
       { label: "CI/CD Readiness", path: "html/ci-cd.html", description: "GitHub Actions식 workflow, trigger, job, permission, cache/artifact, deployment 준비도를 확인합니다." },
       { label: "Unit Test Readiness", path: "html/unit-tests.html", description: "Vitest식 test file, assertion, mock, coverage, environment, reporter 준비도를 확인합니다." },
       { label: "Coverage Readiness", path: "html/coverage-readiness.html", description: "nyc/c8/Codecov식 instrumentation, scope, threshold, report, upload 준비도를 확인합니다." },
@@ -1894,6 +1904,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "test-data-readiness.html",
       goal: "Factory Bot, factory_boy, Faker식 factory, trait, association, sequence, seed, lint 준비도를 확인합니다.",
       evidence: `setups ${input.testDataReadinessReport.dataSetups.length}개, factory signals ${input.testDataReadinessReport.factorySignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Database migration 준비도 확인",
+      href: "database-migration-readiness.html",
+      goal: "Flyway, Liquibase, Alembic식 versioned migration, changelog, revision, rollback, validation, CI 준비도를 확인합니다.",
+      evidence: `setups ${input.databaseMigrationReadinessReport.migrationSetups.length}개, validation signals ${input.databaseMigrationReadinessReport.validationSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Integration test environment 준비도 확인",
@@ -3476,6 +3492,34 @@ function testDataReadinessRiskList(items: TestDataReadinessReport["riskQueue"]):
 }
 
 function testDataReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function databaseMigrationReadinessSetupList(items: DatabaseMigrationReadinessReport["migrationSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">database migration setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)} / ${escapeHtml(item.readiness)}]<br>versioned ${item.versionedCount}, repeatable ${item.repeatableCount}, changelog ${item.changelogCount}, changeset ${item.changesetCount}, revision ${item.revisionCount}<br>rollback ${item.rollbackCount}, validation ${item.validationCount}, CI ${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(databaseMigrationReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function databaseMigrationReadinessSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">database migration readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(databaseMigrationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function databaseMigrationReadinessCommandList(items: DatabaseMigrationReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function databaseMigrationReadinessRiskList(items: DatabaseMigrationReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(databaseMigrationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function databaseMigrationReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
