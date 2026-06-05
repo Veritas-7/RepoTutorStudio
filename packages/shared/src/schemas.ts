@@ -3178,6 +3178,81 @@ export const DataLineageReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DataCatalogReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  catalogSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["openmetadata", "datahub", "amundsen", "custom", "unknown"]),
+    ingestionCount: z.number().int().nonnegative(),
+    entityCount: z.number().int().nonnegative(),
+    schemaCount: z.number().int().nonnegative(),
+    ownershipCount: z.number().int().nonnegative(),
+    glossaryCount: z.number().int().nonnegative(),
+    tagCount: z.number().int().nonnegative(),
+    lineageCount: z.number().int().nonnegative(),
+    searchCount: z.number().int().nonnegative(),
+    policyCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  ingestionSignals: z.array(z.object({
+    signal: z.enum(["source-config", "connector", "recipe", "workflow", "pipeline", "scheduler", "profiling", "usage", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  entitySignals: z.array(z.object({
+    signal: z.enum(["dataset", "table", "column", "dashboard", "chart", "data-job", "data-flow", "user", "team", "domain", "data-product", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  governanceSignals: z.array(z.object({
+    signal: z.enum(["owner", "glossary-term", "tag", "classification", "policy", "domain", "stewardship", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  searchSignals: z.array(z.object({
+    signal: z.enum(["elasticsearch", "opensearch", "semantic-search", "browse-paths", "search-index", "metadata-api", "mcp-search", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  lineageSignals: z.array(z.object({
+    signal: z.enum(["upstream-lineage", "column-lineage", "data-job-io", "query-lineage", "impact-analysis", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "catalog-ingestion-command", "metadata-test-command", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["openmetadata", "datahub", "amundsen", "elasticsearch", "opensearch", "neo4j", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CiCdReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -9012,6 +9087,7 @@ export type DatabaseMigrationReadinessReport = z.infer<typeof DatabaseMigrationR
 export type DatabaseOrmReadinessReport = z.infer<typeof DatabaseOrmReadinessReportSchema>;
 export type DataQualityReadinessReport = z.infer<typeof DataQualityReadinessReportSchema>;
 export type DataLineageReadinessReport = z.infer<typeof DataLineageReadinessReportSchema>;
+export type DataCatalogReadinessReport = z.infer<typeof DataCatalogReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type CoverageReadinessReport = z.infer<typeof CoverageReadinessReportSchema>;

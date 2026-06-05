@@ -74,6 +74,7 @@ import {
   DatabaseOrmReadinessReport,
   DataQualityReadinessReport,
   DataLineageReadinessReport,
+  DataCatalogReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -236,6 +237,7 @@ export interface AnalysisBundle {
   databaseOrmReadinessReport: DatabaseOrmReadinessReport;
   dataQualityReadinessReport: DataQualityReadinessReport;
   dataLineageReadinessReport: DataLineageReadinessReport;
+  dataCatalogReadinessReport: DataCatalogReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -398,6 +400,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const databaseOrmReadinessReport = await buildDatabaseOrmReadinessReport(walk);
   const dataQualityReadinessReport = await buildDataQualityReadinessReport(walk);
   const dataLineageReadinessReport = await buildDataLineageReadinessReport(walk);
+  const dataCatalogReadinessReport = await buildDataCatalogReadinessReport(walk);
   const ciCdReport = await buildCiCdReport(walk);
   const unitTestReport = await buildUnitTestReport(walk);
   const coverageReadinessReport = await buildCoverageReadinessReport(walk);
@@ -481,7 +484,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -13399,6 +13402,292 @@ function dataLineageSignalFromSpecs<T extends Record<K, string> & { pattern: Reg
       readiness: match ? "ready" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/data-lineage-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDataCatalogReadinessReport(walk: WalkResult): Promise<DataCatalogReadinessReport> {
+  const sourceFiles = await dataCatalogSourceFiles(walk);
+  const catalogSetups = dataCatalogSetupsFromSources(sourceFiles);
+  const ingestionSignals = dataCatalogIngestionSignals(sourceFiles);
+  const entitySignals = dataCatalogEntitySignals(sourceFiles);
+  const governanceSignals = dataCatalogGovernanceSignals(sourceFiles);
+  const searchSignals = dataCatalogSearchSignals(sourceFiles);
+  const lineageSignals = dataCatalogLineageSignals(sourceFiles);
+  const ciSignals = dataCatalogCiSignals(sourceFiles);
+  const packageSignals = dataCatalogPackageSignals(sourceFiles);
+
+  const hasIngestion = ingestionSignals.some((item) => item.readiness === "ready") || catalogSetups.some((item) => item.ingestionCount > 0);
+  const hasEntities = entitySignals.filter((item) => item.readiness === "ready").length >= 3 || catalogSetups.some((item) => item.entityCount > 0 && item.schemaCount > 0);
+  const hasGovernance = governanceSignals.some((item) => item.readiness === "ready") || catalogSetups.some((item) => item.ownershipCount + item.glossaryCount + item.tagCount + item.policyCount > 0);
+  const hasSearch = searchSignals.some((item) => item.readiness === "ready") || catalogSetups.some((item) => item.searchCount > 0);
+  const hasLineage = lineageSignals.some((item) => item.readiness === "ready") || catalogSetups.some((item) => item.lineageCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || catalogSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: DataCatalogReadinessReport["riskQueue"] = [];
+  if (!hasIngestion) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add catalog ingestion configuration before claiming data catalog readiness.",
+      why: "A catalog page is stale unless connectors, recipes, workflows, or pipelines can refresh metadata.",
+      relatedHref: "html/data-catalog-readiness.html"
+    });
+  }
+  if (hasIngestion && !hasEntities) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document dataset/table/column/dashboard/job entities and schema fields.",
+      why: "Learners need concrete catalog entities, not only a connector command, to inspect what the repository publishes.",
+      relatedHref: "html/data-catalog-readiness.html"
+    });
+  }
+  if (hasEntities && !hasGovernance) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Capture ownership, glossary, tags, classifications, domains, or policy metadata.",
+      why: "Catalogs become operationally useful when ownership and governance are attached to entities.",
+      relatedHref: "html/data-catalog-readiness.html"
+    });
+  }
+  if (hasEntities && !hasSearch) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add search or browse-path evidence for catalog discovery.",
+      why: "Metadata that cannot be searched or browsed is hard for learners and operators to discover.",
+      relatedHref: "html/data-catalog-readiness.html"
+    });
+  }
+  if (hasEntities && !hasLineage) {
+    riskQueue.push({
+      priority: "low",
+      action: "Connect catalog entities to upstream, column, query, or job IO lineage.",
+      why: "Lineage turns catalog metadata into impact analysis instead of a static inventory.",
+      relatedHref: "html/data-catalog-readiness.html"
+    });
+  }
+  if (hasIngestion && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Run catalog ingestion or metadata tests in CI and upload evidence artifacts.",
+      why: "Catalog metadata should be reproducible outside a developer laptop.",
+      relatedHref: "html/data-catalog-readiness.html"
+    });
+  }
+
+  return {
+    summary: `Data catalog readiness report: catalog setup ${catalogSetups.length}개, ingestion signal ${ingestionSignals.length}개, entity signal ${entitySignals.length}개, governance signal ${governanceSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Data catalog readiness OpenMetadata DataHub Amundsen metadata ingestion connector sourceConfig recipe workflow IngestionPipeline Dataset Table Column GlossaryTerm Tag Owner Ownership Classification Domain DataProduct Search ElasticSearch OpenSearch semantic search browsePaths lineage upstreamLineage column lineage policy CI",
+    catalogSetups,
+    ingestionSignals,
+    entitySignals,
+    governanceSignals,
+    searchSignals,
+    lineageSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue,
+    recommendedCommands: [
+      { command: "rg \"sourceConfig|serviceConnection|connector|recipe|IngestionPipeline|metadata ingestion\" .", purpose: "Find catalog ingestion connectors, recipes, and workflow configuration." },
+      { command: "rg \"Dataset|Table|Column|Dashboard|Chart|DataJob|DataFlow|CorpUser|Team|Domain|DataProduct\" .", purpose: "Find catalog entity and schema metadata evidence." },
+      { command: "rg \"GlossaryTerm|Glossary|Tag|Classification|Ownership|Owner|policy|steward\" .", purpose: "Find ownership and governance metadata evidence." },
+      { command: "rg \"ElasticSearch|OpenSearch|semantic_search|search_metadata|browsePaths|search index\" .", purpose: "Find catalog search, browse, and index evidence." },
+      { command: "rg \"upstreamLineage|columnLineage|DataJobInputOutput|query lineage|impact analysis\" .", purpose: "Find lineage and impact-analysis evidence attached to catalog entities." }
+    ],
+    learnerNextSteps: [
+      "먼저 OpenMetadata/DataHub/Amundsen 또는 custom catalog ingestion 설정이 있는지 찾으세요.",
+      "Dataset/Table/Column/Dashboard/DataJob/DataFlow 같은 엔티티와 schema field가 함께 남는지 확인하세요.",
+      "Owner, GlossaryTerm, Tag, Classification, Domain, DataProduct, policy가 엔티티에 연결되는지 확인하세요.",
+      "ElasticSearch/OpenSearch/semantic search/browsePaths/API/MCP 검색처럼 발견 가능한 색인이 있는지 확인하세요.",
+      "upstreamLineage, columnLineage, DataJobInputOutput, query lineage, CI artifact로 카탈로그가 반복 생성되는지 확인하세요."
+    ]
+  };
+}
+
+type DataCatalogSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function dataCatalogSourceFiles(walk: WalkResult): Promise<DataCatalogSourceFile[]> {
+  const rows: DataCatalogSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!dataCatalogInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!dataCatalogPathSignal(file.relPath) && !dataCatalogContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 240);
+}
+
+function dataCatalogInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements\.txt|setup\.py|setup\.cfg|pom\.xml|build\.gradle|build\.gradle\.kts|docker-compose\.ya?ml|catalog\.ya?ml|metadata\.ya?ml|recipe\.ya?ml|workflow\.ya?ml)$/i.test(base)
+    || /(^|\/)(openmetadata|open-metadata|datahub|amundsen|catalog|metadata|metastore|databuilder|glossary|classification|classifications|search|lineage)(\/|\.|-|_|$)/i.test(filePath)
+    || /(^|\/)\.github\/workflows\/[^/]+\.(ya?ml)$/i.test(filePath)
+    || /\.(json|ya?ml|toml|txt|ts|tsx|js|jsx|mjs|cjs|md|sql|py|java|scala|kt|go|rs)$/i.test(filePath);
+}
+
+function dataCatalogPathSignal(filePath: string): boolean {
+  return /(^|\/)(openmetadata|open-metadata|datahub|amundsen|catalog|metadata|metastore|databuilder|glossary|classification|classifications|search|lineage)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(catalog\.ya?ml|metadata\.ya?ml|recipe\.ya?ml|workflow\.ya?ml)$/i.test(path.basename(filePath));
+}
+
+function dataCatalogContentSignal(text: string): boolean {
+  return /OpenMetadata|DataHub|Amundsen|metadata ingestion|sourceConfig|serviceConnection|IngestionPipeline|MetadataChangeProposal|MetadataChangeEvent|Dataset|TableMetadata|GlossaryTerm|Ownership|globalTags|browsePaths|upstreamLineage|SearchService|MetadataService|databuilder|Neo4j|Elasticsearch|ElasticSearch|OpenSearch/i.test(text);
+}
+
+function dataCatalogSetupsFromSources(sourceFiles: DataCatalogSourceFile[]): DataCatalogReadinessReport["catalogSetups"] {
+  const rows: DataCatalogReadinessReport["catalogSetups"] = [];
+  for (const source of sourceFiles) {
+    const ingestionCount = countMatches(source.text, /metadata ingestion|IngestionPipeline|sourceConfig|serviceConnection|connector|recipe|workflow|pipeline|scheduler|datahub ingest|metadata ingest|databuilder|DataHubIngestionSource/gi);
+    const entityCount = countMatches(source.text, /Dataset|TableMetadata|Table\b|Column\b|Dashboard|Chart|DataJob|DataFlow|CorpUser|User\b|Team|Domain|DataProduct|ResourceType/gi);
+    const schemaCount = countMatches(source.text, /SchemaMetadata|schemaMetadata|schema:|fields:|Column\b|TableSchema|schemaURL|schema field/gi);
+    const ownershipCount = countMatches(source.text, /Ownership|Owner|owner|steward|CorpUser|Team|DataOwner/gi);
+    const glossaryCount = countMatches(source.text, /GlossaryTerm|Glossary|glossaryTerms|glossary term/gi);
+    const tagCount = countMatches(source.text, /globalTags|Tag\b|tags:|Classification|Badge|classifications/gi);
+    const lineageCount = countMatches(source.text, /upstreamLineage|columnLineage|DataJobInputOutput|query lineage|QueryLineage|lineage|impact analysis/gi);
+    const searchCount = countMatches(source.text, /Elasticsearch|ElasticSearch|OpenSearch|SearchService|search_metadata|semantic_search|SearchIndex|browsePaths|search index|metadata API|Restful API/gi);
+    const policyCount = countMatches(source.text, /Policy|policy|classification|stewardship|DataProduct|Domain/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github actions|metadata ingest|datahub ingest|upload-artifact|catalog-report|metadata test|databuilder\.job\.job|pytest/gi);
+    const totalSignals = ingestionCount + entityCount + schemaCount + ownershipCount + glossaryCount + tagCount + lineageCount + searchCount + policyCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: dataCatalogTool(source),
+      ingestionCount,
+      entityCount,
+      schemaCount,
+      ownershipCount,
+      glossaryCount,
+      tagCount,
+      lineageCount,
+      searchCount,
+      policyCount,
+      ciCount,
+      readiness: ingestionCount > 0 && entityCount > 0 && schemaCount > 0 && (ownershipCount + glossaryCount + tagCount + policyCount) > 0 && searchCount > 0 && (lineageCount + ciCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} data catalog readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.ingestionCount + b.entityCount + b.schemaCount + b.ownershipCount + b.glossaryCount + b.tagCount + b.lineageCount + b.searchCount + b.policyCount + b.ciCount) - (a.ingestionCount + a.entityCount + a.schemaCount + a.ownershipCount + a.glossaryCount + a.tagCount + a.lineageCount + a.searchCount + a.policyCount + a.ciCount))
+    .slice(0, 60);
+}
+
+function dataCatalogTool(source: DataCatalogSourceFile): DataCatalogReadinessReport["catalogSetups"][number]["tool"] {
+  if (/openmetadata|open-metadata/i.test(source.filePath) || /OpenMetadata|IngestionPipeline|serviceConnection|sourceConfig|DatabaseServiceProfilerPipeline|DatabaseServiceQueryLineagePipeline/i.test(source.text)) return "openmetadata";
+  if (/datahub/i.test(source.filePath) || /DataHub|MetadataChangeProposal|MetadataChangeEvent|DataHubGraph|DatasetUrn|browsePaths|upstreamLineage|globalTags/i.test(source.text)) return "datahub";
+  if (/amundsen/i.test(source.filePath) || /Amundsen|amundsen-databuilder|SearchService|MetadataService|TableMetadata|Neo4j|gremlin|popular_tables/i.test(source.text)) return "amundsen";
+  if (/catalog|metadata|glossary|owner|lineage|search/i.test(source.filePath) || /metadata|catalog|glossary|owner|lineage|search/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function dataCatalogIngestionSignals(sourceFiles: DataCatalogSourceFile[]): DataCatalogReadinessReport["ingestionSignals"] {
+  const specs: Array<{ signal: DataCatalogReadinessReport["ingestionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "source-config", pattern: /sourceConfig|serviceConnection|DataHubIngestionSourceConfig/i, evidence: "source configuration evidence was detected." },
+    { signal: "connector", pattern: /connector|source type|DatabaseService|DashboardService|serviceConnection/i, evidence: "catalog connector evidence was detected." },
+    { signal: "recipe", pattern: /recipe|datahub ingest -c|source:\s*\n\s*type:|sink:\s*\n\s*type:/i, evidence: "ingestion recipe evidence was detected." },
+    { signal: "workflow", pattern: /workflow|OpenMetadataWorkflowConfig|metadata ingestion workflow/i, evidence: "catalog workflow evidence was detected." },
+    { signal: "pipeline", pattern: /IngestionPipeline|PipelineType|pipeline/i, evidence: "catalog pipeline evidence was detected." },
+    { signal: "scheduler", pattern: /schedule|cron|Airflow|DAG|scheduler/i, evidence: "scheduled ingestion evidence was detected." },
+    { signal: "profiling", pattern: /Profiler|profiling|computeTableMetrics|computeColumnMetrics/i, evidence: "profile or metric ingestion evidence was detected." },
+    { signal: "usage", pattern: /QueryUsage|usage|usageStats|popular_tables/i, evidence: "usage metadata evidence was detected." }
+  ];
+  return dataCatalogSignalFromSpecs(sourceFiles, specs, "ingestion", "signal");
+}
+
+function dataCatalogEntitySignals(sourceFiles: DataCatalogSourceFile[]): DataCatalogReadinessReport["entitySignals"] {
+  const specs: Array<{ signal: DataCatalogReadinessReport["entitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dataset", pattern: /Dataset|DatasetUrn|dataset_key/i, evidence: "dataset entity evidence was detected." },
+    { signal: "table", pattern: /TableMetadata|Table\b|DatabaseService|tableName|DbTable/i, evidence: "table entity evidence was detected." },
+    { signal: "column", pattern: /Column\b|columns:|schemaMetadata|fields:/i, evidence: "column/schema field evidence was detected." },
+    { signal: "dashboard", pattern: /Dashboard|DashboardService|dashboard/i, evidence: "dashboard entity evidence was detected." },
+    { signal: "chart", pattern: /Chart|chart/i, evidence: "chart entity evidence was detected." },
+    { signal: "data-job", pattern: /DataJob|data job|DataJobInputOutput/i, evidence: "data job entity evidence was detected." },
+    { signal: "data-flow", pattern: /DataFlow|data flow/i, evidence: "data flow entity evidence was detected." },
+    { signal: "user", pattern: /CorpUser|User\b|user_id|owner/i, evidence: "user entity evidence was detected." },
+    { signal: "team", pattern: /Team\b|corpGroup|group owner/i, evidence: "team/group entity evidence was detected." },
+    { signal: "domain", pattern: /Domain\b|domain:/i, evidence: "domain entity evidence was detected." },
+    { signal: "data-product", pattern: /DataProduct|data product/i, evidence: "data product entity evidence was detected." }
+  ];
+  return dataCatalogSignalFromSpecs(sourceFiles, specs, "entity", "signal");
+}
+
+function dataCatalogGovernanceSignals(sourceFiles: DataCatalogSourceFile[]): DataCatalogReadinessReport["governanceSignals"] {
+  const specs: Array<{ signal: DataCatalogReadinessReport["governanceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "owner", pattern: /Ownership|Owner|owners:|DataOwner|CorpUser/i, evidence: "ownership evidence was detected." },
+    { signal: "glossary-term", pattern: /GlossaryTerm|Glossary|glossaryTerms|termUrn/i, evidence: "glossary evidence was detected." },
+    { signal: "tag", pattern: /globalTags|Tag\b|tags:|Badge/i, evidence: "tag or badge evidence was detected." },
+    { signal: "classification", pattern: /Classification|classification|classifications/i, evidence: "classification evidence was detected." },
+    { signal: "policy", pattern: /Policy|policy|access policy/i, evidence: "policy evidence was detected." },
+    { signal: "domain", pattern: /Domain\b|domain:/i, evidence: "domain governance evidence was detected." },
+    { signal: "stewardship", pattern: /steward|Steward|data steward/i, evidence: "stewardship evidence was detected." }
+  ];
+  return dataCatalogSignalFromSpecs(sourceFiles, specs, "governance", "signal");
+}
+
+function dataCatalogSearchSignals(sourceFiles: DataCatalogSourceFile[]): DataCatalogReadinessReport["searchSignals"] {
+  const specs: Array<{ signal: DataCatalogReadinessReport["searchSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "elasticsearch", pattern: /Elasticsearch|ElasticSearch/i, evidence: "Elasticsearch evidence was detected." },
+    { signal: "opensearch", pattern: /OpenSearch/i, evidence: "OpenSearch evidence was detected." },
+    { signal: "semantic-search", pattern: /semantic_search|semantic search/i, evidence: "semantic search evidence was detected." },
+    { signal: "browse-paths", pattern: /browsePaths|browse paths|browsePath/i, evidence: "browse path evidence was detected." },
+    { signal: "search-index", pattern: /SearchIndex|search index|indexing/i, evidence: "search index evidence was detected." },
+    { signal: "metadata-api", pattern: /MetadataService|metadata API|Restful API|DataHubGraph|OpenMetadata API/i, evidence: "metadata API evidence was detected." },
+    { signal: "mcp-search", pattern: /search_metadata|MCP|mcp-search/i, evidence: "MCP metadata search evidence was detected." }
+  ];
+  return dataCatalogSignalFromSpecs(sourceFiles, specs, "search", "signal");
+}
+
+function dataCatalogLineageSignals(sourceFiles: DataCatalogSourceFile[]): DataCatalogReadinessReport["lineageSignals"] {
+  const specs: Array<{ signal: DataCatalogReadinessReport["lineageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "upstream-lineage", pattern: /upstreamLineage|upstream lineage|UpstreamLineage/i, evidence: "upstream lineage evidence was detected." },
+    { signal: "column-lineage", pattern: /columnLineage|column lineage|ColumnLineage/i, evidence: "column lineage evidence was detected." },
+    { signal: "data-job-io", pattern: /DataJobInputOutput|DataJob|DataFlow|inputOutput/i, evidence: "data job IO evidence was detected." },
+    { signal: "query-lineage", pattern: /query lineage|QueryLineage|processQueryLineage|DatabaseServiceQueryLineagePipeline/i, evidence: "query lineage evidence was detected." },
+    { signal: "impact-analysis", pattern: /impact analysis|impactAnalysis|downstream impact|lineage impact/i, evidence: "impact analysis evidence was detected." }
+  ];
+  return dataCatalogSignalFromSpecs(sourceFiles, specs, "lineage", "signal");
+}
+
+function dataCatalogCiSignals(sourceFiles: DataCatalogSourceFile[]): DataCatalogReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: DataCatalogReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|uses: actions\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "catalog-ingestion-command", pattern: /metadata ingest|datahub ingest|databuilder\.job\.job|catalog ingest|ingestion run/i, evidence: "catalog ingestion command evidence was detected." },
+    { signal: "metadata-test-command", pattern: /metadata test|pytest.*metadata|catalog test|datahub check|ingestion test/i, evidence: "metadata test command evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|catalog-report|metadata-ingestion\.log|ingestion-results|metadata artifact/i, evidence: "catalog artifact upload evidence was detected." }
+  ];
+  return dataCatalogSignalFromSpecs(sourceFiles, specs, "CI", "signal");
+}
+
+function dataCatalogPackageSignals(sourceFiles: DataCatalogSourceFile[]): DataCatalogReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DataCatalogReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "openmetadata", pattern: /openmetadata-ingestion|openmetadata|OpenMetadata/i, evidence: "OpenMetadata package/API evidence was detected." },
+    { signal: "datahub", pattern: /acryl-datahub|datahub|DataHub/i, evidence: "DataHub package/API evidence was detected." },
+    { signal: "amundsen", pattern: /amundsen-frontend|amundsen-search|amundsen-metadata|amundsen-databuilder|Amundsen/i, evidence: "Amundsen package/API evidence was detected." },
+    { signal: "elasticsearch", pattern: /@elastic\/elasticsearch|elasticsearch|ElasticSearch|Elasticsearch/i, evidence: "Elasticsearch package evidence was detected." },
+    { signal: "opensearch", pattern: /opensearch|OpenSearch/i, evidence: "OpenSearch package evidence was detected." },
+    { signal: "neo4j", pattern: /neo4j|Neo4j|gremlinpython|gremlin/i, evidence: "Neo4j/Gremlin package evidence was detected." }
+  ];
+  return dataCatalogSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function dataCatalogSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DataCatalogSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/data-catalog-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }
