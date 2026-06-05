@@ -2953,6 +2953,85 @@ export const DatabaseMigrationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DatabaseOrmReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  ormSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["typeorm", "sequelize", "sqlalchemy", "prisma", "django", "rails", "drizzle", "knex", "unknown"]),
+    entityCount: z.number().int().nonnegative(),
+    relationCount: z.number().int().nonnegative(),
+    repositoryCount: z.number().int().nonnegative(),
+    sessionCount: z.number().int().nonnegative(),
+    queryCount: z.number().int().nonnegative(),
+    transactionCount: z.number().int().nonnegative(),
+    migrationCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  entitySignals: z.array(z.object({
+    signal: z.enum(["typeorm-entity", "sequelize-model", "sqlalchemy-declarative", "prisma-model", "django-model", "rails-model", "drizzle-table", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  relationSignals: z.array(z.object({
+    signal: z.enum(["typeorm-relations", "sequelize-associations", "sqlalchemy-relationship", "prisma-relations", "foreign-key", "join-table", "cascade", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  repositorySignals: z.array(z.object({
+    signal: z.enum(["typeorm-repository", "sequelize-model-query", "sqlalchemy-session", "active-record-query", "query-builder", "raw-query", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  transactionSignals: z.array(z.object({
+    signal: z.enum(["typeorm-transaction", "sequelize-transaction", "sqlalchemy-session-begin", "active-record-transaction", "rollback", "isolation-level", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  loadingSignals: z.array(z.object({
+    signal: z.enum(["eager-loading", "lazy-loading", "joined-load", "select-in-load", "include", "relation-load-strategy", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["datasource-config", "sequelize-config", "sqlalchemy-engine", "database-url", "naming-strategy", "synchronization-policy", "connection-pool", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "orm-command", "schema-sync-check", "migration-check", "database-service", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["typeorm", "sequelize", "sqlalchemy", "prisma", "django", "rails", "drizzle-orm", "knex", "objection", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CiCdReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -8711,6 +8790,7 @@ export type CodeQualityReport = z.infer<typeof CodeQualityReportSchema>;
 export type DocumentationReport = z.infer<typeof DocumentationReportSchema>;
 export type DatabaseReadinessReport = z.infer<typeof DatabaseReadinessReportSchema>;
 export type DatabaseMigrationReadinessReport = z.infer<typeof DatabaseMigrationReadinessReportSchema>;
+export type DatabaseOrmReadinessReport = z.infer<typeof DatabaseOrmReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type CoverageReadinessReport = z.infer<typeof CoverageReadinessReportSchema>;
