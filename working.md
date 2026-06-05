@@ -6393,6 +6393,48 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 240:
   - `4b5952a` database ORM readiness report
 
+- 2026-06-05: AutoResearch Upgrade 241 candidate selected:
+  privacy readiness from `microsoft/presidio`
+  (`https://github.com/microsoft/presidio`; ignored clone HEAD `5488908`),
+  `opendp/opendp` (`https://github.com/opendp/opendp`; ignored clone HEAD
+  `b05dd7e`), and `LeapBeyond/scrubadub`
+  (`https://github.com/LeapBeyond/scrubadub`; ignored clone HEAD `53772cb`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented Presidio/OpenDP/scrubadub-style
+  privacy-readiness report: `PrivacyReadinessReportSchema`,
+  `analysis/privacy-readiness-report.json`, `markdown/privacy-readiness.md`,
+  `html/privacy-readiness.html`, static PII detection, redaction, policy,
+  differential privacy, configuration, CI, package signals, static-only risk
+  queue, recommended privacy inspection commands, manifest/session-verification
+  coverage, learning-path linkage, HTML page/nav entry, CLI help/list-target
+  coverage, dedicated audit coverage, and `open --target privacy-readiness`.
+- 2026-06-05: RED/GREEN privacy-readiness smoke recorded:
+  old behavior at `ecb7404` had no `PrivacyReadinessReportSchema` and no
+  `privacy-readiness` CLI target (`schema-missing`, `cli-missing`). GREEN
+  fixture detected Presidio `AnalyzerEngine`, `AnonymizerEngine`,
+  `RecognizerResult`, `PatternRecognizer`, `OperatorConfig`, allow/deny lists,
+  `score_threshold`, scrubadub `Scrubber`, `Detector`, `Filth`,
+  `PostProcessor`, OpenDP `Measurement`, `Transformation`, `privacy_map`,
+  epsilon/delta, Laplace/Gaussian noise, clamp/bounds, privacy budget,
+  privacy policy, data classification/minimization, retention/deletion policy,
+  DSAR export/delete, consent/purpose mapping, CI privacy scan/test/artifact
+  signals, package signals, recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 241:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused privacy-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 48/48 tests
+  - `pnpm test`: PASS, 48/48 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 139/139 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 241:
+  - `fef9a0b` privacy readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
