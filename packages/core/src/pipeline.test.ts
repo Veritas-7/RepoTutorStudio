@@ -103,6 +103,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ingress-controller-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "dns-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "certificate-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "helm-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"))).resolves.toBeUndefined();
@@ -262,6 +263,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ingress-controller-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "dns-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "certificate-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "helm-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "cache-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "logging-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-flag-readiness.md"))).resolves.toBeUndefined();
@@ -424,6 +426,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "ingress-controller-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "dns-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "certificate-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "helm-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "cache-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "logging-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-flag-readiness.html"))).resolves.toBeUndefined();
@@ -613,6 +616,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/ingress-controller-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/dns-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/certificate-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/helm-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/cache-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/logging-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-flag-readiness.html\"");
@@ -3557,6 +3561,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/ingress-controller-readiness.html");
     expect(exportManifestText).toContain("html/dns-readiness.html");
     expect(exportManifestText).toContain("html/certificate-readiness.html");
+    expect(exportManifestText).toContain("html/helm-readiness.html");
     expect(exportManifestText).toContain("html/cache-readiness.html");
     expect(exportManifestText).toContain("html/logging-readiness.html");
     expect(exportManifestText).toContain("html/feature-flag-readiness.html");
@@ -3738,6 +3743,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("ingress-controller-readiness.html");
     expect(learningPathHtml).toContain("dns-readiness.html");
     expect(learningPathHtml).toContain("certificate-readiness.html");
+    expect(learningPathHtml).toContain("helm-readiness.html");
     expect(learningPathHtml).toContain("cache-readiness.html");
     expect(learningPathHtml).toContain("logging-readiness.html");
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
@@ -9722,6 +9728,186 @@ describe("RepoTutor core pipeline", () => {
     const certificateHtml = await fs.readFile(path.join(result.session.outputPaths.html, "certificate-readiness.html"), "utf8");
     expect(certificateHtml).toContain("certificate-readiness-card");
     expect(certificateHtml).toContain("data-source-pattern=\"Certificate\"");
+  });
+
+  it("detects Helm readiness without rendering charts or contacting clusters", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-helm-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-helm-source-"));
+    await fs.mkdir(path.join(sourceRoot, "charts", "app", "templates"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "charts", "app", "ci"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "charts", "library"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        helm: "^3.18.0",
+        "chart-testing": "^3.14.0",
+        "chart-releaser": "^1.7.0",
+        "helm-docs": "^1.14.0",
+        "helm-unittest": "^0.6.0",
+        kubeconform: "^0.6.0"
+      },
+      scripts: {
+        "helm:deps": "helm dependency build charts/app && helm dependency update charts/app",
+        "helm:lint": "helm lint charts/app && helm template app charts/app --values charts/app/ci/prod-values.yaml --debug",
+        "helm:dry-run": "helm install app charts/app --dry-run --atomic --wait && helm upgrade --install app charts/app --dry-run=server",
+        "helm:release": "helm package charts/app --sign --keyring ./pubring.gpg && helm verify app-0.1.0.tgz && helm push app-0.1.0.tgz oci://registry.example.com/charts",
+        "helm:ct": "ct lint --charts charts/app && ct install --charts charts/app && helm unittest charts/app"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "charts", "app", "Chart.yaml"), [
+      "apiVersion: v2",
+      "name: app",
+      "description: RepoTutor sample chart",
+      "type: application",
+      "version: 0.1.0",
+      "appVersion: 1.0.0",
+      "dependencies:",
+      "  - name: redis",
+      "    version: 18.0.0",
+      "    repository: https://charts.bitnami.com/bitnami",
+      "    condition: redis.enabled",
+      "    alias: cache"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "charts", "app", "Chart.lock"), [
+      "dependencies:",
+      "  - name: redis",
+      "    version: 18.0.0",
+      "    repository: https://charts.bitnami.com/bitnami",
+      "digest: sha256:abc123",
+      "generated: \"2026-06-05T00:00:00Z\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "charts", "app", "values.yaml"), [
+      "global:",
+      "  imageRegistry: registry.example.com",
+      "image:",
+      "  repository: app",
+      "  tag: stable",
+      "redis:",
+      "  enabled: true",
+      "requiredEnv: production",
+      "# default values default configuration required values must be set"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "charts", "app", "values.schema.json"), JSON.stringify({
+      $schema: "https://json-schema.org/schema#",
+      type: "object",
+      required: ["image"],
+      properties: {
+        image: { type: "object" }
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "charts", "app", "ci", "prod-values.yaml"), [
+      "image:",
+      "  tag: prod",
+      "global:",
+      "  environment: prod"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "charts", "app", "templates", "_helpers.tpl"), [
+      "{{- define \"app.name\" -}}",
+      "{{- required \"name is required\" .Chart.Name -}}",
+      "{{- end -}}",
+      "{{- define \"app.render\" -}}",
+      "{{- tpl .Values.extraTemplate . -}}",
+      "{{- end -}}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "charts", "app", "templates", "deployment.yaml"), [
+      "apiVersion: apps/v1",
+      "kind: Deployment",
+      "metadata:",
+      "  name: {{ include \"app.name\" . }}",
+      "  annotations:",
+      "    helm.sh/hook: pre-install,post-upgrade",
+      "    helm.sh/hook-weight: \"1\"",
+      "spec:",
+      "  template:",
+      "    spec:",
+      "      containers:",
+      "        - name: app",
+      "          image: {{ .Values.global.imageRegistry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}",
+      "{{- if .Capabilities.APIVersions.Has \"policy/v1/PodDisruptionBudget\" }}",
+      "{{- $existing := lookup \"v1\" \"ConfigMap\" .Release.Namespace \"app-config\" }}",
+      "{{- end }}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "charts", "library", "Chart.yaml"), [
+      "apiVersion: v2",
+      "name: app-library",
+      "type: library",
+      "version: 0.1.0"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "helm-readiness.yml"), [
+      "name: helm readiness",
+      "on: [push]",
+      "jobs:",
+      "  helm:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: helm dependency build charts/app && helm lint charts/app && helm template app charts/app --values charts/app/ci/prod-values.yaml > helm-template.yaml",
+      "      - run: kubeconform -summary helm-template.yaml && helm install app charts/app --dry-run --atomic --wait && helm upgrade --install app charts/app --dry-run=server",
+      "      - run: ct lint --charts charts/app && ct install --charts charts/app && helm unittest charts/app && helm test app && helm rollback app 1",
+      "      - run: helm package charts/app --sign --keyring ./pubring.gpg && helm verify app-0.1.0.tgz && helm push app-0.1.0.tgz oci://registry.example.com/charts",
+      "      - run: cr upload --owner Veritas-7 --git-repo charts --packages-with-index --skip-existing && cr index --owner Veritas-7 --git-repo charts --packages-with-index && helm repo index .",
+      "      - run: echo '{}' > helm-readiness-report.json && echo '{}' > chart-report.json && echo '{}' > ct-report.json",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          path: |",
+      "            helm-readiness-report.json",
+      "            chart-report.json",
+      "            ct-report.json",
+      "            helm-template.yaml",
+      "# Chart.yaml type: application values.yaml values.schema.json templates/ _helpers.tpl dependencies: repository: condition: alias:",
+      "# chart-testing chart-releaser helm/chart-releaser-action provenance .prov sha256 digest OCI registry helm registry login"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "helm-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      helmSetups: Array<{ chartType: string; chartCount: number; valuesCount: number; templateCount: number; dependencyCount: number; schemaCount: number; testCount: number; packagingCount: number; releaseCount: number; provenanceCount: number; ciCount: number }>;
+      chartSignals: Array<{ signal: string; readiness: string }>;
+      templateSignals: Array<{ signal: string; readiness: string }>;
+      valuesSignals: Array<{ signal: string; readiness: string }>;
+      dependencySignals: Array<{ signal: string; readiness: string }>;
+      validationSignals: Array<{ signal: string; readiness: string }>;
+      releaseSignals: Array<{ signal: string; readiness: string }>;
+      securitySignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("Helm readiness Chart.yaml values.yaml templates _helpers.tpl values.schema.json Chart.lock helm lint template install upgrade rollback test package push provenance chart-testing ct lint ct install chart-releaser cr upload cr index OCI kubeconform");
+    expect(report.helmSetups.length).toBeGreaterThan(0);
+    expect(report.helmSetups.map((item) => item.chartType)).toEqual(expect.arrayContaining(["application", "library"]));
+    expect(report.helmSetups.some((item) => item.chartCount > 0 && item.valuesCount > 0 && item.templateCount > 0 && item.dependencyCount > 0 && item.schemaCount > 0)).toBe(true);
+    expect(report.helmSetups.some((item) => item.testCount > 0 && item.packagingCount > 0 && item.releaseCount > 0 && item.provenanceCount > 0 && item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.chartSignals)).toEqual(expect.arrayContaining(["chart-yaml", "values", "templates", "helpers", "library-chart", "chart-lock"]));
+    expect(readySignals(report.templateSignals)).toEqual(expect.arrayContaining(["helm-template", "include", "tpl", "lookup", "required", "capabilities", "hooks"]));
+    expect(readySignals(report.valuesSignals)).toEqual(expect.arrayContaining(["values-schema", "global-values", "env-values", "required-values", "default-values"]));
+    expect(readySignals(report.dependencySignals)).toEqual(expect.arrayContaining(["dependencies", "repository", "condition", "alias", "helm-dependency", "chart-lock"]));
+    expect(readySignals(report.validationSignals)).toEqual(expect.arrayContaining(["helm-lint", "helm-template", "dry-run", "kubeconform", "ct-lint", "ct-install", "helm-unittest"]));
+    expect(readySignals(report.releaseSignals)).toEqual(expect.arrayContaining(["helm-upgrade", "helm-install", "helm-rollback", "helm-test", "chart-releaser", "oci-push", "repo-index"]));
+    expect(readySignals(report.securitySignals)).toEqual(expect.arrayContaining(["provenance", "signing", "verify", "keyring", "digest", "oci-registry"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "chart-testing", "helm-lint", "helm-template", "kubeconform", "chart-releaser", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["helm", "chart-testing", "chart-releaser", "helm-docs", "helm-unittest", "kubeconform"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"Chart.yaml|type: library|values.yaml|values.schema.json|templates/|_helpers.tpl|Chart.lock\" .",
+      "rg \"helm lint|helm template|helm install|helm upgrade|helm rollback|helm test|--dry-run|--atomic|--wait\" .",
+      "rg \"ct lint|ct install|chart-testing|kubeconform|kubeval|helm unittest|helm-unittest\" .github .",
+      "rg \"helm dependency (build|update)|dependencies:|repository:|condition:|alias:\" .",
+      "rg \"helm package|--sign|--keyring|helm verify|\\.prov|helm push|oci://|cr upload|cr index|chart-releaser|helm repo index|upload-artifact\" .github ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "helm-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "helm-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "helm-readiness.html"))).resolves.toBeUndefined();
+    const helmMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "helm-readiness.md"), "utf8");
+    expect(helmMarkdown).toContain("Chart Signals");
+    expect(helmMarkdown).toContain("Validation Signals");
+    expect(helmMarkdown).toContain("Security Signals");
+    const helmHtml = await fs.readFile(path.join(result.session.outputPaths.html, "helm-readiness.html"), "utf8");
+    expect(helmHtml).toContain("helm-readiness-card");
+    expect(helmHtml).toContain("data-source-pattern=\"Helm\"");
   });
 
   it("detects feature store readiness without running feature store backends", async () => {

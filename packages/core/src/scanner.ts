@@ -114,6 +114,7 @@ import {
   IngressControllerReadinessReport,
   DnsReadinessReport,
   CertificateReadinessReport,
+  HelmReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -292,6 +293,7 @@ export interface AnalysisBundle {
   ingressControllerReadinessReport: IngressControllerReadinessReport;
   dnsReadinessReport: DnsReadinessReport;
   certificateReadinessReport: CertificateReadinessReport;
+  helmReadinessReport: HelmReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -470,6 +472,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const ingressControllerReadinessReport = await buildIngressControllerReadinessReport(walk);
   const dnsReadinessReport = await buildDnsReadinessReport(walk);
   const certificateReadinessReport = await buildCertificateReadinessReport(walk);
+  const helmReadinessReport = await buildHelmReadinessReport(walk);
   const cacheReadinessReport = await buildCacheReadinessReport(walk);
   const loggingReadinessReport = await buildLoggingReadinessReport(walk);
   const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
@@ -529,7 +532,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -25617,6 +25620,263 @@ function certificateReadinessSignalFromSpecs<const T extends readonly { signal: 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/certificate-readiness.html"
+    } as { signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildHelmReadinessReport(walk: WalkResult): Promise<HelmReadinessReport> {
+  const sourceFiles = await helmReadinessSourceFiles(walk);
+  const helmSetups = helmReadinessSetups(sourceFiles);
+  const chartSignals = helmReadinessChartSignals(sourceFiles);
+  const templateSignals = helmReadinessTemplateSignals(sourceFiles);
+  const valuesSignals = helmReadinessValuesSignals(sourceFiles);
+  const dependencySignals = helmReadinessDependencySignals(sourceFiles);
+  const validationSignals = helmReadinessValidationSignals(sourceFiles);
+  const releaseSignals = helmReadinessReleaseSignals(sourceFiles);
+  const securitySignals = helmReadinessSecuritySignals(sourceFiles);
+  const ciSignals = helmReadinessCiSignals(sourceFiles);
+  const packageSignals = helmReadinessPackageSignals(sourceFiles);
+
+  const hasChart = chartSignals.some((item) => item.readiness === "ready") || helmSetups.some((item) => item.chartCount > 0);
+  const hasTemplates = templateSignals.some((item) => item.readiness === "ready") || helmSetups.some((item) => item.templateCount > 0);
+  const hasValues = valuesSignals.some((item) => item.readiness === "ready") || helmSetups.some((item) => item.valuesCount > 0);
+  const hasDependencies = dependencySignals.some((item) => item.readiness === "ready") || helmSetups.some((item) => item.dependencyCount > 0);
+  const hasValidation = validationSignals.some((item) => item.readiness === "ready") || helmSetups.some((item) => item.testCount > 0);
+  const hasRelease = releaseSignals.some((item) => item.readiness === "ready") || helmSetups.some((item) => item.releaseCount > 0);
+  const hasSecurity = securitySignals.some((item) => item.readiness === "ready") || helmSetups.some((item) => item.provenanceCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || helmSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: HelmReadinessReport["riskQueue"] = [];
+  if (!hasChart) riskQueue.push({ priority: "high", action: "Document Chart.yaml metadata before claiming Helm readiness.", why: "Helm readiness starts with visible chart metadata, chart type, version, dependencies, or chart packaging evidence.", relatedHref: "html/helm-readiness.html" });
+  if (hasChart && !hasValues) riskQueue.push({ priority: "medium", action: "Pair charts with values.yaml, values.schema.json, or environment values evidence.", why: "Values are the learner-facing configuration contract for Helm installs and upgrades.", relatedHref: "html/helm-readiness.html" });
+  if (hasChart && !hasTemplates) riskQueue.push({ priority: "medium", action: "Add template evidence such as templates/, _helpers.tpl, include, tpl, required, Capabilities, or hooks.", why: "Chart metadata alone does not show what Kubernetes objects Helm will render.", relatedHref: "html/helm-readiness.html" });
+  if (hasDependencies && !dependencySignals.some((item) => item.signal === "chart-lock" && item.readiness === "ready")) riskQueue.push({ priority: "medium", action: "Commit Chart.lock or document dependency build/update policy.", why: "Dependency declarations without a lock or build policy can drift across installs.", relatedHref: "html/helm-readiness.html" });
+  if ((hasChart || hasTemplates) && !hasValidation) riskQueue.push({ priority: "low", action: "Add helm lint/template, dry-run, kubeconform, chart-testing, or helm-unittest validation evidence.", why: "Static chart readiness is stronger when rendered manifests and chart metadata are validated before release.", relatedHref: "html/helm-readiness.html" });
+  if ((hasChart || hasValidation) && !hasRelease) riskQueue.push({ priority: "low", action: "Add install, upgrade, rollback, helm test, chart-releaser, OCI push, or repo index release evidence.", why: "Learners need to distinguish rendering readiness from install and release workflow readiness.", relatedHref: "html/helm-readiness.html" });
+  if ((hasRelease || hasChart) && !hasSecurity) riskQueue.push({ priority: "low", action: "Add provenance, signing, verify, keyring, digest, or OCI registry integrity evidence.", why: "Published charts should make package integrity and registry boundaries inspectable.", relatedHref: "html/helm-readiness.html" });
+  if ((hasChart || hasValidation || hasRelease) && !hasCi) riskQueue.push({ priority: "low", action: "Add Helm CI checks for chart-testing, lint/template, kubeconform, chart-releaser, and artifact upload.", why: "CI artifacts make chart render, install, and release outcomes reproducible.", relatedHref: "html/helm-readiness.html" });
+  riskQueue.push({ priority: "low", action: "Run Helm, Kubernetes, chart-testing, chart-releaser, OCI registry, and signing commands only in a trusted sandbox after reviewing this static map.", why: "RepoTutor records Helm readiness only; it does not render charts, install releases, contact clusters, push OCI artifacts, sign packages, call GitHub releases, or execute CI commands.", relatedHref: "html/helm-readiness.html" });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Helm readiness report: setup ${helmSetups.length}개, chart signal ${chartSignals.length}개, validation signal ${validationSignals.length}개, release signal ${releaseSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Helm readiness Chart.yaml values.yaml templates _helpers.tpl values.schema.json Chart.lock helm lint template install upgrade rollback test package push provenance chart-testing ct lint ct install chart-releaser cr upload cr index OCI kubeconform",
+    helmSetups,
+    chartSignals,
+    templateSignals,
+    valuesSignals,
+    dependencySignals,
+    validationSignals,
+    releaseSignals,
+    securitySignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"Chart.yaml|type: library|values.yaml|values.schema.json|templates/|_helpers.tpl|Chart.lock\" .", purpose: "Inventory chart metadata, values contract, helper templates, schemas, and dependency locks." },
+      { command: "rg \"helm lint|helm template|helm install|helm upgrade|helm rollback|helm test|--dry-run|--atomic|--wait\" .", purpose: "Review Helm validation, install, upgrade, rollback, and test workflows." },
+      { command: "rg \"ct lint|ct install|chart-testing|kubeconform|kubeval|helm unittest|helm-unittest\" .github .", purpose: "Find chart-testing, manifest validation, and Helm unit-test CI evidence." },
+      { command: "rg \"helm dependency (build|update)|dependencies:|repository:|condition:|alias:\" .", purpose: "Trace dependency declarations, repositories, conditions, aliases, and dependency build policy." },
+      { command: "rg \"helm package|--sign|--keyring|helm verify|\\.prov|helm push|oci://|cr upload|cr index|chart-releaser|helm repo index|upload-artifact\" .github .", purpose: "Check packaging, provenance, OCI push, chart-releaser, repo index, and artifact upload evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 Chart.yaml이 있는 chart roots를 찾고 type이 application인지 library인지 확인하세요.",
+      "values.yaml, values.schema.json, required/default/global/env values가 사용자 설정 계약을 어떻게 표현하는지 묶어 보세요.",
+      "templates/, _helpers.tpl, include, tpl, required, lookup, Capabilities, hooks가 어떤 Kubernetes manifests를 렌더링하는지 확인하세요.",
+      "dependencies, repository, condition, alias, Chart.lock, helm dependency build/update가 dependency drift를 어떻게 관리하는지 확인하세요.",
+      "helm lint/template, dry-run, kubeconform, ct lint/install, helm test, chart-releaser, OCI push가 CI에서 어떤 산출물로 남는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 helm render/install/upgrade/push/sign/verify는 안전한 sandbox와 test cluster에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type HelmReadinessSourceFile = { filePath: string; text: string; sourceHref: string };
+
+async function helmReadinessSourceFiles(walk: WalkResult): Promise<HelmReadinessSourceFile[]> {
+  const files: HelmReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !helmReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!helmReadinessPathSignal(file.relPath) && !helmReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function helmReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return helmReadinessPathSignal(filePath)
+    || /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|go\.mod|go\.sum|pyproject\.toml|requirements\.txt|Dockerfile|Chart\.ya?ml|Chart\.lock|values\.ya?ml|values\.schema\.json|ct\.ya?ml|cr\.ya?ml|kustomization\.ya?ml)$/i.test(base)
+    || /\.(json|ya?ml|toml|tf|hcl|cue|rego|md|mdx|txt|conf|sh|bash|go|py|ts|tsx|js|jsx|mjs|cjs|rst|tpl)$/i.test(filePath);
+}
+
+function helmReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(charts?|helm|templates|values|chart-testing|chart-releaser|ct|cr)(\/|\.|-|_|$)|(^|\/)(Chart\.ya?ml|Chart\.lock|values\.ya?ml|values\.schema\.json|_helpers\.tpl)$|\.github\/workflows/i.test(filePath);
+}
+
+function helmReadinessContentSignal(text: string): boolean {
+  return /(Chart\.yaml|apiVersion:\s*v2|type:\s*library|values\.yaml|values\.schema\.json|templates\/|_helpers\.tpl|helm\s+(lint|template|install|upgrade|rollback|test|package|push|verify)|ct\s+(lint|install|lint-and-install)|chart-testing|chart-releaser|cr\s+(upload|index)|Chart\.lock|helm dependency|oci:\/\/|\.prov|kubeconform|helm-unittest)/i.test(text);
+}
+
+function helmReadinessSetups(sourceFiles: HelmReadinessSourceFile[]): HelmReadinessReport["helmSetups"] {
+  const rows: HelmReadinessReport["helmSetups"] = [];
+  for (const source of sourceFiles) {
+    const chartCount = countMatches(source.text, /Chart\.ya?ml|apiVersion:\s*v2|apiVersion:\s*v1|\bname:\s|version:\s|appVersion:|type:\s*(application|library)/gi) + (/(^|\/)Chart\.ya?ml$/i.test(source.filePath) ? 1 : 0);
+    const valuesCount = countMatches(source.text, /values\.ya?ml|--values\b|-f\s+|--set\b|--set-string|--set-file|--set-json|global:|required values?|default values?/gi) + (/(^|\/)values\.ya?ml$/i.test(source.filePath) ? 1 : 0);
+    const templateCount = countMatches(source.text, /templates\/|_helpers\.tpl|{{-?\s*(include|tpl|required|lookup|define|template)|\.Capabilities|helm\.sh\/hook|hook-weight/gi) + (/\/templates\//i.test(source.filePath) ? 1 : 0);
+    const dependencyCount = countMatches(source.text, /dependencies:|repository:\s|condition:\s|alias:\s|Chart\.lock|helm dependency (build|update)|requirements\.ya?ml|charts\//gi);
+    const schemaCount = countMatches(source.text, /values\.schema\.json|\$schema|JSON Schema|validate-chart-schema|schema validation/gi) + (/(^|\/)values\.schema\.json$/i.test(source.filePath) ? 1 : 0);
+    const testCount = countMatches(source.text, /helm lint|helm template|helm install.*--dry-run|--dry-run=server|kubeconform|kubeval|ct lint|ct install|ct lint-and-install|helm unittest|helm-unittest|helm test/gi);
+    const packagingCount = countMatches(source.text, /helm package|helm repo index|index\.ya?ml|\.tgz|chart package|package-path|packages-with-index/gi);
+    const releaseCount = countMatches(source.text, /helm install|helm upgrade|helm rollback|helm test|helm push|oci:\/\/|chart-releaser|cr upload|cr index|helm\/chart-releaser-action|skip-existing/gi);
+    const provenanceCount = countMatches(source.text, /--sign|--keyring|helm verify|provenance|\.prov|DigestFile|sha256|keyring|verify/i);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\/|chart-testing|ct lint|ct install|helm lint|helm template|kubeconform|chart-releaser|upload-artifact|helm-readiness-report\.json/gi);
+    const hasSetupSignal = chartCount + valuesCount + templateCount + dependencyCount + schemaCount + testCount + packagingCount + releaseCount + provenanceCount + ciCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      chartType: helmReadinessChartType(source),
+      chartCount,
+      valuesCount,
+      templateCount,
+      dependencyCount,
+      schemaCount,
+      testCount,
+      packagingCount,
+      releaseCount,
+      provenanceCount,
+      ciCount,
+      readiness: chartCount > 0 && valuesCount > 0 && templateCount > 0 && testCount > 0 && (releaseCount > 0 || packagingCount > 0) ? "ready" : "partial",
+      evidence: `${source.filePath} contains chart ${chartCount}, values ${valuesCount}, templates ${templateCount}, dependencies ${dependencyCount}, schemas ${schemaCount}, tests ${testCount}, packaging ${packagingCount}, releases ${releaseCount}, provenance ${provenanceCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => (b.chartCount + b.valuesCount + b.templateCount + b.testCount + b.releaseCount + b.provenanceCount + b.ciCount) - (a.chartCount + a.valuesCount + a.templateCount + a.testCount + a.releaseCount + a.provenanceCount + a.ciCount) || a.filePath.localeCompare(b.filePath)).slice(0, 100);
+}
+
+function helmReadinessChartType(source: HelmReadinessSourceFile): HelmReadinessReport["helmSetups"][number]["chartType"] {
+  if (/type:\s*library/i.test(source.text)) return "library";
+  if (/type:\s*application|apiVersion:\s*v2|templates\/|kind:\s*(Deployment|Service|Ingress|ConfigMap)/i.test(source.text)) return "application";
+  return "unknown";
+}
+
+function helmReadinessChartSignals(sourceFiles: HelmReadinessSourceFile[]): HelmReadinessReport["chartSignals"] {
+  return helmReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "chart-yaml", pattern: /Chart\.ya?ml|apiVersion:\s*v2|apiVersion:\s*v1|appVersion:|version:/i, evidence: "Chart.yaml metadata evidence was detected." },
+    { signal: "values", pattern: /values\.ya?ml|--values\b|-f\s+|--set\b|default values/i, evidence: "values evidence was detected." },
+    { signal: "templates", pattern: /templates\/|kind:\s*(Deployment|Service|Ingress|ConfigMap|Secret)|{{-?\s*(include|tpl|required|define)/i, evidence: "template evidence was detected." },
+    { signal: "helpers", pattern: /_helpers\.tpl|{{-?\s*define|{{-?\s*include/i, evidence: "helper template evidence was detected." },
+    { signal: "library-chart", pattern: /type:\s*library|library chart/i, evidence: "library chart evidence was detected." },
+    { signal: "chart-lock", pattern: /Chart\.lock|digest:\s|generated:\s/i, evidence: "Chart.lock evidence was detected." }
+  ], "chart", "signal");
+}
+
+function helmReadinessTemplateSignals(sourceFiles: HelmReadinessSourceFile[]): HelmReadinessReport["templateSignals"] {
+  return helmReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "helm-template", pattern: /helm template|rendered manifest|template command/i, evidence: "helm template evidence was detected." },
+    { signal: "include", pattern: /{{-?\s*include\b/i, evidence: "include helper evidence was detected." },
+    { signal: "tpl", pattern: /{{-?\s*tpl\b/i, evidence: "tpl function evidence was detected." },
+    { signal: "lookup", pattern: /\blookup\b/i, evidence: "lookup function evidence was detected." },
+    { signal: "required", pattern: /{{-?\s*required\b|required values?/i, evidence: "required value evidence was detected." },
+    { signal: "capabilities", pattern: /\.Capabilities|Capabilities\.APIVersions|Capabilities\.KubeVersion/i, evidence: "Capabilities evidence was detected." },
+    { signal: "hooks", pattern: /helm\.sh\/hook|hook-weight|pre-install|post-install|pre-upgrade|post-upgrade|test-success/i, evidence: "Helm hook evidence was detected." }
+  ], "template", "signal");
+}
+
+function helmReadinessValuesSignals(sourceFiles: HelmReadinessSourceFile[]): HelmReadinessReport["valuesSignals"] {
+  return helmReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "values-schema", pattern: /values\.schema\.json|\$schema|JSON Schema|validate-chart-schema/i, evidence: "values schema evidence was detected." },
+    { signal: "global-values", pattern: /\bglobal:\s|Values\.global/i, evidence: "global values evidence was detected." },
+    { signal: "env-values", pattern: /ci\/.*-values\.ya?ml|prod-values|staging-values|dev-values|environment values|values-prod|values-staging/i, evidence: "environment values evidence was detected." },
+    { signal: "required-values", pattern: /required values?|{{-?\s*required\b|requiredEnv|must be set/i, evidence: "required values evidence was detected." },
+    { signal: "default-values", pattern: /default values?|values\.ya?ml|default config|default configuration/i, evidence: "default values evidence was detected." }
+  ], "values", "signal");
+}
+
+function helmReadinessDependencySignals(sourceFiles: HelmReadinessSourceFile[]): HelmReadinessReport["dependencySignals"] {
+  return helmReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "dependencies", pattern: /dependencies:|requirements\.ya?ml/i, evidence: "dependency declaration evidence was detected." },
+    { signal: "repository", pattern: /repository:\s|@helm repo|helm repo add/i, evidence: "repository evidence was detected." },
+    { signal: "condition", pattern: /condition:\s|tags:\s/i, evidence: "dependency condition evidence was detected." },
+    { signal: "alias", pattern: /alias:\s/i, evidence: "dependency alias evidence was detected." },
+    { signal: "helm-dependency", pattern: /helm dependency (build|update)|skip-helm-dependencies|helm-dependency-extra-args/i, evidence: "helm dependency command evidence was detected." },
+    { signal: "chart-lock", pattern: /Chart\.lock|digest:\s|generated:\s/i, evidence: "Chart.lock evidence was detected." }
+  ], "dependency", "signal");
+}
+
+function helmReadinessValidationSignals(sourceFiles: HelmReadinessSourceFile[]): HelmReadinessReport["validationSignals"] {
+  return helmReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "helm-lint", pattern: /helm lint|Run 'helm lint'|lint charts?/i, evidence: "helm lint evidence was detected." },
+    { signal: "helm-template", pattern: /helm template|template --debug|render manifests?/i, evidence: "helm template evidence was detected." },
+    { signal: "dry-run", pattern: /--dry-run|dry run|dry-run=server|helm install.*dry-run|helm upgrade.*dry-run/i, evidence: "dry-run evidence was detected." },
+    { signal: "kubeconform", pattern: /kubeconform|kubeval|datree|conftest/i, evidence: "manifest validation evidence was detected." },
+    { signal: "ct-lint", pattern: /ct lint|chart-testing.*lint/i, evidence: "ct lint evidence was detected." },
+    { signal: "ct-install", pattern: /ct install|ct lint-and-install|chart-testing.*install/i, evidence: "ct install evidence was detected." },
+    { signal: "helm-unittest", pattern: /helm unittest|helm-unittest|unittest plugin/i, evidence: "helm-unittest evidence was detected." }
+  ], "validation", "signal");
+}
+
+function helmReadinessReleaseSignals(sourceFiles: HelmReadinessSourceFile[]): HelmReadinessReport["releaseSignals"] {
+  return helmReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "helm-upgrade", pattern: /helm upgrade|upgrade --install|helm upgrade --install/i, evidence: "helm upgrade evidence was detected." },
+    { signal: "helm-install", pattern: /helm install|InstallWithValues|ct install/i, evidence: "helm install evidence was detected." },
+    { signal: "helm-rollback", pattern: /helm rollback|rollback release/i, evidence: "helm rollback evidence was detected." },
+    { signal: "helm-test", pattern: /helm test|Test runs `helm test`|ct install.*test/i, evidence: "helm test evidence was detected." },
+    { signal: "chart-releaser", pattern: /chart-releaser|helm\/chart-releaser-action|cr upload|cr index/i, evidence: "chart-releaser evidence was detected." },
+    { signal: "oci-push", pattern: /helm push|oci:\/\/|OCI registry|registry login/i, evidence: "OCI push evidence was detected." },
+    { signal: "repo-index", pattern: /helm repo index|index\.ya?ml|cr index|packages-with-index/i, evidence: "repo index evidence was detected." }
+  ], "release", "signal");
+}
+
+function helmReadinessSecuritySignals(sourceFiles: HelmReadinessSourceFile[]): HelmReadinessReport["securitySignals"] {
+  return helmReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "provenance", pattern: /provenance|\.prov|provFile/i, evidence: "provenance evidence was detected." },
+    { signal: "signing", pattern: /helm package --sign|--sign|signing key|signed package/i, evidence: "signing evidence was detected." },
+    { signal: "verify", pattern: /helm verify|--verify|Verify that the given chart/i, evidence: "verify evidence was detected." },
+    { signal: "keyring", pattern: /--keyring|keyring|public key/i, evidence: "keyring evidence was detected." },
+    { signal: "digest", pattern: /sha256|DigestFile|digest:\s|checksum/i, evidence: "digest evidence was detected." },
+    { signal: "oci-registry", pattern: /oci:\/\/|OCI registry|helm registry login|registry\.Client/i, evidence: "OCI registry evidence was detected." }
+  ], "security", "signal");
+}
+
+function helmReadinessCiSignals(sourceFiles: HelmReadinessSourceFile[]): HelmReadinessReport["ciSignals"] {
+  return helmReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "github-actions", pattern: /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\//i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "chart-testing", pattern: /chart-testing|ct lint|ct install|ct lint-and-install|quay\.io\/helmpack\/chart-testing/i, evidence: "chart-testing evidence was detected." },
+    { signal: "helm-lint", pattern: /helm lint/i, evidence: "helm lint CI evidence was detected." },
+    { signal: "helm-template", pattern: /helm template/i, evidence: "helm template CI evidence was detected." },
+    { signal: "kubeconform", pattern: /kubeconform|kubeval|datree/i, evidence: "kubeconform CI evidence was detected." },
+    { signal: "chart-releaser", pattern: /chart-releaser|helm\/chart-releaser-action|cr upload|cr index/i, evidence: "chart-releaser CI evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|helm-readiness-report\.json|chart-report\.json|helm-template\.yaml|ct-report\.json/i, evidence: "Helm artifact upload evidence was detected." }
+  ], "CI", "signal");
+}
+
+function helmReadinessPackageSignals(sourceFiles: HelmReadinessSourceFile[]): HelmReadinessReport["packageSignals"] {
+  return helmReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "helm", pattern: /helm\.sh\/helm|helm\s+(lint|template|install|upgrade|package|push|verify)|\bhelm\b/i, evidence: "Helm package/command evidence was detected." },
+    { signal: "chart-testing", pattern: /helm\/chart-testing|chart-testing|ct lint|ct install|quay\.io\/helmpack\/chart-testing/i, evidence: "chart-testing package evidence was detected." },
+    { signal: "chart-releaser", pattern: /helm\/chart-releaser|chart-releaser|cr upload|cr index|chart-releaser-action/i, evidence: "chart-releaser package evidence was detected." },
+    { signal: "helm-docs", pattern: /helm-docs|norwoodj\/helm-docs/i, evidence: "helm-docs evidence was detected." },
+    { signal: "helm-unittest", pattern: /helm-unittest|helm unittest/i, evidence: "helm-unittest package evidence was detected." },
+    { signal: "kubeconform", pattern: /kubeconform|kubeval|datree/i, evidence: "kubeconform package evidence was detected." }
+  ], "package", "signal");
+}
+
+function helmReadinessSignalFromSpecs<const T extends readonly { signal: string; pattern: RegExp; evidence: string }[]>(
+  sourceFiles: HelmReadinessSourceFile[],
+  specs: T,
+  label: string,
+  labelKey: "signal"
+): Array<{ signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/helm-readiness.html"
     } as { signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
