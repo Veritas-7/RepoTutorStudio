@@ -173,6 +173,7 @@ import {
   RichTextEditorReadinessReport,
   CommandPaletteReadinessReport,
   GuidedTourReadinessReport,
+  DataTableReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
@@ -385,6 +386,7 @@ export interface AnalysisBundle {
   richTextEditorReadinessReport: RichTextEditorReadinessReport;
   commandPaletteReadinessReport: CommandPaletteReadinessReport;
   guidedTourReadinessReport: GuidedTourReadinessReport;
+  dataTableReadinessReport: DataTableReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -597,6 +599,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const richTextEditorReadinessReport = await buildRichTextEditorReadinessReport(walk);
   const commandPaletteReadinessReport = await buildCommandPaletteReadinessReport(walk);
   const guidedTourReadinessReport = await buildGuidedTourReadinessReport(walk);
+  const dataTableReadinessReport = await buildDataTableReadinessReport(walk);
   const llmReadinessReport = await buildLlmReadinessReport(walk);
   const llmEvalReadinessReport = await buildLlmEvalReadinessReport(walk);
   const llmObservabilityReadinessReport = await buildLlmObservabilityReadinessReport(walk);
@@ -631,7 +634,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, markdownCodeRenderingReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, dragAndDropReadinessReport, richTextEditorReadinessReport, commandPaletteReadinessReport, guidedTourReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, markdownCodeRenderingReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, dragAndDropReadinessReport, richTextEditorReadinessReport, commandPaletteReadinessReport, guidedTourReadinessReport, dataTableReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -42975,6 +42978,330 @@ function guidedTourReadinessSignalFromSpecs<T extends Record<K, string> & { patt
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/guided-tour-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDataTableReadinessReport(walk: WalkResult): Promise<DataTableReadinessReport> {
+  const sourceFiles = await dataTableReadinessSourceFiles(walk);
+  const dataTableSetups = dataTableReadinessSetups(sourceFiles);
+  const frameworkSignals = dataTableReadinessFrameworkSignals(sourceFiles);
+  const columnSignals = dataTableReadinessColumnSignals(sourceFiles);
+  const rowModelSignals = dataTableReadinessRowModelSignals(sourceFiles);
+  const interactionSignals = dataTableReadinessInteractionSignals(sourceFiles);
+  const stateSignals = dataTableReadinessStateSignals(sourceFiles);
+  const virtualizationSignals = dataTableReadinessVirtualizationSignals(sourceFiles);
+  const editingSignals = dataTableReadinessEditingSignals(sourceFiles);
+  const accessibilitySignals = dataTableReadinessAccessibilitySignals(sourceFiles);
+  const testSignals = dataTableReadinessTestSignals(sourceFiles);
+  const packageSignals = dataTableReadinessPackageSignals(sourceFiles);
+
+  const hasFramework = frameworkSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasColumns = columnSignals.some((item) => item.readiness === "ready") || dataTableSetups.some((item) => item.columnCount > 0);
+  const hasRows = rowModelSignals.some((item) => item.readiness === "ready") || dataTableSetups.some((item) => item.rowCount > 0);
+  const hasInteraction = interactionSignals.some((item) => item.readiness === "ready") || dataTableSetups.some((item) => item.sortCount + item.filterCount + item.paginationCount + item.selectionCount > 0);
+  const hasAccessibility = accessibilitySignals.some((item) => item.readiness === "ready") || dataTableSetups.some((item) => item.accessibilityCount > 0);
+  const hasTests = testSignals.some((item) => item.readiness === "ready") || dataTableSetups.some((item) => item.testCount > 0);
+
+  const riskQueue: DataTableReadinessReport["riskQueue"] = [];
+  if (!hasFramework && !hasColumns) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document a data table boundary such as TanStack Table, AG Grid, React Data Grid, or a custom grid adapter.",
+      why: "Data table readiness starts with explicit table/grid framework, column definition, or row model evidence.",
+      relatedHref: "html/data-table-readiness.html"
+    });
+  }
+  if ((hasFramework || hasColumns) && !hasRows) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair column definitions with row data, row model, row key, or server-side row loading evidence.",
+      why: "A table column contract without row model evidence does not show how records are rendered or updated.",
+      relatedHref: "html/data-table-readiness.html"
+    });
+  }
+  if ((hasColumns || hasRows) && !hasInteraction) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document sorting, filtering, pagination, selection, expansion, or faceting behavior.",
+      why: "Learners need to inspect how large tabular data is searched, sorted, paged, and selected.",
+      relatedHref: "html/data-table-readiness.html"
+    });
+  }
+  if ((hasFramework || hasColumns) && !hasAccessibility) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add grid/table roles, row/column indices, aria-sort, and keyboard-navigation evidence.",
+      why: "Data grids are keyboard-heavy, high-density controls and can regress accessibility without explicit ARIA contracts.",
+      relatedHref: "html/data-table-readiness.html"
+    });
+  }
+  if ((hasFramework || hasColumns) && !hasTests) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add deterministic tests for sorting, filtering, pagination, row selection, editing, virtualization, and grid roles.",
+      why: "Data table regressions commonly appear in state transitions, row identity, keyboard focus, and virtualized rendering.",
+      relatedHref: "html/data-table-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify live data table behavior in a trusted browser or original project tests outside RepoTutor.",
+    why: "RepoTutor records data table readiness only; it does not mount grids, measure DOM geometry, virtualize rows, sort/filter data, mutate row state, edit cells, dispatch keyboard events, fetch server-side rows, or run analyzed project tests.",
+    relatedHref: "html/data-table-readiness.html"
+  });
+
+  return {
+    summary: `TanStack Table/AG Grid/React Data Grid-style data table readiness report: setup ${dataTableSetups.length}개, framework signal ${frameworkSignals.length}개, accessibility signal ${accessibilitySignals.length}개, test signal ${testSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Data table readiness TanStack Table AG Grid React Data Grid columns rows sorting filtering pagination virtualization selection editing accessibility tests",
+    dataTableSetups,
+    frameworkSignals,
+    columnSignals,
+    rowModelSignals,
+    interactionSignals,
+    stateSignals,
+    virtualizationSignals,
+    editingSignals,
+    accessibilitySignals,
+    testSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"@tanstack/react-table|useReactTable|ColumnDef|getCoreRowModel|getSortedRowModel|getFilteredRowModel|getPaginationRowModel|flexRender\" src app packages test", purpose: "Find TanStack Table setup, column definitions, row models, renderers, and controlled table state." },
+      { command: "rg \"AgGridReact|GridOptions|columnDefs|rowData|defaultColDef|rowSelection|pagination|cellRenderer|cellEditor\" src app packages test", purpose: "Find AG Grid column, row, selection, pagination, renderer, and editing configuration." },
+      { command: "rg \"react-data-grid|DataGrid|TreeDataGrid|rowKeyGetter|onRowsChange|selectedRows|sortColumns|renderEditCell|enableVirtualization\" src app packages test", purpose: "Find React Data Grid row identity, row updates, selection, sorting, editing, and virtualization." },
+      { command: "rg \"role=.*grid|role=.*row|role=.*columnheader|role=.*gridcell|aria-rowcount|aria-colcount|aria-rowindex|aria-colindex|aria-sort|ArrowDown|Enter\" src app packages test", purpose: "Review grid roles, ARIA indices, sort state, and keyboard-navigation tests." },
+      { command: "pnpm test", purpose: "Run trusted local tests that cover table sorting, filtering, pagination, selection, editing, virtualization, keyboard, and accessibility flows." }
+    ],
+    learnerNextSteps: [
+      "먼저 TanStack Table, AG Grid, React Data Grid, custom grid 중 어떤 table boundary가 있는지 찾으세요.",
+      "columnDefs, ColumnDef, createColumnHelper, accessorKey, cellRenderer/renderCell, header, column visibility/pinning/sizing 신호로 column contract를 확인하세요.",
+      "rowData, rows, rowKeyGetter, getCoreRowModel, sorted/filtered/pagination/grouped/expanded row model 신호로 row lifecycle을 추적하세요.",
+      "sorting, filtering, pagination, row selection, column reorder, row expansion, faceting 신호는 사용자 interaction과 table state 전환을 설명합니다.",
+      "useVirtualizer, enableVirtualization, virtual rows, viewport, row height 신호로 큰 데이터셋 렌더링 전략을 점검하세요.",
+      "editable, cellEditor/renderEditCell, onRowsChange, valueGetter/valueFormatter 신호로 cell editing과 value projection 경계를 확인하세요.",
+      "role=grid/row/columnheader/gridcell, aria-rowcount/colcount/rowindex/colindex/sort, keyboard tests를 같이 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 grid mount, DOM measurement, row virtualization, sorting/filtering execution, cell editing, server-side row loading은 안전한 테스트 환경에서 별도로 검증하세요."
+    ]
+  };
+}
+
+type DataTableReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function dataTableReadinessSourceFiles(walk: WalkResult): Promise<DataTableReadinessSourceFile[]> {
+  const files: DataTableReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !dataTableReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!dataTableReadinessPathSignal(file.relPath) && !dataTableReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function dataTableReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return dataTableReadinessPathSignal(filePath)
+    || /^(package\.json|pnpm-lock\.yaml|yarn\.lock|package-lock\.json|playwright\.config\.[cm]?[jt]s|cypress\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|astro|json|md|mdx|ya?ml|css)$/i.test(filePath);
+}
+
+function dataTableReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(table|tables|grid|grids|datatable|data-table|data-grid|tanstack|ag-grid|react-data-grid|rows?|columns?|virtual|tests?|e2e)(\/|\.|-|_|$)|package\.json$|workflow/i.test(filePath);
+}
+
+function dataTableReadinessContentSignal(text: string): boolean {
+  return /(useReactTable|\bColumnDef\b|createColumnHelper|getCoreRowModel|flexRender|AgGridReact|GridOptions|columnDefs|rowData|DataGrid|TreeDataGrid|rowKeyGetter|onRowsChange|selectedRows|sortColumns|enableVirtualization|role\s*=\s*["']grid|aria-rowcount|aria-colcount)/i.test(text);
+}
+
+function dataTableReadinessSetups(sourceFiles: DataTableReadinessSourceFile[]): DataTableReadinessReport["dataTableSetups"] {
+  const rows: DataTableReadinessReport["dataTableSetups"] = [];
+  for (const source of sourceFiles) {
+    const columnCount = countMatches(source.text, /(ColumnDef|columnDefs|columns\s*=|columns\s*:|createColumnHelper|accessorKey|field\s*:|headerName|header\s*:|cellRenderer|renderCell|columnVisibility|columnPinning|resizable|size\s*:)/gi);
+    const rowCount = countMatches(source.text, /(rowData|rows\s*=|rows\s*:|rowKeyGetter|getRowModel|getCoreRowModel|rowModelType|setGridOption\(['"]rowData|TreeDataGrid|rowGrouper)/gi);
+    const sortCount = countMatches(source.text, /(getSortedRowModel|sorting|setSorting|sortColumns|onSortColumnsChange|sortable|aria-sort|SortColumn)/gi);
+    const filterCount = countMatches(source.text, /(getFilteredRowModel|filter|columnFilter|globalFilter|faceting|getFaceted|enableColumnFilter)/gi);
+    const paginationCount = countMatches(source.text, /(getPaginationRowModel|pagination|pageIndex|pageSize|paginationPageSize|manualPagination)/gi);
+    const virtualizationCount = countMatches(source.text, /(useVirtualizer|virtualizer|virtualItems|enableVirtualization|rowVirtualizer|viewport|rowHeight|estimateSize|suppressRowVirtualisation|domLayout)/gi);
+    const selectionCount = countMatches(source.text, /(rowSelection|selectedRows|onSelectedRowsChange|onRowSelectionChange|enableRowSelection|SelectColumn|onSelectionChanged|getSelectedRows)/gi);
+    const editingCount = countMatches(source.text, /(editable|cellEditor|renderEditCell|renderTextEditor|onRowsChange|setRows|valueGetter|valueFormatter)/gi);
+    const accessibilityCount = countMatches(source.text, /(role\s*=\s*["']grid|role:\s*["']grid|role\s*=\s*["']row|role\s*=\s*["']columnheader|role\s*=\s*["']gridcell|aria-label|aria-rowcount|aria-colcount|aria-rowindex|aria-colindex|aria-sort|ArrowDown|keyboard)/gi);
+    const testCount = countMatches(source.text, /(vitest|playwright|cypress|describe\s*\(|it\s*\(|expect\s*\(|testing-library|getByRole|queryAllByRole|fireEvent\.keyDown|userEvent\.keyboard|upload-artifact|data-table-traces)/gi);
+    const hasSetupSignal = columnCount + rowCount + sortCount + filterCount + paginationCount + virtualizationCount + selectionCount + editingCount + accessibilityCount + testCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: dataTableReadinessPlatform(source),
+      columnCount,
+      rowCount,
+      sortCount,
+      filterCount,
+      paginationCount,
+      virtualizationCount,
+      selectionCount,
+      editingCount,
+      accessibilityCount,
+      testCount,
+      readiness: columnCount > 0 && rowCount > 0 && (sortCount + filterCount + paginationCount + selectionCount > 0) && (virtualizationCount + editingCount + accessibilityCount + testCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains columns ${columnCount}, rows ${rowCount}, sorting ${sortCount}, filters ${filterCount}, pagination ${paginationCount}, virtualization ${virtualizationCount}, selection ${selectionCount}, editing ${editingCount}, accessibility ${accessibilityCount}, tests ${testCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function dataTableReadinessPlatform(source: DataTableReadinessSourceFile): DataTableReadinessReport["dataTableSetups"][number]["platform"] {
+  if (/@tanstack\/react-table|useReactTable|\bColumnDef\b|getCoreRowModel|flexRender/i.test(source.text)) return "tanstack-table";
+  if (/ag-grid-react|AgGridReact|GridOptions|columnDefs|defaultColDef/i.test(source.text)) return "ag-grid";
+  if (/react-data-grid|DataGrid|TreeDataGrid|rowKeyGetter|onRowsChange|SelectColumn/i.test(source.text)) return "react-data-grid";
+  if (/data[-_ ]?table|data[-_ ]?grid|role\s*=\s*["']grid|columns|rows/i.test(source.text) || dataTableReadinessPathSignal(source.filePath)) return "custom";
+  return "unknown";
+}
+
+function dataTableReadinessFrameworkSignals(sourceFiles: DataTableReadinessSourceFile[]): DataTableReadinessReport["frameworkSignals"] {
+  const specs: Array<{ signal: DataTableReadinessReport["frameworkSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tanstack-table", pattern: /@tanstack\/react-table|useReactTable|\bColumnDef\b|getCoreRowModel|flexRender/i, evidence: "TanStack Table evidence was detected." },
+    { signal: "ag-grid", pattern: /ag-grid-react|AgGridReact|GridOptions|columnDefs|defaultColDef/i, evidence: "AG Grid evidence was detected." },
+    { signal: "react-data-grid", pattern: /react-data-grid|DataGrid|TreeDataGrid|rowKeyGetter|onRowsChange/i, evidence: "React Data Grid evidence was detected." },
+    { signal: "custom", pattern: /data[-_ ]?table|data[-_ ]?grid|role\s*=\s*["']grid/i, evidence: "custom data table evidence was detected." }
+  ];
+  return dataTableReadinessSignalFromSpecs(sourceFiles, specs, "framework", "signal");
+}
+
+function dataTableReadinessColumnSignals(sourceFiles: DataTableReadinessSourceFile[]): DataTableReadinessReport["columnSignals"] {
+  const specs: Array<{ signal: DataTableReadinessReport["columnSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "column-defs", pattern: /ColumnDef|columnDefs|columns\s*=|columns\s*:/i, evidence: "column definition evidence was detected." },
+    { signal: "column-helper", pattern: /createColumnHelper|columnHelper/i, evidence: "column helper evidence was detected." },
+    { signal: "accessor-key", pattern: /accessorKey|accessor\s*\(/i, evidence: "accessor key evidence was detected." },
+    { signal: "cell-renderer", pattern: /cellRenderer|renderCell|flexRender|\bcell\s*:/i, evidence: "cell renderer evidence was detected." },
+    { signal: "header", pattern: /headerName|\bheader\s*:|columnheader/i, evidence: "header evidence was detected." },
+    { signal: "column-visibility", pattern: /columnVisibility|onColumnVisibilityChange|hide\s*:/i, evidence: "column visibility evidence was detected." },
+    { signal: "column-pinning", pattern: /columnPinning|onColumnPinningChange|pinned|frozen/i, evidence: "column pinning evidence was detected." },
+    { signal: "column-sizing", pattern: /columnSizing|size\s*:|resizable|width|minWidth|maxWidth/i, evidence: "column sizing evidence was detected." }
+  ];
+  return dataTableReadinessSignalFromSpecs(sourceFiles, specs, "column", "signal");
+}
+
+function dataTableReadinessRowModelSignals(sourceFiles: DataTableReadinessSourceFile[]): DataTableReadinessReport["rowModelSignals"] {
+  const specs: Array<{ signal: DataTableReadinessReport["rowModelSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "core-row-model", pattern: /getCoreRowModel|core row model/i, evidence: "core row model evidence was detected." },
+    { signal: "sorted-row-model", pattern: /getSortedRowModel|sorted row model/i, evidence: "sorted row model evidence was detected." },
+    { signal: "filtered-row-model", pattern: /getFilteredRowModel|filtered row model/i, evidence: "filtered row model evidence was detected." },
+    { signal: "pagination-row-model", pattern: /getPaginationRowModel|pagination row model/i, evidence: "pagination row model evidence was detected." },
+    { signal: "grouped-row-model", pattern: /getGroupedRowModel|grouped row model|rowGrouper|groupBy/i, evidence: "grouped row model evidence was detected." },
+    { signal: "expanded-row-model", pattern: /getExpandedRowModel|expanded row model|TreeDataGrid/i, evidence: "expanded row model evidence was detected." },
+    { signal: "row-data", pattern: /rowData|rows\s*=|rows\s*:|setGridOption\(['"]rowData|rowKeyGetter/i, evidence: "row data evidence was detected." }
+  ];
+  return dataTableReadinessSignalFromSpecs(sourceFiles, specs, "row-model", "signal");
+}
+
+function dataTableReadinessInteractionSignals(sourceFiles: DataTableReadinessSourceFile[]): DataTableReadinessReport["interactionSignals"] {
+  const specs: Array<{ signal: DataTableReadinessReport["interactionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "sorting", pattern: /sorting|sortColumns|sortable|aria-sort|onSortColumnsChange/i, evidence: "sorting evidence was detected." },
+    { signal: "filtering", pattern: /filter|columnFilter|globalFilter|enableColumnFilter/i, evidence: "filtering evidence was detected." },
+    { signal: "pagination", pattern: /pagination|pageIndex|pageSize|paginationPageSize/i, evidence: "pagination evidence was detected." },
+    { signal: "row-selection", pattern: /rowSelection|selectedRows|onSelectedRowsChange|SelectColumn|onSelectionChanged/i, evidence: "row selection evidence was detected." },
+    { signal: "column-reorder", pattern: /onColumnsReorder|columnsOrder|columnOrder|columnPinning|columnVisibility/i, evidence: "column reorder/visibility evidence was detected." },
+    { signal: "row-expansion", pattern: /getExpandedRowModel|TreeDataGrid|expanded|subRows/i, evidence: "row expansion evidence was detected." },
+    { signal: "faceting", pattern: /faceting|getFaceted|getFilteredRowModel|getGroupedRowModel/i, evidence: "faceting/grouping evidence was detected." }
+  ];
+  return dataTableReadinessSignalFromSpecs(sourceFiles, specs, "interaction", "signal");
+}
+
+function dataTableReadinessStateSignals(sourceFiles: DataTableReadinessSourceFile[]): DataTableReadinessReport["stateSignals"] {
+  const specs: Array<{ signal: DataTableReadinessReport["stateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "controlled-state", pattern: /\bstate\s*:|state\s*=|useState|controlled/i, evidence: "controlled state evidence was detected." },
+    { signal: "on-state-change", pattern: /onSortingChange|onRowSelectionChange|onPaginationChange|onColumnVisibilityChange|onColumnPinningChange|onSortColumnsChange|onSelectedRowsChange/i, evidence: "state change handler evidence was detected." },
+    { signal: "row-selection-state", pattern: /RowSelectionState|rowSelection|selectedRows/i, evidence: "row selection state evidence was detected." },
+    { signal: "sorting-state", pattern: /SortingState|sorting|sortColumns/i, evidence: "sorting state evidence was detected." },
+    { signal: "pagination-state", pattern: /PaginationState|pagination|pageIndex|pageSize/i, evidence: "pagination state evidence was detected." },
+    { signal: "rows-change", pattern: /onRowsChange|setRows|setRowData|setGridOption\(['"]rowData/i, evidence: "rows change evidence was detected." }
+  ];
+  return dataTableReadinessSignalFromSpecs(sourceFiles, specs, "state", "signal");
+}
+
+function dataTableReadinessVirtualizationSignals(sourceFiles: DataTableReadinessSourceFile[]): DataTableReadinessReport["virtualizationSignals"] {
+  const specs: Array<{ signal: DataTableReadinessReport["virtualizationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "use-virtualizer", pattern: /useVirtualizer|@tanstack\/react-virtual/i, evidence: "useVirtualizer evidence was detected." },
+    { signal: "enable-virtualization", pattern: /enableVirtualization|suppressRowVirtualisation\s*:\s*false/i, evidence: "enable virtualization evidence was detected." },
+    { signal: "virtual-rows", pattern: /rowVirtualizer|virtualRows|virtualItems|getVirtualItems/i, evidence: "virtual rows evidence was detected." },
+    { signal: "viewport", pattern: /viewport|data-table-viewport|getScrollElement|domLayout/i, evidence: "viewport evidence was detected." },
+    { signal: "row-height", pattern: /rowHeight|estimateSize|defaultRowHeight/i, evidence: "row height evidence was detected." }
+  ];
+  return dataTableReadinessSignalFromSpecs(sourceFiles, specs, "virtualization", "signal");
+}
+
+function dataTableReadinessEditingSignals(sourceFiles: DataTableReadinessSourceFile[]): DataTableReadinessReport["editingSignals"] {
+  const specs: Array<{ signal: DataTableReadinessReport["editingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "editable", pattern: /editable/i, evidence: "editable evidence was detected." },
+    { signal: "cell-editor", pattern: /cellEditor|CellEditor/i, evidence: "cell editor evidence was detected." },
+    { signal: "render-edit-cell", pattern: /renderEditCell|renderTextEditor/i, evidence: "render edit cell evidence was detected." },
+    { signal: "on-rows-change", pattern: /onRowsChange|setRows/i, evidence: "onRowsChange evidence was detected." },
+    { signal: "value-getter", pattern: /valueGetter/i, evidence: "valueGetter evidence was detected." },
+    { signal: "value-formatter", pattern: /valueFormatter/i, evidence: "valueFormatter evidence was detected." }
+  ];
+  return dataTableReadinessSignalFromSpecs(sourceFiles, specs, "editing", "signal");
+}
+
+function dataTableReadinessAccessibilitySignals(sourceFiles: DataTableReadinessSourceFile[]): DataTableReadinessReport["accessibilitySignals"] {
+  const specs: Array<{ signal: DataTableReadinessReport["accessibilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "grid-role", pattern: /role\s*=\s*["']grid|role:\s*["']grid|role="grid"/i, evidence: "grid role evidence was detected." },
+    { signal: "row-role", pattern: /role\s*=\s*["']row|role="row"/i, evidence: "row role evidence was detected." },
+    { signal: "columnheader-role", pattern: /role\s*=\s*["']columnheader|role="columnheader"/i, evidence: "columnheader role evidence was detected." },
+    { signal: "gridcell-role", pattern: /role\s*=\s*["']gridcell|role="gridcell"/i, evidence: "gridcell role evidence was detected." },
+    { signal: "aria-rowcount", pattern: /aria-rowcount/i, evidence: "aria-rowcount evidence was detected." },
+    { signal: "aria-colcount", pattern: /aria-colcount/i, evidence: "aria-colcount evidence was detected." },
+    { signal: "aria-rowindex", pattern: /aria-rowindex/i, evidence: "aria-rowindex evidence was detected." },
+    { signal: "aria-colindex", pattern: /aria-colindex/i, evidence: "aria-colindex evidence was detected." },
+    { signal: "aria-sort", pattern: /aria-sort/i, evidence: "aria-sort evidence was detected." },
+    { signal: "keyboard-navigation", pattern: /ArrowDown|ArrowUp|ArrowLeft|ArrowRight|Enter|keyboard|fireEvent\.keyDown|userEvent\.keyboard/i, evidence: "keyboard navigation evidence was detected." }
+  ];
+  return dataTableReadinessSignalFromSpecs(sourceFiles, specs, "accessibility", "signal");
+}
+
+function dataTableReadinessTestSignals(sourceFiles: DataTableReadinessSourceFile[]): DataTableReadinessReport["testSignals"] {
+  const specs: Array<{ signal: DataTableReadinessReport["testSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vitest", pattern: /vitest|from ["']vitest["']/i, evidence: "Vitest evidence was detected." },
+    { signal: "playwright", pattern: /playwright|npx playwright/i, evidence: "Playwright evidence was detected." },
+    { signal: "cypress", pattern: /cypress/i, evidence: "Cypress evidence was detected." },
+    { signal: "testing-library", pattern: /testing-library|getByRole|queryAllByRole/i, evidence: "Testing Library evidence was detected." },
+    { signal: "keyboard-test", pattern: /fireEvent\.keyDown|userEvent\.keyboard|ArrowDown|ArrowUp|Enter/i, evidence: "keyboard test evidence was detected." },
+    { signal: "role-test", pattern: /getByRole|queryAllByRole|role\s*=\s*["']grid|role="grid"/i, evidence: "role test evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|data-table-traces|grid-traces|trace|screenshot/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return dataTableReadinessSignalFromSpecs(sourceFiles, specs, "test", "signal");
+}
+
+function dataTableReadinessPackageSignals(sourceFiles: DataTableReadinessSourceFile[]): DataTableReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DataTableReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@tanstack/react-table", pattern: /["@']@tanstack\/react-table["@']|from ["']@tanstack\/react-table["']/i, evidence: "@tanstack/react-table package evidence was detected." },
+    { signal: "@tanstack/react-virtual", pattern: /["@']@tanstack\/react-virtual["@']|from ["']@tanstack\/react-virtual["']/i, evidence: "@tanstack/react-virtual package evidence was detected." },
+    { signal: "ag-grid-react", pattern: /["@']ag-grid-react["@']|from ["']ag-grid-react["']/i, evidence: "ag-grid-react package evidence was detected." },
+    { signal: "ag-grid-community", pattern: /["@']ag-grid-community["@']|from ["']ag-grid-community["']/i, evidence: "ag-grid-community package evidence was detected." },
+    { signal: "react-data-grid", pattern: /["@']react-data-grid["@']|from ["']react-data-grid["']/i, evidence: "react-data-grid package evidence was detected." }
+  ];
+  return dataTableReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function dataTableReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DataTableReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/data-table-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
