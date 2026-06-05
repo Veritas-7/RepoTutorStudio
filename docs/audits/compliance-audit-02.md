@@ -1,6 +1,6 @@
 # Compliance Audit 2
 
-Created: 2026-06-05T12:34:01.577Z
+Created: 2026-06-05T12:52:38.668Z
 
 Status: PASS
 
@@ -197,6 +197,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - profiling readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - tracing readiness report
 
 - missing files: none
 - missing strings: none

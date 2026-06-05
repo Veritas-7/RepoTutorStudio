@@ -52,6 +52,7 @@ import {
   ObservabilityReport,
   PerformanceReport,
   ProfilingReadinessReport,
+  TracingReadinessReport,
   LoadTestingReadinessReport,
   BenchmarkReadinessReport,
   E2eReport,
@@ -241,6 +242,7 @@ export interface AnalysisBundle {
   observabilityReport: ObservabilityReport;
   performanceReport: PerformanceReport;
   profilingReadinessReport: ProfilingReadinessReport;
+  tracingReadinessReport: TracingReadinessReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
@@ -430,6 +432,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const observabilityReport = await buildObservabilityReport(walk, runtimeEnvironmentReport);
   const performanceReport = await buildPerformanceReport(walk, runtimeEnvironmentReport);
   const profilingReadinessReport = await buildProfilingReadinessReport(walk);
+  const tracingReadinessReport = await buildTracingReadinessReport(walk);
   const loadTestingReadinessReport = await buildLoadTestingReadinessReport(walk);
   const benchmarkReadinessReport = await buildBenchmarkReadinessReport(walk);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
@@ -562,7 +565,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -7137,6 +7140,320 @@ function profilingSignalFromSpecs<T extends Record<K, string> & { pattern: RegEx
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${spec[labelKey]} profiling signal was not detected.`,
       relatedHref: match?.sourceHref ?? fallbackHref
     } as Omit<T, "pattern"> & { readiness: "ready" | "missing" | "external"; relatedHref: string };
+  });
+}
+
+async function buildTracingReadinessReport(walk: WalkResult): Promise<TracingReadinessReport> {
+  const sourceFiles = await tracingSourceFiles(walk);
+  const tracingSetups = tracingSetupRows(sourceFiles);
+  const instrumentationSignals = tracingInstrumentationSignals(sourceFiles);
+  const propagationSignals = tracingPropagationSignals(sourceFiles);
+  const exporterSignals = tracingExporterSignals(sourceFiles);
+  const samplingSignals = tracingSamplingSignals(sourceFiles);
+  const resourceSignals = tracingResourceSignals(sourceFiles);
+  const backendSignals = tracingBackendSignals(sourceFiles);
+  const qualitySignals = tracingQualitySignals(sourceFiles);
+  const packageSignals = tracingPackageSignals(sourceFiles);
+
+  const hasInstrumentation = instrumentationSignals.some((item) => item.readiness === "ready")
+    || tracingSetups.some((item) => item.tracerCount + item.spanCount > 0);
+  const hasPropagation = propagationSignals.some((item) => item.readiness === "ready")
+    || tracingSetups.some((item) => item.propagationCount > 0);
+  const hasExporterOrBackend = exporterSignals.some((item) => item.readiness === "ready")
+    || backendSignals.some((item) => item.readiness === "ready")
+    || tracingSetups.some((item) => item.exporterCount + item.backendCount > 0);
+  const hasResource = resourceSignals.some((item) => item.readiness === "ready")
+    || tracingSetups.some((item) => item.resourceCount > 0);
+  const hasBackend = backendSignals.some((item) => item.readiness === "ready")
+    || tracingSetups.some((item) => item.backendCount > 0);
+  const hasQuality = qualitySignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: TracingReadinessReport["riskQueue"] = [];
+  if (!hasInstrumentation) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document tracing instrumentation before claiming distributed tracing readiness.",
+      why: "Tracing readiness starts from visible tracer, span, auto-instrumentation, or framework instrumentation evidence.",
+      relatedHref: "html/tracing-readiness.html"
+    });
+  }
+  if (hasInstrumentation && !hasPropagation) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document W3C tracecontext, baggage, B3, Jaeger, X-Ray, async, or zone propagation.",
+      why: "Distributed traces need context propagation across process, queue, browser, and service boundaries.",
+      relatedHref: "html/tracing-readiness.html"
+    });
+  }
+  if (hasInstrumentation && !hasExporterOrBackend) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add an OTLP, Jaeger, Zipkin, Tempo, or collector exporter path.",
+      why: "Spans are not reviewable unless exporter and backend routing are visible.",
+      relatedHref: "html/tracing-readiness.html"
+    });
+  }
+  if (hasInstrumentation && !hasResource) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add service.name, service.version, deployment.environment, or resource attributes.",
+      why: "Tracing backends rely on stable resource identity for search, aggregation, and ownership.",
+      relatedHref: "html/tracing-readiness.html"
+    });
+  }
+  if (hasBackend && !hasQuality) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document span metrics, service graph, dropped span, export failure, health, dashboard, or retention checks.",
+      why: "Tracing backends need quality signals before teams trust trace completeness.",
+      relatedHref: "html/tracing-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "RepoTutor records static tracing readiness only; it does not start SDKs, send spans, contact collectors, query Jaeger/Tempo/Zipkin, or inspect live dashboards.",
+    why: "Tracing runtime checks must happen in an authorized environment because SDK startup and exporters can emit production telemetry.",
+    relatedHref: "html/tracing-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `OpenTelemetry/Jaeger/Zipkin/Tempo-style tracing readiness report: setup ${tracingSetups.length}개, instrumentation signal ${instrumentationSignals.length}개, propagation signal ${propagationSignals.length}개, exporter signal ${exporterSignals.length}개, backend signal ${backendSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Tracing readiness OpenTelemetry Jaeger Zipkin Tempo traceparent baggage spans exporters sampling resources backends quality",
+    tracingSetups,
+    instrumentationSignals,
+    propagationSignals,
+    exporterSignals,
+    samplingSignals,
+    resourceSignals,
+    backendSignals,
+    qualitySignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"NodeSDK|TracerProvider|startSpan|trace.getTracer|registerInstrumentations|getNodeAutoInstrumentations\" .", purpose: "Find tracer, span, manual, and auto-instrumentation setup without starting SDKs." },
+      { command: "rg \"traceparent|baggage|B3Propagator|W3CTraceContextPropagator|OTEL_PROPAGATORS\" .", purpose: "Find trace context propagation evidence across service boundaries." },
+      { command: "rg \"OTLPTraceExporter|JaegerExporter|ZipkinExporter|OTEL_EXPORTER_OTLP_ENDPOINT|collector|tempo|jaeger|zipkin\" .", purpose: "Find exporter, collector, and tracing backend routing evidence." },
+      { command: "rg \"ParentBasedSampler|TraceIdRatioBasedSampler|tail_sampling|remote sampling|spanmetrics|service_graph|dropped spans\" .", purpose: "Find sampling, span metrics, service graph, and quality-control evidence." }
+    ],
+    learnerNextSteps: [
+      "Start with instrumentation, then check propagation across request, async, browser, and service boundaries.",
+      "Confirm exporters route to an owned collector or tracing backend without assuming spans are being sent.",
+      "Check resource identity so service.name, version, and environment are visible in trace search.",
+      "Review sampling, dropped span, export failure, dashboard, health, and retention evidence before relying on trace completeness.",
+      "This report is static readiness only. Real trace coverage claims require authorized SDK/runtime and backend verification."
+    ]
+  };
+}
+
+type TracingSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function tracingSourceFiles(walk: WalkResult): Promise<TracingSourceFile[]> {
+  const files: TracingSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !tracingInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!tracingPathSignal(file.relPath) && !tracingContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 360) break;
+  }
+  return files;
+}
+
+function tracingInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements.*\.txt|go\.mod|Cargo\.toml|Dockerfile|docker-compose\.ya?ml|compose\.ya?ml|Makefile|Taskfile\.ya?ml|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /\.(js|ts|mjs|cjs|json|ya?ml|toml|md|py|go|sh|conf|ini)$/i.test(filePath);
+}
+
+function tracingPathSignal(filePath: string): boolean {
+  return /(trac|otel|opentelemetry|jaeger|zipkin|tempo|collector|span|traceql)/i.test(filePath);
+}
+
+function tracingContentSignal(text: string): boolean {
+  return /(NodeSDK|TracerProvider|startSpan|trace\.getTracer|registerInstrumentations|getNodeAutoInstrumentations|traceparent|baggage|B3Propagator|W3CTraceContextPropagator|OTLPTraceExporter|JaegerExporter|ZipkinExporter|OTEL_EXPORTER_OTLP_ENDPOINT|tail_sampling|spanmetrics|service_graph|jaeger|zipkin|tempo|TraceQL|opentelemetry|OpenTelemetry|collector|SpanProcessor)/i.test(text);
+}
+
+function tracingSetupRows(sourceFiles: TracingSourceFile[]): TracingReadinessReport["tracingSetups"] {
+  const rows: TracingReadinessReport["tracingSetups"] = [];
+  for (const source of sourceFiles) {
+    const haystack = `${source.filePath}\n${source.text}`;
+    const tracerCount = countMatches(source.text, /NodeSDK|TracerProvider|trace\.getTracer|getTracer|tracer|sdk-trace|go\.opentelemetry\.io\/otel/gi);
+    const spanCount = countMatches(source.text, /startSpan|span\.|SpanProcessor|spans?|traceparent/gi);
+    const propagationCount = countMatches(source.text, /traceparent|baggage|W3CTraceContextPropagator|W3CBaggagePropagator|B3Propagator|OTEL_PROPAGATORS|AsyncHooksContextManager|ZoneContextManager/gi);
+    const exporterCount = countMatches(source.text, /OTLPTraceExporter|ConsoleSpanExporter|JaegerExporter|ZipkinExporter|OTEL_EXPORTER_OTLP_ENDPOINT|exporters?|collector|otlp/gi);
+    const samplingCount = countMatches(source.text, /ParentBasedSampler|TraceIdRatioBasedSampler|AlwaysOnSampler|AlwaysOffSampler|tail_sampling|remote sampling|rate limit|sampling/gi);
+    const resourceCount = countMatches(source.text, /ATTR_SERVICE_NAME|service\.name|service\.version|deployment\.environment|resourceFromAttributes|WithResource|Resource/gi);
+    const processorCount = countMatches(source.text, /BatchSpanProcessor|SimpleSpanProcessor|SpanProcessor|batch|tail_sampling|memory_limiter/gi);
+    const backendCount = countMatches(source.text, /jaeger|zipkin|tempo|collector|distributor|ingester|querier|all-in-one/gi);
+    const storageCount = countMatches(source.text, /badger|elasticsearch|cassandra|kafka|s3|gcs|object storage|WAL|retention/gi);
+    const queryCount = countMatches(source.text, /query|16686|TraceQL|\/api\/traces|dashboard|service graph|service_graph/gi);
+    const ciCount = countMatches(haystack, /\.github\/workflows|upload-artifact|artifact|CI|pull_request|schedule|runs-on/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = tracerCount + spanCount + propagationCount + exporterCount + samplingCount + resourceCount + processorCount + backendCount + storageCount + queryCount + ciCount;
+    if (totalSignals === 0 && !tracingPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: tracingPlatform(source),
+      tracerCount,
+      spanCount,
+      propagationCount,
+      exporterCount,
+      samplingCount,
+      resourceCount,
+      processorCount,
+      backendCount,
+      storageCount,
+      queryCount,
+      ciCount,
+      readiness: (tracerCount > 0 || spanCount > 0) && propagationCount > 0 && exporterCount > 0 && (resourceCount > 0 || backendCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains tracer ${tracerCount}, span ${spanCount}, propagation ${propagationCount}, exporter ${exporterCount}, sampling ${samplingCount}, resource ${resourceCount}, processor ${processorCount}, backend ${backendCount}, storage ${storageCount}, query ${queryCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.tracerCount + b.spanCount + b.propagationCount + b.exporterCount + b.backendCount + b.storageCount + b.ciCount;
+    const aScore = a.tracerCount + a.spanCount + a.propagationCount + a.exporterCount + a.backendCount + a.storageCount + a.ciCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 100);
+}
+
+function tracingPlatform(source: TracingSourceFile): TracingReadinessReport["tracingSetups"][number]["platform"] {
+  const haystack = `${source.filePath}\n${source.text}`;
+  if (/^\.github\/workflows\//i.test(source.filePath)) return "workflow";
+  if (path.basename(source.filePath) === "package.json" && /(trace|otel|opentelemetry|@opentelemetry)/i.test(source.text)) return "package-script";
+  if (/opentelemetry|OpenTelemetry|NodeSDK|TracerProvider|OTLPTraceExporter|@opentelemetry/i.test(haystack)) return "opentelemetry";
+  if (/otel-collector|opentelemetry-collector|collector\.ya?ml|receivers:|exporters:/i.test(haystack)) return "collector-config";
+  if (/sentry|Sentry|startTransaction|spanStatus/i.test(haystack)) return "sentry-tracing";
+  if (/tempo|TraceQL|metrics-generator|service_graph|spanmetrics/i.test(haystack)) return "tempo";
+  if (/jaeger|all-in-one|16686|14250|14268|remote sampling/i.test(haystack)) return "jaeger";
+  if (/zipkin|9411|ZipkinExporter/i.test(haystack)) return "zipkin";
+  return "unknown";
+}
+
+function tracingInstrumentationSignals(sourceFiles: TracingSourceFile[]): TracingReadinessReport["instrumentationSignals"] {
+  const specs: Array<{ signal: TracingReadinessReport["instrumentationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "manual-span", pattern: /startSpan|trace\.getTracer|span\.setAttribute|span\.addEvent|span\.end/i, evidence: "manual span evidence was detected." },
+    { signal: "auto-instrumentation", pattern: /registerInstrumentations|getNodeAutoInstrumentations|auto[- ]?instrument/i, evidence: "auto-instrumentation evidence was detected." },
+    { signal: "http-instrumentation", pattern: /HttpInstrumentation|instrumentation-http|http instrumentation/i, evidence: "HTTP instrumentation evidence was detected." },
+    { signal: "grpc-instrumentation", pattern: /GrpcInstrumentation|instrumentation-grpc|grpc instrumentation/i, evidence: "gRPC instrumentation evidence was detected." },
+    { signal: "db-instrumentation", pattern: /PgInstrumentation|instrumentation-pg|db instrumentation|database instrumentation|SQL instrumentation/i, evidence: "database instrumentation evidence was detected." },
+    { signal: "browser-instrumentation", pattern: /browser tracing|ZoneContextManager|instrumentation-document-load|instrumentation-user-interaction|web-vitals/i, evidence: "browser tracing instrumentation evidence was detected." }
+  ];
+  return tracingSignalFromSpecs(sourceFiles, specs, "instrumentation");
+}
+
+function tracingPropagationSignals(sourceFiles: TracingSourceFile[]): TracingReadinessReport["propagationSignals"] {
+  const specs: Array<{ signal: TracingReadinessReport["propagationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "tracecontext", pattern: /traceparent|tracecontext|W3CTraceContextPropagator/i, evidence: "W3C tracecontext evidence was detected." },
+    { signal: "baggage", pattern: /baggage|W3CBaggagePropagator/i, evidence: "W3C baggage evidence was detected." },
+    { signal: "b3", pattern: /B3Propagator|\bB3\b/i, evidence: "B3 propagation evidence was detected." },
+    { signal: "jaeger", pattern: /JaegerPropagator|jaeger/i, evidence: "Jaeger propagation/backend evidence was detected." },
+    { signal: "xray", pattern: /X-Ray|xray|AWSXRay/i, evidence: "AWS X-Ray propagation evidence was detected." },
+    { signal: "async-context", pattern: /AsyncHooksContextManager|context-async-hooks|async context/i, evidence: "async context propagation evidence was detected." },
+    { signal: "zone-context", pattern: /ZoneContextManager|zone context|zone-context/i, evidence: "zone context propagation evidence was detected." }
+  ];
+  return tracingSignalFromSpecs(sourceFiles, specs, "propagation");
+}
+
+function tracingExporterSignals(sourceFiles: TracingSourceFile[]): TracingReadinessReport["exporterSignals"] {
+  const specs: Array<{ signal: TracingReadinessReport["exporterSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "otlp-grpc", pattern: /exporter-trace-otlp-grpc|OTLPTraceExporter|otlp.*grpc|4317/i, evidence: "OTLP gRPC exporter evidence was detected." },
+    { signal: "otlp-http", pattern: /exporter-trace-otlp-http|otlp.*http|4318|\/v1\/traces/i, evidence: "OTLP HTTP exporter evidence was detected." },
+    { signal: "console", pattern: /ConsoleSpanExporter/i, evidence: "Console span exporter evidence was detected." },
+    { signal: "jaeger", pattern: /JaegerExporter|jaeger/i, evidence: "Jaeger exporter/backend evidence was detected." },
+    { signal: "zipkin", pattern: /ZipkinExporter|zipkin/i, evidence: "Zipkin exporter/backend evidence was detected." },
+    { signal: "tempo", pattern: /tempo|otlp\/tempo/i, evidence: "Tempo exporter/backend evidence was detected." },
+    { signal: "collector", pattern: /collector|otelcol|opentelemetry-collector|OTEL_EXPORTER_OTLP_ENDPOINT/i, evidence: "collector routing evidence was detected." }
+  ];
+  return tracingSignalFromSpecs(sourceFiles, specs, "exporter");
+}
+
+function tracingSamplingSignals(sourceFiles: TracingSourceFile[]): TracingReadinessReport["samplingSignals"] {
+  const specs: Array<{ signal: TracingReadinessReport["samplingSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "parent-based", pattern: /ParentBasedSampler|parent[- ]?based/i, evidence: "parent-based sampling evidence was detected." },
+    { signal: "traceid-ratio", pattern: /TraceIdRatioBasedSampler|traceid[- ]?ratio|trace id ratio/i, evidence: "trace ID ratio sampling evidence was detected." },
+    { signal: "always-on", pattern: /AlwaysOnSampler|always[- ]?on/i, evidence: "always-on sampling evidence was detected." },
+    { signal: "always-off", pattern: /AlwaysOffSampler|always[- ]?off/i, evidence: "always-off sampling evidence was detected." },
+    { signal: "tail-sampling", pattern: /tail_sampling|tail[- ]?sampling/i, evidence: "tail sampling evidence was detected." },
+    { signal: "remote-sampling", pattern: /remote sampling|remote-sampling|remote_sampling/i, evidence: "remote sampling evidence was detected." },
+    { signal: "rate-limit", pattern: /rate limit|rate-limit|rate_limiting|rate_limiter/i, evidence: "rate-limit sampling evidence was detected." }
+  ];
+  return tracingSignalFromSpecs(sourceFiles, specs, "sampling");
+}
+
+function tracingResourceSignals(sourceFiles: TracingSourceFile[]): TracingReadinessReport["resourceSignals"] {
+  const specs: Array<{ signal: TracingReadinessReport["resourceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "service-name", pattern: /ATTR_SERVICE_NAME|service\.name|OTEL_SERVICE_NAME/i, evidence: "service.name evidence was detected." },
+    { signal: "service-version", pattern: /service\.version|service version/i, evidence: "service.version evidence was detected." },
+    { signal: "deployment-environment", pattern: /deployment\.environment|deployment environment/i, evidence: "deployment.environment evidence was detected." },
+    { signal: "resource-detector", pattern: /detectResources|ResourceDetector|resource detector|envDetector|containerDetector/i, evidence: "resource detector evidence was detected." },
+    { signal: "attributes", pattern: /resourceFromAttributes|WithResource|Resource|attributes/i, evidence: "resource attribute evidence was detected." }
+  ];
+  return tracingSignalFromSpecs(sourceFiles, specs, "resource");
+}
+
+function tracingBackendSignals(sourceFiles: TracingSourceFile[]): TracingReadinessReport["backendSignals"] {
+  const specs: Array<{ signal: TracingReadinessReport["backendSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "jaeger-all-in-one", pattern: /jaeger.*all-in-one|all-in-one.*jaeger|all in one/i, evidence: "Jaeger all-in-one evidence was detected." },
+    { signal: "jaeger-collector", pattern: /jaeger.*collector|collector.*jaeger|14250|14268/i, evidence: "Jaeger collector evidence was detected." },
+    { signal: "jaeger-query", pattern: /jaeger.*query|query.*jaeger|\b16686\b/i, evidence: "Jaeger query evidence was detected." },
+    { signal: "tempo-distributor", pattern: /tempo.*distributor|distributor.*tempo|distributor/i, evidence: "Tempo distributor evidence was detected." },
+    { signal: "tempo-ingester", pattern: /tempo.*ingester|ingester.*tempo|ingester/i, evidence: "Tempo ingester evidence was detected." },
+    { signal: "tempo-querier", pattern: /tempo.*querier|querier.*tempo|TraceQL|querier/i, evidence: "Tempo querier or TraceQL evidence was detected." },
+    { signal: "zipkin-server", pattern: /zipkin.*server|server.*zipkin|9411/i, evidence: "Zipkin server evidence was detected." },
+    { signal: "storage-backend", pattern: /badger|elasticsearch|cassandra|kafka|s3|gcs|object storage|WAL|storage backend/i, evidence: "tracing storage backend evidence was detected." }
+  ];
+  return tracingSignalFromSpecs(sourceFiles, specs, "backend");
+}
+
+function tracingQualitySignals(sourceFiles: TracingSourceFile[]): TracingReadinessReport["qualitySignals"] {
+  const specs: Array<{ signal: TracingReadinessReport["qualitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "span-metrics", pattern: /spanmetrics|span metrics|span-metrics/i, evidence: "span metrics evidence was detected." },
+    { signal: "service-graph", pattern: /service_graph|service graph|service-graph/i, evidence: "service graph evidence was detected." },
+    { signal: "dropped-spans", pattern: /dropped spans|dropped_spans|dropped-spans/i, evidence: "dropped span evidence was detected." },
+    { signal: "export-failures", pattern: /export failures|export_failures|export-failures|failed exports/i, evidence: "export failure evidence was detected." },
+    { signal: "health-check", pattern: /health check|health_check|health-check|\/health/i, evidence: "health check evidence was detected." },
+    { signal: "dashboard", pattern: /dashboard|Grafana/i, evidence: "dashboard evidence was detected." },
+    { signal: "retention", pattern: /retention|retention_period/i, evidence: "retention evidence was detected." }
+  ];
+  return tracingSignalFromSpecs(sourceFiles, specs, "quality");
+}
+
+function tracingPackageSignals(sourceFiles: TracingSourceFile[]): TracingReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: TracingReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "@opentelemetry/api", pattern: /["@']@opentelemetry\/api["@']|@opentelemetry\/api/i, evidence: "OpenTelemetry API package evidence was detected." },
+    { signal: "@opentelemetry/sdk-node", pattern: /["@']@opentelemetry\/sdk-node["@']|@opentelemetry\/sdk-node|NodeSDK/i, evidence: "OpenTelemetry Node SDK evidence was detected." },
+    { signal: "@opentelemetry/instrumentation", pattern: /@opentelemetry\/instrumentation|auto-instrumentations/i, evidence: "OpenTelemetry instrumentation package evidence was detected." },
+    { signal: "@opentelemetry/exporter-trace-otlp", pattern: /@opentelemetry\/exporter-trace-otlp|OTLPTraceExporter/i, evidence: "OpenTelemetry OTLP exporter package evidence was detected." },
+    { signal: "jaeger", pattern: /jaeger|JaegerExporter/i, evidence: "Jaeger package/config evidence was detected." },
+    { signal: "zipkin", pattern: /zipkin|ZipkinExporter/i, evidence: "Zipkin package/config evidence was detected." },
+    { signal: "tempo", pattern: /tempo|TraceQL/i, evidence: "Tempo package/config evidence was detected." }
+  ];
+  return tracingSignalFromSpecs(sourceFiles, specs, "package");
+}
+
+function tracingSignalFromSpecs<T extends string>(
+  sourceFiles: TracingSourceFile[],
+  specs: Array<{ signal: T; pattern: RegExp; evidence: string }>,
+  label: string
+): Array<{ signal: T; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(haystack);
+    });
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/tracing-readiness.html"
+    };
   });
 }
 

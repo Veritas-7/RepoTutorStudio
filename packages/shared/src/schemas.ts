@@ -1829,6 +1829,88 @@ export const ProfilingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const TracingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  tracingSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["opentelemetry", "jaeger", "zipkin", "tempo", "sentry-tracing", "package-script", "workflow", "collector-config", "unknown"]),
+    tracerCount: z.number().int().nonnegative(),
+    spanCount: z.number().int().nonnegative(),
+    propagationCount: z.number().int().nonnegative(),
+    exporterCount: z.number().int().nonnegative(),
+    samplingCount: z.number().int().nonnegative(),
+    resourceCount: z.number().int().nonnegative(),
+    processorCount: z.number().int().nonnegative(),
+    backendCount: z.number().int().nonnegative(),
+    storageCount: z.number().int().nonnegative(),
+    queryCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  instrumentationSignals: z.array(z.object({
+    signal: z.enum(["manual-span", "auto-instrumentation", "http-instrumentation", "grpc-instrumentation", "db-instrumentation", "browser-instrumentation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  propagationSignals: z.array(z.object({
+    signal: z.enum(["tracecontext", "baggage", "b3", "jaeger", "xray", "async-context", "zone-context", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  exporterSignals: z.array(z.object({
+    signal: z.enum(["otlp-grpc", "otlp-http", "console", "jaeger", "zipkin", "tempo", "collector", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  samplingSignals: z.array(z.object({
+    signal: z.enum(["parent-based", "traceid-ratio", "always-on", "always-off", "tail-sampling", "remote-sampling", "rate-limit", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resourceSignals: z.array(z.object({
+    signal: z.enum(["service-name", "service-version", "deployment-environment", "resource-detector", "attributes", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  backendSignals: z.array(z.object({
+    signal: z.enum(["jaeger-all-in-one", "jaeger-collector", "jaeger-query", "tempo-distributor", "tempo-ingester", "tempo-querier", "zipkin-server", "storage-backend", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  qualitySignals: z.array(z.object({
+    signal: z.enum(["span-metrics", "service-graph", "dropped-spans", "export-failures", "health-check", "dashboard", "retention", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@opentelemetry/api", "@opentelemetry/sdk-node", "@opentelemetry/instrumentation", "@opentelemetry/exporter-trace-otlp", "jaeger", "zipkin", "tempo", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LoadTestingReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -11412,6 +11494,7 @@ export type ConsumerContractReadinessReport = z.infer<typeof ConsumerContractRea
 export type ObservabilityReport = z.infer<typeof ObservabilityReportSchema>;
 export type PerformanceReport = z.infer<typeof PerformanceReportSchema>;
 export type ProfilingReadinessReport = z.infer<typeof ProfilingReadinessReportSchema>;
+export type TracingReadinessReport = z.infer<typeof TracingReadinessReportSchema>;
 export type LoadTestingReadinessReport = z.infer<typeof LoadTestingReadinessReportSchema>;
 export type BenchmarkReadinessReport = z.infer<typeof BenchmarkReadinessReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;
