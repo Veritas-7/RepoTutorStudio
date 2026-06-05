@@ -5873,6 +5873,54 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 229:
   - `76e6f3d` browser extension readiness report
 
+- 2026-06-05: AutoResearch Upgrade 230 candidate selected:
+  `istanbuljs/nyc`
+  (`https://github.com/istanbuljs/nyc`; ISC, public, 5,764 stars,
+  362 forks, updated 2026-06-02T14:05:44Z, ignored clone HEAD `9086204`)
+  with comparison sources `bcoe/c8`
+  (`https://github.com/bcoe/c8`; ISC, public, 2,103 stars, 98 forks,
+  updated 2026-05-30T02:09:24Z, ignored clone HEAD `ee2f1cf`) and
+  `codecov/codecov-action`
+  (`https://github.com/codecov/codecov-action`; MIT, public, 1,678 stars,
+  250 forks, updated 2026-06-03T15:04:11Z, ignored clone HEAD `ca0a928`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented nyc/c8/Codecov-style
+  coverage-readiness report: `CoverageReadinessReportSchema`,
+  `analysis/coverage-readiness-report.json`,
+  `markdown/coverage-readiness.md`, `html/coverage-readiness.html`,
+  static coverage setup detection, nyc/c8/Vitest/Jest/coverage.py/
+  pytest-cov/Go/Codecov/Coveralls tool classification, instrumentation,
+  scope, threshold, report, CI upload, and package signals, static-only risk
+  queue, recommended review commands, manifest/session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target coverage-readiness`.
+- 2026-06-05: RED/GREEN coverage-readiness smoke recorded:
+  old behavior at `355902c` had no `CoverageReadinessReportSchema` and no
+  `coverage-readiness` CLI target (`RED missing-count=2 expected=2`). GREEN
+  fixture detected nyc, c8, Vitest V8/Istanbul providers, Babel/Istanbul,
+  coverage.py, pytest-cov, Go coverprofile, lcov/genhtml, all/include/exclude/
+  exclude-after-remap/source-map/per-file/workspace-src/ignore hints,
+  line/function/branch/statement/watermark/global/per-file/patch/project
+  thresholds, text/text-summary/html/lcov/json/json-summary/Cobertura/Clover/
+  JUnit/coverage-final/coverage.out reports, Codecov token/OIDC/flags/files/
+  fail-on-error, Coveralls, GitHub step summary, upload artifact, badge, package
+  signals, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 230:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm typecheck`: PASS
+  - focused coverage-readiness Vitest command: PASS, pipeline file 37/37 tests
+  - full pipeline Vitest: PASS, 37/37 tests
+  - `pnpm test`: PASS, 37/37 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 128/128 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 230:
+  - `2700b04` coverage readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
