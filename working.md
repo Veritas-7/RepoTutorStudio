@@ -6065,6 +6065,52 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 233:
   - `6cf199a` flaky test readiness report
 
+- 2026-06-05: AutoResearch Upgrade 234 candidate selected:
+  `nrwl/nx` (`https://github.com/nrwl/nx`; ignored clone HEAD `82c1825`)
+  with comparison sources `jestjs/jest`
+  (`https://github.com/jestjs/jest`; ignored clone HEAD `4c3091b`) and
+  `tarpas/pytest-testmon`
+  (`https://github.com/tarpas/pytest-testmon`; ignored clone HEAD `dccc58d`).
+  GitHub API metadata lookup hit a 403 rate limit, so this pass used public
+  repo URLs, ignored local clones, and static source inspection only.
+  `git ls-files` for all three external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Nx/Jest/pytest-testmon-style
+  test-impact-readiness report: `TestImpactReadinessReportSchema`,
+  `analysis/test-impact-readiness-report.json`,
+  `markdown/test-impact-readiness.md`, `html/test-impact-readiness.html`,
+  static affected/related/changed-only setup detection, Nx affected, Jest
+  `findRelatedTests`, `onlyChanged`, `changedSince`, `lastCommit`,
+  pytest-testmon `--testmon`, `--testmon-forceselect`, Turbo affected filter,
+  change-detection, selection, cache, CI, package signals, static-only risk
+  queue, recommended review commands, manifest/session-verification coverage,
+  learning-path linkage, HTML page/nav entry, CLI help/list-target coverage,
+  dedicated audit coverage, and `open --target test-impact-readiness`.
+- 2026-06-05: RED/GREEN test-impact-readiness smoke recorded:
+  old behavior at `66848a5` had no `TestImpactReadinessReportSchema` and no
+  `test-impact-readiness` CLI target (`schema-missing`, `cli-missing`). GREEN
+  fixture detected Nx affected commands, base/head and changed-file inputs,
+  Jest `findRelatedTests`, `onlyChanged`, `changedSince`, `lastCommit`,
+  pytest-testmon selection and force-selection controls, Turbo affected
+  filters, dependency/project graph evidence, test splitting, Nx/remote/task
+  cache, `.testmondata`, coverage dependency evidence, Jest Haste map,
+  Watchman, GitHub Actions PR/matrix/shard/upload-artifact/affected-only CI,
+  package signals, recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 234:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm -w typecheck && pnpm -w build`: PASS
+  - focused test-impact-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 41/41 tests
+  - `pnpm test`: PASS, 41/41 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 132/132 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 234:
+  - `96c4bbc` test impact readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
