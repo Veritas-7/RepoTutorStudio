@@ -19976,6 +19976,146 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "backup-readiness.html"))).resolves.toBeUndefined();
   });
 
+  it("detects notebook readiness without executing notebooks or renderers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-notebook-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-notebook-source-"));
+    await fs.mkdir(path.join(sourceRoot, "notebooks"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "marimo"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "reports"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "notebooks", "analysis.ipynb"), JSON.stringify({
+      cells: [
+        { cell_type: "markdown", source: ["# Revenue analysis\n", "Binder launch notes"] },
+        {
+          cell_type: "code",
+          execution_count: 1,
+          metadata: { tags: ["parameters"] },
+          source: ["import ipywidgets as widgets\n", "from IPython.display import display\n", "display(widgets.IntSlider(value=5))\n"],
+          outputs: [{ output_type: "execute_result", data: { "text/plain": "IntSlider(value=5)" } }]
+        }
+      ],
+      metadata: {
+        kernelspec: { name: "python3", display_name: "Python 3" },
+        language_info: { name: "python", version: "3.12" },
+        jupytext: { formats: "ipynb,py:percent" }
+      },
+      nbformat: 4,
+      nbformat_minor: 5
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "marimo", "app.py"), [
+      "import marimo",
+      "app = marimo.App(width=\"medium\")",
+      "",
+      "@app.cell",
+      "def _():",
+      "    import marimo as mo",
+      "    slider = mo.ui.slider(0, 10, value=3)",
+      "    mo.md(f\"## Reactive notebook {slider.value}\")",
+      "    return mo, slider",
+      "",
+      "@app.cell",
+      "def _(slider):",
+      "    import polars as pl",
+      "    return pl.DataFrame({\"value\": [slider.value]})",
+      "",
+      "if __name__ == \"__main__\":",
+      "    app.run()"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "_quarto.yml"), [
+      "project:",
+      "  type: website",
+      "execute:",
+      "  freeze: auto",
+      "  cache: true",
+      "jupyter: python3",
+      "format:",
+      "  html:",
+      "    toc: true"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "reports", "analysis.qmd"), [
+      "---",
+      "title: Notebook report",
+      "format: html",
+      "execute:",
+      "  echo: true",
+      "  freeze: auto",
+      "jupyter: python3",
+      "---",
+      "",
+      "```{python}",
+      "import pandas as pd",
+      "pd.DataFrame({'x': [1, 2]}).plot()",
+      "```"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "dependencies = [\"notebook\", \"jupyterlab\", \"nbconvert\", \"nbformat\", \"papermill\", \"jupytext\", \"marimo\", \"quarto\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "notebooks.yml"), [
+      "name: notebooks",
+      "on: [push]",
+      "jobs:",
+      "  render:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: jupyter nbconvert --execute --to html notebooks/analysis.ipynb",
+      "      - run: papermill notebooks/analysis.ipynb output.ipynb",
+      "      - run: marimo export html marimo/app.py -o marimo.html",
+      "      - run: quarto render reports/analysis.qmd",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: notebook-html",
+      "          path: '*.html'"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "notebook-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      notebookSetups: Array<{ filePath: string; platform: string; cellCount: number; codeCellCount: number; outputCount: number; readiness: string }>;
+      platformSignals: Array<{ signal: string; readiness: string }>;
+      fileSignals: Array<{ signal: string; readiness: string }>;
+      kernelSignals: Array<{ signal: string; readiness: string }>;
+      executionSignals: Array<{ signal: string; readiness: string }>;
+      dependencySignals: Array<{ signal: string; readiness: string }>;
+      interactivitySignals: Array<{ signal: string; readiness: string }>;
+      exportSignals: Array<{ signal: string; readiness: string }>;
+      reproducibilitySignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Notebook readiness Jupyter ipynb nbformat kernelspec nbconvert papermill jupytext Binder marimo @app.cell mo.ui mo.md Quarto qmd render execute freeze cache outputs widgets exports");
+    expect(report.notebookSetups.some((item) => item.filePath === "notebooks/analysis.ipynb" && item.platform === "jupyter" && item.cellCount >= 2 && item.outputCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(report.notebookSetups.some((item) => item.filePath === "marimo/app.py" && item.platform === "marimo" && item.codeCellCount > 0)).toBe(true);
+    expect(report.notebookSetups.some((item) => item.filePath === "reports/analysis.qmd" && item.platform === "quarto" && item.codeCellCount > 0)).toBe(true);
+    expect(readySignals(report.platformSignals)).toEqual(expect.arrayContaining(["jupyter", "marimo", "quarto"]));
+    expect(readySignals(report.fileSignals)).toEqual(expect.arrayContaining(["ipynb", "marimo-py", "qmd", "quarto-project"]));
+    expect(readySignals(report.kernelSignals)).toEqual(expect.arrayContaining(["kernelspec", "language-info", "jupyter-kernel"]));
+    expect(readySignals(report.executionSignals)).toEqual(expect.arrayContaining(["execute-count", "nbconvert-execute", "papermill", "quarto-execute", "marimo-run"]));
+    expect(readySignals(report.dependencySignals)).toEqual(expect.arrayContaining(["notebook", "jupyterlab", "nbconvert", "nbformat", "papermill", "jupytext", "marimo", "quarto"]));
+    expect(readySignals(report.interactivitySignals)).toEqual(expect.arrayContaining(["ipywidgets", "display", "marimo-ui", "marimo-markdown"]));
+    expect(readySignals(report.exportSignals)).toEqual(expect.arrayContaining(["html-export", "nbconvert", "marimo-export", "quarto-render", "artifact-upload"]));
+    expect(readySignals(report.reproducibilitySignals)).toEqual(expect.arrayContaining(["jupytext", "binder", "freeze", "cache", "parameters", "outputs"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["github-actions", "nbconvert", "papermill", "marimo-export", "quarto-render", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["notebook", "jupyterlab", "nbconvert", "nbformat", "papermill", "jupytext", "marimo", "quarto"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("nbconvert"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records notebook readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "notebook-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "notebook-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "notebook-readiness.html"))).resolves.toBeUndefined();
+    const notebookMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "notebook-readiness.md"), "utf8");
+    expect(notebookMarkdown).toContain("Notebook Readiness");
+    expect(notebookMarkdown).toContain("Jupyter");
+    const notebookHtml = await fs.readFile(path.join(result.session.outputPaths.html, "notebook-readiness.html"), "utf8");
+    expect(notebookHtml).toContain("notebook-readiness-card");
+    expect(notebookHtml).toContain("data-source-pattern=\"Notebook\"");
+    expect(notebookHtml).toContain("RepoTutor records notebook readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

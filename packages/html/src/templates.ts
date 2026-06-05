@@ -143,6 +143,7 @@ import type {
   PdfGenerationReadinessReport,
   SpreadsheetReadinessReport,
   ChartVisualizationReadinessReport,
+  NotebookReadinessReport,
   DiagramRenderingReadinessReport,
   LinkIntegrityReadinessReport,
   SeoMetadataReadinessReport,
@@ -343,6 +344,7 @@ export interface StudyHtmlInput {
   pdfGenerationReadinessReport: PdfGenerationReadinessReport;
   spreadsheetReadinessReport: SpreadsheetReadinessReport;
   chartVisualizationReadinessReport: ChartVisualizationReadinessReport;
+  notebookReadinessReport: NotebookReadinessReport;
   diagramRenderingReadinessReport: DiagramRenderingReadinessReport;
   linkIntegrityReadinessReport: LinkIntegrityReadinessReport;
   seoMetadataReadinessReport: SeoMetadataReadinessReport;
@@ -542,6 +544,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["pdf-generation-readiness.html", "PDF Generation"],
     ["spreadsheet-readiness.html", "Spreadsheets"],
     ["chart-visualization-readiness.html", "Charts"],
+    ["notebook-readiness.html", "Notebooks"],
     ["diagram-rendering-readiness.html", "Diagrams"],
     ["link-integrity-readiness.html", "Link Integrity"],
     ["seo-metadata-readiness.html", "SEO Metadata"],
@@ -1486,6 +1489,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Chart Visualization Readiness", "chart-visualization-readiness.html", `<section class="panel" data-source-pattern="Chart.js"><h2>Chart Visualization Snapshot</h2><p>${escapeHtml(input.chartVisualizationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.chartVisualizationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.chartVisualizationReadinessReport.chartSetups.length}</dd></div><div><dt>types</dt><dd>${input.chartVisualizationReadinessReport.chartTypeSignals.length}</dd></div><div><dt>data</dt><dd>${input.chartVisualizationReadinessReport.dataSignals.length}</dd></div><div><dt>render</dt><dd>${input.chartVisualizationReadinessReport.renderSignals.length}</dd></div></dl><p class="muted">RepoTutor records chart visualization readiness only; it does not render charts, open canvases, measure pixels, execute plugins, export images, mutate DOM, or run the analyzed project's tests.</p></section><section class="grid"><article class="chart-visualization-readiness-card"><h3>Chart Setups</h3>${chartVisualizationReadinessSetupList(input.chartVisualizationReadinessReport.chartSetups)}</article><article class="chart-visualization-readiness-card"><h3>Chart Type Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.chartTypeSignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Data Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.dataSignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Scale Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.scaleSignals, "signal")}</article></section><section class="grid"><article class="chart-visualization-readiness-card"><h3>Interaction Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.interactionSignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Render Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.renderSignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Lifecycle Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.lifecycleSignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Safety Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.safetySignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Package Signals</h3>${chartVisualizationReadinessSignalList(input.chartVisualizationReadinessReport.packageSignals, "signal")}</article><article class="chart-visualization-readiness-card"><h3>Recommended Commands</h3>${chartVisualizationReadinessCommandList(input.chartVisualizationReadinessReport.recommendedCommands)}</article><article class="chart-visualization-readiness-card"><h3>Risk Queue</h3>${chartVisualizationReadinessRiskList(input.chartVisualizationReadinessReport.riskQueue)}</article><article class="chart-visualization-readiness-card"><h3>다음 확인 단계</h3>${list(input.chartVisualizationReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "notebook-readiness.html",
+      title: "Notebook Readiness",
+      html: pageShell("Notebook Readiness", "notebook-readiness.html", `<section class="panel" data-source-pattern="Notebook"><h2>Notebook Snapshot</h2><p>${escapeHtml(input.notebookReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.notebookReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.notebookReadinessReport.notebookSetups.length}</dd></div><div><dt>platforms</dt><dd>${input.notebookReadinessReport.platformSignals.length}</dd></div><div><dt>execution</dt><dd>${input.notebookReadinessReport.executionSignals.length}</dd></div><div><dt>reproducibility</dt><dd>${input.notebookReadinessReport.reproducibilitySignals.length}</dd></div><div><dt>exports</dt><dd>${input.notebookReadinessReport.exportSignals.length}</dd></div><div><dt>workflow</dt><dd>${input.notebookReadinessReport.workflowSignals.length}</dd></div></dl><p class="muted">RepoTutor records notebook readiness only; it does not execute notebooks, start Jupyter servers, run kernels, render Quarto, launch marimo, install packages, or open Binder sessions.</p></section><section class="grid"><article class="notebook-readiness-card"><h3>Notebook Setups</h3>${notebookReadinessSetupList(input.notebookReadinessReport.notebookSetups)}</article><article class="notebook-readiness-card"><h3>Platform Signals</h3>${notebookReadinessSignalList(input.notebookReadinessReport.platformSignals, "signal")}</article><article class="notebook-readiness-card"><h3>File Signals</h3>${notebookReadinessSignalList(input.notebookReadinessReport.fileSignals, "signal")}</article><article class="notebook-readiness-card"><h3>Kernel Signals</h3>${notebookReadinessSignalList(input.notebookReadinessReport.kernelSignals, "signal")}</article></section><section class="grid"><article class="notebook-readiness-card"><h3>Execution Signals</h3>${notebookReadinessSignalList(input.notebookReadinessReport.executionSignals, "signal")}</article><article class="notebook-readiness-card"><h3>Dependency Signals</h3>${notebookReadinessSignalList(input.notebookReadinessReport.dependencySignals, "signal")}</article><article class="notebook-readiness-card"><h3>Interactivity Signals</h3>${notebookReadinessSignalList(input.notebookReadinessReport.interactivitySignals, "signal")}</article><article class="notebook-readiness-card"><h3>Export Signals</h3>${notebookReadinessSignalList(input.notebookReadinessReport.exportSignals, "signal")}</article></section><section class="grid"><article class="notebook-readiness-card"><h3>Reproducibility Signals</h3>${notebookReadinessSignalList(input.notebookReadinessReport.reproducibilitySignals, "signal")}</article><article class="notebook-readiness-card"><h3>Workflow Signals</h3>${notebookReadinessSignalList(input.notebookReadinessReport.workflowSignals, "signal")}</article><article class="notebook-readiness-card"><h3>Package Signals</h3>${notebookReadinessSignalList(input.notebookReadinessReport.packageSignals, "signal")}</article><article class="notebook-readiness-card"><h3>Recommended Commands</h3>${notebookReadinessCommandList(input.notebookReadinessReport.recommendedCommands)}</article><article class="notebook-readiness-card"><h3>Risk Queue</h3>${notebookReadinessRiskList(input.notebookReadinessReport.riskQueue)}</article><article class="notebook-readiness-card"><h3>다음 확인 단계</h3>${list(input.notebookReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "diagram-rendering-readiness.html",
       title: "Diagram Rendering Readiness",
       html: pageShell("Diagram Rendering Readiness", "diagram-rendering-readiness.html", `<section class="panel" data-source-pattern="Mermaid"><h2>Diagram Rendering Snapshot</h2><p>${escapeHtml(input.diagramRenderingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.diagramRenderingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.diagramRenderingReadinessReport.diagramSetups.length}</dd></div><div><dt>types</dt><dd>${input.diagramRenderingReadinessReport.diagramTypeSignals.length}</dd></div><div><dt>render</dt><dd>${input.diagramRenderingReadinessReport.renderSignals.length}</dd></div><div><dt>security</dt><dd>${input.diagramRenderingReadinessReport.securitySignals.length}</dd></div></dl><p class="muted">RepoTutor records diagram rendering readiness only; it does not render Mermaid diagrams, execute diagram callbacks, open sandboxed iframes, sanitize user text, mutate SVG, export images, or run the analyzed project's tests.</p></section><section class="grid"><article class="diagram-rendering-readiness-card"><h3>Diagram Setups</h3>${diagramRenderingReadinessSetupList(input.diagramRenderingReadinessReport.diagramSetups)}</article><article class="diagram-rendering-readiness-card"><h3>Diagram Type Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.diagramTypeSignals, "signal")}</article><article class="diagram-rendering-readiness-card"><h3>Render Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.renderSignals, "signal")}</article><article class="diagram-rendering-readiness-card"><h3>Theme Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.themeSignals, "signal")}</article></section><section class="grid"><article class="diagram-rendering-readiness-card"><h3>Security Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.securitySignals, "signal")}</article><article class="diagram-rendering-readiness-card"><h3>Layout Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.layoutSignals, "signal")}</article><article class="diagram-rendering-readiness-card"><h3>Output Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.outputSignals, "signal")}</article><article class="diagram-rendering-readiness-card"><h3>Package Signals</h3>${diagramRenderingReadinessSignalList(input.diagramRenderingReadinessReport.packageSignals, "signal")}</article><article class="diagram-rendering-readiness-card"><h3>Recommended Commands</h3>${diagramRenderingReadinessCommandList(input.diagramRenderingReadinessReport.recommendedCommands)}</article><article class="diagram-rendering-readiness-card"><h3>Risk Queue</h3>${diagramRenderingReadinessRiskList(input.diagramRenderingReadinessReport.riskQueue)}</article><article class="diagram-rendering-readiness-card"><h3>다음 확인 단계</h3>${list(input.diagramRenderingReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1948,6 +1956,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "PDF Generation Readiness", path: "html/pdf-generation-readiness.html", description: "pdf-lib식 document, page, asset, form, output, safety 준비도를 확인합니다." },
       { label: "Spreadsheet Readiness", path: "html/spreadsheet-readiness.html", description: "SheetJS식 workbook, sheet, format, input, output, safety 준비도를 확인합니다." },
       { label: "Chart Visualization Readiness", path: "html/chart-visualization-readiness.html", description: "Chart.js식 chart type, data, scale, interaction, render, lifecycle 준비도를 확인합니다." },
+      { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
       { label: "Link Integrity Readiness", path: "html/link-integrity-readiness.html", description: "Lychee식 link target, policy, network, output, CI 준비도를 확인합니다." },
       { label: "SEO Metadata Readiness", path: "html/seo-metadata-readiness.html", description: "Nuxt SEO식 robots, sitemap, metadata, structured data, AEO 준비도를 확인합니다." },
@@ -2887,6 +2896,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "chart-visualization-readiness.html",
       goal: "Chart.js식 chart type, data, scale, interaction, render, lifecycle 흐름을 보고 시각화 관문을 확인합니다.",
       evidence: `chart setups ${input.chartVisualizationReadinessReport.chartSetups.length}개, render signals ${input.chartVisualizationReadinessReport.renderSignals.length}개`
+    },
+    {
+      title: "Notebook readiness 확인",
+      href: "notebook-readiness.html",
+      goal: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 흐름을 보고 literate computing 관문을 확인합니다.",
+      evidence: `notebook setups ${input.notebookReadinessReport.notebookSetups.length}개, execution signals ${input.notebookReadinessReport.executionSignals.length}개`
     },
     {
       title: "Diagram rendering readiness 확인",
@@ -6744,6 +6759,31 @@ function chartVisualizationReadinessRiskList(items: ChartVisualizationReadinessR
 }
 
 function chartVisualizationReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function notebookReadinessSetupList(items: NotebookReadinessReport["notebookSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">notebook setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)}/${escapeHtml(item.readiness)}]<br>cells/code/markdown/outputs/kernels/execution/dependencies/interactivity/exports/reproducibility/workflow ${item.cellCount}/${item.codeCellCount}/${item.markdownCellCount}/${item.outputCount}/${item.kernelCount}/${item.executionCount}/${item.dependencyCount}/${item.interactivityCount}/${item.exportCount}/${item.reproducibilityCount}/${item.workflowCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(notebookReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function notebookReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">notebook signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(notebookReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function notebookReadinessCommandList(items: NotebookReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function notebookReadinessRiskList(items: NotebookReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(notebookReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function notebookReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
