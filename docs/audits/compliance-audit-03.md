@@ -1,6 +1,6 @@
 # Compliance Audit 3
 
-Created: 2026-06-05T08:29:45.688Z
+Created: 2026-06-05T08:49:33.458Z
 
 Status: PASS
 
@@ -557,6 +557,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - ingress controller readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - dns readiness report
 
 - missing files: none
 - missing strings: none

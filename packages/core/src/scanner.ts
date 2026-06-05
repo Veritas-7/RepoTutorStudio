@@ -112,6 +112,7 @@ import {
   PipelineOrchestrationReadinessReport,
   ServiceMeshReadinessReport,
   IngressControllerReadinessReport,
+  DnsReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -288,6 +289,7 @@ export interface AnalysisBundle {
   pipelineOrchestrationReadinessReport: PipelineOrchestrationReadinessReport;
   serviceMeshReadinessReport: ServiceMeshReadinessReport;
   ingressControllerReadinessReport: IngressControllerReadinessReport;
+  dnsReadinessReport: DnsReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -464,6 +466,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const pipelineOrchestrationReadinessReport = await buildPipelineOrchestrationReadinessReport(walk);
   const serviceMeshReadinessReport = await buildServiceMeshReadinessReport(walk);
   const ingressControllerReadinessReport = await buildIngressControllerReadinessReport(walk);
+  const dnsReadinessReport = await buildDnsReadinessReport(walk);
   const cacheReadinessReport = await buildCacheReadinessReport(walk);
   const loggingReadinessReport = await buildLoggingReadinessReport(walk);
   const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
@@ -523,7 +526,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -25028,6 +25031,295 @@ function ingressControllerReadinessSignalFromSpecs<T extends Record<K, string> &
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/ingress-controller-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDnsReadinessReport(walk: WalkResult): Promise<DnsReadinessReport> {
+  const sourceFiles = await dnsReadinessSourceFiles(walk);
+  const dnsSetups = dnsReadinessSetups(sourceFiles);
+  const providerSignals = dnsReadinessProviderSignals(sourceFiles);
+  const sourceSignals = dnsReadinessSourceSignals(sourceFiles);
+  const zoneSignals = dnsReadinessZoneSignals(sourceFiles);
+  const recordSignals = dnsReadinessRecordSignals(sourceFiles);
+  const ownershipSignals = dnsReadinessOwnershipSignals(sourceFiles);
+  const coreDnsSignals = dnsReadinessCoreDnsSignals(sourceFiles);
+  const automationSignals = dnsReadinessAutomationSignals(sourceFiles);
+  const observabilitySignals = dnsReadinessObservabilitySignals(sourceFiles);
+  const ciSignals = dnsReadinessCiSignals(sourceFiles);
+  const packageSignals = dnsReadinessPackageSignals(sourceFiles);
+
+  const hasProvider = providerSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasSource = sourceSignals.some((item) => item.readiness === "ready") || dnsSetups.some((item) => item.sourceCount > 0);
+  const hasZone = zoneSignals.some((item) => item.readiness === "ready") || dnsSetups.some((item) => item.zoneCount > 0);
+  const hasRecords = recordSignals.some((item) => item.readiness === "ready") || dnsSetups.some((item) => item.recordCount > 0);
+  const hasOwnership = ownershipSignals.some((item) => item.readiness === "ready") || dnsSetups.some((item) => item.ownershipCount > 0);
+  const hasAutomation = automationSignals.some((item) => item.readiness === "ready") || dnsSetups.some((item) => item.automationCount > 0);
+  const hasObservability = observabilitySignals.some((item) => item.readiness === "ready") || dnsSetups.some((item) => item.observabilityCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || dnsSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: DnsReadinessReport["riskQueue"] = [];
+  if (!hasProvider && !hasSource) riskQueue.push({ priority: "high", action: "Document the DNS provider or source of truth before claiming DNS readiness.", why: "DNS readiness starts with visible ExternalDNS, CoreDNS, octoDNS, provider, source, or zone evidence.", relatedHref: "html/dns-readiness.html" });
+  if (hasSource && !hasZone) riskQueue.push({ priority: "medium", action: "Map DNS sources to managed zones, domain filters, zone IDs, or split-horizon boundaries.", why: "DNS source evidence without zone ownership makes it hard to reason about blast radius.", relatedHref: "html/dns-readiness.html" });
+  if (hasZone && !hasRecords) riskQueue.push({ priority: "medium", action: "Add record type evidence such as A, AAAA, CNAME, TXT, MX, NS, SRV, CAA, ALIAS, or PTR.", why: "Learners need record-shape evidence to understand what DNS data can change.", relatedHref: "html/dns-readiness.html" });
+  if (hasProvider && !hasOwnership) riskQueue.push({ priority: "medium", action: "Add ownership and safety evidence such as TXT registry, txt-owner-id, upsert-only, dry-run, or policy sync boundaries.", why: "Provider automation can delete or mutate records unless ownership and policy are visible.", relatedHref: "html/dns-readiness.html" });
+  if ((hasProvider || hasRecords) && !hasAutomation) riskQueue.push({ priority: "low", action: "Add plan/sync automation evidence such as octodns-sync, ExternalDNS dry-run, provider plan, or record validation.", why: "DNS readiness is stronger when changes can be reviewed before apply.", relatedHref: "html/dns-readiness.html" });
+  if ((hasProvider || hasSource) && !hasObservability) riskQueue.push({ priority: "low", action: "Add health, ready, metrics, Prometheus, logs, errors, events, or dig smoke evidence.", why: "DNS failures are hard to debug without resolution and control-plane visibility.", relatedHref: "html/dns-readiness.html" });
+  if ((hasProvider || hasAutomation) && !hasCi) riskQueue.push({ priority: "low", action: "Add DNS CI checks for dry-run, octoDNS validation, CoreDNS check, dig smoke, provider plan, and artifact upload.", why: "Static DNS readiness is stronger when CI records the intended changes and resolution checks.", relatedHref: "html/dns-readiness.html" });
+  riskQueue.push({ priority: "low", action: "Run DNS provider, CoreDNS, octoDNS, and dig commands only in a trusted sandbox after reviewing this static map.", why: "RepoTutor records DNS readiness only; it does not query resolvers, mutate DNS providers, start CoreDNS, run octoDNS, call cloud APIs, or execute CI commands.", relatedHref: "html/dns-readiness.html" });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `DNS readiness report: setup ${dnsSetups.length}개, provider signal ${providerSignals.length}개, source signal ${sourceSignals.length}개, record signal ${recordSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "DNS readiness ExternalDNS CoreDNS octoDNS Route53 Cloudflare Google Cloud DNS Azure DNS source provider zone record TXT registry Corefile forward cache kubernetes plugin octodns-sync dry-run dig",
+    dnsSetups,
+    providerSignals,
+    sourceSignals,
+    zoneSignals,
+    recordSignals,
+    ownershipSignals,
+    coreDnsSignals,
+    automationSignals,
+    observabilitySignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"external-dns|--source=|--provider=|--domain-filter|--txt-owner-id|--registry=txt|external-dns.kubernetes.io\" .", purpose: "Inventory ExternalDNS source, provider, zone filter, TXT ownership, and annotation evidence." },
+      { command: "rg \"Corefile|forward|cache|kubernetes|rewrite|template|health|ready|prometheus|reload|errors|log\" .", purpose: "Review CoreDNS Corefile plugins, health, readiness, caching, forwarding, and observability." },
+      { command: "rg \"octodns-sync|octodns-validate|YamlProvider|Route53Provider|CloudflareProvider|sources:|targets:|zones:\" .", purpose: "Find octoDNS providers, source/target mapping, zones, validation, and sync workflow." },
+      { command: "rg \"type: (A|AAAA|CNAME|TXT|MX|NS|SRV|CAA|ALIAS|PTR)|SOA|serial|split-horizon|public|private\" .", purpose: "Trace DNS record types, zone serials, and public/private zone ownership." },
+      { command: "rg \"dig |drill |nslookup|dns smoke|dns-plan|provider-plan|upload-artifact|dry-run\" .github .", purpose: "Check CI dry-run, provider plan, DNS smoke, and artifact upload evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 DNS source of truth가 ExternalDNS, CoreDNS Corefile, octoDNS config, cloud provider, 또는 custom workflow 중 어디인지 찾으세요.",
+      "source가 Service/Ingress/Gateway/CRD/file zone/provider config 중 어디서 오는지 zone boundary와 함께 묶어 보세요.",
+      "domain-filter, zone-id-filter, public/private zone, split-horizon, reverse zone, SOA serial 같은 blast radius 신호를 확인하세요.",
+      "A/AAAA/CNAME/TXT/MX/NS/SRV/CAA/ALIAS/PTR record shape와 TTL, ownership, sync policy를 함께 확인하세요.",
+      "TXT registry, txt-owner-id, txt prefix/suffix, encryption, dry-run, upsert-only/sync policy가 shared zone 삭제 위험을 줄이는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 DNS lookup, provider mutation, CoreDNS startup, octoDNS apply는 안전한 sandbox에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type DnsReadinessSourceFile = { filePath: string; text: string; sourceHref: string };
+
+async function dnsReadinessSourceFiles(walk: WalkResult): Promise<DnsReadinessSourceFile[]> {
+  const files: DnsReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !dnsReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!dnsReadinessPathSignal(file.relPath) && !dnsReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function dnsReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return dnsReadinessPathSignal(filePath)
+    || /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|go\.mod|go\.sum|pyproject\.toml|requirements\.txt|Dockerfile|Corefile|Chart\.ya?ml|values\.ya?ml|kustomization\.ya?ml)$/i.test(base)
+    || /\.(json|ya?ml|toml|tf|hcl|cue|rego|md|mdx|txt|zone|db|conf|sh|bash|go|py|ts|tsx|js|jsx|mjs|cjs|rst)$/i.test(filePath);
+}
+
+function dnsReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(dns|external-dns|coredns|corefile|octodns|route53|cloudflare|clouddns|azuredns|dnsendpoint|zone|zones|records|bind|named|resolver)(\/|\.|-|_|$)|\.github\/workflows|Corefile|Chart\.ya?ml|values\.ya?ml/i.test(filePath);
+}
+
+function dnsReadinessContentSignal(text: string): boolean {
+  return /(ExternalDNS|external-dns|external-dns\.kubernetes\.io|--source=|--provider=|--domain-filter|--txt-owner-id|CoreDNS|Corefile|forward\s+\.|cache\s+\d|kubernetes\s+cluster\.local|health|ready|prometheus|octoDNS|octodns-sync|YamlProvider|Route53Provider|CloudflareProvider|zones:|sources:|targets:|type:\s*(A|AAAA|CNAME|TXT|MX|NS|SRV|CAA|ALIAS|PTR)|dig\s+|nslookup|dns smoke)/i.test(text);
+}
+
+function dnsReadinessSetups(sourceFiles: DnsReadinessSourceFile[]): DnsReadinessReport["dnsSetups"] {
+  const rows: DnsReadinessReport["dnsSetups"] = [];
+  for (const source of sourceFiles) {
+    const sourceCount = countMatches(source.text, /--source=|source:\s|sources:|external-dns\.kubernetes\.io|kind:\s*(Service|Ingress|Gateway|DNSEndpoint)|EndpointSlice|YamlProvider|file\s+\/|zone file/gi);
+    const providerCount = countMatches(source.text, /--provider=|provider:\s|providers:|Route53|Cloudflare|Google Cloud DNS|CloudDNS|Azure DNS|AzurePrivateDNS|DynProvider|YamlProvider|PowerDnsProvider|CoreDNS|octoDNS|external-dns/gi);
+    const zoneCount = countMatches(source.text, /--domain-filter|--zone-id-filter|managedZone|hosted zone|public zone|private zone|split-horizon|reverse zone|in-addr\.arpa|ip6\.arpa|SOA|serial|zones:/gi);
+    const recordCount = countMatches(source.text, /\b(A|AAAA|CNAME|TXT|MX|NS|SRV|CAA|ALIAS|PTR|SOA)\b|type:\s*(A|AAAA|CNAME|TXT|MX|NS|SRV|CAA|ALIAS|PTR)|ttl:/gi);
+    const ownershipCount = countMatches(source.text, /--registry=txt|registry:\s*txt|--txt-owner-id|txt-owner-id|--txt-prefix|--txt-suffix|--txt-encrypt|TXT registry|heritage=external-dns|owner=|--policy=sync|--policy=upsert-only|--dry-run|dry-run/gi);
+    const policyCount = countMatches(source.text, /policy=sync|policy=upsert-only|upsert-only|sync policy|delete|deletion|managed-record-types|exclude|include|ignore|safe|owner-id/gi);
+    const coreDnsCount = countMatches(source.text, /Corefile|CoreDNS|forward\s+\.|cache\s+\d|kubernetes\s+cluster\.local|rewrite|template|health|ready|prometheus|reload|errors|log|fallthrough|transfer/gi);
+    const automationCount = countMatches(source.text, /octodns-sync|octodns-validate|octodns-dump|plan|provider plan|sources:|targets:|processors:|record validation|--doit|--config-file|external-dns.*--once/gi);
+    const observabilityCount = countMatches(source.text, /metrics?|Prometheus|prometheus|logs?|errors|health|ready|events?|dig\s+|drill\s+|nslookup|trace|query log/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\/|external-dns.*dry-run|octodns-validate|octodns-sync|coredns\s+-conf|coredns-check|Corefile check|dig\s+|dns smoke|provider-plan|upload-artifact|dns-readiness-report\.json/gi);
+    const hasSetupSignal = sourceCount + providerCount + zoneCount + recordCount + ownershipCount + policyCount + coreDnsCount + automationCount + observabilityCount + ciCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: dnsReadinessPlatform(source),
+      sourceCount,
+      providerCount,
+      zoneCount,
+      recordCount,
+      ownershipCount,
+      policyCount,
+      coreDnsCount,
+      automationCount,
+      observabilityCount,
+      ciCount,
+      readiness: providerCount > 0 && zoneCount > 0 && recordCount > 0 && (ownershipCount > 0 || coreDnsCount > 0 || automationCount > 0) ? "ready" : "partial",
+      evidence: `${source.filePath} contains source ${sourceCount}, provider ${providerCount}, zone ${zoneCount}, record ${recordCount}, ownership ${ownershipCount}, policy ${policyCount}, CoreDNS ${coreDnsCount}, automation ${automationCount}, observability ${observabilityCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => (b.sourceCount + b.providerCount + b.zoneCount + b.recordCount + b.ownershipCount + b.coreDnsCount + b.automationCount) - (a.sourceCount + a.providerCount + a.zoneCount + a.recordCount + a.ownershipCount + a.coreDnsCount + a.automationCount) || a.filePath.localeCompare(b.filePath)).slice(0, 100);
+}
+
+function dnsReadinessPlatform(source: DnsReadinessSourceFile): DnsReadinessReport["dnsSetups"][number]["platform"] {
+  if (/external-dns/i.test(source.filePath) || /ExternalDNS|external-dns/i.test(source.text)) return "external-dns";
+  if (/Corefile|coredns/i.test(source.filePath) || /CoreDNS|Corefile|forward\s+\.|kubernetes\s+cluster\.local/i.test(source.text)) return "coredns";
+  if (/octodns/i.test(source.filePath) || /octoDNS|octodns-sync|YamlProvider/i.test(source.text)) return "octodns";
+  if (/route53/i.test(source.filePath) || /Route53|AWS Route 53/i.test(source.text)) return "route53";
+  if (/cloudflare/i.test(source.filePath) || /Cloudflare|CloudFlare/i.test(source.text)) return "cloudflare";
+  if (/dns/i.test(source.filePath) || /dns/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function dnsReadinessProviderSignals(sourceFiles: DnsReadinessSourceFile[]): DnsReadinessReport["providerSignals"] {
+  return dnsReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "external-dns", pattern: /ExternalDNS|external-dns/i, evidence: "ExternalDNS evidence was detected." },
+    { signal: "route53", pattern: /Route53|route53|AWS Route 53|--provider=aws/i, evidence: "Route53 evidence was detected." },
+    { signal: "cloudflare", pattern: /Cloudflare|CloudFlare|--provider=cloudflare|CloudflareProvider/i, evidence: "Cloudflare DNS evidence was detected." },
+    { signal: "google-cloud-dns", pattern: /Google Cloud DNS|CloudDNS|google-cloud-dns|--provider=google|GoogleProvider/i, evidence: "Google Cloud DNS evidence was detected." },
+    { signal: "azure-dns", pattern: /Azure DNS|AzurePrivateDNS|--provider=azure|AzureProvider/i, evidence: "Azure DNS evidence was detected." },
+    { signal: "octodns", pattern: /octoDNS|octodns-sync|octodns\.provider/i, evidence: "octoDNS evidence was detected." },
+    { signal: "coredns", pattern: /CoreDNS|Corefile|github\.com\/coredns\/coredns/i, evidence: "CoreDNS evidence was detected." },
+    { signal: "custom", pattern: /dns provider|custom DNS|PowerDnsProvider|DynProvider|NS1Provider/i, evidence: "custom DNS provider evidence was detected." }
+  ], "provider", "signal");
+}
+
+function dnsReadinessSourceSignals(sourceFiles: DnsReadinessSourceFile[]): DnsReadinessReport["sourceSignals"] {
+  return dnsReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "service", pattern: /--source=service|kind:\s*Service\b|external-dns\.kubernetes\.io\/hostname/i, evidence: "Kubernetes Service source evidence was detected." },
+    { signal: "ingress", pattern: /--source=ingress|kind:\s*Ingress\b|Ingress source/i, evidence: "Ingress source evidence was detected." },
+    { signal: "gateway", pattern: /--source=gateway|Gateway API|HTTPRoute|GRPCRoute|GatewayClass/i, evidence: "Gateway source evidence was detected." },
+    { signal: "dnsendpoint-crd", pattern: /DNSEndpoint|externaldns\.k8s\.io|--source=crd|dnsendpoint/i, evidence: "DNSEndpoint CRD source evidence was detected." },
+    { signal: "endpoint-slice", pattern: /EndpointSlice|endpointslices|discovery\.k8s\.io/i, evidence: "EndpointSlice source evidence was detected." },
+    { signal: "node", pattern: /--source=node|--source=nodes|Nodes as source|\bnodes\b/i, evidence: "node source evidence was detected." },
+    { signal: "file-zone", pattern: /Corefile|file\s+\/|zone file|\.zone|\.db|SOA/i, evidence: "file zone evidence was detected." },
+    { signal: "yaml-provider", pattern: /YamlProvider|SplitYamlProvider|directory:\s*\.?\/?config/i, evidence: "YAML provider source evidence was detected." },
+    { signal: "dynamic-zone", pattern: /dynamic zone|list_zones|zones:\s*\n\s*\*|dynamic entry/i, evidence: "dynamic zone evidence was detected." }
+  ], "source", "signal");
+}
+
+function dnsReadinessZoneSignals(sourceFiles: DnsReadinessSourceFile[]): DnsReadinessReport["zoneSignals"] {
+  return dnsReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "domain-filter", pattern: /--domain-filter|domain-filter|domainFilters/i, evidence: "domain filter evidence was detected." },
+    { signal: "zone-id-filter", pattern: /--zone-id-filter|zone-id-filter|zoneId|hostedZoneId/i, evidence: "zone ID filter evidence was detected." },
+    { signal: "managed-zone", pattern: /managedZone|managed zone|hosted zone|zoneName|zones:/i, evidence: "managed zone evidence was detected." },
+    { signal: "public-private-zone", pattern: /public zone|private zone|--aws-zone-type=(public|private)|public.*private|private.*public/i, evidence: "public/private zone evidence was detected." },
+    { signal: "reverse-zone", pattern: /in-addr\.arpa|ip6\.arpa|reverse zone|PTR\b/i, evidence: "reverse zone evidence was detected." },
+    { signal: "split-horizon", pattern: /split-horizon|split horizon|internal-hostname|public and private|internal zone/i, evidence: "split-horizon evidence was detected." },
+    { signal: "soa-serial", pattern: /\bSOA\b|serial|soa serial/i, evidence: "SOA/serial evidence was detected." }
+  ], "zone", "signal");
+}
+
+function dnsReadinessRecordSignals(sourceFiles: DnsReadinessSourceFile[]): DnsReadinessReport["recordSignals"] {
+  return dnsReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "a", pattern: /type:\s*A\b|\bA\s+IN\b|\bA record\b|managed-record-types=A\b/i, evidence: "A record evidence was detected." },
+    { signal: "aaaa", pattern: /type:\s*AAAA\b|\bAAAA\s+IN\b|\bAAAA record\b/i, evidence: "AAAA record evidence was detected." },
+    { signal: "cname", pattern: /type:\s*CNAME\b|\bCNAME\s+IN\b|\bCNAME record\b/i, evidence: "CNAME record evidence was detected." },
+    { signal: "txt", pattern: /type:\s*TXT\b|\bTXT\s+IN\b|\bTXT record\b|registry=txt/i, evidence: "TXT record evidence was detected." },
+    { signal: "mx", pattern: /type:\s*MX\b|\bMX\s+IN\b|\bMX record\b/i, evidence: "MX record evidence was detected." },
+    { signal: "ns", pattern: /type:\s*NS\b|\bNS\s+IN\b|\bNS record\b/i, evidence: "NS record evidence was detected." },
+    { signal: "srv", pattern: /type:\s*SRV\b|\bSRV\s+IN\b|\bSRV record\b/i, evidence: "SRV record evidence was detected." },
+    { signal: "caa", pattern: /type:\s*CAA\b|\bCAA\s+IN\b|\bCAA record\b/i, evidence: "CAA record evidence was detected." },
+    { signal: "alias", pattern: /type:\s*ALIAS\b|\bALIAS\b|\bANAME\b/i, evidence: "ALIAS/ANAME record evidence was detected." },
+    { signal: "ptr", pattern: /type:\s*PTR\b|\bPTR\s+IN\b|\bPTR record\b|in-addr\.arpa|ip6\.arpa/i, evidence: "PTR record evidence was detected." }
+  ], "record", "signal");
+}
+
+function dnsReadinessOwnershipSignals(sourceFiles: DnsReadinessSourceFile[]): DnsReadinessReport["ownershipSignals"] {
+  return dnsReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "txt-registry", pattern: /--registry=txt|registry:\s*txt|TXT registry/i, evidence: "TXT registry evidence was detected." },
+    { signal: "txt-owner-id", pattern: /--txt-owner-id|txt-owner-id|owner-id|external-dns\/owner/i, evidence: "TXT owner ID evidence was detected." },
+    { signal: "txt-prefix-suffix", pattern: /--txt-prefix|--txt-suffix|txt-prefix|txt-suffix|%{record_type}/i, evidence: "TXT prefix/suffix evidence was detected." },
+    { signal: "txt-encryption", pattern: /--txt-encrypt|txt-encrypt|AES-256-GCM|encrypt.*TXT/i, evidence: "TXT encryption evidence was detected." },
+    { signal: "policy-sync", pattern: /--policy=sync|policy:\s*sync|policy=sync/i, evidence: "sync policy evidence was detected." },
+    { signal: "upsert-only", pattern: /--policy=upsert-only|policy:\s*upsert-only|upsert-only/i, evidence: "upsert-only policy evidence was detected." },
+    { signal: "dry-run", pattern: /--dry-run|dry-run|DRY_RUN|EXTERNAL_DNS_DRY_RUN/i, evidence: "dry-run evidence was detected." }
+  ], "ownership", "signal");
+}
+
+function dnsReadinessCoreDnsSignals(sourceFiles: DnsReadinessSourceFile[]): DnsReadinessReport["coreDnsSignals"] {
+  return dnsReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "corefile", pattern: /Corefile|\.:\s*53|corefile/i, evidence: "Corefile evidence was detected." },
+    { signal: "forward", pattern: /forward\s+\.|forward\s+[a-z0-9.-]+\s+/i, evidence: "CoreDNS forward plugin evidence was detected." },
+    { signal: "cache", pattern: /cache\s+\d*|plugin\/cache|coredns_cache/i, evidence: "CoreDNS cache evidence was detected." },
+    { signal: "kubernetes-plugin", pattern: /kubernetes\s+cluster\.local|plugin\/kubernetes|pods\s+insecure|fallthrough/i, evidence: "CoreDNS Kubernetes plugin evidence was detected." },
+    { signal: "rewrite", pattern: /rewrite\s+|plugin\/rewrite/i, evidence: "CoreDNS rewrite evidence was detected." },
+    { signal: "template", pattern: /template\s+|plugin\/template/i, evidence: "CoreDNS template evidence was detected." },
+    { signal: "health", pattern: /\bhealth\b|plugin\/health/i, evidence: "CoreDNS health plugin evidence was detected." },
+    { signal: "ready", pattern: /\bready\b|plugin\/ready/i, evidence: "CoreDNS ready plugin evidence was detected." },
+    { signal: "prometheus", pattern: /prometheus|coredns_dns_requests_total/i, evidence: "CoreDNS Prometheus evidence was detected." },
+    { signal: "reload", pattern: /\breload\b|plugin\/reload/i, evidence: "CoreDNS reload evidence was detected." }
+  ], "CoreDNS", "signal");
+}
+
+function dnsReadinessAutomationSignals(sourceFiles: DnsReadinessSourceFile[]): DnsReadinessReport["automationSignals"] {
+  return dnsReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "octodns-sync", pattern: /octodns-sync|octodns sync/i, evidence: "octoDNS sync evidence was detected." },
+    { signal: "octodns-plan", pattern: /octodns.*plan|provider plan|plan output|--doit/i, evidence: "octoDNS/provider plan evidence was detected." },
+    { signal: "providers-config", pattern: /providers:\s*\n|YamlProvider|Route53Provider|CloudflareProvider|GoogleProvider|AzureProvider/i, evidence: "provider config evidence was detected." },
+    { signal: "sources-targets", pattern: /sources:\s*\n|targets:\s*\n|source providers|target providers/i, evidence: "source/target mapping evidence was detected." },
+    { signal: "record-validation", pattern: /octodns-validate|validate records|ZoneValidator|Record.from_rrs|missing trailing|not a valid FQDN/i, evidence: "DNS record validation evidence was detected." },
+    { signal: "processors", pattern: /processors:\s*\n|processor|filter processor|include|exclude/i, evidence: "octoDNS processor/filter evidence was detected." },
+    { signal: "ci", pattern: /\.github\/workflows|github[-_ ]?actions|upload-artifact|dns-plan/i, evidence: "DNS automation CI evidence was detected." }
+  ], "automation", "signal");
+}
+
+function dnsReadinessObservabilitySignals(sourceFiles: DnsReadinessSourceFile[]): DnsReadinessReport["observabilitySignals"] {
+  return dnsReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "metrics", pattern: /\bmetrics?\b|coredns_dns_requests_total|external_dns_registry_errors_total/i, evidence: "DNS metrics evidence was detected." },
+    { signal: "prometheus", pattern: /Prometheus|prometheus|ServiceMonitor|PodMonitor/i, evidence: "Prometheus evidence was detected." },
+    { signal: "logs", pattern: /\blogs?\b|query log|log-level|log-format|plugin\/log/i, evidence: "DNS log evidence was detected." },
+    { signal: "errors", pattern: /\berrors\b|plugin\/errors|SERVFAIL|NXDOMAIN/i, evidence: "DNS error evidence was detected." },
+    { signal: "health", pattern: /\bhealth\b|healthcheck|health check/i, evidence: "DNS health evidence was detected." },
+    { signal: "ready", pattern: /\bready\b|readinessProbe|ready plugin/i, evidence: "DNS readiness evidence was detected." },
+    { signal: "events", pattern: /\bevents?\b|Kubernetes Events|kubectl describe|Normal\s+UPDATE/i, evidence: "DNS event evidence was detected." },
+    { signal: "dig-smoke", pattern: /dig\s+|drill\s+|nslookup|dns smoke|resolution smoke/i, evidence: "DNS smoke query evidence was detected." }
+  ], "observability", "signal");
+}
+
+function dnsReadinessCiSignals(sourceFiles: DnsReadinessSourceFile[]): DnsReadinessReport["ciSignals"] {
+  return dnsReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "github-actions", pattern: /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\//i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "external-dns-dry-run", pattern: /external-dns.*--dry-run|EXTERNAL_DNS_DRY_RUN|external-dns.*--once/i, evidence: "ExternalDNS dry-run evidence was detected." },
+    { signal: "octodns-validate", pattern: /octodns-validate|octodns.*validate|python -m octodns/i, evidence: "octoDNS validation evidence was detected." },
+    { signal: "coredns-check", pattern: /coredns.*-conf|Corefile check|coredns-check|coredns -dns\.port/i, evidence: "CoreDNS check evidence was detected." },
+    { signal: "dig-smoke", pattern: /dig\s+|drill\s+|nslookup|dns smoke|resolution-smoke/i, evidence: "dig/nslookup smoke evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|dns-readiness-report\.json|dns-plan\.json|dig-smoke\.json|coredns-check\.json/i, evidence: "DNS artifact upload evidence was detected." },
+    { signal: "provider-plan", pattern: /provider-plan|dns-plan|octodns-sync.*--doit|octodns-sync.*--config-file|terraform plan.*dns/i, evidence: "provider plan evidence was detected." }
+  ], "CI", "signal");
+}
+
+function dnsReadinessPackageSignals(sourceFiles: DnsReadinessSourceFile[]): DnsReadinessReport["packageSignals"] {
+  return dnsReadinessSignalFromSpecs(sourceFiles, [
+    { signal: "external-dns", pattern: /external-dns|sigs\.k8s\.io\/external-dns|registry\.k8s\.io\/external-dns/i, evidence: "ExternalDNS package/image evidence was detected." },
+    { signal: "coredns", pattern: /coredns|github\.com\/coredns\/coredns|coredns\/coredns/i, evidence: "CoreDNS package/image evidence was detected." },
+    { signal: "octodns", pattern: /octodns|octoDNS|octodns-sync/i, evidence: "octoDNS package evidence was detected." },
+    { signal: "route53", pattern: /octodns-route53|Route53Provider|boto3|route53/i, evidence: "Route53 package/provider evidence was detected." },
+    { signal: "cloudflare", pattern: /octodns-cloudflare|CloudflareProvider|cloudflare/i, evidence: "Cloudflare package/provider evidence was detected." },
+    { signal: "google-cloud-dns", pattern: /octodns-google|GoogleProvider|google-cloud-dns|CloudDNS/i, evidence: "Google Cloud DNS package/provider evidence was detected." }
+  ], "package", "signal");
+}
+
+function dnsReadinessSignalFromSpecs<const T extends readonly { signal: string; pattern: RegExp; evidence: string }[]>(
+  sourceFiles: DnsReadinessSourceFile[],
+  specs: T,
+  label: string,
+  labelKey: "signal"
+): Array<{ signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/dns-readiness.html"
+    } as { signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
 

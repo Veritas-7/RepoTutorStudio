@@ -1,6 +1,6 @@
 {
   "iteration": 4,
-  "createdAt": "2026-06-05T08:29:53.631Z",
+  "createdAt": "2026-06-05T08:49:41.356Z",
   "checks": [
     {
       "name": "project setup",
@@ -648,6 +648,13 @@
     },
     {
       "name": "ingress controller readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "dns readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

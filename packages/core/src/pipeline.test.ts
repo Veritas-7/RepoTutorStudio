@@ -101,6 +101,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "pipeline-orchestration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "service-mesh-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ingress-controller-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "dns-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"))).resolves.toBeUndefined();
@@ -258,6 +259,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "pipeline-orchestration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "service-mesh-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ingress-controller-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "dns-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "cache-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "logging-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-flag-readiness.md"))).resolves.toBeUndefined();
@@ -418,6 +420,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "pipeline-orchestration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "service-mesh-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ingress-controller-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "dns-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "cache-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "logging-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-flag-readiness.html"))).resolves.toBeUndefined();
@@ -605,6 +608,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/pipeline-orchestration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/service-mesh-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ingress-controller-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/dns-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/cache-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/logging-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-flag-readiness.html\"");
@@ -2194,6 +2198,32 @@ describe("RepoTutor core pipeline", () => {
     expect(ingressControllerReadinessMarkdown).toContain("## Controller Signals");
     expect(ingressControllerReadinessMarkdown).toContain("## Route Signals");
     expect(ingressControllerReadinessMarkdown).toContain("## Admission Signals");
+    const dnsReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "dns-readiness-report.json"), "utf8");
+    expect(dnsReadinessText).toContain("DNS readiness ExternalDNS CoreDNS octoDNS Route53 Cloudflare Google Cloud DNS Azure DNS source provider zone record TXT registry Corefile forward cache kubernetes plugin octodns-sync dry-run dig");
+    expect(dnsReadinessText).toContain("\"dnsSetups\"");
+    expect(dnsReadinessText).toContain("\"providerSignals\"");
+    expect(dnsReadinessText).toContain("\"sourceSignals\"");
+    expect(dnsReadinessText).toContain("\"zoneSignals\"");
+    expect(dnsReadinessText).toContain("\"recordSignals\"");
+    expect(dnsReadinessText).toContain("\"ownershipSignals\"");
+    expect(dnsReadinessText).toContain("\"coreDnsSignals\"");
+    expect(dnsReadinessText).toContain("\"automationSignals\"");
+    expect(dnsReadinessText).toContain("\"observabilitySignals\"");
+    expect(dnsReadinessText).toContain("\"ciSignals\"");
+    expect(dnsReadinessText).toContain("\"packageSignals\"");
+    const dnsReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "dns-readiness.html"), "utf8");
+    expect(dnsReadinessHtml).toContain("DNS Readiness");
+    expect(dnsReadinessHtml).toContain("dns-readiness-card");
+    expect(dnsReadinessHtml).toContain("data-source-pattern=\"DNS\"");
+    expect(dnsReadinessHtml).toContain("Provider Signals");
+    expect(dnsReadinessHtml).toContain("CoreDNS Signals");
+    expect(dnsReadinessHtml).toContain("Ownership Signals");
+    const dnsReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "dns-readiness.md"), "utf8");
+    expect(dnsReadinessMarkdown).toContain("# DNS Readiness");
+    expect(dnsReadinessMarkdown).toContain("Source pattern: DNS readiness");
+    expect(dnsReadinessMarkdown).toContain("## Provider Signals");
+    expect(dnsReadinessMarkdown).toContain("## CoreDNS Signals");
+    expect(dnsReadinessMarkdown).toContain("## Ownership Signals");
     const cacheReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"), "utf8");
     expect(cacheReadinessText).toContain("Node Redis createClient connect get set EX NX expire ttl del mGet mSet scanIterator multi watch clientSideCache RESP socket reconnect isReady");
     expect(cacheReadinessText).toContain("\"cacheSetups\"");
@@ -3494,6 +3524,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/pipeline-orchestration-readiness.html");
     expect(exportManifestText).toContain("html/service-mesh-readiness.html");
     expect(exportManifestText).toContain("html/ingress-controller-readiness.html");
+    expect(exportManifestText).toContain("html/dns-readiness.html");
     expect(exportManifestText).toContain("html/cache-readiness.html");
     expect(exportManifestText).toContain("html/logging-readiness.html");
     expect(exportManifestText).toContain("html/feature-flag-readiness.html");
@@ -3673,6 +3704,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("pipeline-orchestration-readiness.html");
     expect(learningPathHtml).toContain("service-mesh-readiness.html");
     expect(learningPathHtml).toContain("ingress-controller-readiness.html");
+    expect(learningPathHtml).toContain("dns-readiness.html");
     expect(learningPathHtml).toContain("cache-readiness.html");
     expect(learningPathHtml).toContain("logging-readiness.html");
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
@@ -9182,6 +9214,265 @@ describe("RepoTutor core pipeline", () => {
     const ingressControllerHtml = await fs.readFile(path.join(result.session.outputPaths.html, "ingress-controller-readiness.html"), "utf8");
     expect(ingressControllerHtml).toContain("ingress-controller-readiness-card");
     expect(ingressControllerHtml).toContain("data-source-pattern=\"IngressController\"");
+  });
+
+  it("detects DNS readiness without querying resolvers or mutating DNS providers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-dns-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-dns-source-"));
+    await fs.mkdir(path.join(sourceRoot, "external-dns"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "coredns"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "octodns"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "zones"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "external-dns": "^0.15.0",
+        coredns: "^1.12.0",
+        octodns: "^1.12.0",
+        "octodns-route53": "^0.0.8",
+        "octodns-cloudflare": "^0.0.6",
+        "google-cloud-dns": "^1.0.0",
+        "PowerDnsProvider": "^1.0.0"
+      },
+      scripts: {
+        "dns:dry-run": "external-dns --source=service --source=ingress --source=gateway --source=crd --provider=aws --domain-filter=example.com --zone-id-filter=Z123 --registry=txt --txt-owner-id=cluster-a --policy=upsert-only --once --dry-run",
+        "dns:plan": "octodns-sync --config-file=octodns/config.yaml # octodns plan provider plan",
+        "dns:validate": "octodns-validate --config-file=octodns/config.yaml && coredns -conf coredns/Corefile -dns.port=1053",
+        "dns:smoke": "dig app.example.com A +short && drill api.example.com && nslookup api.example.com"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "external-dns", "deployment.yaml"), [
+      "apiVersion: apps/v1",
+      "kind: Deployment",
+      "metadata: { name: external-dns }",
+      "spec:",
+      "  template:",
+      "    metadata:",
+      "      annotations:",
+      "        external-dns.kubernetes.io/hostname: app.example.com",
+      "        external-dns.alpha.kubernetes.io/ttl: \"60\"",
+      "        external-dns.alpha.kubernetes.io/internal-hostname: app.internal.example.com",
+      "    spec:",
+      "      containers:",
+      "        - name: external-dns",
+      "          args:",
+      "            - --source=service",
+      "            - --source=ingress",
+      "            - --source=gateway",
+      "            - --source=crd",
+      "            - --source=node",
+      "            - --source=endpointslice",
+      "            - --provider=aws",
+      "            - --provider=cloudflare",
+      "            - --provider=azure",
+      "            - --domain-filter=example.com",
+      "            - --zone-id-filter=Z123",
+      "            - --aws-zone-type=public",
+      "            - --registry=txt",
+      "            - --txt-owner-id=cluster-a",
+      "            - --txt-prefix=%{record_type}-",
+      "            - --txt-suffix=-owner",
+      "            - --txt-encrypt-enabled",
+      "            - --policy=sync",
+      "            - --policy=upsert-only",
+      "            - --dry-run",
+      "            - --managed-record-types=A",
+      "            - --managed-record-types=TXT",
+      "---",
+      "apiVersion: externaldns.k8s.io/v1alpha1",
+      "kind: DNSEndpoint",
+      "metadata: { name: app-record }",
+      "---",
+      "apiVersion: discovery.k8s.io/v1",
+      "kind: EndpointSlice",
+      "metadata: { name: app-slice }",
+      "# Azure DNS AzureProvider Google Cloud DNS GoogleProvider CloudDNS custom DNS provider",
+      "# public zone private zone split-horizon reverse zone SOA serial TXT registry migration shared zone deletion risk",
+      "# metrics Prometheus logs errors health ready Kubernetes Events Normal UPDATE dig smoke"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "coredns", "Corefile"), [
+      ".:53 {",
+      "  errors",
+      "  log",
+      "  health :8080",
+      "  ready",
+      "  prometheus :9153",
+      "  kubernetes cluster.local in-addr.arpa ip6.arpa {",
+      "    pods insecure",
+      "    fallthrough in-addr.arpa ip6.arpa",
+      "  }",
+      "  forward . 1.1.1.1 8.8.8.8",
+      "  cache 30",
+      "  rewrite name regex (.*)\\.svc\\.example\\.com {1}.default.svc.cluster.local",
+      "  template IN A app.example.com { answer \"{{ .Name }} 60 IN A 192.0.2.10\" }",
+      "  reload",
+      "}",
+      "example.org:1053 {",
+      "  file /zones/example.org.zone",
+      "  transfer to *",
+      "  prometheus",
+      "  errors",
+      "  log",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "zones", "example.org.zone"), [
+      "$ORIGIN example.org.",
+      "@ 3600 IN SOA ns1.example.org. hostmaster.example.org. 2026060501 7200 3600 1209600 3600",
+      "@ 3600 IN NS ns1.example.org.",
+      "app 60 IN A 192.0.2.10",
+      "app 60 IN AAAA 2001:db8::10",
+      "api 60 IN CNAME app.example.org.",
+      "@ 60 IN TXT \"owner=cluster-a\"",
+      "@ 60 IN MX 10 mail.example.org.",
+      "_sip._tcp 60 IN SRV 10 10 5060 sip.example.org.",
+      "@ 60 IN CAA 0 issue \"letsencrypt.org\"",
+      "alias 60 IN ALIAS app.example.org.",
+      "10.2.0.192.in-addr.arpa. 60 IN PTR app.example.org."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "octodns", "config.yaml"), [
+      "manager:",
+      "  max_workers: 2",
+      "processors:",
+      "  keep_safe:",
+      "    class: octodns.processor.filter.NameAllowlistFilter",
+      "providers:",
+      "  config:",
+      "    class: octodns.provider.yaml.YamlProvider",
+      "    directory: ./octodns",
+      "  route53:",
+      "    class: octodns_route53.Route53Provider",
+      "  cloudflare:",
+      "    class: octodns_cloudflare.CloudflareProvider",
+      "  google:",
+      "    class: octodns_googlecloud.GoogleCloudProvider # GoogleProvider google-cloud-dns",
+      "zones:",
+      "  example.com.:",
+      "    sources:",
+      "      - config",
+      "    targets:",
+      "      - route53",
+      "      - cloudflare",
+      "      - google",
+      "  \"*.example.net.\":",
+      "    sources: [config]",
+      "    targets: [route53]",
+      "# dynamic zone list_zones dynamic entry provider plan record validation"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "octodns", "example.com.yaml"), [
+      "app:",
+      "  type: A",
+      "  value: 192.0.2.10",
+      "app6:",
+      "  type: AAAA",
+      "  value: 2001:db8::10",
+      "api:",
+      "  type: CNAME",
+      "  value: app.example.com.",
+      "txt:",
+      "  type: TXT",
+      "  value: owner=cluster-a",
+      "mail:",
+      "  type: MX",
+      "  values:",
+      "    - preference: 10",
+      "      exchange: mail.example.com.",
+      "ns:",
+      "  type: NS",
+      "  values: [ns1.example.com.]",
+      "_sip._tcp:",
+      "  type: SRV",
+      "  values:",
+      "    - priority: 10",
+      "      weight: 10",
+      "      port: 5060",
+      "      target: sip.example.com.",
+      "caa:",
+      "  type: CAA",
+      "  value:",
+      "    tag: issue",
+      "    value: letsencrypt.org",
+      "alias:",
+      "  type: ALIAS",
+      "  value: app.example.com.",
+      "ptr:",
+      "  type: PTR",
+      "  value: app.example.com."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "dns-readiness.yml"), [
+      "name: dns readiness",
+      "on: [push]",
+      "jobs:",
+      "  dns:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: external-dns --source=service --once --dry-run",
+      "      - run: octodns-validate --config-file=octodns/config.yaml",
+      "      - run: octodns-sync --config-file=octodns/config.yaml",
+      "      - run: coredns -conf coredns/Corefile -dns.port=1053",
+      "      - run: dig app.example.com A +short && drill app.example.com && nslookup api.example.com # dns smoke",
+      "      - run: provider-plan > dns-plan.json && echo '{}' > dns-readiness-report.json && echo '{}' > dig-smoke.json && echo '{}' > coredns-check.json",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          path: |",
+      "            dns-readiness-report.json",
+      "            dns-plan.json",
+      "            dig-smoke.json",
+      "            coredns-check.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "dns-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      dnsSetups: Array<{ platform: string; sourceCount: number; providerCount: number; zoneCount: number; recordCount: number; ownershipCount: number; policyCount: number; coreDnsCount: number; automationCount: number; observabilityCount: number; ciCount: number }>;
+      providerSignals: Array<{ signal: string; readiness: string }>;
+      sourceSignals: Array<{ signal: string; readiness: string }>;
+      zoneSignals: Array<{ signal: string; readiness: string }>;
+      recordSignals: Array<{ signal: string; readiness: string }>;
+      ownershipSignals: Array<{ signal: string; readiness: string }>;
+      coreDnsSignals: Array<{ signal: string; readiness: string }>;
+      automationSignals: Array<{ signal: string; readiness: string }>;
+      observabilitySignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("DNS readiness ExternalDNS CoreDNS octoDNS Route53 Cloudflare Google Cloud DNS Azure DNS source provider zone record TXT registry Corefile forward cache kubernetes plugin octodns-sync dry-run dig");
+    expect(report.dnsSetups.length).toBeGreaterThan(0);
+    expect(report.dnsSetups.map((item) => item.platform)).toEqual(expect.arrayContaining(["external-dns", "coredns", "octodns"]));
+    expect(report.dnsSetups.some((item) => item.sourceCount > 0 && item.providerCount > 0 && item.zoneCount > 0 && item.recordCount > 0 && item.ownershipCount > 0 && item.policyCount > 0)).toBe(true);
+    expect(report.dnsSetups.some((item) => item.coreDnsCount > 0 && item.automationCount > 0 && item.observabilityCount > 0 && item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.providerSignals)).toEqual(expect.arrayContaining(["external-dns", "route53", "cloudflare", "google-cloud-dns", "azure-dns", "octodns", "coredns", "custom"]));
+    expect(readySignals(report.sourceSignals)).toEqual(expect.arrayContaining(["service", "ingress", "gateway", "dnsendpoint-crd", "endpoint-slice", "node", "file-zone", "yaml-provider", "dynamic-zone"]));
+    expect(readySignals(report.zoneSignals)).toEqual(expect.arrayContaining(["domain-filter", "zone-id-filter", "managed-zone", "public-private-zone", "reverse-zone", "split-horizon", "soa-serial"]));
+    expect(readySignals(report.recordSignals)).toEqual(expect.arrayContaining(["a", "aaaa", "cname", "txt", "mx", "ns", "srv", "caa", "alias", "ptr"]));
+    expect(readySignals(report.ownershipSignals)).toEqual(expect.arrayContaining(["txt-registry", "txt-owner-id", "txt-prefix-suffix", "txt-encryption", "policy-sync", "upsert-only", "dry-run"]));
+    expect(readySignals(report.coreDnsSignals)).toEqual(expect.arrayContaining(["corefile", "forward", "cache", "kubernetes-plugin", "rewrite", "template", "health", "ready", "prometheus", "reload"]));
+    expect(readySignals(report.automationSignals)).toEqual(expect.arrayContaining(["octodns-sync", "octodns-plan", "providers-config", "sources-targets", "record-validation", "processors", "ci"]));
+    expect(readySignals(report.observabilitySignals)).toEqual(expect.arrayContaining(["metrics", "prometheus", "logs", "errors", "health", "ready", "events", "dig-smoke"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "external-dns-dry-run", "octodns-validate", "coredns-check", "dig-smoke", "artifact-upload", "provider-plan"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["external-dns", "coredns", "octodns", "route53", "cloudflare", "google-cloud-dns"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"external-dns|--source=|--provider=|--domain-filter|--txt-owner-id|--registry=txt|external-dns.kubernetes.io\" .",
+      "rg \"Corefile|forward|cache|kubernetes|rewrite|template|health|ready|prometheus|reload|errors|log\" .",
+      "rg \"octodns-sync|octodns-validate|YamlProvider|Route53Provider|CloudflareProvider|sources:|targets:|zones:\" .",
+      "rg \"type: (A|AAAA|CNAME|TXT|MX|NS|SRV|CAA|ALIAS|PTR)|SOA|serial|split-horizon|public|private\" .",
+      "rg \"dig |drill |nslookup|dns smoke|dns-plan|provider-plan|upload-artifact|dry-run\" .github ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "dns-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "dns-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "dns-readiness.html"))).resolves.toBeUndefined();
+    const dnsMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "dns-readiness.md"), "utf8");
+    expect(dnsMarkdown).toContain("Provider Signals");
+    expect(dnsMarkdown).toContain("CoreDNS Signals");
+    expect(dnsMarkdown).toContain("Ownership Signals");
+    const dnsHtml = await fs.readFile(path.join(result.session.outputPaths.html, "dns-readiness.html"), "utf8");
+    expect(dnsHtml).toContain("dns-readiness-card");
+    expect(dnsHtml).toContain("data-source-pattern=\"DNS\"");
   });
 
   it("detects feature store readiness without running feature store backends", async () => {

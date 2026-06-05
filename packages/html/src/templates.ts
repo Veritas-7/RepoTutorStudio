@@ -107,6 +107,7 @@ import type {
   PipelineOrchestrationReadinessReport,
   ServiceMeshReadinessReport,
   IngressControllerReadinessReport,
+  DnsReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -278,6 +279,7 @@ export interface StudyHtmlInput {
   pipelineOrchestrationReadinessReport: PipelineOrchestrationReadinessReport;
   serviceMeshReadinessReport: ServiceMeshReadinessReport;
   ingressControllerReadinessReport: IngressControllerReadinessReport;
+  dnsReadinessReport: DnsReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -668,6 +670,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Pipeline Orchestration Readiness</h3><p>${escapeHtml(input.pipelineOrchestrationReadinessReport.summary)}</p><p>Airflow, Dagster, Prefect 패턴으로 DAG/job/flow, task, schedule, sensor, asset, partition, executor, deployment 준비도를 정리합니다.</p><a href="pipeline-orchestration-readiness.html">Pipeline Orchestration 열기</a></article>
           <article><h3>Service Mesh Readiness</h3><p>${escapeHtml(input.serviceMeshReadinessReport.summary)}</p><p>Istio, Linkerd, Consul 패턴으로 control plane, proxy injection, traffic policy, mTLS, gateway, telemetry 준비도를 정리합니다.</p><a href="service-mesh-readiness.html">Service Mesh 열기</a></article>
           <article><h3>Ingress Controller Readiness</h3><p>${escapeHtml(input.ingressControllerReadinessReport.summary)}</p><p>ingress-nginx, Traefik, Envoy Gateway 패턴으로 class, route, exposure, TLS, policy, admission, observability 준비도를 정리합니다.</p><a href="ingress-controller-readiness.html">Ingress Controller 열기</a></article>
+          <article><h3>DNS Readiness</h3><p>${escapeHtml(input.dnsReadinessReport.summary)}</p><p>ExternalDNS, CoreDNS, octoDNS 패턴으로 source, provider, zone, record, ownership, Corefile, plan/sync 준비도를 정리합니다.</p><a href="dns-readiness.html">DNS 열기</a></article>
           <article><h3>Context Pack</h3><p>${escapeHtml(input.contextPackReport.summary)}</p><p>Repomix 패턴으로 LLM에 넣을 파일과 token budget을 확인합니다.</p><a href="context-pack.html">Context Pack 열기</a></article>
           <article><h3>MCP Handoff</h3><p>${escapeHtml(input.mcpHandoffReport.summary)}</p><p>codebase-mcp 패턴으로 AI 도구에 넘길 tool/prompt를 정리합니다.</p><a href="mcp-handoff.html">MCP Handoff 열기</a></article>
           <article><h3>Agent Memory</h3><p>${escapeHtml(input.agentMemoryReport.summary)}</p><p>Obsidian/Graphify 패턴으로 다음 AI 세션이 먼저 읽을 기억 노트를 만듭니다.</p><a href="agent-memory.html">Agent Memory 열기</a></article>
@@ -1195,6 +1198,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Ingress Controller Readiness", "ingress-controller-readiness.html", `<section class="panel" data-source-pattern="IngressController"><h2>Ingress Controller Snapshot</h2><p>${escapeHtml(input.ingressControllerReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.ingressControllerReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.ingressControllerReadinessReport.ingressControllerSetups.length}</dd></div><div><dt>controllers</dt><dd>${input.ingressControllerReadinessReport.controllerSignals.length}</dd></div><div><dt>routes</dt><dd>${input.ingressControllerReadinessReport.routeSignals.length}</dd></div><div><dt>TLS</dt><dd>${input.ingressControllerReadinessReport.tlsSignals.length}</dd></div><div><dt>admission</dt><dd>${input.ingressControllerReadinessReport.admissionSignals.length}</dd></div></dl><p class="muted">RepoTutor records ingress controller readiness only. It does not run kubectl, helm, ingress controllers, Gateway API controllers, admission webhooks, traffic, DNS, TLS, load balancer, or CI commands.</p></section><section class="grid"><article class="ingress-controller-readiness-card"><h3>Ingress Controller Setups</h3>${ingressControllerReadinessSetupList(input.ingressControllerReadinessReport.ingressControllerSetups)}</article><article class="ingress-controller-readiness-card"><h3>Controller Signals</h3>${ingressControllerReadinessSignalList(input.ingressControllerReadinessReport.controllerSignals, "signal")}</article><article class="ingress-controller-readiness-card"><h3>Ingress Class Signals</h3>${ingressControllerReadinessSignalList(input.ingressControllerReadinessReport.ingressClassSignals, "signal")}</article><article class="ingress-controller-readiness-card"><h3>Route Signals</h3>${ingressControllerReadinessSignalList(input.ingressControllerReadinessReport.routeSignals, "signal")}</article></section><section class="grid"><article class="ingress-controller-readiness-card"><h3>Service Exposure Signals</h3>${ingressControllerReadinessSignalList(input.ingressControllerReadinessReport.serviceExposureSignals, "signal")}</article><article class="ingress-controller-readiness-card"><h3>TLS Signals</h3>${ingressControllerReadinessSignalList(input.ingressControllerReadinessReport.tlsSignals, "signal")}</article><article class="ingress-controller-readiness-card"><h3>Middleware Signals</h3>${ingressControllerReadinessSignalList(input.ingressControllerReadinessReport.middlewareSignals, "signal")}</article><article class="ingress-controller-readiness-card"><h3>Policy Signals</h3>${ingressControllerReadinessSignalList(input.ingressControllerReadinessReport.policySignals, "signal")}</article></section><section class="grid"><article class="ingress-controller-readiness-card"><h3>Load Balancing Signals</h3>${ingressControllerReadinessSignalList(input.ingressControllerReadinessReport.loadBalancingSignals, "signal")}</article><article class="ingress-controller-readiness-card"><h3>Observability Signals</h3>${ingressControllerReadinessSignalList(input.ingressControllerReadinessReport.observabilitySignals, "signal")}</article><article class="ingress-controller-readiness-card"><h3>Admission Signals</h3>${ingressControllerReadinessSignalList(input.ingressControllerReadinessReport.admissionSignals, "signal")}</article><article class="ingress-controller-readiness-card"><h3>CI Signals</h3>${ingressControllerReadinessSignalList(input.ingressControllerReadinessReport.ciSignals, "signal")}</article><article class="ingress-controller-readiness-card"><h3>Package Signals</h3>${ingressControllerReadinessSignalList(input.ingressControllerReadinessReport.packageSignals, "signal")}</article><article class="ingress-controller-readiness-card"><h3>Recommended Commands</h3>${ingressControllerReadinessCommandList(input.ingressControllerReadinessReport.recommendedCommands)}</article><article class="ingress-controller-readiness-card"><h3>Risk Queue</h3>${ingressControllerReadinessRiskList(input.ingressControllerReadinessReport.riskQueue)}</article><article class="ingress-controller-readiness-card"><h3>다음 확인 단계</h3>${list(input.ingressControllerReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "dns-readiness.html",
+      title: "DNS Readiness",
+      html: pageShell("DNS Readiness", "dns-readiness.html", `<section class="panel" data-source-pattern="DNS"><h2>DNS Snapshot</h2><p>${escapeHtml(input.dnsReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dnsReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dnsReadinessReport.dnsSetups.length}</dd></div><div><dt>providers</dt><dd>${input.dnsReadinessReport.providerSignals.length}</dd></div><div><dt>sources</dt><dd>${input.dnsReadinessReport.sourceSignals.length}</dd></div><div><dt>records</dt><dd>${input.dnsReadinessReport.recordSignals.length}</dd></div><div><dt>CoreDNS</dt><dd>${input.dnsReadinessReport.coreDnsSignals.length}</dd></div></dl><p class="muted">RepoTutor records DNS readiness only. It does not query resolvers, mutate DNS providers, start CoreDNS, run octoDNS, call cloud APIs, or execute CI commands.</p></section><section class="grid"><article class="dns-readiness-card"><h3>DNS Setups</h3>${dnsReadinessSetupList(input.dnsReadinessReport.dnsSetups)}</article><article class="dns-readiness-card"><h3>Provider Signals</h3>${dnsReadinessSignalList(input.dnsReadinessReport.providerSignals, "signal")}</article><article class="dns-readiness-card"><h3>Source Signals</h3>${dnsReadinessSignalList(input.dnsReadinessReport.sourceSignals, "signal")}</article><article class="dns-readiness-card"><h3>Zone Signals</h3>${dnsReadinessSignalList(input.dnsReadinessReport.zoneSignals, "signal")}</article></section><section class="grid"><article class="dns-readiness-card"><h3>Record Signals</h3>${dnsReadinessSignalList(input.dnsReadinessReport.recordSignals, "signal")}</article><article class="dns-readiness-card"><h3>Ownership Signals</h3>${dnsReadinessSignalList(input.dnsReadinessReport.ownershipSignals, "signal")}</article><article class="dns-readiness-card"><h3>CoreDNS Signals</h3>${dnsReadinessSignalList(input.dnsReadinessReport.coreDnsSignals, "signal")}</article><article class="dns-readiness-card"><h3>Automation Signals</h3>${dnsReadinessSignalList(input.dnsReadinessReport.automationSignals, "signal")}</article></section><section class="grid"><article class="dns-readiness-card"><h3>Observability Signals</h3>${dnsReadinessSignalList(input.dnsReadinessReport.observabilitySignals, "signal")}</article><article class="dns-readiness-card"><h3>CI Signals</h3>${dnsReadinessSignalList(input.dnsReadinessReport.ciSignals, "signal")}</article><article class="dns-readiness-card"><h3>Package Signals</h3>${dnsReadinessSignalList(input.dnsReadinessReport.packageSignals, "signal")}</article><article class="dns-readiness-card"><h3>Recommended Commands</h3>${dnsReadinessCommandList(input.dnsReadinessReport.recommendedCommands)}</article><article class="dns-readiness-card"><h3>Risk Queue</h3>${dnsReadinessRiskList(input.dnsReadinessReport.riskQueue)}</article><article class="dns-readiness-card"><h3>다음 확인 단계</h3>${list(input.dnsReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "cache-readiness.html",
       title: "Cache Readiness",
       html: pageShell("Cache Readiness", "cache-readiness.html", `<section class="panel" data-source-pattern="Node Redis"><h2>Cache Snapshot</h2><p>${escapeHtml(input.cacheReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.cacheReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.cacheReadinessReport.cacheSetups.length}</dd></div><div><dt>operations</dt><dd>${input.cacheReadinessReport.operationSignals.length}</dd></div><div><dt>policy</dt><dd>${input.cacheReadinessReport.policySignals.length}</dd></div><div><dt>connection</dt><dd>${input.cacheReadinessReport.connectionSignals.length}</dd></div></dl><p class="muted">RepoTutor records cache readiness only. It does not start Redis, open cache sockets, read or write cache keys, subscribe to channels, flush data, or run the analyzed project's tests.</p></section><section class="grid"><article class="cache-readiness-card"><h3>Cache Setups</h3>${cacheReadinessSetupList(input.cacheReadinessReport.cacheSetups)}</article><article class="cache-readiness-card"><h3>Operation Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.operationSignals, "signal")}</article><article class="cache-readiness-card"><h3>Policy Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.policySignals, "signal")}</article><article class="cache-readiness-card"><h3>Connection Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.connectionSignals, "signal")}</article></section><section class="grid"><article class="cache-readiness-card"><h3>Advanced Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.advancedSignals, "signal")}</article><article class="cache-readiness-card"><h3>Package Signals</h3>${cacheReadinessSignalList(input.cacheReadinessReport.packageSignals, "signal")}</article><article class="cache-readiness-card"><h3>Recommended Commands</h3>${cacheReadinessCommandList(input.cacheReadinessReport.recommendedCommands)}</article><article class="cache-readiness-card"><h3>Risk Queue</h3>${cacheReadinessRiskList(input.cacheReadinessReport.riskQueue)}</article><article class="cache-readiness-card"><h3>다음 확인 단계</h3>${list(input.cacheReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1692,6 +1700,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Pipeline Orchestration Readiness", path: "html/pipeline-orchestration-readiness.html", description: "Apache Airflow/Dagster/Prefect식 DAG, task, schedule, sensor, asset, partition, executor, deployment 준비도를 확인합니다." },
       { label: "Service Mesh Readiness", path: "html/service-mesh-readiness.html", description: "Istio/Linkerd/Consul식 control plane, proxy injection, traffic policy, mTLS, gateway, telemetry 준비도를 확인합니다." },
       { label: "Ingress Controller Readiness", path: "html/ingress-controller-readiness.html", description: "ingress-nginx/Traefik/Envoy Gateway식 class, route, exposure, TLS, policy, admission, observability 준비도를 확인합니다." },
+      { label: "DNS Readiness", path: "html/dns-readiness.html", description: "ExternalDNS/CoreDNS/octoDNS식 source, provider, zone, record, ownership, Corefile, plan/sync 준비도를 확인합니다." },
       { label: "Cache Readiness", path: "html/cache-readiness.html", description: "Node Redis식 client setup, get/set, TTL, invalidation, connection, advanced Redis 준비도를 확인합니다." },
       { label: "Logging Readiness", path: "html/logging-readiness.html", description: "Pino식 logger setup, level, context binding, redaction, transport 준비도를 확인합니다." },
       { label: "Feature Flag Readiness", path: "html/feature-flag-readiness.html", description: "OpenFeature식 provider, evaluation, targeting context, hooks, tracking 준비도를 확인합니다." },
@@ -2406,6 +2415,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "ingress-controller-readiness.html",
       goal: "ingress-nginx/Traefik/Envoy Gateway식 class, route, exposure, TLS, middleware/policy, admission, observability 관문을 확인합니다.",
       evidence: `ingress controller setups ${input.ingressControllerReadinessReport.ingressControllerSetups.length}개, route signals ${input.ingressControllerReadinessReport.routeSignals.length}개`
+    },
+    {
+      title: "DNS readiness 확인",
+      href: "dns-readiness.html",
+      goal: "ExternalDNS/CoreDNS/octoDNS식 source, provider, zone, record, ownership, Corefile, plan/sync 관문을 확인합니다.",
+      evidence: `DNS setups ${input.dnsReadinessReport.dnsSetups.length}개, provider signals ${input.dnsReadinessReport.providerSignals.length}개`
     },
     {
       title: "Cache readiness 확인",
@@ -5347,6 +5362,31 @@ function ingressControllerReadinessRiskList(items: IngressControllerReadinessRep
 }
 
 function ingressControllerReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function dnsReadinessSetupList(items: DnsReadinessReport["dnsSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">DNS setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)}/${escapeHtml(item.readiness)}]<br>source/provider/zone/record/ownership/policy ${item.sourceCount}/${item.providerCount}/${item.zoneCount}/${item.recordCount}/${item.ownershipCount}/${item.policyCount}<br>CoreDNS/automation/observability/CI ${item.coreDnsCount}/${item.automationCount}/${item.observabilityCount}/${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dnsReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function dnsReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">DNS signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dnsReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dnsReadinessCommandList(items: DnsReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function dnsReadinessRiskList(items: DnsReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(dnsReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dnsReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
