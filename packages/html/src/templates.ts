@@ -101,6 +101,7 @@ import type {
   SeoMetadataReadinessReport,
   PwaReadinessReport,
   BrowserCompatibilityReadinessReport,
+  BrowserExtensionReadinessReport,
   EnvValidationReadinessReport,
   SecurityHeadersReadinessReport,
   GraphqlReadinessReport,
@@ -243,6 +244,7 @@ export interface StudyHtmlInput {
   seoMetadataReadinessReport: SeoMetadataReadinessReport;
   pwaReadinessReport: PwaReadinessReport;
   browserCompatibilityReadinessReport: BrowserCompatibilityReadinessReport;
+  browserExtensionReadinessReport: BrowserExtensionReadinessReport;
   envValidationReadinessReport: EnvValidationReadinessReport;
   securityHeadersReadinessReport: SecurityHeadersReadinessReport;
   graphqlReadinessReport: GraphqlReadinessReport;
@@ -398,6 +400,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["seo-metadata-readiness.html", "SEO Metadata"],
     ["pwa-readiness.html", "PWA"],
     ["browser-compat-readiness.html", "Browser Compat"],
+    ["browser-extension-readiness.html", "Browser Extension"],
     ["env-validation-readiness.html", "Env Validation"],
     ["security-headers-readiness.html", "Security Headers"],
     ["graphql-readiness.html", "GraphQL"],
@@ -1058,6 +1061,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Browser Compatibility Readiness", "browser-compat-readiness.html", `<section class="panel" data-source-pattern="Browserslist"><h2>Browser Compatibility Snapshot</h2><p>${escapeHtml(input.browserCompatibilityReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.browserCompatibilityReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.browserCompatibilityReadinessReport.compatibilitySetups.length}</dd></div><div><dt>config</dt><dd>${input.browserCompatibilityReadinessReport.configSignals.length}</dd></div><div><dt>queries</dt><dd>${input.browserCompatibilityReadinessReport.querySignals.length}</dd></div><div><dt>coverage</dt><dd>${input.browserCompatibilityReadinessReport.coverageSignals.length}</dd></div></dl><p class="muted">RepoTutor records browser compatibility readiness only; it does not resolve Browserslist queries, update caniuse-lite, run Babel, run Autoprefixer, execute browser tests, or contact external services.</p></section><section class="grid"><article class="browser-compat-readiness-card"><h3>Compatibility Setups</h3>${browserCompatibilityReadinessSetupList(input.browserCompatibilityReadinessReport.compatibilitySetups)}</article><article class="browser-compat-readiness-card"><h3>Config Signals</h3>${browserCompatibilityReadinessSignalList(input.browserCompatibilityReadinessReport.configSignals, "signal")}</article><article class="browser-compat-readiness-card"><h3>Query Signals</h3>${browserCompatibilityReadinessSignalList(input.browserCompatibilityReadinessReport.querySignals, "signal")}</article><article class="browser-compat-readiness-card"><h3>Coverage Signals</h3>${browserCompatibilityReadinessSignalList(input.browserCompatibilityReadinessReport.coverageSignals, "signal")}</article></section><section class="grid"><article class="browser-compat-readiness-card"><h3>Feature Signals</h3>${browserCompatibilityReadinessSignalList(input.browserCompatibilityReadinessReport.featureSignals, "signal")}</article><article class="browser-compat-readiness-card"><h3>Update Signals</h3>${browserCompatibilityReadinessSignalList(input.browserCompatibilityReadinessReport.updateSignals, "signal")}</article><article class="browser-compat-readiness-card"><h3>Package Signals</h3>${browserCompatibilityReadinessSignalList(input.browserCompatibilityReadinessReport.packageSignals, "signal")}</article><article class="browser-compat-readiness-card"><h3>Recommended Commands</h3>${browserCompatibilityReadinessCommandList(input.browserCompatibilityReadinessReport.recommendedCommands)}</article><article class="browser-compat-readiness-card"><h3>Risk Queue</h3>${browserCompatibilityReadinessRiskList(input.browserCompatibilityReadinessReport.riskQueue)}</article><article class="browser-compat-readiness-card"><h3>다음 확인 단계</h3>${list(input.browserCompatibilityReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "browser-extension-readiness.html",
+      title: "Browser Extension Readiness",
+      html: pageShell("Browser Extension Readiness", "browser-extension-readiness.html", `<section class="panel" data-source-pattern="WXT"><h2>Browser Extension Snapshot</h2><p>${escapeHtml(input.browserExtensionReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.browserExtensionReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.browserExtensionReadinessReport.extensionSetups.length}</dd></div><div><dt>manifest</dt><dd>${input.browserExtensionReadinessReport.manifestSignals.length}</dd></div><div><dt>entrypoints</dt><dd>${input.browserExtensionReadinessReport.entrypointSignals.length}</dd></div><div><dt>permissions</dt><dd>${input.browserExtensionReadinessReport.permissionSignals.length}</dd></div><div><dt>messaging</dt><dd>${input.browserExtensionReadinessReport.messagingSignals.length}</dd></div><div><dt>publish</dt><dd>${input.browserExtensionReadinessReport.publishSignals.length}</dd></div></dl><p class="muted">RepoTutor records browser extension readiness only; it does not run WXT, Plasmo, CRXJS, Vite, web-ext, browser launchers, store upload, signing, or extension tests.</p></section><section class="grid"><article class="browser-extension-readiness-card"><h3>Extension Setups</h3>${browserExtensionReadinessSetupList(input.browserExtensionReadinessReport.extensionSetups)}</article><article class="browser-extension-readiness-card"><h3>Manifest Signals</h3>${browserExtensionReadinessSignalList(input.browserExtensionReadinessReport.manifestSignals, "signal")}</article><article class="browser-extension-readiness-card"><h3>Entrypoint Signals</h3>${browserExtensionReadinessSignalList(input.browserExtensionReadinessReport.entrypointSignals, "signal")}</article><article class="browser-extension-readiness-card"><h3>Permission Signals</h3>${browserExtensionReadinessSignalList(input.browserExtensionReadinessReport.permissionSignals, "signal")}</article></section><section class="grid"><article class="browser-extension-readiness-card"><h3>Messaging Signals</h3>${browserExtensionReadinessSignalList(input.browserExtensionReadinessReport.messagingSignals, "signal")}</article><article class="browser-extension-readiness-card"><h3>Build Signals</h3>${browserExtensionReadinessSignalList(input.browserExtensionReadinessReport.buildSignals, "signal")}</article><article class="browser-extension-readiness-card"><h3>Publish Signals</h3>${browserExtensionReadinessSignalList(input.browserExtensionReadinessReport.publishSignals, "signal")}</article><article class="browser-extension-readiness-card"><h3>Package Signals</h3>${browserExtensionReadinessSignalList(input.browserExtensionReadinessReport.packageSignals, "signal")}</article><article class="browser-extension-readiness-card"><h3>Recommended Commands</h3>${browserExtensionReadinessCommandList(input.browserExtensionReadinessReport.recommendedCommands)}</article><article class="browser-extension-readiness-card"><h3>Risk Queue</h3>${browserExtensionReadinessRiskList(input.browserExtensionReadinessReport.riskQueue)}</article><article class="browser-extension-readiness-card"><h3>다음 확인 단계</h3>${list(input.browserExtensionReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "env-validation-readiness.html",
       title: "Env Validation Readiness",
       html: pageShell("Env Validation Readiness", "env-validation-readiness.html", `<section class="panel" data-source-pattern="t3-env"><h2>Env Validation Snapshot</h2><p>${escapeHtml(input.envValidationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.envValidationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.envValidationReadinessReport.envSetups.length}</dd></div><div><dt>schema</dt><dd>${input.envValidationReadinessReport.schemaSignals.length}</dd></div><div><dt>runtime</dt><dd>${input.envValidationReadinessReport.runtimeSignals.length}</dd></div><div><dt>boundary</dt><dd>${input.envValidationReadinessReport.boundarySignals.length}</dd></div></dl><p class="muted">RepoTutor records env validation readiness only; it does not load .env files, execute validators, evaluate transforms, contact secret stores, or run the analyzed project's tests.</p></section><section class="grid"><article class="env-validation-readiness-card"><h3>Env Setups</h3>${envValidationReadinessSetupList(input.envValidationReadinessReport.envSetups)}</article><article class="env-validation-readiness-card"><h3>Schema Signals</h3>${envValidationReadinessSignalList(input.envValidationReadinessReport.schemaSignals, "signal")}</article><article class="env-validation-readiness-card"><h3>Runtime Signals</h3>${envValidationReadinessSignalList(input.envValidationReadinessReport.runtimeSignals, "signal")}</article><article class="env-validation-readiness-card"><h3>Boundary Signals</h3>${envValidationReadinessSignalList(input.envValidationReadinessReport.boundarySignals, "signal")}</article></section><section class="grid"><article class="env-validation-readiness-card"><h3>Validation Signals</h3>${envValidationReadinessSignalList(input.envValidationReadinessReport.validationSignals, "signal")}</article><article class="env-validation-readiness-card"><h3>Documentation Signals</h3>${envValidationReadinessSignalList(input.envValidationReadinessReport.documentationSignals, "signal")}</article><article class="env-validation-readiness-card"><h3>Package Signals</h3>${envValidationReadinessSignalList(input.envValidationReadinessReport.packageSignals, "signal")}</article><article class="env-validation-readiness-card"><h3>Recommended Commands</h3>${envValidationReadinessCommandList(input.envValidationReadinessReport.recommendedCommands)}</article><article class="env-validation-readiness-card"><h3>Risk Queue</h3>${envValidationReadinessRiskList(input.envValidationReadinessReport.riskQueue)}</article><article class="env-validation-readiness-card"><h3>다음 확인 단계</h3>${list(input.envValidationReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1434,6 +1442,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "SEO Metadata Readiness", path: "html/seo-metadata-readiness.html", description: "Nuxt SEO식 robots, sitemap, metadata, structured data, AEO 준비도를 확인합니다." },
       { label: "PWA Readiness", path: "html/pwa-readiness.html", description: "Vite PWA식 manifest, service worker, Workbox cache, update/install 준비도를 확인합니다." },
       { label: "Browser Compatibility Readiness", path: "html/browser-compat-readiness.html", description: "Browserslist식 target browser config, query, coverage, update 준비도를 확인합니다." },
+      { label: "Browser Extension Readiness", path: "html/browser-extension-readiness.html", description: "WXT/Plasmo/CRXJS식 manifest, entrypoint, permission, messaging, build/publish 준비도를 확인합니다." },
       { label: "Env Validation Readiness", path: "html/env-validation-readiness.html", description: "t3-env식 server/client schema, runtimeEnv, client prefix, validation hook 준비도를 확인합니다." },
       { label: "Security Headers Readiness", path: "html/security-headers-readiness.html", description: "Helmet식 CSP, HSTS, cross-origin, legacy hardening header 준비도를 확인합니다." },
       { label: "GraphQL Readiness", path: "html/graphql-readiness.html", description: "GraphQL.js식 schema, operation, resolver, validation, execution 준비도를 확인합니다." },
@@ -2089,6 +2098,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "browser-compat-readiness.html",
       goal: "Browserslist식 target browser config, query, coverage, update 흐름을 보고 프런트엔드 호환성 정책을 확인합니다.",
       evidence: `compatibility setups ${input.browserCompatibilityReadinessReport.compatibilitySetups.length}개, query signals ${input.browserCompatibilityReadinessReport.querySignals.length}개`
+    },
+    {
+      title: "Browser extension readiness 확인",
+      href: "browser-extension-readiness.html",
+      goal: "WXT/Plasmo/CRXJS식 manifest, entrypoint, permission, messaging, build/publish 흐름을 보고 browser extension contract를 확인합니다.",
+      evidence: `extension setups ${input.browserExtensionReadinessReport.extensionSetups.length}개, permission signals ${input.browserExtensionReadinessReport.permissionSignals.length}개`
     },
     {
       title: "Env validation readiness 확인",
@@ -4685,6 +4700,31 @@ function browserCompatibilityReadinessRiskList(items: BrowserCompatibilityReadin
 }
 
 function browserCompatibilityReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function browserExtensionReadinessSetupList(items: BrowserExtensionReadinessReport["extensionSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">browser extension setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>manifest/entrypoint/permission/host/messaging/storage/UI/build/publish ${item.manifestCount}/${item.entrypointCount}/${item.permissionCount}/${item.hostPermissionCount}/${item.messagingCount}/${item.storageCount}/${item.uiSurfaceCount}/${item.buildCount}/${item.publishCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(browserExtensionReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function browserExtensionReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">browser extension signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(browserExtensionReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function browserExtensionReadinessCommandList(items: BrowserExtensionReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function browserExtensionReadinessRiskList(items: BrowserExtensionReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(browserExtensionReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function browserExtensionReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

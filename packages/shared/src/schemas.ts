@@ -5023,6 +5023,80 @@ export const BrowserCompatibilityReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const BrowserExtensionReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  extensionSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["wxt", "plasmo", "crxjs", "manifest", "webextension-polyfill", "custom", "unknown"]),
+    manifestCount: z.number().int().nonnegative(),
+    entrypointCount: z.number().int().nonnegative(),
+    permissionCount: z.number().int().nonnegative(),
+    hostPermissionCount: z.number().int().nonnegative(),
+    messagingCount: z.number().int().nonnegative(),
+    storageCount: z.number().int().nonnegative(),
+    uiSurfaceCount: z.number().int().nonnegative(),
+    buildCount: z.number().int().nonnegative(),
+    publishCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  manifestSignals: z.array(z.object({
+    signal: z.enum(["manifest-v3", "manifest-v2", "manifest-json", "generated-manifest", "wxt-config", "plasmo-config", "crxjs-plugin", "browser-targets", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  entrypointSignals: z.array(z.object({
+    signal: z.enum(["background", "service-worker", "content-script", "popup", "options", "side-panel", "devtools", "offscreen", "newtab", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  permissionSignals: z.array(z.object({
+    signal: z.enum(["permissions", "host-permissions", "optional-permissions", "optional-host-permissions", "active-tab", "scripting", "storage", "declarative-net-request", "web-accessible-resources", "content-security-policy", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  messagingSignals: z.array(z.object({
+    signal: z.enum(["chrome-runtime", "browser-runtime", "send-message", "runtime-connect", "tabs-message", "plasmo-messaging", "wxt-messaging", "webextension-polyfill", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  buildSignals: z.array(z.object({
+    signal: z.enum(["wxt-build", "plasmo-build", "vite-crx", "web-ext", "zip-artifact", "watch-dev", "hmr", "typescript", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  publishSignals: z.array(z.object({
+    signal: z.enum(["chrome-web-store", "firefox-addons", "edge-addons", "plasmo-bpp", "wxt-submit", "web-ext-sign", "release-action", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["wxt", "plasmo", "@crxjs/vite-plugin", "webextension-polyfill", "@types/chrome", "chrome-types", "web-ext", "extension-api", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const EnvValidationReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -7945,6 +8019,7 @@ export type LinkIntegrityReadinessReport = z.infer<typeof LinkIntegrityReadiness
 export type SeoMetadataReadinessReport = z.infer<typeof SeoMetadataReadinessReportSchema>;
 export type PwaReadinessReport = z.infer<typeof PwaReadinessReportSchema>;
 export type BrowserCompatibilityReadinessReport = z.infer<typeof BrowserCompatibilityReadinessReportSchema>;
+export type BrowserExtensionReadinessReport = z.infer<typeof BrowserExtensionReadinessReportSchema>;
 export type EnvValidationReadinessReport = z.infer<typeof EnvValidationReadinessReportSchema>;
 export type SecurityHeadersReadinessReport = z.infer<typeof SecurityHeadersReadinessReportSchema>;
 export type GraphqlReadinessReport = z.infer<typeof GraphqlReadinessReportSchema>;
