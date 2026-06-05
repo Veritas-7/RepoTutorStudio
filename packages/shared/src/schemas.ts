@@ -3032,6 +3032,79 @@ export const DatabaseOrmReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DataQualityReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  dataQualitySetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["great-expectations", "soda-core", "dbt", "deequ", "pandera", "custom", "unknown"]),
+    suiteCount: z.number().int().nonnegative(),
+    expectationCount: z.number().int().nonnegative(),
+    checkpointCount: z.number().int().nonnegative(),
+    scanCount: z.number().int().nonnegative(),
+    schemaTestCount: z.number().int().nonnegative(),
+    freshnessCount: z.number().int().nonnegative(),
+    resultCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  expectationSignals: z.array(z.object({
+    signal: z.enum(["expectation-suite", "validator", "checkpoint", "batch-request", "expect-column-values", "expect-table", "mostly", "result-format", "unexpected-rows", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  sodaSignals: z.array(z.object({
+    signal: z.enum(["sodacl", "checks-for", "row-count", "missing-count", "duplicate-count", "freshness", "fail-warn-threshold", "scan-command", "data-source", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dbtSignals: z.array(z.object({
+    signal: z.enum(["data-tests", "schema-yml", "not-null", "unique", "accepted-values", "relationships", "source-freshness", "severity", "store-failures", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  qualityDimensionSignals: z.array(z.object({
+    signal: z.enum(["completeness", "uniqueness", "validity", "freshness", "schema", "volume", "distribution", "anomaly", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resultSignals: z.array(z.object({
+    signal: z.enum(["validation-result", "run-results", "failed-rows", "data-docs", "junit", "sarif", "artifact", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "quality-scan-command", "dbt-test-command", "gx-checkpoint-command", "soda-scan-command", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["great-expectations", "soda-core", "dbt-core", "dbt-expectations", "dbt-utils", "pandera", "deequ", "pydantic", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CiCdReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -8864,6 +8937,7 @@ export type DocumentationReport = z.infer<typeof DocumentationReportSchema>;
 export type DatabaseReadinessReport = z.infer<typeof DatabaseReadinessReportSchema>;
 export type DatabaseMigrationReadinessReport = z.infer<typeof DatabaseMigrationReadinessReportSchema>;
 export type DatabaseOrmReadinessReport = z.infer<typeof DatabaseOrmReadinessReportSchema>;
+export type DataQualityReadinessReport = z.infer<typeof DataQualityReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type CoverageReadinessReport = z.infer<typeof CoverageReadinessReportSchema>;
