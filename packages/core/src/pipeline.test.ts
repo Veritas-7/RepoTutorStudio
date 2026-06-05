@@ -64,6 +64,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-quality-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-lineage-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-catalog-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-annotation-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-store-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-registry-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "experiment-tracking-readiness-report.json"))).resolves.toBeUndefined();
@@ -214,6 +215,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-quality-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-lineage-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-catalog-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-annotation-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-store-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-registry-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "experiment-tracking-readiness.md"))).resolves.toBeUndefined();
@@ -367,6 +369,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-quality-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-lineage-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-catalog-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-annotation-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-store-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "model-registry-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "experiment-tracking-readiness.html"))).resolves.toBeUndefined();
@@ -547,6 +550,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/data-quality-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-lineage-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-catalog-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/data-annotation-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-store-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/model-registry-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/experiment-tracking-readiness.html\"");
@@ -3305,6 +3309,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/data-quality-readiness.html");
     expect(exportManifestText).toContain("html/data-lineage-readiness.html");
     expect(exportManifestText).toContain("html/data-catalog-readiness.html");
+    expect(exportManifestText).toContain("html/data-annotation-readiness.html");
     expect(exportManifestText).toContain("html/feature-store-readiness.html");
     expect(exportManifestText).toContain("html/model-registry-readiness.html");
     expect(exportManifestText).toContain("html/experiment-tracking-readiness.html");
@@ -3477,6 +3482,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("data-quality-readiness.html");
     expect(learningPathHtml).toContain("data-lineage-readiness.html");
     expect(learningPathHtml).toContain("data-catalog-readiness.html");
+    expect(learningPathHtml).toContain("data-annotation-readiness.html");
     expect(learningPathHtml).toContain("feature-store-readiness.html");
     expect(learningPathHtml).toContain("model-registry-readiness.html");
     expect(learningPathHtml).toContain("experiment-tracking-readiness.html");
@@ -7398,6 +7404,170 @@ describe("RepoTutor core pipeline", () => {
     const dataCatalogHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-catalog-readiness.html"), "utf8");
     expect(dataCatalogHtml).toContain("data-catalog-readiness-card");
     expect(dataCatalogHtml).toContain("data-source-pattern=\"DataCatalog\"");
+  });
+
+  it("detects data annotation readiness without running annotation tools or jobs", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-annotation-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-annotation-source-"));
+    await fs.mkdir(path.join(sourceRoot, "labelstudio"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "fiftyone"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "argilla"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "name = \"data-annotation-fixture\"",
+      "description = \"Label Studio FiftyOne Argilla CVAT Labelbox custom annotation labeling workflow fixture\"",
+      "dependencies = [\"label-studio\", \"fiftyone\", \"argilla\", \"cvat-sdk\", \"labelbox\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "labelstudio", "project.py"), [
+      "from label_studio_sdk import Client",
+      "LABEL_CONFIG = \"\"\"<View><Image name='image' value='$image'/><Choices name='label' toName='image'><Choice value='cat'/><Choice value='dog'/></Choices><RectangleLabels name='bbox' toName='image'><Label value='object'/></RectangleLabels><BrushLabels name='mask' toName='image'><Label value='foreground'/></BrushLabels><TextArea name='comment' toName='image'/></View>\"\"\"",
+      "LABEL_CONFIG_XML = LABEL_CONFIG",
+      "client = Client(url=\"http://localhost:8080\", api_key=\"token\")",
+      "project = client.projects.create(title=\"image annotation project\", label_config=LABEL_CONFIG, show_collab_predictions=True, maximum_annotations=3)",
+      "task_template = \"task template labeling interface guidelines metadata assignment overlap bulk\"",
+      "tasks = [{\"data\": {\"image\": \"s3://bucket/cat.jpg\"}, \"metadata\": {\"split\": \"train\"}, \"predictions\": [{\"score\": 0.91, \"result\": []}]}]",
+      "project.import_tasks(tasks)",
+      "project.tasks.create(data=tasks[0][\"data\"], metadata=tasks[0][\"metadata\"])",
+      "project.annotations.create(task_id=1, result=[], ground_truth=True, was_cancelled=False)",
+      "project.predictions.create(task_id=1, result=[], score=0.91)",
+      "stats = project.stats.total_agreement",
+      "agreement_annotator = stats",
+      "consensus = \"human consensus disagreement review queue ground_truth confidence validation metrics annotation-report downstream model training\"",
+      "exported_json = project.export(format=\"JSON\")",
+      "exported_csv = project.export(format=\"CSV\")",
+      "exported_coco = project.export(format=\"COCO\")",
+      "exported_yolo = project.export(format=\"YOLO\")",
+      "export_storage = \"S3 export storage for downstream training dataset\"",
+      "custom_annotation_workflow = \"annotator labeling workflow review queue submit response save as draft weak supervision active learning\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "fiftyone", "annotation.py"), [
+      "import fiftyone as fo",
+      "import fiftyone.brain as fob",
+      "dataset = fo.Dataset(\"annotation-demo\")",
+      "sample = fo.Sample(filepath=\"cat.jpg\")",
+      "sample[\"ground_truth\"] = fo.Detections(detections=[])",
+      "sample[\"predictions\"] = fo.Detections(detections=[])",
+      "sample[\"metadata\"] = {\"assignment\": \"reviewer-a\", \"taxonomy\": \"animal\"}",
+      "dataset.add_sample(sample)",
+      "unique_view = dataset.match_tags(\"needs_annotation\")",
+      "anno_key = \"labelstudio_round1\"",
+      "unique_view.annotate(anno_key, label_field=\"ground_truth\", backend=\"labelstudio\", label_type=\"detections\", classes=[\"cat\", \"dog\"], launch_editor=False)",
+      "dataset.load_annotations(anno_key)",
+      "dataset.evaluate_detections(\"predictions\", gt_field=\"ground_truth\", eval_key=\"eval\")",
+      "dataset.evaluate_classifications(\"predictions\", gt_field=\"ground_truth\", eval_key=\"class_eval\")",
+      "fob.compute_similarity(dataset, brain_key=\"img_sim\", embeddings=\"embedding\")",
+      "dataset.export(export_dir=\"exports/coco\", dataset_type=fo.types.COCODetectionDataset)",
+      "dataset.export(export_dir=\"exports/yolo\", dataset_type=fo.types.YOLOv5Dataset)",
+      "dataset.export(export_dir=\"exports/fiftyone\", dataset_type=fo.types.FiftyOneDataset)",
+      "active learning unique sample similarity confidence metrics JSON CSV COCO YOLO FiftyOneDataset"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "argilla", "feedback.py"), [
+      "import argilla as rg",
+      "settings = rg.Settings(",
+      "    fields=[rg.TextField(name=\"text\")],",
+      "    questions=[rg.LabelQuestion(name=\"label\", labels=[\"good\", \"bad\"]), rg.MultiLabelQuestion(name=\"topics\", labels=[\"a\", \"b\"]), rg.RatingQuestion(name=\"rating\", values=[1, 2, 3]), rg.TextQuestion(name=\"comment\"), rg.RankingQuestion(name=\"rank\", values=[\"a\", \"b\"])],",
+      "    guidelines=\"annotation guidelines with taxonomy span named entity token text response\"",
+      ")",
+      "dataset = rg.Dataset(name=\"feedback\", workspace=\"admin\", settings=settings)",
+      "feedback = rg.FeedbackDataset(fields=[rg.TextField(name=\"text\")], questions=settings.questions, guidelines=\"feedback guidelines\")",
+      "vectors = rg.VectorSettings(name=\"embedding\", dimensions=384)",
+      "records = [rg.Record(fields={\"text\": \"example\"}, suggestions=[rg.Suggestion(question_name=\"label\", value=\"good\", score=0.93)], responses=[rg.Response(values={\"label\": {\"value\": \"good\"}}, status=\"submitted\")], vectors={\"embedding\": [0.1, 0.2]})]",
+      "dataset.records.log(records)",
+      "pending = dataset.records.filter_by(response_status=\"pending\")",
+      "overlap = \"OverlapTaskDistributionModel strategy overlap min_submitted=2 response_status pending save as draft submit response review disagreement consensus\"",
+      "weak_supervision = \"weak supervision suggestion model-assisted prelabel active learning\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "annotation.yml"), [
+      "name: annotation",
+      "on: [push]",
+      "jobs:",
+      "  annotation:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: python labelstudio/project.py --annotation-smoke --schema-check --import-smoke",
+      "      - run: python fiftyone/annotation.py --import-smoke --export-smoke",
+      "      - run: python argilla/feedback.py --quality-check --agreement",
+      "      - run: pytest tests/annotation --schema-check --quality-check",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: annotation-report",
+      "          path: |",
+      "            annotation-report.json",
+      "            exports/annotations.json",
+      "            exports/coco",
+      "            exports/yolo",
+      "            agreement-report"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "data-annotation-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      annotationSetups: Array<{ tool: string; projectCount: number; taskCount: number; schemaCount: number; labelCount: number; workflowCount: number; qualityCount: number; prelabelCount: number; reviewCount: number; exportCount: number; ciCount: number }>;
+      platformSignals: Array<{ signal: string; readiness: string }>;
+      projectSignals: Array<{ signal: string; readiness: string }>;
+      taskSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      qualitySignals: Array<{ signal: string; readiness: string }>;
+      prelabelSignals: Array<{ signal: string; readiness: string }>;
+      exportSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (tool: string) => report.annotationSetups
+      .filter((item) => item.tool === tool)
+      .reduce((totals, item) => ({
+        projectCount: totals.projectCount + item.projectCount,
+        taskCount: totals.taskCount + item.taskCount,
+        schemaCount: totals.schemaCount + item.schemaCount,
+        labelCount: totals.labelCount + item.labelCount,
+        workflowCount: totals.workflowCount + item.workflowCount,
+        qualityCount: totals.qualityCount + item.qualityCount,
+        prelabelCount: totals.prelabelCount + item.prelabelCount,
+        reviewCount: totals.reviewCount + item.reviewCount,
+        exportCount: totals.exportCount + item.exportCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { projectCount: 0, taskCount: 0, schemaCount: 0, labelCount: 0, workflowCount: 0, qualityCount: 0, prelabelCount: 0, reviewCount: 0, exportCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Data annotation readiness Label Studio FiftyOne Argilla annotation labeling label_config annotate load_annotations FeedbackDataset questions suggestions responses agreement consensus review export CI");
+    expect(setupTotals("label-studio").projectCount).toBeGreaterThan(0);
+    expect(setupTotals("label-studio").workflowCount).toBeGreaterThan(0);
+    expect(setupTotals("fiftyone").taskCount).toBeGreaterThan(0);
+    expect(setupTotals("fiftyone").exportCount).toBeGreaterThan(0);
+    expect(setupTotals("argilla").schemaCount).toBeGreaterThan(0);
+    expect(setupTotals("argilla").prelabelCount).toBeGreaterThan(0);
+    expect(report.annotationSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.platformSignals)).toEqual(expect.arrayContaining(["label-studio", "fiftyone", "argilla", "cvat", "labelbox", "custom"]));
+    expect(readySignals(report.projectSignals)).toEqual(expect.arrayContaining(["project", "dataset", "workspace", "labeling-interface", "task-template", "guidelines"]));
+    expect(readySignals(report.taskSignals)).toEqual(expect.arrayContaining(["task", "record", "sample", "import", "metadata", "assignment", "overlap", "bulk", "filter"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["label-config", "question", "choice", "taxonomy", "bounding-box", "segmentation", "span", "ranking", "rating", "text-response"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["annotate", "load-annotations", "submit-response", "draft", "review", "consensus", "ground-truth", "active-learning"]));
+    expect(readySignals(report.qualitySignals)).toEqual(expect.arrayContaining(["inter-annotator-agreement", "consensus", "disagreement", "review-queue", "confidence-score", "evaluation", "validation", "metrics"]));
+    expect(readySignals(report.prelabelSignals)).toEqual(expect.arrayContaining(["prediction", "suggestion", "model-assisted", "similarity", "embedding", "weak-supervision", "active-learning"]));
+    expect(readySignals(report.exportSignals)).toEqual(expect.arrayContaining(["export", "json", "csv", "coco", "yolo", "fiftyone-dataset", "storage", "downstream"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "import-smoke-command", "export-smoke-command", "schema-check-command", "quality-check-command", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["label-studio", "fiftyone", "argilla", "cvat", "labelbox", "custom"]));
+    expect(report.riskQueue).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"label_config|LabelInterface|annotate\\(|load_annotations|FeedbackDataset|rg\\.Dataset|LabelQuestion|TextQuestion\" .",
+      "rg \"prediction|suggestion|show_collab_predictions|compute_similarity|embedding|weak supervision|active learning\" .",
+      "rg \"export|load_annotations|dataset\\.export|COCO|YOLO|FiftyOneDataset|upload-artifact|annotation smoke\" .github workflows ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-annotation-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-annotation-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-annotation-readiness.html"))).resolves.toBeUndefined();
+    const dataAnnotationMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-annotation-readiness.md"), "utf8");
+    expect(dataAnnotationMarkdown).toContain("Platform Signals");
+    expect(dataAnnotationMarkdown).toContain("Quality Signals");
+    expect(dataAnnotationMarkdown).toContain("Prelabel Signals");
+    const dataAnnotationHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-annotation-readiness.html"), "utf8");
+    expect(dataAnnotationHtml).toContain("data-annotation-readiness-card");
+    expect(dataAnnotationHtml).toContain("data-source-pattern=\"DataAnnotation\"");
   });
 
   it("detects feature store readiness without running feature store backends", async () => {

@@ -70,6 +70,7 @@ import type {
   DataQualityReadinessReport,
   DataLineageReadinessReport,
   DataCatalogReadinessReport,
+  DataAnnotationReadinessReport,
   FeatureStoreReadinessReport,
   ModelRegistryReadinessReport,
   ExperimentTrackingReadinessReport,
@@ -234,6 +235,7 @@ export interface StudyHtmlInput {
   dataQualityReadinessReport: DataQualityReadinessReport;
   dataLineageReadinessReport: DataLineageReadinessReport;
   dataCatalogReadinessReport: DataCatalogReadinessReport;
+  dataAnnotationReadinessReport: DataAnnotationReadinessReport;
   featureStoreReadinessReport: FeatureStoreReadinessReport;
   modelRegistryReadinessReport: ModelRegistryReadinessReport;
   experimentTrackingReadinessReport: ExperimentTrackingReadinessReport;
@@ -417,6 +419,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["data-quality-readiness.html", "Data Quality"],
     ["data-lineage-readiness.html", "Data Lineage"],
     ["data-catalog-readiness.html", "Data Catalog"],
+    ["data-annotation-readiness.html", "Data Annotation"],
     ["feature-store-readiness.html", "Feature Store"],
     ["model-registry-readiness.html", "Model Registry"],
     ["experiment-tracking-readiness.html", "Experiment Tracking"],
@@ -618,6 +621,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Data Quality Readiness</h3><p>${escapeHtml(input.dataQualityReadinessReport.summary)}</p><p>Great Expectations, SodaCL, dbt data_tests 패턴으로 expectation, freshness, failed rows, artifact 준비도를 정리합니다.</p><a href="data-quality-readiness.html">Data Quality 열기</a></article>
           <article><h3>Data Lineage Readiness</h3><p>${escapeHtml(input.dataLineageReadinessReport.summary)}</p><p>OpenLineage, Marquez, dbt artifact 패턴으로 event, dataset edge, facet, column lineage, storage 준비도를 정리합니다.</p><a href="data-lineage-readiness.html">Data Lineage 열기</a></article>
           <article><h3>Data Catalog Readiness</h3><p>${escapeHtml(input.dataCatalogReadinessReport.summary)}</p><p>OpenMetadata, DataHub, Amundsen 패턴으로 ingestion, entity, governance, search, lineage 준비도를 정리합니다.</p><a href="data-catalog-readiness.html">Data Catalog 열기</a></article>
+          <article><h3>Data Annotation Readiness</h3><p>${escapeHtml(input.dataAnnotationReadinessReport.summary)}</p><p>Label Studio, FiftyOne, Argilla 패턴으로 project, task, schema, workflow, quality, prelabel, export 준비도를 정리합니다.</p><a href="data-annotation-readiness.html">Data Annotation 열기</a></article>
           <article><h3>Feature Store Readiness</h3><p>${escapeHtml(input.featureStoreReadinessReport.summary)}</p><p>Feast, Feathr, Hopsworks 패턴으로 feature definition, source, offline/online store, registry, retrieval, materialization 준비도를 정리합니다.</p><a href="feature-store-readiness.html">Feature Store 열기</a></article>
           <article><h3>Model Registry Readiness</h3><p>${escapeHtml(input.modelRegistryReadinessReport.summary)}</p><p>MLflow, Kubeflow Model Registry, BentoML 패턴으로 registered model, model version, artifact, metadata, serving 준비도를 정리합니다.</p><a href="model-registry-readiness.html">Model Registry 열기</a></article>
           <article><h3>Experiment Tracking Readiness</h3><p>${escapeHtml(input.experimentTrackingReadinessReport.summary)}</p><p>MLflow Tracking, W&B, Neptune 패턴으로 experiment, run, metric, param, config, artifact, offline sync, CI 준비도를 정리합니다.</p><a href="experiment-tracking-readiness.html">Experiment Tracking 열기</a></article>
@@ -987,6 +991,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "data-catalog-readiness.html",
       title: "Data Catalog Readiness",
       html: pageShell("Data Catalog Readiness", "data-catalog-readiness.html", `<section class="panel" data-source-pattern="DataCatalog"><h2>Data Catalog Snapshot</h2><p>${escapeHtml(input.dataCatalogReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dataCatalogReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dataCatalogReadinessReport.catalogSetups.length}</dd></div><div><dt>ingestion</dt><dd>${input.dataCatalogReadinessReport.ingestionSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>entities</dt><dd>${input.dataCatalogReadinessReport.entitySignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>governance</dt><dd>${input.dataCatalogReadinessReport.governanceSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>search</dt><dd>${input.dataCatalogReadinessReport.searchSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records data catalog readiness only; it does not run catalog ingestion, connect to metadata services, start search indexes, call governance APIs, or contact catalog backends.</p></section><section class="grid"><article class="data-catalog-readiness-card"><h3>Catalog Setups</h3>${dataCatalogReadinessSetupList(input.dataCatalogReadinessReport.catalogSetups)}</article><article class="data-catalog-readiness-card"><h3>Ingestion Signals</h3>${dataCatalogReadinessSignalList(input.dataCatalogReadinessReport.ingestionSignals, "signal")}</article><article class="data-catalog-readiness-card"><h3>Entity Signals</h3>${dataCatalogReadinessSignalList(input.dataCatalogReadinessReport.entitySignals, "signal")}</article><article class="data-catalog-readiness-card"><h3>Governance Signals</h3>${dataCatalogReadinessSignalList(input.dataCatalogReadinessReport.governanceSignals, "signal")}</article></section><section class="grid"><article class="data-catalog-readiness-card"><h3>Search Signals</h3>${dataCatalogReadinessSignalList(input.dataCatalogReadinessReport.searchSignals, "signal")}</article><article class="data-catalog-readiness-card"><h3>Lineage Signals</h3>${dataCatalogReadinessSignalList(input.dataCatalogReadinessReport.lineageSignals, "signal")}</article><article class="data-catalog-readiness-card"><h3>CI Signals</h3>${dataCatalogReadinessSignalList(input.dataCatalogReadinessReport.ciSignals, "signal")}</article><article class="data-catalog-readiness-card"><h3>Package Signals</h3>${dataCatalogReadinessSignalList(input.dataCatalogReadinessReport.packageSignals, "signal")}</article><article class="data-catalog-readiness-card"><h3>Recommended Commands</h3>${dataCatalogReadinessCommandList(input.dataCatalogReadinessReport.recommendedCommands)}</article><article class="data-catalog-readiness-card"><h3>Risk Queue</h3>${dataCatalogReadinessRiskList(input.dataCatalogReadinessReport.riskQueue)}</article><article class="data-catalog-readiness-card"><h3>다음 확인 단계</h3>${list(input.dataCatalogReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "data-annotation-readiness.html",
+      title: "Data Annotation Readiness",
+      html: pageShell("Data Annotation Readiness", "data-annotation-readiness.html", `<section class="panel" data-source-pattern="DataAnnotation"><h2>Data Annotation Snapshot</h2><p>${escapeHtml(input.dataAnnotationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dataAnnotationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dataAnnotationReadinessReport.annotationSetups.length}</dd></div><div><dt>projects</dt><dd>${input.dataAnnotationReadinessReport.projectSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>schemas</dt><dd>${input.dataAnnotationReadinessReport.schemaSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>workflows</dt><dd>${input.dataAnnotationReadinessReport.workflowSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>quality</dt><dd>${input.dataAnnotationReadinessReport.qualitySignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records data annotation readiness only; it does not run Label Studio, FiftyOne, Argilla, CVAT, Labelbox, annotation jobs, API calls, imports, exports, quality metrics, or CI commands.</p></section><section class="grid"><article class="data-annotation-readiness-card"><h3>Annotation Setups</h3>${dataAnnotationReadinessSetupList(input.dataAnnotationReadinessReport.annotationSetups)}</article><article class="data-annotation-readiness-card"><h3>Platform Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.platformSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Project Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.projectSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Task Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.taskSignals, "signal")}</article></section><section class="grid"><article class="data-annotation-readiness-card"><h3>Schema Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.schemaSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Workflow Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.workflowSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Quality Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.qualitySignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Prelabel Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.prelabelSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Export Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.exportSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>CI Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.ciSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Package Signals</h3>${dataAnnotationReadinessSignalList(input.dataAnnotationReadinessReport.packageSignals, "signal")}</article><article class="data-annotation-readiness-card"><h3>Recommended Commands</h3>${dataAnnotationReadinessCommandList(input.dataAnnotationReadinessReport.recommendedCommands)}</article><article class="data-annotation-readiness-card"><h3>Risk Queue</h3>${dataAnnotationReadinessRiskList(input.dataAnnotationReadinessReport.riskQueue)}</article><article class="data-annotation-readiness-card"><h3>다음 확인 단계</h3>${list(input.dataAnnotationReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "feature-store-readiness.html",
@@ -1599,6 +1608,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Data Quality Readiness", path: "html/data-quality-readiness.html", description: "Great Expectations/SodaCL/dbt식 expectation, freshness, failed-row, artifact 준비도를 확인합니다." },
       { label: "Data Lineage Readiness", path: "html/data-lineage-readiness.html", description: "OpenLineage/Marquez/dbt식 event, dataset edge, facet, column lineage, artifact 준비도를 확인합니다." },
       { label: "Data Catalog Readiness", path: "html/data-catalog-readiness.html", description: "OpenMetadata/DataHub/Amundsen식 ingestion, entity, governance, search, lineage 준비도를 확인합니다." },
+      { label: "Data Annotation Readiness", path: "html/data-annotation-readiness.html", description: "Label Studio/FiftyOne/Argilla식 project, task, schema, workflow, quality, prelabel, export 준비도를 확인합니다." },
       { label: "Feature Store Readiness", path: "html/feature-store-readiness.html", description: "Feast/Feathr/Hopsworks식 definition, source, storage, retrieval, materialization 준비도를 확인합니다." },
       { label: "Model Registry Readiness", path: "html/model-registry-readiness.html", description: "MLflow/Kubeflow/BentoML식 registered model, version, artifact, metadata, serving 준비도를 확인합니다." },
       { label: "Experiment Tracking Readiness", path: "html/experiment-tracking-readiness.html", description: "MLflow/W&B/Neptune식 experiment, run, metric, artifact, offline sync 준비도를 확인합니다." },
@@ -2043,6 +2053,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "data-catalog-readiness.html",
       goal: "OpenMetadata, DataHub, Amundsen식 ingestion, entity, governance, search, lineage 준비도를 확인합니다.",
       evidence: `setups ${input.dataCatalogReadinessReport.catalogSetups.length}개, entity signals ${input.dataCatalogReadinessReport.entitySignals.filter((item) => item.readiness === "ready").length}개, search signals ${input.dataCatalogReadinessReport.searchSignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Data annotation readiness 확인",
+      href: "data-annotation-readiness.html",
+      goal: "Label Studio, FiftyOne, Argilla식 project, task, schema, workflow, quality, prelabel, export 준비도를 확인합니다.",
+      evidence: `setups ${input.dataAnnotationReadinessReport.annotationSetups.length}개, workflow signals ${input.dataAnnotationReadinessReport.workflowSignals.filter((item) => item.readiness === "ready").length}개, quality signals ${input.dataAnnotationReadinessReport.qualitySignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Feature store readiness 확인",
@@ -3807,6 +3823,34 @@ function dataCatalogReadinessRiskList(items: DataCatalogReadinessReport["riskQue
 }
 
 function dataCatalogReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function dataAnnotationReadinessSetupList(items: DataAnnotationReadinessReport["annotationSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">data annotation setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)} / ${escapeHtml(item.readiness)}]<br>project ${item.projectCount}, task ${item.taskCount}, schema ${item.schemaCount}, label ${item.labelCount}, workflow ${item.workflowCount}<br>quality ${item.qualityCount}, prelabel ${item.prelabelCount}, review ${item.reviewCount}, export ${item.exportCount}, CI ${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dataAnnotationReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function dataAnnotationReadinessSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">data annotation readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dataAnnotationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dataAnnotationReadinessCommandList(items: DataAnnotationReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function dataAnnotationReadinessRiskList(items: DataAnnotationReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(dataAnnotationReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dataAnnotationReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
