@@ -85,6 +85,7 @@ import {
   DatabaseReadinessReport,
   DatabaseMigrationReadinessReport,
   DatabaseOrmReadinessReport,
+  DataTransformationReadinessReport,
   DataQualityReadinessReport,
   DataLineageReadinessReport,
   DataCatalogReadinessReport,
@@ -284,6 +285,7 @@ export interface AnalysisBundle {
   databaseReadinessReport: DatabaseReadinessReport;
   databaseMigrationReadinessReport: DatabaseMigrationReadinessReport;
   databaseOrmReadinessReport: DatabaseOrmReadinessReport;
+  dataTransformationReadinessReport: DataTransformationReadinessReport;
   dataQualityReadinessReport: DataQualityReadinessReport;
   dataLineageReadinessReport: DataLineageReadinessReport;
   dataCatalogReadinessReport: DataCatalogReadinessReport;
@@ -483,6 +485,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const databaseReadinessReport = await buildDatabaseReadinessReport(walk);
   const databaseMigrationReadinessReport = await buildDatabaseMigrationReadinessReport(walk);
   const databaseOrmReadinessReport = await buildDatabaseOrmReadinessReport(walk);
+  const dataTransformationReadinessReport = await buildDataTransformationReadinessReport(walk);
   const dataQualityReadinessReport = await buildDataQualityReadinessReport(walk);
   const dataLineageReadinessReport = await buildDataLineageReadinessReport(walk);
   const dataCatalogReadinessReport = await buildDataCatalogReadinessReport(walk);
@@ -592,7 +595,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -16882,6 +16885,310 @@ function databaseOrmReadinessSignalFromSpecs<T extends Record<K, string> & { pat
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/database-orm-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildDataTransformationReadinessReport(walk: WalkResult): Promise<DataTransformationReadinessReport> {
+  const sourceFiles = await dataTransformationSourceFiles(walk);
+  const transformationSetups = dataTransformationSetupsFromSources(sourceFiles);
+  const toolSignals = dataTransformationToolSignals(sourceFiles);
+  const modelSignals = dataTransformationModelSignals(sourceFiles);
+  const dependencySignals = dataTransformationDependencySignals(sourceFiles);
+  const incrementalitySignals = dataTransformationIncrementalitySignals(sourceFiles);
+  const environmentSignals = dataTransformationEnvironmentSignals(sourceFiles);
+  const artifactSignals = dataTransformationArtifactSignals(sourceFiles);
+  const workflowSignals = dataTransformationWorkflowSignals(sourceFiles);
+  const packageSignals = dataTransformationPackageSignals(sourceFiles);
+
+  const hasTool = toolSignals.some((item) => item.readiness === "ready") || transformationSetups.some((item) => item.tool !== "unknown");
+  const hasModels = modelSignals.some((item) => item.readiness === "ready") || transformationSetups.some((item) => item.modelCount > 0);
+  const hasDependencies = dependencySignals.some((item) => ["ref", "source", "dependency", "declaration"].includes(item.signal) && item.readiness === "ready") || transformationSetups.some((item) => item.sourceCount > 0);
+  const hasIncrementality = incrementalitySignals.some((item) => item.readiness === "ready") || transformationSetups.some((item) => item.incrementalCount > 0);
+  const hasEnvironment = environmentSignals.some((item) => item.readiness === "ready") || transformationSetups.some((item) => item.environmentCount > 0);
+  const hasArtifacts = artifactSignals.some((item) => item.readiness === "ready") || transformationSetups.some((item) => item.artifactCount > 0);
+  const hasWorkflow = workflowSignals.some((item) => item.readiness === "ready") || transformationSetups.some((item) => item.workflowCount > 0);
+
+  const riskQueue: DataTransformationReadinessReport["riskQueue"] = [];
+  if (!hasTool && !hasModels) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document dbt, SQLMesh, Dataform, or custom transformation project evidence before claiming transformation readiness.",
+      why: "Learners need a concrete project file, model directory, or transformation DSL entry point to understand the transformation layer.",
+      relatedHref: "html/data-transformation-readiness.html"
+    });
+  }
+  if (hasModels && !hasDependencies) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document transformation dependencies with ref, source, declare, dependencies, or equivalent upstream references.",
+      why: "Transformation models are hard to review when upstream tables and model ordering are implicit.",
+      relatedHref: "html/data-transformation-readiness.html"
+    });
+  }
+  if (hasModels && !hasIncrementality) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document materialization and incrementality policy for large or stateful transformations.",
+      why: "dbt materialized incremental, SQLMesh incremental model kinds, and Dataform uniqueKey/pre-post operations make rebuild cost and state behavior visible.",
+      relatedHref: "html/data-transformation-readiness.html"
+    });
+  }
+  if (hasModels && !hasEnvironment) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record target profiles, SQLMesh environments, Dataform workflow settings, or warehouse engine assumptions.",
+      why: "Transformation readiness depends on where models compile and run, not just on SQL files existing.",
+      relatedHref: "html/data-transformation-readiness.html"
+    });
+  }
+  if (hasModels && !hasArtifacts) {
+    riskQueue.push({
+      priority: "low",
+      action: "Persist manifests, run results, compiled graph, catalog, snapshots, or compiled SQL artifacts.",
+      why: "Compiled artifacts make dependency graphs, execution status, and generated SQL reviewable without querying production data.",
+      relatedHref: "html/data-transformation-readiness.html"
+    });
+  }
+  if ((hasTool || hasModels) && !hasWorkflow) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add CI or scheduled workflow evidence for compile, plan, test, and artifact upload.",
+      why: "Transformation projects are safer when compile/plan checks and outputs are repeatable outside a local laptop.",
+      relatedHref: "html/data-transformation-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run transformation commands only in reviewed CI or an isolated warehouse sandbox.",
+    why: "RepoTutor records data transformation readiness only; it does not run dbt, SQLMesh, Dataform, compile SQL, query warehouses, apply plans, invoke workflows, or mutate datasets.",
+    relatedHref: "html/data-transformation-readiness.html"
+  });
+
+  return {
+    summary: `Data transformation readiness report: transformation setup ${transformationSetups.length}개, tool signal ${toolSignals.filter((item) => item.readiness === "ready").length}개, model signal ${modelSignals.filter((item) => item.readiness === "ready").length}개, workflow signal ${workflowSignals.filter((item) => item.readiness === "ready").length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Data transformation readiness dbt SQLMesh Dataform dbt_project.yml models seeds snapshots macros ref source materialized incremental state defer sqlmesh MODEL AUDIT plan environment snapshot dataform workflow_settings definitions publish declare assert compile run",
+    transformationSetups,
+    toolSignals,
+    modelSignals,
+    dependencySignals,
+    incrementalitySignals,
+    environmentSignals,
+    artifactSignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"dbt_project.yml|models:|seeds:|snapshots:|macros:|ref\\(|source\\(\" .", purpose: "Find dbt project, model, seed, snapshot, macro, ref, and source evidence." },
+      { command: "rg \"sqlmesh|MODEL \\(|model_kind|AUDIT \\(|sqlmesh plan|sqlmesh run|environment|snapshot\" .", purpose: "Find SQLMesh model, audit, plan, environment, and snapshot evidence." },
+      { command: "rg \"workflow_settings.yaml|dataform.json|definitions/|publish\\(|declare\\(|assert\\(|ref\\(|resolve\\(\" .", purpose: "Find Dataform workflow settings, definitions, declarations, assertions, and dependency references." },
+      { command: "rg \"materialized:|type: incremental|uniqueKey|incremental_by_time_range|SCD_TYPE_2|pre_operations|post_operations\" .", purpose: "Review incrementality, unique key, SCD, and operation boundary evidence." },
+      { command: "rg \"dbt build|dbt compile|dbt ls|sqlmesh plan|sqlmesh test|dataform compile|dataform run|upload-artifact\" .github .", purpose: "Find compile, plan, test, run, and artifact workflow coverage." }
+    ],
+    learnerNextSteps: [
+      "먼저 dbt_project.yml, SQLMesh config/model, Dataform workflow_settings.yaml/dataform.json 중 어떤 transformation project entry point가 있는지 찾으세요.",
+      "models, definitions, MODEL blocks, SQL/Python models, seeds, snapshots, macros를 분리해서 읽으세요.",
+      "ref, source, declare, dependencies, owner, tag, grain, cron처럼 dependency와 운영 메타데이터를 확인하세요.",
+      "incremental materialization, unique key, SQLMesh incremental model kinds, SCD_TYPE_2, pre/post operations가 stateful rebuild 방식을 설명하는지 확인하세요.",
+      "manifest, run_results, compiled graph, catalog, compiled SQL, CI artifact가 남는지 확인하되 이 리포트 자체는 명령을 실행하지 않는 정적 분석이라는 점을 유지하세요."
+    ]
+  };
+}
+
+type DataTransformationSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function dataTransformationSourceFiles(walk: WalkResult): Promise<DataTransformationSourceFile[]> {
+  const rows: DataTransformationSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate) continue;
+    if (!dataTransformationInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!dataTransformationPathSignal(file.relPath) && !dataTransformationContentSignal(text)) continue;
+    rows.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+  }
+  return rows.slice(0, 260);
+}
+
+function dataTransformationInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|pyproject\.toml|requirements.*\.txt|dbt_project\.ya?ml|profiles\.ya?ml|selectors\.ya?ml|schema\.ya?ml|sources?\.ya?ml|manifest\.json|run_results\.json|catalog\.json|workflow_settings\.ya?ml|dataform\.json|config\.ya?ml|sqlmesh\.ya?ml)$/i.test(base)
+    || /(^|\/)(dbt|models|seeds|snapshots|macros|target|sqlmesh|audits|definitions|dataform|transform|transforms|warehouse|analytics)(\/|\.|-|_|$)/i.test(filePath)
+    || /^\.github\/workflows\/[^/]+\.ya?ml$/i.test(filePath)
+    || /\.(sqlx?|py|json|ya?ml|toml|txt|ts|tsx|js|jsx|mjs|cjs|md)$/i.test(filePath);
+}
+
+function dataTransformationPathSignal(filePath: string): boolean {
+  return /(^|\/)(dbt|models|seeds|snapshots|macros|target|sqlmesh|audits|definitions|dataform|transform|transforms)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(dbt_project\.ya?ml|profiles\.ya?ml|selectors\.ya?ml|manifest\.json|run_results\.json|catalog\.json|workflow_settings\.ya?ml|dataform\.json|sqlmesh\.ya?ml)$/i.test(path.basename(filePath));
+}
+
+function dataTransformationContentSignal(text: string): boolean {
+  return /dbt_project|dbt-core|dbt build|dbt compile|dbt ls|ref\(|source\(|materialized|unique_key|state:modified|--defer|sqlmesh|MODEL\s*\(|AUDIT\s*\(|INCREMENTAL_BY_TIME_RANGE|SCD_TYPE_2|workflow_settings|dataform|publish\(|declare\(|assert\(|resolve\(|compiled_graph|run_results|manifest\.json/i.test(text);
+}
+
+function dataTransformationSetupsFromSources(sourceFiles: DataTransformationSourceFile[]): DataTransformationReadinessReport["transformationSetups"] {
+  const rows: DataTransformationReadinessReport["transformationSetups"] = [];
+  for (const source of sourceFiles) {
+    const haystack = `${source.filePath}\n${source.text}`;
+    const projectCount = countMatches(haystack, /dbt_project\.ya?ml|workflow_settings\.ya?ml|dataform\.json|sqlmesh\.ya?ml|gateways:|defaultProject|project_name|name:\s*/gi);
+    const modelCount = countMatches(haystack, /(^|\/)(models|definitions)\/|models:\s*$|MODEL\s*\(|@model|publish\(|config\s*\{|SELECT\s+.+\s+FROM|CREATE\s+(OR\s+REPLACE\s+)?(TABLE|VIEW)/gim);
+    const sourceCount = countMatches(haystack, /source\(|sources:\s*$|declare\(|raw\.|dependencies|depends_on|input|upstream/gim);
+    const macroCount = countMatches(haystack, /macros?:|\{\%\s*macro|macro\s+\w+|generate_schema_name/gi);
+    const testCount = countMatches(haystack, /tests:\s*$|data_tests|AUDIT\s*\(|assert\(|assertion|sqlmesh test|dbt test/gim);
+    const incrementalCount = countMatches(haystack, /materialized\s*[:=]\s*['"]?incremental|\+materialized:\s*incremental|type:\s*['"]?incremental|unique_key|uniqueKey|INCREMENTAL_BY_TIME_RANGE|SCD_TYPE_2|pre_operations|post_operations|is_incremental\(/gi);
+    const environmentCount = countMatches(haystack, /profiles\.ya?ml|profile:|target:|environment|gateways:|default_gateway|virtual_environment|workflow_settings\.ya?ml|defaultProject|defaultDataset|warehouse|bigquery|snowflake|redshift|duckdb|databricks|trino|spark/gi);
+    const artifactCount = countMatches(haystack, /manifest\.json|run_results\.json|compiled_graph|catalog\.json|target\/compiled|compiled_code|compiled_sql|snapshot|upload-artifact|artifact/gi);
+    const workflowCount = countMatches(haystack, /\.github\/workflows|github actions|runs-on|dbt build|dbt compile|dbt ls|sqlmesh plan|sqlmesh test|dataform compile|dataform run|upload-artifact/gi);
+    const totalSignals = projectCount + modelCount + sourceCount + macroCount + testCount + incrementalCount + environmentCount + artifactCount + workflowCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      tool: dataTransformationTool(source),
+      projectCount,
+      modelCount,
+      sourceCount,
+      macroCount,
+      testCount,
+      incrementalCount,
+      environmentCount,
+      artifactCount,
+      workflowCount,
+      readiness: modelCount > 0 && sourceCount > 0 && incrementalCount > 0 && (environmentCount + artifactCount + workflowCount) > 0 ? "ready" : "partial",
+      evidence: `${totalSignals} data transformation readiness signal(s) detected in this file.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows
+    .sort((a, b) => (b.projectCount + b.modelCount + b.sourceCount + b.macroCount + b.testCount + b.incrementalCount + b.environmentCount + b.artifactCount + b.workflowCount) - (a.projectCount + a.modelCount + a.sourceCount + a.macroCount + a.testCount + a.incrementalCount + a.environmentCount + a.artifactCount + a.workflowCount))
+    .slice(0, 80);
+}
+
+function dataTransformationTool(source: DataTransformationSourceFile): DataTransformationReadinessReport["transformationSetups"][number]["tool"] {
+  if (/sqlmesh/i.test(source.filePath) || /sqlmesh|MODEL\s*\(|AUDIT\s*\(|INCREMENTAL_BY_TIME_RANGE|SCD_TYPE_2/i.test(source.text)) return "sqlmesh";
+  if (/workflow_settings\.ya?ml|dataform\.json|(^|\/)definitions\//i.test(source.filePath) || /dataform|publish\(|declare\(|assert\(|workflow_settings/i.test(source.text)) return "dataform";
+  if (/dbt_project\.ya?ml|(^|\/)(dbt|models|seeds|snapshots|macros)(\/|$)/i.test(source.filePath) || /dbt-core|dbt build|dbt compile|ref\(|source\(|dbt_project/i.test(source.text)) return "dbt";
+  if (/transform|warehouse|analytics/i.test(source.filePath) || /transform|materialized view|CREATE\s+(TABLE|VIEW)|SELECT\s+.+\s+FROM/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function dataTransformationToolSignals(sourceFiles: DataTransformationSourceFile[]): DataTransformationReadinessReport["toolSignals"] {
+  const specs: Array<{ signal: DataTransformationReadinessReport["toolSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dbt", pattern: /dbt_project\.ya?ml|dbt-core|dbt build|dbt compile|ref\(|source\(/i, evidence: "dbt project or command evidence was detected." },
+    { signal: "sqlmesh", pattern: /sqlmesh|MODEL\s*\(|AUDIT\s*\(|sqlmesh plan|sqlmesh run/i, evidence: "SQLMesh model or command evidence was detected." },
+    { signal: "dataform", pattern: /workflow_settings\.ya?ml|dataform\.json|dataform|publish\(|declare\(|assert\(/i, evidence: "Dataform project or definition evidence was detected." },
+    { signal: "custom", pattern: /transform|materialized view|CREATE\s+(TABLE|VIEW)|SELECT\s+.+\s+FROM/i, evidence: "custom SQL transformation evidence was detected." }
+  ];
+  return dataTransformationSignalFromSpecs(sourceFiles, specs, "tool", "signal");
+}
+
+function dataTransformationModelSignals(sourceFiles: DataTransformationSourceFile[]): DataTransformationReadinessReport["modelSignals"] {
+  const specs: Array<{ signal: DataTransformationReadinessReport["modelSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dbt-model", pattern: /(^|\/)models\/|models:\s*$|dbt_project\.ya?ml|ref\(|source\(/im, evidence: "dbt model evidence was detected." },
+    { signal: "sqlmesh-model", pattern: /MODEL\s*\(|model_kind|@model|sqlmesh/i, evidence: "SQLMesh model evidence was detected." },
+    { signal: "dataform-table", pattern: /publish\(|config\s*\{[^}]*type:\s*["']?(table|incremental)|\.sqlx/i, evidence: "Dataform table or incremental definition evidence was detected." },
+    { signal: "sql-model", pattern: /\.sqlx?$|SELECT\s+.+\s+FROM|CREATE\s+(OR\s+REPLACE\s+)?(TABLE|VIEW)/i, evidence: "SQL model evidence was detected." },
+    { signal: "python-model", pattern: /\.py$|@model|PythonModel|def\s+model/i, evidence: "Python model evidence was detected." },
+    { signal: "seed", pattern: /seed-paths|(^|\/)seeds\//i, evidence: "seed evidence was detected." },
+    { signal: "snapshot", pattern: /snapshot-paths|(^|\/)snapshots\/|snapshot\(/i, evidence: "snapshot evidence was detected." }
+  ];
+  return dataTransformationSignalFromSpecs(sourceFiles, specs, "model", "signal");
+}
+
+function dataTransformationDependencySignals(sourceFiles: DataTransformationSourceFile[]): DataTransformationReadinessReport["dependencySignals"] {
+  const specs: Array<{ signal: DataTransformationReadinessReport["dependencySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ref", pattern: /ref\(/i, evidence: "model ref dependency evidence was detected." },
+    { signal: "source", pattern: /source\(|sources:\s*$/im, evidence: "source dependency evidence was detected." },
+    { signal: "dependency", pattern: /depends_on|dependencies|dependency|input|upstream/i, evidence: "dependency declaration evidence was detected." },
+    { signal: "declaration", pattern: /declare\(|declarations?:|sources:\s*$/im, evidence: "declaration evidence was detected." },
+    { signal: "owner", pattern: /\bowner\b\s*[:=]?|owners?:|meta:\s*.*owner/i, evidence: "owner metadata evidence was detected." },
+    { signal: "tag", pattern: /tags?\s*[:=]|\btags\s*\[/i, evidence: "tag metadata evidence was detected." },
+    { signal: "grain", pattern: /\bgrain\b\s*[:=]?/i, evidence: "grain metadata evidence was detected." },
+    { signal: "cron", pattern: /cron\s*[:=]|@daily|@hourly|schedule:/i, evidence: "cron/schedule metadata evidence was detected." }
+  ];
+  return dataTransformationSignalFromSpecs(sourceFiles, specs, "dependency", "signal");
+}
+
+function dataTransformationIncrementalitySignals(sourceFiles: DataTransformationSourceFile[]): DataTransformationReadinessReport["incrementalitySignals"] {
+  const specs: Array<{ signal: DataTransformationReadinessReport["incrementalitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "materialized-incremental", pattern: /materialized\s*[:=]\s*['"]?incremental|\+materialized:\s*incremental|type:\s*['"]?incremental|is_incremental\(/i, evidence: "incremental materialization evidence was detected." },
+    { signal: "unique-key", pattern: /unique_key|uniqueKey/i, evidence: "unique key evidence was detected." },
+    { signal: "incremental-by-time-range", pattern: /INCREMENTAL_BY_TIME_RANGE|incremental_by_time_range/i, evidence: "SQLMesh time-range incrementality evidence was detected." },
+    { signal: "scd-type-2", pattern: /SCD_TYPE_2|scd_type_2/i, evidence: "SCD Type 2 model evidence was detected." },
+    { signal: "pre-post-ops", pattern: /pre_operations|post_operations|preOperations|postOperations/i, evidence: "pre/post operation evidence was detected." },
+    { signal: "state-modified", pattern: /state:modified|--state/i, evidence: "state selection evidence was detected." },
+    { signal: "defer", pattern: /--defer|\bdefer\b/i, evidence: "defer evidence was detected." }
+  ];
+  return dataTransformationSignalFromSpecs(sourceFiles, specs, "incrementality", "signal");
+}
+
+function dataTransformationEnvironmentSignals(sourceFiles: DataTransformationSourceFile[]): DataTransformationReadinessReport["environmentSignals"] {
+  const specs: Array<{ signal: DataTransformationReadinessReport["environmentSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "target-profile", pattern: /profiles\.ya?ml|profile:|target:/i, evidence: "target/profile evidence was detected." },
+    { signal: "sqlmesh-environment", pattern: /sqlmesh|environment|gateways:|default_gateway/i, evidence: "SQLMesh environment evidence was detected." },
+    { signal: "virtual-environment", pattern: /virtual_environment|virtual environment|dev|prod/i, evidence: "virtual environment evidence was detected." },
+    { signal: "dataform-workflow-settings", pattern: /workflow_settings\.ya?ml|defaultProject|defaultDataset|defaultAssertionDataset/i, evidence: "Dataform workflow settings evidence was detected." },
+    { signal: "warehouse-engine", pattern: /bigquery|snowflake|redshift|postgres|duckdb|databricks|trino|spark|warehouse/i, evidence: "warehouse engine evidence was detected." }
+  ];
+  return dataTransformationSignalFromSpecs(sourceFiles, specs, "environment", "signal");
+}
+
+function dataTransformationArtifactSignals(sourceFiles: DataTransformationSourceFile[]): DataTransformationReadinessReport["artifactSignals"] {
+  const specs: Array<{ signal: DataTransformationReadinessReport["artifactSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "manifest", pattern: /manifest\.json|ManifestArtifact/i, evidence: "manifest artifact evidence was detected." },
+    { signal: "run-results", pattern: /run_results\.json|run-results|RunResults/i, evidence: "run results artifact evidence was detected." },
+    { signal: "compiled-graph", pattern: /compiled_graph|compiled graph|CompiledGraph/i, evidence: "compiled graph evidence was detected." },
+    { signal: "catalog", pattern: /catalog\.json|CatalogArtifact/i, evidence: "catalog artifact evidence was detected." },
+    { signal: "snapshot", pattern: /snapshot|Snapshot/i, evidence: "snapshot artifact evidence was detected." },
+    { signal: "state-sync", pattern: /state:modified|--state|state sync|state_connection/i, evidence: "state sync evidence was detected." },
+    { signal: "compiled-sql", pattern: /compiled_code|compiled_sql|target\/compiled|compiled SQL|dbt compile|dataform compile/i, evidence: "compiled SQL evidence was detected." }
+  ];
+  return dataTransformationSignalFromSpecs(sourceFiles, specs, "artifact", "signal");
+}
+
+function dataTransformationWorkflowSignals(sourceFiles: DataTransformationSourceFile[]): DataTransformationReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: DataTransformationReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github actions|uses:\s*actions\//i, evidence: "GitHub Actions workflow evidence was detected." },
+    { signal: "dbt-build", pattern: /dbt build/i, evidence: "dbt build workflow evidence was detected." },
+    { signal: "dbt-compile", pattern: /dbt compile/i, evidence: "dbt compile workflow evidence was detected." },
+    { signal: "dbt-ls", pattern: /dbt ls/i, evidence: "dbt ls workflow evidence was detected." },
+    { signal: "sqlmesh-plan", pattern: /sqlmesh plan/i, evidence: "SQLMesh plan workflow evidence was detected." },
+    { signal: "sqlmesh-test", pattern: /sqlmesh test/i, evidence: "SQLMesh test workflow evidence was detected." },
+    { signal: "dataform-compile", pattern: /dataform compile/i, evidence: "Dataform compile workflow evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|artifact/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return dataTransformationSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function dataTransformationPackageSignals(sourceFiles: DataTransformationSourceFile[]): DataTransformationReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: DataTransformationReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dbt-core", pattern: /dbt-core|dbt_project\.ya?ml|dbt build|dbt compile/i, evidence: "dbt Core package/project evidence was detected." },
+    { signal: "sqlmesh", pattern: /sqlmesh|SQLMesh/i, evidence: "SQLMesh package evidence was detected." },
+    { signal: "dataform-core", pattern: /@dataform\/core|dataformCoreVersion/i, evidence: "Dataform Core package evidence was detected." },
+    { signal: "dataform-cli", pattern: /@dataform\/cli|dataform\s+(compile|run)/i, evidence: "Dataform CLI package evidence was detected." },
+    { signal: "sqlglot", pattern: /sqlglot|SQLGlot/i, evidence: "SQLGlot package evidence was detected." },
+    { signal: "dbt-adapter", pattern: /dbt-(snowflake|bigquery|postgres|redshift|databricks|spark|duckdb|trino)/i, evidence: "dbt adapter package evidence was detected." }
+  ];
+  return dataTransformationSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function dataTransformationSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: DataTransformationSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text) || spec.pattern.test(`${source.filePath}\n${source.text}`));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/data-transformation-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing"; evidence: string; relatedHref: string };
   });
 }
 
