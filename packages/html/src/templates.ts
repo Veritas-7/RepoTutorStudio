@@ -211,6 +211,7 @@ import type { DataTableReadinessReport } from "@repotutor/shared";
 import type { CalendarReadinessReport } from "@repotutor/shared";
 import type { DialogReadinessReport } from "@repotutor/shared";
 import type { PopoverTooltipReadinessReport } from "@repotutor/shared";
+import type { MenuDropdownReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -383,6 +384,7 @@ export interface StudyHtmlInput {
   calendarReadinessReport: CalendarReadinessReport;
   dialogReadinessReport: DialogReadinessReport;
   popoverTooltipReadinessReport: PopoverTooltipReadinessReport;
+  menuDropdownReadinessReport: MenuDropdownReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -596,6 +598,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["calendar-readiness.html", "Calendar"],
     ["dialog-readiness.html", "Dialog"],
     ["popover-tooltip-readiness.html", "Popover Tooltip"],
+    ["menu-dropdown-readiness.html", "Menu Dropdown"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1655,6 +1658,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Popover Tooltip Readiness", "popover-tooltip-readiness.html", `<section class="panel" data-source-pattern="PopoverTooltip"><h2>Popover Tooltip Snapshot</h2><p>${escapeHtml(input.popoverTooltipReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.popoverTooltipReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.popoverTooltipReadinessReport.popoverTooltipSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.popoverTooltipReadinessReport.frameworkSignals.length}</dd></div><div><dt>positioning</dt><dd>${input.popoverTooltipReadinessReport.positioningSignals.length}</dd></div><div><dt>tests</dt><dd>${input.popoverTooltipReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records popover/tooltip readiness only; it does not open floating surfaces, measure DOM geometry, move focus, calculate collision, dispatch hover/click/Escape/outside press, lock scroll, animate portals, or run analyzed project tests.</p></section><section class="grid"><article class="popover-tooltip-readiness-card"><h3>Popover Tooltip Setups</h3>${popoverTooltipReadinessSetupList(input.popoverTooltipReadinessReport.popoverTooltipSetups)}</article><article class="popover-tooltip-readiness-card"><h3>Framework Signals</h3>${popoverTooltipReadinessSignalList(input.popoverTooltipReadinessReport.frameworkSignals, "signal")}</article><article class="popover-tooltip-readiness-card"><h3>Structure Signals</h3>${popoverTooltipReadinessSignalList(input.popoverTooltipReadinessReport.structureSignals, "signal")}</article><article class="popover-tooltip-readiness-card"><h3>Positioning Signals</h3>${popoverTooltipReadinessSignalList(input.popoverTooltipReadinessReport.positioningSignals, "signal")}</article></section><section class="grid"><article class="popover-tooltip-readiness-card"><h3>Interaction Signals</h3>${popoverTooltipReadinessSignalList(input.popoverTooltipReadinessReport.interactionSignals, "signal")}</article><article class="popover-tooltip-readiness-card"><h3>Dismissal Signals</h3>${popoverTooltipReadinessSignalList(input.popoverTooltipReadinessReport.dismissalSignals, "signal")}</article><article class="popover-tooltip-readiness-card"><h3>Focus Signals</h3>${popoverTooltipReadinessSignalList(input.popoverTooltipReadinessReport.focusSignals, "signal")}</article><article class="popover-tooltip-readiness-card"><h3>Accessibility Signals</h3>${popoverTooltipReadinessSignalList(input.popoverTooltipReadinessReport.accessibilitySignals, "signal")}</article></section><section class="grid"><article class="popover-tooltip-readiness-card"><h3>Portal Signals</h3>${popoverTooltipReadinessSignalList(input.popoverTooltipReadinessReport.portalSignals, "signal")}</article><article class="popover-tooltip-readiness-card"><h3>Test Signals</h3>${popoverTooltipReadinessSignalList(input.popoverTooltipReadinessReport.testSignals, "signal")}</article><article class="popover-tooltip-readiness-card"><h3>Package Signals</h3>${popoverTooltipReadinessSignalList(input.popoverTooltipReadinessReport.packageSignals, "signal")}</article><article class="popover-tooltip-readiness-card"><h3>Recommended Commands</h3>${popoverTooltipReadinessCommandList(input.popoverTooltipReadinessReport.recommendedCommands)}</article><article class="popover-tooltip-readiness-card"><h3>Risk Queue</h3>${popoverTooltipReadinessRiskList(input.popoverTooltipReadinessReport.riskQueue)}</article><article class="popover-tooltip-readiness-card"><h3>다음 확인 단계</h3>${list(input.popoverTooltipReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "menu-dropdown-readiness.html",
+      title: "Menu Dropdown Readiness",
+      html: pageShell("Menu Dropdown Readiness", "menu-dropdown-readiness.html", `<section class="panel" data-source-pattern="MenuDropdown"><h2>Menu Dropdown Snapshot</h2><p>${escapeHtml(input.menuDropdownReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.menuDropdownReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.menuDropdownReadinessReport.menuDropdownSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.menuDropdownReadinessReport.frameworkSignals.length}</dd></div><div><dt>selection</dt><dd>${input.menuDropdownReadinessReport.selectionSignals.length}</dd></div><div><dt>tests</dt><dd>${input.menuDropdownReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records menu/dropdown readiness only; it does not open menus, move roving focus, dispatch pointer/contextmenu/keyboard events, calculate floating position, select items, mutate form values, or run analyzed project tests.</p></section><section class="grid"><article class="menu-dropdown-readiness-card"><h3>Menu Dropdown Setups</h3>${menuDropdownReadinessSetupList(input.menuDropdownReadinessReport.menuDropdownSetups)}</article><article class="menu-dropdown-readiness-card"><h3>Framework Signals</h3>${menuDropdownReadinessSignalList(input.menuDropdownReadinessReport.frameworkSignals, "signal")}</article><article class="menu-dropdown-readiness-card"><h3>Structure Signals</h3>${menuDropdownReadinessSignalList(input.menuDropdownReadinessReport.structureSignals, "signal")}</article><article class="menu-dropdown-readiness-card"><h3>Selection Signals</h3>${menuDropdownReadinessSignalList(input.menuDropdownReadinessReport.selectionSignals, "signal")}</article></section><section class="grid"><article class="menu-dropdown-readiness-card"><h3>Positioning Signals</h3>${menuDropdownReadinessSignalList(input.menuDropdownReadinessReport.positioningSignals, "signal")}</article><article class="menu-dropdown-readiness-card"><h3>Interaction Signals</h3>${menuDropdownReadinessSignalList(input.menuDropdownReadinessReport.interactionSignals, "signal")}</article><article class="menu-dropdown-readiness-card"><h3>Accessibility Signals</h3>${menuDropdownReadinessSignalList(input.menuDropdownReadinessReport.accessibilitySignals, "signal")}</article><article class="menu-dropdown-readiness-card"><h3>State Signals</h3>${menuDropdownReadinessSignalList(input.menuDropdownReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="menu-dropdown-readiness-card"><h3>Test Signals</h3>${menuDropdownReadinessSignalList(input.menuDropdownReadinessReport.testSignals, "signal")}</article><article class="menu-dropdown-readiness-card"><h3>Package Signals</h3>${menuDropdownReadinessSignalList(input.menuDropdownReadinessReport.packageSignals, "signal")}</article><article class="menu-dropdown-readiness-card"><h3>Recommended Commands</h3>${menuDropdownReadinessCommandList(input.menuDropdownReadinessReport.recommendedCommands)}</article><article class="menu-dropdown-readiness-card"><h3>Risk Queue</h3>${menuDropdownReadinessRiskList(input.menuDropdownReadinessReport.riskQueue)}</article><article class="menu-dropdown-readiness-card"><h3>다음 확인 단계</h3>${list(input.menuDropdownReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2074,6 +2082,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Calendar Readiness", path: "html/calendar-readiness.html", description: "FullCalendar/react-big-calendar/React DayPicker식 views, events, selection, timezone 준비도를 확인합니다." },
       { label: "Dialog Readiness", path: "html/dialog-readiness.html", description: "Radix Dialog/Headless UI Dialog/Ariakit Dialog식 portal, overlay, focus, dismissal, accessibility 준비도를 확인합니다." },
       { label: "Popover Tooltip Readiness", path: "html/popover-tooltip-readiness.html", description: "Radix Popover/Tooltip, Floating UI, Ariakit식 portal, positioning, interaction, dismissal 준비도를 확인합니다." },
+      { label: "Menu Dropdown Readiness", path: "html/menu-dropdown-readiness.html", description: "Radix DropdownMenu/ContextMenu/Menubar/NavigationMenu, Headless UI, Ariakit식 menu, selection, keyboard, accessibility 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3061,6 +3070,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "popover-tooltip-readiness.html",
       goal: "Radix Popover/Tooltip, Floating UI, Ariakit식 trigger, portal, positioning, dismissal 흐름을 보고 floating UI 관문을 확인합니다.",
       evidence: `popover tooltip setups ${input.popoverTooltipReadinessReport.popoverTooltipSetups.length}개, positioning signals ${input.popoverTooltipReadinessReport.positioningSignals.length}개`
+    },
+    {
+      title: "Menu dropdown readiness 확인",
+      href: "menu-dropdown-readiness.html",
+      goal: "Radix DropdownMenu/ContextMenu/Menubar/NavigationMenu, Headless UI, Ariakit식 menu, selection, keyboard, accessibility 흐름을 보고 menu UI 관문을 확인합니다.",
+      evidence: `menu dropdown setups ${input.menuDropdownReadinessReport.menuDropdownSetups.length}개, selection signals ${input.menuDropdownReadinessReport.selectionSignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -7579,6 +7594,31 @@ function popoverTooltipReadinessRiskList(items: PopoverTooltipReadinessReport["r
 }
 
 function popoverTooltipReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function menuDropdownReadinessSetupList(items: MenuDropdownReadinessReport["menuDropdownSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">menu dropdown setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>trigger/content/item/selection/positioning/interaction/accessibility/test ${item.triggerCount}/${item.contentCount}/${item.itemCount}/${item.selectionCount}/${item.positioningCount}/${item.interactionCount}/${item.accessibilityCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(menuDropdownReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function menuDropdownReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">menu dropdown signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(menuDropdownReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function menuDropdownReadinessCommandList(items: MenuDropdownReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function menuDropdownReadinessRiskList(items: MenuDropdownReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(menuDropdownReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function menuDropdownReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

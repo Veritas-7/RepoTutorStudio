@@ -22516,6 +22516,168 @@ describe("RepoTutor core pipeline", () => {
     expect(popoverHtml).toContain("RepoTutor records popover/tooltip readiness only");
   });
 
+  it("detects menu and dropdown readiness without opening menu surfaces", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-menu-dropdown-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-menu-dropdown-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "radix-menu-dropdown.tsx"), [
+      "import { useState } from 'react';",
+      "import * as DropdownMenu from '@radix-ui/react-dropdown-menu';",
+      "import * as ContextMenu from '@radix-ui/react-context-menu';",
+      "import * as Menubar from '@radix-ui/react-menubar';",
+      "import * as NavigationMenu from '@radix-ui/react-navigation-menu';",
+      "export function RadixMenus() {",
+      "  const [open, setOpen] = useState(false);",
+      "  const [checked, setChecked] = useState(false);",
+      "  const [value, setValue] = useState('left');",
+      "  return <>",
+      "    <DropdownMenu.Root open={open} defaultOpen={false} onOpenChange={setOpen} modal>",
+      "      <DropdownMenu.Trigger aria-haspopup=\"menu\" aria-expanded={open} aria-controls=\"account-menu\">Account</DropdownMenu.Trigger>",
+      "      <DropdownMenu.Portal forceMount>",
+      "        <DropdownMenu.Content id=\"account-menu\" role=\"menu\" side=\"bottom\" align=\"end\" sideOffset={8} collisionBoundary={document.body} avoidCollisions data-state={open ? 'open' : 'closed'}>",
+      "          <DropdownMenu.Label>Account actions</DropdownMenu.Label>",
+      "          <DropdownMenu.Group><DropdownMenu.Item role=\"menuitem\" data-highlighted>Profile</DropdownMenu.Item><DropdownMenu.Separator /></DropdownMenu.Group>",
+      "          <DropdownMenu.CheckboxItem checked={checked} onCheckedChange={setChecked} aria-checked={checked}><DropdownMenu.ItemIndicator>✓</DropdownMenu.ItemIndicator>Email updates</DropdownMenu.CheckboxItem>",
+      "          <DropdownMenu.RadioGroup value={value} onValueChange={setValue}><DropdownMenu.RadioItem value=\"left\"><DropdownMenu.ItemIndicator />Left</DropdownMenu.RadioItem></DropdownMenu.RadioGroup>",
+      "          <DropdownMenu.Sub><DropdownMenu.SubTrigger>More</DropdownMenu.SubTrigger><DropdownMenu.Portal><DropdownMenu.SubContent sideOffset={4}><DropdownMenu.Item>Archive</DropdownMenu.Item><DropdownMenu.Arrow /></DropdownMenu.SubContent></DropdownMenu.Portal></DropdownMenu.Sub>",
+      "        </DropdownMenu.Content>",
+      "      </DropdownMenu.Portal>",
+      "    </DropdownMenu.Root>",
+      "    <ContextMenu.Root onOpenChange={setOpen}><ContextMenu.Trigger onContextMenu={(event) => event.preventDefault()}>Open context menu</ContextMenu.Trigger><ContextMenu.Portal><ContextMenu.Content role=\"menu\"><ContextMenu.Item>Copy</ContextMenu.Item><ContextMenu.Arrow /></ContextMenu.Content></ContextMenu.Portal></ContextMenu.Root>",
+      "    <Menubar.Root value={value} onValueChange={setValue}><Menubar.Menu value=\"file\"><Menubar.Trigger>File</Menubar.Trigger><Menubar.Portal><Menubar.Content><Menubar.Item>New</Menubar.Item><Menubar.CheckboxItem checked={checked}>Pinned</Menubar.CheckboxItem><Menubar.RadioGroup value={value}><Menubar.RadioItem value=\"left\">Left</Menubar.RadioItem></Menubar.RadioGroup></Menubar.Content></Menubar.Portal></Menubar.Menu></Menubar.Root>",
+      "    <NavigationMenu.Root value={value} onValueChange={setValue}><NavigationMenu.List><NavigationMenu.Item><NavigationMenu.Trigger aria-controls=\"nav-products\">Products</NavigationMenu.Trigger><NavigationMenu.Content id=\"nav-products\"><NavigationMenu.Link active href=\"/docs\">Docs</NavigationMenu.Link></NavigationMenu.Content></NavigationMenu.Item><NavigationMenu.Indicator /><NavigationMenu.Viewport /></NavigationMenu.List></NavigationMenu.Root>",
+      "  </>;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "headless-menu-listbox.tsx"), [
+      "import { Combobox, Listbox, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';",
+      "export function HeadlessMenus({ people, selected, setSelected }) {",
+      "  return <>",
+      "    <Menu as=\"div\"><MenuButton aria-haspopup=\"menu\" aria-expanded=\"false\">Actions</MenuButton><MenuItems anchor=\"bottom end\" static data-headlessui-state=\"open\"><MenuItem disabled>{({ active, close }) => <button role=\"menuitem\" data-headlessui-state={active ? 'active' : ''} onClick={() => close()}>Archive</button>}</MenuItem></MenuItems></Menu>",
+      "    <Listbox value={selected} onChange={setSelected} multiple by=\"id\" disabled={false}><Listbox.Button aria-controls=\"people-listbox\">Assignee</Listbox.Button><Listbox.Options id=\"people-listbox\" role=\"listbox\"><Listbox.Option value={people[0]}>{({ selected, active }) => <span role=\"option\" aria-selected={selected} data-headlessui-state={active ? 'active' : ''}>Ada</span>}</Listbox.Option></Listbox.Options></Listbox>",
+      "    <Combobox value={selected} onChange={setSelected} immediate virtual={{ options: people }} nullable><Combobox.Input aria-activedescendant=\"person-1\" displayValue={(person) => person.name} /><Combobox.Button>Search</Combobox.Button><Combobox.Options><Combobox.Option value={people[0]}>Ada</Combobox.Option></Combobox.Options></Combobox>",
+      "  </>;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "ariakit-menu-select.tsx"), [
+      "import { Combobox, ComboboxItem, ComboboxProvider, Menu, MenuArrow, MenuButton, MenuButtonArrow, MenuHeading, MenuItem, MenuItemCheckbox, MenuItemRadio, MenuProvider, MenuSeparator, Select, SelectItem, SelectItemCheck, SelectProvider, useComboboxStore, useMenuStore, useSelectStore } from '@ariakit/react';",
+      "export function AriakitMenus() {",
+      "  const menu = useMenuStore({ defaultOpen: false, placement: 'bottom-start' });",
+      "  const select = useSelectStore({ defaultValue: 'one', placement: 'bottom' });",
+      "  const combobox = useComboboxStore({ defaultValue: '', placement: 'bottom-start' });",
+      "  return <MenuProvider store={menu}>",
+      "    <MenuButton aria-haspopup=\"menu\" aria-expanded={menu.useState('open')}><MenuButtonArrow />Open menu</MenuButton>",
+      "    <Menu store={menu} portal gutter={8} shift={4} flip hideOnEscape hideOnInteractOutside aria-labelledby=\"menu-title\"><MenuHeading id=\"menu-title\">Project actions</MenuHeading><MenuItem>Rename</MenuItem><MenuItemCheckbox checked>Watched</MenuItemCheckbox><MenuItemRadio name=\"density\" value=\"compact\">Compact</MenuItemRadio><MenuSeparator /><MenuArrow /></Menu>",
+      "    <SelectProvider store={select}><Select aria-label=\"Plan\"><SelectItem value=\"one\"><SelectItemCheck />One</SelectItem><SelectItem value=\"two\">Two</SelectItem></Select></SelectProvider>",
+      "    <ComboboxProvider store={combobox}><Combobox aria-activedescendant=\"combo-one\" aria-controls=\"combo-list\" /><ComboboxItem id=\"combo-one\" value=\"one\">One</ComboboxItem></ComboboxProvider>",
+      "  </MenuProvider>;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "test", "menu-dropdown.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { RadixMenus } from '../src/radix-menu-dropdown';",
+      "describe('menu and dropdown accessibility behavior', () => {",
+      "  it('keeps roles, pointer, keyboard, and selection behavior testable', async () => {",
+      "    render(<RadixMenus />);",
+      "    await userEvent.click(screen.getByRole('button', { name: /account/i }));",
+      "    await userEvent.pointer({ keys: '[MouseRight]', target: screen.getByText(/open context menu/i) });",
+      "    await userEvent.keyboard('{ArrowDown}{Enter}{Escape}{Tab}');",
+      "    expect(screen.getByRole('menu')).toBeTruthy();",
+      "    expect(screen.getByRole('menuitem', { name: /profile/i })).toBeTruthy();",
+      "  });",
+      "});"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "menu-dropdown.yml"), [
+      "name: menu dropdown",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest run test/menu-dropdown.spec.tsx",
+      "      - run: pnpm playwright test menu-dropdown.spec.tsx",
+      "      - run: pnpm cypress run --spec test/menu-dropdown.spec.tsx",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: menu-dropdown-traces",
+      "          path: reports/menu-dropdown"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@ariakit/react": "latest",
+        "@headlessui/react": "latest",
+        "@radix-ui/react-context-menu": "latest",
+        "@radix-ui/react-dropdown-menu": "latest",
+        "@radix-ui/react-menubar": "latest",
+        "@radix-ui/react-navigation-menu": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "@types/react": "latest",
+        "cypress": "latest",
+        "playwright": "latest",
+        "typescript": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "menu-dropdown-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      menuDropdownSetups: Array<{ filePath: string; framework: string; triggerCount: number; contentCount: number; itemCount: number; selectionCount: number; positioningCount: number; interactionCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      selectionSignals: Array<{ signal: string; readiness: string }>;
+      positioningSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Menu/dropdown readiness Radix DropdownMenu ContextMenu Menubar NavigationMenu Headless UI Menu Listbox Combobox Ariakit Menu Select Combobox keyboard selection accessibility tests");
+    expect(report.menuDropdownSetups.some((item) => item.filePath === "src/radix-menu-dropdown.tsx" && item.framework === "radix-dropdown-menu" && item.triggerCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.selectionCount > 0 && item.positioningCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.menuDropdownSetups.some((item) => item.filePath === "src/headless-menu-listbox.tsx" && item.framework === "headless-menu" && item.triggerCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.selectionCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.menuDropdownSetups.some((item) => item.filePath === "src/ariakit-menu-select.tsx" && item.framework === "ariakit-menu" && item.triggerCount > 0 && item.contentCount > 0 && item.itemCount > 0 && item.selectionCount > 0 && item.positioningCount > 0 && item.interactionCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["radix-dropdown-menu", "radix-context-menu", "radix-menubar", "radix-navigation-menu", "headless-menu", "headless-listbox", "headless-combobox", "ariakit-menu", "ariakit-select", "ariakit-combobox"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "trigger-button", "portal", "content", "item", "group", "label", "separator", "checkbox-item", "radio-item", "indicator", "submenu", "arrow", "viewport"]));
+    expect(readySignals(report.selectionSignals)).toEqual(expect.arrayContaining(["value-prop", "on-value-change", "checked-state", "on-checked-change", "radio-group", "selected-state", "multiple-selection"]));
+    expect(readySignals(report.positioningSignals)).toEqual(expect.arrayContaining(["side", "align", "side-offset", "collision-boundary", "popper", "anchor", "viewport", "floating-panel"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["click", "context-menu", "hover", "typeahead", "roving-focus", "keyboard-navigation", "escape-key", "outside-click", "tab-close"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-menu", "role-menuitem", "role-listbox", "role-option", "aria-haspopup", "aria-expanded", "aria-controls", "aria-activedescendant", "aria-labelledby", "aria-selected", "aria-checked"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["open-prop", "default-open", "on-open-change", "disabled", "data-state", "data-highlighted", "data-disabled"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "cypress", "testing-library", "keyboard-test", "role-test", "pointer-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@radix-ui/react-dropdown-menu", "@radix-ui/react-context-menu", "@radix-ui/react-menubar", "@radix-ui/react-navigation-menu", "@headlessui/react", "@ariakit/react", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@radix-ui/react-dropdown-menu"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records menu/dropdown readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "menu-dropdown-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "menu-dropdown-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "menu-dropdown-readiness.html"))).resolves.toBeUndefined();
+    const menuMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "menu-dropdown-readiness.md"), "utf8");
+    expect(menuMarkdown).toContain("Menu Dropdown Readiness");
+    expect(menuMarkdown).toContain("@headlessui/react");
+    const menuHtml = await fs.readFile(path.join(result.session.outputPaths.html, "menu-dropdown-readiness.html"), "utf8");
+    expect(menuHtml).toContain("menu-dropdown-readiness-card");
+    expect(menuHtml).toContain("data-source-pattern=\"MenuDropdown\"");
+    expect(menuHtml).toContain("RepoTutor records menu/dropdown readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
