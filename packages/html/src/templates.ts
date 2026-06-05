@@ -209,6 +209,7 @@ import type {
 import type { GuidedTourReadinessReport } from "@repotutor/shared";
 import type { DataTableReadinessReport } from "@repotutor/shared";
 import type { CalendarReadinessReport } from "@repotutor/shared";
+import type { DialogReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -379,6 +380,7 @@ export interface StudyHtmlInput {
   guidedTourReadinessReport: GuidedTourReadinessReport;
   dataTableReadinessReport: DataTableReadinessReport;
   calendarReadinessReport: CalendarReadinessReport;
+  dialogReadinessReport: DialogReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -590,6 +592,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["guided-tour-readiness.html", "Guided Tour"],
     ["data-table-readiness.html", "Data Table"],
     ["calendar-readiness.html", "Calendar"],
+    ["dialog-readiness.html", "Dialog"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1639,6 +1642,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Calendar Readiness", "calendar-readiness.html", `<section class="panel" data-source-pattern="Calendar"><h2>Calendar Snapshot</h2><p>${escapeHtml(input.calendarReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.calendarReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.calendarReadinessReport.calendarSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.calendarReadinessReport.frameworkSignals.length}</dd></div><div><dt>events</dt><dd>${input.calendarReadinessReport.eventSignals.length}</dd></div><div><dt>tests</dt><dd>${input.calendarReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records calendar readiness only; it does not render calendars, mutate Date objects, calculate layout geometry, drag events, resize events, select dates, advance time zones, fetch event sources, or run analyzed project tests.</p></section><section class="grid"><article class="calendar-readiness-card"><h3>Calendar Setups</h3>${calendarReadinessSetupList(input.calendarReadinessReport.calendarSetups)}</article><article class="calendar-readiness-card"><h3>Framework Signals</h3>${calendarReadinessSignalList(input.calendarReadinessReport.frameworkSignals, "signal")}</article><article class="calendar-readiness-card"><h3>View Signals</h3>${calendarReadinessSignalList(input.calendarReadinessReport.viewSignals, "signal")}</article><article class="calendar-readiness-card"><h3>Event Signals</h3>${calendarReadinessSignalList(input.calendarReadinessReport.eventSignals, "signal")}</article></section><section class="grid"><article class="calendar-readiness-card"><h3>Selection Signals</h3>${calendarReadinessSignalList(input.calendarReadinessReport.selectionSignals, "signal")}</article><article class="calendar-readiness-card"><h3>Navigation Signals</h3>${calendarReadinessSignalList(input.calendarReadinessReport.navigationSignals, "signal")}</article><article class="calendar-readiness-card"><h3>Localization Signals</h3>${calendarReadinessSignalList(input.calendarReadinessReport.localizationSignals, "signal")}</article><article class="calendar-readiness-card"><h3>Resource Signals</h3>${calendarReadinessSignalList(input.calendarReadinessReport.resourceSignals, "signal")}</article></section><section class="grid"><article class="calendar-readiness-card"><h3>Drag Drop Signals</h3>${calendarReadinessSignalList(input.calendarReadinessReport.dragDropSignals, "signal")}</article><article class="calendar-readiness-card"><h3>Range Constraint Signals</h3>${calendarReadinessSignalList(input.calendarReadinessReport.rangeConstraintSignals, "signal")}</article><article class="calendar-readiness-card"><h3>Accessibility Signals</h3>${calendarReadinessSignalList(input.calendarReadinessReport.accessibilitySignals, "signal")}</article><article class="calendar-readiness-card"><h3>Test Signals</h3>${calendarReadinessSignalList(input.calendarReadinessReport.testSignals, "signal")}</article><article class="calendar-readiness-card"><h3>Package Signals</h3>${calendarReadinessSignalList(input.calendarReadinessReport.packageSignals, "signal")}</article><article class="calendar-readiness-card"><h3>Recommended Commands</h3>${calendarReadinessCommandList(input.calendarReadinessReport.recommendedCommands)}</article><article class="calendar-readiness-card"><h3>Risk Queue</h3>${calendarReadinessRiskList(input.calendarReadinessReport.riskQueue)}</article><article class="calendar-readiness-card"><h3>다음 확인 단계</h3>${list(input.calendarReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "dialog-readiness.html",
+      title: "Dialog Readiness",
+      html: pageShell("Dialog Readiness", "dialog-readiness.html", `<section class="panel" data-source-pattern="Dialog"><h2>Dialog Snapshot</h2><p>${escapeHtml(input.dialogReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.dialogReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.dialogReadinessReport.dialogSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.dialogReadinessReport.frameworkSignals.length}</dd></div><div><dt>focus</dt><dd>${input.dialogReadinessReport.focusSignals.length}</dd></div><div><dt>tests</dt><dd>${input.dialogReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records dialog readiness only; it does not open portals, move focus, mark siblings inert, lock scroll, dispatch Escape/outside clicks, animate overlays, or run analyzed project tests.</p></section><section class="grid"><article class="dialog-readiness-card"><h3>Dialog Setups</h3>${dialogReadinessSetupList(input.dialogReadinessReport.dialogSetups)}</article><article class="dialog-readiness-card"><h3>Framework Signals</h3>${dialogReadinessSignalList(input.dialogReadinessReport.frameworkSignals, "signal")}</article><article class="dialog-readiness-card"><h3>Structure Signals</h3>${dialogReadinessSignalList(input.dialogReadinessReport.structureSignals, "signal")}</article><article class="dialog-readiness-card"><h3>State Signals</h3>${dialogReadinessSignalList(input.dialogReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="dialog-readiness-card"><h3>Focus Signals</h3>${dialogReadinessSignalList(input.dialogReadinessReport.focusSignals, "signal")}</article><article class="dialog-readiness-card"><h3>Dismissal Signals</h3>${dialogReadinessSignalList(input.dialogReadinessReport.dismissalSignals, "signal")}</article><article class="dialog-readiness-card"><h3>Portal Overlay Signals</h3>${dialogReadinessSignalList(input.dialogReadinessReport.portalOverlaySignals, "signal")}</article><article class="dialog-readiness-card"><h3>Accessibility Signals</h3>${dialogReadinessSignalList(input.dialogReadinessReport.accessibilitySignals, "signal")}</article></section><section class="grid"><article class="dialog-readiness-card"><h3>Animation Signals</h3>${dialogReadinessSignalList(input.dialogReadinessReport.animationSignals, "signal")}</article><article class="dialog-readiness-card"><h3>Test Signals</h3>${dialogReadinessSignalList(input.dialogReadinessReport.testSignals, "signal")}</article><article class="dialog-readiness-card"><h3>Package Signals</h3>${dialogReadinessSignalList(input.dialogReadinessReport.packageSignals, "signal")}</article><article class="dialog-readiness-card"><h3>Recommended Commands</h3>${dialogReadinessCommandList(input.dialogReadinessReport.recommendedCommands)}</article><article class="dialog-readiness-card"><h3>Risk Queue</h3>${dialogReadinessRiskList(input.dialogReadinessReport.riskQueue)}</article><article class="dialog-readiness-card"><h3>다음 확인 단계</h3>${list(input.dialogReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2056,6 +2064,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Guided Tour Readiness", path: "html/guided-tour-readiness.html", description: "React Joyride/Shepherd.js/driver.js식 guided tour steps, targets, overlay, accessibility 준비도를 확인합니다." },
       { label: "Data Table Readiness", path: "html/data-table-readiness.html", description: "TanStack Table/AG Grid/React Data Grid식 columns, rows, sorting, virtualization 준비도를 확인합니다." },
       { label: "Calendar Readiness", path: "html/calendar-readiness.html", description: "FullCalendar/react-big-calendar/React DayPicker식 views, events, selection, timezone 준비도를 확인합니다." },
+      { label: "Dialog Readiness", path: "html/dialog-readiness.html", description: "Radix Dialog/Headless UI Dialog/Ariakit Dialog식 portal, overlay, focus, dismissal, accessibility 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -3031,6 +3040,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "calendar-readiness.html",
       goal: "FullCalendar/react-big-calendar/React DayPicker식 views, events, selection, navigation, localization 흐름을 보고 calendar UI 관문을 확인합니다.",
       evidence: `calendar setups ${input.calendarReadinessReport.calendarSetups.length}개, event signals ${input.calendarReadinessReport.eventSignals.length}개`
+    },
+    {
+      title: "Dialog readiness 확인",
+      href: "dialog-readiness.html",
+      goal: "Radix Dialog/Headless UI Dialog/Ariakit Dialog식 portal, overlay, focus, dismissal, accessibility 흐름을 보고 modal UI 관문을 확인합니다.",
+      evidence: `dialog setups ${input.dialogReadinessReport.dialogSetups.length}개, focus signals ${input.dialogReadinessReport.focusSignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -7499,6 +7514,31 @@ function calendarReadinessRiskList(items: CalendarReadinessReport["riskQueue"]):
 }
 
 function calendarReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function dialogReadinessSetupList(items: DialogReadinessReport["dialogSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">dialog setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.framework)}/${escapeHtml(item.readiness)}]<br>trigger/portal/overlay/content/title-description/state/focus/dismiss/accessibility/test ${item.triggerCount}/${item.portalCount}/${item.overlayCount}/${item.contentCount}/${item.titleDescriptionCount}/${item.stateCount}/${item.focusCount}/${item.dismissCount}/${item.accessibilityCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dialogReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function dialogReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">dialog signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(dialogReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dialogReadinessCommandList(items: DialogReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function dialogReadinessRiskList(items: DialogReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(dialogReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function dialogReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

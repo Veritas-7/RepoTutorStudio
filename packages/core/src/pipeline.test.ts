@@ -22174,6 +22174,176 @@ describe("RepoTutor core pipeline", () => {
     expect(calendarHtml).toContain("RepoTutor records calendar readiness only");
   });
 
+  it("detects dialog readiness without opening portals or moving focus", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-dialog-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-dialog-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "radix-dialog.tsx"), [
+      "import { useRef, useState } from 'react';",
+      "import * as Dialog from '@radix-ui/react-dialog';",
+      "import * as AlertDialog from '@radix-ui/react-alert-dialog';",
+      "export function RadixSettingsDialog() {",
+      "  const [open, setOpen] = useState(false);",
+      "  const closeRef = useRef<HTMLButtonElement>(null);",
+      "  return <Dialog.Root open={open} defaultOpen={false} onOpenChange={setOpen} modal>",
+      "    <Dialog.Trigger aria-label=\"Open settings dialog\">Settings</Dialog.Trigger>",
+      "    <Dialog.Portal forceMount>",
+      "      <Dialog.Overlay className=\"fixed inset-0\" data-state={open ? 'open' : 'closed'} />",
+      "      <Dialog.Content aria-label=\"Settings dialog\" onOpenAutoFocus={(event) => closeRef.current?.focus()} onCloseAutoFocus={(event) => event.preventDefault()}>",
+      "        <Dialog.Title>Settings</Dialog.Title>",
+      "        <Dialog.Description>Change workspace preferences</Dialog.Description>",
+      "        <Dialog.Close ref={closeRef} aria-label=\"Close settings dialog\">Close</Dialog.Close>",
+      "      </Dialog.Content>",
+      "    </Dialog.Portal>",
+      "    <AlertDialog.Root>",
+      "      <AlertDialog.Trigger>Delete workspace</AlertDialog.Trigger>",
+      "      <AlertDialog.Portal><AlertDialog.Overlay /><AlertDialog.Content role=\"alertdialog\"><AlertDialog.Title>Confirm delete</AlertDialog.Title><AlertDialog.Description>This cannot be undone</AlertDialog.Description><AlertDialog.Cancel>Cancel</AlertDialog.Cancel><AlertDialog.Action>Delete</AlertDialog.Action></AlertDialog.Content></AlertDialog.Portal>",
+      "    </AlertDialog.Root>",
+      "  </Dialog.Root>;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "headlessui-dialog.tsx"), [
+      "import { Fragment, useRef, useState } from 'react';",
+      "import { CloseButton, Description, Dialog, DialogBackdrop, DialogPanel, DialogTitle, Transition } from '@headlessui/react';",
+      "export function HeadlessBillingDialog() {",
+      "  const [open, setOpen] = useState(true);",
+      "  const initialFocus = useRef<HTMLButtonElement>(null);",
+      "  return <Transition show={open} as={Fragment}>",
+      "    <Dialog open={open} onClose={setOpen} initialFocus={initialFocus} autoFocus role=\"alertdialog\" static transition>",
+      "      <Transition.Child as={Fragment} enter=\"ease-out duration-200\" leave=\"ease-in duration-150\">",
+      "        <DialogBackdrop className=\"fixed inset-0 bg-black/40\" />",
+      "      </Transition.Child>",
+      "      <DialogPanel aria-label=\"Billing confirmation\" className=\"panel\">",
+      "        <DialogTitle>Confirm billing change</DialogTitle>",
+      "        <Description>Review invoice changes before continuing</Description>",
+      "        <CloseButton ref={initialFocus} aria-label=\"Close billing dialog\">Cancel</CloseButton>",
+      "      </DialogPanel>",
+      "    </Dialog>",
+      "  </Transition>;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "src", "ariakit-dialog.tsx"), [
+      "import { useRef } from 'react';",
+      "import { Dialog, DialogDescription, DialogDisclosure, DialogDismiss, DialogHeading, DialogProvider, useDialogStore } from '@ariakit/react';",
+      "export function AriakitCommandDialog() {",
+      "  const initialFocus = useRef<HTMLInputElement>(null);",
+      "  const finalFocus = useRef<HTMLButtonElement>(null);",
+      "  const store = useDialogStore({ defaultOpen: false });",
+      "  return <DialogProvider store={store}>",
+      "    <DialogDisclosure ref={finalFocus}>Open command dialog</DialogDisclosure>",
+      "    <Dialog store={store} modal portal backdrop hideOnEscape hideOnInteractOutside preventBodyScroll autoFocusOnShow autoFocusOnHide initialFocus={initialFocus} finalFocus={finalFocus} aria-label=\"Command dialog\">",
+      "      <DialogHeading>Command dialog</DialogHeading>",
+      "      <DialogDescription>Choose the next command</DialogDescription>",
+      "      <input ref={initialFocus} aria-label=\"Command search\" />",
+      "      <DialogDismiss aria-label=\"Dismiss command dialog\">Dismiss</DialogDismiss>",
+      "    </Dialog>",
+      "  </DialogProvider>;",
+      "}"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "test", "dialog.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { HeadlessBillingDialog } from '../src/headlessui-dialog';",
+      "describe('dialog accessibility and focus behavior', () => {",
+      "  it('keeps role, labels, escape, and tab flow testable', async () => {",
+      "    render(<HeadlessBillingDialog />);",
+      "    expect(screen.getByRole('alertdialog')).toBeTruthy();",
+      "    expect(screen.getByLabelText(/billing confirmation/i)).toBeTruthy();",
+      "    await userEvent.keyboard('{Tab}{Escape}');",
+      "    expect(document.activeElement).toBeTruthy();",
+      "  });",
+      "});"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "dialog.yml"), [
+      "name: dialog",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest run test/dialog.spec.tsx",
+      "      - run: pnpm playwright test dialog.spec.tsx",
+      "      - run: pnpm cypress run --spec test/dialog.spec.tsx",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: dialog-traces",
+      "          path: reports/dialog"
+    ].join("\n"));
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@ariakit/react": "latest",
+        "@headlessui/react": "latest",
+        "@radix-ui/react-alert-dialog": "latest",
+        "@radix-ui/react-dialog": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "@types/react": "latest",
+        "cypress": "latest",
+        "playwright": "latest",
+        "typescript": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "dialog-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      dialogSetups: Array<{ filePath: string; framework: string; triggerCount: number; portalCount: number; overlayCount: number; contentCount: number; titleDescriptionCount: number; stateCount: number; focusCount: number; dismissCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      focusSignals: Array<{ signal: string; readiness: string }>;
+      dismissalSignals: Array<{ signal: string; readiness: string }>;
+      portalOverlaySignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      animationSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Dialog readiness Radix Dialog Headless UI Dialog Ariakit Dialog portal overlay focus trap dismiss accessibility tests");
+    expect(report.dialogSetups.some((item) => item.filePath === "src/radix-dialog.tsx" && item.framework === "radix-dialog" && item.triggerCount > 0 && item.portalCount > 0 && item.overlayCount > 0 && item.contentCount > 0 && item.titleDescriptionCount > 0 && item.stateCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.dialogSetups.some((item) => item.filePath === "src/headlessui-dialog.tsx" && item.framework === "headlessui-dialog" && item.portalCount > 0 && item.overlayCount > 0 && item.contentCount > 0 && item.titleDescriptionCount > 0 && item.stateCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.dialogSetups.some((item) => item.filePath === "src/ariakit-dialog.tsx" && item.framework === "ariakit-dialog" && item.triggerCount > 0 && item.portalCount > 0 && item.overlayCount > 0 && item.contentCount > 0 && item.titleDescriptionCount > 0 && item.stateCount > 0 && item.focusCount > 0 && item.dismissCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["radix-dialog", "radix-alert-dialog", "headlessui-dialog", "ariakit-dialog"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "trigger", "portal", "overlay", "content", "title", "description", "close", "panel", "backdrop"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["open-prop", "default-open", "on-open-change", "on-close", "dialog-provider", "dialog-store", "controlled-state", "transition-state"]));
+    expect(readySignals(report.focusSignals)).toEqual(expect.arrayContaining(["focus-scope", "focus-trap", "initial-focus", "restore-focus", "auto-focus", "final-focus", "tab-lock", "inert-others"]));
+    expect(readySignals(report.dismissalSignals)).toEqual(expect.arrayContaining(["dismissable-layer", "outside-click", "escape-key", "close-button", "dialog-dismiss", "hide-on-escape", "hide-on-interact-outside", "on-dismiss"]));
+    expect(readySignals(report.portalOverlaySignals)).toEqual(expect.arrayContaining(["portal", "portal-group", "force-portal-root", "remove-scroll", "scroll-lock", "backdrop", "overlay", "modal"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-dialog", "role-alertdialog", "aria-modal", "aria-labelledby", "aria-describedby", "aria-label", "title-required", "description-warning"]));
+    expect(readySignals(report.animationSignals)).toEqual(expect.arrayContaining(["transition", "transition-child", "data-state", "force-mount", "open-closed-state", "mounted-state"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "playwright", "cypress", "testing-library", "role-test", "keyboard-test", "focus-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@radix-ui/react-dialog", "@radix-ui/react-alert-dialog", "@headlessui/react", "@ariakit/react", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@radix-ui/react-dialog"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records dialog readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "dialog-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "dialog-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "dialog-readiness.html"))).resolves.toBeUndefined();
+    const dialogMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "dialog-readiness.md"), "utf8");
+    expect(dialogMarkdown).toContain("Dialog Readiness");
+    expect(dialogMarkdown).toContain("@radix-ui/react-dialog");
+    const dialogHtml = await fs.readFile(path.join(result.session.outputPaths.html, "dialog-readiness.html"), "utf8");
+    expect(dialogHtml).toContain("dialog-readiness-card");
+    expect(dialogHtml).toContain("data-source-pattern=\"Dialog\"");
+    expect(dialogHtml).toContain("RepoTutor records dialog readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

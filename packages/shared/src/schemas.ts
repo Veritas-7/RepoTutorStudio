@@ -10691,6 +10691,99 @@ export const CalendarReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const DialogReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  dialogSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["radix-dialog", "headlessui-dialog", "ariakit-dialog", "native-dialog", "custom", "unknown"]),
+    triggerCount: z.number().int().nonnegative(),
+    portalCount: z.number().int().nonnegative(),
+    overlayCount: z.number().int().nonnegative(),
+    contentCount: z.number().int().nonnegative(),
+    titleDescriptionCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    focusCount: z.number().int().nonnegative(),
+    dismissCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["radix-dialog", "radix-alert-dialog", "headlessui-dialog", "ariakit-dialog", "native-dialog", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "trigger", "portal", "overlay", "content", "title", "description", "close", "panel", "backdrop", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["open-prop", "default-open", "on-open-change", "on-close", "dialog-provider", "dialog-store", "controlled-state", "transition-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  focusSignals: z.array(z.object({
+    signal: z.enum(["focus-scope", "focus-trap", "initial-focus", "restore-focus", "auto-focus", "final-focus", "tab-lock", "inert-others", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dismissalSignals: z.array(z.object({
+    signal: z.enum(["dismissable-layer", "outside-click", "escape-key", "close-button", "dialog-dismiss", "hide-on-escape", "hide-on-interact-outside", "on-dismiss", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  portalOverlaySignals: z.array(z.object({
+    signal: z.enum(["portal", "portal-group", "force-portal-root", "remove-scroll", "scroll-lock", "backdrop", "overlay", "modal", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-dialog", "role-alertdialog", "aria-modal", "aria-labelledby", "aria-describedby", "aria-label", "title-required", "description-warning", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  animationSignals: z.array(z.object({
+    signal: z.enum(["transition", "transition-child", "data-state", "force-mount", "open-closed-state", "mounted-state", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "role-test", "keyboard-test", "focus-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@radix-ui/react-dialog", "@radix-ui/react-alert-dialog", "@headlessui/react", "@ariakit/react", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -13750,6 +13843,7 @@ export type CommandPaletteReadinessReport = z.infer<typeof CommandPaletteReadine
 export type GuidedTourReadinessReport = z.infer<typeof GuidedTourReadinessReportSchema>;
 export type DataTableReadinessReport = z.infer<typeof DataTableReadinessReportSchema>;
 export type CalendarReadinessReport = z.infer<typeof CalendarReadinessReportSchema>;
+export type DialogReadinessReport = z.infer<typeof DialogReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
