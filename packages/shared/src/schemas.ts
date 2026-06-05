@@ -11649,6 +11649,92 @@ export const AvatarReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const PinInputReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  pinInputSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["radix-otp", "zag-pin-input", "native-input", "custom", "unknown"]),
+    rootCount: z.number().int().nonnegative(),
+    inputCount: z.number().int().nonnegative(),
+    hiddenInputCount: z.number().int().nonnegative(),
+    valueCount: z.number().int().nonnegative(),
+    validationCount: z.number().int().nonnegative(),
+    interactionCount: z.number().int().nonnegative(),
+    formCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["radix-otp", "zag-pin-input", "native-input", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "input", "hidden-input", "label", "control", "collection", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  valueSignals: z.array(z.object({
+    signal: z.enum(["value", "default-value", "value-as-string", "complete", "count", "focused-index", "set-value", "clear-value", "set-index", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  validationSignals: z.array(z.object({
+    signal: z.enum(["numeric", "alpha", "alphanumeric", "pattern", "sanitize", "invalid", "mask", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["paste", "before-input", "change", "backspace", "delete", "arrow-left", "arrow-right", "home", "end", "enter", "focus-blur", "auto-advance", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  formSignals: z.array(z.object({
+    signal: z.enum(["name", "form", "auto-submit", "request-submit", "hidden-submit-input", "reset", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["aria-label", "group-role", "input-mode", "autocomplete-one-time-code", "disabled", "readonly", "required", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "axe", "keyboard-test", "paste-test", "form-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@radix-ui/react-one-time-password-field", "@zag-js/pin-input", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -14719,6 +14805,7 @@ export type SelectComboboxReadinessReport = z.infer<typeof SelectComboboxReadine
 export type ToolbarToggleReadinessReport = z.infer<typeof ToolbarToggleReadinessReportSchema>;
 export type ScrollAreaReadinessReport = z.infer<typeof ScrollAreaReadinessReportSchema>;
 export type AvatarReadinessReport = z.infer<typeof AvatarReadinessReportSchema>;
+export type PinInputReadinessReport = z.infer<typeof PinInputReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
