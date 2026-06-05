@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-05T22:19:28.251Z",
+  "createdAt": "2026-06-05T22:36:26.256Z",
   "checks": [
     {
       "name": "project setup",
@@ -1131,6 +1131,13 @@
     },
     {
       "name": "Checkbox radio switch readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Slider progress readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

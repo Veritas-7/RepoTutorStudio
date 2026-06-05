@@ -23225,6 +23225,140 @@ describe("RepoTutor core pipeline", () => {
     expect(controlsHtml).toContain("RepoTutor records checkbox/radio/switch readiness only");
   });
 
+  it("detects slider and progress readiness without changing values", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-slider-progress-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-slider-progress-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "radix-slider-progress.tsx"), [
+      "import * as React from 'react';",
+      "import * as Slider from '@radix-ui/react-slider';",
+      "import * as Progress from '@radix-ui/react-progress';",
+      "export function RadixSliderProgressControls() {",
+      "  const [value, setValue] = React.useState([25, 75]);",
+      "  const uploadValue = value[0];",
+      "  return (",
+      "    <form id=\"settings\">",
+      "      <Slider.Root name=\"volume\" form=\"settings\" value={value} defaultValue={[25, 75]} min={0} max={100} step={5} minStepsBetweenThumbs={2} orientation=\"horizontal\" dir=\"ltr\" inverted={false} disabled={false} onValueChange={setValue} onValueCommit={() => {}} aria-label=\"Volume range\">",
+      "        <Slider.Track data-orientation=\"horizontal\">",
+      "          <Slider.Range />",
+      "          <Slider.Thumb aria-label=\"Minimum volume\" />",
+      "          <Slider.Thumb aria-label=\"Maximum volume\" />",
+      "        </Slider.Track>",
+      "      </Slider.Root>",
+      "      <Slider.Root name=\"brightness\" form=\"settings\" defaultValue={[50]} min={0} max={100} step={10} orientation=\"vertical\" inverted aria-label=\"Brightness\">",
+      "        <Slider.Track data-orientation=\"vertical\">",
+      "          <Slider.Range />",
+      "          <Slider.Thumb aria-label=\"Brightness\" />",
+      "        </Slider.Track>",
+      "      </Slider.Root>",
+      "      <Progress.Root value={uploadValue} max={100} getValueLabel={(current, max) => `${current} of ${max}`} aria-label=\"Upload progress\">",
+      "        <Progress.Indicator data-state={uploadValue === 100 ? 'complete' : 'loading'} data-value={uploadValue} data-max={100} />",
+      "      </Progress.Root>",
+      "      <Progress.Root value={null} max={100} aria-valuetext=\"Loading progress\">",
+      "        <Progress.Indicator data-state=\"indeterminate\" />",
+      "      </Progress.Root>",
+      "    </form>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "native-range-progress.tsx"), [
+      "export function NativeRangeProgress() {",
+      "  return (",
+      "    <div>",
+      "      <input type=\"range\" min={0} max={10} step={1} defaultValue={5} name=\"score\" form=\"settings\" aria-label=\"Score\" onChange={() => {}} disabled={false} />",
+      "      <progress max={10} value={5} aria-label=\"Native progress\">5</progress>",
+      "      <div role=\"slider\" aria-valuenow={5} aria-valuemin={0} aria-valuemax={10} aria-orientation=\"horizontal\" tabIndex={0} data-state=\"ready\" />",
+      "      <div role=\"progressbar\" aria-valuenow={5} aria-valuemin={0} aria-valuemax={10} aria-valuetext=\"half done\" />",
+      "    </div>",
+      "  );",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "slider-progress.spec.tsx"), [
+      "import { render, screen } from '@testing-library/react';",
+      "import userEvent from '@testing-library/user-event';",
+      "import { describe, expect, it } from 'vitest';",
+      "import { NativeRangeProgress } from '../src/native-range-progress';",
+      "describe('slider progress behavior', () => {",
+      "  it('keeps value roles keyboard and attributes testable', async () => {",
+      "    render(<NativeRangeProgress />);",
+      "    expect(screen.getByRole('slider', { name: /score/i })).toHaveAttribute('min', '0');",
+      "    expect(screen.getByRole('progressbar', { name: /native progress/i })).toHaveAttribute('value', '5');",
+      "    await userEvent.keyboard('{Home}{End}{ArrowRight}{ArrowLeft}{PageUp}{PageDown}');",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "slider-progress.yml"), [
+      "name: slider progress",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm test -- slider-progress",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: slider-progress-traces",
+      "          path: test-results/slider-progress"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "@radix-ui/react-slider": "latest",
+        "@radix-ui/react-progress": "latest",
+        "react": "latest"
+      },
+      devDependencies: {
+        "@testing-library/react": "latest",
+        "@testing-library/user-event": "latest",
+        "vitest": "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "slider-progress-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      sliderProgressSetups: Array<{ filePath: string; framework: string; sliderCount: number; progressCount: number; trackCount: number; rangeCount: number; thumbCount: number; indicatorCount: number; valueCount: number; keyboardCount: number; orientationCount: number; formCount: number; accessibilityCount: number; testCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      structureSignals: Array<{ signal: string; readiness: string }>;
+      valueSignals: Array<{ signal: string; readiness: string }>;
+      interactionSignals: Array<{ signal: string; readiness: string }>;
+      orientationSignals: Array<{ signal: string; readiness: string }>;
+      formSignals: Array<{ signal: string; readiness: string }>;
+      accessibilitySignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Slider/progress readiness Radix Slider Progress native input range progressbar value min max step orientation aria-valuenow form tests");
+    expect(report.sliderProgressSetups.some((item) => item.filePath === "src/radix-slider-progress.tsx" && item.framework === "radix-slider" && item.sliderCount > 0 && item.progressCount > 0 && item.trackCount > 0 && item.rangeCount > 0 && item.thumbCount > 0 && item.indicatorCount > 0 && item.valueCount > 0 && item.orientationCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(report.sliderProgressSetups.some((item) => item.filePath === "src/native-range-progress.tsx" && item.framework === "native" && item.sliderCount > 0 && item.progressCount > 0 && item.valueCount > 0 && item.formCount > 0 && item.accessibilityCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["radix-slider", "radix-progress", "native-range", "native-progress"]));
+    expect(readySignals(report.structureSignals)).toEqual(expect.arrayContaining(["root", "track", "range", "thumb", "indicator", "provider", "bubble-input"]));
+    expect(readySignals(report.valueSignals)).toEqual(expect.arrayContaining(["value", "default-value", "min", "max", "step", "percentage", "indeterminate", "data-state", "data-value"]));
+    expect(readySignals(report.interactionSignals)).toEqual(expect.arrayContaining(["pointer", "keyboard", "home-end", "arrow-keys", "page-keys", "disabled"]));
+    expect(readySignals(report.orientationSignals)).toEqual(expect.arrayContaining(["horizontal", "vertical", "inverted", "rtl-dir"]));
+    expect(readySignals(report.formSignals)).toEqual(expect.arrayContaining(["name", "form", "bubble-input", "input-range", "value"]));
+    expect(readySignals(report.accessibilitySignals)).toEqual(expect.arrayContaining(["role-slider", "role-progressbar", "aria-valuenow", "aria-valuemin", "aria-valuemax", "aria-valuetext", "aria-orientation", "aria-label"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "testing-library", "user-event", "keyboard-test", "role-test", "attribute-test", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["@radix-ui/react-slider", "@radix-ui/react-progress", "react"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("@radix-ui/react-slider"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records slider/progress readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "slider-progress-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "slider-progress-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "slider-progress-readiness.html"))).resolves.toBeUndefined();
+    const sliderMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "slider-progress-readiness.md"), "utf8");
+    expect(sliderMarkdown).toContain("Slider Progress Readiness");
+    expect(sliderMarkdown).toContain("@radix-ui/react-slider");
+    const sliderHtml = await fs.readFile(path.join(result.session.outputPaths.html, "slider-progress-readiness.html"), "utf8");
+    expect(sliderHtml).toContain("slider-progress-readiness-card");
+    expect(sliderHtml).toContain("data-source-pattern=\"SliderProgress\"");
+    expect(sliderHtml).toContain("RepoTutor records slider/progress readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));

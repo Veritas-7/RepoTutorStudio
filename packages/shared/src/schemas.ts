@@ -11217,6 +11217,95 @@ export const CheckboxRadioSwitchReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SliderProgressReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  sliderProgressSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["radix-slider", "radix-progress", "native", "custom", "unknown"]),
+    sliderCount: z.number().int().nonnegative(),
+    progressCount: z.number().int().nonnegative(),
+    trackCount: z.number().int().nonnegative(),
+    rangeCount: z.number().int().nonnegative(),
+    thumbCount: z.number().int().nonnegative(),
+    indicatorCount: z.number().int().nonnegative(),
+    valueCount: z.number().int().nonnegative(),
+    keyboardCount: z.number().int().nonnegative(),
+    orientationCount: z.number().int().nonnegative(),
+    formCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["radix-slider", "radix-progress", "native-range", "native-progress", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  structureSignals: z.array(z.object({
+    signal: z.enum(["root", "track", "range", "thumb", "indicator", "provider", "bubble-input", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  valueSignals: z.array(z.object({
+    signal: z.enum(["value", "default-value", "min", "max", "step", "percentage", "indeterminate", "data-state", "data-value", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  interactionSignals: z.array(z.object({
+    signal: z.enum(["pointer", "keyboard", "home-end", "arrow-keys", "page-keys", "disabled", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  orientationSignals: z.array(z.object({
+    signal: z.enum(["horizontal", "vertical", "inverted", "rtl-dir", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  formSignals: z.array(z.object({
+    signal: z.enum(["name", "form", "bubble-input", "input-range", "value", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["role-slider", "role-progressbar", "aria-valuenow", "aria-valuemin", "aria-valuemax", "aria-valuetext", "aria-orientation", "aria-label", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "testing-library", "user-event", "keyboard-test", "role-test", "attribute-test", "precision-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["@radix-ui/react-slider", "@radix-ui/react-progress", "react", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -14282,6 +14371,7 @@ export type MenuDropdownReadinessReport = z.infer<typeof MenuDropdownReadinessRe
 export type ToastSnackbarReadinessReport = z.infer<typeof ToastSnackbarReadinessReportSchema>;
 export type TabsAccordionReadinessReport = z.infer<typeof TabsAccordionReadinessReportSchema>;
 export type CheckboxRadioSwitchReadinessReport = z.infer<typeof CheckboxRadioSwitchReadinessReportSchema>;
+export type SliderProgressReadinessReport = z.infer<typeof SliderProgressReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;
