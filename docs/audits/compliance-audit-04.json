@@ -1,6 +1,6 @@
 {
   "iteration": 4,
-  "createdAt": "2026-06-05T07:47:48.982Z",
+  "createdAt": "2026-06-05T08:09:55.260Z",
   "checks": [
     {
       "name": "project setup",
@@ -634,6 +634,13 @@
     },
     {
       "name": "pipeline orchestration readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "service mesh readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

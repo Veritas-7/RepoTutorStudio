@@ -5702,6 +5702,113 @@ export const PipelineOrchestrationReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ServiceMeshReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  serviceMeshSetups: z.array(z.object({
+    filePath: z.string(),
+    mesh: z.enum(["istio", "linkerd", "consul", "gateway-api", "envoy", "custom", "unknown"]),
+    controlPlaneCount: z.number().int().nonnegative(),
+    sidecarCount: z.number().int().nonnegative(),
+    gatewayCount: z.number().int().nonnegative(),
+    routeCount: z.number().int().nonnegative(),
+    trafficPolicyCount: z.number().int().nonnegative(),
+    securityPolicyCount: z.number().int().nonnegative(),
+    mtlsCount: z.number().int().nonnegative(),
+    identityCount: z.number().int().nonnegative(),
+    telemetryCount: z.number().int().nonnegative(),
+    resilienceCount: z.number().int().nonnegative(),
+    multiClusterCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  meshSignals: z.array(z.object({
+    signal: z.enum(["istio", "linkerd", "consul", "gateway-api", "envoy", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  controlPlaneSignals: z.array(z.object({
+    signal: z.enum(["istiod", "linkerd-control-plane", "consul-server", "proxy-injector", "xds", "crds", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  injectionSignals: z.array(z.object({
+    signal: z.enum(["sidecar-injection", "proxy-container", "transparent-proxy", "cni", "ambient", "waypoint", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  trafficSignals: z.array(z.object({
+    signal: z.enum(["virtual-service", "destination-rule", "gateway-api-route", "traffic-split", "service-router", "service-splitter", "service-resolver", "service-defaults", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  securitySignals: z.array(z.object({
+    signal: z.enum(["peer-authentication", "authorization-policy", "request-authentication", "server-authorization", "mesh-tls-authentication", "network-authentication", "intentions", "jwt-provider", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  mtlsSignals: z.array(z.object({
+    signal: z.enum(["strict-mtls", "permissive-mtls", "spiffe", "identity", "ca", "certificate-rotation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  resilienceSignals: z.array(z.object({
+    signal: z.enum(["retry", "timeout", "circuit-breaker", "outlier-detection", "fault-injection", "rate-limit", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  gatewaySignals: z.array(z.object({
+    signal: z.enum(["ingress-gateway", "egress-gateway", "mesh-gateway", "terminating-gateway", "api-gateway", "gateway-class", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  telemetrySignals: z.array(z.object({
+    signal: z.enum(["telemetry-api", "metrics", "tracing", "access-logs", "prometheus", "tap", "viz", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  multiclusterSignals: z.array(z.object({
+    signal: z.enum(["multi-cluster", "service-entry", "east-west-gateway", "cluster-link", "sameness-group", "peering", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "mesh-lint", "proxy-config-smoke", "policy-smoke", "traffic-smoke", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["istio", "linkerd", "consul", "envoy", "gateway-api", "helm-chart", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CacheReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -10140,6 +10247,7 @@ export type QueueReadinessReport = z.infer<typeof QueueReadinessReportSchema>;
 export type EventStreamReadinessReport = z.infer<typeof EventStreamReadinessReportSchema>;
 export type StreamProcessingReadinessReport = z.infer<typeof StreamProcessingReadinessReportSchema>;
 export type PipelineOrchestrationReadinessReport = z.infer<typeof PipelineOrchestrationReadinessReportSchema>;
+export type ServiceMeshReadinessReport = z.infer<typeof ServiceMeshReadinessReportSchema>;
 export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
 export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;

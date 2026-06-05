@@ -110,6 +110,7 @@ import {
   EventStreamReadinessReport,
   StreamProcessingReadinessReport,
   PipelineOrchestrationReadinessReport,
+  ServiceMeshReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -284,6 +285,7 @@ export interface AnalysisBundle {
   eventStreamReadinessReport: EventStreamReadinessReport;
   streamProcessingReadinessReport: StreamProcessingReadinessReport;
   pipelineOrchestrationReadinessReport: PipelineOrchestrationReadinessReport;
+  serviceMeshReadinessReport: ServiceMeshReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -458,6 +460,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const eventStreamReadinessReport = await buildEventStreamReadinessReport(walk);
   const streamProcessingReadinessReport = await buildStreamProcessingReadinessReport(walk);
   const pipelineOrchestrationReadinessReport = await buildPipelineOrchestrationReadinessReport(walk);
+  const serviceMeshReadinessReport = await buildServiceMeshReadinessReport(walk);
   const cacheReadinessReport = await buildCacheReadinessReport(walk);
   const loggingReadinessReport = await buildLoggingReadinessReport(walk);
   const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
@@ -517,7 +520,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -24256,6 +24259,387 @@ function pipelineOrchestrationReadinessSignalFromSpecs<T extends Record<K, strin
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/pipeline-orchestration-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildServiceMeshReadinessReport(walk: WalkResult): Promise<ServiceMeshReadinessReport> {
+  const sourceFiles = await serviceMeshReadinessSourceFiles(walk);
+  const serviceMeshSetups = serviceMeshReadinessSetups(sourceFiles);
+  const meshSignals = serviceMeshReadinessMeshSignals(sourceFiles);
+  const controlPlaneSignals = serviceMeshReadinessControlPlaneSignals(sourceFiles);
+  const injectionSignals = serviceMeshReadinessInjectionSignals(sourceFiles);
+  const trafficSignals = serviceMeshReadinessTrafficSignals(sourceFiles);
+  const securitySignals = serviceMeshReadinessSecuritySignals(sourceFiles);
+  const mtlsSignals = serviceMeshReadinessMtlsSignals(sourceFiles);
+  const resilienceSignals = serviceMeshReadinessResilienceSignals(sourceFiles);
+  const gatewaySignals = serviceMeshReadinessGatewaySignals(sourceFiles);
+  const telemetrySignals = serviceMeshReadinessTelemetrySignals(sourceFiles);
+  const multiclusterSignals = serviceMeshReadinessMulticlusterSignals(sourceFiles);
+  const ciSignals = serviceMeshReadinessCiSignals(sourceFiles);
+  const packageSignals = serviceMeshReadinessPackageSignals(sourceFiles);
+
+  const hasMesh = meshSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => ["istio", "linkerd", "consul", "envoy"].includes(item.signal) && item.readiness === "ready");
+  const hasControlPlane = controlPlaneSignals.some((item) => item.readiness === "ready") || serviceMeshSetups.some((item) => item.controlPlaneCount > 0);
+  const hasInjection = injectionSignals.some((item) => item.readiness === "ready") || serviceMeshSetups.some((item) => item.sidecarCount > 0);
+  const hasTraffic = trafficSignals.some((item) => item.readiness === "ready") || serviceMeshSetups.some((item) => item.routeCount + item.trafficPolicyCount > 0);
+  const hasSecurity = securitySignals.some((item) => item.readiness === "ready") || serviceMeshSetups.some((item) => item.securityPolicyCount > 0);
+  const hasMtls = mtlsSignals.some((item) => item.readiness === "ready") || serviceMeshSetups.some((item) => item.mtlsCount + item.identityCount > 0);
+  const hasResilience = resilienceSignals.some((item) => item.readiness === "ready") || serviceMeshSetups.some((item) => item.resilienceCount > 0);
+  const hasGateway = gatewaySignals.some((item) => item.readiness === "ready") || serviceMeshSetups.some((item) => item.gatewayCount > 0);
+  const hasTelemetry = telemetrySignals.some((item) => item.readiness === "ready") || serviceMeshSetups.some((item) => item.telemetryCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || serviceMeshSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: ServiceMeshReadinessReport["riskQueue"] = [];
+  if (!hasMesh && !hasControlPlane) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document the service mesh implementation and control-plane boundary before claiming service mesh readiness.",
+      why: "Istio, Linkerd, and Consul readiness starts with visible mesh, control-plane, CRD, xDS, or package evidence.",
+      relatedHref: "html/service-mesh-readiness.html"
+    });
+  }
+  if (hasMesh && !hasInjection) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Trace sidecar, proxy injection, transparent proxy, CNI, ambient, or waypoint evidence.",
+      why: "A mesh declaration without a proxy attachment path does not show how workloads enter the data plane.",
+      relatedHref: "html/service-mesh-readiness.html"
+    });
+  }
+  if (hasTraffic && !hasSecurity) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair mesh routing with authorization, authentication, intentions, or network policy evidence.",
+      why: "Mesh traffic shaping without policy controls can hide cross-service access risk from learners.",
+      relatedHref: "html/service-mesh-readiness.html"
+    });
+  }
+  if (hasSecurity && !hasMtls) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document mTLS mode, workload identity, SPIFFE/SVID, CA, or certificate rotation evidence.",
+      why: "Service mesh security claims depend on identity and transport protection, not only L7 authorization objects.",
+      relatedHref: "html/service-mesh-readiness.html"
+    });
+  }
+  if (hasTraffic && !hasResilience) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add retry, timeout, outlier detection, circuit breaker, fault injection, or rate limit evidence.",
+      why: "Mesh routing readiness is stronger when failure handling and overload behavior are visible.",
+      relatedHref: "html/service-mesh-readiness.html"
+    });
+  }
+  if (hasGateway && !hasSecurity) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Map gateway routes to authentication and authorization policy.",
+      why: "Ingress, egress, API, terminating, and mesh gateways create perimeter paths that need explicit policy.",
+      relatedHref: "html/service-mesh-readiness.html"
+    });
+  }
+  if ((hasMesh || hasControlPlane || hasTraffic) && !hasTelemetry) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add telemetry, metrics, tracing, access logs, tap, viz, or Prometheus evidence.",
+      why: "Mesh operators need request visibility before debugging route, policy, or proxy failures.",
+      relatedHref: "html/service-mesh-readiness.html"
+    });
+  }
+  if ((hasMesh || hasControlPlane || hasTraffic || hasSecurity) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add mesh config lint, proxy-config smoke, policy smoke, traffic smoke, and artifact upload checks.",
+      why: "Static mesh readiness is stronger when CI proves config parses and key proxy/policy paths are preserved.",
+      relatedHref: "html/service-mesh-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run service mesh commands only in a trusted cluster or sandbox after reviewing this static map.",
+    why: "RepoTutor records service mesh readiness only; it does not run istioctl, linkerd, consul, envoy, Kubernetes, Helm, traffic, proxy, policy, or CI commands.",
+    relatedHref: "html/service-mesh-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `Service mesh readiness report: setup ${serviceMeshSetups.length}개, mesh signal ${meshSignals.length}개, traffic signal ${trafficSignals.length}개, security signal ${securitySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Service mesh readiness Istio Linkerd Consul Envoy Gateway API VirtualService DestinationRule Gateway Sidecar EnvoyFilter PeerAuthentication AuthorizationPolicy RequestAuthentication ServiceEntry HTTPRoute GRPCRoute TrafficSplit ServerAuthorization MeshTLSAuthentication service-defaults service-router service-splitter service-resolver proxy-defaults intentions mTLS SPIFFE telemetry proxy-config CI",
+    serviceMeshSetups,
+    meshSignals,
+    controlPlaneSignals,
+    injectionSignals,
+    trafficSignals,
+    securitySignals,
+    mtlsSignals,
+    resilienceSignals,
+    gatewaySignals,
+    telemetrySignals,
+    multiclusterSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"VirtualService|DestinationRule|Gateway|Sidecar|EnvoyFilter|PeerAuthentication|AuthorizationPolicy|RequestAuthentication|ServiceEntry|Telemetry\" .", purpose: "Inventory Istio CRDs for routing, policy, identity, egress, telemetry, and proxy customization." },
+      { command: "rg \"linkerd.io|ServerAuthorization|MeshTLSAuthentication|NetworkAuthentication|HTTPRoute|GRPCRoute|TrafficSplit|ServiceProfile|linkerd inject|linkerd check|linkerd viz\" .", purpose: "Find Linkerd injection, policy, Gateway API route, ServiceProfile, health check, and observability evidence." },
+      { command: "rg \"service-defaults|service-router|service-splitter|service-resolver|proxy-defaults|ingress-gateway|terminating-gateway|mesh-gateway|sidecar_service|intentions|connect\" .", purpose: "Trace Consul Connect config entries, gateways, intentions, proxies, and service mesh registration." },
+      { command: "rg \"mTLS|STRICT|PERMISSIVE|SPIFFE|spiffe|identity|certificate|CA|caBundle|TrustDomain|JWTProvider\" .", purpose: "Review workload identity, mTLS mode, certificate, trust-domain, and JWT policy evidence." },
+      { command: "rg \"mesh-lint|proxy-config-smoke|policy-smoke|traffic-smoke|istioctl|linkerd check|consul config|upload-artifact\" .github .", purpose: "Check CI smoke commands and uploaded mesh analysis artifacts." }
+    ],
+    learnerNextSteps: [
+      "먼저 Istio, Linkerd, Consul, Envoy, Gateway API 중 어떤 mesh boundary가 실제로 쓰이는지 찾으세요.",
+      "control plane과 proxy injection, sidecar, transparent proxy, CNI, ambient/waypoint 경계를 분리해서 확인하세요.",
+      "routing object가 보이면 VirtualService, DestinationRule, HTTPRoute, TrafficSplit, service-router/splitter/resolver를 서비스 단위로 묶어 보세요.",
+      "AuthorizationPolicy, PeerAuthentication, ServerAuthorization, MeshTLSAuthentication, intentions가 mTLS와 workload identity를 어떻게 보호하는지 확인하세요.",
+      "retry, timeout, circuit breaker, outlier detection, fault injection, rate limit 같은 resilience 정책이 routing과 연결되는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 mesh install, proxy config, route traffic, policy enforcement, telemetry dashboard는 안전한 cluster/sandbox에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type ServiceMeshReadinessSourceFile = { filePath: string; text: string; sourceHref: string };
+
+async function serviceMeshReadinessSourceFiles(walk: WalkResult): Promise<ServiceMeshReadinessSourceFile[]> {
+  const files: ServiceMeshReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !serviceMeshReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 280_000);
+    if (!text) continue;
+    if (!serviceMeshReadinessPathSignal(file.relPath) && !serviceMeshReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function serviceMeshReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return serviceMeshReadinessPathSignal(filePath)
+    || /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|go\.mod|go\.sum|Cargo\.toml|pyproject\.toml|requirements\.txt|Dockerfile|docker-compose\.ya?ml|compose\.ya?ml|helmfile\.ya?ml|Chart\.ya?ml|values\.ya?ml|kustomization\.ya?ml)$/i.test(base)
+    || /\.(json|ya?ml|toml|tf|hcl|cue|rego|md|mdx|txt|sh|bash|go|rs|py|ts|tsx|js|jsx|mjs|cjs)$/i.test(filePath);
+}
+
+function serviceMeshReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(istio|linkerd|consul|envoy|service[-_ ]?mesh|mesh[-_ ]?gateway|ingress[-_ ]?gateway|egress[-_ ]?gateway|gateway-api|gatewayapi|virtual[-_]?service|destination[-_]?rule|authorization[-_]?policy|peer[-_]?authentication|request[-_]?authentication|service[-_]?entry|traffic[-_]?split|service[-_]?router|service[-_]?splitter|service[-_]?resolver|service[-_]?defaults|proxy[-_]?defaults|intentions?|xds|mtls|spiffe|sidecars?|proxies?|proxy-injector)(\/|\.|-|_|$)|\.github\/workflows|Chart\.ya?ml|values\.ya?ml/i.test(filePath);
+}
+
+function serviceMeshReadinessContentSignal(text: string): boolean {
+  return /(Istio|istioctl|VirtualService|DestinationRule|EnvoyFilter|PeerAuthentication|AuthorizationPolicy|RequestAuthentication|ServiceEntry|meshConfig|outlierDetection|trafficPolicy|Linkerd|linkerd inject|linkerd check|linkerd viz|ServerAuthorization|MeshTLSAuthentication|NetworkAuthentication|TrafficSplit|ServiceProfile|Consul Connect|service-defaults|service-router|service-splitter|service-resolver|proxy-defaults|sidecar_service|intentions?|TransparentProxy|mesh-gateway|terminating-gateway|ingress-gateway|xDS|Envoy|Gateway API|HTTPRoute|GRPCRoute|mTLS|mutual TLS|SPIFFE|spiffe|service mesh)/i.test(text);
+}
+
+function serviceMeshReadinessSetups(sourceFiles: ServiceMeshReadinessSourceFile[]): ServiceMeshReadinessReport["serviceMeshSetups"] {
+  const rows: ServiceMeshReadinessReport["serviceMeshSetups"] = [];
+  for (const source of sourceFiles) {
+    const controlPlaneCount = countMatches(source.text, /\bistiod\b|\blinkerd-(identity|destination|proxy-injector|policy|tap|viz)\b|\bconsul server\b|\bconsul-server\b|\bcontrol plane\b|\bcontrol-plane\b|\bxDS\b|\bCRDs?\b|\bCustomResourceDefinition\b|\bmeshConfig\b/gi);
+    const sidecarCount = countMatches(source.text, /\bsidecar\b|\bSidecar\b|\blinkerd-proxy\b|\bistio-proxy\b|\bproxy-injector\b|\bsidecar_service\b|\bTransparentProxy\b|\btransparent proxy\b|\bproxy container\b|\bCNI\b|\bambient\b|\bwaypoint\b/gi);
+    const gatewayCount = countMatches(source.text, /\bGateway\b|\bIngressGateway\b|\bEgressGateway\b|\bingress-gateway\b|\begress-gateway\b|\bmesh-gateway\b|\bterminating-gateway\b|\bapi-gateway\b|\bGatewayClass\b|\bGateway API\b/gi);
+    const routeCount = countMatches(source.text, /\bVirtualService\b|\bHTTPRoute\b|\bGRPCRoute\b|\bTCPRoute\b|\bTrafficSplit\b|\bServiceProfile\b|\bservice-router\b|\bservice-splitter\b|\bservice-resolver\b|\broute\b|\broutes\b/gi);
+    const trafficPolicyCount = countMatches(source.text, /\bDestinationRule\b|\btrafficPolicy\b|\bsubsets?\b|\bloadBalancer\b|\boutlierDetection\b|\bservice-defaults\b|\bproxy-defaults\b|\bretries?\b|\btimeout\b|\bcircuit.?breaker\b/gi);
+    const securityPolicyCount = countMatches(source.text, /\bPeerAuthentication\b|\bAuthorizationPolicy\b|\bRequestAuthentication\b|\bServerAuthorization\b|\bMeshTLSAuthentication\b|\bNetworkAuthentication\b|\bintentions?\b|\bservice-intentions\b|\bJWTProvider\b|\bRBAC\b|\ballow\b|\bdeny\b/gi);
+    const mtlsCount = countMatches(source.text, /\bmTLS\b|\bmutual TLS\b|\bSTRICT\b|\bPERMISSIVE\b|\bMeshTLS\b|\btlsMode\b|\bTLS\b|\bspiffe\b|\bSPIFFE\b|\bSVID\b|\bidentity\b|\bTrustDomain\b/gi);
+    const identityCount = countMatches(source.text, /\bidentity\b|\bSPIFFE\b|\bspiffe\b|\bSVID\b|\bcertificate\b|\bcert-manager\b|\bcaBundle\b|\bCA\b|\btrustDomain\b|\bTrustDomain\b|\bworkload identity\b/gi);
+    const telemetryCount = countMatches(source.text, /\bTelemetry\b|\bmetrics?\b|\btracing\b|\baccess logs?\b|\bPrometheus\b|\bOpenTelemetry\b|\botel\b|\btap\b|\blinkerd viz\b|\bviz\b|\bgolden metrics\b|\bproxy logs?\b/gi);
+    const resilienceCount = countMatches(source.text, /\bretries?\b|\btimeout\b|\bfault\b|\bfaultInjection\b|\boutlierDetection\b|\bcircuit.?breaker\b|\brate.?limit\b|\bPassiveHealthCheck\b|\bConsecutive5xx\b|\bretryBudget\b/gi);
+    const multiClusterCount = countMatches(source.text, /\bmulti[-_ ]?cluster\b|\bmulticluster\b|\bServiceEntry\b|\beast[-_ ]?west\b|\beast-west-gateway\b|\bcluster link\b|\bSamenessGroup\b|\bpeering\b|\bfederation\b/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|\bgithub[-_ ]?actions\b|mesh-lint|proxy-config-smoke|policy-smoke|traffic-smoke|istioctl analyze|istioctl proxy-config|linkerd check|consul config|upload-artifact|service-mesh-report\.json/gi);
+    const hasSetupSignal = controlPlaneCount + sidecarCount + gatewayCount + routeCount + trafficPolicyCount + securityPolicyCount + mtlsCount + identityCount + telemetryCount + resilienceCount + multiClusterCount + ciCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      mesh: serviceMeshReadinessMesh(source),
+      controlPlaneCount,
+      sidecarCount,
+      gatewayCount,
+      routeCount,
+      trafficPolicyCount,
+      securityPolicyCount,
+      mtlsCount,
+      identityCount,
+      telemetryCount,
+      resilienceCount,
+      multiClusterCount,
+      ciCount,
+      readiness: (routeCount + trafficPolicyCount > 0) && securityPolicyCount > 0 && mtlsCount > 0 && (sidecarCount > 0 || controlPlaneCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains control-plane ${controlPlaneCount}, sidecar/proxy ${sidecarCount}, gateway ${gatewayCount}, route ${routeCount}, traffic policy ${trafficPolicyCount}, security policy ${securityPolicyCount}, mTLS ${mtlsCount}, identity ${identityCount}, telemetry ${telemetryCount}, resilience ${resilienceCount}, multicluster ${multiClusterCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => (b.controlPlaneCount + b.sidecarCount + b.gatewayCount + b.routeCount + b.trafficPolicyCount + b.securityPolicyCount + b.mtlsCount + b.telemetryCount + b.resilienceCount) - (a.controlPlaneCount + a.sidecarCount + a.gatewayCount + a.routeCount + a.trafficPolicyCount + a.securityPolicyCount + a.mtlsCount + a.telemetryCount + a.resilienceCount) || a.filePath.localeCompare(b.filePath)).slice(0, 100);
+}
+
+function serviceMeshReadinessMesh(source: ServiceMeshReadinessSourceFile): ServiceMeshReadinessReport["serviceMeshSetups"][number]["mesh"] {
+  if (/(^|\/)istio(\/|$)/i.test(source.filePath) || /\bIstio\b|\bistioctl\b|\bVirtualService\b|\bDestinationRule\b|\bPeerAuthentication\b|\bEnvoyFilter\b/i.test(source.text)) return "istio";
+  if (/(^|\/)linkerd(2)?(\/|$)/i.test(source.filePath) || /\bLinkerd\b|\blinkerd\b|\bServerAuthorization\b|\bMeshTLSAuthentication\b|\blinkerd-proxy\b/i.test(source.text)) return "linkerd";
+  if (/(^|\/)consul(\/|$)/i.test(source.filePath) || /\bConsul\b|\bconsul\b|\bservice-defaults\b|\bservice-router\b|\bsidecar_service\b|\bintentions?\b/i.test(source.text)) return "consul";
+  if (/\bGateway API\b|\bHTTPRoute\b|\bGRPCRoute\b|\bGatewayClass\b/i.test(source.text)) return "gateway-api";
+  if (/\bEnvoy\b|\bxDS\b|\benvoy\b/i.test(source.filePath) || /\bEnvoy\b|\bxDS\b|\benvoy\b/i.test(source.text)) return "envoy";
+  if (/service[-_ ]?mesh|mesh/i.test(source.filePath) || /service mesh|mesh/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function serviceMeshReadinessMeshSignals(sourceFiles: ServiceMeshReadinessSourceFile[]): ServiceMeshReadinessReport["meshSignals"] {
+  const specs: Array<{ signal: ServiceMeshReadinessReport["meshSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "istio", pattern: /\bIstio\b|\bistioctl\b|\bVirtualService\b|\bDestinationRule\b|\bPeerAuthentication\b|\bAuthorizationPolicy\b/i, evidence: "Istio evidence was detected." },
+    { signal: "linkerd", pattern: /\bLinkerd\b|\blinkerd\b|\bServerAuthorization\b|\bMeshTLSAuthentication\b|\blinkerd-proxy\b/i, evidence: "Linkerd evidence was detected." },
+    { signal: "consul", pattern: /\bConsul\b|\bconsul\b|\bservice-defaults\b|\bservice-router\b|\bsidecar_service\b|\bintentions?\b/i, evidence: "Consul service mesh evidence was detected." },
+    { signal: "gateway-api", pattern: /\bGateway API\b|\bHTTPRoute\b|\bGRPCRoute\b|\bGatewayClass\b|\bgateway\.networking\.k8s\.io\b/i, evidence: "Gateway API evidence was detected." },
+    { signal: "envoy", pattern: /\bEnvoy\b|\bxDS\b|\benvoy\b/i, evidence: "Envoy or xDS evidence was detected." },
+    { signal: "custom", pattern: /\bservice mesh\b|\bmesh routing\b|\bmesh policy\b/i, evidence: "custom service mesh evidence was detected." }
+  ];
+  return serviceMeshReadinessSignalFromSpecs(sourceFiles, specs, "mesh", "signal");
+}
+
+function serviceMeshReadinessControlPlaneSignals(sourceFiles: ServiceMeshReadinessSourceFile[]): ServiceMeshReadinessReport["controlPlaneSignals"] {
+  const specs: Array<{ signal: ServiceMeshReadinessReport["controlPlaneSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "istiod", pattern: /\bistiod\b|\bpilot-discovery\b|\bmeshConfig\b/i, evidence: "Istio control-plane evidence was detected." },
+    { signal: "linkerd-control-plane", pattern: /\blinkerd-(identity|destination|policy|tap|viz)\b|\blinkerd control plane\b/i, evidence: "Linkerd control-plane evidence was detected." },
+    { signal: "consul-server", pattern: /\bconsul server\b|\bconsul-server\b|\bconsul agent\b|\bconnect\b/i, evidence: "Consul server/agent evidence was detected." },
+    { signal: "proxy-injector", pattern: /\bproxy-injector\b|\bsidecar injector\b|\bMutatingWebhookConfiguration\b|\binjector\b/i, evidence: "proxy injector evidence was detected." },
+    { signal: "xds", pattern: /\bxDS\b|\bADS\b|\bCDS\b|\bEDS\b|\bRDS\b|\bLDS\b|\bSDS\b|\bdiscovery service\b/i, evidence: "xDS/discovery service evidence was detected." },
+    { signal: "crds", pattern: /\bCustomResourceDefinition\b|\bCRD\b|\bcrds?\b|\bapiextensions\.k8s\.io\b/i, evidence: "CRD evidence was detected." }
+  ];
+  return serviceMeshReadinessSignalFromSpecs(sourceFiles, specs, "control-plane", "signal");
+}
+
+function serviceMeshReadinessInjectionSignals(sourceFiles: ServiceMeshReadinessSourceFile[]): ServiceMeshReadinessReport["injectionSignals"] {
+  const specs: Array<{ signal: ServiceMeshReadinessReport["injectionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "sidecar-injection", pattern: /sidecar\.istio\.io\/inject|linkerd inject|proxy-injector|sidecar injection|inject: ["']?enabled|injection/i, evidence: "sidecar injection evidence was detected." },
+    { signal: "proxy-container", pattern: /istio-proxy|linkerd-proxy|envoy sidecar|proxy container|name:\s*(istio-proxy|linkerd-proxy)/i, evidence: "proxy container evidence was detected." },
+    { signal: "transparent-proxy", pattern: /TransparentProxy|transparent proxy|tproxy|redirect inbound|redirect outbound/i, evidence: "transparent proxy evidence was detected." },
+    { signal: "cni", pattern: /\bCNI\b|istio-cni|linkerd-cni|cniPlugin|cni plugin/i, evidence: "CNI evidence was detected." },
+    { signal: "ambient", pattern: /\bambient\b|\bztunnel\b|istio ambient/i, evidence: "Istio ambient mesh evidence was detected." },
+    { signal: "waypoint", pattern: /\bwaypoint\b|\bWaypoint\b/i, evidence: "waypoint proxy evidence was detected." }
+  ];
+  return serviceMeshReadinessSignalFromSpecs(sourceFiles, specs, "injection", "signal");
+}
+
+function serviceMeshReadinessTrafficSignals(sourceFiles: ServiceMeshReadinessSourceFile[]): ServiceMeshReadinessReport["trafficSignals"] {
+  const specs: Array<{ signal: ServiceMeshReadinessReport["trafficSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "virtual-service", pattern: /\bVirtualService\b|kind:\s*VirtualService/i, evidence: "Istio VirtualService evidence was detected." },
+    { signal: "destination-rule", pattern: /\bDestinationRule\b|kind:\s*DestinationRule|\btrafficPolicy\b|\bsubsets?\b/i, evidence: "Istio DestinationRule/traffic policy evidence was detected." },
+    { signal: "gateway-api-route", pattern: /\bHTTPRoute\b|\bGRPCRoute\b|\bTCPRoute\b|\bGateway API\b|\bgateway\.networking\.k8s\.io/i, evidence: "Gateway API route evidence was detected." },
+    { signal: "traffic-split", pattern: /\bTrafficSplit\b|traffic split|split traffic/i, evidence: "TrafficSplit evidence was detected." },
+    { signal: "service-router", pattern: /service-router|ServiceRouter|kind\s*=\s*"service-router"/i, evidence: "Consul service-router evidence was detected." },
+    { signal: "service-splitter", pattern: /service-splitter|ServiceSplitter|kind\s*=\s*"service-splitter"/i, evidence: "Consul service-splitter evidence was detected." },
+    { signal: "service-resolver", pattern: /service-resolver|ServiceResolver|kind\s*=\s*"service-resolver"/i, evidence: "Consul service-resolver evidence was detected." },
+    { signal: "service-defaults", pattern: /service-defaults|ServiceDefaults|kind\s*=\s*"service-defaults"/i, evidence: "Consul service-defaults evidence was detected." }
+  ];
+  return serviceMeshReadinessSignalFromSpecs(sourceFiles, specs, "traffic", "signal");
+}
+
+function serviceMeshReadinessSecuritySignals(sourceFiles: ServiceMeshReadinessSourceFile[]): ServiceMeshReadinessReport["securitySignals"] {
+  const specs: Array<{ signal: ServiceMeshReadinessReport["securitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "peer-authentication", pattern: /\bPeerAuthentication\b|kind:\s*PeerAuthentication/i, evidence: "Istio PeerAuthentication evidence was detected." },
+    { signal: "authorization-policy", pattern: /\bAuthorizationPolicy\b|kind:\s*AuthorizationPolicy/i, evidence: "Istio AuthorizationPolicy evidence was detected." },
+    { signal: "request-authentication", pattern: /\bRequestAuthentication\b|kind:\s*RequestAuthentication/i, evidence: "Istio RequestAuthentication evidence was detected." },
+    { signal: "server-authorization", pattern: /\bServerAuthorization\b|serverauthorizations\.policy\.linkerd\.io/i, evidence: "Linkerd ServerAuthorization evidence was detected." },
+    { signal: "mesh-tls-authentication", pattern: /\bMeshTLSAuthentication\b|meshtlsauthentications\.policy\.linkerd\.io/i, evidence: "Linkerd MeshTLSAuthentication evidence was detected." },
+    { signal: "network-authentication", pattern: /\bNetworkAuthentication\b|networkauthentications\.policy\.linkerd\.io/i, evidence: "Linkerd NetworkAuthentication evidence was detected." },
+    { signal: "intentions", pattern: /\bintentions?\b|\bservice-intentions\b|IntentionCreate|TrafficPermissions/i, evidence: "Consul intentions or traffic permissions evidence was detected." },
+    { signal: "jwt-provider", pattern: /\bJWTProvider\b|\bjwt\b|\bJWKS\b|\bissuer\b/i, evidence: "JWT provider/authentication evidence was detected." }
+  ];
+  return serviceMeshReadinessSignalFromSpecs(sourceFiles, specs, "security", "signal");
+}
+
+function serviceMeshReadinessMtlsSignals(sourceFiles: ServiceMeshReadinessSourceFile[]): ServiceMeshReadinessReport["mtlsSignals"] {
+  const specs: Array<{ signal: ServiceMeshReadinessReport["mtlsSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "strict-mtls", pattern: /\bSTRICT\b|mode:\s*STRICT|mtls.*strict/i, evidence: "strict mTLS evidence was detected." },
+    { signal: "permissive-mtls", pattern: /\bPERMISSIVE\b|mode:\s*PERMISSIVE|mtls.*permissive/i, evidence: "permissive mTLS evidence was detected." },
+    { signal: "spiffe", pattern: /\bSPIFFE\b|\bspiffe:\/\/|\bSVID\b/i, evidence: "SPIFFE/SVID evidence was detected." },
+    { signal: "identity", pattern: /\bidentity\b|\blinkerd-identity\b|\bworkload identity\b|\btrustDomain\b|\bTrustDomain\b/i, evidence: "workload identity evidence was detected." },
+    { signal: "ca", pattern: /\bCA\b|\bcaBundle\b|\bcertificate authority\b|\broot cert\b|\btrust anchor\b/i, evidence: "CA/trust anchor evidence was detected." },
+    { signal: "certificate-rotation", pattern: /\bcertificate rotation\b|\brotate\b|\bissuer\b|\bcert-manager\b|\bSDS\b/i, evidence: "certificate rotation/SDS evidence was detected." }
+  ];
+  return serviceMeshReadinessSignalFromSpecs(sourceFiles, specs, "mTLS", "signal");
+}
+
+function serviceMeshReadinessResilienceSignals(sourceFiles: ServiceMeshReadinessSourceFile[]): ServiceMeshReadinessReport["resilienceSignals"] {
+  const specs: Array<{ signal: ServiceMeshReadinessReport["resilienceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "retry", pattern: /\bretries?\b|\bretryBudget\b|\bRetryPolicy\b/i, evidence: "retry evidence was detected." },
+    { signal: "timeout", pattern: /\btimeout\b|\brequestTimeout\b|\bidleTimeout\b/i, evidence: "timeout evidence was detected." },
+    { signal: "circuit-breaker", pattern: /circuit.?breaker|maxConnections|http1MaxPendingRequests|maxRequestsPerConnection/i, evidence: "circuit breaker evidence was detected." },
+    { signal: "outlier-detection", pattern: /outlierDetection|outlier detection|Consecutive5xx|ConsecutiveGatewayFailure/i, evidence: "outlier detection evidence was detected." },
+    { signal: "fault-injection", pattern: /\bfault\b|\bfaultInjection\b|\bdelay\b|\babort\b/i, evidence: "fault injection evidence was detected." },
+    { signal: "rate-limit", pattern: /rate.?limit|localRateLimit|RateLimit|quota/i, evidence: "rate limit evidence was detected." }
+  ];
+  return serviceMeshReadinessSignalFromSpecs(sourceFiles, specs, "resilience", "signal");
+}
+
+function serviceMeshReadinessGatewaySignals(sourceFiles: ServiceMeshReadinessSourceFile[]): ServiceMeshReadinessReport["gatewaySignals"] {
+  const specs: Array<{ signal: ServiceMeshReadinessReport["gatewaySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ingress-gateway", pattern: /ingress-gateway|IngressGateway|istio-ingressgateway|\bingress gateway\b/i, evidence: "ingress gateway evidence was detected." },
+    { signal: "egress-gateway", pattern: /egress-gateway|EgressGateway|istio-egressgateway|\begress gateway\b/i, evidence: "egress gateway evidence was detected." },
+    { signal: "mesh-gateway", pattern: /mesh-gateway|MeshGateway|\bmesh gateway\b/i, evidence: "mesh gateway evidence was detected." },
+    { signal: "terminating-gateway", pattern: /terminating-gateway|TerminatingGateway|\bterminating gateway\b/i, evidence: "terminating gateway evidence was detected." },
+    { signal: "api-gateway", pattern: /api-gateway|APIGateway|\bAPI Gateway\b/i, evidence: "API gateway evidence was detected." },
+    { signal: "gateway-class", pattern: /\bGatewayClass\b|\bgatewayClassName\b/i, evidence: "GatewayClass evidence was detected." }
+  ];
+  return serviceMeshReadinessSignalFromSpecs(sourceFiles, specs, "gateway", "signal");
+}
+
+function serviceMeshReadinessTelemetrySignals(sourceFiles: ServiceMeshReadinessSourceFile[]): ServiceMeshReadinessReport["telemetrySignals"] {
+  const specs: Array<{ signal: ServiceMeshReadinessReport["telemetrySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "telemetry-api", pattern: /\bTelemetry\b|telemetry\.istio\.io|kind:\s*Telemetry/i, evidence: "Telemetry API evidence was detected." },
+    { signal: "metrics", pattern: /\bmetrics?\b|\bgolden metrics\b|\bproxy metrics\b/i, evidence: "metrics evidence was detected." },
+    { signal: "tracing", pattern: /\btracing\b|\bJaeger\b|\bZipkin\b|\bOpenTelemetry\b|\botel\b/i, evidence: "tracing evidence was detected." },
+    { signal: "access-logs", pattern: /access logs?|accessLog|proxy logs?|tap logs?/i, evidence: "access log evidence was detected." },
+    { signal: "prometheus", pattern: /\bPrometheus\b|prometheus\.io|prometheusUrl/i, evidence: "Prometheus evidence was detected." },
+    { signal: "tap", pattern: /\btap\b|\blinkerd tap\b|\blinkerd-tap\b/i, evidence: "Linkerd tap evidence was detected." },
+    { signal: "viz", pattern: /\bviz\b|\blinkerd viz\b|\blinkerd-viz\b/i, evidence: "Linkerd viz evidence was detected." }
+  ];
+  return serviceMeshReadinessSignalFromSpecs(sourceFiles, specs, "telemetry", "signal");
+}
+
+function serviceMeshReadinessMulticlusterSignals(sourceFiles: ServiceMeshReadinessSourceFile[]): ServiceMeshReadinessReport["multiclusterSignals"] {
+  const specs: Array<{ signal: ServiceMeshReadinessReport["multiclusterSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "multi-cluster", pattern: /multi[-_ ]?cluster|multicluster|remote cluster/i, evidence: "multi-cluster evidence was detected." },
+    { signal: "service-entry", pattern: /\bServiceEntry\b|kind:\s*ServiceEntry/i, evidence: "Istio ServiceEntry evidence was detected." },
+    { signal: "east-west-gateway", pattern: /east[-_ ]?west|east-west-gateway/i, evidence: "east-west gateway evidence was detected." },
+    { signal: "cluster-link", pattern: /cluster link|cluster-link|linkerd multicluster/i, evidence: "cluster link evidence was detected." },
+    { signal: "sameness-group", pattern: /\bSamenessGroup\b|sameness_group/i, evidence: "Consul sameness group evidence was detected." },
+    { signal: "peering", pattern: /\bpeering\b|\bPeer\b|\bmesh federation\b/i, evidence: "mesh peering/federation evidence was detected." }
+  ];
+  return serviceMeshReadinessSignalFromSpecs(sourceFiles, specs, "multicluster", "signal");
+}
+
+function serviceMeshReadinessCiSignals(sourceFiles: ServiceMeshReadinessSourceFile[]): ServiceMeshReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: ServiceMeshReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\//i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "mesh-lint", pattern: /mesh-lint|istioctl analyze|linkerd check|consul validate|kubeconform|kubeval/i, evidence: "mesh lint evidence was detected." },
+    { signal: "proxy-config-smoke", pattern: /proxy-config-smoke|istioctl proxy-config|linkerd diagnostics|consul.*envoy|xds.*smoke/i, evidence: "proxy config smoke evidence was detected." },
+    { signal: "policy-smoke", pattern: /policy-smoke|authorization.*smoke|intentions.*smoke|mtls.*smoke|authn.*authz/i, evidence: "policy smoke evidence was detected." },
+    { signal: "traffic-smoke", pattern: /traffic-smoke|curl.*VirtualService|HTTPRoute.*smoke|TrafficSplit.*smoke|route.*smoke/i, evidence: "traffic smoke evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|service-mesh-report\.json|mesh-analysis\.json|proxy-config\.json|policy-smoke\.json|traffic-smoke\.json/i, evidence: "service mesh artifact upload evidence was detected." }
+  ];
+  return serviceMeshReadinessSignalFromSpecs(sourceFiles, specs, "ci", "signal");
+}
+
+function serviceMeshReadinessPackageSignals(sourceFiles: ServiceMeshReadinessSourceFile[]): ServiceMeshReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: ServiceMeshReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "istio", pattern: /istioctl|\bistio\b|istio\.io|charts\/istio|istio-proxy/i, evidence: "Istio package/chart evidence was detected." },
+    { signal: "linkerd", pattern: /\blinkerd\b|linkerd\.io|linkerd-proxy|linkerd2/i, evidence: "Linkerd package/chart evidence was detected." },
+    { signal: "consul", pattern: /\bconsul\b|hashicorp\/consul|consul-k8s|consul-helm/i, evidence: "Consul package/chart evidence was detected." },
+    { signal: "envoy", pattern: /\benvoy\b|envoyproxy|EnvoyFilter|xDS/i, evidence: "Envoy package/config evidence was detected." },
+    { signal: "gateway-api", pattern: /gateway-api|gateway\.networking\.k8s\.io|GatewayClass|HTTPRoute/i, evidence: "Gateway API package/config evidence was detected." },
+    { signal: "helm-chart", pattern: /Chart\.ya?ml|values\.ya?ml|helm install|helm upgrade|charts\//i, evidence: "Helm chart evidence was detected." }
+  ];
+  return serviceMeshReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function serviceMeshReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: ServiceMeshReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/service-mesh-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
