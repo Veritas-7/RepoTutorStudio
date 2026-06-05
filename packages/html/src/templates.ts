@@ -157,6 +157,7 @@ import type {
   GraphqlReadinessReport,
   CliReadinessReport,
   TerminalUiReadinessReport,
+  StateMachineReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
@@ -361,6 +362,7 @@ export interface StudyHtmlInput {
   graphqlReadinessReport: GraphqlReadinessReport;
   cliReadinessReport: CliReadinessReport;
   terminalUiReadinessReport: TerminalUiReadinessReport;
+  stateMachineReadinessReport: StateMachineReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -564,6 +566,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["graphql-readiness.html", "GraphQL"],
     ["cli-readiness.html", "CLI"],
     ["terminal-ui-readiness.html", "Terminal UI"],
+    ["state-machine-readiness.html", "State Machine"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1568,6 +1571,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Terminal UI Readiness", "terminal-ui-readiness.html", `<section class="panel" data-source-pattern="Terminal UI"><h2>Terminal UI Snapshot</h2><p>${escapeHtml(input.terminalUiReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.terminalUiReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.terminalUiReadinessReport.terminalSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.terminalUiReadinessReport.frameworkSignals.length}</dd></div><div><dt>input</dt><dd>${input.terminalUiReadinessReport.inputSignals.length}</dd></div><div><dt>render</dt><dd>${input.terminalUiReadinessReport.renderSignals.length}</dd></div></dl><p class="muted">RepoTutor records terminal UI readiness only; it does not start TUI programs, enter raw mode, switch alternate screens, capture keyboard or mouse input, resize terminals, spawn pseudo-terminals, write ANSI control sequences, or run the analyzed project's tests.</p></section><section class="grid"><article class="terminal-ui-readiness-card"><h3>Terminal UI Setups</h3>${terminalUiReadinessSetupList(input.terminalUiReadinessReport.terminalSetups)}</article><article class="terminal-ui-readiness-card"><h3>Framework Signals</h3>${terminalUiReadinessSignalList(input.terminalUiReadinessReport.frameworkSignals, "signal")}</article><article class="terminal-ui-readiness-card"><h3>Screen Signals</h3>${terminalUiReadinessSignalList(input.terminalUiReadinessReport.screenSignals, "signal")}</article><article class="terminal-ui-readiness-card"><h3>Layout Signals</h3>${terminalUiReadinessSignalList(input.terminalUiReadinessReport.layoutSignals, "signal")}</article></section><section class="grid"><article class="terminal-ui-readiness-card"><h3>Input Signals</h3>${terminalUiReadinessSignalList(input.terminalUiReadinessReport.inputSignals, "signal")}</article><article class="terminal-ui-readiness-card"><h3>Focus Signals</h3>${terminalUiReadinessSignalList(input.terminalUiReadinessReport.focusSignals, "signal")}</article><article class="terminal-ui-readiness-card"><h3>Mouse Signals</h3>${terminalUiReadinessSignalList(input.terminalUiReadinessReport.mouseSignals, "signal")}</article><article class="terminal-ui-readiness-card"><h3>Render Signals</h3>${terminalUiReadinessSignalList(input.terminalUiReadinessReport.renderSignals, "signal")}</article></section><section class="grid"><article class="terminal-ui-readiness-card"><h3>Lifecycle Signals</h3>${terminalUiReadinessSignalList(input.terminalUiReadinessReport.lifecycleSignals, "signal")}</article><article class="terminal-ui-readiness-card"><h3>Test Signals</h3>${terminalUiReadinessSignalList(input.terminalUiReadinessReport.testSignals, "signal")}</article><article class="terminal-ui-readiness-card"><h3>Package Signals</h3>${terminalUiReadinessSignalList(input.terminalUiReadinessReport.packageSignals, "signal")}</article><article class="terminal-ui-readiness-card"><h3>Recommended Commands</h3>${terminalUiReadinessCommandList(input.terminalUiReadinessReport.recommendedCommands)}</article><article class="terminal-ui-readiness-card"><h3>Risk Queue</h3>${terminalUiReadinessRiskList(input.terminalUiReadinessReport.riskQueue)}</article><article class="terminal-ui-readiness-card"><h3>다음 확인 단계</h3>${list(input.terminalUiReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "state-machine-readiness.html",
+      title: "State Machine Readiness",
+      html: pageShell("State Machine Readiness", "state-machine-readiness.html", `<section class="panel" data-source-pattern="State Machine"><h2>State Machine Snapshot</h2><p>${escapeHtml(input.stateMachineReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.stateMachineReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.stateMachineReadinessReport.stateMachineSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.stateMachineReadinessReport.frameworkSignals.length}</dd></div><div><dt>transitions</dt><dd>${input.stateMachineReadinessReport.transitionSignals.length}</dd></div><div><dt>actors</dt><dd>${input.stateMachineReadinessReport.actorSignals.length}</dd></div></dl><p class="muted">RepoTutor records state machine readiness only; it does not interpret machines, start actors, send runtime events, run workflows, call invoked services, or execute analyzed project tests.</p></section><section class="grid"><article class="state-machine-readiness-card"><h3>State Machine Setups</h3>${stateMachineReadinessSetupList(input.stateMachineReadinessReport.stateMachineSetups)}</article><article class="state-machine-readiness-card"><h3>Framework Signals</h3>${stateMachineReadinessSignalList(input.stateMachineReadinessReport.frameworkSignals, "signal")}</article><article class="state-machine-readiness-card"><h3>State Signals</h3>${stateMachineReadinessSignalList(input.stateMachineReadinessReport.stateSignals, "signal")}</article><article class="state-machine-readiness-card"><h3>Transition Signals</h3>${stateMachineReadinessSignalList(input.stateMachineReadinessReport.transitionSignals, "signal")}</article></section><section class="grid"><article class="state-machine-readiness-card"><h3>Action Signals</h3>${stateMachineReadinessSignalList(input.stateMachineReadinessReport.actionSignals, "signal")}</article><article class="state-machine-readiness-card"><h3>Guard Signals</h3>${stateMachineReadinessSignalList(input.stateMachineReadinessReport.guardSignals, "signal")}</article><article class="state-machine-readiness-card"><h3>Actor Signals</h3>${stateMachineReadinessSignalList(input.stateMachineReadinessReport.actorSignals, "signal")}</article><article class="state-machine-readiness-card"><h3>Context Signals</h3>${stateMachineReadinessSignalList(input.stateMachineReadinessReport.contextSignals, "signal")}</article></section><section class="grid"><article class="state-machine-readiness-card"><h3>Event Signals</h3>${stateMachineReadinessSignalList(input.stateMachineReadinessReport.eventSignals, "signal")}</article><article class="state-machine-readiness-card"><h3>Test Signals</h3>${stateMachineReadinessSignalList(input.stateMachineReadinessReport.testSignals, "signal")}</article><article class="state-machine-readiness-card"><h3>Package Signals</h3>${stateMachineReadinessSignalList(input.stateMachineReadinessReport.packageSignals, "signal")}</article><article class="state-machine-readiness-card"><h3>Recommended Commands</h3>${stateMachineReadinessCommandList(input.stateMachineReadinessReport.recommendedCommands)}</article><article class="state-machine-readiness-card"><h3>Risk Queue</h3>${stateMachineReadinessRiskList(input.stateMachineReadinessReport.riskQueue)}</article><article class="state-machine-readiness-card"><h3>다음 확인 단계</h3>${list(input.stateMachineReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1994,6 +2002,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "GraphQL Readiness", path: "html/graphql-readiness.html", description: "GraphQL.js식 schema, operation, resolver, validation, execution 준비도를 확인합니다." },
       { label: "CLI Readiness", path: "html/cli-readiness.html", description: "Commander.js식 command, option, argument, action, help, error 준비도를 확인합니다." },
       { label: "Terminal UI Readiness", path: "html/terminal-ui-readiness.html", description: "Ink/Bubble Tea/Blessed식 screen, layout, input, focus, mouse, render, lifecycle 준비도를 확인합니다." },
+      { label: "State Machine Readiness", path: "html/state-machine-readiness.html", description: "XState/Robot/Zag식 machine, state, transition, action, guard, actor 준비도를 확인합니다." },
       { label: "LLM Readiness", path: "html/llm-readiness.html", description: "LangChain.js식 model, prompt, tool, RAG, structured output, streaming 준비도를 확인합니다." },
       { label: "LLM Eval Readiness", path: "html/llm-eval-readiness.html", description: "promptfoo/OpenAI eval/OpenEvals식 prompt, provider, dataset, judge, red-team 준비도를 확인합니다." },
       { label: "LLM Observability Readiness", path: "html/llm-observability-readiness.html", description: "Langfuse/Phoenix/Helicone식 trace, session, token/cost, feedback, gateway 준비도를 확인합니다." },
@@ -3007,6 +3016,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "terminal-ui-readiness.html",
       goal: "Ink/Bubble Tea/Blessed식 screen, layout, input, focus, mouse, render, lifecycle 흐름을 보고 TUI contract를 확인합니다.",
       evidence: `TUI setups ${input.terminalUiReadinessReport.terminalSetups.length}개, input signals ${input.terminalUiReadinessReport.inputSignals.length}개`
+    },
+    {
+      title: "State machine readiness 확인",
+      href: "state-machine-readiness.html",
+      goal: "XState/Robot/Zag식 machine, state, transition, action, guard, actor 흐름을 보고 state machine contract를 확인합니다.",
+      evidence: `State machine setups ${input.stateMachineReadinessReport.stateMachineSetups.length}개, transition signals ${input.stateMachineReadinessReport.transitionSignals.length}개`
     },
     {
       title: "LLM readiness 확인",
@@ -7154,6 +7169,31 @@ function terminalUiReadinessRiskList(items: TerminalUiReadinessReport["riskQueue
 }
 
 function terminalUiReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function stateMachineReadinessSetupList(items: StateMachineReadinessReport["stateMachineSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">state machine setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)}/${escapeHtml(item.readiness)}]<br>machine/state/transition/action/guard/actor/invoke/context/event/test ${item.machineCount}/${item.stateCount}/${item.transitionCount}/${item.actionCount}/${item.guardCount}/${item.actorCount}/${item.invokeCount}/${item.contextCount}/${item.eventCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(stateMachineReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function stateMachineReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">state machine signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(stateMachineReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function stateMachineReadinessCommandList(items: StateMachineReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function stateMachineReadinessRiskList(items: StateMachineReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(stateMachineReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function stateMachineReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

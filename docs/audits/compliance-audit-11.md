@@ -1,6 +1,6 @@
 # Compliance Audit 11
 
-Created: 2026-06-05T17:34:40.176Z
+Created: 2026-06-05T17:50:03.779Z
 
 Status: PASS
 
@@ -881,6 +881,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - Terminal UI readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - State machine readiness report
 
 - missing files: none
 - missing strings: none

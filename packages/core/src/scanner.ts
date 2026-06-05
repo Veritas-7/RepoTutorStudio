@@ -166,6 +166,7 @@ import {
   GraphqlReadinessReport,
   CliReadinessReport,
   TerminalUiReadinessReport,
+  StateMachineReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
@@ -371,6 +372,7 @@ export interface AnalysisBundle {
   graphqlReadinessReport: GraphqlReadinessReport;
   cliReadinessReport: CliReadinessReport;
   terminalUiReadinessReport: TerminalUiReadinessReport;
+  stateMachineReadinessReport: StateMachineReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -576,6 +578,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const graphqlReadinessReport = await buildGraphqlReadinessReport(walk);
   const cliReadinessReport = await buildCliReadinessReport(walk);
   const terminalUiReadinessReport = await buildTerminalUiReadinessReport(walk);
+  const stateMachineReadinessReport = await buildStateMachineReadinessReport(walk);
   const llmReadinessReport = await buildLlmReadinessReport(walk);
   const llmEvalReadinessReport = await buildLlmEvalReadinessReport(walk);
   const llmObservabilityReadinessReport = await buildLlmObservabilityReadinessReport(walk);
@@ -610,7 +613,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -40706,6 +40709,326 @@ function terminalUiReadinessSignalFromSpecs<T extends Record<K, string> & { patt
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/terminal-ui-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildStateMachineReadinessReport(walk: WalkResult): Promise<StateMachineReadinessReport> {
+  const sourceFiles = await stateMachineReadinessSourceFiles(walk);
+  const stateMachineSetups = stateMachineReadinessSetups(sourceFiles);
+  const frameworkSignals = stateMachineReadinessFrameworkSignals(sourceFiles);
+  const stateSignals = stateMachineReadinessStateSignals(sourceFiles);
+  const transitionSignals = stateMachineReadinessTransitionSignals(sourceFiles);
+  const actionSignals = stateMachineReadinessActionSignals(sourceFiles);
+  const guardSignals = stateMachineReadinessGuardSignals(sourceFiles);
+  const actorSignals = stateMachineReadinessActorSignals(sourceFiles);
+  const contextSignals = stateMachineReadinessContextSignals(sourceFiles);
+  const eventSignals = stateMachineReadinessEventSignals(sourceFiles);
+  const testSignals = stateMachineReadinessTestSignals(sourceFiles);
+  const packageSignals = stateMachineReadinessPackageSignals(sourceFiles);
+
+  const hasFramework = frameworkSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasMachine = stateMachineSetups.some((item) => item.machineCount > 0);
+  const hasStates = stateSignals.some((item) => item.readiness === "ready") || stateMachineSetups.some((item) => item.stateCount > 0);
+  const hasTransitions = transitionSignals.some((item) => item.readiness === "ready") || stateMachineSetups.some((item) => item.transitionCount > 0);
+  const hasActors = actorSignals.some((item) => item.readiness === "ready") || stateMachineSetups.some((item) => item.actorCount > 0 || item.invokeCount > 0);
+  const hasTests = testSignals.some((item) => item.readiness === "ready") || stateMachineSetups.some((item) => item.testCount > 0);
+
+  const riskQueue: StateMachineReadinessReport["riskQueue"] = [];
+  if (!hasFramework && !hasMachine) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the state machine framework or explicit machine definition before claiming state machine readiness.",
+      why: "XState/Robot/Zag-style readiness starts with a machine boundary learners can trace.",
+      relatedHref: "html/state-machine-readiness.html"
+    });
+  }
+  if (hasMachine && !hasStates) {
+    riskQueue.push({
+      priority: "high",
+      action: "Trace initial state, states map, final states, computed state, or watch-derived state.",
+      why: "A machine without visible states cannot explain the lifecycle or allowed UI/business modes.",
+      relatedHref: "html/state-machine-readiness.html"
+    });
+  }
+  if ((hasMachine || hasStates) && !hasTransitions) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document event-to-target transitions, always/immediate transitions, delayed transitions, or transition helpers.",
+      why: "State machine value comes from explicit transitions; missing transition evidence leaves behavior implicit.",
+      relatedHref: "html/state-machine-readiness.html"
+    });
+  }
+  if ((hasMachine || hasTransitions) && !hasActors) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Identify actor, service, invoke, promise, or interpreter boundaries.",
+      why: "Async work and running machines are often expressed as actors/services; learners need to separate definition from runtime execution.",
+      relatedHref: "html/state-machine-readiness.html"
+    });
+  }
+  if ((hasMachine || hasTransitions || hasActors) && !hasTests) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add transition, model, snapshot, or workflow artifact tests for critical machine paths.",
+      why: "State machine regressions are easiest to catch when event paths and terminal states are asserted.",
+      relatedHref: "html/state-machine-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify machine behavior with trusted local tests or reviewed traces outside RepoTutor.",
+    why: "RepoTutor records state machine readiness only; it does not interpret machines, start actors, send runtime events, run workflows, call invoked services, or execute analyzed project tests.",
+    relatedHref: "html/state-machine-readiness.html"
+  });
+
+  return {
+    summary: `XState/Robot/Zag-style state machine readiness report: setup ${stateMachineSetups.length}개, framework signal ${frameworkSignals.length}개, transition signal ${transitionSignals.length}개, actor signal ${actorSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "State machine readiness XState createMachine setup createActor Robot state transition interpret Zag createMachine connect states on actions guards",
+    stateMachineSetups,
+    frameworkSignals,
+    stateSignals,
+    transitionSignals,
+    actionSignals,
+    guardSignals,
+    actorSignals,
+    contextSignals,
+    eventSignals,
+    testSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"createMachine|setup\\(|createActor|interpret\\(|state\\(|transition\\(|machine\\(|connect\\(\" src app packages test", purpose: "Find machine definitions, actor/service startup, Robot helpers, and Zag machine/connect usage." },
+      { command: "rg \"initial:|states:|type: ['\\\"]final|computed:|watch:\" src app packages test", purpose: "Trace initial, concrete, final, computed, and watched state boundaries." },
+      { command: "rg \"on:|target:|always:|immediate\\(|after:|delay|transition\\(\" src app packages test", purpose: "Inventory event-driven, immediate, delayed, and helper-based transitions." },
+      { command: "rg \"assign\\(|actions:|reduce\\(|entry:|exit:|effects:|guards:|guard:|cond:\" src app packages test", purpose: "Review actions, reducers, entry/exit/effects, and guarded paths." },
+      { command: "rg \"invoke:|fromPromise|onDone|onError|service\\.send|actor\\.send|subscribe\\(|matches\\(\" src app packages test", purpose: "Separate invoked async work, runtime event sending, subscriptions, and snapshot matching." },
+      { command: "pnpm test", purpose: "Run trusted local tests that cover machine transitions and terminal states." }
+    ],
+    learnerNextSteps: [
+      "먼저 XState, Robot, Zag, javascript-state-machine 같은 framework 또는 custom machine definition을 찾으세요.",
+      "initial, states, final, computed, watch 신호로 가능한 상태와 파생 상태를 분리하세요.",
+      "on, target, always, immediate, after/delay, transition helper를 따라 이벤트가 상태를 어떻게 바꾸는지 확인하세요.",
+      "assign/actions/reduce/entry/exit/effects와 guard/cond/choose를 나눠 side effect와 조건부 전이를 표시하세요.",
+      "createActor, interpret, invoke, fromPromise, service/actor ref로 정의와 런타임 실행 경계를 구분하세요.",
+      "send, subscribe, event type, onDone/onError, snapshot.matches로 이벤트 입출력과 검증 지점을 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 actor start, event send, invoked service, transition timing은 원본 프로젝트 테스트나 수동 검증에서 별도 확인하세요."
+    ]
+  };
+}
+
+type StateMachineReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function stateMachineReadinessSourceFiles(walk: WalkResult): Promise<StateMachineReadinessSourceFile[]> {
+  const files: StateMachineReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !stateMachineReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!stateMachineReadinessPathSignal(file.relPath) && !stateMachineReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function stateMachineReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return stateMachineReadinessPathSignal(filePath)
+    || /^(package\.json|pnpm-lock\.yaml|yarn\.lock|package-lock\.json)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|json|md|mdx|ya?ml)$/i.test(filePath);
+}
+
+function stateMachineReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(machines?|state-machine|statemachine|workflow|flows?|actors?|services?|xstate|robot|zag|stores?|tests?)(\/|\.|-|_|$)|package\.json$|workflow/i.test(filePath);
+}
+
+function stateMachineReadinessContentSignal(text: string): boolean {
+  return /\b(createMachine|setup\s*\(|createActor|interpret\s*\(|fromPromise|assign\s*\(|state\s*\(|transition\s*\(|reduce\s*\(|guard\s*\(|immediate\s*\(|invoke\s*\(|states\s*:|initial\s*:|on\s*:|target\s*:|always\s*:|onDone|onError|snapshot\.matches|\.send\s*\(|\.subscribe\s*\(|useMachine|normalizeProps|connect\s*\(|computed\s*:|watch\s*:)\b|"(xstate|robot3|@zag-js\/core|@zag-js\/react|@zag-js\/toggle|javascript-state-machine)"/i.test(text);
+}
+
+function stateMachineReadinessSetups(sourceFiles: StateMachineReadinessSourceFile[]): StateMachineReadinessReport["stateMachineSetups"] {
+  const rows: StateMachineReadinessReport["stateMachineSetups"] = [];
+  for (const source of sourceFiles) {
+    const machineCount = countMatches(source.text, /(createMachine|setup\s*\(|\.createMachine\s*\(|Machine\s*\(|createModel|machine\s*\(|toggle\.machine)/gi);
+    const stateCount = countMatches(source.text, /(initial\s*:|states\s*:|state\s*\(|type\s*:\s*['"]final['"]|computed\s*:|watch\s*:|parallel\s*:|history)/gi);
+    const transitionCount = countMatches(source.text, /(on\s*:|target\s*:|always\s*:|immediate\s*\(|transition\s*\(|after\s*:|delay\s*:|onDone|onError)/gi);
+    const actionCount = countMatches(source.text, /(assign\s*\(|actions\s*:|reduce\s*\(|entry\s*:|exit\s*:|effects\s*:|effect\s*:|onTransition)/gi);
+    const guardCount = countMatches(source.text, /(guard\s*:|guards\s*:|guard\s*\(|cond\s*:|choose\s*\(|can[A-Z][A-Za-z0-9_]*)/gi);
+    const actorCount = countMatches(source.text, /(createActor|interpret\s*\(|useMachine|actor\.|ActorRef|service\.|spawn|fromCallback|fromObservable)/gi);
+    const invokeCount = countMatches(source.text, /(invoke\s*:|invoke\s*\(|fromPromise|fromCallback|fromObservable|actors\s*:|onDone|onError)/gi);
+    const contextCount = countMatches(source.text, /(context\s*:|snapshot|\.context|matches\s*\(|computed\s*:|watch\s*:|input\s*:)/gi);
+    const eventCount = countMatches(source.text, /(send\s*\(|\.send\s*\(|subscribe\s*\(|type\s*:\s*['"`][A-Z_a-z.-]+|onDone|onError|event\.|events\s*:)/gi);
+    const testCount = countMatches(source.text, /(vitest|describe\s*\(|it\s*\(|expect\s*\(|model test|createTestModel|testModel|upload-artifact|state-machine-traces|transition test)/gi);
+    const hasSetupSignal = machineCount + stateCount + transitionCount + actionCount + guardCount + actorCount + invokeCount + contextCount + eventCount + testCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: stateMachineReadinessPlatform(source),
+      machineCount,
+      stateCount,
+      transitionCount,
+      actionCount,
+      guardCount,
+      actorCount,
+      invokeCount,
+      contextCount,
+      eventCount,
+      testCount,
+      readiness: machineCount > 0 && stateCount > 0 && transitionCount > 0 && (actorCount > 0 || eventCount > 0 || invokeCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains machines ${machineCount}, states ${stateCount}, transitions ${transitionCount}, actions ${actionCount}, guards ${guardCount}, actors ${actorCount}, invokes ${invokeCount}, context ${contextCount}, events ${eventCount}, tests ${testCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function stateMachineReadinessPlatform(source: StateMachineReadinessSourceFile): StateMachineReadinessReport["stateMachineSetups"][number]["platform"] {
+  if (/\b(from ["']xstate["']|require\(["']xstate["']\)|createActor|fromPromise|setup\s*\(|\.createMachine\s*\(|@xstate)\b/i.test(source.text)) return "xstate";
+  if (/\b(from ["']robot3["']|require\(["']robot3["']\)|state\s*\(|transition\s*\(|reduce\s*\(|immediate\s*\(|interpret\s*\()\b/i.test(source.text)) return "robot";
+  if (/@zag-js\/(core|react|toggle)|toggle\.machine|normalizeProps|connect\s*\(|useMachine/i.test(source.text)) return "zag";
+  if (/javascript-state-machine|new\s+StateMachine|StateMachine\.factory/i.test(source.text)) return "javascript-state-machine";
+  if (/createMachine|states\s*:|transition|actor|service|event/i.test(source.text) || stateMachineReadinessPathSignal(source.filePath)) return "custom";
+  return "unknown";
+}
+
+function stateMachineReadinessFrameworkSignals(sourceFiles: StateMachineReadinessSourceFile[]): StateMachineReadinessReport["frameworkSignals"] {
+  const specs: Array<{ signal: StateMachineReadinessReport["frameworkSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "xstate", pattern: /"xstate"|from ["']xstate["']|createActor|fromPromise|setup\s*\(|\.createMachine\s*\(/i, evidence: "XState evidence was detected." },
+    { signal: "robot", pattern: /"robot3"|from ["']robot3["']|state\s*\(|transition\s*\(|reduce\s*\(|immediate\s*\(/i, evidence: "Robot evidence was detected." },
+    { signal: "zag", pattern: /@zag-js\/(core|react|toggle)|toggle\.machine|normalizeProps|connect\s*\(|useMachine/i, evidence: "Zag evidence was detected." },
+    { signal: "javascript-state-machine", pattern: /javascript-state-machine|new\s+StateMachine|StateMachine\.factory/i, evidence: "javascript-state-machine evidence was detected." },
+    { signal: "custom", pattern: /states\s*:|transitions?\s*:|state machine|finite state|actor|event bus/i, evidence: "custom state machine evidence was detected." }
+  ];
+  return stateMachineReadinessSignalFromSpecs(sourceFiles, specs, "framework", "signal");
+}
+
+function stateMachineReadinessStateSignals(sourceFiles: StateMachineReadinessSourceFile[]): StateMachineReadinessReport["stateSignals"] {
+  const specs: Array<{ signal: StateMachineReadinessReport["stateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "initial", pattern: /\binitial\s*:/i, evidence: "initial state evidence was detected." },
+    { signal: "states", pattern: /\bstates\s*:|state\s*\(/i, evidence: "states map/helper evidence was detected." },
+    { signal: "final", pattern: /type\s*:\s*['"]final['"]|final\s*:/i, evidence: "final state evidence was detected." },
+    { signal: "nested", pattern: /states\s*:\s*\{[\s\S]{0,300}states\s*:|nested/i, evidence: "nested state evidence was detected." },
+    { signal: "parallel", pattern: /type\s*:\s*['"]parallel['"]|parallel\s*:/i, evidence: "parallel state evidence was detected." },
+    { signal: "history", pattern: /type\s*:\s*['"]history['"]|history\s*:/i, evidence: "history state evidence was detected." },
+    { signal: "computed", pattern: /\bcomputed\s*:/i, evidence: "computed state evidence was detected." },
+    { signal: "watch", pattern: /\bwatch\s*:/i, evidence: "watch-derived state evidence was detected." }
+  ];
+  return stateMachineReadinessSignalFromSpecs(sourceFiles, specs, "state", "signal");
+}
+
+function stateMachineReadinessTransitionSignals(sourceFiles: StateMachineReadinessSourceFile[]): StateMachineReadinessReport["transitionSignals"] {
+  const specs: Array<{ signal: StateMachineReadinessReport["transitionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "on", pattern: /\bon\s*:/i, evidence: "event transition map evidence was detected." },
+    { signal: "target", pattern: /\btarget\s*:/i, evidence: "target transition evidence was detected." },
+    { signal: "always", pattern: /\balways\s*:/i, evidence: "always transition evidence was detected." },
+    { signal: "immediate", pattern: /\bimmediate\s*\(/i, evidence: "immediate transition evidence was detected." },
+    { signal: "transition", pattern: /\btransition\s*\(/i, evidence: "transition helper evidence was detected." },
+    { signal: "after", pattern: /\bafter\s*:/i, evidence: "after transition evidence was detected." },
+    { signal: "delay", pattern: /\bdelay\s*:|delays\s*:/i, evidence: "delay transition evidence was detected." }
+  ];
+  return stateMachineReadinessSignalFromSpecs(sourceFiles, specs, "transition", "signal");
+}
+
+function stateMachineReadinessActionSignals(sourceFiles: StateMachineReadinessSourceFile[]): StateMachineReadinessReport["actionSignals"] {
+  const specs: Array<{ signal: StateMachineReadinessReport["actionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "assign", pattern: /\bassign\s*\(/i, evidence: "assign action evidence was detected." },
+    { signal: "actions", pattern: /\bactions\s*:/i, evidence: "actions map evidence was detected." },
+    { signal: "reduce", pattern: /\breduce\s*\(/i, evidence: "Robot reducer evidence was detected." },
+    { signal: "entry", pattern: /\bentry\s*:/i, evidence: "entry action evidence was detected." },
+    { signal: "exit", pattern: /\bexit\s*:/i, evidence: "exit action evidence was detected." },
+    { signal: "effect", pattern: /\beffects?\s*:/i, evidence: "effect action evidence was detected." }
+  ];
+  return stateMachineReadinessSignalFromSpecs(sourceFiles, specs, "action", "signal");
+}
+
+function stateMachineReadinessGuardSignals(sourceFiles: StateMachineReadinessSourceFile[]): StateMachineReadinessReport["guardSignals"] {
+  const specs: Array<{ signal: StateMachineReadinessReport["guardSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "guard", pattern: /\bguard\s*:|\bguard\s*\(/i, evidence: "guard evidence was detected." },
+    { signal: "guards", pattern: /\bguards\s*:/i, evidence: "guards map evidence was detected." },
+    { signal: "can-guard", pattern: /\bcan[A-Z][A-Za-z0-9_]*\b/i, evidence: "can* guard naming evidence was detected." },
+    { signal: "cond", pattern: /\bcond\s*:/i, evidence: "condition evidence was detected." },
+    { signal: "choose", pattern: /\bchoose\s*\(/i, evidence: "choose guard evidence was detected." }
+  ];
+  return stateMachineReadinessSignalFromSpecs(sourceFiles, specs, "guard", "signal");
+}
+
+function stateMachineReadinessActorSignals(sourceFiles: StateMachineReadinessSourceFile[]): StateMachineReadinessReport["actorSignals"] {
+  const specs: Array<{ signal: StateMachineReadinessReport["actorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "create-actor", pattern: /\bcreateActor\s*\(/i, evidence: "createActor evidence was detected." },
+    { signal: "interpret", pattern: /\binterpret\s*\(/i, evidence: "interpreter evidence was detected." },
+    { signal: "invoke", pattern: /\binvoke\s*:|\binvoke\s*\(/i, evidence: "invoke evidence was detected." },
+    { signal: "from-promise", pattern: /\bfromPromise\s*\(/i, evidence: "fromPromise evidence was detected." },
+    { signal: "service", pattern: /\bservice\.|const\s+service|useMachine/i, evidence: "service/useMachine evidence was detected." },
+    { signal: "actor-ref", pattern: /\bActorRef|actor\.|spawn\s*\(/i, evidence: "actor ref evidence was detected." }
+  ];
+  return stateMachineReadinessSignalFromSpecs(sourceFiles, specs, "actor", "signal");
+}
+
+function stateMachineReadinessContextSignals(sourceFiles: StateMachineReadinessSourceFile[]): StateMachineReadinessReport["contextSignals"] {
+  const specs: Array<{ signal: StateMachineReadinessReport["contextSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "context", pattern: /\bcontext\s*:|\.context\b/i, evidence: "context evidence was detected." },
+    { signal: "snapshot", pattern: /\bsnapshot\b|getSnapshot\s*\(/i, evidence: "snapshot evidence was detected." },
+    { signal: "matches", pattern: /\bmatches\s*\(/i, evidence: "state matching evidence was detected." },
+    { signal: "computed", pattern: /\bcomputed\s*:/i, evidence: "computed context evidence was detected." },
+    { signal: "watch", pattern: /\bwatch\s*:/i, evidence: "watch evidence was detected." },
+    { signal: "input", pattern: /\binput\s*:|fromPromise\s*\(\s*async\s*\(\s*\{\s*input/i, evidence: "input evidence was detected." }
+  ];
+  return stateMachineReadinessSignalFromSpecs(sourceFiles, specs, "context", "signal");
+}
+
+function stateMachineReadinessEventSignals(sourceFiles: StateMachineReadinessSourceFile[]): StateMachineReadinessReport["eventSignals"] {
+  const specs: Array<{ signal: StateMachineReadinessReport["eventSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "send", pattern: /\.send\s*\(|\bsend\s*\(/i, evidence: "send event evidence was detected." },
+    { signal: "subscribe", pattern: /\.subscribe\s*\(|subscribe\s*\(/i, evidence: "subscription evidence was detected." },
+    { signal: "event-type", pattern: /type\s*:\s*['"`][A-Za-z0-9_.-]+|events\s*:/i, evidence: "event type evidence was detected." },
+    { signal: "on-done", pattern: /onDone|xstate\.done|transition\s*\(['"]done['"]/i, evidence: "done event evidence was detected." },
+    { signal: "on-error", pattern: /onError|transition\s*\(['"]error['"]/i, evidence: "error event evidence was detected." },
+    { signal: "event-payload", pattern: /event\.[A-Za-z0-9_]+|ev\.[A-Za-z0-9_]+|payload|output/i, evidence: "event payload evidence was detected." }
+  ];
+  return stateMachineReadinessSignalFromSpecs(sourceFiles, specs, "event", "signal");
+}
+
+function stateMachineReadinessTestSignals(sourceFiles: StateMachineReadinessSourceFile[]): StateMachineReadinessReport["testSignals"] {
+  const specs: Array<{ signal: StateMachineReadinessReport["testSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vitest", pattern: /\bvitest\b|describe\s*\(|it\s*\(|expect\s*\(/i, evidence: "Vitest evidence was detected." },
+    { signal: "model-test", pattern: /createTestModel|testModel|@xstate\/test|model-based/i, evidence: "model-based test evidence was detected." },
+    { signal: "transition-test", pattern: /transition test|matches\s*\(|getSnapshot\s*\(|state-machine/i, evidence: "transition assertion evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|state-machine-traces|artifacts?/i, evidence: "artifact upload evidence was detected." },
+    { signal: "storybook", pattern: /storybook|play\s*:/i, evidence: "Storybook interaction evidence was detected." }
+  ];
+  return stateMachineReadinessSignalFromSpecs(sourceFiles, specs, "test", "signal");
+}
+
+function stateMachineReadinessPackageSignals(sourceFiles: StateMachineReadinessSourceFile[]): StateMachineReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: StateMachineReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "xstate", pattern: /"xstate"|from ["']xstate["']|createActor|fromPromise|setup\s*\(/i, evidence: "XState package evidence was detected." },
+    { signal: "robot3", pattern: /"robot3"|from ["']robot3["']|require\(["']robot3["']\)/i, evidence: "Robot3 package evidence was detected." },
+    { signal: "@zag-js/core", pattern: /"@zag-js\/core"|from ["']@zag-js\/core["']|createMachine\s*\(/i, evidence: "Zag core package evidence was detected." },
+    { signal: "@zag-js/react", pattern: /"@zag-js\/react"|from ["']@zag-js\/react["']|useMachine|normalizeProps/i, evidence: "Zag React package evidence was detected." },
+    { signal: "@zag-js/toggle", pattern: /"@zag-js\/toggle"|from ["']@zag-js\/toggle["']|toggle\.machine|toggle\.connect/i, evidence: "Zag toggle package evidence was detected." },
+    { signal: "javascript-state-machine", pattern: /"javascript-state-machine"|javascript-state-machine|new\s+StateMachine/i, evidence: "javascript-state-machine package evidence was detected." }
+  ];
+  return stateMachineReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function stateMachineReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: StateMachineReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/state-machine-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

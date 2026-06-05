@@ -20547,6 +20547,204 @@ describe("RepoTutor core pipeline", () => {
     expect(terminalHtml).toContain("RepoTutor records terminal UI readiness only");
   });
 
+  it("detects state machine readiness without interpreting or sending runtime events", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-state-machine-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-state-machine-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "test"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "src", "checkout-machine.ts"), [
+      "import { assign, createActor, fromPromise, setup } from 'xstate';",
+      "",
+      "type CheckoutContext = { total: number; receipt?: string };",
+      "type CheckoutEvent = { type: 'START' } | { type: 'UPDATE'; total: number } | { type: 'SUBMIT' };",
+      "",
+      "export const checkoutMachine = setup({",
+      "  types: {} as { context: CheckoutContext; events: CheckoutEvent },",
+      "  actions: {",
+      "    rememberTotal: assign({ total: ({ event }) => event.type === 'UPDATE' ? event.total : 0 }),",
+      "    rememberReceipt: assign({ receipt: ({ event }) => event.type === 'xstate.done.actor.submitOrder' ? event.output.id : undefined })",
+      "  },",
+      "  guards: {",
+      "    canSubmit: ({ context }) => context.total > 0",
+      "  },",
+      "  actors: {",
+      "    submitOrder: fromPromise(async ({ input }) => ({ id: `receipt-${input.total}` }))",
+      "  }",
+      "}).createMachine({",
+      "  id: 'checkout',",
+      "  initial: 'idle',",
+      "  context: { total: 0 },",
+      "  states: {",
+      "    idle: { on: { START: { target: 'editing' } } },",
+      "    editing: {",
+      "      on: {",
+      "        UPDATE: { actions: 'rememberTotal' },",
+      "        SUBMIT: { guard: 'canSubmit', target: 'submitting' }",
+      "      },",
+      "      always: [{ guard: 'canSubmit', target: 'review' }]",
+      "    },",
+      "    review: { on: { SUBMIT: { target: 'submitting' } } },",
+      "    submitting: {",
+      "      invoke: {",
+      "        id: 'submitOrder',",
+      "        src: 'submitOrder',",
+      "        input: ({ context }) => ({ total: context.total }),",
+      "        onDone: { target: 'complete', actions: 'rememberReceipt' },",
+      "        onError: { target: 'failed' }",
+      "      }",
+      "    },",
+      "    failed: { on: { START: 'editing' } },",
+      "    complete: { type: 'final' }",
+      "  }",
+      "});",
+      "",
+      "const actor = createActor(checkoutMachine);",
+      "actor.subscribe((snapshot) => snapshot.matches('complete'));",
+      "actor.start();",
+      "actor.send({ type: 'START' });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "robot-flow.js"), [
+      "import { createMachine, guard, immediate, interpret, invoke, reduce, state, transition } from 'robot3';",
+      "",
+      "const loadUsers = async () => [{ id: 'ada' }];",
+      "const canRetry = (ctx) => ctx.retries < 2;",
+      "",
+      "export const userMachine = createMachine({",
+      "  idle: state(transition('fetch', 'loading')),",
+      "  loading: invoke(loadUsers,",
+      "    transition('done', 'loaded', reduce((ctx, ev) => ({ ...ctx, users: ev.data }))),",
+      "    transition('error', 'failed', reduce((ctx) => ({ ...ctx, retries: ctx.retries + 1 })))",
+      "  ),",
+      "  failed: state(immediate('idle', guard(canRetry))),",
+      "  loaded: state(transition('reset', 'idle'))",
+      "}, () => ({ users: [], retries: 0 }));",
+      "",
+      "const service = interpret(userMachine, (service) => service.machine);",
+      "service.send('fetch');"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "zag-toggle.tsx"), [
+      "import { createMachine } from '@zag-js/core';",
+      "import { normalizeProps, useMachine } from '@zag-js/react';",
+      "import * as toggle from '@zag-js/toggle';",
+      "",
+      "export const panelMachine = createMachine({",
+      "  id: 'panel',",
+      "  initial: 'closed',",
+      "  context: { count: 0 },",
+      "  computed: { canOpen: ({ context }) => context.count >= 0 },",
+      "  watch: { count: ['trackCount'] },",
+      "  states: {",
+      "    closed: {",
+      "      entry: ['onClosed'],",
+      "      on: { OPEN: { target: 'open', actions: ['increment'] } }",
+      "    },",
+      "    open: {",
+      "      effects: ['syncFocus'],",
+      "      exit: ['onExit'],",
+      "      on: { CLOSE: 'closed', TOGGLE: { target: 'closed', guard: 'canClose' } }",
+      "    }",
+      "  }",
+      "});",
+      "",
+      "export function ToggleButton() {",
+      "  const service = useMachine(toggle.machine({ id: 'toggle' }));",
+      "  const api = toggle.connect(service, normalizeProps);",
+      "  return <button {...api.getRootProps()}>{api.pressed ? 'On' : 'Off'}</button>;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "test", "state-machine.test.ts"), [
+      "import { describe, expect, it } from 'vitest';",
+      "import { createActor } from 'xstate';",
+      "import { checkoutMachine } from '../src/checkout-machine';",
+      "",
+      "describe('checkout machine', () => {",
+      "  it('transitions through start and submit events', () => {",
+      "    const actor = createActor(checkoutMachine);",
+      "    actor.start();",
+      "    actor.send({ type: 'START' });",
+      "    expect(actor.getSnapshot().matches('editing')).toBe(true);",
+      "  });",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        test: "vitest state-machine.test.ts"
+      },
+      dependencies: {
+        xstate: "^5.24.0",
+        robot3: "^1.2.0",
+        "@zag-js/core": "^1.29.0",
+        "@zag-js/react": "^1.29.0",
+        "@zag-js/toggle": "^1.29.0",
+        react: "^19.0.0"
+      },
+      devDependencies: {
+        vitest: "^3.0.0",
+        typescript: "^5.8.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "state-machine.yml"), [
+      "name: state-machine",
+      "on: [push]",
+      "jobs:",
+      "  static-state-machine:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm vitest state-machine.test.ts",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: state-machine-traces",
+      "          path: reports/state-machine"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "state-machine-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      stateMachineSetups: Array<{ filePath: string; platform: string; stateCount: number; transitionCount: number; guardCount: number; actorCount: number; invokeCount: number; readiness: string }>;
+      frameworkSignals: Array<{ signal: string; readiness: string }>;
+      stateSignals: Array<{ signal: string; readiness: string }>;
+      transitionSignals: Array<{ signal: string; readiness: string }>;
+      actionSignals: Array<{ signal: string; readiness: string }>;
+      guardSignals: Array<{ signal: string; readiness: string }>;
+      actorSignals: Array<{ signal: string; readiness: string }>;
+      contextSignals: Array<{ signal: string; readiness: string }>;
+      eventSignals: Array<{ signal: string; readiness: string }>;
+      testSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("State machine readiness XState createMachine setup createActor Robot state transition interpret Zag createMachine connect states on actions guards");
+    expect(report.stateMachineSetups.some((item) => item.filePath === "src/checkout-machine.ts" && item.platform === "xstate" && item.stateCount > 0 && item.transitionCount > 0 && item.actorCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(report.stateMachineSetups.some((item) => item.filePath === "src/robot-flow.js" && item.platform === "robot" && item.transitionCount > 0 && item.guardCount > 0 && item.invokeCount > 0)).toBe(true);
+    expect(report.stateMachineSetups.some((item) => item.filePath === "src/zag-toggle.tsx" && item.platform === "zag" && item.stateCount > 0 && item.transitionCount > 0)).toBe(true);
+    expect(readySignals(report.frameworkSignals)).toEqual(expect.arrayContaining(["xstate", "robot", "zag"]));
+    expect(readySignals(report.stateSignals)).toEqual(expect.arrayContaining(["initial", "states", "final", "computed", "watch"]));
+    expect(readySignals(report.transitionSignals)).toEqual(expect.arrayContaining(["on", "target", "always", "immediate", "transition"]));
+    expect(readySignals(report.actionSignals)).toEqual(expect.arrayContaining(["assign", "actions", "reduce", "entry", "exit"]));
+    expect(readySignals(report.guardSignals)).toEqual(expect.arrayContaining(["guard", "guards", "can-guard"]));
+    expect(readySignals(report.actorSignals)).toEqual(expect.arrayContaining(["create-actor", "interpret", "invoke", "from-promise", "service"]));
+    expect(readySignals(report.contextSignals)).toEqual(expect.arrayContaining(["context", "snapshot", "matches", "computed", "watch"]));
+    expect(readySignals(report.eventSignals)).toEqual(expect.arrayContaining(["send", "subscribe", "event-type", "on-done", "on-error"]));
+    expect(readySignals(report.testSignals)).toEqual(expect.arrayContaining(["vitest", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["xstate", "robot3", "@zag-js/core", "@zag-js/react", "@zag-js/toggle"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("createMachine"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records state machine readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "state-machine-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "state-machine-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "state-machine-readiness.html"))).resolves.toBeUndefined();
+    const stateMachineMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "state-machine-readiness.md"), "utf8");
+    expect(stateMachineMarkdown).toContain("State Machine Readiness");
+    expect(stateMachineMarkdown).toContain("XState");
+    const stateMachineHtml = await fs.readFile(path.join(result.session.outputPaths.html, "state-machine-readiness.html"), "utf8");
+    expect(stateMachineHtml).toContain("state-machine-readiness-card");
+    expect(stateMachineHtml).toContain("data-source-pattern=\"State Machine\"");
+    expect(stateMachineHtml).toContain("RepoTutor records state machine readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
