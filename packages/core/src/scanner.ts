@@ -56,6 +56,7 @@ import {
   DebugReadinessReport,
   CrashReportingReadinessReport,
   IncidentResponseReadinessReport,
+  SloReadinessReport,
   LoadTestingReadinessReport,
   BenchmarkReadinessReport,
   E2eReport,
@@ -249,6 +250,7 @@ export interface AnalysisBundle {
   debugReadinessReport: DebugReadinessReport;
   crashReportingReadinessReport: CrashReportingReadinessReport;
   incidentResponseReadinessReport: IncidentResponseReadinessReport;
+  sloReadinessReport: SloReadinessReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
@@ -442,6 +444,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const debugReadinessReport = await buildDebugReadinessReport(walk);
   const crashReportingReadinessReport = await buildCrashReportingReadinessReport(walk);
   const incidentResponseReadinessReport = await buildIncidentResponseReadinessReport(walk);
+  const sloReadinessReport = await buildSloReadinessReport(walk);
   const loadTestingReadinessReport = await buildLoadTestingReadinessReport(walk);
   const benchmarkReadinessReport = await buildBenchmarkReadinessReport(walk);
   const e2eReport = await buildE2eReport(walk, runtimeEnvironmentReport);
@@ -574,7 +577,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -8402,6 +8405,321 @@ function incidentSignalFromSpecs<T extends string>(
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/incident-response-readiness.html"
+    };
+  });
+}
+
+async function buildSloReadinessReport(walk: WalkResult): Promise<SloReadinessReport> {
+  const sourceFiles = await sloSourceFiles(walk);
+  const sloSetups = sloSetupRows(sourceFiles);
+  const specSignals = sloSpecSignals(sourceFiles);
+  const indicatorSignals = sloIndicatorSignals(sourceFiles);
+  const objectiveSignals = sloObjectiveSignals(sourceFiles);
+  const alertSignals = sloAlertSignals(sourceFiles);
+  const ruleSignals = sloRuleSignals(sourceFiles);
+  const governanceSignals = sloGovernanceSignals(sourceFiles);
+  const workflowSignals = sloWorkflowSignals(sourceFiles);
+  const packageSignals = sloPackageSignals(sourceFiles);
+
+  const hasSpec = specSignals.some((item) => item.readiness === "ready") || sloSetups.some((item) => item.sloCount > 0);
+  const hasIndicator = indicatorSignals.some((item) => item.readiness === "ready") || sloSetups.some((item) => item.sliCount + item.dataSourceCount > 0);
+  const hasObjective = objectiveSignals.some((item) => item.readiness === "ready") || sloSetups.some((item) => item.objectiveCount + item.targetCount + item.windowCount > 0);
+  const hasAlerting = alertSignals.some((item) => item.readiness === "ready") || sloSetups.some((item) => item.alertCount + item.burnRateCount > 0);
+  const hasRules = ruleSignals.some((item) => item.readiness === "ready") || sloSetups.some((item) => item.recordingRuleCount > 0);
+  const hasValidation = workflowSignals.some((item) => item.readiness === "ready") || sloSetups.some((item) => item.validationCount + item.ciCount > 0);
+
+  const riskQueue: SloReadinessReport["riskQueue"] = [];
+  if (!hasSpec) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add or document SLO specs before claiming SLO readiness.",
+      why: "SLO readiness needs explicit OpenSLO, Sloth, Pyrra, PrometheusRule, or equivalent service-level-objective manifests.",
+      relatedHref: "html/slo-readiness.html"
+    });
+  }
+  if (hasSpec && !hasIndicator) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Connect each SLO to a measurable SLI.",
+      why: "Targets are not actionable unless the good/total, bad/total, raw ratio, threshold, latency, or availability indicator is visible.",
+      relatedHref: "html/slo-readiness.html"
+    });
+  }
+  if (hasSpec && !hasObjective) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add objective targets, time windows, and budgeting method evidence.",
+      why: "Error budgets depend on a target and a window; missing objective metadata makes burn-rate interpretation ambiguous.",
+      relatedHref: "html/slo-readiness.html"
+    });
+  }
+  if (hasSpec && !hasAlerting) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Pair SLOs with burn-rate alerting and notification labels.",
+      why: "SLO specs without page/ticket or Prometheus alert rules may not drive operational action when budgets burn.",
+      relatedHref: "html/slo-readiness.html"
+    });
+  }
+  if (hasSpec && !hasRules) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Check generated recording rules or Prometheus Operator rule outputs.",
+      why: "Tools such as Sloth and Pyrra turn SLOs into recording and alerting rules; readiness should show where those rules are generated or routed.",
+      relatedHref: "html/slo-readiness.html"
+    });
+  }
+  if (hasSpec && !hasValidation) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add CI validation or dry-run coverage for SLO manifests.",
+      why: "SLO YAML can drift or fail to compile; CI validation catches broken specs before alerting changes land.",
+      relatedHref: "html/slo-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "RepoTutor records static SLO readiness only; it does not evaluate PromQL, query Prometheus/Grafana, apply Kubernetes resources, generate rules, or page teams.",
+    why: "SLO correctness and burn-rate behavior must be verified through authorized observability and deployment workflows.",
+    relatedHref: "html/slo-readiness.html"
+  });
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  return {
+    summary: `OpenSLO/Sloth/Pyrra-style SLO readiness report: setup ${sloSetups.length} files, indicator signals ${indicatorSignals.length}, objective signals ${objectiveSignals.length}, alert signals ${alertSignals.length} were mapped from static evidence.`,
+    sourcePattern: "SLO readiness OpenSLO Sloth Pyrra service level objective SLI error budget burn rate Prometheus recording rules",
+    sloSetups,
+    specSignals,
+    indicatorSignals,
+    objectiveSignals,
+    alertSignals,
+    ruleSignals,
+    governanceSignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"apiVersion: (openslo|pyrra)|kind: (SLO|SLI|ServiceLevelObjective)|sloth.dev\" .", purpose: "Find OpenSLO, Pyrra, and Sloth SLO specification surfaces." },
+      { command: "rg \"ratioMetric|thresholdMetric|indicator:|error_query|total_query|latency|availability|raw ratio\" .", purpose: "Review SLI indicator definitions and PromQL query inputs." },
+      { command: "rg \"targetPercent|target:|objective:|timeWindow|window:|budgetingMethod|error budget\" .", purpose: "Review objectives, targets, windows, and budgeting method evidence." },
+      { command: "rg \"burnrate|burn rate|page_alert|ticket_alert|PrometheusRule|recording rule|alertAfter|multi window\" .", purpose: "Review burn-rate alerting and generated rule evidence." },
+      { command: "rg \"sloth validate|pyrra|kubectl apply|helm chart|dry-run|generic-rules\" .github . scripts ops deploy", purpose: "Review validation, deployment, and rule-generation workflows." }
+    ],
+    learnerNextSteps: [
+      "Start by finding SLO specs and confirming the owning service/team labels.",
+      "For each SLO, verify the SLI query shape: ratio, threshold, latency, availability, or raw error ratio.",
+      "Check target, targetPercent, objective, timeWindow/window, and budgetingMethod before trusting an error budget.",
+      "Review burn-rate alerting, page/ticket labels, generated recording rules, and Prometheus Operator routing.",
+      "This report is static readiness only. Real SLO correctness requires authorized PromQL evaluation, rule generation, and observability review."
+    ]
+  };
+}
+
+type SloSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function sloSourceFiles(walk: WalkResult): Promise<SloSourceFile[]> {
+  const files: SloSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !sloInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 240_000);
+    if (!text) continue;
+    if (!sloPathSignal(file.relPath) && !sloContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 360) break;
+  }
+  return files;
+}
+
+function sloInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|go\.mod|requirements.*\.txt|pyproject\.toml|Chart\.ya?ml|values\.ya?ml|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(^|\/)(slo|slos|sli|slis|openslo|sloth|pyrra|prometheus|prometheus-rule|prometheusrule|grafana|dashboards?|alerts?|alerting|monitoring|observability|ops|sre|k8s|kubernetes|helm|charts?|manifests?|deploy|docs?)(\/|\.|-|_|$)/i.test(filePath)
+    || /\.(ya?ml|json|jsonnet|toml|md|tf|hcl|js|ts|mjs|cjs|py|go|sh|conf|ini)$/i.test(filePath);
+}
+
+function sloPathSignal(filePath: string): boolean {
+  return /(slo|sli|openslo|sloth|pyrra|servicelevelobjective|prometheusrule|error-budget|burnrate|burn-rate)/i.test(filePath);
+}
+
+function sloContentSignal(text: string): boolean {
+  return /(OpenSLO|openslo|sloth\.dev|Sloth|Pyrra|pyrra\.dev|ServiceLevelObjective|kind:\s*(SLO|SLI)|service level objective|error budget|burnrate|burn rate|budgetingMethod|ratioMetric|thresholdMetric|targetPercent|page_alert|ticket_alert|PrometheusRule)/i.test(text);
+}
+
+function sloSetupRows(sourceFiles: SloSourceFile[]): SloReadinessReport["sloSetups"] {
+  const rows: SloReadinessReport["sloSetups"] = [];
+  for (const source of sourceFiles) {
+    const haystack = `${source.filePath}\n${source.text}`;
+    const sloCount = countMatches(source.text, /kind:\s*SLO\b|ServiceLevelObjective|service level objective|\bslos?\s*:|pyrra\.dev\/v1alpha1|openslo\/v1|sloth\.dev/gi);
+    const sliCount = countMatches(source.text, /kind:\s*SLI\b|SLI\b|indicator\s*:|indicatorRef|ratioMetric|thresholdMetric|error_query|total_query|raw ratio|latencyNative|boolGauge/gi);
+    const objectiveCount = countMatches(source.text, /objectives?\s*:|objective\s*:|targetPercent|target\s*:|timeSliceTarget|compositeWeight/gi);
+    const targetCount = countMatches(source.text, /targetPercent|target\s*:|objective\s*:\s*["']?[0-9]|target\s*=\s*["']?[0-9]/gi);
+    const windowCount = countMatches(source.text, /timeWindow|window\s*:|timeSliceWindow|\{\{\.window\}\}|\[[0-9]+[smhdw]\]|[0-9]+\s*(minute|hour|day|week)/gi);
+    const budgetCount = countMatches(source.text, /budgetingMethod|error budget|burn(?:ed)? budget|Occurrences|Timeslices|RatioTimeslices|budget target/gi);
+    const alertCount = countMatches(source.text, /alerting\s*:|page_alert|ticket_alert|alertAfter|PrometheusRule|alert rules?|severity|slack_channel|multi window|multi burn/gi);
+    const recordingRuleCount = countMatches(source.text, /recording rules?|PrometheusRule|rules\s*:|ruleOutput|generic-rules|promOpRulesGenerated|slo:sli_error|slo:objective|burnrate[0-9]+[smhdw]/gi);
+    const burnRateCount = countMatches(source.text, /burnrate|burn rate|burn-rate|multi.?window|multi.?burn|MWMB|short window|long window/gi);
+    const labelCount = countMatches(source.text, /labels\s*:|annotations\s*:|pyrra\.dev\/team|team\s*:|service\s*:|owner|runbook|dashboard/gi);
+    const dataSourceCount = countMatches(source.text, /dataSourceRef|prometheus|Prometheus|query\s*:|promql|good\s*:|bad\s*:|total\s*:|error_query|total_query/gi);
+    const validationCount = countMatches(source.text, /validate|validation|admission|dry-run|kubectl apply|sloth validate|pyrra filesy?stem|promtool/gi);
+    const dashboardCount = countMatches(source.text, /Grafana|dashboard|generic-rules|grafana-external-url|grafana datasource|Explore/i);
+    const ciCount = countMatches(haystack, /\.github\/workflows|CI|pull_request|runs-on|sloth validate|pyrra|kubectl apply|helm|promtool|dry-run/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = sloCount + sliCount + objectiveCount + targetCount + windowCount + budgetCount + alertCount + recordingRuleCount + burnRateCount + labelCount + dataSourceCount + validationCount + dashboardCount + ciCount;
+    if (totalSignals === 0 && !sloPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: sloPlatform(source),
+      sloCount,
+      sliCount,
+      objectiveCount,
+      targetCount,
+      windowCount,
+      budgetCount,
+      alertCount,
+      recordingRuleCount,
+      burnRateCount,
+      labelCount,
+      dataSourceCount,
+      validationCount,
+      dashboardCount,
+      ciCount,
+      readiness: sloCount > 0 && sliCount > 0 && targetCount > 0 && windowCount > 0 && (alertCount + recordingRuleCount + burnRateCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains SLO ${sloCount}, SLI ${sliCount}, objectives ${objectiveCount}, targets ${targetCount}, windows ${windowCount}, budgets ${budgetCount}, alerts ${alertCount}, recording rules ${recordingRuleCount}, burn-rate ${burnRateCount}, labels ${labelCount}, data sources ${dataSourceCount}, validation ${validationCount}, dashboards ${dashboardCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => {
+    const bScore = b.sloCount + b.sliCount + b.objectiveCount + b.targetCount + b.windowCount + b.alertCount + b.recordingRuleCount + b.burnRateCount + b.ciCount;
+    const aScore = a.sloCount + a.sliCount + a.objectiveCount + a.targetCount + a.windowCount + a.alertCount + a.recordingRuleCount + a.burnRateCount + a.ciCount;
+    return bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 100);
+}
+
+function sloPlatform(source: SloSourceFile): SloReadinessReport["sloSetups"][number]["platform"] {
+  const haystack = `${source.filePath}\n${source.text}`;
+  if (/^\.github\/workflows\//i.test(source.filePath)) return "workflow";
+  if (/pyrra\.dev|ServiceLevelObjective|Pyrra/i.test(haystack)) return "pyrra";
+  if (/sloth\.dev|Sloth|prometheus\/v1/i.test(haystack)) return "sloth";
+  if (/openslo|OpenSLO|kind:\s*(SLO|SLI)\b|budgetingMethod|ratioMetric|thresholdMetric/i.test(haystack)) return "openslo";
+  if (/PrometheusRule|recording rules?|burnrate/i.test(haystack)) return "prometheus-rule";
+  if (/Grafana|dashboard/i.test(haystack)) return "grafana-dashboard";
+  if (/slo|sli|service level objective/i.test(haystack)) return "custom";
+  return "unknown";
+}
+
+function sloSpecSignals(sourceFiles: SloSourceFile[]): SloReadinessReport["specSignals"] {
+  const specs: Array<{ signal: SloReadinessReport["specSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "openslo", pattern: /OpenSLO|openslo\/v1|openslo\.com|kind:\s*(SLO|SLI)\b|budgetingMethod/i, evidence: "OpenSLO-style spec evidence was detected." },
+    { signal: "sloth-spec", pattern: /sloth\.dev|Sloth|version:\s*"prometheus\/v1"|prometheusservicelevels/i, evidence: "Sloth spec evidence was detected." },
+    { signal: "pyrra-crd", pattern: /pyrra\.dev\/v1alpha1|kind:\s*ServiceLevelObjective|Pyrra/i, evidence: "Pyrra ServiceLevelObjective CRD evidence was detected." },
+    { signal: "prometheus-rule", pattern: /PrometheusRule|recording rules?|alerting rules?|groups:\s*|rules:\s*/i, evidence: "Prometheus rule evidence was detected." },
+    { signal: "yaml-manifest", pattern: /apiVersion:|kind:|metadata:|spec:/i, evidence: "YAML manifest evidence was detected." }
+  ];
+  return sloSignalFromSpecs(sourceFiles, specs, "spec");
+}
+
+function sloIndicatorSignals(sourceFiles: SloSourceFile[]): SloReadinessReport["indicatorSignals"] {
+  const specs: Array<{ signal: SloReadinessReport["indicatorSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ratio-metric", pattern: /ratioMetric|ratio:\s*|good\s*:|bad\s*:|total\s*:/i, evidence: "ratio metric evidence was detected." },
+    { signal: "threshold-metric", pattern: /thresholdMetric|threshold metric|op:\s*(lte|gte|lt|gt)|value\s*:/i, evidence: "threshold metric evidence was detected." },
+    { signal: "latency", pattern: /latency|duration|histogram|quantile|le="/i, evidence: "latency SLI evidence was detected." },
+    { signal: "availability", pattern: /availability|success|failure|5xx|error ratio|http_requests/i, evidence: "availability SLI evidence was detected." },
+    { signal: "error-query", pattern: /error_query|bad\s*:|errors?|failure/i, evidence: "error query evidence was detected." },
+    { signal: "total-query", pattern: /total_query|total\s*:|all requests|request.*count/i, evidence: "total query evidence was detected." },
+    { signal: "raw-ratio", pattern: /raw ratio|raw\s*:|errorRatioQuery|already calculated/i, evidence: "raw ratio evidence was detected." }
+  ];
+  return sloSignalFromSpecs(sourceFiles, specs, "indicator");
+}
+
+function sloObjectiveSignals(sourceFiles: SloSourceFile[]): SloReadinessReport["objectiveSignals"] {
+  const specs: Array<{ signal: SloReadinessReport["objectiveSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "target", pattern: /target\s*:|objective\s*:|target\s*=/i, evidence: "target evidence was detected." },
+    { signal: "target-percent", pattern: /targetPercent|target percent|99\.[0-9]+|99\b/i, evidence: "targetPercent evidence was detected." },
+    { signal: "time-window", pattern: /timeWindow|window\s*:|timeSliceWindow|\{\{\.window\}\}|\[[0-9]+[smhdw]\]/i, evidence: "time window evidence was detected." },
+    { signal: "budgeting-method", pattern: /budgetingMethod|Occurrences|Timeslices|RatioTimeslices/i, evidence: "budgeting method evidence was detected." },
+    { signal: "composite-weight", pattern: /compositeWeight|Composite SLO|composite objective/i, evidence: "composite SLO evidence was detected." },
+    { signal: "error-budget", pattern: /error budget|burned budget|budget target|budget burn/i, evidence: "error budget evidence was detected." }
+  ];
+  return sloSignalFromSpecs(sourceFiles, specs, "objective");
+}
+
+function sloAlertSignals(sourceFiles: SloSourceFile[]): SloReadinessReport["alertSignals"] {
+  const specs: Array<{ signal: SloReadinessReport["alertSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "burn-rate", pattern: /burnrate|burn rate|burn-rate/i, evidence: "burn-rate evidence was detected." },
+    { signal: "multi-window", pattern: /multi.?window|multi.?burn|short window|long window|MWMB/i, evidence: "multi-window burn evidence was detected." },
+    { signal: "page-alert", pattern: /page_alert|page alert|critical alert|severity:\s*(page|critical)/i, evidence: "page alert evidence was detected." },
+    { signal: "ticket-alert", pattern: /ticket_alert|ticket alert|warning alert|severity:\s*(ticket|warning)/i, evidence: "ticket alert evidence was detected." },
+    { signal: "prometheus-alert", pattern: /PrometheusRule|alert:\s*|expr:\s*|for:\s*/i, evidence: "Prometheus alert rule evidence was detected." },
+    { signal: "alert-after", pattern: /alertAfter|alert after|for:\s*[0-9]+[smhd]/i, evidence: "alert-after evidence was detected." },
+    { signal: "alert-labels", pattern: /slack_channel|labels:\s*|annotations:\s*|runbook|dashboard/i, evidence: "alert label or annotation evidence was detected." }
+  ];
+  return sloSignalFromSpecs(sourceFiles, specs, "alert");
+}
+
+function sloRuleSignals(sourceFiles: SloSourceFile[]): SloReadinessReport["ruleSignals"] {
+  const specs: Array<{ signal: SloReadinessReport["ruleSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "recording-rules", pattern: /recording rules?|record:\s*|slo:sli_error|slo:objective|burnrate[0-9]+[smhdw]/i, evidence: "recording rule evidence was detected." },
+    { signal: "prometheus-operator", pattern: /Prometheus Operator|PrometheusRule|prometheusrules|promOpRulesGenerated/i, evidence: "Prometheus Operator evidence was detected." },
+    { signal: "promql-window-template", pattern: /\{\{\.window\}\}|\[[0-9]+[smhdw]\]|rate\(|increase\(|sum_over_time/i, evidence: "PromQL window evidence was detected." },
+    { signal: "rule-output", pattern: /ruleOutput|role:\s*alert-rules|prometheus:\s*|thanos/i, evidence: "rule output routing evidence was detected." },
+    { signal: "generic-rules", pattern: /generic-rules|--generic-rules|ConfigMap|filesystem mode/i, evidence: "generic rule output evidence was detected." }
+  ];
+  return sloSignalFromSpecs(sourceFiles, specs, "rule");
+}
+
+function sloGovernanceSignals(sourceFiles: SloSourceFile[]): SloReadinessReport["governanceSignals"] {
+  const specs: Array<{ signal: SloReadinessReport["governanceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "service-owner", pattern: /service\s*:|service owner|owner|ownership/i, evidence: "service ownership evidence was detected." },
+    { signal: "labels", pattern: /labels\s*:|annotations\s*:|pyrra\.dev\/|slo_label/i, evidence: "label metadata evidence was detected." },
+    { signal: "team", pattern: /team\s*:|pyrra\.dev\/team|slack_channel|team owner/i, evidence: "team routing evidence was detected." },
+    { signal: "runbook-link", pattern: /runbook|playbook|dashboard_url|dashboard/i, evidence: "runbook/dashboard link evidence was detected." },
+    { signal: "dashboard", pattern: /Grafana|dashboard|grafana-external-url|grafana datasource/i, evidence: "dashboard evidence was detected." },
+    { signal: "validation", pattern: /validate|validation|admission|dry-run|promtool/i, evidence: "validation evidence was detected." }
+  ];
+  return sloSignalFromSpecs(sourceFiles, specs, "governance");
+}
+
+function sloWorkflowSignals(sourceFiles: SloSourceFile[]): SloReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: SloReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ci-validate", pattern: /\.github\/workflows|CI|pull_request|runs-on|promtool|validate/i, evidence: "CI validation evidence was detected." },
+    { signal: "sloth-validate", pattern: /sloth validate|sloth.*validate/i, evidence: "Sloth validate evidence was detected." },
+    { signal: "kubectl-apply", pattern: /kubectl apply|kubectl diff|kustomize build/i, evidence: "kubectl apply/diff evidence was detected." },
+    { signal: "helm-chart", pattern: /helm upgrade|helm install|Chart\.yaml|values\.yaml|helm chart/i, evidence: "Helm chart evidence was detected." },
+    { signal: "dry-run", pattern: /dry-run|server-dry-run|--dry-run/i, evidence: "dry-run evidence was detected." }
+  ];
+  return sloSignalFromSpecs(sourceFiles, specs, "workflow");
+}
+
+function sloPackageSignals(sourceFiles: SloSourceFile[]): SloReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: SloReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "sloth", pattern: /sloth\.dev|github\.com\/slok\/sloth|sloth\b/i, evidence: "Sloth evidence was detected." },
+    { signal: "pyrra", pattern: /pyrra\.dev|github\.com\/pyrra-dev\/pyrra|pyrra\b/i, evidence: "Pyrra evidence was detected." },
+    { signal: "openslo", pattern: /OpenSLO|openslo/i, evidence: "OpenSLO evidence was detected." },
+    { signal: "prometheus-operator", pattern: /prometheus-operator|PrometheusRule|kube-prometheus/i, evidence: "Prometheus Operator evidence was detected." },
+    { signal: "grafana", pattern: /grafana|Grafana|grafana-dashboard/i, evidence: "Grafana evidence was detected." }
+  ];
+  return sloSignalFromSpecs(sourceFiles, specs, "package");
+}
+
+function sloSignalFromSpecs<T extends string>(
+  sourceFiles: SloSourceFile[],
+  specs: Array<{ signal: T; pattern: RegExp; evidence: string }>,
+  label: string
+): Array<{ signal: T; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(haystack);
+    });
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/slo-readiness.html"
     };
   });
 }

@@ -45,6 +45,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "debug-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "crash-reporting-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "incident-response-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "slo-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
@@ -219,6 +220,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "debug-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "crash-reporting-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "incident-response-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "slo-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
@@ -396,6 +398,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "debug-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "crash-reporting-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "incident-response-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "slo-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "load-testing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
@@ -1311,6 +1314,27 @@ describe("RepoTutor core pipeline", () => {
     expect(incidentResponseMarkdown).toContain("# Incident Response Readiness");
     expect(incidentResponseMarkdown).toContain("## On-Call Signals");
     expect(incidentResponseMarkdown).toContain("## Runbook Signals");
+    const sloText = await fs.readFile(path.join(result.session.outputPaths.analysis, "slo-readiness-report.json"), "utf8");
+    expect(sloText).toContain("SLO readiness OpenSLO Sloth Pyrra service level objective SLI error budget burn rate Prometheus recording rules");
+    expect(sloText).toContain("\"sloSetups\"");
+    expect(sloText).toContain("\"specSignals\"");
+    expect(sloText).toContain("\"indicatorSignals\"");
+    expect(sloText).toContain("\"objectiveSignals\"");
+    expect(sloText).toContain("\"alertSignals\"");
+    expect(sloText).toContain("\"ruleSignals\"");
+    expect(sloText).toContain("\"governanceSignals\"");
+    expect(sloText).toContain("\"workflowSignals\"");
+    expect(sloText).toContain("\"packageSignals\"");
+    expect(sloText).toContain("RepoTutor records static SLO readiness only");
+    const sloHtml = await fs.readFile(path.join(result.session.outputPaths.html, "slo-readiness.html"), "utf8");
+    expect(sloHtml).toContain("SLO Readiness");
+    expect(sloHtml).toContain("slo-readiness-card");
+    expect(sloHtml).toContain("data-source-pattern=\"SLO\"");
+    expect(sloHtml).toContain("does not evaluate PromQL");
+    const sloMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "slo-readiness.md"), "utf8");
+    expect(sloMarkdown).toContain("# SLO Readiness");
+    expect(sloMarkdown).toContain("## Indicator Signals");
+    expect(sloMarkdown).toContain("## Rule Signals");
     const loadTestingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"), "utf8");
     expect(loadTestingText).toContain("k6 Artillery Locust load testing scenarios phases thresholds checks ensure HttpUser headless distributed reports");
     expect(loadTestingText).toContain("\"loadTestSetups\"");
@@ -3795,6 +3819,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/debug-readiness.html");
     expect(exportManifestText).toContain("html/crash-reporting-readiness.html");
     expect(exportManifestText).toContain("html/incident-response-readiness.html");
+    expect(exportManifestText).toContain("html/slo-readiness.html");
     expect(exportManifestText).toContain("html/load-testing-readiness.html");
     expect(exportManifestText).toContain("html/benchmark-readiness.html");
     expect(exportManifestText).toContain("html/e2e.html");
@@ -3991,6 +4016,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("debug-readiness.html");
     expect(learningPathHtml).toContain("crash-reporting-readiness.html");
     expect(learningPathHtml).toContain("incident-response-readiness.html");
+    expect(learningPathHtml).toContain("slo-readiness.html");
     expect(learningPathHtml).toContain("load-testing-readiness.html");
     expect(learningPathHtml).toContain("benchmark-readiness.html");
     expect(learningPathHtml).toContain("e2e.html");
@@ -6496,6 +6522,224 @@ describe("RepoTutor core pipeline", () => {
     const html = await fs.readFile(path.join(result.session.outputPaths.html, "incident-response-readiness.html"), "utf8");
     expect(html).toContain("incident-response-readiness-card");
     expect(html).toContain("does not page responders");
+  });
+
+  it("detects SLO readiness without evaluating PromQL", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-slo-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-slo-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "slo"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "prometheus"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "dashboards"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "slo-readiness-study",
+      version: "1.0.0",
+      scripts: {
+        "slo:validate": "sloth validate -i slo/payment-sloth.yaml && promtool check rules prometheus/payment-slo-rules.yaml",
+        "slo:dry-run": "kubectl apply --dry-run=server -f slo && helm upgrade --install pyrra pyrra-dev/pyrra && pyrra --generic-rules"
+      },
+      dependencies: {
+        sloth: "latest",
+        pyrra: "latest",
+        openslo: "latest",
+        grafana: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "slo", "payment-openslo.yaml"), [
+      "apiVersion: openslo/v1",
+      "kind: SLO",
+      "metadata:",
+      "  name: payment-availability",
+      "  labels:",
+      "    team: payments",
+      "    runbook: https://runbooks.example.com/payment-slo",
+      "spec:",
+      "  service: payments-api",
+      "  indicator:",
+      "    ratioMetric:",
+      "      good:",
+      "        dataSourceRef: prometheus",
+      "        query: sum(rate(http_requests_total{job=\"payments\",code!~\"5..\"}[{{.window}}]))",
+      "      total:",
+      "        dataSourceRef: prometheus",
+      "        query: sum(rate(http_requests_total{job=\"payments\"}[{{.window}}]))",
+      "  timeWindow:",
+      "    - duration: 28d",
+      "  budgetingMethod: Occurrences",
+      "  objectives:",
+      "    - displayName: availability",
+      "      targetPercent: 99.9",
+      "      timeSliceTarget: 0.999",
+      "      timeSliceWindow: 5m",
+      "      compositeWeight: 1",
+      "  alertPolicies:",
+      "    - kind: burnrate",
+      "      alertAfter: 5m",
+      "---",
+      "apiVersion: openslo/v1",
+      "kind: SLI",
+      "metadata:",
+      "  name: payment-latency",
+      "spec:",
+      "  thresholdMetric:",
+      "    dataSourceRef: prometheus",
+      "    query: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[{{.window}}]))",
+      "  op: lte",
+      "  value: 0.25"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "slo", "payment-sloth.yaml"), [
+      "# sloth validate -i slo/payment-sloth.yaml in CI before multi window multi burn rule generation",
+      "version: \"prometheus/v1\"",
+      "service: payments-api",
+      "labels:",
+      "  team: payments",
+      "slo_plugins:",
+      "  - id: common-sli",
+      "slos:",
+      "  - name: payment-availability",
+      "    objective: 99.9",
+      "    description: Availability SLO with error budget and raw ratio backup",
+      "    labels:",
+      "      owner: sre",
+      "    sli:",
+      "      events:",
+      "        error_query: sum(rate(http_requests_total{job=\"payments\",code=~\"5..|429\"}[{{.window}}]))",
+      "        total_query: sum(rate(http_requests_total{job=\"payments\"}[{{.window}}]))",
+      "      raw:",
+      "        error_ratio_query: sum(rate(payment_error_ratio[{{.window}}]))",
+      "    alerting:",
+      "      name: payment-slo",
+      "      labels:",
+      "        dashboard: https://grafana.example.com/d/slo",
+      "      page_alert:",
+      "        labels:",
+      "          severity: page",
+      "          slack_channel: '#payments-page'",
+      "      ticket_alert:",
+      "        labels:",
+      "          severity: ticket"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "slo", "payment-pyrra.yaml"), [
+      "# Pyrra creates PrometheusRule objects for the Prometheus Operator.",
+      "apiVersion: pyrra.dev/v1alpha1",
+      "kind: ServiceLevelObjective",
+      "metadata:",
+      "  name: payment-errors",
+      "  labels:",
+      "    prometheus: k8s",
+      "    role: alert-rules",
+      "    pyrra.dev/team: payments",
+      "spec:",
+      "  target: \"99\"",
+      "  window: 2w",
+      "  performanceOverAccuracy: true",
+      "  ruleOutput:",
+      "    short:",
+      "      labels:",
+      "        prometheus: k8s",
+      "    long:",
+      "      labels:",
+      "        prometheus: thanos-k8s",
+      "  indicator:",
+      "    ratio:",
+      "      errors:",
+      "        metric: http_requests_total{job=\"payments\",code=~\"5..\"}",
+      "      total:",
+      "        metric: http_requests_total{job=\"payments\"}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "prometheus", "payment-slo-rules.yaml"), [
+      "groups:",
+      "  - name: payment-slo",
+      "    rules:",
+      "      - record: payment:http_requests:burnrate5m",
+      "        expr: sum(rate(http_requests_total{job=\"payments\",code=~\"5..\"}[5m])) / sum(rate(http_requests_total{job=\"payments\"}[5m]))",
+      "      - record: payment:slo:sli_error:ratio_rate28d",
+      "        expr: sum_over_time(payment:http_requests:burnrate5m[28d:5m])",
+      "      - alert: PaymentSLOBurnRatePage",
+      "        expr: payment:http_requests:burnrate5m > 14.4",
+      "        for: 5m",
+      "        labels:",
+      "          severity: page",
+      "          team: payments",
+      "        annotations:",
+      "          runbook: https://runbooks.example.com/payment-slo",
+      "      - alert: PaymentSLOBurnRateTicket",
+      "        expr: payment:http_requests:burnrate5m > 6",
+      "        for: 30m",
+      "        labels:",
+      "          severity: ticket"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "dashboards", "slo-dashboard.json"), JSON.stringify({
+      title: "Grafana SLO dashboard",
+      panels: [
+        { title: "Error budget burned", targets: [{ expr: "payment:http_requests:burnrate5m" }] },
+        { title: "Availability SLI", targets: [{ expr: "payment:slo:sli_error:ratio_rate28d" }] }
+      ]
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "slo.yml"), [
+      "name: slo",
+      "on: [push, pull_request]",
+      "jobs:",
+      "  validate:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: sloth validate -i slo/payment-sloth.yaml",
+      "      - run: promtool check rules prometheus/payment-slo-rules.yaml",
+      "      - run: kubectl apply --dry-run=server -f slo",
+      "      - run: helm upgrade --install pyrra pyrra-dev/pyrra --dry-run"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "slo-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      sloSetups: Array<{ filePath: string; platform: string; sloCount: number; sliCount: number; objectiveCount: number; targetCount: number; windowCount: number; budgetCount: number; alertCount: number; recordingRuleCount: number; burnRateCount: number; labelCount: number; dataSourceCount: number; validationCount: number; dashboardCount: number; ciCount: number }>;
+      specSignals: Array<{ signal: string; readiness: string }>;
+      indicatorSignals: Array<{ signal: string; readiness: string }>;
+      objectiveSignals: Array<{ signal: string; readiness: string }>;
+      alertSignals: Array<{ signal: string; readiness: string }>;
+      ruleSignals: Array<{ signal: string; readiness: string }>;
+      governanceSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("SLO readiness OpenSLO Sloth Pyrra service level objective SLI error budget burn rate Prometheus recording rules");
+    expect(report.sloSetups.length).toBeGreaterThan(0);
+    expect(report.sloSetups.some((item) => item.platform === "openslo" && item.sloCount > 0 && item.sliCount > 0 && item.targetCount > 0)).toBe(true);
+    expect(report.sloSetups.some((item) => item.platform === "sloth" && item.sloCount > 0 && item.alertCount > 0 && item.validationCount > 0)).toBe(true);
+    expect(report.sloSetups.some((item) => item.platform === "pyrra" && item.sloCount > 0 && item.recordingRuleCount > 0)).toBe(true);
+    expect(report.sloSetups.some((item) => item.platform === "prometheus-rule" && item.recordingRuleCount > 0 && item.burnRateCount > 0)).toBe(true);
+    expect(report.sloSetups.some((item) => item.platform === "workflow" && item.ciCount > 0 && item.validationCount > 0)).toBe(true);
+    expect(readySignals(report.specSignals)).toEqual(expect.arrayContaining(["openslo", "sloth-spec", "pyrra-crd", "prometheus-rule", "yaml-manifest"]));
+    expect(readySignals(report.indicatorSignals)).toEqual(expect.arrayContaining(["ratio-metric", "threshold-metric", "latency", "availability", "error-query", "total-query", "raw-ratio"]));
+    expect(readySignals(report.objectiveSignals)).toEqual(expect.arrayContaining(["target", "target-percent", "time-window", "budgeting-method", "composite-weight", "error-budget"]));
+    expect(readySignals(report.alertSignals)).toEqual(expect.arrayContaining(["burn-rate", "multi-window", "page-alert", "ticket-alert", "prometheus-alert", "alert-after", "alert-labels"]));
+    expect(readySignals(report.ruleSignals)).toEqual(expect.arrayContaining(["recording-rules", "prometheus-operator", "promql-window-template", "rule-output", "generic-rules"]));
+    expect(readySignals(report.governanceSignals)).toEqual(expect.arrayContaining(["service-owner", "labels", "team", "runbook-link", "dashboard", "validation"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["ci-validate", "sloth-validate", "kubectl-apply", "helm-chart", "dry-run"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["sloth", "pyrra", "openslo", "prometheus-operator", "grafana"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.map((item) => item.action)).toContain("RepoTutor records static SLO readiness only; it does not evaluate PromQL, query Prometheus/Grafana, apply Kubernetes resources, generate rules, or page teams.");
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual([
+      "rg \"apiVersion: (openslo|pyrra)|kind: (SLO|SLI|ServiceLevelObjective)|sloth.dev\" .",
+      "rg \"ratioMetric|thresholdMetric|indicator:|error_query|total_query|latency|availability|raw ratio\" .",
+      "rg \"targetPercent|target:|objective:|timeWindow|window:|budgetingMethod|error budget\" .",
+      "rg \"burnrate|burn rate|page_alert|ticket_alert|PrometheusRule|recording rule|alertAfter|multi window\" .",
+      "rg \"sloth validate|pyrra|kubectl apply|helm chart|dry-run|generic-rules\" .github . scripts ops deploy"
+    ]);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "slo-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "slo-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "slo-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "slo-readiness.md"), "utf8");
+    expect(markdown).toContain("# SLO Readiness");
+    expect(markdown).toContain("## Indicator Signals");
+    expect(markdown).toContain("## Rule Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "slo-readiness.html"), "utf8");
+    expect(html).toContain("slo-readiness-card");
+    expect(html).toContain("does not evaluate PromQL");
   });
 
   it("detects load testing readiness without running load toolchains", async () => {

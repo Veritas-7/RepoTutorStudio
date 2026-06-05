@@ -170,6 +170,7 @@ import type {
   StylingReadinessReport,
   VisualRegressionReadinessReport,
   IncidentResponseReadinessReport,
+  SloReadinessReport,
   InfrastructureReadinessReport,
   IacDriftReadinessReport,
   DeploymentReadinessReport,
@@ -239,6 +240,7 @@ export interface StudyHtmlInput {
   debugReadinessReport: DebugReadinessReport;
   crashReportingReadinessReport: CrashReportingReadinessReport;
   incidentResponseReadinessReport: IncidentResponseReadinessReport;
+  sloReadinessReport: SloReadinessReport;
   loadTestingReadinessReport: LoadTestingReadinessReport;
   benchmarkReadinessReport: BenchmarkReadinessReport;
   e2eReport: E2eReport;
@@ -447,6 +449,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["debug-readiness.html", "Debugging"],
     ["crash-reporting-readiness.html", "Crash Reporting"],
     ["incident-response-readiness.html", "Incident Response"],
+    ["slo-readiness.html", "SLO"],
     ["load-testing-readiness.html", "Load Testing"],
     ["benchmark-readiness.html", "Benchmarks"],
     ["e2e.html", "E2E"],
@@ -662,6 +665,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Debug Readiness</h3><p>${escapeHtml(input.debugReadinessReport.summary)}</p><p>VS Code js-debug/debugpy/Delve/DAP 패턴으로 launch, attach, breakpoint, source map, path mapping, remote, log 준비도를 정리합니다.</p><a href="debug-readiness.html">Debugging 열기</a></article>
           <article><h3>Crash Reporting Readiness</h3><p>${escapeHtml(input.crashReportingReadinessReport.summary)}</p><p>Sentry/Bugsnag/Rollbar 패턴으로 crash capture, release identity, source maps, symbols, privacy, alert 준비도를 정리합니다.</p><a href="crash-reporting-readiness.html">Crash Reporting 열기</a></article>
           <article><h3>Incident Response Readiness</h3><p>${escapeHtml(input.incidentResponseReadinessReport.summary)}</p><p>PagerDuty/Grafana OnCall/FireHydrant 패턴으로 alert routing, escalation, schedules, runbooks, status pages, postmortems 준비도를 정리합니다.</p><a href="incident-response-readiness.html">Incident Response 열기</a></article>
+          <article><h3>SLO Readiness</h3><p>${escapeHtml(input.sloReadinessReport.summary)}</p><p>OpenSLO/Sloth/Pyrra 패턴으로 SLO, SLI, error budget, burn-rate alert, recording rule 준비도를 정리합니다.</p><a href="slo-readiness.html">SLO 열기</a></article>
           <article><h3>Load Testing Readiness</h3><p>${escapeHtml(input.loadTestingReadinessReport.summary)}</p><p>k6/Artillery/Locust 패턴으로 profile, protocol, SLO gates, data, execution, reports 준비도를 정리합니다.</p><a href="load-testing-readiness.html">Load Testing 열기</a></article>
           <article><h3>Benchmark Readiness</h3><p>${escapeHtml(input.benchmarkReadinessReport.summary)}</p><p>Tinybench/Benchmark.js/Hyperfine 패턴으로 suite, timing, comparison, reports, CI 준비도를 정리합니다.</p><a href="benchmark-readiness.html">Benchmarks 열기</a></article>
           <article><h3>E2E Readiness</h3><p>${escapeHtml(input.e2eReport.summary)}</p><p>Playwright 패턴으로 browser projects, locators, assertions, traces/reporters, webServer/baseURL 준비도를 정리합니다.</p><a href="e2e.html">E2E 열기</a></article>
@@ -976,6 +980,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "incident-response-readiness.html",
       title: "Incident Response Readiness",
       html: pageShell("Incident Response Readiness", "incident-response-readiness.html", `<section class="panel" data-source-pattern="Incident"><h2>Incident Response Snapshot</h2><p>${escapeHtml(input.incidentResponseReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.incidentResponseReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.incidentResponseReadinessReport.incidentSetups.length}</dd></div><div><dt>intake</dt><dd>${input.incidentResponseReadinessReport.intakeSignals.length}</dd></div><div><dt>on-call</dt><dd>${input.incidentResponseReadinessReport.onCallSignals.length}</dd></div><div><dt>runbooks</dt><dd>${input.incidentResponseReadinessReport.runbookSignals.length}</dd></div><div><dt>lifecycle</dt><dd>${input.incidentResponseReadinessReport.lifecycleSignals.length}</dd></div><div><dt>governance</dt><dd>${input.incidentResponseReadinessReport.governanceSignals.length}</dd></div></dl><p class="muted">RepoTutor records static incident-response readiness only; it does not page responders, create incidents, change on-call schedules, contact PagerDuty/Grafana OnCall/FireHydrant, or publish status pages.</p></section><section class="grid"><article class="incident-response-readiness-card"><h3>Incident Setups</h3>${incidentResponseSetupList(input.incidentResponseReadinessReport.incidentSetups)}</article><article class="incident-response-readiness-card"><h3>Intake Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.intakeSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Triage Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.triageSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>On-Call Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.onCallSignals, "signal")}</article></section><section class="grid"><article class="incident-response-readiness-card"><h3>Communication Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.communicationSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Runbook Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.runbookSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Lifecycle Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.lifecycleSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Governance Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.governanceSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Workflow Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.workflowSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Package Signals</h3>${incidentResponseSignalList(input.incidentResponseReadinessReport.packageSignals, "signal")}</article><article class="incident-response-readiness-card"><h3>Recommended Commands</h3>${incidentResponseCommandList(input.incidentResponseReadinessReport.recommendedCommands)}</article><article class="incident-response-readiness-card"><h3>Risk Queue</h3>${incidentResponseRiskList(input.incidentResponseReadinessReport.riskQueue)}</article><article class="incident-response-readiness-card"><h3>다음 확인 단계</h3>${list(input.incidentResponseReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "slo-readiness.html",
+      title: "SLO Readiness",
+      html: pageShell("SLO Readiness", "slo-readiness.html", `<section class="panel" data-source-pattern="SLO"><h2>SLO Snapshot</h2><p>${escapeHtml(input.sloReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.sloReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.sloReadinessReport.sloSetups.length}</dd></div><div><dt>specs</dt><dd>${input.sloReadinessReport.specSignals.length}</dd></div><div><dt>indicators</dt><dd>${input.sloReadinessReport.indicatorSignals.length}</dd></div><div><dt>objectives</dt><dd>${input.sloReadinessReport.objectiveSignals.length}</dd></div><div><dt>alerts</dt><dd>${input.sloReadinessReport.alertSignals.length}</dd></div><div><dt>rules</dt><dd>${input.sloReadinessReport.ruleSignals.length}</dd></div></dl><p class="muted">RepoTutor records static SLO readiness only; it does not evaluate PromQL, query Prometheus/Grafana, apply Kubernetes resources, generate rules, or page teams.</p></section><section class="grid"><article class="slo-readiness-card"><h3>SLO Setups</h3>${sloSetupList(input.sloReadinessReport.sloSetups)}</article><article class="slo-readiness-card"><h3>Spec Signals</h3>${sloSignalList(input.sloReadinessReport.specSignals, "signal")}</article><article class="slo-readiness-card"><h3>Indicator Signals</h3>${sloSignalList(input.sloReadinessReport.indicatorSignals, "signal")}</article><article class="slo-readiness-card"><h3>Objective Signals</h3>${sloSignalList(input.sloReadinessReport.objectiveSignals, "signal")}</article></section><section class="grid"><article class="slo-readiness-card"><h3>Alert Signals</h3>${sloSignalList(input.sloReadinessReport.alertSignals, "signal")}</article><article class="slo-readiness-card"><h3>Rule Signals</h3>${sloSignalList(input.sloReadinessReport.ruleSignals, "signal")}</article><article class="slo-readiness-card"><h3>Governance Signals</h3>${sloSignalList(input.sloReadinessReport.governanceSignals, "signal")}</article><article class="slo-readiness-card"><h3>Workflow Signals</h3>${sloSignalList(input.sloReadinessReport.workflowSignals, "signal")}</article><article class="slo-readiness-card"><h3>Package Signals</h3>${sloSignalList(input.sloReadinessReport.packageSignals, "signal")}</article><article class="slo-readiness-card"><h3>Recommended Commands</h3>${sloCommandList(input.sloReadinessReport.recommendedCommands)}</article><article class="slo-readiness-card"><h3>Risk Queue</h3>${sloRiskList(input.sloReadinessReport.riskQueue)}</article><article class="slo-readiness-card"><h3>다음 확인 단계</h3>${list(input.sloReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "load-testing-readiness.html",
@@ -1784,6 +1793,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Debug Readiness", path: "html/debug-readiness.html", description: "VS Code js-debug/debugpy/Delve/DAP식 launch, attach, breakpoint, source map, path mapping, remote, log 준비도를 확인합니다." },
       { label: "Crash Reporting Readiness", path: "html/crash-reporting-readiness.html", description: "Sentry/Bugsnag/Rollbar식 crash capture, release identity, source map, symbolication, privacy, alert 준비도를 확인합니다." },
       { label: "Incident Response Readiness", path: "html/incident-response-readiness.html", description: "PagerDuty/Grafana OnCall/FireHydrant식 alert routing, escalation, schedules, runbooks, status pages, postmortems 준비도를 확인합니다." },
+      { label: "SLO Readiness", path: "html/slo-readiness.html", description: "OpenSLO/Sloth/Pyrra식 SLO, SLI, error budget, burn-rate alert, recording rule 준비도를 확인합니다." },
       { label: "Load Testing Readiness", path: "html/load-testing-readiness.html", description: "k6/Artillery/Locust식 load profile, protocol, SLO gate, report 준비도를 확인합니다." },
       { label: "Benchmark Readiness", path: "html/benchmark-readiness.html", description: "Tinybench/Benchmark.js/Hyperfine식 suite, timing, comparison, report, CI 준비도를 확인합니다." },
       { label: "E2E Readiness", path: "html/e2e.html", description: "Playwright식 browser project, locator, assertion, trace/report 준비도를 확인합니다." },
@@ -2235,6 +2245,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "incident-response-readiness.html",
       goal: "PagerDuty, Grafana OnCall, FireHydrant식 intake, on-call escalation, runbook, communication, postmortem 준비도를 확인합니다.",
       evidence: `incident setups ${input.incidentResponseReadinessReport.incidentSetups.length}개, on-call signals ${input.incidentResponseReadinessReport.onCallSignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "SLO readiness 확인",
+      href: "slo-readiness.html",
+      goal: "OpenSLO, Sloth, Pyrra식 SLO, SLI, error budget, burn-rate alert, recording rule 준비도를 확인합니다.",
+      evidence: `SLO setups ${input.sloReadinessReport.sloSetups.length}개, alert signals ${input.sloReadinessReport.alertSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Load testing readiness 확인",
@@ -3976,6 +3992,31 @@ function incidentResponseRiskList(items: IncidentResponseReadinessReport["riskQu
 }
 
 function incidentResponseHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function sloSetupList(items: SloReadinessReport["sloSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">SLO setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)} / ${escapeHtml(item.readiness)}]<br>SLO/SLI/objectives/targets/windows ${item.sloCount}/${item.sliCount}/${item.objectiveCount}/${item.targetCount}/${item.windowCount}<br>budgets/alerts/rules/burn-rate ${item.budgetCount}/${item.alertCount}/${item.recordingRuleCount}/${item.burnRateCount}<br>labels/data/validation/dashboards/CI ${item.labelCount}/${item.dataSourceCount}/${item.validationCount}/${item.dashboardCount}/${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(sloHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function sloSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">SLO signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(sloHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function sloCommandList(items: SloReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function sloRiskList(items: SloReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(sloHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function sloHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

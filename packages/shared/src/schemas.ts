@@ -2167,6 +2167,91 @@ export const IncidentResponseReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SloReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  sloSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["openslo", "sloth", "pyrra", "prometheus-rule", "grafana-dashboard", "workflow", "custom", "unknown"]),
+    sloCount: z.number().int().nonnegative(),
+    sliCount: z.number().int().nonnegative(),
+    objectiveCount: z.number().int().nonnegative(),
+    targetCount: z.number().int().nonnegative(),
+    windowCount: z.number().int().nonnegative(),
+    budgetCount: z.number().int().nonnegative(),
+    alertCount: z.number().int().nonnegative(),
+    recordingRuleCount: z.number().int().nonnegative(),
+    burnRateCount: z.number().int().nonnegative(),
+    labelCount: z.number().int().nonnegative(),
+    dataSourceCount: z.number().int().nonnegative(),
+    validationCount: z.number().int().nonnegative(),
+    dashboardCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  specSignals: z.array(z.object({
+    signal: z.enum(["openslo", "sloth-spec", "pyrra-crd", "prometheus-rule", "yaml-manifest", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  indicatorSignals: z.array(z.object({
+    signal: z.enum(["ratio-metric", "threshold-metric", "latency", "availability", "error-query", "total-query", "raw-ratio", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  objectiveSignals: z.array(z.object({
+    signal: z.enum(["target", "target-percent", "time-window", "budgeting-method", "composite-weight", "error-budget", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  alertSignals: z.array(z.object({
+    signal: z.enum(["burn-rate", "multi-window", "page-alert", "ticket-alert", "prometheus-alert", "alert-after", "alert-labels", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ruleSignals: z.array(z.object({
+    signal: z.enum(["recording-rules", "prometheus-operator", "promql-window-template", "rule-output", "generic-rules", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  governanceSignals: z.array(z.object({
+    signal: z.enum(["service-owner", "labels", "team", "runbook-link", "dashboard", "validation", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["ci-validate", "sloth-validate", "kubectl-apply", "helm-chart", "dry-run", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["sloth", "pyrra", "openslo", "prometheus-operator", "grafana", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LoadTestingReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -11754,6 +11839,7 @@ export type TracingReadinessReport = z.infer<typeof TracingReadinessReportSchema
 export type DebugReadinessReport = z.infer<typeof DebugReadinessReportSchema>;
 export type CrashReportingReadinessReport = z.infer<typeof CrashReportingReadinessReportSchema>;
 export type IncidentResponseReadinessReport = z.infer<typeof IncidentResponseReadinessReportSchema>;
+export type SloReadinessReport = z.infer<typeof SloReadinessReportSchema>;
 export type LoadTestingReadinessReport = z.infer<typeof LoadTestingReadinessReportSchema>;
 export type BenchmarkReadinessReport = z.infer<typeof BenchmarkReadinessReportSchema>;
 export type E2eReport = z.infer<typeof E2eReportSchema>;
