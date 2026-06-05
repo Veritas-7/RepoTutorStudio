@@ -62,6 +62,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-migration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-orm-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-quality-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-lineage-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
@@ -204,6 +205,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-migration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-orm-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-quality-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-lineage-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ci-cd.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
@@ -349,6 +351,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-migration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-orm-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-quality-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-lineage-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ci-cd.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
@@ -521,6 +524,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/database-migration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/database-orm-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-quality-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/data-lineage-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ci-cd.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/coverage-readiness.html\"");
@@ -3271,6 +3275,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/database-migration-readiness.html");
     expect(exportManifestText).toContain("html/database-orm-readiness.html");
     expect(exportManifestText).toContain("html/data-quality-readiness.html");
+    expect(exportManifestText).toContain("html/data-lineage-readiness.html");
     expect(exportManifestText).toContain("html/ci-cd.html");
     expect(exportManifestText).toContain("html/unit-tests.html");
     expect(exportManifestText).toContain("html/coverage-readiness.html");
@@ -3435,6 +3440,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("database-migration-readiness.html");
     expect(learningPathHtml).toContain("database-orm-readiness.html");
     expect(learningPathHtml).toContain("data-quality-readiness.html");
+    expect(learningPathHtml).toContain("data-lineage-readiness.html");
     expect(learningPathHtml).toContain("ci-cd.html");
     expect(learningPathHtml).toContain("unit-tests.html");
     expect(learningPathHtml).toContain("coverage-readiness.html");
@@ -6989,6 +6995,208 @@ describe("RepoTutor core pipeline", () => {
     const dataQualityHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-quality-readiness.html"), "utf8");
     expect(dataQualityHtml).toContain("data-quality-readiness-card");
     expect(dataQualityHtml).toContain("data-source-pattern=\"DataQuality\"");
+  });
+
+  it("detects data lineage readiness without running lineage backends", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-lineage-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-data-lineage-source-"));
+    await fs.mkdir(path.join(sourceRoot, "openlineage"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "marquez"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "dbt"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "apache-airflow-providers-openlineage": "2.8.0",
+        "dbt-core": "1.10.0",
+        marquez: "0.51.0",
+        openlineage: "1.37.0",
+        "openlineage-spark": "1.37.0",
+        sqlglot: "26.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "openlineage", "orders-run-event.json"), JSON.stringify({
+      eventType: "COMPLETE",
+      eventTime: "2026-06-05T00:00:00Z",
+      producer: "https://github.com/example/producer",
+      schemaURL: "https://openlineage.io/spec/2-0-2/OpenLineage.json",
+      run: {
+        runId: "11111111-1111-4111-8111-111111111111",
+        facets: {
+          nominalTime: { _producer: "repo", _schemaURL: "https://openlineage.io/spec/facets/1-0-0/NominalTimeRunFacet.json" },
+          parent: { run: { runId: "00000000-0000-4000-8000-000000000000" }, job: { namespace: "analytics", name: "daily_parent" } }
+        }
+      },
+      job: {
+        namespace: "analytics",
+        name: "daily_orders",
+        jobName: "daily_orders",
+        facets: {
+          sql: { query: "select order_id, customer_id from raw.orders" },
+          jobType: { processingType: "BATCH", integration: "DBT", jobType: "QUERY" }
+        }
+      },
+      inputs: [
+        {
+          namespace: "warehouse",
+          name: "raw.orders",
+          facets: {
+            schema: { fields: [{ name: "order_id", type: "string" }, { name: "customer_id", type: "string" }] },
+            dataSource: { name: "warehouse", uri: "snowflake://account/db/schema" },
+            datasetVersion: { datasetVersion: "raw-orders-v1" }
+          }
+        }
+      ],
+      outputs: [
+        {
+          namespace: "warehouse",
+          name: "mart.orders",
+          facets: {
+            schema: { fields: [{ name: "order_id", type: "string" }, { name: "customer_id", type: "string" }] },
+            columnLineage: {
+              fields: {
+                order_id: { inputFields: [{ namespace: "warehouse", name: "raw.orders", field: "order_id" }] },
+                customer_id: { inputFields: [{ namespace: "warehouse", name: "raw.orders", field: "customer_id" }] }
+              }
+            }
+          }
+        }
+      ],
+      InputDataset: "raw.orders",
+      OutputDataset: "mart.orders",
+      LineageEvent: "RunEvent"
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "marquez", "storage.sql"), [
+      "-- Marquez receives OpenLineage via POST /lineage and LineageResource.",
+      "create table lineage_events (run_uuid uuid, event_time timestamptz, job_name text, job_namespace text, event jsonb);",
+      "create table dataset_facets (run_uuid uuid, lineage_event_time timestamptz, lineage_event_type varchar, facet jsonb);",
+      "create table job_facets (run_uuid uuid, lineage_event_time timestamptz, lineage_event_type varchar, facet jsonb);",
+      "create table run_facets (run_uuid uuid, lineage_event_time timestamptz, lineage_event_type varchar, facet jsonb);",
+      "create table dataset_versions (dataset_uuid uuid, externalVersion text);",
+      "create table job_versions (job_uuid uuid, version uuid);",
+      "-- DatasetVersionRow JobVersionRow DatasetId DatasetName DatasetField field_mapping run_uuid"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "dbt", "manifest.json"), JSON.stringify({
+      metadata: { dbt_schema_version: "https://schemas.getdbt.com/dbt/manifest/v12.json" },
+      parent_map: { "model.analytics.stg_orders": ["source.analytics.raw.orders"] },
+      child_map: { "source.analytics.raw.orders": ["model.analytics.stg_orders"] },
+      nodes: {
+        "model.analytics.stg_orders": {
+          unique_id: "model.analytics.stg_orders",
+          relation_name: "analytics.stg_orders",
+          depends_on: { nodes: ["source.analytics.raw.orders"] },
+          sources: ["source.analytics.raw.orders"],
+          metrics: ["metric.analytics.order_count"],
+          compiled_sql: "select * from {{ source('raw', 'orders') }}"
+        }
+      },
+      sources: {
+        "source.analytics.raw.orders": {
+          unique_id: "source.analytics.raw.orders",
+          relation_name: "raw.orders"
+        }
+      },
+      exposures: { "exposure.analytics.dashboard": { unique_id: "exposure.analytics.dashboard" } },
+      metrics: { "metric.analytics.order_count": { unique_id: "metric.analytics.order_count" } },
+      semantic_models: { "semantic_model.analytics.orders": { unique_id: "semantic_model.analytics.orders" } },
+      group_map: { analytics: ["model.analytics.stg_orders"] }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "dbt", "catalog.json"), JSON.stringify({
+      nodes: {
+        "model.analytics.stg_orders": {
+          metadata: { type: "table", schema: "analytics", name: "stg_orders" },
+          columns: { order_id: { type: "string" }, customer_id: { type: "string" } }
+        }
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "dbt", "run_results.json"), JSON.stringify({
+      results: [{ unique_id: "model.analytics.stg_orders", status: "success", execution_time: 1.23 }]
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "dbt", "sources.json"), JSON.stringify({
+      results: [{ unique_id: "source.analytics.raw.orders", status: "pass", max_loaded_at: "2026-06-05T00:00:00Z" }]
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "lineage.yml"), [
+      "name: Data lineage",
+      "on:",
+      "  schedule:",
+      "    - cron: '0 * * * *'",
+      "jobs:",
+      "  lineage:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: dbt docs generate",
+      "      - run: dbt ls --output json",
+      "      - run: echo 'openlineage dbt-ol send-events lineage backend'",
+      "      - run: echo 'lineage export lineage.json'",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: lineage artifact",
+      "          path: |",
+      "            dbt/manifest.json",
+      "            dbt/catalog.json",
+      "            dbt/run_results.json",
+      "            dbt/sources.json",
+      "            lineage.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "data-lineage-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      lineageSetups: Array<{ tool: string; eventCount: number; datasetCount: number; jobCount: number; runCount: number; facetCount: number; columnLineageCount: number; artifactCount: number; ciCount: number }>;
+      eventSignals: Array<{ signal: string; readiness: string }>;
+      identitySignals: Array<{ signal: string; readiness: string }>;
+      datasetSignals: Array<{ signal: string; readiness: string }>;
+      dbtArtifactSignals: Array<{ signal: string; readiness: string }>;
+      storageSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (tool: string) => report.lineageSetups
+      .filter((item) => item.tool === tool)
+      .reduce((totals, item) => ({
+        eventCount: totals.eventCount + item.eventCount,
+        datasetCount: totals.datasetCount + item.datasetCount,
+        jobCount: totals.jobCount + item.jobCount,
+        runCount: totals.runCount + item.runCount,
+        facetCount: totals.facetCount + item.facetCount,
+        columnLineageCount: totals.columnLineageCount + item.columnLineageCount,
+        artifactCount: totals.artifactCount + item.artifactCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { eventCount: 0, datasetCount: 0, jobCount: 0, runCount: 0, facetCount: 0, columnLineageCount: 0, artifactCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Data lineage readiness OpenLineage Marquez dbt RunEvent LineageEvent eventType producer schemaURL namespace job run dataset input output facet columnLineage manifest.json catalog.json run_results.json parent_map child_map depends_on lineage_events dataset_facets job_facets run_facets CI");
+    expect(setupTotals("openlineage").eventCount).toBeGreaterThan(0);
+    expect(setupTotals("openlineage").datasetCount).toBeGreaterThan(0);
+    expect(setupTotals("openlineage").columnLineageCount).toBeGreaterThan(0);
+    expect(setupTotals("marquez").facetCount).toBeGreaterThan(0);
+    expect(setupTotals("dbt").artifactCount).toBeGreaterThan(0);
+    expect(report.lineageSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.eventSignals)).toEqual(expect.arrayContaining(["run-event", "event-type", "producer", "schema-url", "event-time", "run-id"]));
+    expect(readySignals(report.identitySignals)).toEqual(expect.arrayContaining(["namespace", "job-name", "run-id", "dataset-namespace", "dataset-name", "unique-id"]));
+    expect(readySignals(report.datasetSignals)).toEqual(expect.arrayContaining(["input-dataset", "output-dataset", "dataset-version", "schema-facet", "column-lineage", "data-source"]));
+    expect(readySignals(report.dbtArtifactSignals)).toEqual(expect.arrayContaining(["manifest", "catalog", "run-results", "sources", "exposures", "metrics", "semantic-models", "parent-child-map", "depends-on"]));
+    expect(readySignals(report.storageSignals)).toEqual(expect.arrayContaining(["marquez-api", "lineage-events-table", "dataset-facets", "job-facets", "run-facets", "dataset-version", "job-version"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "dbt-docs-generate", "openlineage-command", "lineage-export", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["openlineage", "marquez", "dbt-core", "airflow-openlineage", "spark-openlineage", "sqlglot"]));
+    expect(report.riskQueue).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"RunEvent|LineageEvent|eventType|producer|schemaURL|runId|namespace\" .",
+      "rg \"inputs|outputs|InputDataset|OutputDataset|columnLineage|inputFields|DatasetVersion\" .",
+      "dbt docs generate && dbt ls --output json"
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-lineage-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-lineage-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "data-lineage-readiness.html"))).resolves.toBeUndefined();
+    const dataLineageMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "data-lineage-readiness.md"), "utf8");
+    expect(dataLineageMarkdown).toContain("Event Signals");
+    expect(dataLineageMarkdown).toContain("dbt Artifact Signals");
+    expect(dataLineageMarkdown).toContain("Storage Signals");
+    const dataLineageHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-lineage-readiness.html"), "utf8");
+    expect(dataLineageHtml).toContain("data-lineage-readiness-card");
+    expect(dataLineageHtml).toContain("data-source-pattern=\"DataLineage\"");
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {
