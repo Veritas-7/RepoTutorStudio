@@ -5370,6 +5370,106 @@ export const QueueReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const EventStreamReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  eventStreamSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["kafka", "redpanda", "pulsar", "custom", "unknown"]),
+    brokerCount: z.number().int().nonnegative(),
+    topicCount: z.number().int().nonnegative(),
+    producerCount: z.number().int().nonnegative(),
+    consumerCount: z.number().int().nonnegative(),
+    groupCount: z.number().int().nonnegative(),
+    offsetCount: z.number().int().nonnegative(),
+    schemaCount: z.number().int().nonnegative(),
+    reliabilityCount: z.number().int().nonnegative(),
+    securityCount: z.number().int().nonnegative(),
+    opsCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  platformSignals: z.array(z.object({
+    signal: z.enum(["apache-kafka", "redpanda", "apache-pulsar", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  brokerSignals: z.array(z.object({
+    signal: z.enum(["broker", "bootstrap-server", "listener", "advertised-listener", "kraft", "zookeeper", "bookkeeper", "broker-service", "proxy", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  topicSignals: z.array(z.object({
+    signal: z.enum(["topic", "partition", "replication-factor", "retention", "compaction", "cleanup-policy", "partitioned-topic", "tenant-namespace", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  producerSignals: z.array(z.object({
+    signal: z.enum(["kafka-producer", "pulsar-producer", "producer-config", "acks", "idempotence", "transactional-id", "batching", "compression", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  consumerSignals: z.array(z.object({
+    signal: z.enum(["kafka-consumer", "pulsar-consumer", "consumer-group", "subscription", "offset-commit", "rebalance", "acknowledge", "negative-ack", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  schemaSignals: z.array(z.object({
+    signal: z.enum(["schema-registry", "avro", "protobuf", "json-schema", "schema-evolution", "compatibility", "schema-definition", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  reliabilitySignals: z.array(z.object({
+    signal: z.enum(["dead-letter-queue", "retry-topic", "poison-record", "transaction", "exactly-once", "mirror-replication", "geo-replication", "backpressure", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  securitySignals: z.array(z.object({
+    signal: z.enum(["sasl", "tls", "acl", "authentication", "authorization", "oauth", "scram", "certificates", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  opsSignals: z.array(z.object({
+    signal: z.enum(["metrics", "lag-monitoring", "quota", "rack-awareness", "admin-client", "topic-create", "reassignment", "health-check", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "broker-smoke-command", "producer-smoke-command", "consumer-smoke-command", "schema-smoke-command", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["kafka-client", "kafka-streams", "kafka-connect", "redpanda", "pulsar-client", "pulsar-broker", "pulsar-functions", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CacheReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -9805,6 +9905,7 @@ export type AuthorizationReadinessReport = z.infer<typeof AuthorizationReadiness
 export type PaymentReadinessReport = z.infer<typeof PaymentReadinessReportSchema>;
 export type EmailReadinessReport = z.infer<typeof EmailReadinessReportSchema>;
 export type QueueReadinessReport = z.infer<typeof QueueReadinessReportSchema>;
+export type EventStreamReadinessReport = z.infer<typeof EventStreamReadinessReportSchema>;
 export type CacheReadinessReport = z.infer<typeof CacheReadinessReportSchema>;
 export type LoggingReadinessReport = z.infer<typeof LoggingReadinessReportSchema>;
 export type FeatureFlagReadinessReport = z.infer<typeof FeatureFlagReadinessReportSchema>;

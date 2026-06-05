@@ -107,6 +107,7 @@ import {
   PaymentReadinessReport,
   EmailReadinessReport,
   QueueReadinessReport,
+  EventStreamReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -278,6 +279,7 @@ export interface AnalysisBundle {
   paymentReadinessReport: PaymentReadinessReport;
   emailReadinessReport: EmailReadinessReport;
   queueReadinessReport: QueueReadinessReport;
+  eventStreamReadinessReport: EventStreamReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -449,6 +451,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const paymentReadinessReport = await buildPaymentReadinessReport(walk);
   const emailReadinessReport = await buildEmailReadinessReport(walk);
   const queueReadinessReport = await buildQueueReadinessReport(walk);
+  const eventStreamReadinessReport = await buildEventStreamReadinessReport(walk);
   const cacheReadinessReport = await buildCacheReadinessReport(walk);
   const loggingReadinessReport = await buildLoggingReadinessReport(walk);
   const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
@@ -508,7 +511,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -23069,6 +23072,384 @@ function queueReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/queue-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildEventStreamReadinessReport(walk: WalkResult): Promise<EventStreamReadinessReport> {
+  const sourceFiles = await eventStreamReadinessSourceFiles(walk);
+  const eventStreamSetups = eventStreamReadinessSetups(sourceFiles);
+  const platformSignals = eventStreamReadinessPlatformSignals(sourceFiles);
+  const brokerSignals = eventStreamReadinessBrokerSignals(sourceFiles);
+  const topicSignals = eventStreamReadinessTopicSignals(sourceFiles);
+  const producerSignals = eventStreamReadinessProducerSignals(sourceFiles);
+  const consumerSignals = eventStreamReadinessConsumerSignals(sourceFiles);
+  const schemaSignals = eventStreamReadinessSchemaSignals(sourceFiles);
+  const reliabilitySignals = eventStreamReadinessReliabilitySignals(sourceFiles);
+  const securitySignals = eventStreamReadinessSecuritySignals(sourceFiles);
+  const opsSignals = eventStreamReadinessOpsSignals(sourceFiles);
+  const ciSignals = eventStreamReadinessCiSignals(sourceFiles);
+  const packageSignals = eventStreamReadinessPackageSignals(sourceFiles);
+
+  const hasPlatform = platformSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => ["kafka-client", "redpanda", "pulsar-client", "pulsar-broker"].includes(item.signal) && item.readiness === "ready");
+  const hasBroker = brokerSignals.some((item) => item.readiness === "ready") || eventStreamSetups.some((item) => item.brokerCount > 0);
+  const hasTopic = topicSignals.some((item) => item.readiness === "ready") || eventStreamSetups.some((item) => item.topicCount > 0);
+  const hasProducer = producerSignals.some((item) => item.readiness === "ready") || eventStreamSetups.some((item) => item.producerCount > 0);
+  const hasConsumer = consumerSignals.some((item) => item.readiness === "ready") || eventStreamSetups.some((item) => item.consumerCount > 0);
+  const hasOffsetOrAck = consumerSignals.some((item) => ["offset-commit", "acknowledge", "negative-ack", "rebalance"].includes(item.signal) && item.readiness === "ready") || eventStreamSetups.some((item) => item.groupCount + item.offsetCount > 0);
+  const hasSchemaPackage = packageSignals.some((item) => ["kafka-connect", "pulsar-client", "pulsar-broker"].includes(item.signal) && item.readiness === "ready") || schemaSignals.some((item) => ["avro", "protobuf", "json-schema", "schema-definition"].includes(item.signal) && item.readiness === "ready");
+  const hasSchema = schemaSignals.some((item) => item.readiness === "ready") || eventStreamSetups.some((item) => item.schemaCount > 0);
+  const hasReliability = reliabilitySignals.some((item) => item.readiness === "ready") || eventStreamSetups.some((item) => item.reliabilityCount > 0);
+  const hasSecurity = securitySignals.some((item) => item.readiness === "ready") || eventStreamSetups.some((item) => item.securityCount > 0);
+  const hasOps = opsSignals.some((item) => item.readiness === "ready") || eventStreamSetups.some((item) => item.opsCount > 0);
+  const hasCi = ciSignals.some((item) => item.readiness === "ready") || eventStreamSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: EventStreamReadinessReport["riskQueue"] = [];
+  if (!hasPlatform && !hasBroker && !hasTopic) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document the event streaming platform, broker, and topic strategy before claiming stream readiness.",
+      why: "Kafka, Redpanda, and Pulsar readiness starts with explicit platform, broker, topic, partition, or namespace evidence.",
+      relatedHref: "html/event-stream-readiness.html"
+    });
+  }
+  if (hasTopic && (!hasProducer || !hasConsumer)) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair each stream topic with producer and consumer ownership.",
+      why: "A topic without both publishing and consuming paths leaves event flow, ownership, and failure handling ambiguous.",
+      relatedHref: "html/event-stream-readiness.html"
+    });
+  }
+  if ((hasProducer || hasConsumer) && !hasOffsetOrAck) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add consumer-group offset, rebalance, subscription, or acknowledgement handling.",
+      why: "Streaming consumers need auditable offset commits, rebalance callbacks, Pulsar subscriptions, or ack/nack behavior before runtime verification.",
+      relatedHref: "html/event-stream-readiness.html"
+    });
+  }
+  if (hasSchemaPackage && !hasSchema) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document schema registry, schema definitions, and compatibility policy.",
+      why: "Typed event streams need schema evolution controls so producers and consumers can change safely.",
+      relatedHref: "html/event-stream-readiness.html"
+    });
+  }
+  if ((hasPlatform || hasTopic) && !hasReliability) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add DLQ, retry topic, transaction, exactly-once, replication, or backpressure evidence.",
+      why: "Event streams need explicit handling for poison records, duplicate delivery, cross-cluster recovery, and overload behavior.",
+      relatedHref: "html/event-stream-readiness.html"
+    });
+  }
+  if ((hasPlatform || hasBroker) && !hasSecurity) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document SASL/TLS/ACL/authentication controls for stream clients and brokers.",
+      why: "Broker access and topic permissions are security boundaries, not implementation details.",
+      relatedHref: "html/event-stream-readiness.html"
+    });
+  }
+  if ((hasPlatform || hasBroker || hasTopic) && !hasOps) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add lag, metrics, quota, rack-awareness, admin-client, reassignment, or health-check evidence.",
+      why: "Operators need observability and administrative controls to diagnose stream drift before incidents.",
+      relatedHref: "html/event-stream-readiness.html"
+    });
+  }
+  if ((hasPlatform || hasTopic) && !hasCi) {
+    riskQueue.push({
+      priority: "low",
+      action: "Add CI smoke artifacts for broker, producer, consumer, and schema checks.",
+      why: "Static stream readiness is stronger when CI records a broker/client/schema smoke result as an artifact.",
+      relatedHref: "html/event-stream-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run event stream integration tests only in a trusted workspace after reviewing this static map.",
+    why: "RepoTutor records event stream readiness only; it does not run Kafka, Redpanda, Pulsar, brokers, clients, schema registries, topic creation, producer/consumer jobs, security handshakes, or CI commands.",
+    relatedHref: "html/event-stream-readiness.html"
+  });
+
+  return {
+    summary: `Event stream readiness report: setup ${eventStreamSetups.length}개, platform signal ${platformSignals.length}개, topic signal ${topicSignals.length}개, reliability signal ${reliabilitySignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Event stream readiness Apache Kafka Redpanda Apache Pulsar KafkaProducer KafkaConsumer AdminClient NewTopic consumer group offset commit rebalance schema registry DLQ retention compaction idempotence transactions ACL SASL PulsarClient SubscriptionType BookKeeper tenant namespace CI",
+    eventStreamSetups,
+    platformSignals,
+    brokerSignals,
+    topicSignals,
+    producerSignals,
+    consumerSignals,
+    schemaSignals,
+    reliabilitySignals,
+    securitySignals,
+    opsSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"KafkaProducer|KafkaConsumer|AdminClient|NewTopic|bootstrap.servers|consumer group|commitSync|commitAsync\" .", purpose: "Inventory Kafka producers, consumers, admin topic creation, broker bootstrap, consumer groups, and offset commits." },
+      { command: "rg \"PulsarClient|newProducer|newConsumer|SubscriptionType|acknowledge|negativeAcknowledge|tenant|namespace\" .", purpose: "Find Pulsar client setup, producers, consumers, subscriptions, ack/nack behavior, and tenant/namespace boundaries." },
+      { command: "rg \"schema.registry|Schema Registry|Avro|Protobuf|JSONSchema|SchemaDefinition|compatibility\" .", purpose: "Review schema registry, event schema formats, schema definitions, and compatibility policy." },
+      { command: "rg \"dead.?letter|DLQ|retry topic|poison|transactional.id|enable.idempotence|exactly-once|geo-replication|MirrorMaker\" .", purpose: "Trace DLQ, retry, poison-record, transaction, idempotence, exactly-once, and replication behavior." },
+      { command: "rg \"SASL|SCRAM|OAuth|TLS|ACL|authorization|authentication|quota|lag|rack.aware|upload-artifact|stream smoke\" .github .", purpose: "Check security, quota, lag monitoring, rack awareness, CI smoke, and artifact upload evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 Kafka, Redpanda, Pulsar 중 어떤 platform evidence가 있는지 확인하고 broker/topic/partition 경계를 표시하세요.",
+      "topic 또는 namespace가 보이면 producer와 consumer가 모두 있는지, consumer group 또는 subscription ownership이 분명한지 확인하세요.",
+      "consumer 코드는 offset commit, rebalance listener, acknowledge, negativeAcknowledge, DLQ, retry topic 같은 장애 복구 단서를 함께 추적하세요.",
+      "schema registry, Avro, Protobuf, JSON Schema, SchemaDefinition evidence가 있으면 compatibility와 schema evolution 정책을 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 broker startup, topic creation, producer/consumer job, security handshake, lag monitoring은 안전한 테스트 환경에서 별도로 확인하세요."
+    ]
+  };
+}
+
+type EventStreamReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function eventStreamReadinessSourceFiles(walk: WalkResult): Promise<EventStreamReadinessSourceFile[]> {
+  const files: EventStreamReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !eventStreamReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!eventStreamReadinessPathSignal(file.relPath) && !eventStreamReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function eventStreamReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return eventStreamReadinessPathSignal(filePath)
+    || /^(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|build\.gradle|settings\.gradle|pom\.xml|docker-compose\.ya?ml|compose\.ya?ml|Dockerfile|\.env\.example|\.env\.sample)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|java|kt|scala|py|go|rs|json|md|mdx|ya?ml|toml|properties|conf|env)$/i.test(filePath);
+}
+
+function eventStreamReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(kafka|redpanda|pulsar|event[-_]?streams?|streams?|topics?|producers?|consumers?|schema[-_]?registry|dlq|dead[-_]?letter|connectors?|brokers?|subscriptions?|namespaces?)(\/|\.|-|_|$)|\.github\/workflows|docker-compose|compose\.ya?ml/i.test(filePath);
+}
+
+function eventStreamReadinessContentSignal(text: string): boolean {
+  return /\b(Apache Kafka|KafkaProducer|KafkaConsumer|AdminClient|NewTopic|bootstrap\.servers|consumer group|commitSync|commitAsync|ConsumerRebalanceListener|enable\.idempotence|transactional\.id|schema\.registry|Schema Registry|dead[-_ ]?letter|DLQ|retention\.ms|cleanup\.policy|SASL|SCRAM|ACL|Redpanda|rpk topic|pandaproxy|kafka-clients|kafka-streams|connect-api|kafka-connect|PulsarClient|newProducer|newConsumer|SubscriptionType|acknowledge|negativeAcknowledge|DeadLetterPolicy|BookKeeper|pulsar-client|pulsar-broker|pulsar-functions|tenant|namespace|partitioned topic)\b/i.test(text);
+}
+
+function eventStreamReadinessSetups(sourceFiles: EventStreamReadinessSourceFile[]): EventStreamReadinessReport["eventStreamSetups"] {
+  const rows: EventStreamReadinessReport["eventStreamSetups"] = [];
+  for (const source of sourceFiles) {
+    const brokerCount = countMatches(source.text, /\bbroker\b|\bbootstrap\.servers\b|\badvertised\.listeners?\b|\blisteners?\b|\bKRaft\b|\bZooKeeper\b|\bBookKeeper\b|\bserviceUrl\b|\bpandaproxy\b/gi);
+    const topicCount = countMatches(source.text, /\btopic\b|\bNewTopic\b|\bpartitions?\b|\breplication\.factor\b|\bretention\.ms\b|\bcleanup\.policy\b|\bcompaction\b|\bpartitioned topic\b|\btenant\b|\bnamespace\b|\brpk topic\b/gi);
+    const producerCount = countMatches(source.text, /\bKafkaProducer\b|\bnewProducer\b|\bProducer\b|\bproducer\b|\backs\b|\benable\.idempotence\b|\btransactional\.id\b|\bbatching\b|\bcompression\b/gi);
+    const consumerCount = countMatches(source.text, /\bKafkaConsumer\b|\bnewConsumer\b|\bConsumer\b|\bconsumer\b|\bsubscribe\b|\bSubscriptionType\b|\backnowledge\b|\bnegativeAcknowledge\b/gi);
+    const groupCount = countMatches(source.text, /\bconsumer group\b|\bgroup\.id\b|\bgroupId\b|\bgroup_name\b|\bsubscription(Name|Type)?\b|\bConsumerRebalanceListener\b/gi);
+    const offsetCount = countMatches(source.text, /\boffset\b|\bcommitSync\b|\bcommitAsync\b|\boffset commit\b|\backnowledge\b|\bnegativeAcknowledge\b|\bpending ack\b/gi);
+    const schemaCount = countMatches(source.text, /\bschema\.registry\b|\bSchema Registry\b|\bschema_registry\b|\bSchemaDefinition\b|\bSchema\.(AVRO|JSON|PROTOBUF)\b|\bAvro\b|\bProtobuf\b|\bJSONSchema\b|\bcompatibility\b/gi);
+    const reliabilityCount = countMatches(source.text, /\bdead[-_ ]?letter\b|\bDLQ\b|\bretry topic\b|\bpoison\b|\btransaction\b|\bexactly[-_ ]?once\b|\bMirrorMaker\b|\bgeo[-_ ]?replication\b|\bbackpressure\b|\benable\.idempotence\b/gi);
+    const securityCount = countMatches(source.text, /\bSASL\b|\bSCRAM\b|\bOAuth\b|\bOAUTHBEARER\b|\bTLS\b|\bSSL\b|\bACL\b|\bauthentication\b|\bauthorization\b|\bcertificates?\b/gi);
+    const opsCount = countMatches(source.text, /\bmetrics?\b|\blag\b|\bquota\b|\brack\.aware\b|\brack-awareness\b|\bAdminClient\b|\btopic create\b|\breassignment\b|\bhealth[-_ ]?check\b|\brpk\b/gi);
+    const ciCount = countMatches(source.text, /\bgithub[-_ ]?actions\b|\.github\/workflows|upload-artifact|broker-smoke|producer-smoke|consumer-smoke|schema-smoke|stream smoke/gi);
+    const hasSetupSignal = brokerCount + topicCount + producerCount + consumerCount + groupCount + offsetCount + schemaCount + reliabilityCount + securityCount + opsCount + ciCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: eventStreamReadinessPlatform(source),
+      brokerCount,
+      topicCount,
+      producerCount,
+      consumerCount,
+      groupCount,
+      offsetCount,
+      schemaCount,
+      reliabilityCount,
+      securityCount,
+      opsCount,
+      ciCount,
+      readiness: brokerCount > 0 && topicCount > 0 && (producerCount > 0 || consumerCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains brokers ${brokerCount}, topics ${topicCount}, producers ${producerCount}, consumers ${consumerCount}, groups ${groupCount}, offsets ${offsetCount}, schemas ${schemaCount}, reliability ${reliabilityCount}, security ${securityCount}, ops ${opsCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 90);
+}
+
+function eventStreamReadinessPlatform(source: EventStreamReadinessSourceFile): EventStreamReadinessReport["eventStreamSetups"][number]["platform"] {
+  if (/\bRedpanda\b|\brpk\b|\bpandaproxy\b|redpanda/i.test(source.filePath) || /\bRedpanda\b|\brpk\s+topic|\bpandaproxy\b/i.test(source.text)) return "redpanda";
+  if (/\bPulsarClient\b|\bApache Pulsar\b|\bBookKeeper\b|\bSubscriptionType\b|pulsar/i.test(source.filePath) || /\bPulsarClient\b|\bApache Pulsar\b|\bBookKeeper\b|\bSubscriptionType\b/i.test(source.text)) return "pulsar";
+  if (/\bKafkaProducer\b|\bKafkaConsumer\b|\bApache Kafka\b|\bAdminClient\b|\bKafka Streams\b|kafka/i.test(source.filePath) || /\bKafkaProducer\b|\bKafkaConsumer\b|\bApache Kafka\b|\bAdminClient\b|\bKafka Streams\b/i.test(source.text)) return "kafka";
+  if (/\bevent[-_ ]?stream|\bmessage[-_ ]?stream|\bstreaming platform\b/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function eventStreamReadinessPlatformSignals(sourceFiles: EventStreamReadinessSourceFile[]): EventStreamReadinessReport["platformSignals"] {
+  const specs: Array<{ signal: EventStreamReadinessReport["platformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "apache-kafka", pattern: /\bApache Kafka\b|\bKafkaProducer\b|\bKafkaConsumer\b|\bAdminClient\b|\bKafka Streams\b|\bkafka-clients\b|kafkajs/i, evidence: "Apache Kafka client or platform evidence was detected." },
+    { signal: "redpanda", pattern: /\bRedpanda\b|\brpk\b|\bpandaproxy\b|redpanda/i, evidence: "Redpanda platform evidence was detected." },
+    { signal: "apache-pulsar", pattern: /\bApache Pulsar\b|\bPulsarClient\b|\bSubscriptionType\b|\bBookKeeper\b|pulsar-client/i, evidence: "Apache Pulsar platform evidence was detected." },
+    { signal: "custom", pattern: /\bevent[-_ ]?stream|\bmessage[-_ ]?stream|\bstreaming platform\b/i, evidence: "custom event stream platform evidence was detected." }
+  ];
+  return eventStreamReadinessSignalFromSpecs(sourceFiles, specs, "platform", "signal");
+}
+
+function eventStreamReadinessBrokerSignals(sourceFiles: EventStreamReadinessSourceFile[]): EventStreamReadinessReport["brokerSignals"] {
+  const specs: Array<{ signal: EventStreamReadinessReport["brokerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "broker", pattern: /\bbroker(s)?\b|\bKafkaCluster\b|\bPulsarService\b|\bredpanda\b/i, evidence: "broker evidence was detected." },
+    { signal: "bootstrap-server", pattern: /\bbootstrap\.servers\b|\bbootstrapServers\b|\bBOOTSTRAP_SERVERS\b/i, evidence: "bootstrap server evidence was detected." },
+    { signal: "listener", pattern: /\blisteners?\b|\bSASL_SSL:\/\/|\bPLAINTEXT:\/\//i, evidence: "listener evidence was detected." },
+    { signal: "advertised-listener", pattern: /\badvertised\.listeners?\b|\badvertised_kafka_api\b/i, evidence: "advertised listener evidence was detected." },
+    { signal: "kraft", pattern: /\bKRaft\b|\bprocess\.roles\b|\bcontroller\.quorum\b/i, evidence: "KRaft broker mode evidence was detected." },
+    { signal: "zookeeper", pattern: /\bZooKeeper\b|\bzookeeper\b/i, evidence: "ZooKeeper coordination evidence was detected." },
+    { signal: "bookkeeper", pattern: /\bBookKeeper\b|\bbookkeeper\b/i, evidence: "BookKeeper storage evidence was detected." },
+    { signal: "broker-service", pattern: /\bPulsarService\b|\bbrokerService\b|\bserviceUrl\b|\bbrokerServiceUrl\b/i, evidence: "Pulsar broker service evidence was detected." },
+    { signal: "proxy", pattern: /\bpandaproxy\b|\bpulsar-proxy\b|\bProxyService\b|\bproxyService\b/i, evidence: "stream proxy evidence was detected." }
+  ];
+  return eventStreamReadinessSignalFromSpecs(sourceFiles, specs, "broker", "signal");
+}
+
+function eventStreamReadinessTopicSignals(sourceFiles: EventStreamReadinessSourceFile[]): EventStreamReadinessReport["topicSignals"] {
+  const specs: Array<{ signal: EventStreamReadinessReport["topicSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "topic", pattern: /\btopic(Name)?\b|\bNewTopic\b|\brpk topic\b/i, evidence: "topic evidence was detected." },
+    { signal: "partition", pattern: /\bpartitions?\b|\bnumPartitions\b|\bpartitioned\b/i, evidence: "partition evidence was detected." },
+    { signal: "replication-factor", pattern: /\breplication\.factor\b|\breplicationFactor\b|\breplicas\b/i, evidence: "replication factor evidence was detected." },
+    { signal: "retention", pattern: /\bretention\.ms\b|\bretention\.bytes\b|\bmessageRetention\b|\bretentionSize\b|\bretentionTime\b/i, evidence: "retention evidence was detected." },
+    { signal: "compaction", pattern: /\bcompaction\b|\bcompacted\b|\bTopicCompaction\b|\bcleanup\.policy\s*=\s*compact\b/i, evidence: "compaction evidence was detected." },
+    { signal: "cleanup-policy", pattern: /\bcleanup\.policy\b|\blog\.cleanup\.policy\b/i, evidence: "cleanup policy evidence was detected." },
+    { signal: "partitioned-topic", pattern: /\bpartitioned topic\b|\bcreatePartitionedTopic\b|\bpartitionedTopic\b/i, evidence: "partitioned topic evidence was detected." },
+    { signal: "tenant-namespace", pattern: /\btenant\b|\bnamespace\b|\bNamespaceName\b|\bTenantInfo\b/i, evidence: "tenant or namespace evidence was detected." }
+  ];
+  return eventStreamReadinessSignalFromSpecs(sourceFiles, specs, "topic", "signal");
+}
+
+function eventStreamReadinessProducerSignals(sourceFiles: EventStreamReadinessSourceFile[]): EventStreamReadinessReport["producerSignals"] {
+  const specs: Array<{ signal: EventStreamReadinessReport["producerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kafka-producer", pattern: /\bKafkaProducer\b|\bnew\s+ProducerRecord\b|\bkafka\.producer\b|\bproducer\.send\b/i, evidence: "Kafka producer evidence was detected." },
+    { signal: "pulsar-producer", pattern: /\bnewProducer\b|\bProducerBuilder\b|\bPulsarClient.*producer|\bproducerName\b/i, evidence: "Pulsar producer evidence was detected." },
+    { signal: "producer-config", pattern: /\bProducerConfig\b|\bproducer\.properties\b|\bproducerConfig\b|\bproducer\./i, evidence: "producer configuration evidence was detected." },
+    { signal: "acks", pattern: /\backs\b|\backs=all|\bACKS_CONFIG\b/i, evidence: "producer acknowledgement config evidence was detected." },
+    { signal: "idempotence", pattern: /\benable\.idempotence\b|\bIDEMPOTENCE\b|\bidempotent\b/i, evidence: "idempotent producer evidence was detected." },
+    { signal: "transactional-id", pattern: /\btransactional\.id\b|\bTRANSACTIONAL_ID\b|\btransactionalId\b/i, evidence: "transactional producer ID evidence was detected." },
+    { signal: "batching", pattern: /\bbatch\.size\b|\bbatching\b|\bbatchingMax\b|\blinger\.ms\b/i, evidence: "producer batching evidence was detected." },
+    { signal: "compression", pattern: /\bcompression\.type\b|\bcompressionType\b|\bcompression\b/i, evidence: "producer compression evidence was detected." }
+  ];
+  return eventStreamReadinessSignalFromSpecs(sourceFiles, specs, "producer", "signal");
+}
+
+function eventStreamReadinessConsumerSignals(sourceFiles: EventStreamReadinessSourceFile[]): EventStreamReadinessReport["consumerSignals"] {
+  const specs: Array<{ signal: EventStreamReadinessReport["consumerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kafka-consumer", pattern: /\bKafkaConsumer\b|\bkafka\.consumer\b|\bconsumer\.poll\b|\bsubscribe\s*\(/i, evidence: "Kafka consumer evidence was detected." },
+    { signal: "pulsar-consumer", pattern: /\bnewConsumer\b|\bConsumerBuilder\b|\bPulsarClient.*consumer|\bsubscriptionName\b/i, evidence: "Pulsar consumer evidence was detected." },
+    { signal: "consumer-group", pattern: /\bconsumer group\b|\bgroup\.id\b|\bgroupId\b|\bgroup_name\b/i, evidence: "consumer group evidence was detected." },
+    { signal: "subscription", pattern: /\bSubscriptionType\b|\bsubscriptionName\b|\bsubscriptionType\b|\bsubscribeAsync\b/i, evidence: "Pulsar subscription evidence was detected." },
+    { signal: "offset-commit", pattern: /\bcommitSync\b|\bcommitAsync\b|\boffset commit\b|\bOffsetCommit\b|\bcommitted offset\b/i, evidence: "offset commit evidence was detected." },
+    { signal: "rebalance", pattern: /\bConsumerRebalanceListener\b|\brebalance\b|\bonPartitionsAssigned\b|\bonPartitionsRevoked\b/i, evidence: "consumer rebalance evidence was detected." },
+    { signal: "acknowledge", pattern: /\backnowledge(Async)?\b|\backTimeout\b|\bpositive ack\b/i, evidence: "acknowledgement evidence was detected." },
+    { signal: "negative-ack", pattern: /\bnegativeAcknowledge\b|\bnack\b|\bnegative ack\b/i, evidence: "negative acknowledgement evidence was detected." }
+  ];
+  return eventStreamReadinessSignalFromSpecs(sourceFiles, specs, "consumer", "signal");
+}
+
+function eventStreamReadinessSchemaSignals(sourceFiles: EventStreamReadinessSourceFile[]): EventStreamReadinessReport["schemaSignals"] {
+  const specs: Array<{ signal: EventStreamReadinessReport["schemaSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "schema-registry", pattern: /\bschema\.registry\b|\bSchema Registry\b|\bschema_registry\b|\bSchemaRegistry\b/i, evidence: "schema registry evidence was detected." },
+    { signal: "avro", pattern: /\bAvro\b|\bSchema\.AVRO\b|\bavroSchema\b/i, evidence: "Avro schema evidence was detected." },
+    { signal: "protobuf", pattern: /\bProtobuf\b|\bProtoBuf\b|\bSchema\.PROTOBUF\b|\bproto3\b/i, evidence: "Protobuf schema evidence was detected." },
+    { signal: "json-schema", pattern: /\bJSONSchema\b|\bJSON Schema\b|\bSchema\.JSON\b|\bjson-schema\b/i, evidence: "JSON Schema evidence was detected." },
+    { signal: "schema-evolution", pattern: /\bschema evolution\b|\bevolution\b|\bversioned schema\b|\bSchemaInfoWithVersion\b/i, evidence: "schema evolution evidence was detected." },
+    { signal: "compatibility", pattern: /\bcompatibility\b|\bBACKWARD\b|\bFORWARD\b|\bFULL_TRANSITIVE\b/i, evidence: "schema compatibility evidence was detected." },
+    { signal: "schema-definition", pattern: /\bSchemaDefinition\b|\bSchemaInfo\b|\bSchemaType\b|\bSchema\.builder\b/i, evidence: "schema definition evidence was detected." }
+  ];
+  return eventStreamReadinessSignalFromSpecs(sourceFiles, specs, "schema", "signal");
+}
+
+function eventStreamReadinessReliabilitySignals(sourceFiles: EventStreamReadinessSourceFile[]): EventStreamReadinessReport["reliabilitySignals"] {
+  const specs: Array<{ signal: EventStreamReadinessReport["reliabilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dead-letter-queue", pattern: /\bdead[-_ ]?letter\b|\bDLQ\b|errors\.deadletterqueue\.topic\.name|DeadLetterPolicy/i, evidence: "dead-letter queue evidence was detected." },
+    { signal: "retry-topic", pattern: /\bretry topic\b|\bretryTopic\b|\bretry[-_ ]?queue\b|\bRetryLetterTopic\b/i, evidence: "retry topic evidence was detected." },
+    { signal: "poison-record", pattern: /\bpoison\b|\bpoison record\b|\bbad record\b|\bmalformed message\b/i, evidence: "poison record handling evidence was detected." },
+    { signal: "transaction", pattern: /\btransactional\.id\b|\bTransaction\b|\btransaction coordinator\b|\bTxnID\b|\bwithTransaction\b/i, evidence: "transaction evidence was detected." },
+    { signal: "exactly-once", pattern: /\bexactly[-_ ]?once\b|\beos\b|\bidempotent\b|\benable\.idempotence\b/i, evidence: "exactly-once or idempotence evidence was detected." },
+    { signal: "mirror-replication", pattern: /\bMirrorMaker\b|\bMirrorSource\b|\bMirrorCheckpoint\b|\bmirror replication\b/i, evidence: "mirror replication evidence was detected." },
+    { signal: "geo-replication", pattern: /\bgeo[-_ ]?replication\b|\breplicate.*cluster\b|\bcluster replication\b/i, evidence: "geo replication evidence was detected." },
+    { signal: "backpressure", pattern: /\bbackpressure\b|\bmaxPollRecords\b|\breceiverQueueSize\b|\bflow control\b/i, evidence: "backpressure or flow-control evidence was detected." }
+  ];
+  return eventStreamReadinessSignalFromSpecs(sourceFiles, specs, "reliability", "signal");
+}
+
+function eventStreamReadinessSecuritySignals(sourceFiles: EventStreamReadinessSourceFile[]): EventStreamReadinessReport["securitySignals"] {
+  const specs: Array<{ signal: EventStreamReadinessReport["securitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "sasl", pattern: /\bSASL\b|\bsasl\./i, evidence: "SASL evidence was detected." },
+    { signal: "tls", pattern: /\bTLS\b|\bSSL\b|\bSASL_SSL\b|\bssl\./i, evidence: "TLS/SSL evidence was detected." },
+    { signal: "acl", pattern: /\bACL\b|\bAclBinding\b|\bAccessControlEntry\b|\ballowAcl\b/i, evidence: "ACL evidence was detected." },
+    { signal: "authentication", pattern: /\bauthentication\b|\bauthn\b|\bAuthenticationProvider\b|\bauthPluginClassName\b/i, evidence: "authentication evidence was detected." },
+    { signal: "authorization", pattern: /\bauthorization\b|\bauthz\b|\bAuthorizationProvider\b|\bauthorizer\b/i, evidence: "authorization evidence was detected." },
+    { signal: "oauth", pattern: /\bOAuth\b|\bOAUTHBEARER\b|\boauthbearer\b/i, evidence: "OAuth evidence was detected." },
+    { signal: "scram", pattern: /\bSCRAM\b|\bscram\b/i, evidence: "SCRAM evidence was detected." },
+    { signal: "certificates", pattern: /\bcertificate\b|\bcertFile\b|\btruststore\b|\bkeystore\b|\bcaCert\b/i, evidence: "certificate evidence was detected." }
+  ];
+  return eventStreamReadinessSignalFromSpecs(sourceFiles, specs, "security", "signal");
+}
+
+function eventStreamReadinessOpsSignals(sourceFiles: EventStreamReadinessSourceFile[]): EventStreamReadinessReport["opsSignals"] {
+  const specs: Array<{ signal: EventStreamReadinessReport["opsSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "metrics", pattern: /\bmetrics?\b|\bJMX\b|\bPrometheus\b|\bMicrometer\b/i, evidence: "metrics evidence was detected." },
+    { signal: "lag-monitoring", pattern: /\blag\b|\bconsumer lag\b|\boffset lag\b|\brecords-lag\b/i, evidence: "lag monitoring evidence was detected." },
+    { signal: "quota", pattern: /\bquota\b|\bclient quota\b|\bclient_quota\b|\bthrottle/i, evidence: "quota evidence was detected." },
+    { signal: "rack-awareness", pattern: /\brack\.aware\b|\brack-awareness\b|\bbroker\.rack\b|\brackAware\b/i, evidence: "rack awareness evidence was detected." },
+    { signal: "admin-client", pattern: /\bAdminClient\b|\bAdmin\b|\brpk\b|\bPulsarAdmin\b/i, evidence: "admin client evidence was detected." },
+    { signal: "topic-create", pattern: /\bNewTopic\b|\bcreateTopics?\b|\brpk topic create\b|\bcreatePartitionedTopic\b/i, evidence: "topic creation evidence was detected." },
+    { signal: "reassignment", pattern: /\breassignment\b|\breassign partitions\b|\balterPartitionReassignments\b/i, evidence: "partition reassignment evidence was detected." },
+    { signal: "health-check", pattern: /\bhealth[-_ ]?check\b|\breadinessProbe\b|\blivenessProbe\b|\bcluster health\b/i, evidence: "health check evidence was detected." }
+  ];
+  return eventStreamReadinessSignalFromSpecs(sourceFiles, specs, "ops", "signal");
+}
+
+function eventStreamReadinessCiSignals(sourceFiles: EventStreamReadinessSourceFile[]): EventStreamReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: EventStreamReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\//i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "broker-smoke-command", pattern: /broker-smoke|stream broker smoke|kafka.*smoke|pulsar.*smoke|redpanda.*smoke/i, evidence: "broker smoke command evidence was detected." },
+    { signal: "producer-smoke-command", pattern: /producer-smoke|producer smoke|produce.*smoke/i, evidence: "producer smoke command evidence was detected." },
+    { signal: "consumer-smoke-command", pattern: /consumer-smoke|consumer smoke|consume.*smoke/i, evidence: "consumer smoke command evidence was detected." },
+    { signal: "schema-smoke-command", pattern: /schema-smoke|schema registry.*smoke|schema.*compatibility.*check/i, evidence: "schema smoke command evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|event-stream-report\.json|consumer-lag\.json|schema-registry-check\.json|dlq-report\.json/i, evidence: "stream readiness artifact upload evidence was detected." }
+  ];
+  return eventStreamReadinessSignalFromSpecs(sourceFiles, specs, "ci", "signal");
+}
+
+function eventStreamReadinessPackageSignals(sourceFiles: EventStreamReadinessSourceFile[]): EventStreamReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: EventStreamReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "kafka-client", pattern: /kafkajs|@confluentinc\/kafka-javascript|org\.apache\.kafka:kafka-clients|["']kafka-node["']|\bkafka-clients\b/i, evidence: "Kafka client package evidence was detected." },
+    { signal: "kafka-streams", pattern: /org\.apache\.kafka:kafka-streams|\bkafka-streams\b|\bKafkaStreams\b/i, evidence: "Kafka Streams package evidence was detected." },
+    { signal: "kafka-connect", pattern: /org\.apache\.kafka:connect-api|\bkafka-connect\b|\bconnect-api\b|\bKafka Connect\b/i, evidence: "Kafka Connect package evidence was detected." },
+    { signal: "redpanda", pattern: /redpanda|@redpanda-data|\brpk\b|\bpandaproxy\b/i, evidence: "Redpanda package or CLI evidence was detected." },
+    { signal: "pulsar-client", pattern: /pulsar-client|org\.apache\.pulsar:pulsar-client|\bPulsarClient\b/i, evidence: "Pulsar client package evidence was detected." },
+    { signal: "pulsar-broker", pattern: /pulsar-broker|org\.apache\.pulsar:pulsar-broker|\bPulsarService\b/i, evidence: "Pulsar broker package evidence was detected." },
+    { signal: "pulsar-functions", pattern: /pulsar-functions|org\.apache\.pulsar:pulsar-functions|\bPulsar Functions\b/i, evidence: "Pulsar Functions package evidence was detected." },
+    { signal: "custom", pattern: /\bevent[-_ ]?stream|\bmessage[-_ ]?stream|\bstream processor\b/i, evidence: "custom stream package evidence was detected." }
+  ];
+  return eventStreamReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function eventStreamReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: EventStreamReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/event-stream-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

@@ -96,6 +96,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "payment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "email-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "queue-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "event-stream-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"))).resolves.toBeUndefined();
@@ -248,6 +249,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "payment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "email-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "queue-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "event-stream-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "cache-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "logging-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-flag-readiness.md"))).resolves.toBeUndefined();
@@ -403,6 +405,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "payment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "email-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "queue-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "event-stream-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "cache-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "logging-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-flag-readiness.html"))).resolves.toBeUndefined();
@@ -585,6 +588,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/payment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/email-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/queue-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/event-stream-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/cache-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/logging-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-flag-readiness.html\"");
@@ -2050,6 +2054,29 @@ describe("RepoTutor core pipeline", () => {
     expect(queueReadinessMarkdown).toContain("Source pattern: BullMQ");
     expect(queueReadinessMarkdown).toContain("## Producer Signals");
     expect(queueReadinessMarkdown).toContain("## Connection Signals");
+    const eventStreamReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "event-stream-readiness-report.json"), "utf8");
+    expect(eventStreamReadinessText).toContain("Event stream readiness Apache Kafka Redpanda Apache Pulsar KafkaProducer KafkaConsumer AdminClient NewTopic consumer group offset commit rebalance schema registry DLQ retention compaction idempotence transactions ACL SASL PulsarClient SubscriptionType BookKeeper tenant namespace CI");
+    expect(eventStreamReadinessText).toContain("\"eventStreamSetups\"");
+    expect(eventStreamReadinessText).toContain("\"platformSignals\"");
+    expect(eventStreamReadinessText).toContain("\"brokerSignals\"");
+    expect(eventStreamReadinessText).toContain("\"topicSignals\"");
+    expect(eventStreamReadinessText).toContain("\"schemaSignals\"");
+    expect(eventStreamReadinessText).toContain("\"reliabilitySignals\"");
+    expect(eventStreamReadinessText).toContain("\"securitySignals\"");
+    expect(eventStreamReadinessText).toContain("\"opsSignals\"");
+    expect(eventStreamReadinessText).toContain("\"ciSignals\"");
+    expect(eventStreamReadinessText).toContain("\"packageSignals\"");
+    const eventStreamReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "event-stream-readiness.html"), "utf8");
+    expect(eventStreamReadinessHtml).toContain("Event Stream Readiness");
+    expect(eventStreamReadinessHtml).toContain("event-stream-readiness-card");
+    expect(eventStreamReadinessHtml).toContain("data-source-pattern=\"EventStream\"");
+    expect(eventStreamReadinessHtml).toContain("Schema Signals");
+    expect(eventStreamReadinessHtml).toContain("Reliability Signals");
+    const eventStreamReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "event-stream-readiness.md"), "utf8");
+    expect(eventStreamReadinessMarkdown).toContain("# Event Stream Readiness");
+    expect(eventStreamReadinessMarkdown).toContain("Source pattern: Event stream readiness");
+    expect(eventStreamReadinessMarkdown).toContain("## Schema Signals");
+    expect(eventStreamReadinessMarkdown).toContain("## Ops Signals");
     const cacheReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"), "utf8");
     expect(cacheReadinessText).toContain("Node Redis createClient connect get set EX NX expire ttl del mGet mSet scanIterator multi watch clientSideCache RESP socket reconnect isReady");
     expect(cacheReadinessText).toContain("\"cacheSetups\"");
@@ -3345,6 +3372,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/payment-readiness.html");
     expect(exportManifestText).toContain("html/email-readiness.html");
     expect(exportManifestText).toContain("html/queue-readiness.html");
+    expect(exportManifestText).toContain("html/event-stream-readiness.html");
     expect(exportManifestText).toContain("html/cache-readiness.html");
     expect(exportManifestText).toContain("html/logging-readiness.html");
     expect(exportManifestText).toContain("html/feature-flag-readiness.html");
@@ -3519,6 +3547,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("payment-readiness.html");
     expect(learningPathHtml).toContain("email-readiness.html");
     expect(learningPathHtml).toContain("queue-readiness.html");
+    expect(learningPathHtml).toContain("event-stream-readiness.html");
     expect(learningPathHtml).toContain("cache-readiness.html");
     expect(learningPathHtml).toContain("logging-readiness.html");
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
@@ -7753,6 +7782,173 @@ describe("RepoTutor core pipeline", () => {
     const lakehouseHtml = await fs.readFile(path.join(result.session.outputPaths.html, "lakehouse-table-readiness.html"), "utf8");
     expect(lakehouseHtml).toContain("lakehouse-table-readiness-card");
     expect(lakehouseHtml).toContain("data-source-pattern=\"LakehouseTable\"");
+  });
+
+  it("detects event stream readiness without running brokers or clients", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-event-stream-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-event-stream-source-"));
+    await fs.mkdir(path.join(sourceRoot, "kafka"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "redpanda"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "pulsar"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        kafkajs: "^2.2.4",
+        "@confluentinc/kafka-javascript": "^1.0.0",
+        "pulsar-client": "^1.12.0",
+        "@redpanda-data/console": "^3.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "build.gradle"), [
+      "dependencies {",
+      "  implementation(\"org.apache.kafka:kafka-clients:4.0.0\")",
+      "  implementation(\"org.apache.kafka:kafka-streams:4.0.0\")",
+      "  implementation(\"org.apache.kafka:connect-api:4.0.0\")",
+      "  implementation(\"org.apache.pulsar:pulsar-client:4.0.0\")",
+      "  implementation(\"org.apache.pulsar:pulsar-broker:4.0.0\")",
+      "  implementation(\"org.apache.pulsar:pulsar-functions:4.0.0\")",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "kafka", "orders-stream.java"), [
+      "import org.apache.kafka.clients.admin.AdminClient;",
+      "import org.apache.kafka.clients.admin.NewTopic;",
+      "import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;",
+      "import org.apache.kafka.clients.consumer.KafkaConsumer;",
+      "import org.apache.kafka.clients.producer.KafkaProducer;",
+      "class OrdersStream {",
+      "  String platform = \"Apache Kafka custom event stream\";",
+      "  String broker = \"bootstrap.servers=broker:9092 advertised.listeners=SASL_SSL://broker:9093 KRaft\";",
+      "  AdminClient adminClient;",
+      "  NewTopic topic = new NewTopic(\"orders.events\", 12, (short) 3);",
+      "  String topicPolicy = \"retention.ms=86400000 cleanup.policy=compact replication.factor=3 partitions=12\";",
+      "  KafkaProducer<String, String> producer;",
+      "  KafkaConsumer<String, String> consumer;",
+      "  ConsumerRebalanceListener rebalanceListener;",
+      "  String producerConfig = \"acks=all enable.idempotence=true transactional.id=orders-tx batch.size=32768 compression.type=zstd\";",
+      "  String consumerConfig = \"consumer group group.id=orders commitSync commitAsync offset commit\";",
+      "  String schema = \"schema.registry.url Schema Registry Avro Protobuf JSONSchema compatibility BACKWARD schema evolution\";",
+      "  String reliability = \"errors.deadletterqueue.topic.name=orders.dlq DLQ retry topic poison record exactly-once MirrorMaker geo-replication backpressure\";",
+      "  String security = \"SASL_SSL SCRAM OAuth OAUTHBEARER TLS ACL authentication authorization certificate truststore keystore\";",
+      "  String ops = \"metrics consumer lag quota rack.aware AdminClient topic create reassignment health-check\";",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "redpanda", "streaming-platform.yaml"), [
+      "redpanda:",
+      "  rpk topic create orders.events --partitions 12 --replicas 3",
+      "  pandaproxy: true",
+      "  schema_registry: true",
+      "  retention.ms: 86400000",
+      "  cleanup.policy: compact",
+      "  consumer group recovery: offset commit",
+      "  security: SASL TLS ACL authentication authorization",
+      "  ops: metrics lag quota rack-awareness health-check"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "pulsar", "orders-pulsar.java"), [
+      "import org.apache.bookkeeper.client.BookKeeper;",
+      "import org.apache.pulsar.client.api.DeadLetterPolicy;",
+      "import org.apache.pulsar.client.api.PulsarClient;",
+      "import org.apache.pulsar.client.api.Schema;",
+      "import org.apache.pulsar.client.api.SubscriptionType;",
+      "import org.apache.pulsar.client.api.schema.SchemaDefinition;",
+      "class OrdersPulsar {",
+      "  PulsarClient client = PulsarClient.builder().serviceUrl(\"pulsar+ssl://broker:6651\").build();",
+      "  BookKeeper bookKeeper;",
+      "  String topic = \"persistent://tenant/namespace/orders partitioned topic tenant namespace\";",
+      "  Object producer = client.newProducer(Schema.AVRO(String.class)).topic(topic);",
+      "  Object consumer = client.newConsumer(Schema.JSON(String.class)).topic(topic).subscriptionName(\"orders-sub\").subscriptionType(SubscriptionType.Shared);",
+      "  DeadLetterPolicy dlq;",
+      "  SchemaDefinition<String> schemaDefinition;",
+      "  String handling = \"acknowledge acknowledgeAsync negativeAcknowledge retry topic compaction retention transaction authentication authorization TLS\";",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "stream-readiness.yml"), [
+      "name: event stream smoke",
+      "on: [push]",
+      "jobs:",
+      "  stream:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pnpm stream --broker-smoke --producer-smoke --consumer-smoke --schema-smoke",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          path: |",
+      "            event-stream-report.json",
+      "            consumer-lag.json",
+      "            schema-registry-check.json",
+      "            dlq-report.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "event-stream-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      eventStreamSetups: Array<{ platform: string; brokerCount: number; topicCount: number; producerCount: number; consumerCount: number; groupCount: number; offsetCount: number; schemaCount: number; reliabilityCount: number; securityCount: number; opsCount: number; ciCount: number }>;
+      platformSignals: Array<{ signal: string; readiness: string }>;
+      brokerSignals: Array<{ signal: string; readiness: string }>;
+      topicSignals: Array<{ signal: string; readiness: string }>;
+      producerSignals: Array<{ signal: string; readiness: string }>;
+      consumerSignals: Array<{ signal: string; readiness: string }>;
+      schemaSignals: Array<{ signal: string; readiness: string }>;
+      reliabilitySignals: Array<{ signal: string; readiness: string }>;
+      securitySignals: Array<{ signal: string; readiness: string }>;
+      opsSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (platform: string) => report.eventStreamSetups
+      .filter((item) => item.platform === platform)
+      .reduce((totals, item) => ({
+        brokerCount: totals.brokerCount + item.brokerCount,
+        topicCount: totals.topicCount + item.topicCount,
+        producerCount: totals.producerCount + item.producerCount,
+        consumerCount: totals.consumerCount + item.consumerCount,
+        groupCount: totals.groupCount + item.groupCount,
+        offsetCount: totals.offsetCount + item.offsetCount,
+        schemaCount: totals.schemaCount + item.schemaCount,
+        reliabilityCount: totals.reliabilityCount + item.reliabilityCount,
+        securityCount: totals.securityCount + item.securityCount,
+        opsCount: totals.opsCount + item.opsCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { brokerCount: 0, topicCount: 0, producerCount: 0, consumerCount: 0, groupCount: 0, offsetCount: 0, schemaCount: 0, reliabilityCount: 0, securityCount: 0, opsCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Event stream readiness Apache Kafka Redpanda Apache Pulsar KafkaProducer KafkaConsumer AdminClient NewTopic consumer group offset commit rebalance schema registry DLQ retention compaction idempotence transactions ACL SASL PulsarClient SubscriptionType BookKeeper tenant namespace CI");
+    expect(setupTotals("kafka").brokerCount).toBeGreaterThan(0);
+    expect(setupTotals("kafka").topicCount).toBeGreaterThan(0);
+    expect(setupTotals("kafka").producerCount).toBeGreaterThan(0);
+    expect(setupTotals("kafka").consumerCount).toBeGreaterThan(0);
+    expect(setupTotals("redpanda").opsCount).toBeGreaterThan(0);
+    expect(setupTotals("pulsar").schemaCount).toBeGreaterThan(0);
+    expect(report.eventStreamSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.platformSignals)).toEqual(expect.arrayContaining(["apache-kafka", "redpanda", "apache-pulsar", "custom"]));
+    expect(readySignals(report.brokerSignals)).toEqual(expect.arrayContaining(["broker", "bootstrap-server", "listener", "advertised-listener", "kraft", "bookkeeper", "broker-service", "proxy"]));
+    expect(readySignals(report.topicSignals)).toEqual(expect.arrayContaining(["topic", "partition", "replication-factor", "retention", "compaction", "cleanup-policy", "partitioned-topic", "tenant-namespace"]));
+    expect(readySignals(report.producerSignals)).toEqual(expect.arrayContaining(["kafka-producer", "pulsar-producer", "producer-config", "acks", "idempotence", "transactional-id", "batching", "compression"]));
+    expect(readySignals(report.consumerSignals)).toEqual(expect.arrayContaining(["kafka-consumer", "pulsar-consumer", "consumer-group", "subscription", "offset-commit", "rebalance", "acknowledge", "negative-ack"]));
+    expect(readySignals(report.schemaSignals)).toEqual(expect.arrayContaining(["schema-registry", "avro", "protobuf", "json-schema", "schema-evolution", "compatibility", "schema-definition"]));
+    expect(readySignals(report.reliabilitySignals)).toEqual(expect.arrayContaining(["dead-letter-queue", "retry-topic", "poison-record", "transaction", "exactly-once", "mirror-replication", "geo-replication", "backpressure"]));
+    expect(readySignals(report.securitySignals)).toEqual(expect.arrayContaining(["sasl", "tls", "acl", "authentication", "authorization", "oauth", "scram", "certificates"]));
+    expect(readySignals(report.opsSignals)).toEqual(expect.arrayContaining(["metrics", "lag-monitoring", "quota", "rack-awareness", "admin-client", "topic-create", "reassignment", "health-check"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "broker-smoke-command", "producer-smoke-command", "consumer-smoke-command", "schema-smoke-command", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["kafka-client", "kafka-streams", "kafka-connect", "redpanda", "pulsar-client", "pulsar-broker", "pulsar-functions", "custom"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"KafkaProducer|KafkaConsumer|AdminClient|NewTopic|bootstrap.servers|consumer group|commitSync|commitAsync\" .",
+      "rg \"PulsarClient|newProducer|newConsumer|SubscriptionType|acknowledge|negativeAcknowledge|tenant|namespace\" .",
+      "rg \"SASL|SCRAM|OAuth|TLS|ACL|authorization|authentication|quota|lag|rack.aware|upload-artifact|stream smoke\" .github ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "event-stream-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "event-stream-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "event-stream-readiness.html"))).resolves.toBeUndefined();
+    const eventStreamMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "event-stream-readiness.md"), "utf8");
+    expect(eventStreamMarkdown).toContain("Schema Signals");
+    expect(eventStreamMarkdown).toContain("Reliability Signals");
+    expect(eventStreamMarkdown).toContain("Ops Signals");
+    const eventStreamHtml = await fs.readFile(path.join(result.session.outputPaths.html, "event-stream-readiness.html"), "utf8");
+    expect(eventStreamHtml).toContain("event-stream-readiness-card");
+    expect(eventStreamHtml).toContain("data-source-pattern=\"EventStream\"");
   });
 
   it("detects feature store readiness without running feature store backends", async () => {

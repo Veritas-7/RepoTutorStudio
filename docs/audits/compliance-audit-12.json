@@ -1,6 +1,6 @@
 {
   "iteration": 12,
-  "createdAt": "2026-06-05T06:37:25.385Z",
+  "createdAt": "2026-06-05T07:01:01.751Z",
   "checks": [
     {
       "name": "project setup",
@@ -613,6 +613,13 @@
     },
     {
       "name": "queue readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "event stream readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],
