@@ -1,6 +1,6 @@
 {
   "iteration": 13,
-  "createdAt": "2026-06-05T19:17:23.635Z",
+  "createdAt": "2026-06-05T19:31:26.312Z",
   "checks": [
     {
       "name": "project setup",
@@ -1068,6 +1068,13 @@
     },
     {
       "name": "Command palette readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "Guided tour readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

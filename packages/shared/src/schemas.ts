@@ -10402,6 +10402,97 @@ export const CommandPaletteReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const GuidedTourReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  guidedTourSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["react-joyride", "shepherd", "driver-js", "custom", "unknown"]),
+    stepCount: z.number().int().nonnegative(),
+    targetCount: z.number().int().nonnegative(),
+    navigationCount: z.number().int().nonnegative(),
+    overlayCount: z.number().int().nonnegative(),
+    callbackCount: z.number().int().nonnegative(),
+    accessibilityCount: z.number().int().nonnegative(),
+    stateCount: z.number().int().nonnegative(),
+    testCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  frameworkSignals: z.array(z.object({
+    signal: z.enum(["react-joyride", "shepherd", "driver-js", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stepSignals: z.array(z.object({
+    signal: z.enum(["steps-array", "step-object", "title", "content-text", "placement", "popover", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  targetSignals: z.array(z.object({
+    signal: z.enum(["target", "attach-to", "element", "selector", "highlight", "spotlight", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  navigationSignals: z.array(z.object({
+    signal: z.enum(["start", "next", "back-prev", "skip-cancel-close", "complete", "progress", "continuous", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  overlaySignals: z.array(z.object({
+    signal: z.enum(["modal-overlay", "spotlight", "stage-padding", "stage-radius", "popover-class", "styles", "scroll", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  callbackSignals: z.array(z.object({
+    signal: z.enum(["callback", "on-event", "on-next-click", "on-prev-click", "on-close-click", "before-show", "after-hook", "analytics-event", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  accessibilitySignals: z.array(z.object({
+    signal: z.enum(["dialog-role", "aria-label", "aria-labelledby", "aria-describedby", "aria-controls", "focus-trap", "keyboard-escape", "tab-order", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  stateSignals: z.array(z.object({
+    signal: z.enum(["run", "step-index", "status", "lifecycle", "controlled-mode", "set-steps", "local-storage-progress", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  testSignals: z.array(z.object({
+    signal: z.enum(["vitest", "playwright", "cypress", "testing-library", "keyboard-test", "a11y-test", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["react-joyride", "shepherd.js", "react-shepherd", "driver.js", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const LlmReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -13458,6 +13549,7 @@ export type AnimationReadinessReport = z.infer<typeof AnimationReadinessReportSc
 export type DragAndDropReadinessReport = z.infer<typeof DragAndDropReadinessReportSchema>;
 export type RichTextEditorReadinessReport = z.infer<typeof RichTextEditorReadinessReportSchema>;
 export type CommandPaletteReadinessReport = z.infer<typeof CommandPaletteReadinessReportSchema>;
+export type GuidedTourReadinessReport = z.infer<typeof GuidedTourReadinessReportSchema>;
 export type LlmReadinessReport = z.infer<typeof LlmReadinessReportSchema>;
 export type LlmEvalReadinessReport = z.infer<typeof LlmEvalReadinessReportSchema>;
 export type LlmObservabilityReadinessReport = z.infer<typeof LlmObservabilityReadinessReportSchema>;

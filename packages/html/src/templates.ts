@@ -206,6 +206,7 @@ import type {
   IncrementalReport,
   WrongNote
 } from "@repotutor/shared";
+import type { GuidedTourReadinessReport } from "@repotutor/shared";
 import type { MarkdownCodeRenderingReadinessReport } from "@repotutor/shared";
 import { htmlAnchor } from "@repotutor/shared";
 
@@ -373,6 +374,7 @@ export interface StudyHtmlInput {
   dragAndDropReadinessReport: DragAndDropReadinessReport;
   richTextEditorReadinessReport: RichTextEditorReadinessReport;
   commandPaletteReadinessReport: CommandPaletteReadinessReport;
+  guidedTourReadinessReport: GuidedTourReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -581,6 +583,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["drag-and-drop-readiness.html", "Drag and Drop"],
     ["rich-text-editor-readiness.html", "Rich Text Editor"],
     ["command-palette-readiness.html", "Command Palette"],
+    ["guided-tour-readiness.html", "Guided Tour"],
     ["llm-readiness.html", "LLM"],
     ["llm-eval-readiness.html", "LLM Eval"],
     ["llm-observability-readiness.html", "LLM Observability"],
@@ -1615,6 +1618,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Command Palette Readiness", "command-palette-readiness.html", `<section class="panel" data-source-pattern="Command Palette"><h2>Command Palette Snapshot</h2><p>${escapeHtml(input.commandPaletteReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.commandPaletteReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.commandPaletteReadinessReport.commandPaletteSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.commandPaletteReadinessReport.frameworkSignals.length}</dd></div><div><dt>keyboard</dt><dd>${input.commandPaletteReadinessReport.keyboardSignals.length}</dd></div><div><dt>tests</dt><dd>${input.commandPaletteReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records command palette readiness only; it does not open dialogs, dispatch keyboard events, focus inputs, run fuzzy search, fetch autocomplete sources, mutate selected state, navigate URLs, call Algolia services, render portals, or run analyzed project tests.</p></section><section class="grid"><article class="command-palette-readiness-card"><h3>Command Palette Setups</h3>${commandPaletteReadinessSetupList(input.commandPaletteReadinessReport.commandPaletteSetups)}</article><article class="command-palette-readiness-card"><h3>Framework Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.frameworkSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Input Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.inputSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Result Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.resultSignals, "signal")}</article></section><section class="grid"><article class="command-palette-readiness-card"><h3>Selection Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.selectionSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Filter Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.filterSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>State Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.stateSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Plugin Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.pluginSignals, "signal")}</article></section><section class="grid"><article class="command-palette-readiness-card"><h3>Accessibility Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.accessibilitySignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Keyboard Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.keyboardSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Test Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.testSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Package Signals</h3>${commandPaletteReadinessSignalList(input.commandPaletteReadinessReport.packageSignals, "signal")}</article><article class="command-palette-readiness-card"><h3>Recommended Commands</h3>${commandPaletteReadinessCommandList(input.commandPaletteReadinessReport.recommendedCommands)}</article><article class="command-palette-readiness-card"><h3>Risk Queue</h3>${commandPaletteReadinessRiskList(input.commandPaletteReadinessReport.riskQueue)}</article><article class="command-palette-readiness-card"><h3>다음 확인 단계</h3>${list(input.commandPaletteReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "guided-tour-readiness.html",
+      title: "Guided Tour Readiness",
+      html: pageShell("Guided Tour Readiness", "guided-tour-readiness.html", `<section class="panel" data-source-pattern="Guided Tour"><h2>Guided Tour Snapshot</h2><p>${escapeHtml(input.guidedTourReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.guidedTourReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.guidedTourReadinessReport.guidedTourSetups.length}</dd></div><div><dt>frameworks</dt><dd>${input.guidedTourReadinessReport.frameworkSignals.length}</dd></div><div><dt>accessibility</dt><dd>${input.guidedTourReadinessReport.accessibilitySignals.length}</dd></div><div><dt>tests</dt><dd>${input.guidedTourReadinessReport.testSignals.length}</dd></div></dl><p class="muted">RepoTutor records guided tour readiness only; it does not start tours, mutate overlays, focus elements, scroll pages, attach popovers, dispatch tour events, persist progress, or run analyzed project tests.</p></section><section class="grid"><article class="guided-tour-readiness-card"><h3>Guided Tour Setups</h3>${guidedTourReadinessSetupList(input.guidedTourReadinessReport.guidedTourSetups)}</article><article class="guided-tour-readiness-card"><h3>Framework Signals</h3>${guidedTourReadinessSignalList(input.guidedTourReadinessReport.frameworkSignals, "signal")}</article><article class="guided-tour-readiness-card"><h3>Step Signals</h3>${guidedTourReadinessSignalList(input.guidedTourReadinessReport.stepSignals, "signal")}</article><article class="guided-tour-readiness-card"><h3>Target Signals</h3>${guidedTourReadinessSignalList(input.guidedTourReadinessReport.targetSignals, "signal")}</article></section><section class="grid"><article class="guided-tour-readiness-card"><h3>Navigation Signals</h3>${guidedTourReadinessSignalList(input.guidedTourReadinessReport.navigationSignals, "signal")}</article><article class="guided-tour-readiness-card"><h3>Overlay Signals</h3>${guidedTourReadinessSignalList(input.guidedTourReadinessReport.overlaySignals, "signal")}</article><article class="guided-tour-readiness-card"><h3>Callback Signals</h3>${guidedTourReadinessSignalList(input.guidedTourReadinessReport.callbackSignals, "signal")}</article><article class="guided-tour-readiness-card"><h3>Accessibility Signals</h3>${guidedTourReadinessSignalList(input.guidedTourReadinessReport.accessibilitySignals, "signal")}</article></section><section class="grid"><article class="guided-tour-readiness-card"><h3>State Signals</h3>${guidedTourReadinessSignalList(input.guidedTourReadinessReport.stateSignals, "signal")}</article><article class="guided-tour-readiness-card"><h3>Test Signals</h3>${guidedTourReadinessSignalList(input.guidedTourReadinessReport.testSignals, "signal")}</article><article class="guided-tour-readiness-card"><h3>Package Signals</h3>${guidedTourReadinessSignalList(input.guidedTourReadinessReport.packageSignals, "signal")}</article><article class="guided-tour-readiness-card"><h3>Recommended Commands</h3>${guidedTourReadinessCommandList(input.guidedTourReadinessReport.recommendedCommands)}</article><article class="guided-tour-readiness-card"><h3>Risk Queue</h3>${guidedTourReadinessRiskList(input.guidedTourReadinessReport.riskQueue)}</article><article class="guided-tour-readiness-card"><h3>다음 확인 단계</h3>${list(input.guidedTourReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "llm-readiness.html",
       title: "LLM Readiness",
       html: pageShell("LLM Readiness", "llm-readiness.html", `<section class="panel" data-source-pattern="LangChain.js"><h2>LLM Snapshot</h2><p>${escapeHtml(input.llmReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.llmReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.llmReadinessReport.llmSetups.length}</dd></div><div><dt>models</dt><dd>${input.llmReadinessReport.modelSignals.length}</dd></div><div><dt>prompts</dt><dd>${input.llmReadinessReport.promptSignals.length}</dd></div><div><dt>tools</dt><dd>${input.llmReadinessReport.toolSignals.length}</dd></div></dl><p class="muted">RepoTutor records LLM readiness only; it does not call providers, stream tokens, run agents, fetch vector stores, evaluate prompts, or inspect live traces.</p></section><section class="grid"><article class="llm-readiness-card"><h3>LLM Setups</h3>${llmReadinessSetupList(input.llmReadinessReport.llmSetups)}</article><article class="llm-readiness-card"><h3>Model Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.modelSignals, "signal")}</article><article class="llm-readiness-card"><h3>Prompt Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.promptSignals, "signal")}</article><article class="llm-readiness-card"><h3>Tool Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.toolSignals, "signal")}</article></section><section class="grid"><article class="llm-readiness-card"><h3>Retrieval Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.retrievalSignals, "signal")}</article><article class="llm-readiness-card"><h3>Structured Output Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.structuredOutputSignals, "signal")}</article><article class="llm-readiness-card"><h3>Streaming Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.streamingSignals, "signal")}</article><article class="llm-readiness-card"><h3>Safety Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.safetySignals, "signal")}</article><article class="llm-readiness-card"><h3>Package Signals</h3>${llmReadinessSignalList(input.llmReadinessReport.packageSignals, "signal")}</article><article class="llm-readiness-card"><h3>Recommended Commands</h3>${llmReadinessCommandList(input.llmReadinessReport.recommendedCommands)}</article><article class="llm-readiness-card"><h3>Risk Queue</h3>${llmReadinessRiskList(input.llmReadinessReport.riskQueue)}</article><article class="llm-readiness-card"><h3>다음 확인 단계</h3>${list(input.llmReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -2029,6 +2037,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Spreadsheet Readiness", path: "html/spreadsheet-readiness.html", description: "SheetJS식 workbook, sheet, format, input, output, safety 준비도를 확인합니다." },
       { label: "Chart Visualization Readiness", path: "html/chart-visualization-readiness.html", description: "Chart.js식 chart type, data, scale, interaction, render, lifecycle 준비도를 확인합니다." },
       { label: "Markdown Code Rendering Readiness", path: "html/markdown-code-rendering-readiness.html", description: "react-markdown/Shiki/Prism식 Markdown renderer, parser, highlighter, sanitizer 준비도를 확인합니다." },
+      { label: "Guided Tour Readiness", path: "html/guided-tour-readiness.html", description: "React Joyride/Shepherd.js/driver.js식 guided tour steps, targets, overlay, accessibility 준비도를 확인합니다." },
       { label: "Notebook Readiness", path: "html/notebook-readiness.html", description: "Jupyter/marimo/Quarto식 notebook, kernel, execution, export, reproducibility 준비도를 확인합니다." },
       { label: "Map Visualization Readiness", path: "html/map-visualization-readiness.html", description: "MapLibre/Leaflet/deck.gl식 map, tile, layer, viewport, interaction 준비도를 확인합니다." },
       { label: "Diagram Rendering Readiness", path: "html/diagram-rendering-readiness.html", description: "Mermaid식 syntax, render, theme, security, layout, output 준비도를 확인합니다." },
@@ -2986,6 +2995,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "markdown-code-rendering-readiness.html",
       goal: "react-markdown/Shiki/Prism식 renderer, parser, highlighter, sanitizer 흐름을 보고 Markdown/code rendering 관문을 확인합니다.",
       evidence: `markdown/code setups ${input.markdownCodeRenderingReadinessReport.markdownCodeRenderingSetups.length}개, highlight signals ${input.markdownCodeRenderingReadinessReport.highlightSignals.length}개`
+    },
+    {
+      title: "Guided tour readiness 확인",
+      href: "guided-tour-readiness.html",
+      goal: "React Joyride/Shepherd.js/driver.js식 steps, targets, navigation, overlay, accessibility 흐름을 보고 onboarding tour 관문을 확인합니다.",
+      evidence: `guided tour setups ${input.guidedTourReadinessReport.guidedTourSetups.length}개, accessibility signals ${input.guidedTourReadinessReport.accessibilitySignals.length}개`
     },
     {
       title: "Notebook readiness 확인",
@@ -7379,6 +7394,31 @@ function commandPaletteReadinessRiskList(items: CommandPaletteReadinessReport["r
 }
 
 function commandPaletteReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function guidedTourReadinessSetupList(items: GuidedTourReadinessReport["guidedTourSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">guided tour setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)}/${escapeHtml(item.readiness)}]<br>step/target/navigation/overlay/callback/accessibility/state/test ${item.stepCount}/${item.targetCount}/${item.navigationCount}/${item.overlayCount}/${item.callbackCount}/${item.accessibilityCount}/${item.stateCount}/${item.testCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(guidedTourReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function guidedTourReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">guided tour signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(guidedTourReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function guidedTourReadinessCommandList(items: GuidedTourReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function guidedTourReadinessRiskList(items: GuidedTourReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(guidedTourReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function guidedTourReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

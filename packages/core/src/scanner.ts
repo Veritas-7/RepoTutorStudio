@@ -172,6 +172,7 @@ import {
   DragAndDropReadinessReport,
   RichTextEditorReadinessReport,
   CommandPaletteReadinessReport,
+  GuidedTourReadinessReport,
   LlmReadinessReport,
   LlmEvalReadinessReport,
   LlmObservabilityReadinessReport,
@@ -383,6 +384,7 @@ export interface AnalysisBundle {
   dragAndDropReadinessReport: DragAndDropReadinessReport;
   richTextEditorReadinessReport: RichTextEditorReadinessReport;
   commandPaletteReadinessReport: CommandPaletteReadinessReport;
+  guidedTourReadinessReport: GuidedTourReadinessReport;
   llmReadinessReport: LlmReadinessReport;
   llmEvalReadinessReport: LlmEvalReadinessReport;
   llmObservabilityReadinessReport: LlmObservabilityReadinessReport;
@@ -594,6 +596,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const dragAndDropReadinessReport = await buildDragAndDropReadinessReport(walk);
   const richTextEditorReadinessReport = await buildRichTextEditorReadinessReport(walk);
   const commandPaletteReadinessReport = await buildCommandPaletteReadinessReport(walk);
+  const guidedTourReadinessReport = await buildGuidedTourReadinessReport(walk);
   const llmReadinessReport = await buildLlmReadinessReport(walk);
   const llmEvalReadinessReport = await buildLlmEvalReadinessReport(walk);
   const llmObservabilityReadinessReport = await buildLlmObservabilityReadinessReport(walk);
@@ -628,7 +631,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, markdownCodeRenderingReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, dragAndDropReadinessReport, richTextEditorReadinessReport, commandPaletteReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, markdownCodeRenderingReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, terminalUiReadinessReport, stateMachineReadinessReport, animationReadinessReport, dragAndDropReadinessReport, richTextEditorReadinessReport, commandPaletteReadinessReport, guidedTourReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -42645,6 +42648,333 @@ function commandPaletteReadinessSignalFromSpecs<T extends Record<K, string> & { 
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/command-palette-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildGuidedTourReadinessReport(walk: WalkResult): Promise<GuidedTourReadinessReport> {
+  const sourceFiles = await guidedTourReadinessSourceFiles(walk);
+  const guidedTourSetups = guidedTourReadinessSetups(sourceFiles);
+  const frameworkSignals = guidedTourReadinessFrameworkSignals(sourceFiles);
+  const stepSignals = guidedTourReadinessStepSignals(sourceFiles);
+  const targetSignals = guidedTourReadinessTargetSignals(sourceFiles);
+  const navigationSignals = guidedTourReadinessNavigationSignals(sourceFiles);
+  const overlaySignals = guidedTourReadinessOverlaySignals(sourceFiles);
+  const callbackSignals = guidedTourReadinessCallbackSignals(sourceFiles);
+  const accessibilitySignals = guidedTourReadinessAccessibilitySignals(sourceFiles);
+  const stateSignals = guidedTourReadinessStateSignals(sourceFiles);
+  const testSignals = guidedTourReadinessTestSignals(sourceFiles);
+  const packageSignals = guidedTourReadinessPackageSignals(sourceFiles);
+
+  const hasFramework = frameworkSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasSteps = stepSignals.some((item) => item.readiness === "ready") || guidedTourSetups.some((item) => item.stepCount > 0);
+  const hasTargets = targetSignals.some((item) => item.readiness === "ready") || guidedTourSetups.some((item) => item.targetCount > 0);
+  const hasNavigation = navigationSignals.some((item) => item.readiness === "ready") || guidedTourSetups.some((item) => item.navigationCount > 0);
+  const hasOverlay = overlaySignals.some((item) => item.readiness === "ready") || guidedTourSetups.some((item) => item.overlayCount > 0);
+  const hasAccessibility = accessibilitySignals.some((item) => item.readiness === "ready") || guidedTourSetups.some((item) => item.accessibilityCount > 0);
+  const hasTests = testSignals.some((item) => item.readiness === "ready") || guidedTourSetups.some((item) => item.testCount > 0);
+
+  const riskQueue: GuidedTourReadinessReport["riskQueue"] = [];
+  if (!hasFramework && !hasSteps) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document a guided tour boundary such as React Joyride, Shepherd.js, driver.js, or a custom tour adapter.",
+      why: "Guided tour readiness starts with explicit steps, targets, popovers, or a tour framework learners can inspect.",
+      relatedHref: "html/guided-tour-readiness.html"
+    });
+  }
+  if ((hasFramework || hasSteps) && !hasTargets) {
+    riskQueue.push({
+      priority: "high",
+      action: "Pair tour steps with target, attachTo, element, selector, highlight, or spotlight evidence.",
+      why: "A tour step without target semantics does not prove where the learner will be guided.",
+      relatedHref: "html/guided-tour-readiness.html"
+    });
+  }
+  if (hasTargets && !hasNavigation) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document start, next, back/previous, skip/cancel/close, complete, progress, and continuous flow behavior.",
+      why: "Guided tours are stateful journeys, so learners need visible navigation and completion semantics.",
+      relatedHref: "html/guided-tour-readiness.html"
+    });
+  }
+  if (hasSteps && !hasOverlay) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add overlay, spotlight, stage sizing, popover class/style, and scroll behavior evidence.",
+      why: "Guided tour usability depends on overlay framing, target visibility, and scroll-to-target behavior.",
+      relatedHref: "html/guided-tour-readiness.html"
+    });
+  }
+  if (hasSteps && !hasAccessibility) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add dialog role, labels, described-by/control wiring, focus trap, Escape, and tab-order evidence.",
+      why: "Guided tours can block the page and must be inspectable for keyboard and assistive technology users.",
+      relatedHref: "html/guided-tour-readiness.html"
+    });
+  }
+  if (hasSteps && !hasTests) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add deterministic unit, browser, or Cypress tests that cover step navigation, overlays, Escape, and a11y contracts.",
+      why: "Tour regressions usually appear in focus, overlay placement, target lookup, and next/back transitions.",
+      relatedHref: "html/guided-tour-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify live guided tour behavior in a trusted browser or the original project tests outside RepoTutor.",
+    why: "RepoTutor records guided tour readiness only; it does not start tours, mutate overlays, focus elements, scroll pages, attach popovers, dispatch tour events, persist progress, or run analyzed project tests.",
+    relatedHref: "html/guided-tour-readiness.html"
+  });
+
+  return {
+    summary: `React Joyride/Shepherd.js/driver.js-style guided tour readiness report: setup ${guidedTourSetups.length}개, framework signal ${frameworkSignals.length}개, accessibility signal ${accessibilitySignals.length}개, test signal ${testSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Guided tour readiness React Joyride Shepherd.js driver.js steps target attachTo popover overlay progress callbacks accessibility tests",
+    guidedTourSetups,
+    frameworkSignals,
+    stepSignals,
+    targetSignals,
+    navigationSignals,
+    overlaySignals,
+    callbackSignals,
+    accessibilitySignals,
+    stateSignals,
+    testSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"react-joyride|Joyride|steps|target|callback|showProgress|showSkipButton\" src app packages test", purpose: "Find React Joyride setup, step targets, callbacks, progress, skip, and controlled state." },
+      { command: "rg \"Shepherd\\.Tour|new Shepherd|addStep|attachTo|useModalOverlay|beforeShowPromise|advanceOn\" src app packages test", purpose: "Find Shepherd.js tour construction, target attachment, modal overlay, hooks, and advance behavior." },
+      { command: "rg \"driver\\(|driver\\.js|setSteps|drive\\(|highlight\\(|popover|stagePadding|stageRadius|onNextClick\" src app packages test", purpose: "Find driver.js setup, popover steps, stage sizing, and explicit navigation callbacks." },
+      { command: "rg \"role=.*dialog|aria-label|aria-labelledby|aria-describedby|aria-controls|focus-trap|Escape|tab-order\" src app packages test", purpose: "Review guided tour dialog semantics, focus handling, Escape behavior, and tab order." },
+      { command: "pnpm test", purpose: "Run trusted local tests that cover guided tour navigation, overlay, target lookup, keyboard, and accessibility flows." }
+    ],
+    learnerNextSteps: [
+      "먼저 React Joyride, Shepherd.js, driver.js, custom tour 중 어떤 guided tour boundary가 있는지 찾으세요.",
+      "steps 배열, addStep, title/content/text/description, placement/popover 신호로 각 단계가 무엇을 설명하는지 확인하세요.",
+      "target, attachTo, element, selector, highlight, spotlight 신호는 tour step이 실제 화면 어디에 붙는지 보여줍니다.",
+      "start, next, back/previous, skip/cancel/close, complete, progress, continuous 신호로 사용자가 tour를 이동하고 끝내는 경로를 확인하세요.",
+      "useModalOverlay, spotlight, stagePadding, stageRadius, popoverClass, styles, scroll 신호로 overlay와 target visibility를 점검하세요.",
+      "dialog role, aria-label/labelledby/describedby/controls, focus trap, Escape, tab order 테스트를 같이 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 tour start, DOM mutation, focus movement, scroll, overlay placement, progress persistence는 안전한 브라우저 테스트에서 별도로 검증하세요."
+    ]
+  };
+}
+
+type GuidedTourReadinessSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function guidedTourReadinessSourceFiles(walk: WalkResult): Promise<GuidedTourReadinessSourceFile[]> {
+  const files: GuidedTourReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !guidedTourReadinessInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!guidedTourReadinessPathSignal(file.relPath) && !guidedTourReadinessContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function guidedTourReadinessInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return guidedTourReadinessPathSignal(filePath)
+    || /^(package\.json|pnpm-lock\.yaml|yarn\.lock|package-lock\.json|playwright\.config\.[cm]?[jt]s|cypress\.config\.[cm]?[jt]s)$/i.test(base)
+    || /\.(js|cjs|mjs|ts|tsx|jsx|vue|svelte|astro|json|md|mdx|ya?ml|css)$/i.test(filePath);
+}
+
+function guidedTourReadinessPathSignal(filePath: string): boolean {
+  return /(^|\/)(tour|guided|onboarding|walkthrough|joyride|shepherd|driver|coachmark|hotspot|tooltip|popover|tests?|e2e)(\/|\.|-|_|$)|package\.json$|workflow/i.test(filePath);
+}
+
+function guidedTourReadinessContentSignal(text: string): boolean {
+  return /(react-joyride|Joyride|Shepherd\.Tour|new Shepherd|shepherd\.js|driver\.js|driver\s*\(|addStep|setSteps|steps\s*:|steps\s*=|attachTo|target\s*:|popover|useModalOverlay|showProgress|showSkipButton|spotlight|stagePadding|aria-labelledby|aria-describedby|data-shepherd-step-id)/i.test(text);
+}
+
+function guidedTourReadinessSetups(sourceFiles: GuidedTourReadinessSourceFile[]): GuidedTourReadinessReport["guidedTourSetups"] {
+  const rows: GuidedTourReadinessReport["guidedTourSetups"] = [];
+  for (const source of sourceFiles) {
+    const stepCount = countMatches(source.text, /(steps\s*=|steps\s*:|Step\[\]|addStep|addSteps|step\s*:|title\s*:|content\s*:|text\s*:|description\s*:|popover\s*:)/gi);
+    const targetCount = countMatches(source.text, /(target\s*:|attachTo|element\s*:|selector\s*:|highlight|highlightClass|spotlight|data-shepherd-step-id)/gi);
+    const navigationCount = countMatches(source.text, /(start\s*\(|\.start|next\s*\(|\.next|back\s*\(|\.back|prev|previous|skip|cancel|close|complete|drive\s*\(|showProgress|continuous)/gi);
+    const overlayCount = countMatches(source.text, /(useModalOverlay|modalOverlay|spotlight|stagePadding|stageRadius|popoverClass|styles\s*=|styles\s*:|classes\s*:|scrollTo|smoothScroll|disableOverlayClose|overlayClickBehavior)/gi);
+    const callbackCount = countMatches(source.text, /(callback\s*=|callback\s*:|tour\.on|\.on\s*\(|EVENTS|event\s*:|onNextClick|onPrevClick|onCloseClick|onDeselected|onPopoverRender|beforeShowPromise|STEP_AFTER|onHighlighted|onHighlightStarted|dispatchEvent|CustomEvent)/gi);
+    const accessibilityCount = countMatches(source.text, /(role\s*=\s*["']dialog|role:\s*["']dialog|aria-label|aria-labelledby|aria-describedby|aria-controls|focusTrap|focus-trap|data-focus-trap|Escape|tab-order|tabIndex|tabindex|showSkipButton|disableOverlayClose|locale\s*=|locale\s*:|cancelIcon|disableActiveInteraction)/gi);
+    const stateCount = countMatches(source.text, /(run\s*=|run\s*:|setRun|stepIndex|initialStepIndex|STATUS|status|LIFECYCLE|lifecycle|STEP_AFTER|controlled|setSteps|setConfig|localStorage|tour-progress|getActiveElement|activeStep)/gi);
+    const testCount = countMatches(source.text, /(vitest|playwright|cypress|describe\s*\(|it\s*\(|expect\s*\(|testing-library|getByRole|fireEvent\.keyDown|userEvent\.keyboard|a11y|axe|upload-artifact|guided-tour-traces)/gi);
+    const hasSetupSignal = stepCount + targetCount + navigationCount + overlayCount + callbackCount + accessibilityCount + stateCount + testCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: guidedTourReadinessPlatform(source),
+      stepCount,
+      targetCount,
+      navigationCount,
+      overlayCount,
+      callbackCount,
+      accessibilityCount,
+      stateCount,
+      testCount,
+      readiness: stepCount > 0 && targetCount > 0 && navigationCount > 0 && overlayCount > 0 && callbackCount > 0 && (accessibilityCount + stateCount + testCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains steps ${stepCount}, targets ${targetCount}, navigation ${navigationCount}, overlays ${overlayCount}, callbacks ${callbackCount}, accessibility ${accessibilityCount}, state ${stateCount}, tests ${testCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function guidedTourReadinessPlatform(source: GuidedTourReadinessSourceFile): GuidedTourReadinessReport["guidedTourSetups"][number]["platform"] {
+  if (/react-joyride|Joyride|ACTIONS|EVENTS|STATUS/i.test(source.text)) return "react-joyride";
+  if (/shepherd\.js|Shepherd\.Tour|new Shepherd|addStep|attachTo/i.test(source.text)) return "shepherd";
+  if (/driver\.js|driver\s*\(|setSteps|drive\s*\(|stagePadding|popoverClass/i.test(source.text)) return "driver-js";
+  if (/tour|guided|onboarding|walkthrough|coachmark|popover/i.test(source.text) || guidedTourReadinessPathSignal(source.filePath)) return "custom";
+  return "unknown";
+}
+
+function guidedTourReadinessFrameworkSignals(sourceFiles: GuidedTourReadinessSourceFile[]): GuidedTourReadinessReport["frameworkSignals"] {
+  const specs: Array<{ signal: GuidedTourReadinessReport["frameworkSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "react-joyride", pattern: /react-joyride|Joyride|ACTIONS|EVENTS|STATUS/i, evidence: "React Joyride evidence was detected." },
+    { signal: "shepherd", pattern: /shepherd\.js|Shepherd\.Tour|new Shepherd|addStep/i, evidence: "Shepherd.js evidence was detected." },
+    { signal: "driver-js", pattern: /driver\.js|driver\s*\(|setSteps|drive\s*\(/i, evidence: "driver.js evidence was detected." },
+    { signal: "custom", pattern: /guided[-_ ]?tour|onboarding|walkthrough|coachmark|hotspot/i, evidence: "custom guided tour evidence was detected." }
+  ];
+  return guidedTourReadinessSignalFromSpecs(sourceFiles, specs, "framework", "signal");
+}
+
+function guidedTourReadinessStepSignals(sourceFiles: GuidedTourReadinessSourceFile[]): GuidedTourReadinessReport["stepSignals"] {
+  const specs: Array<{ signal: GuidedTourReadinessReport["stepSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "steps-array", pattern: /steps\s*=|steps\s*:|const\s+steps|Step\[\]|setSteps/i, evidence: "steps array evidence was detected." },
+    { signal: "step-object", pattern: /addStep|addSteps|step\s*:|\{\s*(target|element|attachTo|popover)\b/i, evidence: "step object evidence was detected." },
+    { signal: "title", pattern: /\btitle\s*:/i, evidence: "step title evidence was detected." },
+    { signal: "content-text", pattern: /\bcontent\s*:|\btext\s*:|\bdescription\s*:/i, evidence: "step content/text evidence was detected." },
+    { signal: "placement", pattern: /\bplacement\s*:|\bon\s*:|\bside\s*:|\balign\s*:/i, evidence: "placement evidence was detected." },
+    { signal: "popover", pattern: /\bpopover\s*:|popoverClass|onPopoverRender/i, evidence: "popover evidence was detected." }
+  ];
+  return guidedTourReadinessSignalFromSpecs(sourceFiles, specs, "step", "signal");
+}
+
+function guidedTourReadinessTargetSignals(sourceFiles: GuidedTourReadinessSourceFile[]): GuidedTourReadinessReport["targetSignals"] {
+  const specs: Array<{ signal: GuidedTourReadinessReport["targetSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "target", pattern: /\btarget\s*:/i, evidence: "target evidence was detected." },
+    { signal: "attach-to", pattern: /attachTo/i, evidence: "attachTo evidence was detected." },
+    { signal: "element", pattern: /\belement\s*:/i, evidence: "element evidence was detected." },
+    { signal: "selector", pattern: /\bselector\s*:/i, evidence: "selector evidence was detected." },
+    { signal: "highlight", pattern: /highlight|highlightClass/i, evidence: "highlight evidence was detected." },
+    { signal: "spotlight", pattern: /spotlight|spotlightClicks/i, evidence: "spotlight evidence was detected." }
+  ];
+  return guidedTourReadinessSignalFromSpecs(sourceFiles, specs, "target", "signal");
+}
+
+function guidedTourReadinessNavigationSignals(sourceFiles: GuidedTourReadinessSourceFile[]): GuidedTourReadinessReport["navigationSignals"] {
+  const specs: Array<{ signal: GuidedTourReadinessReport["navigationSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "start", pattern: /start\s*\(|\.start|drive\s*\(/i, evidence: "start/drive evidence was detected." },
+    { signal: "next", pattern: /\bnext\b|onNextClick|ACTIONS\.NEXT/i, evidence: "next evidence was detected." },
+    { signal: "back-prev", pattern: /\bback\b|\bprev\b|previous|onPrevClick/i, evidence: "back/previous evidence was detected." },
+    { signal: "skip-cancel-close", pattern: /skip|cancel|close|allowClose|onCloseClick|showSkipButton/i, evidence: "skip/cancel/close evidence was detected." },
+    { signal: "complete", pattern: /complete|FINISHED|STATUS\.FINISHED/i, evidence: "complete evidence was detected." },
+    { signal: "progress", pattern: /showProgress|progress|tour-progress/i, evidence: "progress evidence was detected." },
+    { signal: "continuous", pattern: /continuous/i, evidence: "continuous flow evidence was detected." }
+  ];
+  return guidedTourReadinessSignalFromSpecs(sourceFiles, specs, "navigation", "signal");
+}
+
+function guidedTourReadinessOverlaySignals(sourceFiles: GuidedTourReadinessSourceFile[]): GuidedTourReadinessReport["overlaySignals"] {
+  const specs: Array<{ signal: GuidedTourReadinessReport["overlaySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "modal-overlay", pattern: /useModalOverlay|modalOverlay|disableOverlayClose|overlayClickBehavior/i, evidence: "modal overlay evidence was detected." },
+    { signal: "spotlight", pattern: /spotlight|spotlightClicks/i, evidence: "spotlight overlay evidence was detected." },
+    { signal: "stage-padding", pattern: /stagePadding|modalOverlayOpeningPadding/i, evidence: "stage padding evidence was detected." },
+    { signal: "stage-radius", pattern: /stageRadius/i, evidence: "stage radius evidence was detected." },
+    { signal: "popover-class", pattern: /popoverClass|classes\s*:|classPrefix/i, evidence: "popover/class evidence was detected." },
+    { signal: "styles", pattern: /\bstyles\s*=|\bstyles\s*:|theme/i, evidence: "styles evidence was detected." },
+    { signal: "scroll", pattern: /scrollTo|scrollToFirstStep|smoothScroll/i, evidence: "scroll evidence was detected." }
+  ];
+  return guidedTourReadinessSignalFromSpecs(sourceFiles, specs, "overlay", "signal");
+}
+
+function guidedTourReadinessCallbackSignals(sourceFiles: GuidedTourReadinessSourceFile[]): GuidedTourReadinessReport["callbackSignals"] {
+  const specs: Array<{ signal: GuidedTourReadinessReport["callbackSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "callback", pattern: /\bcallback\s*=|\bcallback\s*:|handleCallback/i, evidence: "callback evidence was detected." },
+    { signal: "on-event", pattern: /tour\.on|\.on\s*\(|EVENTS|event\s*:/i, evidence: "event callback evidence was detected." },
+    { signal: "on-next-click", pattern: /onNextClick/i, evidence: "onNextClick evidence was detected." },
+    { signal: "on-prev-click", pattern: /onPrevClick/i, evidence: "onPrevClick evidence was detected." },
+    { signal: "on-close-click", pattern: /onCloseClick/i, evidence: "onCloseClick evidence was detected." },
+    { signal: "before-show", pattern: /beforeShowPromise|onHighlightStarted/i, evidence: "before-show evidence was detected." },
+    { signal: "after-hook", pattern: /STEP_AFTER|onHighlighted|after/i, evidence: "after hook evidence was detected." },
+    { signal: "analytics-event", pattern: /dispatchEvent|CustomEvent|analytics|track|telemetry/i, evidence: "analytics/event evidence was detected." }
+  ];
+  return guidedTourReadinessSignalFromSpecs(sourceFiles, specs, "callback", "signal");
+}
+
+function guidedTourReadinessAccessibilitySignals(sourceFiles: GuidedTourReadinessSourceFile[]): GuidedTourReadinessReport["accessibilitySignals"] {
+  const specs: Array<{ signal: GuidedTourReadinessReport["accessibilitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "dialog-role", pattern: /role\s*=\s*["']dialog|role:\s*["']dialog|role="dialog"/i, evidence: "dialog role evidence was detected." },
+    { signal: "aria-label", pattern: /aria-label/i, evidence: "aria-label evidence was detected." },
+    { signal: "aria-labelledby", pattern: /aria-labelledby/i, evidence: "aria-labelledby evidence was detected." },
+    { signal: "aria-describedby", pattern: /aria-describedby/i, evidence: "aria-describedby evidence was detected." },
+    { signal: "aria-controls", pattern: /aria-controls/i, evidence: "aria-controls evidence was detected." },
+    { signal: "focus-trap", pattern: /focusTrap|focus-trap|data-focus-trap/i, evidence: "focus trap evidence was detected." },
+    { signal: "keyboard-escape", pattern: /Escape|key\s*:\s*["']Escape/i, evidence: "Escape-key evidence was detected." },
+    { signal: "tab-order", pattern: /tab-order|tabIndex|tabindex/i, evidence: "tab order evidence was detected." }
+  ];
+  return guidedTourReadinessSignalFromSpecs(sourceFiles, specs, "accessibility", "signal");
+}
+
+function guidedTourReadinessStateSignals(sourceFiles: GuidedTourReadinessSourceFile[]): GuidedTourReadinessReport["stateSignals"] {
+  const specs: Array<{ signal: GuidedTourReadinessReport["stateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "run", pattern: /\brun\s*=|\brun\s*:|setRun/i, evidence: "run state evidence was detected." },
+    { signal: "step-index", pattern: /stepIndex|initialStepIndex|data\.index/i, evidence: "step index evidence was detected." },
+    { signal: "status", pattern: /STATUS|status/i, evidence: "status evidence was detected." },
+    { signal: "lifecycle", pattern: /LIFECYCLE|lifecycle|STEP_AFTER/i, evidence: "lifecycle evidence was detected." },
+    { signal: "controlled-mode", pattern: /controlled|stepIndex|run\s*=/i, evidence: "controlled-mode evidence was detected." },
+    { signal: "set-steps", pattern: /setSteps|steps\s*=/i, evidence: "set steps evidence was detected." },
+    { signal: "local-storage-progress", pattern: /localStorage|tour-progress/i, evidence: "local progress persistence evidence was detected." }
+  ];
+  return guidedTourReadinessSignalFromSpecs(sourceFiles, specs, "state", "signal");
+}
+
+function guidedTourReadinessTestSignals(sourceFiles: GuidedTourReadinessSourceFile[]): GuidedTourReadinessReport["testSignals"] {
+  const specs: Array<{ signal: GuidedTourReadinessReport["testSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "vitest", pattern: /vitest|from ["']vitest["']/i, evidence: "Vitest evidence was detected." },
+    { signal: "playwright", pattern: /playwright|npx playwright/i, evidence: "Playwright evidence was detected." },
+    { signal: "cypress", pattern: /cypress/i, evidence: "Cypress evidence was detected." },
+    { signal: "testing-library", pattern: /testing-library|getByRole|queryAllByRole/i, evidence: "Testing Library evidence was detected." },
+    { signal: "keyboard-test", pattern: /fireEvent\.keyDown|userEvent\.keyboard|Escape|ArrowDown|ArrowUp|Enter/i, evidence: "keyboard test evidence was detected." },
+    { signal: "a11y-test", pattern: /a11y|axe|aria-label|aria-labelledby|aria-describedby|accessibility/i, evidence: "a11y test evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|guided-tour-traces|tour-traces|trace|screenshot/i, evidence: "artifact upload evidence was detected." }
+  ];
+  return guidedTourReadinessSignalFromSpecs(sourceFiles, specs, "test", "signal");
+}
+
+function guidedTourReadinessPackageSignals(sourceFiles: GuidedTourReadinessSourceFile[]): GuidedTourReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: GuidedTourReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "react-joyride", pattern: /["@']react-joyride["@']|from ["']react-joyride["']/i, evidence: "react-joyride package evidence was detected." },
+    { signal: "shepherd.js", pattern: /["@']shepherd\.js["@']|from ["']shepherd\.js["']/i, evidence: "Shepherd.js package evidence was detected." },
+    { signal: "react-shepherd", pattern: /["@']react-shepherd["@']|from ["']react-shepherd["']/i, evidence: "react-shepherd package evidence was detected." },
+    { signal: "driver.js", pattern: /["@']driver\.js["@']|from ["']driver\.js["']/i, evidence: "driver.js package evidence was detected." }
+  ];
+  return guidedTourReadinessSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function guidedTourReadinessSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: GuidedTourReadinessSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/guided-tour-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }
