@@ -6345,6 +6345,54 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 239:
   - `96793a2` database migration readiness report
 
+- 2026-06-05: AutoResearch Upgrade 240 candidate selected:
+  database ORM readiness from `typeorm/typeorm`
+  (`https://github.com/typeorm/typeorm`; ignored clone HEAD `a84b9b3`),
+  `sequelize/sequelize` (`https://github.com/sequelize/sequelize`;
+  ignored clone HEAD `8260c29`), and `sqlalchemy/sqlalchemy`
+  (`https://github.com/sqlalchemy/sqlalchemy`; ignored clone HEAD `f8191bf`).
+  Static source inspection only; `git ls-files` for all three external source
+  paths returned `0`, and `git status --ignored=matching` showed the clones
+  only under ignored `research/external-src/`.
+- 2026-06-05: Implemented TypeORM/Sequelize/SQLAlchemy-style
+  database-orm-readiness report:
+  `DatabaseOrmReadinessReportSchema`,
+  `analysis/database-orm-readiness-report.json`,
+  `markdown/database-orm-readiness.md`,
+  `html/database-orm-readiness.html`, static ORM setup detection,
+  entity/model, relation/association, repository/session/query,
+  transaction/rollback/isolation, loading, config, CI, package signals,
+  static-only risk queue, recommended TypeORM/Sequelize/Alembic inspection
+  commands, manifest/session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit coverage,
+  and `open --target database-orm-readiness`.
+- 2026-06-05: RED/GREEN database-orm-readiness smoke recorded:
+  old behavior at `1314cd9` had no `DatabaseOrmReadinessReportSchema` and no
+  `database-orm-readiness` CLI target (`schema-missing`, `cli-missing`). GREEN
+  fixture detected TypeORM `@Entity`, `@Column`, relation decorators,
+  `Repository`, `DataSource`, `createQueryBuilder`, `QueryRunner`,
+  `manager.transaction`; Sequelize `Model.init`, `DataTypes`, associations,
+  `findAll`, `include`, raw query, `sequelize.transaction`, `sequelize.sync`;
+  SQLAlchemy `DeclarativeBase`, `mapped_column`, `relationship`, `ForeignKey`,
+  `create_engine`, `Session`, `sessionmaker`, `joinedload`, `selectinload`,
+  `session.begin`, rollback/isolation; Prisma relation models, Django model,
+  Rails Active Record model/query/transaction, Drizzle table, CI database
+  service/schema-sync/migration-status/artifact signals, package signals,
+  recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 240:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm --filter @repotutor/core build && pnpm -w typecheck`: PASS
+  - focused database-orm-readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 47/47 tests
+  - `pnpm test`: PASS, 47/47 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 138/138 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 240:
+  - `4b5952a` database ORM readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
