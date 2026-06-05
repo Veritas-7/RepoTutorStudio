@@ -7615,6 +7615,63 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 262:
   - `d48f8d6` API gateway readiness report
 
+- 2026-06-05: AutoResearch Upgrade 263 candidate selected:
+  SAST readiness from `semgrep/semgrep`
+  (`https://github.com/semgrep/semgrep`; ignored clone HEAD
+  `4cc850aff696dce0f6beddd4bb72db7f4c9abbc0`),
+  `github/codeql-action`
+  (`https://github.com/github/codeql-action`; ignored clone HEAD
+  `9fc351a8ac7432cff4cf6b2e45db91873bec9bf9`), and
+  `SonarSource/sonarqube-scan-action`
+  (`https://github.com/SonarSource/sonarqube-scan-action`; ignored clone HEAD
+  `c9d327c0246c0bbfe955144aa8a5e033bf766f52`). Static source inspection only;
+  `git ls-files` for the new external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Semgrep/CodeQL/SonarQube/Snyk Code-style SAST
+  readiness report: `SastReadinessReportSchema`,
+  `analysis/sast-readiness-report.json`, `markdown/sast-readiness.md`,
+  `html/sast-readiness.html`, static SAST setup detection, tool/rule/query/
+  language/scope/baseline/output/CI/package signals, Semgrep rule/pattern/
+  pattern-either/pattern-regex/metavariable/severity/message/taint-mode
+  coverage, CodeQL query suite/query pack/security-extended/
+  security-and-quality/qlpack/custom-query coverage, Sonar source/exclusion/
+  quality-gate coverage, Snyk Code and SARIF/code-scanning/artifact evidence,
+  static-only risk queue, recommended inspection commands, manifest/session
+  verification coverage, learning-path linkage, HTML page/nav entry, CLI
+  help/list-target coverage, dedicated audit coverage, and
+  `open --target sast-readiness`.
+- 2026-06-05: RED/GREEN SAST readiness smoke recorded:
+  old behavior at `65ff9c8` had no `SastReadinessReportSchema` and no
+  `sast-readiness` target (`dedicated_sast_gap_exit=1`). GREEN fixture
+  detected Semgrep, CodeQL, SonarQube, Snyk Code, eslint security, Semgrep
+  rules, pattern, pattern-either, pattern-regex, metavariable, severity,
+  message, taint-mode, CodeQL query, query suite, query pack,
+  security-extended, security-and-quality, qlpack, custom query,
+  JavaScript/TypeScript, Python, Go, multi-language, paths, paths-ignore,
+  exclusions, generated-code, test scope, monorepo, baseline ref, diff-aware
+  PR scan, fail threshold, severity threshold, quality gate, SARIF, JSON,
+  JUnit, HTML, code scanning, artifact upload, GitHub Actions, Semgrep CI,
+  CodeQL init/analyze, Sonar scan action, Snyk Code, upload-SARIF, package
+  signals, recommended commands, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 263:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - `pnpm -w typecheck`: PASS
+  - focused SAST readiness Vitest command: PASS, pipeline file 1/1 focused test
+  - full pipeline Vitest: PASS, 70/70 tests
+  - `pnpm test`: PASS, 70/70 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 161/161 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS,
+    scanned ~77.74 KB with no leaks
+- 2026-06-05: Pushed AutoResearch Upgrade 263:
+  - `234c1c7` SAST readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
