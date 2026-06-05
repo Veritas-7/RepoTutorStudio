@@ -1,6 +1,6 @@
 {
   "iteration": 5,
-  "createdAt": "2026-06-05T04:40:59.091Z",
+  "createdAt": "2026-06-05T04:53:33.699Z",
   "checks": [
     {
       "name": "project setup",
@@ -396,6 +396,13 @@
     },
     {
       "name": "feature store readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "model registry readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

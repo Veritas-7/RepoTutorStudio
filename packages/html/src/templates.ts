@@ -71,6 +71,7 @@ import type {
   DataLineageReadinessReport,
   DataCatalogReadinessReport,
   FeatureStoreReadinessReport,
+  ModelRegistryReadinessReport,
   CiCdReport,
   UnitTestReport,
   CoverageReadinessReport,
@@ -230,6 +231,7 @@ export interface StudyHtmlInput {
   dataLineageReadinessReport: DataLineageReadinessReport;
   dataCatalogReadinessReport: DataCatalogReadinessReport;
   featureStoreReadinessReport: FeatureStoreReadinessReport;
+  modelRegistryReadinessReport: ModelRegistryReadinessReport;
   ciCdReport: CiCdReport;
   unitTestReport: UnitTestReport;
   coverageReadinessReport: CoverageReadinessReport;
@@ -408,6 +410,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["data-lineage-readiness.html", "Data Lineage"],
     ["data-catalog-readiness.html", "Data Catalog"],
     ["feature-store-readiness.html", "Feature Store"],
+    ["model-registry-readiness.html", "Model Registry"],
     ["ci-cd.html", "CI/CD"],
     ["unit-tests.html", "Unit Tests"],
     ["coverage-readiness.html", "Coverage"],
@@ -604,6 +607,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Data Lineage Readiness</h3><p>${escapeHtml(input.dataLineageReadinessReport.summary)}</p><p>OpenLineage, Marquez, dbt artifact 패턴으로 event, dataset edge, facet, column lineage, storage 준비도를 정리합니다.</p><a href="data-lineage-readiness.html">Data Lineage 열기</a></article>
           <article><h3>Data Catalog Readiness</h3><p>${escapeHtml(input.dataCatalogReadinessReport.summary)}</p><p>OpenMetadata, DataHub, Amundsen 패턴으로 ingestion, entity, governance, search, lineage 준비도를 정리합니다.</p><a href="data-catalog-readiness.html">Data Catalog 열기</a></article>
           <article><h3>Feature Store Readiness</h3><p>${escapeHtml(input.featureStoreReadinessReport.summary)}</p><p>Feast, Feathr, Hopsworks 패턴으로 feature definition, source, offline/online store, registry, retrieval, materialization 준비도를 정리합니다.</p><a href="feature-store-readiness.html">Feature Store 열기</a></article>
+          <article><h3>Model Registry Readiness</h3><p>${escapeHtml(input.modelRegistryReadinessReport.summary)}</p><p>MLflow, Kubeflow Model Registry, BentoML 패턴으로 registered model, model version, artifact, metadata, serving 준비도를 정리합니다.</p><a href="model-registry-readiness.html">Model Registry 열기</a></article>
           <article><h3>CI/CD Readiness</h3><p>${escapeHtml(input.ciCdReport.summary)}</p><p>GitHub Actions 패턴으로 workflow, trigger, job, permission, artifact/cache, deployment 준비도를 정리합니다.</p><a href="ci-cd.html">CI/CD 열기</a></article>
           <article><h3>Unit Test Readiness</h3><p>${escapeHtml(input.unitTestReport.summary)}</p><p>Vitest 패턴으로 test files, assertions, mocks, coverage, environment, reporters 준비도를 정리합니다.</p><a href="unit-tests.html">Unit Tests 열기</a></article>
           <article><h3>Coverage Readiness</h3><p>${escapeHtml(input.coverageReadinessReport.summary)}</p><p>nyc/c8/Codecov 패턴으로 instrumentation, scope, thresholds, reports, CI uploads 준비도를 정리합니다.</p><a href="coverage-readiness.html">Coverage 열기</a></article>
@@ -972,6 +976,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "feature-store-readiness.html",
       title: "Feature Store Readiness",
       html: pageShell("Feature Store Readiness", "feature-store-readiness.html", `<section class="panel" data-source-pattern="FeatureStore"><h2>Feature Store Snapshot</h2><p>${escapeHtml(input.featureStoreReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.featureStoreReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.featureStoreReadinessReport.featureStoreSetups.length}</dd></div><div><dt>definitions</dt><dd>${input.featureStoreReadinessReport.definitionSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>sources</dt><dd>${input.featureStoreReadinessReport.sourceSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>storage</dt><dd>${input.featureStoreReadinessReport.storageSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>retrieval</dt><dd>${input.featureStoreReadinessReport.retrievalSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records feature store readiness only; it does not run Feast, Feathr, Hopsworks, Spark, Redis, materialization jobs, or online serving APIs.</p></section><section class="grid"><article class="feature-store-readiness-card"><h3>Feature Store Setups</h3>${featureStoreReadinessSetupList(input.featureStoreReadinessReport.featureStoreSetups)}</article><article class="feature-store-readiness-card"><h3>Definition Signals</h3>${featureStoreReadinessSignalList(input.featureStoreReadinessReport.definitionSignals, "signal")}</article><article class="feature-store-readiness-card"><h3>Source Signals</h3>${featureStoreReadinessSignalList(input.featureStoreReadinessReport.sourceSignals, "signal")}</article><article class="feature-store-readiness-card"><h3>Storage Signals</h3>${featureStoreReadinessSignalList(input.featureStoreReadinessReport.storageSignals, "signal")}</article></section><section class="grid"><article class="feature-store-readiness-card"><h3>Retrieval Signals</h3>${featureStoreReadinessSignalList(input.featureStoreReadinessReport.retrievalSignals, "signal")}</article><article class="feature-store-readiness-card"><h3>Materialization Signals</h3>${featureStoreReadinessSignalList(input.featureStoreReadinessReport.materializationSignals, "signal")}</article><article class="feature-store-readiness-card"><h3>CI Signals</h3>${featureStoreReadinessSignalList(input.featureStoreReadinessReport.ciSignals, "signal")}</article><article class="feature-store-readiness-card"><h3>Package Signals</h3>${featureStoreReadinessSignalList(input.featureStoreReadinessReport.packageSignals, "signal")}</article><article class="feature-store-readiness-card"><h3>Recommended Commands</h3>${featureStoreReadinessCommandList(input.featureStoreReadinessReport.recommendedCommands)}</article><article class="feature-store-readiness-card"><h3>Risk Queue</h3>${featureStoreReadinessRiskList(input.featureStoreReadinessReport.riskQueue)}</article><article class="feature-store-readiness-card"><h3>다음 확인 단계</h3>${list(input.featureStoreReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "model-registry-readiness.html",
+      title: "Model Registry Readiness",
+      html: pageShell("Model Registry Readiness", "model-registry-readiness.html", `<section class="panel" data-source-pattern="ModelRegistry"><h2>Model Registry Snapshot</h2><p>${escapeHtml(input.modelRegistryReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.modelRegistryReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.modelRegistryReadinessReport.modelRegistrySetups.length}</dd></div><div><dt>registration</dt><dd>${input.modelRegistryReadinessReport.registrationSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>metadata</dt><dd>${input.modelRegistryReadinessReport.metadataSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>artifacts</dt><dd>${input.modelRegistryReadinessReport.artifactSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>serving</dt><dd>${input.modelRegistryReadinessReport.servingSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records model registry readiness only; it does not run MLflow, Kubeflow Model Registry, BentoML, KServe, Docker, model serving, registration APIs, or deployment commands.</p></section><section class="grid"><article class="model-registry-readiness-card"><h3>Model Registry Setups</h3>${modelRegistryReadinessSetupList(input.modelRegistryReadinessReport.modelRegistrySetups)}</article><article class="model-registry-readiness-card"><h3>Registration Signals</h3>${modelRegistryReadinessSignalList(input.modelRegistryReadinessReport.registrationSignals, "signal")}</article><article class="model-registry-readiness-card"><h3>Metadata Signals</h3>${modelRegistryReadinessSignalList(input.modelRegistryReadinessReport.metadataSignals, "signal")}</article><article class="model-registry-readiness-card"><h3>Artifact Signals</h3>${modelRegistryReadinessSignalList(input.modelRegistryReadinessReport.artifactSignals, "signal")}</article></section><section class="grid"><article class="model-registry-readiness-card"><h3>Lifecycle Signals</h3>${modelRegistryReadinessSignalList(input.modelRegistryReadinessReport.lifecycleSignals, "signal")}</article><article class="model-registry-readiness-card"><h3>Serving Signals</h3>${modelRegistryReadinessSignalList(input.modelRegistryReadinessReport.servingSignals, "signal")}</article><article class="model-registry-readiness-card"><h3>Lineage Signals</h3>${modelRegistryReadinessSignalList(input.modelRegistryReadinessReport.lineageSignals, "signal")}</article><article class="model-registry-readiness-card"><h3>CI Signals</h3>${modelRegistryReadinessSignalList(input.modelRegistryReadinessReport.ciSignals, "signal")}</article><article class="model-registry-readiness-card"><h3>Package Signals</h3>${modelRegistryReadinessSignalList(input.modelRegistryReadinessReport.packageSignals, "signal")}</article><article class="model-registry-readiness-card"><h3>Recommended Commands</h3>${modelRegistryReadinessCommandList(input.modelRegistryReadinessReport.recommendedCommands)}</article><article class="model-registry-readiness-card"><h3>Risk Queue</h3>${modelRegistryReadinessRiskList(input.modelRegistryReadinessReport.riskQueue)}</article><article class="model-registry-readiness-card"><h3>다음 확인 단계</h3>${list(input.modelRegistryReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "ci-cd.html",
@@ -1555,6 +1564,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Data Lineage Readiness", path: "html/data-lineage-readiness.html", description: "OpenLineage/Marquez/dbt식 event, dataset edge, facet, column lineage, artifact 준비도를 확인합니다." },
       { label: "Data Catalog Readiness", path: "html/data-catalog-readiness.html", description: "OpenMetadata/DataHub/Amundsen식 ingestion, entity, governance, search, lineage 준비도를 확인합니다." },
       { label: "Feature Store Readiness", path: "html/feature-store-readiness.html", description: "Feast/Feathr/Hopsworks식 definition, source, storage, retrieval, materialization 준비도를 확인합니다." },
+      { label: "Model Registry Readiness", path: "html/model-registry-readiness.html", description: "MLflow/Kubeflow/BentoML식 registered model, version, artifact, metadata, serving 준비도를 확인합니다." },
       { label: "CI/CD Readiness", path: "html/ci-cd.html", description: "GitHub Actions식 workflow, trigger, job, permission, cache/artifact, deployment 준비도를 확인합니다." },
       { label: "Unit Test Readiness", path: "html/unit-tests.html", description: "Vitest식 test file, assertion, mock, coverage, environment, reporter 준비도를 확인합니다." },
       { label: "Coverage Readiness", path: "html/coverage-readiness.html", description: "nyc/c8/Codecov식 instrumentation, scope, threshold, report, upload 준비도를 확인합니다." },
@@ -1999,6 +2009,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "feature-store-readiness.html",
       goal: "Feast, Feathr, Hopsworks식 feature definition, source, offline/online store, registry, retrieval, materialization 준비도를 확인합니다.",
       evidence: `setups ${input.featureStoreReadinessReport.featureStoreSetups.length}개, definition signals ${input.featureStoreReadinessReport.definitionSignals.filter((item) => item.readiness === "ready").length}개, retrieval signals ${input.featureStoreReadinessReport.retrievalSignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Model registry readiness 확인",
+      href: "model-registry-readiness.html",
+      goal: "MLflow, Kubeflow Model Registry, BentoML식 registered model, version, artifact, metadata, serving 준비도를 확인합니다.",
+      evidence: `setups ${input.modelRegistryReadinessReport.modelRegistrySetups.length}개, registration signals ${input.modelRegistryReadinessReport.registrationSignals.filter((item) => item.readiness === "ready").length}개, serving signals ${input.modelRegistryReadinessReport.servingSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Integration test environment 준비도 확인",
@@ -3755,6 +3771,34 @@ function featureStoreReadinessRiskList(items: FeatureStoreReadinessReport["riskQ
 }
 
 function featureStoreReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function modelRegistryReadinessSetupList(items: ModelRegistryReadinessReport["modelRegistrySetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">model registry setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)} / ${escapeHtml(item.readiness)}]<br>registered ${item.registeredModelCount}, version ${item.versionCount}, artifact ${item.artifactCount}, metadata ${item.metadataCount}, alias ${item.aliasCount}<br>stage ${item.stageCount}, lineage ${item.lineageCount}, signature ${item.signatureCount}, serving ${item.servingCount}, CI ${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(modelRegistryReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function modelRegistryReadinessSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">model registry readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(modelRegistryReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function modelRegistryReadinessCommandList(items: ModelRegistryReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function modelRegistryReadinessRiskList(items: ModelRegistryReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(modelRegistryReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function modelRegistryReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

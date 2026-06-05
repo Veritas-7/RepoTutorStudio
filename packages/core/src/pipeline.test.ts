@@ -65,6 +65,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-lineage-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-catalog-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-store-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-registry-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
@@ -210,6 +211,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-lineage-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-catalog-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-store-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-registry-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ci-cd.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
@@ -358,6 +360,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-lineage-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-catalog-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-store-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "model-registry-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ci-cd.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
@@ -533,6 +536,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/data-lineage-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-catalog-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-store-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/model-registry-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ci-cd.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/coverage-readiness.html\"");
@@ -3286,6 +3290,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/data-lineage-readiness.html");
     expect(exportManifestText).toContain("html/data-catalog-readiness.html");
     expect(exportManifestText).toContain("html/feature-store-readiness.html");
+    expect(exportManifestText).toContain("html/model-registry-readiness.html");
     expect(exportManifestText).toContain("html/ci-cd.html");
     expect(exportManifestText).toContain("html/unit-tests.html");
     expect(exportManifestText).toContain("html/coverage-readiness.html");
@@ -3453,6 +3458,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("data-lineage-readiness.html");
     expect(learningPathHtml).toContain("data-catalog-readiness.html");
     expect(learningPathHtml).toContain("feature-store-readiness.html");
+    expect(learningPathHtml).toContain("model-registry-readiness.html");
     expect(learningPathHtml).toContain("ci-cd.html");
     expect(learningPathHtml).toContain("unit-tests.html");
     expect(learningPathHtml).toContain("coverage-readiness.html");
@@ -7530,6 +7536,168 @@ describe("RepoTutor core pipeline", () => {
     const featureStoreHtml = await fs.readFile(path.join(result.session.outputPaths.html, "feature-store-readiness.html"), "utf8");
     expect(featureStoreHtml).toContain("feature-store-readiness-card");
     expect(featureStoreHtml).toContain("data-source-pattern=\"FeatureStore\"");
+  });
+
+  it("detects model registry readiness without running registry or serving backends", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-model-registry-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-model-registry-source-"));
+    await fs.mkdir(path.join(sourceRoot, "mlflow"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "kubeflow"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "bentoml"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "pyproject.toml"), [
+      "[project]",
+      "name = \"model-registry-fixture\"",
+      "description = \"MLflow Model Registry Kubeflow Model Registry BentoML static readiness fixture\"",
+      "dependencies = [\"mlflow\", \"model-registry\", \"bentoml\", \"kserve\", \"docker\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "mlflow", "registry.py"), [
+      "import mlflow",
+      "from mlflow.tracking import MlflowClient",
+      "from mlflow.models import infer_signature",
+      "client = MlflowClient()",
+      "client.create_registered_model(\"fraud_model\", description=\"registered model description\")",
+      "result = mlflow.register_model(\"runs:/abc123/model\", \"fraud_model\")",
+      "version = client.create_model_version(name=\"fraud_model\", source=\"runs:/abc123/model\", run_id=\"abc123\", tags={\"stage\": \"candidate\", \"dataset\": \"transactions\"})",
+      "client.set_registered_model_alias(\"fraud_model\", \"champion\", version.version)",
+      "client.transition_model_version_stage(\"fraud_model\", version.version, stage=\"Production\", archive_existing_versions=True)",
+      "client.set_model_version_tag(\"fraud_model\", version.version, \"approval\", \"approved review validated champion promotion rollback previous version Archived\")",
+      "client.search_registered_models(filter_string=\"name LIKE 'fraud%'\")",
+      "client.search_model_versions(\"name='fraud_model'\")",
+      "client.delete_model_version(\"fraud_model\", version.version)",
+      "signature = infer_signature(input_example, predictions)",
+      "model_uri = \"models:/fraud_model/Production\"",
+      "artifact_uri = \"s3://registry/fraud_model/version/model.pkl\"",
+      "source_run_id = \"abc123\"",
+      "run_id = source_run_id",
+      "evaluation_metric = {\"auc\": 0.93, \"f1\": 0.82}",
+      "dataset = \"transactions_training\"",
+      "provenance = \"training data lineage source run\"",
+      "mlflow models serve -m models:/fraud_model/Production"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "kubeflow", "model_registry.md"), [
+      "# Kubeflow Model Registry Service",
+      "The REST API exposes RegisteredModel, ModelVersion, ModelArtifact, ServingEnvironment, and InferenceService resources.",
+      "CreateRegisteredModel, CreateModelVersion, UpsertModelVersionArtifact, FindRegisteredModel, FindModelVersion, UpdateModelVersion, DeleteModelVersion.",
+      "ModelArtifact uses ARTIFACT_URI and artifact URI; GetModelVersionDownloadUri returns a download URI.",
+      "customProperties MetadataStringValue versionDescription versionScore metric description tag alias stage.",
+      "EmitModelVersionLineage records model version lineage, dataset link, source run, evaluation metric, and provenance.",
+      "ServingEnvironment and InferenceService connect model versions to KServe serving.kserve.io deployments.",
+      "REST /api/model_registry/v1alpha3/registered_models and gRPC clients are documented."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "bentoml", "service.py"), [
+      "import bentoml",
+      "from bentoml.models import HuggingFaceModel",
+      "@bentoml.service(resources={\"cpu\": \"2\"})",
+      "class Summarization:",
+      "    model_ref = HuggingFaceModel(\"openai-community/gpt2\")",
+      "    stored_model = bentoml.models.get(\"summarizer:latest\")",
+      "    @bentoml.api",
+      "    def summarize(self, text: str) -> str:",
+      "        return text",
+      "Bento model store ModelStore Tag version bento tag",
+      "Bento build artifact model URI Dockerfile docker build docker run container image",
+      "bentoml build",
+      "bentoml serve",
+      "bentoml containerize summarization:latest",
+      "bentoml deploy summarization:latest"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "bentoml", "bentofile.yaml"), [
+      "service: service:Summarization",
+      "python:",
+      "  packages:",
+      "    - bentoml",
+      "    - transformers",
+      "docker:",
+      "  python_version: '3.11'"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "model-registry.yml"), [
+      "name: model-registry",
+      "on: [push]",
+      "jobs:",
+      "  model-registry:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: python mlflow/registry.py",
+      "      - run: mlflow models serve -m models:/fraud_model/Production --no-conda",
+      "      - run: bentoml build",
+      "      - run: bentoml containerize summarization:latest",
+      "      - run: pytest tests/model_registry",
+      "      - run: curl http://localhost:3000/healthz",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: registry-report",
+      "          path: |",
+      "            registry-report.json",
+      "            model-uri.txt",
+      "            bento tag",
+      "            container image"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "model-registry-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      modelRegistrySetups: Array<{ tool: string; registeredModelCount: number; versionCount: number; artifactCount: number; metadataCount: number; aliasCount: number; stageCount: number; lineageCount: number; signatureCount: number; servingCount: number; ciCount: number }>;
+      registrationSignals: Array<{ signal: string; readiness: string }>;
+      metadataSignals: Array<{ signal: string; readiness: string }>;
+      artifactSignals: Array<{ signal: string; readiness: string }>;
+      lifecycleSignals: Array<{ signal: string; readiness: string }>;
+      servingSignals: Array<{ signal: string; readiness: string }>;
+      lineageSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (tool: string) => report.modelRegistrySetups
+      .filter((item) => item.tool === tool)
+      .reduce((totals, item) => ({
+        registeredModelCount: totals.registeredModelCount + item.registeredModelCount,
+        versionCount: totals.versionCount + item.versionCount,
+        artifactCount: totals.artifactCount + item.artifactCount,
+        metadataCount: totals.metadataCount + item.metadataCount,
+        aliasCount: totals.aliasCount + item.aliasCount,
+        stageCount: totals.stageCount + item.stageCount,
+        lineageCount: totals.lineageCount + item.lineageCount,
+        signatureCount: totals.signatureCount + item.signatureCount,
+        servingCount: totals.servingCount + item.servingCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { registeredModelCount: 0, versionCount: 0, artifactCount: 0, metadataCount: 0, aliasCount: 0, stageCount: 0, lineageCount: 0, signatureCount: 0, servingCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Model registry readiness MLflow Kubeflow Model Registry BentoML RegisteredModel ModelVersion ModelArtifact model URI artifact URI alias stage tag signature input example lineage serving environment inference service KServe REST gRPC Bento build containerize CI");
+    expect(setupTotals("mlflow").registeredModelCount).toBeGreaterThan(0);
+    expect(setupTotals("mlflow").aliasCount).toBeGreaterThan(0);
+    expect(setupTotals("kubeflow").registeredModelCount).toBeGreaterThan(0);
+    expect(setupTotals("kubeflow").servingCount).toBeGreaterThan(0);
+    expect(setupTotals("bentoml").artifactCount).toBeGreaterThan(0);
+    expect(setupTotals("bentoml").servingCount).toBeGreaterThan(0);
+    expect(report.modelRegistrySetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.registrationSignals)).toEqual(expect.arrayContaining(["registered-model", "model-version", "model-artifact", "model-uri", "model-store", "bento"]));
+    expect(readySignals(report.metadataSignals)).toEqual(expect.arrayContaining(["tag", "alias", "stage", "custom-property", "description", "metric", "signature", "input-example"]));
+    expect(readySignals(report.artifactSignals)).toEqual(expect.arrayContaining(["artifact-uri", "model-uri", "download-uri", "container-image", "dockerfile", "bento-build", "package-config"]));
+    expect(readySignals(report.lifecycleSignals)).toEqual(expect.arrayContaining(["create", "update", "search", "delete", "transition-stage", "approval", "promotion", "rollback"]));
+    expect(readySignals(report.servingSignals)).toEqual(expect.arrayContaining(["inference-service", "serving-environment", "kserve", "model-server", "rest-api", "grpc", "bento-serve", "deployment"]));
+    expect(readySignals(report.lineageSignals)).toEqual(expect.arrayContaining(["run-link", "source-run", "model-version-lineage", "dataset-link", "evaluation-metric", "provenance"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "register-command", "model-test-command", "serving-smoke-command", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["mlflow", "kubeflow-model-registry", "bentoml", "kserve", "docker"]));
+    expect(report.riskQueue).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"RegisteredModel|registered_model|register_model|ModelVersion|model version\" .",
+      "rg \"ModelArtifact|artifact_uri|model_uri|models:/|download URI|bentoml build|containerize\" .",
+      "rg \"InferenceService|ServingEnvironment|KServe|REST|gRPC|bentoml serve|deployment\" ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "model-registry-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "model-registry-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "model-registry-readiness.html"))).resolves.toBeUndefined();
+    const modelRegistryMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "model-registry-readiness.md"), "utf8");
+    expect(modelRegistryMarkdown).toContain("Registration Signals");
+    expect(modelRegistryMarkdown).toContain("Artifact Signals");
+    expect(modelRegistryMarkdown).toContain("Serving Signals");
+    const modelRegistryHtml = await fs.readFile(path.join(result.session.outputPaths.html, "model-registry-readiness.html"), "utf8");
+    expect(modelRegistryHtml).toContain("model-registry-readiness-card");
+    expect(modelRegistryHtml).toContain("data-source-pattern=\"ModelRegistry\"");
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {
