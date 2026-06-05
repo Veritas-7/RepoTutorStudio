@@ -9040,6 +9040,62 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-06: Committed and pushed AutoResearch Upgrade 287:
   - `0a81267` state machine readiness report
 
+- 2026-06-06: AutoResearch Upgrade 288 candidate selected:
+  animation readiness from new ignored `motiondivision/motion` clone
+  (`https://github.com/motiondivision/motion.git`; ignored clone HEAD
+  `43e508e3e967b3d17b5361064d0d53812f12fee6`), new ignored
+  `pmndrs/react-spring` clone (`https://github.com/pmndrs/react-spring.git`;
+  ignored clone HEAD `831a1bd299272c109e010a6a310bf52bd322929c`), and new
+  ignored `greensock/GSAP` clone (`https://github.com/greensock/GSAP.git`;
+  ignored clone HEAD `13e2b790546426a1a2e0e9b409f3f8dc6d6611f2`). Static
+  source inspection only; `git ls-files research/external-src` returned `0`,
+  and `git status --ignored=matching --short research/external-src` showed the
+  clones only under ignored `research/external-src/`.
+- 2026-06-06: Implemented Motion/React Spring/GSAP-style animation readiness
+  report: `AnimationReadinessReportSchema`,
+  `analysis/animation-readiness-report.json`,
+  `markdown/animation-readiness.md`, `html/animation-readiness.html`, static
+  animation setup detection, library, declaration, timing, interaction,
+  layout, accessibility, runtime, test, and package signals, Motion
+  `motion.*`, `AnimatePresence`, `variants`, `whileHover`, `whileTap`,
+  `layout`, `layoutId`, `useMotionValue`, `useReducedMotion`, `useAnimate`,
+  and animation controls evidence, React Spring `useSpring`, `useSprings`,
+  `useTrail`, `useTransition`, `animated.*`, `Controller`, `SpringValue`, and
+  `config` evidence, GSAP `timeline`, `from`, `to`, `fromTo`, `ScrollTrigger`,
+  `registerPlugin`, `stagger`, `repeat`, `yoyo`, and `killTweensOf` evidence,
+  static-only animation guardrail, recommended inspection commands, manifest
+  and session-verification coverage, learning-path linkage, HTML page/nav
+  entry, CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target animation-readiness`.
+- 2026-06-06: RED/GREEN animation readiness smoke recorded:
+  pre-implementation focused Vitest failed because
+  `analysis/animation-readiness-report.json` did not exist. GREEN fixture
+  detected Motion, Framer Motion package, React Spring, and GSAP setup rows;
+  motion component, animate prop, variants, transition, timeline, duration,
+  delay, ease, spring config, stagger, repeat, yoyo, while-hover, while-tap,
+  scroll-trigger, in-view, layout, layout-id, AnimatePresence, exit,
+  reduced-motion, prefers-reduced-motion, will-change, controls, motion value,
+  animation-frame, getAnimations, kill, Vitest, Playwright, fake timers, frame
+  tests, artifact upload, packages, recommended command, static-only guardrail,
+  and all three new artifacts.
+- 2026-06-06: Verification for Upgrade 288:
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused animation readiness Vitest command: PASS, pipeline file 1/1
+    focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 95/95 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 186/186 audit checks across 13 reports
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~75.89 KB with no leaks
+- 2026-06-06: Committed and pushed AutoResearch Upgrade 288:
+  - `ca76af6` animation readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
