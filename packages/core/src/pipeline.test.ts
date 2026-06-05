@@ -64,6 +64,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-quality-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-lineage-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "data-catalog-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-store-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "ci-cd-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "unit-test-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
@@ -208,6 +209,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-quality-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-lineage-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "data-catalog-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-store-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "ci-cd.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "unit-tests.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
@@ -355,6 +357,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-quality-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-lineage-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "data-catalog-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "feature-store-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "ci-cd.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "unit-tests.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
@@ -529,6 +532,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/data-quality-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-lineage-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/data-catalog-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/feature-store-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/ci-cd.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/unit-tests.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/coverage-readiness.html\"");
@@ -3281,6 +3285,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/data-quality-readiness.html");
     expect(exportManifestText).toContain("html/data-lineage-readiness.html");
     expect(exportManifestText).toContain("html/data-catalog-readiness.html");
+    expect(exportManifestText).toContain("html/feature-store-readiness.html");
     expect(exportManifestText).toContain("html/ci-cd.html");
     expect(exportManifestText).toContain("html/unit-tests.html");
     expect(exportManifestText).toContain("html/coverage-readiness.html");
@@ -3447,6 +3452,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("data-quality-readiness.html");
     expect(learningPathHtml).toContain("data-lineage-readiness.html");
     expect(learningPathHtml).toContain("data-catalog-readiness.html");
+    expect(learningPathHtml).toContain("feature-store-readiness.html");
     expect(learningPathHtml).toContain("ci-cd.html");
     expect(learningPathHtml).toContain("unit-tests.html");
     expect(learningPathHtml).toContain("coverage-readiness.html");
@@ -7362,6 +7368,168 @@ describe("RepoTutor core pipeline", () => {
     const dataCatalogHtml = await fs.readFile(path.join(result.session.outputPaths.html, "data-catalog-readiness.html"), "utf8");
     expect(dataCatalogHtml).toContain("data-catalog-readiness-card");
     expect(dataCatalogHtml).toContain("data-source-pattern=\"DataCatalog\"");
+  });
+
+  it("detects feature store readiness without running feature store backends", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-feature-store-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-feature-store-source-"));
+    await fs.mkdir(path.join(sourceRoot, "feast"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "feathr"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "hopsworks"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "feature_repo"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        feast: "^0.44.0",
+        feathr: "^1.0.0",
+        hopsworks: "^4.1.0",
+        redis: "^5.0.0",
+        pyspark: "^3.5.0",
+        "kafka-python": "^2.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "feast", "feature_store.yaml"), [
+      "project: repo_tutor",
+      "registry: data/registry.db",
+      "provider: local",
+      "offline_store:",
+      "  type: snowflake",
+      "  warehouse: Spark",
+      "  fallback: BigQuery",
+      "online_store:",
+      "  type: redis",
+      "  connection_string: Redis localhost",
+      "feature_server: true"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "feast", "features.py"), [
+      "from feast import FeatureStore, Entity, FeatureView, FeatureService, Field, RequestSource, PushSource",
+      "from feast.infra.offline_stores.file_source import FileSource",
+      "driver = Entity(name=\"driver\", join_keys=[\"driver_id\"])",
+      "batch_source = FileSource(path=\"features.parquet\", event_timestamp_column=\"event_timestamp\")",
+      "stream_source = PushSource(name=\"driver_push\", batch_source=batch_source)",
+      "request_source = RequestSource(name=\"request\", schema=[Field(name=\"request_context\")])",
+      "view = FeatureView(name=\"driver_stats\", entities=[driver], ttl=\"1d\", schema=[Field(name=\"conv_rate\")], source=batch_source)",
+      "stream_view = StreamFeatureView(name=\"driver_stream\", entities=[driver], source=stream_source)",
+      "derived = OnDemandFeatureView(name=\"derived_driver\", sources=[request_source], features=[Field(name=\"derived_score\")], transform=lambda inputs: inputs)",
+      "service = FeatureService(name=\"driver_model\", features=[view, stream_view, derived])",
+      "store = FeatureStore(repo_path=\".\")",
+      "store.apply([driver, view, stream_view, derived, service])",
+      "store.get_historical_features(entity_df=entity_df, features=[\"driver_stats:conv_rate\"]).to_df()",
+      "store.get_online_features(features=[\"driver_stats:conv_rate\"], entity_rows=[{\"driver_id\": 1}]).to_dict()",
+      "point-in-time correct training dataset entity_df",
+      "feast apply",
+      "feast materialize 2026-01-01T00:00:00 2026-01-02T00:00:00",
+      "feast materialize-incremental 2026-01-02T00:00:00",
+      "materialize_incremental",
+      "feature server serving API"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "feathr", "features.py"), [
+      "from feathr import FeatureAnchor, DerivedFeature, RedisSink, MaterializationSettings",
+      "from feathr import SparkSqlSource, KafkaConfig, INPUT_CONTEXT, FeatureJoinJob, FeatureGenJob",
+      "anchor = FeatureAnchor(name=\"user_anchor\", source=SparkSqlSource(name=\"batch_source\", event_timestamp_column=\"event_timestamp\"), features=[])",
+      "stream = KafkaConfig(brokers=[\"localhost:9092\"], topics=[\"feature_events\"])",
+      "derived = DerivedFeature(name=\"derived_user\", input_features=[INPUT_CONTEXT], transform=\"feature_transformation Spark SQL Aggregation\")",
+      "sink = RedisSink(table_name=\"online_features\")",
+      "settings = MaterializationSettings(sinks=[sink], schedule=\"0 * * * *\")",
+      "registry = FeathrRegistry(feature_registry=\"feature_registry\")",
+      "join_job = FeatureJoinJob(feature_anchor_list=[anchor], feature_list=[derived])",
+      "gen_job = FeatureGenJob(output_path=\"training dataset\")",
+      "client.materialize_features(settings)",
+      "client.get_online_features(feature_table=\"driver\", key=[\"1\"])",
+      "FeatureJoin point-in-time training dataset"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "hopsworks", "feature_store.md"), [
+      "# Hopsworks Feature Store API",
+      "FeatureGroup and Feature View assets define online feature and offline feature serving.",
+      "FeatureGroup source data connector event_timestamp ttl schema fields.",
+      "TrainingDataset generation supports point-in-time correct training data.",
+      "feature group online feature offline feature serving API provenance lineage.",
+      "offlineFeaturestoreDbName onlineFeaturestoreDbName registry metadata.",
+      "Feature Store API materialization streaming ingestion and serving paths."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "feature-store.yml"), [
+      "name: feature-store",
+      "on: [push]",
+      "jobs:",
+      "  feature-store:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: feast apply",
+      "      - run: feast materialize-incremental 2026-01-02T00:00:00",
+      "      - run: python -c \"client.materialize_features(settings)\"",
+      "      - run: pytest tests/feature_store",
+      "      - run: python -c \"store.get_historical_features(entity_df=entity_df).to_df(); store.get_online_features(features=[], entity_rows=[])\"",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: feature-store-report",
+      "          path: |",
+      "            registry.db",
+      "            feature-store-report.json",
+      "            training-dataset"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "feature-store-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      featureStoreSetups: Array<{ tool: string; definitionCount: number; entityCount: number; sourceCount: number; offlineStoreCount: number; onlineStoreCount: number; materializationCount: number; retrievalCount: number; registryCount: number; trainingDatasetCount: number; ciCount: number }>;
+      definitionSignals: Array<{ signal: string; readiness: string }>;
+      sourceSignals: Array<{ signal: string; readiness: string }>;
+      storageSignals: Array<{ signal: string; readiness: string }>;
+      retrievalSignals: Array<{ signal: string; readiness: string }>;
+      materializationSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (tool: string) => report.featureStoreSetups
+      .filter((item) => item.tool === tool)
+      .reduce((totals, item) => ({
+        definitionCount: totals.definitionCount + item.definitionCount,
+        entityCount: totals.entityCount + item.entityCount,
+        sourceCount: totals.sourceCount + item.sourceCount,
+        offlineStoreCount: totals.offlineStoreCount + item.offlineStoreCount,
+        onlineStoreCount: totals.onlineStoreCount + item.onlineStoreCount,
+        materializationCount: totals.materializationCount + item.materializationCount,
+        retrievalCount: totals.retrievalCount + item.retrievalCount,
+        registryCount: totals.registryCount + item.registryCount,
+        trainingDatasetCount: totals.trainingDatasetCount + item.trainingDatasetCount,
+        ciCount: totals.ciCount + item.ciCount
+      }), { definitionCount: 0, entityCount: 0, sourceCount: 0, offlineStoreCount: 0, onlineStoreCount: 0, materializationCount: 0, retrievalCount: 0, registryCount: 0, trainingDatasetCount: 0, ciCount: 0 });
+
+    expect(report.sourcePattern).toBe("Feature store readiness Feast Feathr Hopsworks FeatureStore FeatureView Entity FeatureService FeatureAnchor DerivedFeature FeatureGroup offline store online store registry materialize materialize-incremental historical features online features point-in-time training dataset feature join Redis Spark Kafka CI");
+    expect(setupTotals("feast").definitionCount).toBeGreaterThan(0);
+    expect(setupTotals("feast").retrievalCount).toBeGreaterThan(0);
+    expect(setupTotals("feathr").definitionCount).toBeGreaterThan(0);
+    expect(setupTotals("feathr").materializationCount).toBeGreaterThan(0);
+    expect(setupTotals("hopsworks").definitionCount).toBeGreaterThan(0);
+    expect(setupTotals("hopsworks").trainingDatasetCount).toBeGreaterThan(0);
+    expect(report.featureStoreSetups.some((item) => item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.definitionSignals)).toEqual(expect.arrayContaining(["entity", "feature-view", "feature-service", "feature-anchor", "derived-feature", "feature-group", "schema-field", "transform"]));
+    expect(readySignals(report.sourceSignals)).toEqual(expect.arrayContaining(["batch-source", "stream-source", "request-source", "push-source", "data-source", "event-timestamp", "ttl"]));
+    expect(readySignals(report.storageSignals)).toEqual(expect.arrayContaining(["offline-store", "online-store", "registry", "provider", "redis", "spark", "snowflake", "bigquery"]));
+    expect(readySignals(report.retrievalSignals)).toEqual(expect.arrayContaining(["historical-features", "online-features", "point-in-time", "training-dataset", "feature-join", "entity-df", "serving-api"]));
+    expect(readySignals(report.materializationSignals)).toEqual(expect.arrayContaining(["materialize-command", "incremental-materialize", "scheduled-materialization", "streaming-ingestion", "sink", "feature-server"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "feature-store-apply-command", "materialization-command", "offline-online-test-command", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["feast", "feathr", "hopsworks", "redis", "spark", "kafka"]));
+    expect(report.riskQueue).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"FeatureStore|FeatureView|Entity|FeatureService|FeatureAnchor|DerivedFeature|FeatureGroup\" .",
+      "rg \"offline_store|online_store|registry|provider|Redis|Spark|Snowflake|BigQuery\" .",
+      "rg \"materialize|materialize-incremental|FeatureGenJob|FeatureJoinJob|feature server|upload-artifact\" ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-store-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-store-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "feature-store-readiness.html"))).resolves.toBeUndefined();
+    const featureStoreMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "feature-store-readiness.md"), "utf8");
+    expect(featureStoreMarkdown).toContain("Definition Signals");
+    expect(featureStoreMarkdown).toContain("Storage Signals");
+    expect(featureStoreMarkdown).toContain("Materialization Signals");
+    const featureStoreHtml = await fs.readFile(path.join(result.session.outputPaths.html, "feature-store-readiness.html"), "utf8");
+    expect(featureStoreHtml).toContain("feature-store-readiness-card");
+    expect(featureStoreHtml).toContain("data-source-pattern=\"FeatureStore\"");
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {
