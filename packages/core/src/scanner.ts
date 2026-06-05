@@ -54,6 +54,7 @@ import {
   FlakyTestReadinessReport,
   TestImpactReadinessReport,
   TestReportingReadinessReport,
+  SnapshotReadinessReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
   AccessibilityReport,
@@ -208,6 +209,7 @@ export interface AnalysisBundle {
   flakyTestReadinessReport: FlakyTestReadinessReport;
   testImpactReadinessReport: TestImpactReadinessReport;
   testReportingReadinessReport: TestReportingReadinessReport;
+  snapshotReadinessReport: SnapshotReadinessReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
   accessibilityReport: AccessibilityReport;
@@ -362,6 +364,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const flakyTestReadinessReport = await buildFlakyTestReadinessReport(walk);
   const testImpactReadinessReport = await buildTestImpactReadinessReport(walk);
   const testReportingReadinessReport = await buildTestReportingReadinessReport(walk);
+  const snapshotReadinessReport = await buildSnapshotReadinessReport(walk);
   const integrationTestEnvironmentReadinessReport = await buildIntegrationTestEnvironmentReadinessReport(walk, runtimeEnvironmentReport);
   const chaosEngineeringReadinessReport = await buildChaosEngineeringReadinessReport(walk);
   const accessibilityReport = await buildAccessibilityReport(walk, e2eReport);
@@ -457,7 +460,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -7583,6 +7586,294 @@ function testReportingSignalFromSpecs<T extends Record<K, string> & { pattern: R
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/test-reporting-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildSnapshotReadinessReport(walk: WalkResult): Promise<SnapshotReadinessReport> {
+  const sourceFiles = await snapshotSourceFiles(walk);
+  const snapshotSetups = snapshotSetupRows(sourceFiles);
+  const assertionSignals = snapshotAssertionSignals(sourceFiles);
+  const storageSignals = snapshotStorageSignals(sourceFiles);
+  const updateSignals = snapshotUpdateSignals(sourceFiles);
+  const serializerSignals = snapshotSerializerSignals(sourceFiles);
+  const visualSignals = snapshotVisualSignals(sourceFiles);
+  const ciSignals = snapshotCiSignals(sourceFiles);
+  const packageSignals = snapshotPackageSignals(sourceFiles);
+  const hasAssertion = assertionSignals.some((item) => item.readiness === "ready");
+  const hasStorage = storageSignals.some((item) => item.readiness === "ready");
+  const hasUpdatePolicy = updateSignals.some((item) => item.readiness === "ready");
+  const hasVisual = visualSignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: SnapshotReadinessReport["riskQueue"] = [];
+  if (!hasAssertion) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add explicit snapshot assertions before relying on snapshot review signals.",
+      why: "Snapshot baselines are only useful when tests call text, inline, file, visual, or ARIA snapshot matchers.",
+      relatedHref: "html/snapshot-readiness.html"
+    });
+  }
+  if (hasAssertion && !hasStorage) {
+    riskQueue.push({
+      priority: "high",
+      action: "Make snapshot baseline locations explicit and commit the expected baselines.",
+      why: "Untracked or implicit baselines make CI behavior hard to audit and reproduce.",
+      relatedHref: "html/snapshot-readiness.html"
+    });
+  }
+  if (hasAssertion && !hasUpdatePolicy) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document snapshot update policy for local review and CI.",
+      why: "Teams need a clear path for updateSnapshot/update-snapshots while CI should fail on unexpected new snapshots.",
+      relatedHref: "html/snapshot-readiness.html"
+    });
+  }
+  if (hasVisual && !ciSignals.some((item) => item.signal === "os-matrix" && item.readiness === "ready")) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Pin OS/browser/runtime matrix for visual snapshots.",
+      why: "Screenshot baselines can drift by platform, browser, font, scale, or rendering settings.",
+      relatedHref: "html/snapshot-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run the project's original snapshot commands before treating this report as quality evidence.",
+    why: "RepoTutor records static snapshot readiness only; it does not update, diff, or approve snapshots.",
+    relatedHref: "html/snapshot-readiness.html"
+  });
+
+  return {
+    summary: `Snapshot readiness report: setup ${snapshotSetups.length}개, assertion signal ${assertionSignals.filter((item) => item.readiness === "ready").length}개, update signal ${updateSignals.filter((item) => item.readiness === "ready").length}개, visual signal ${visualSignals.filter((item) => item.readiness === "ready").length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Snapshot testing readiness Jest Vitest Playwright toMatchSnapshot inline file visual ARIA snapshots update policy serializers baselines CI",
+    snapshotSetups,
+    assertionSignals,
+    storageSignals,
+    updateSignals,
+    serializerSignals,
+    visualSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "npx jest --ci", purpose: "Verify Jest snapshots in CI mode without auto-writing new snapshots." },
+      { command: "npx jest --updateSnapshot", purpose: "Update reviewed Jest snapshots locally." },
+      { command: "npx vitest run --update", purpose: "Update reviewed Vitest snapshots locally." },
+      { command: "npx playwright test --update-snapshots=changed", purpose: "Update reviewed Playwright visual/text/ARIA snapshots." },
+      { command: "rg \"toMatchSnapshot|toMatchInlineSnapshot|toMatchFileSnapshot|toHaveScreenshot|toMatchAriaSnapshot|snapshotPathTemplate\" .", purpose: "Locate static snapshot readiness evidence." }
+    ],
+    learnerNextSteps: [
+      "먼저 snapshot assertion이 무엇을 고정하는지 확인하고, volatile field는 property matcher나 serializer로 제거하세요.",
+      "`.snap`, file snapshot, screenshot baseline, ARIA YAML baseline이 버전 관리되는 위치에 있는지 확인하세요.",
+      "로컬 update command와 CI fail policy가 분리되어 있는지 확인하세요.",
+      "visual snapshot은 OS, browser, font, scale, mask, threshold 설정이 재현 가능한지 원본 CI에서 검증해야 합니다."
+    ]
+  };
+}
+
+type SnapshotSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function snapshotSourceFiles(walk: WalkResult): Promise<SnapshotSourceFile[]> {
+  const files: SnapshotSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !snapshotInspectablePath(file.relPath)) continue;
+    const pathCandidate = snapshotPathSignal(file.relPath);
+    const text = await readTextIfSafe(file.absPath, 180_000);
+    if (!text) continue;
+    if (!pathCandidate && !snapshotContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 180) break;
+  }
+  return files;
+}
+
+function snapshotInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return /^(package\.json|jest\.config\.[cm]?[jt]s|vitest\.config\.[cm]?[jt]s|playwright\.config\.[cm]?[jt]s|README\.md)$/i.test(base)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(^|\/)(__snapshots__|snapshots?|__screenshots__|screenshots?|visual-baselines?|fixtures?)(\/|$)/i.test(filePath)
+    || /\.(snap|aria\.ya?ml|test\.[cm]?[jt]sx?|spec\.[cm]?[jt]sx?|ya?ml|md|json|ts|tsx|js|jsx)$/i.test(filePath);
+}
+
+function snapshotPathSignal(filePath: string): boolean {
+  return /(^|\/)(__snapshots__|snapshots?|__screenshots__|screenshots?|visual-baselines?)(\/|$)|\.(snap|aria\.ya?ml|png)$/i.test(filePath);
+}
+
+function snapshotContentSignal(text: string): boolean {
+  return /(toMatchSnapshot|toMatchInlineSnapshot|toMatchFileSnapshot|toThrowErrorMatchingInlineSnapshot|toHaveScreenshot|toMatchAriaSnapshot|snapshotPathTemplate|snapshotSerializers|addSnapshotSerializer|snapshotFormat|updateSnapshot|update-snapshots|__snapshots__|maxDiffPixels|maxDiffPixelRatio|maskColor|stylePath)/i.test(text);
+}
+
+function snapshotSetupRows(sourceFiles: SnapshotSourceFile[]): SnapshotReadinessReport["snapshotSetups"] {
+  const rows: SnapshotReadinessReport["snapshotSetups"] = [];
+  for (const source of sourceFiles) {
+    const textSnapshotCount = countMatches(source.text, /toMatchSnapshot|matchSnapshot|jest-snapshot|snapshot test/gi);
+    const inlineSnapshotCount = countMatches(source.text, /toMatchInlineSnapshot|toThrowErrorMatchingInlineSnapshot|inline snapshot/gi);
+    const fileSnapshotCount = countMatches(source.text, /toMatchFileSnapshot|file snapshot|\.snap\b|__snapshots__/gi);
+    const visualSnapshotCount = countMatches(source.text, /toHaveScreenshot|screenshot baseline|visual snapshot|visual comparison|__screenshots__/gi);
+    const ariaSnapshotCount = countMatches(source.text, /toMatchAriaSnapshot|aria snapshot|\.aria\.ya?ml/gi);
+    const updatePolicyCount = countMatches(source.text, /updateSnapshot|--updateSnapshot|--update-snapshots|update snapshots?|missing|changed|all|none|watch mode|\bu key\b/gi);
+    const serializerCount = countMatches(source.text, /snapshotSerializers|addSnapshotSerializer|snapshotFormat|pretty-format|serializer/gi);
+    const pathTemplateCount = countMatches(source.text, /snapshotPathTemplate|snapshotResolver|snapshotDir|snapshot path|__snapshots__|__screenshots__/gi);
+    const thresholdCount = countMatches(source.text, /maxDiffPixels|maxDiffPixelRatio|threshold|pixelmatch|diff pixel/gi);
+    const maskingCount = countMatches(source.text, /maskColor|mask:|stylePath|animations|caret|scale|dynamic data|volatile/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|GitHub Actions|pull_request|CI\s*[:=]|--ci|update-forbidden|update snapshots forbidden|runs-on|matrix|browserName|os:/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const baselineCount = countMatches(source.text, /__snapshots__|\.snap\b|baseline|expected screenshot|expected.*actual|version control|commit.*snapshot|snapshots?\/|__screenshots__/gi) + (snapshotPathSignal(source.filePath) ? 1 : 0);
+    const reviewCount = countMatches(source.text, /review|approve|snapshot diff|expected|actual|artifact|upload-artifact|HTML report|trace|pull request/gi);
+    const totalSignals = textSnapshotCount + inlineSnapshotCount + fileSnapshotCount + visualSnapshotCount + ariaSnapshotCount + updatePolicyCount + serializerCount + pathTemplateCount + thresholdCount + maskingCount + ciCount + baselineCount + reviewCount;
+    if (totalSignals === 0 && !snapshotPathSignal(source.filePath)) continue;
+    const readiness = (textSnapshotCount + inlineSnapshotCount + fileSnapshotCount + visualSnapshotCount + ariaSnapshotCount) > 0 && baselineCount > 0 && updatePolicyCount > 0
+      ? "ready"
+      : totalSignals > 0
+        ? "partial"
+        : "missing";
+    rows.push({
+      filePath: source.filePath,
+      framework: snapshotFramework(source.filePath, source.text),
+      textSnapshotCount,
+      inlineSnapshotCount,
+      fileSnapshotCount,
+      visualSnapshotCount,
+      ariaSnapshotCount,
+      updatePolicyCount,
+      serializerCount,
+      pathTemplateCount,
+      thresholdCount,
+      maskingCount,
+      ciCount,
+      baselineCount,
+      reviewCount,
+      readiness,
+      evidence: `${source.filePath} contains ${totalSignals} snapshot readiness signal(s).`,
+      sourceHref: source.sourceHref
+    });
+  }
+  const order = { ready: 0, partial: 1, missing: 2 };
+  return rows.sort((a, b) => order[a.readiness] - order[b.readiness] || a.filePath.localeCompare(b.filePath)).slice(0, 90);
+}
+
+function snapshotFramework(filePath: string, text: string): SnapshotReadinessReport["snapshotSetups"][number]["framework"] {
+  if (/playwright|toHaveScreenshot|toMatchAriaSnapshot|snapshotPathTemplate/i.test(text) || /playwright/i.test(filePath)) return "playwright";
+  if (/vitest|vi\.|toMatchFileSnapshot/i.test(text) || /vitest/i.test(filePath)) return "vitest";
+  if (/jest|jest-snapshot|toMatchInlineSnapshot|snapshotSerializers/i.test(text) || /jest/i.test(filePath)) return "jest";
+  if (/storybook|stories\./i.test(text) || /storybook/i.test(filePath)) return "storybook";
+  return snapshotContentSignal(text) ? "custom" : "unknown";
+}
+
+function snapshotAssertionSignals(sourceFiles: SnapshotSourceFile[]): SnapshotReadinessReport["assertionSignals"] {
+  const specs: Array<{ signal: SnapshotReadinessReport["assertionSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "to-match-snapshot", pattern: /toMatchSnapshot|matchSnapshot/i, evidence: "toMatchSnapshot evidence was detected." },
+    { signal: "inline-snapshot", pattern: /toMatchInlineSnapshot|inline snapshot/i, evidence: "inline snapshot evidence was detected." },
+    { signal: "file-snapshot", pattern: /toMatchFileSnapshot|file snapshot/i, evidence: "file snapshot evidence was detected." },
+    { signal: "throw-error-inline", pattern: /toThrowErrorMatchingInlineSnapshot/i, evidence: "throw-error inline snapshot evidence was detected." },
+    { signal: "to-have-screenshot", pattern: /toHaveScreenshot/i, evidence: "toHaveScreenshot evidence was detected." },
+    { signal: "to-match-aria-snapshot", pattern: /toMatchAriaSnapshot|aria snapshot/i, evidence: "ARIA snapshot evidence was detected." },
+    { signal: "property-matchers", pattern: /propertyMatchers|expect\.any|expect\.stringMatching|asymmetric matchers?|volatile fields?/i, evidence: "property matcher evidence was detected." },
+    { signal: "custom-matchers", pattern: /Snapshots\.toMatch|jest-snapshot|custom snapshot matchers?|expect\.extend/i, evidence: "custom snapshot matcher evidence was detected." }
+  ];
+  return snapshotSignalFromSpecs(sourceFiles, specs, "assertion", "signal");
+}
+
+function snapshotStorageSignals(sourceFiles: SnapshotSourceFile[]): SnapshotReadinessReport["storageSignals"] {
+  const specs: Array<{ signal: SnapshotReadinessReport["storageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "__snapshots__", pattern: /__snapshots__/i, evidence: "__snapshots__ storage evidence was detected." },
+    { signal: "snap-files", pattern: /\.snap\b|snap file/i, evidence: ".snap file evidence was detected." },
+    { signal: "file-snapshot", pattern: /toMatchFileSnapshot|file snapshot|fixtures?\//i, evidence: "file snapshot storage evidence was detected." },
+    { signal: "snapshot-path-template", pattern: /snapshotPathTemplate|snapshotResolver|snapshot path/i, evidence: "snapshot path template evidence was detected." },
+    { signal: "screenshot-baseline", pattern: /__screenshots__|screenshots?\/|baseline screenshot|expected screenshot/i, evidence: "screenshot baseline evidence was detected." },
+    { signal: "aria-yaml", pattern: /\.aria\.ya?ml|ARIA snapshot|aria snapshot/i, evidence: "ARIA YAML evidence was detected." },
+    { signal: "version-controlled-baseline", pattern: /commit.*snapshot|version control|checked in|part of the code|baseline.*repo/i, evidence: "version-controlled baseline evidence was detected." }
+  ];
+  return snapshotSignalFromSpecs(sourceFiles, specs, "storage", "signal");
+}
+
+function snapshotUpdateSignals(sourceFiles: SnapshotSourceFile[]): SnapshotReadinessReport["updateSignals"] {
+  const specs: Array<{ signal: SnapshotReadinessReport["updateSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "update-snapshot", pattern: /--updateSnapshot|updateSnapshot\b/i, evidence: "Jest updateSnapshot evidence was detected." },
+    { signal: "update-snapshots", pattern: /--update-snapshots|update snapshots/i, evidence: "Playwright update-snapshots evidence was detected." },
+    { signal: "watch-update", pattern: /watch mode|\bu key\b|interactive update/i, evidence: "watch update evidence was detected." },
+    { signal: "ci-new-snapshot-fail", pattern: /--ci|CI.*new snapshot.*fail|new snapshots?.*CI.*fail|not automatically written.*CI/i, evidence: "CI new-snapshot fail evidence was detected." },
+    { signal: "missing-only", pattern: /missing-only|missing snapshots?|update-snapshots[ =:]+missing|updateSnapshots:\s*['"]missing/i, evidence: "missing-only update policy evidence was detected." },
+    { signal: "changed-only", pattern: /changed-only|changed snapshots?|update-snapshots[ =:]+changed|updateSnapshots:\s*['"]changed/i, evidence: "changed-only update policy evidence was detected." },
+    { signal: "all-update", pattern: /updateSnapshots:\s*['"]all|--update-snapshots[ =:]+all|updateSnapshot:\s*['"]all/i, evidence: "all update policy evidence was detected." },
+    { signal: "none-update", pattern: /updateSnapshots:\s*['"]none|--update-snapshots[ =:]+none|updateSnapshot:\s*['"]none/i, evidence: "none update policy evidence was detected." }
+  ];
+  return snapshotSignalFromSpecs(sourceFiles, specs, "update", "signal");
+}
+
+function snapshotSerializerSignals(sourceFiles: SnapshotSourceFile[]): SnapshotReadinessReport["serializerSignals"] {
+  const specs: Array<{ signal: SnapshotReadinessReport["serializerSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "snapshot-serializers", pattern: /snapshotSerializers/i, evidence: "snapshotSerializers evidence was detected." },
+    { signal: "add-snapshot-serializer", pattern: /addSnapshotSerializer/i, evidence: "expect.addSnapshotSerializer evidence was detected." },
+    { signal: "snapshot-format", pattern: /snapshotFormat/i, evidence: "snapshotFormat evidence was detected." },
+    { signal: "pretty-format", pattern: /pretty-format|prettyFormat/i, evidence: "pretty-format evidence was detected." },
+    { signal: "custom-serializer", pattern: /serializer|test:\s*\(|print:\s*\(|serialize/i, evidence: "custom serializer evidence was detected." }
+  ];
+  return snapshotSignalFromSpecs(sourceFiles, specs, "serializer", "signal");
+}
+
+function snapshotVisualSignals(sourceFiles: SnapshotSourceFile[]): SnapshotReadinessReport["visualSignals"] {
+  const specs: Array<{ signal: SnapshotReadinessReport["visualSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "to-have-screenshot", pattern: /toHaveScreenshot/i, evidence: "toHaveScreenshot visual evidence was detected." },
+    { signal: "max-diff-pixels", pattern: /maxDiffPixels/i, evidence: "maxDiffPixels evidence was detected." },
+    { signal: "max-diff-pixel-ratio", pattern: /maxDiffPixelRatio/i, evidence: "maxDiffPixelRatio evidence was detected." },
+    { signal: "threshold", pattern: /threshold/i, evidence: "visual threshold evidence was detected." },
+    { signal: "mask", pattern: /mask:\s*\[|mask:|masked elements?/i, evidence: "mask evidence was detected." },
+    { signal: "mask-color", pattern: /maskColor/i, evidence: "maskColor evidence was detected." },
+    { signal: "style-path", pattern: /stylePath/i, evidence: "stylePath evidence was detected." },
+    { signal: "animations", pattern: /animations:\s*['"]disabled|animations/i, evidence: "animations control evidence was detected." },
+    { signal: "caret", pattern: /caret:\s*['"]hide|caret/i, evidence: "caret control evidence was detected." },
+    { signal: "scale", pattern: /scale:\s*['"]css|scale:\s*['"]device|scale/i, evidence: "scale evidence was detected." }
+  ];
+  return snapshotSignalFromSpecs(sourceFiles, specs, "visual", "signal");
+}
+
+function snapshotCiSignals(sourceFiles: SnapshotSourceFile[]): SnapshotReadinessReport["ciSignals"] {
+  const specs: Array<{ signal: SnapshotReadinessReport["ciSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "github-actions", pattern: /^\.github\/workflows\/|GitHub Actions|actions\/checkout/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "pull-request", pattern: /pull_request|pull request/i, evidence: "pull request CI evidence was detected." },
+    { signal: "update-forbidden", pattern: /--ci|update-forbidden|update snapshots forbidden|updateSnapshot.*none|update-snapshots=none/i, evidence: "forbidden snapshot update evidence was detected." },
+    { signal: "snapshot-artifact", pattern: /upload-artifact|snapshot.*artifact|playwright-report|test-results/i, evidence: "snapshot artifact evidence was detected." },
+    { signal: "os-matrix", pattern: /matrix:|runs-on:|ubuntu|macos|windows|os:/i, evidence: "OS matrix evidence was detected." },
+    { signal: "browser-matrix", pattern: /browserName|chromium|firefox|webkit|project.*browser/i, evidence: "browser matrix evidence was detected." },
+    { signal: "snapshot-report", pattern: /HTML report|snapshot diff|playwright-report|jest-html|summary/i, evidence: "snapshot report evidence was detected." }
+  ];
+  return snapshotSignalFromSpecs(sourceFiles, specs, "ci", "signal");
+}
+
+function snapshotPackageSignals(sourceFiles: SnapshotSourceFile[]): SnapshotReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: SnapshotReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "jest", pattern: /"jest"|jest\.config|npx jest/i, evidence: "Jest package/config evidence was detected." },
+    { signal: "vitest", pattern: /"vitest"|vitest\.config|npx vitest/i, evidence: "Vitest package/config evidence was detected." },
+    { signal: "playwright", pattern: /"@playwright\/test"|playwright\.config|npx playwright/i, evidence: "Playwright package/config evidence was detected." },
+    { signal: "jest-snapshot", pattern: /jest-snapshot/i, evidence: "jest-snapshot package evidence was detected." },
+    { signal: "pretty-format", pattern: /pretty-format|prettyFormat/i, evidence: "pretty-format package evidence was detected." },
+    { signal: "testing-library", pattern: /@testing-library|react-test-renderer/i, evidence: "Testing Library or renderer evidence was detected." }
+  ];
+  return snapshotSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function snapshotSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: SnapshotSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => {
+      const haystack = `${source.filePath}\n${source.text}`;
+      return spec.pattern.test(source.filePath) || spec.pattern.test(source.text) || spec.pattern.test(haystack);
+    });
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/snapshot-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

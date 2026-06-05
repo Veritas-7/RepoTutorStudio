@@ -1915,6 +1915,84 @@ export const TestReportingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SnapshotReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  snapshotSetups: z.array(z.object({
+    filePath: z.string(),
+    framework: z.enum(["jest", "vitest", "playwright", "storybook", "custom", "unknown"]),
+    textSnapshotCount: z.number().int().nonnegative(),
+    inlineSnapshotCount: z.number().int().nonnegative(),
+    fileSnapshotCount: z.number().int().nonnegative(),
+    visualSnapshotCount: z.number().int().nonnegative(),
+    ariaSnapshotCount: z.number().int().nonnegative(),
+    updatePolicyCount: z.number().int().nonnegative(),
+    serializerCount: z.number().int().nonnegative(),
+    pathTemplateCount: z.number().int().nonnegative(),
+    thresholdCount: z.number().int().nonnegative(),
+    maskingCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    baselineCount: z.number().int().nonnegative(),
+    reviewCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  assertionSignals: z.array(z.object({
+    signal: z.enum(["to-match-snapshot", "inline-snapshot", "file-snapshot", "throw-error-inline", "to-have-screenshot", "to-match-aria-snapshot", "property-matchers", "custom-matchers", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  storageSignals: z.array(z.object({
+    signal: z.enum(["__snapshots__", "snap-files", "file-snapshot", "snapshot-path-template", "screenshot-baseline", "aria-yaml", "version-controlled-baseline", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  updateSignals: z.array(z.object({
+    signal: z.enum(["update-snapshot", "update-snapshots", "watch-update", "ci-new-snapshot-fail", "missing-only", "changed-only", "all-update", "none-update", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  serializerSignals: z.array(z.object({
+    signal: z.enum(["snapshot-serializers", "add-snapshot-serializer", "snapshot-format", "pretty-format", "custom-serializer", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  visualSignals: z.array(z.object({
+    signal: z.enum(["to-have-screenshot", "max-diff-pixels", "max-diff-pixel-ratio", "threshold", "mask", "mask-color", "style-path", "animations", "caret", "scale", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "pull-request", "update-forbidden", "snapshot-artifact", "os-matrix", "browser-matrix", "snapshot-report", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["jest", "vitest", "playwright", "jest-snapshot", "pretty-format", "testing-library", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const IntegrationTestEnvironmentReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -8400,6 +8478,7 @@ export type E2eReport = z.infer<typeof E2eReportSchema>;
 export type FlakyTestReadinessReport = z.infer<typeof FlakyTestReadinessReportSchema>;
 export type TestImpactReadinessReport = z.infer<typeof TestImpactReadinessReportSchema>;
 export type TestReportingReadinessReport = z.infer<typeof TestReportingReadinessReportSchema>;
+export type SnapshotReadinessReport = z.infer<typeof SnapshotReadinessReportSchema>;
 export type IntegrationTestEnvironmentReadinessReport = z.infer<typeof IntegrationTestEnvironmentReadinessReportSchema>;
 export type ChaosEngineeringReadinessReport = z.infer<typeof ChaosEngineeringReadinessReportSchema>;
 export type AccessibilityReport = z.infer<typeof AccessibilityReportSchema>;

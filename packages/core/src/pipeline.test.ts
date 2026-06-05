@@ -43,6 +43,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "flaky-test-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-impact-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-reporting-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "snapshot-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "chaos-engineering-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "accessibility-report.json"))).resolves.toBeUndefined();
@@ -178,6 +179,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "flaky-test-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-impact-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-reporting-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "snapshot-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "chaos-engineering-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "accessibility.md"))).resolves.toBeUndefined();
@@ -316,6 +318,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "flaky-test-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "test-impact-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "test-reporting-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "snapshot-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "chaos-engineering-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "accessibility.html"))).resolves.toBeUndefined();
@@ -481,6 +484,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/flaky-test-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/test-impact-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/test-reporting-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/snapshot-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/integration-test-environment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/chaos-engineering-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/accessibility.html\"");
@@ -1130,6 +1134,27 @@ describe("RepoTutor core pipeline", () => {
     expect(testReportingMarkdown).toContain("Source pattern: Test reporting readiness");
     expect(testReportingMarkdown).toContain("## Adapter Signals");
     expect(testReportingMarkdown).toContain("## Quality Signals");
+    const snapshotReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "snapshot-readiness-report.json"), "utf8");
+    expect(snapshotReadinessText).toContain("Snapshot testing readiness Jest Vitest Playwright toMatchSnapshot inline file visual ARIA snapshots update policy serializers baselines CI");
+    expect(snapshotReadinessText).toContain("\"snapshotSetups\"");
+    expect(snapshotReadinessText).toContain("\"assertionSignals\"");
+    expect(snapshotReadinessText).toContain("\"storageSignals\"");
+    expect(snapshotReadinessText).toContain("\"updateSignals\"");
+    expect(snapshotReadinessText).toContain("\"serializerSignals\"");
+    expect(snapshotReadinessText).toContain("\"visualSignals\"");
+    expect(snapshotReadinessText).toContain("\"packageSignals\"");
+    expect(snapshotReadinessText).toContain("npx playwright test --update-snapshots=changed");
+    const snapshotReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "snapshot-readiness.html"), "utf8");
+    expect(snapshotReadinessHtml).toContain("Snapshot Readiness");
+    expect(snapshotReadinessHtml).toContain("snapshot-readiness-card");
+    expect(snapshotReadinessHtml).toContain("data-source-pattern=\"Snapshot\"");
+    expect(snapshotReadinessHtml).toContain("Update Signals");
+    expect(snapshotReadinessHtml).toContain("Visual Signals");
+    const snapshotReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "snapshot-readiness.md"), "utf8");
+    expect(snapshotReadinessMarkdown).toContain("# Snapshot Readiness");
+    expect(snapshotReadinessMarkdown).toContain("Source pattern: Snapshot testing readiness");
+    expect(snapshotReadinessMarkdown).toContain("## Serializer Signals");
+    expect(snapshotReadinessMarkdown).toContain("## Visual Signals");
     const integrationTestEnvironmentText = await fs.readFile(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"), "utf8");
     expect(integrationTestEnvironmentText).toContain("Testcontainers GenericContainer DockerContainer DockerComposeEnvironment DockerCompose wait strategies exposed ports env lifecycle stop Ryuk resource reaper pytest beforeAll afterAll");
     expect(integrationTestEnvironmentText).toContain("\"integrationSetups\"");
@@ -3113,6 +3138,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/flaky-test-readiness.html");
     expect(exportManifestText).toContain("html/test-impact-readiness.html");
     expect(exportManifestText).toContain("html/test-reporting-readiness.html");
+    expect(exportManifestText).toContain("html/snapshot-readiness.html");
     expect(exportManifestText).toContain("html/integration-test-environment-readiness.html");
     expect(exportManifestText).toContain("html/chaos-engineering-readiness.html");
     expect(exportManifestText).toContain("html/accessibility.html");
@@ -3270,6 +3296,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("flaky-test-readiness.html");
     expect(learningPathHtml).toContain("test-impact-readiness.html");
     expect(learningPathHtml).toContain("test-reporting-readiness.html");
+    expect(learningPathHtml).toContain("snapshot-readiness.html");
     expect(learningPathHtml).toContain("integration-test-environment-readiness.html");
     expect(learningPathHtml).toContain("chaos-engineering-readiness.html");
     expect(learningPathHtml).toContain("accessibility.html");
@@ -5701,6 +5728,183 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-reporting-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-reporting-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "test-reporting-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects snapshot readiness without running test toolchains", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-snapshot-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-snapshot-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "__tests__", "__snapshots__"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "__tests__", "fixtures"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "e2e", "__snapshots__"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "__screenshots__"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "test:jest": "jest --ci",
+        "test:jest:update": "jest --updateSnapshot",
+        "test:vitest:update": "vitest run --update",
+        "test:playwright": "playwright test --update-snapshots=none",
+        "test:playwright:update": "playwright test --update-snapshots=changed",
+        "test:playwright:update-missing": "playwright test --update-snapshots=missing",
+        "test:playwright:update-all": "playwright test --update-snapshots=all"
+      },
+      devDependencies: {
+        "@playwright/test": "^1.54.0",
+        "@testing-library/react": "^16.0.0",
+        "jest": "^30.0.0",
+        "jest-snapshot": "^30.0.0",
+        "pretty-format": "^30.0.0",
+        "react-test-renderer": "^19.0.0",
+        "vitest": "^3.0.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "jest.config.js"), [
+      "module.exports = {",
+      "  ci: true,",
+      "  snapshotFormat: { escapeString: false, printBasicPrototype: false },",
+      "  snapshotSerializers: ['<rootDir>/test/snapshot-serializer.js'],",
+      "  snapshotResolver: '<rootDir>/test/snapshot-resolver.js'",
+      "};"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "vitest.config.ts"), [
+      "import { defineConfig } from 'vitest/config';",
+      "export default defineConfig({",
+      "  test: {",
+      "    snapshotFormat: { printBasicPrototype: false },",
+      "    snapshotSerializers: ['./test/vitest-serializer.ts'],",
+      "    update: false",
+      "  }",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "playwright.config.ts"), [
+      "import { defineConfig } from '@playwright/test';",
+      "export default defineConfig({",
+      "  snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}',",
+      "  updateSnapshots: 'none',",
+      "  projects: [{ name: 'chromium', use: { browserName: 'chromium' } }, { name: 'firefox', use: { browserName: 'firefox' } }],",
+      "  expect: {",
+      "    toHaveScreenshot: { maxDiffPixels: 20, maxDiffPixelRatio: 0.01, threshold: 0.2, animations: 'disabled', caret: 'hide', scale: 'css', stylePath: './snapshot.css' },",
+      "    toMatchSnapshot: { maxDiffPixels: 10, maxDiffPixelRatio: 0.01, threshold: 0.2 }",
+      "  }",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "__tests__", "component.test.tsx"), [
+      "import { toMatchSnapshot, toMatchInlineSnapshot } from 'jest-snapshot';",
+      "expect.addSnapshotSerializer({ test: value => Boolean(value), print: value => String(value) });",
+      "expect.extend({ toMatchTrimmedSnapshot(received) { return toMatchSnapshot.call(this, String(received).trim()); } });",
+      "// Baselines are committed in __snapshots__; update locally with jest --updateSnapshot; CI uses jest --ci and fails on new snapshots.",
+      "test('component snapshot', () => {",
+      "  const user = { id: 'volatile-id', createdAt: Date.now(), name: 'Ada' };",
+      "  expect(user).toMatchSnapshot({ id: expect.any(String), createdAt: expect.any(Number) });",
+      "  expect('<button>Ada</button>').toMatchInlineSnapshot(`<button>Ada</button>`);",
+      "  expect(() => { throw new Error('boom'); }).toThrowErrorMatchingInlineSnapshot(`boom`);",
+      "  toMatchInlineSnapshot.call(expect('<p>Ada</p>'), '<p>Ada</p>');",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "__tests__", "file-snapshot.test.ts"), [
+      "import { expect, test } from 'vitest';",
+      "// toMatchFileSnapshot stores the baseline in fixtures/component.html and updates with vitest run --update.",
+      "test('file snapshot', async () => {",
+      "  await expect('<main>stable html</main>').toMatchFileSnapshot('./fixtures/component.html');",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "e2e", "home.spec.ts"), [
+      "import { expect, test } from '@playwright/test';",
+      "test('visual and aria snapshots', async ({ page }) => {",
+      "  await page.goto('/');",
+      "  await expect(page).toHaveScreenshot('home.png', {",
+      "    mask: [page.locator('[data-dynamic]')],",
+      "    maskColor: '#000000',",
+      "    stylePath: './snapshot.css',",
+      "    animations: 'disabled',",
+      "    caret: 'hide',",
+      "    scale: 'css',",
+      "    maxDiffPixels: 20,",
+      "    maxDiffPixelRatio: 0.01,",
+      "    threshold: 0.2",
+      "  });",
+      "  await expect(page.locator('main')).toMatchAriaSnapshot();",
+      "  expect(await page.textContent('main')).toMatchSnapshot('main.txt');",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "__tests__", "__snapshots__", "component.test.tsx.snap"), [
+      "exports[`component snapshot 1`] = `",
+      "<button>Ada</button>",
+      "`;"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "__tests__", "fixtures", "component.html"), "<main>stable html</main>\n");
+    await fs.writeFile(path.join(sourceRoot, "e2e", "__snapshots__", "home.aria.yml"), "- main:\n  - heading \"Welcome\"\n");
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "snapshots.yml"), [
+      "name: snapshots",
+      "on:",
+      "  pull_request:",
+      "jobs:",
+      "  snapshot:",
+      "    runs-on: ${{ matrix.os }}",
+      "    strategy:",
+      "      matrix:",
+      "        os: [ubuntu-latest, macos-latest]",
+      "        browser: [chromium, firefox, webkit]",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npx jest --ci",
+      "      - run: npx vitest run",
+      "      - run: npx playwright test --update-snapshots=none --project=${{ matrix.browser }}",
+      "      - run: echo 'snapshot diff HTML report update snapshots forbidden' >> $GITHUB_STEP_SUMMARY",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: snapshot-artifact-${{ matrix.os }}-${{ matrix.browser }}",
+      "          path: |",
+      "            __snapshots__",
+      "            __screenshots__",
+      "            playwright-report",
+      "            test-results"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "README.md"), [
+      "# Snapshot Study",
+      "Jest inline snapshots can update with --updateSnapshot or the u key in watch mode.",
+      "Jest CI mode should fail when a new snapshot appears and should not automatically write new snapshots.",
+      "Playwright update-snapshots supports missing, changed, all, and none policies.",
+      "Version controlled baseline snapshots are committed under __snapshots__, .snap files, __screenshots__, and ARIA YAML files.",
+      "Visual snapshots need threshold, maxDiffPixels, maxDiffPixelRatio, mask, maskColor, stylePath, animations, caret, and scale controls.",
+      "Snapshot review compares expected and actual output, uploads snapshot artifacts, and requires pull request approval."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "snapshot-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      snapshotSetups: Array<{ filePath: string; framework: string; textSnapshotCount: number; visualSnapshotCount: number; updatePolicyCount: number; baselineCount: number; readiness: string }>;
+      assertionSignals: Array<{ signal: string; readiness: string }>;
+      storageSignals: Array<{ signal: string; readiness: string }>;
+      updateSignals: Array<{ signal: string; readiness: string }>;
+      serializerSignals: Array<{ signal: string; readiness: string }>;
+      visualSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("Snapshot testing readiness Jest Vitest Playwright toMatchSnapshot inline file visual ARIA snapshots update policy serializers baselines CI");
+    expect(report.snapshotSetups.some((item) => item.framework === "jest" && item.readiness === "ready" && item.textSnapshotCount > 0 && item.updatePolicyCount > 0 && item.baselineCount > 0)).toBe(true);
+    expect(report.snapshotSetups.some((item) => item.framework === "playwright" && item.visualSnapshotCount > 0 && item.updatePolicyCount > 0 && item.baselineCount > 0)).toBe(true);
+    expect(readySignals(report.assertionSignals)).toEqual(expect.arrayContaining(["to-match-snapshot", "inline-snapshot", "file-snapshot", "throw-error-inline", "to-have-screenshot", "to-match-aria-snapshot", "property-matchers", "custom-matchers"]));
+    expect(readySignals(report.storageSignals)).toEqual(expect.arrayContaining(["__snapshots__", "snap-files", "file-snapshot", "snapshot-path-template", "screenshot-baseline", "aria-yaml", "version-controlled-baseline"]));
+    expect(readySignals(report.updateSignals)).toEqual(expect.arrayContaining(["update-snapshot", "update-snapshots", "watch-update", "ci-new-snapshot-fail", "missing-only", "changed-only", "all-update", "none-update"]));
+    expect(readySignals(report.serializerSignals)).toEqual(expect.arrayContaining(["snapshot-serializers", "add-snapshot-serializer", "snapshot-format", "pretty-format", "custom-serializer"]));
+    expect(readySignals(report.visualSignals)).toEqual(expect.arrayContaining(["to-have-screenshot", "max-diff-pixels", "max-diff-pixel-ratio", "threshold", "mask", "mask-color", "style-path", "animations", "caret", "scale"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "pull-request", "update-forbidden", "snapshot-artifact", "os-matrix", "browser-matrix", "snapshot-report"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["jest", "vitest", "playwright", "jest-snapshot", "pretty-format", "testing-library"]));
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "npx jest --ci",
+      "npx jest --updateSnapshot",
+      "npx vitest run --update",
+      "npx playwright test --update-snapshots=changed"
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "snapshot-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "snapshot-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "snapshot-readiness.html"))).resolves.toBeUndefined();
   });
 
   it("detects browser extension readiness without running extension toolchains", async () => {
