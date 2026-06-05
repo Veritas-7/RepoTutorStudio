@@ -5767,6 +5767,55 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Pushed AutoResearch Upgrade 227:
   - `fd9abe1` code metrics readiness report
 
+- 2026-06-05: AutoResearch Upgrade 228 candidate selected:
+  `tauri-apps/tauri`
+  (`https://github.com/tauri-apps/tauri`; Apache-2.0, public,
+  107,501 stars, 3,671 forks, updated 2026-06-04T23:14:50Z, ignored clone
+  HEAD `f092d10`) with comparison sources `electron/electron`
+  (`https://github.com/electron/electron`; MIT, public, 121,534 stars,
+  17,233 forks, updated 2026-06-04T19:09:14Z, ignored clone HEAD `b320f91`)
+  and `wailsapp/wails` (`https://github.com/wailsapp/wails`; MIT, public,
+  34,626 stars, 1,709 forks, updated 2026-06-04T21:34:34Z, ignored clone
+  HEAD `e4a3f36`). Static source inspection only; `git ls-files` for all
+  three external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-05: Implemented Tauri/Electron/Wails-style
+  desktop-readiness report: `DesktopReadinessReportSchema`,
+  `analysis/desktop-readiness-report.json`,
+  `markdown/desktop-readiness.md`, `html/desktop-readiness.html`,
+  Tauri config/capabilities/permissions/bundle/updater/signing detection,
+  Electron package/main/preload/IPC/autoUpdater/signing detection, Wails
+  config/build command detection, framework/config/runtime/permission/bundle/
+  release/package signals, static-only risk queue, recommended review
+  commands, manifest/session-verification coverage, learning-path linkage,
+  HTML page/nav entry, CLI help/list-target coverage, dedicated audit
+  coverage, and `open --target desktop-readiness`.
+- 2026-06-05: RED/GREEN desktop-readiness smoke recorded:
+  old behavior at `9776e85` had no `DesktopReadinessReportSchema` and no
+  `desktop-readiness` CLI target (`RED missing-count=2 expected=2`). GREEN
+  fixture detected Tauri, Electron, and Wails setups; Tauri
+  `tauri.conf.json`, `wails.json`, electron-builder, Electron Forge,
+  package main, Cargo manifest, frontend dist, dev URL, identifier, window,
+  tray, menu, dialog, deep-link, file-association, custom protocol, IPC,
+  Tauri capabilities, permissions, CSP, entitlements, sandbox, shell-open,
+  fs-scope, global Tauri bridge, bundle targets, icons, resources, macOS,
+  Windows, Linux, DMG, NSIS, AppImage, MSI, updater, updater artifacts,
+  signing, notarization, hardened runtime, CI build, artifact upload,
+  release draft, version sync, package signals, and all three new artifacts.
+- 2026-06-05: Verification for Upgrade 228:
+  - RED baseline smoke: PASS
+  - `pnpm --filter @repotutor/shared build && pnpm --filter @repotutor/html build && pnpm typecheck`: PASS
+  - focused desktop-readiness Vitest command: PASS, pipeline file 35/35 tests
+  - full pipeline Vitest: PASS, 35/35 tests
+  - `pnpm test`: PASS, 35/35 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 126/126 audit checks across 13 reports
+  - `git diff --check`: PASS
+  - feature-stage `gitleaks protect --staged --redact --no-banner`: PASS
+- 2026-06-05: Pushed AutoResearch Upgrade 228:
+  - `7ce313d` desktop readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
