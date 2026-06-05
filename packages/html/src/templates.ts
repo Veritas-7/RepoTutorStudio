@@ -140,6 +140,7 @@ import type {
   ImageProcessingReadinessReport,
   FileUploadReadinessReport,
   WebSocketReadinessReport,
+  RealtimeMediaReadinessReport,
   PdfGenerationReadinessReport,
   SpreadsheetReadinessReport,
   ChartVisualizationReadinessReport,
@@ -342,6 +343,7 @@ export interface StudyHtmlInput {
   imageProcessingReadinessReport: ImageProcessingReadinessReport;
   fileUploadReadinessReport: FileUploadReadinessReport;
   webSocketReadinessReport: WebSocketReadinessReport;
+  realtimeMediaReadinessReport: RealtimeMediaReadinessReport;
   pdfGenerationReadinessReport: PdfGenerationReadinessReport;
   spreadsheetReadinessReport: SpreadsheetReadinessReport;
   chartVisualizationReadinessReport: ChartVisualizationReadinessReport;
@@ -543,6 +545,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["image-processing-readiness.html", "Images"],
     ["file-upload-readiness.html", "Uploads"],
     ["websocket-readiness.html", "WebSockets"],
+    ["realtime-media-readiness.html", "Realtime Media"],
     ["pdf-generation-readiness.html", "PDF Generation"],
     ["spreadsheet-readiness.html", "Spreadsheets"],
     ["chart-visualization-readiness.html", "Charts"],
@@ -1477,6 +1480,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("WebSocket Readiness", "websocket-readiness.html", `<section class="panel" data-source-pattern="ws"><h2>WebSocket Snapshot</h2><p>${escapeHtml(input.webSocketReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.webSocketReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.webSocketReadinessReport.webSocketSetups.length}</dd></div><div><dt>connections</dt><dd>${input.webSocketReadinessReport.connectionSignals.length}</dd></div><div><dt>messages</dt><dd>${input.webSocketReadinessReport.messageSignals.length}</dd></div><div><dt>lifecycle</dt><dd>${input.webSocketReadinessReport.lifecycleSignals.length}</dd></div></dl><p class="muted">RepoTutor records WebSocket readiness only. It does not open sockets, perform HTTP upgrades, send frames, keep timers, mutate rooms, or run the analyzed project's tests.</p></section><section class="grid"><article class="websocket-readiness-card"><h3>WebSocket Setups</h3>${webSocketReadinessSetupList(input.webSocketReadinessReport.webSocketSetups)}</article><article class="websocket-readiness-card"><h3>Connection Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.connectionSignals, "signal")}</article><article class="websocket-readiness-card"><h3>Message Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.messageSignals, "signal")}</article><article class="websocket-readiness-card"><h3>Lifecycle Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.lifecycleSignals, "signal")}</article></section><section class="grid"><article class="websocket-readiness-card"><h3>Safety Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.safetySignals, "signal")}</article><article class="websocket-readiness-card"><h3>Package Signals</h3>${webSocketReadinessSignalList(input.webSocketReadinessReport.packageSignals, "signal")}</article><article class="websocket-readiness-card"><h3>Recommended Commands</h3>${webSocketReadinessCommandList(input.webSocketReadinessReport.recommendedCommands)}</article><article class="websocket-readiness-card"><h3>Risk Queue</h3>${webSocketReadinessRiskList(input.webSocketReadinessReport.riskQueue)}</article><article class="websocket-readiness-card"><h3>다음 확인 단계</h3>${list(input.webSocketReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "realtime-media-readiness.html",
+      title: "Realtime Media Readiness",
+      html: pageShell("Realtime Media Readiness", "realtime-media-readiness.html", `<section class="panel" data-source-pattern="Realtime Media"><h2>Realtime Media Snapshot</h2><p>${escapeHtml(input.realtimeMediaReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.realtimeMediaReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.realtimeMediaReadinessReport.mediaSetups.length}</dd></div><div><dt>platforms</dt><dd>${input.realtimeMediaReadinessReport.platformSignals.length}</dd></div><div><dt>tracks</dt><dd>${input.realtimeMediaReadinessReport.trackSignals.length}</dd></div><div><dt>transports</dt><dd>${input.realtimeMediaReadinessReport.transportSignals.length}</dd></div><div><dt>quality</dt><dd>${input.realtimeMediaReadinessReport.qualitySignals.length}</dd></div></dl><p class="muted">RepoTutor records realtime media readiness only; it does not join rooms, request camera or microphone access, connect to signaling servers, create WebRTC transports, fetch TURN credentials, publish media, record calls, or run the analyzed project's tests.</p></section><section class="grid"><article class="realtime-media-readiness-card"><h3>Media Setups</h3>${realtimeMediaReadinessSetupList(input.realtimeMediaReadinessReport.mediaSetups)}</article><article class="realtime-media-readiness-card"><h3>Platform Signals</h3>${realtimeMediaReadinessSignalList(input.realtimeMediaReadinessReport.platformSignals, "signal")}</article><article class="realtime-media-readiness-card"><h3>Room Signals</h3>${realtimeMediaReadinessSignalList(input.realtimeMediaReadinessReport.roomSignals, "signal")}</article><article class="realtime-media-readiness-card"><h3>Device Signals</h3>${realtimeMediaReadinessSignalList(input.realtimeMediaReadinessReport.deviceSignals, "signal")}</article></section><section class="grid"><article class="realtime-media-readiness-card"><h3>Track Signals</h3>${realtimeMediaReadinessSignalList(input.realtimeMediaReadinessReport.trackSignals, "signal")}</article><article class="realtime-media-readiness-card"><h3>Transport Signals</h3>${realtimeMediaReadinessSignalList(input.realtimeMediaReadinessReport.transportSignals, "signal")}</article><article class="realtime-media-readiness-card"><h3>Data Channel Signals</h3>${realtimeMediaReadinessSignalList(input.realtimeMediaReadinessReport.dataChannelSignals, "signal")}</article><article class="realtime-media-readiness-card"><h3>Quality Signals</h3>${realtimeMediaReadinessSignalList(input.realtimeMediaReadinessReport.qualitySignals, "signal")}</article></section><section class="grid"><article class="realtime-media-readiness-card"><h3>Security Signals</h3>${realtimeMediaReadinessSignalList(input.realtimeMediaReadinessReport.securitySignals, "signal")}</article><article class="realtime-media-readiness-card"><h3>Workflow Signals</h3>${realtimeMediaReadinessSignalList(input.realtimeMediaReadinessReport.workflowSignals, "signal")}</article><article class="realtime-media-readiness-card"><h3>Package Signals</h3>${realtimeMediaReadinessSignalList(input.realtimeMediaReadinessReport.packageSignals, "signal")}</article><article class="realtime-media-readiness-card"><h3>Recommended Commands</h3>${realtimeMediaReadinessCommandList(input.realtimeMediaReadinessReport.recommendedCommands)}</article><article class="realtime-media-readiness-card"><h3>Risk Queue</h3>${realtimeMediaReadinessRiskList(input.realtimeMediaReadinessReport.riskQueue)}</article><article class="realtime-media-readiness-card"><h3>다음 확인 단계</h3>${list(input.realtimeMediaReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "pdf-generation-readiness.html",
       title: "PDF Generation Readiness",
       html: pageShell("PDF Generation Readiness", "pdf-generation-readiness.html", `<section class="panel" data-source-pattern="pdf-lib"><h2>PDF Generation Snapshot</h2><p>${escapeHtml(input.pdfGenerationReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.pdfGenerationReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.pdfGenerationReadinessReport.pdfGenerationSetups.length}</dd></div><div><dt>documents</dt><dd>${input.pdfGenerationReadinessReport.documentSignals.length}</dd></div><div><dt>pages</dt><dd>${input.pdfGenerationReadinessReport.pageSignals.length}</dd></div><div><dt>outputs</dt><dd>${input.pdfGenerationReadinessReport.outputSignals.length}</dd></div></dl><p class="muted">RepoTutor records PDF generation readiness only; it does not parse PDFs, render pages, embed fonts/images, modify form fields, write files, trigger downloads, or run the analyzed project's tests.</p></section><section class="grid"><article class="pdf-generation-readiness-card"><h3>PDF Generation Setups</h3>${pdfGenerationReadinessSetupList(input.pdfGenerationReadinessReport.pdfGenerationSetups)}</article><article class="pdf-generation-readiness-card"><h3>Document Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.documentSignals, "signal")}</article><article class="pdf-generation-readiness-card"><h3>Page Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.pageSignals, "signal")}</article><article class="pdf-generation-readiness-card"><h3>Asset Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.assetSignals, "signal")}</article></section><section class="grid"><article class="pdf-generation-readiness-card"><h3>Form Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.formSignals, "signal")}</article><article class="pdf-generation-readiness-card"><h3>Output Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.outputSignals, "signal")}</article><article class="pdf-generation-readiness-card"><h3>Safety Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.safetySignals, "signal")}</article><article class="pdf-generation-readiness-card"><h3>Package Signals</h3>${pdfGenerationReadinessSignalList(input.pdfGenerationReadinessReport.packageSignals, "signal")}</article><article class="pdf-generation-readiness-card"><h3>Recommended Commands</h3>${pdfGenerationReadinessCommandList(input.pdfGenerationReadinessReport.recommendedCommands)}</article><article class="pdf-generation-readiness-card"><h3>Risk Queue</h3>${pdfGenerationReadinessRiskList(input.pdfGenerationReadinessReport.riskQueue)}</article><article class="pdf-generation-readiness-card"><h3>다음 확인 단계</h3>${list(input.pdfGenerationReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1961,6 +1969,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Image Processing Readiness", path: "html/image-processing-readiness.html", description: "Sharp식 input, resize/format, metadata, output, safety, performance 준비도를 확인합니다." },
       { label: "File Upload Readiness", path: "html/file-upload-readiness.html", description: "Uppy식 input, restrictions, transport, lifecycle, safety 준비도를 확인합니다." },
       { label: "WebSocket Readiness", path: "html/websocket-readiness.html", description: "ws식 server/client, upgrade, message, lifecycle, safety 준비도를 확인합니다." },
+      { label: "Realtime Media Readiness", path: "html/realtime-media-readiness.html", description: "LiveKit/mediasoup/PeerJS식 room, device, track, WebRTC transport, data channel 준비도를 확인합니다." },
       { label: "PDF Generation Readiness", path: "html/pdf-generation-readiness.html", description: "pdf-lib식 document, page, asset, form, output, safety 준비도를 확인합니다." },
       { label: "Spreadsheet Readiness", path: "html/spreadsheet-readiness.html", description: "SheetJS식 workbook, sheet, format, input, output, safety 준비도를 확인합니다." },
       { label: "Chart Visualization Readiness", path: "html/chart-visualization-readiness.html", description: "Chart.js식 chart type, data, scale, interaction, render, lifecycle 준비도를 확인합니다." },
@@ -2887,6 +2896,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "websocket-readiness.html",
       goal: "ws식 server/client, upgrade, message, lifecycle, safety 흐름을 보고 실시간 연결 관문을 확인합니다.",
       evidence: `websocket setups ${input.webSocketReadinessReport.webSocketSetups.length}개, message signals ${input.webSocketReadinessReport.messageSignals.length}개`
+    },
+    {
+      title: "Realtime media readiness 확인",
+      href: "realtime-media-readiness.html",
+      goal: "LiveKit/mediasoup/PeerJS식 room, device, track, transport, data channel 흐름을 보고 WebRTC 미디어 관문을 확인합니다.",
+      evidence: `media setups ${input.realtimeMediaReadinessReport.mediaSetups.length}개, track signals ${input.realtimeMediaReadinessReport.trackSignals.length}개`
     },
     {
       title: "PDF generation readiness 확인",
@@ -6699,6 +6714,31 @@ function webSocketReadinessRiskList(items: WebSocketReadinessReport["riskQueue"]
 }
 
 function webSocketReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function realtimeMediaReadinessSetupList(items: RealtimeMediaReadinessReport["mediaSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">realtime media setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.platform)}/${escapeHtml(item.readiness)}]<br>rooms/signaling/tracks/devices/publish/subscribe/data/transport/ice/quality/recording/workflow ${item.roomCount}/${item.signalingCount}/${item.mediaTrackCount}/${item.deviceCount}/${item.publishCount}/${item.subscribeCount}/${item.dataChannelCount}/${item.transportCount}/${item.iceCount}/${item.qualityCount}/${item.recordingCount}/${item.workflowCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(realtimeMediaReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function realtimeMediaReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">realtime media signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(realtimeMediaReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function realtimeMediaReadinessCommandList(items: RealtimeMediaReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function realtimeMediaReadinessRiskList(items: RealtimeMediaReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(realtimeMediaReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function realtimeMediaReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

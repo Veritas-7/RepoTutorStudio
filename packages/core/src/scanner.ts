@@ -149,6 +149,7 @@ import {
   ImageProcessingReadinessReport,
   FileUploadReadinessReport,
   WebSocketReadinessReport,
+  RealtimeMediaReadinessReport,
   PdfGenerationReadinessReport,
   SpreadsheetReadinessReport,
   ChartVisualizationReadinessReport,
@@ -352,6 +353,7 @@ export interface AnalysisBundle {
   imageProcessingReadinessReport: ImageProcessingReadinessReport;
   fileUploadReadinessReport: FileUploadReadinessReport;
   webSocketReadinessReport: WebSocketReadinessReport;
+  realtimeMediaReadinessReport: RealtimeMediaReadinessReport;
   pdfGenerationReadinessReport: PdfGenerationReadinessReport;
   spreadsheetReadinessReport: SpreadsheetReadinessReport;
   chartVisualizationReadinessReport: ChartVisualizationReadinessReport;
@@ -555,6 +557,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const imageProcessingReadinessReport = await buildImageProcessingReadinessReport(walk);
   const fileUploadReadinessReport = await buildFileUploadReadinessReport(walk);
   const webSocketReadinessReport = await buildWebSocketReadinessReport(walk);
+  const realtimeMediaReadinessReport = await buildRealtimeMediaReadinessReport(walk);
   const pdfGenerationReadinessReport = await buildPdfGenerationReadinessReport(walk);
   const spreadsheetReadinessReport = await buildSpreadsheetReadinessReport(walk);
   const chartVisualizationReadinessReport = await buildChartVisualizationReadinessReport(walk);
@@ -604,7 +607,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, profilingReadinessReport, tracingReadinessReport, debugReadinessReport, crashReportingReadinessReport, incidentResponseReadinessReport, sloReadinessReport, costReadinessReport, progressiveDeliveryReadinessReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataTransformationReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, dataConnectorReadinessReport, semanticLayerReadinessReport, biDashboardReadinessReport, schemaRegistryReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, realtimeMediaReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, notebookReadinessReport, mapVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -35826,6 +35829,326 @@ function webSocketReadinessSignalFromSpecs<T extends Record<K, string> & { patte
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/websocket-readiness.html"
+    } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildRealtimeMediaReadinessReport(walk: WalkResult): Promise<RealtimeMediaReadinessReport> {
+  const sourceFiles = await realtimeMediaSourceFiles(walk);
+  const mediaSetups = realtimeMediaSetups(sourceFiles);
+  const platformSignals = realtimeMediaPlatformSignals(sourceFiles);
+  const roomSignals = realtimeMediaRoomSignals(sourceFiles);
+  const deviceSignals = realtimeMediaDeviceSignals(sourceFiles);
+  const trackSignals = realtimeMediaTrackSignals(sourceFiles);
+  const transportSignals = realtimeMediaTransportSignals(sourceFiles);
+  const dataChannelSignals = realtimeMediaDataChannelSignals(sourceFiles);
+  const qualitySignals = realtimeMediaQualitySignals(sourceFiles);
+  const securitySignals = realtimeMediaSecuritySignals(sourceFiles);
+  const workflowSignals = realtimeMediaWorkflowSignals(sourceFiles);
+  const packageSignals = realtimeMediaPackageSignals(sourceFiles);
+
+  const hasPlatform = platformSignals.some((item) => item.readiness === "ready") || packageSignals.some((item) => item.readiness === "ready");
+  const hasSetup = mediaSetups.some((item) => item.readiness !== "missing");
+  const hasDevices = deviceSignals.some((item) => item.readiness === "ready") || mediaSetups.some((item) => item.deviceCount > 0);
+  const hasTracks = trackSignals.some((item) => item.readiness === "ready") || mediaSetups.some((item) => item.mediaTrackCount > 0);
+  const hasTransport = transportSignals.some((item) => item.readiness === "ready") || mediaSetups.some((item) => item.transportCount > 0 || item.iceCount > 0);
+  const hasSecurity = securitySignals.some((item) => item.readiness === "ready");
+
+  const riskQueue: RealtimeMediaReadinessReport["riskQueue"] = [];
+  if (!hasPlatform && !hasSetup) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add or document the realtime media platform before claiming WebRTC audio/video readiness.",
+      why: "Realtime media readiness starts with LiveKit, mediasoup, PeerJS, native WebRTC, or another explicit room/call/signaling implementation.",
+      relatedHref: "html/realtime-media-readiness.html"
+    });
+  }
+  if (hasSetup && !hasDevices) {
+    riskQueue.push({
+      priority: "high",
+      action: "Document getUserMedia, camera, microphone, screen share, device list, or autoplay handling.",
+      why: "Browser media sessions fail early when device permission and playback requirements are not visible.",
+      relatedHref: "html/realtime-media-readiness.html"
+    });
+  }
+  if (hasSetup && !hasTracks) {
+    riskQueue.push({
+      priority: "high",
+      action: "Record local/remote tracks, publish/subscribe paths, MediaStream, and simulcast/SVC evidence.",
+      why: "Room or peer setup alone does not prove that audio/video tracks are published and rendered.",
+      relatedHref: "html/realtime-media-readiness.html"
+    });
+  }
+  if (hasSetup && !hasTransport) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Document ICE, DTLS, STUN/TURN, WebRtcTransport, send/receive transport, or RTCConfiguration evidence.",
+      why: "Realtime media reliability depends on explicit transport and NAT traversal boundaries.",
+      relatedHref: "html/realtime-media-readiness.html"
+    });
+  }
+  if (hasSetup && !hasSecurity) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Review room tokens, E2EE, media permission, track permissions, and secure signaling before live calls.",
+      why: "Camera, microphone, screen share, and call signaling are privacy-sensitive surfaces.",
+      relatedHref: "html/realtime-media-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Verify calls, device permission prompts, TURN credentials, room tokens, and media recording only in a trusted browser or media test environment.",
+    why: "RepoTutor records realtime media readiness only; it does not join rooms, request camera or microphone access, connect to signaling servers, create WebRTC transports, fetch TURN credentials, publish media, record calls, or run the analyzed project's tests.",
+    relatedHref: "html/realtime-media-readiness.html"
+  });
+
+  return {
+    summary: `Realtime media readiness report: setup ${mediaSetups.length}개, platform signal ${platformSignals.length}개, track signal ${trackSignals.length}개, transport signal ${transportSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Realtime media readiness WebRTC LiveKit Room mediasoup WebRtcTransport PeerJS getUserMedia MediaStream Track publish subscribe ICE DTLS data channel E2EE",
+    mediaSetups,
+    platformSignals,
+    roomSignals,
+    deviceSignals,
+    trackSignals,
+    transportSignals,
+    dataChannelSignals,
+    qualitySignals,
+    securitySignals,
+    workflowSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"LiveKit|RoomEvent|new Room|room\\.connect|localParticipant|publishTrack|setCameraEnabled|setMicrophoneEnabled\" .", purpose: "Inventory LiveKit room connection, participant, device, and track publishing evidence." },
+      { command: "rg \"mediasoup|createWorker|createRouter|createWebRtcTransport|produce\\(|consume\\(|iceParameters|dtlsParameters\" .", purpose: "Review mediasoup worker, router, WebRTC transport, producer, consumer, ICE, and DTLS evidence." },
+      { command: "rg \"new Peer|peer\\.connect|peer\\.call|getUserMedia|MediaConnection|DataConnection|call\\.answer|on\\(['\\\"]stream\" .", purpose: "Map PeerJS peer, data connection, media call, local device, and remote stream evidence." },
+      { command: "rg \"RTCPeerConnection|RTCConfiguration|iceServers|stun:|turn:|RTCDataChannel|addTrack|getStats|reconnect\" .", purpose: "Check native WebRTC transport, NAT traversal, data channel, stats, and reconnect evidence." },
+      { command: "rg \"e2ee|token|permission|TrackPermission|BrowserStack|playwright|media.*artifact|recording\" .", purpose: "Check privacy/security controls, browser media QA, artifacts, and recording boundaries." }
+    ],
+    learnerNextSteps: [
+      "먼저 LiveKit, mediasoup, PeerJS, native WebRTC 중 어떤 realtime media path가 실제 entry point인지 확인하세요.",
+      "room/participant/peer/call 신호 다음에 getUserMedia, camera, microphone, screen share, autoplay 처리를 확인하세요.",
+      "publishTrack/produce/call/answer와 TrackSubscribed/consume/stream 이벤트를 연결해 local track과 remote render 흐름을 분리하세요.",
+      "ICE, DTLS, STUN/TURN, WebRtcTransport, send/recv transport, RTCConfiguration 신호로 NAT traversal과 transport 경계를 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 room join, device permission, TURN credential, media publish/recording, browser media QA는 안전한 환경에서 별도로 검증하세요."
+    ]
+  };
+}
+
+type RealtimeMediaSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function realtimeMediaSourceFiles(walk: WalkResult): Promise<RealtimeMediaSourceFile[]> {
+  const files: RealtimeMediaSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !realtimeMediaInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!realtimeMediaPathSignal(file.relPath) && !realtimeMediaContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 280) break;
+  }
+  return files;
+}
+
+function realtimeMediaInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return realtimeMediaPathSignal(filePath)
+    || /^(package\.json|playwright\.config\.[jt]s|vite\.config\.[jt]s)$/i.test(base)
+    || /\.(ts|tsx|js|jsx|mjs|cjs|json|ya?ml|toml|md|mdx|html)$/i.test(filePath);
+}
+
+function realtimeMediaPathSignal(filePath: string): boolean {
+  return /(^|\/)(webrtc|rtc|realtime[-_]?media|livekit|mediasoup|peerjs|peer|peers|room|rooms|call|calls|video|audio|media|tracks?|transports?|signaling|sfu|turn|stun|e2e|browserstack)(\/|\.|-|_|$)|\.github\/workflows/i.test(filePath);
+}
+
+function realtimeMediaContentSignal(text: string): boolean {
+  return /LiveKit|RoomEvent|new\s+Room|room\.connect|localParticipant|createLocalTracks|publishTrack|setCameraEnabled|setMicrophoneEnabled|setScreenShareEnabled|mediasoup|createWebRtcTransport|WebRtcTransport|produce\(|consume\(|iceParameters|dtlsParameters|new\s+Peer|peer\.call|peer\.connect|getUserMedia|MediaConnection|DataConnection|RTCPeerConnection|RTCDataChannel|iceServers|E2EE/i.test(text);
+}
+
+function realtimeMediaSetups(sourceFiles: RealtimeMediaSourceFile[]): RealtimeMediaReadinessReport["mediaSetups"] {
+  const rows: RealtimeMediaReadinessReport["mediaSetups"] = [];
+  for (const source of sourceFiles) {
+    const roomCount = countMatches(source.text, /new\s+Room|RoomEvent|room\.connect|localParticipant|Participant|new\s+Peer|peer\.call|peer\.connect|peer\.on\(['"]call|createRouter|router\.|roomId|call\(/gi);
+    const signalingCount = countMatches(source.text, /connect\(|room\.connect|SignalClient|signaling|PeerServer|host:\s*|secure:\s*|serverUrl|participantToken|token|wss?:\/\//gi);
+    const mediaTrackCount = countMatches(source.text, /Track|LocalTrack|RemoteTrack|MediaStream|MediaStreamTrack|audio|video|publishTrack|TrackSubscribed|produce\(|consume\(|getTracks|addTrack|remoteStream|localStream/gi);
+    const deviceCount = countMatches(source.text, /getUserMedia|mediaDevices|getLocalDevices|setCameraEnabled|setMicrophoneEnabled|setScreenShareEnabled|enableCameraAndMicrophone|camera|microphone|screen[-_ ]?share|startAudio|autoplay/gi);
+    const publishCount = countMatches(source.text, /publishTrack|publishDataTrack|setCameraEnabled|setMicrophoneEnabled|setScreenShareEnabled|produce\(|peer\.call|addTrack|sendFile|tryPush|send\(/gi);
+    const subscribeCount = countMatches(source.text, /TrackSubscribed|TrackUnsubscribed|consume\(|on\(['"]stream|call\.answer|attachRemote|remoteTrack|remoteStream|ondatachannel/gi);
+    const dataChannelCount = countMatches(source.text, /RTCDataChannel|DataChannel|DataConnection|DataTrack|publishDataTrack|data channel|data-track|peer\.connect|conn\.on\(['"]data|performRpc|registerRpcMethod|reliable|unreliable/gi);
+    const transportCount = countMatches(source.text, /RTCPeerConnection|WebRtcTransport|createWebRtcTransport|createSendTransport|createRecvTransport|sendTransport|recvTransport|transport\.connect|transport\.produce|transport\.consume|RTCConfiguration/gi);
+    const iceCount = countMatches(source.text, /iceServers|iceParameters|iceCandidates|stun:|turn:|listenIps|listenInfos|announcedAddress|dtlsParameters|DTLS|ICE|rtcMinPort|rtcMaxPort/gi);
+    const qualityCount = countMatches(source.text, /adaptiveStream|dynacast|ConnectionQuality|connectionQuality|quality|simulcast|svc|getStats|stats|reconnect|Reconnecting|Reconnected|bandwidth|bwe/gi);
+    const recordingCount = countMatches(source.text, /recording|Recorder|MediaRecorder|egress|ingress|LocalTrackRecorder|record|captureStream/gi);
+    const workflowCount = countMatches(source.text, /playwright|BrowserStack|media[-_ ]?e2e|video[-_ ]?call|upload-artifact|artifact|fuzzer|webrtc[-_ ]?test/gi)
+      + (source.filePath.includes(".github/workflows") ? 1 : 0);
+    const hasSetupSignal = roomCount + signalingCount + mediaTrackCount + deviceCount + publishCount + subscribeCount + dataChannelCount + transportCount + iceCount + qualityCount + recordingCount + workflowCount > 0;
+    if (!hasSetupSignal) continue;
+    rows.push({
+      filePath: source.filePath,
+      platform: realtimeMediaPlatform(source),
+      roomCount,
+      signalingCount,
+      mediaTrackCount,
+      deviceCount,
+      publishCount,
+      subscribeCount,
+      dataChannelCount,
+      transportCount,
+      iceCount,
+      qualityCount,
+      recordingCount,
+      workflowCount,
+      readiness: (roomCount > 0 || transportCount > 0) && mediaTrackCount > 0 && (deviceCount > 0 || iceCount > 0 || publishCount > 0) ? "ready" : hasSetupSignal ? "partial" : "missing",
+      evidence: `${source.filePath} contains rooms ${roomCount}, signaling ${signalingCount}, media tracks ${mediaTrackCount}, devices ${deviceCount}, publish ${publishCount}, subscribe ${subscribeCount}, data channels ${dataChannelCount}, transports ${transportCount}, ICE/DTLS ${iceCount}, quality ${qualityCount}, recording ${recordingCount}, workflow ${workflowCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.slice(0, 100);
+}
+
+function realtimeMediaPlatform(source: RealtimeMediaSourceFile): RealtimeMediaReadinessReport["mediaSetups"][number]["platform"] {
+  if (/livekit/i.test(source.filePath) || /LiveKit|livekit-client|RoomEvent|localParticipant/i.test(source.text)) return "livekit";
+  if (/mediasoup/i.test(source.filePath) || /mediasoup|WebRtcTransport|createWebRtcTransport|createRouter|createWorker/i.test(source.text)) return "mediasoup";
+  if (/peerjs|peer/i.test(source.filePath) || /PeerJS|new\s+Peer|peer\.call|peer\.connect|MediaConnection|DataConnection/i.test(source.text)) return "peerjs";
+  if (/twilio/i.test(source.filePath) || /twilio-video|connect\(\s*token|LocalVideoTrack/i.test(source.text)) return "twilio";
+  if (/daily/i.test(source.filePath) || /DailyIframe|daily-js|daily\.co/i.test(source.text)) return "daily";
+  if (/RTCPeerConnection|getUserMedia|RTCDataChannel/i.test(source.text)) return "webrtc";
+  if (/webrtc|media|audio|video|call/i.test(source.text)) return "custom";
+  return "unknown";
+}
+
+function realtimeMediaPlatformSignals(sourceFiles: RealtimeMediaSourceFile[]): RealtimeMediaReadinessReport["platformSignals"] {
+  const specs: Array<{ signal: RealtimeMediaReadinessReport["platformSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "livekit", pattern: /LiveKit|livekit-client|RoomEvent|localParticipant/i, evidence: "LiveKit evidence was detected." },
+    { signal: "mediasoup", pattern: /mediasoup|WebRtcTransport|createWebRtcTransport|createRouter|createWorker/i, evidence: "mediasoup evidence was detected." },
+    { signal: "peerjs", pattern: /PeerJS|new\s+Peer|peer\.call|peer\.connect|MediaConnection|DataConnection/i, evidence: "PeerJS evidence was detected." },
+    { signal: "native-webrtc", pattern: /RTCPeerConnection|RTCDataChannel|getUserMedia|RTCConfiguration/i, evidence: "native WebRTC evidence was detected." },
+    { signal: "twilio-video", pattern: /twilio-video|Twilio\.Video|LocalVideoTrack|RemoteVideoTrack/i, evidence: "Twilio Video evidence was detected." },
+    { signal: "daily", pattern: /DailyIframe|daily-js|daily\.co/i, evidence: "Daily video evidence was detected." },
+    { signal: "custom", pattern: /realtime media|video call|audio call|media room|SFU/i, evidence: "custom realtime media evidence was detected." }
+  ];
+  return realtimeMediaSignalFromSpecs(sourceFiles, specs, "platform", "signal");
+}
+
+function realtimeMediaRoomSignals(sourceFiles: RealtimeMediaSourceFile[]): RealtimeMediaReadinessReport["roomSignals"] {
+  const specs: Array<{ signal: RealtimeMediaReadinessReport["roomSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "room", pattern: /new\s+Room|room\.connect|RoomEvent|roomId|roomName|RoomConfiguration/i, evidence: "room evidence was detected." },
+    { signal: "participant", pattern: /localParticipant|Participant|participantToken|participantSid|ParticipantConnected|ParticipantDisconnected/i, evidence: "participant evidence was detected." },
+    { signal: "peer", pattern: /new\s+Peer|peer\.connect|peer\.on|PeerServer|peerId/i, evidence: "peer evidence was detected." },
+    { signal: "sfu-router", pattern: /createRouter|Router|createWorker|SFU|router\.createWebRtcTransport/i, evidence: "SFU router evidence was detected." },
+    { signal: "call", pattern: /peer\.call|on\(['"]call|call\.answer|video call|audio call|MediaConnection/i, evidence: "call evidence was detected." }
+  ];
+  return realtimeMediaSignalFromSpecs(sourceFiles, specs, "room", "signal");
+}
+
+function realtimeMediaDeviceSignals(sourceFiles: RealtimeMediaSourceFile[]): RealtimeMediaReadinessReport["deviceSignals"] {
+  const specs: Array<{ signal: RealtimeMediaReadinessReport["deviceSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "get-user-media", pattern: /getUserMedia|createLocalTracks|mediaDevices/i, evidence: "getUserMedia/local track capture evidence was detected." },
+    { signal: "camera", pattern: /setCameraEnabled|Track\.Source\.Camera|video:\s*true|camera/i, evidence: "camera evidence was detected." },
+    { signal: "microphone", pattern: /setMicrophoneEnabled|Track\.Source\.Microphone|audio:\s*true|microphone/i, evidence: "microphone evidence was detected." },
+    { signal: "screen-share", pattern: /setScreenShareEnabled|ScreenShare|getDisplayMedia|screen[-_ ]?share/i, evidence: "screen share evidence was detected." },
+    { signal: "device-list", pattern: /getLocalDevices|enumerateDevices|deviceId|audioinput|videoinput/i, evidence: "device listing evidence was detected." },
+    { signal: "autoplay", pattern: /startAudio|AudioPlaybackStatusChanged|canPlaybackAudio|autoplay|play\(\)/i, evidence: "autoplay/audio playback evidence was detected." }
+  ];
+  return realtimeMediaSignalFromSpecs(sourceFiles, specs, "device", "signal");
+}
+
+function realtimeMediaTrackSignals(sourceFiles: RealtimeMediaSourceFile[]): RealtimeMediaReadinessReport["trackSignals"] {
+  const specs: Array<{ signal: RealtimeMediaReadinessReport["trackSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "local-track", pattern: /LocalTrack|localTrack|createLocalTracks|mediaStreamTrack|Track\.Source/i, evidence: "local track evidence was detected." },
+    { signal: "remote-track", pattern: /RemoteTrack|remoteTrack|TrackSubscribed|remoteStream|on\(['"]stream/i, evidence: "remote track evidence was detected." },
+    { signal: "publish-track", pattern: /publishTrack|produce\(|peer\.call|addTrack|setCameraEnabled|setMicrophoneEnabled/i, evidence: "publish track evidence was detected." },
+    { signal: "subscribe-track", pattern: /TrackSubscribed|consume\(|TrackUnsubscribed|call\.answer|attachRemote|on\(['"]stream/i, evidence: "subscribe/render track evidence was detected." },
+    { signal: "media-stream", pattern: /MediaStream|MediaStreamTrack|getTracks|srcObject|captureStream/i, evidence: "MediaStream evidence was detected." },
+    { signal: "simulcast", pattern: /simulcast|svc|dynacast|scalabilityMode|encodings|bwe/i, evidence: "simulcast/SVC evidence was detected." }
+  ];
+  return realtimeMediaSignalFromSpecs(sourceFiles, specs, "track", "signal");
+}
+
+function realtimeMediaTransportSignals(sourceFiles: RealtimeMediaSourceFile[]): RealtimeMediaReadinessReport["transportSignals"] {
+  const specs: Array<{ signal: RealtimeMediaReadinessReport["transportSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "ice", pattern: /iceServers|iceParameters|iceCandidates|ICE|listenIps|listenInfos|rtcMinPort|rtcMaxPort/i, evidence: "ICE evidence was detected." },
+    { signal: "dtls", pattern: /dtlsParameters|DTLS|fingerprints|transport\.connect/i, evidence: "DTLS evidence was detected." },
+    { signal: "stun-turn", pattern: /stun:|turn:|TURN|STUN|announcedAddress|iceServers/i, evidence: "STUN/TURN evidence was detected." },
+    { signal: "webrtc-transport", pattern: /WebRtcTransport|createWebRtcTransport|RTCPeerConnection|RTCConfiguration/i, evidence: "WebRTC transport evidence was detected." },
+    { signal: "send-transport", pattern: /createSendTransport|sendTransport|producerTransport|produce\(|transport\.produce/i, evidence: "send transport evidence was detected." },
+    { signal: "recv-transport", pattern: /createRecvTransport|recvTransport|consumerTransport|consume\(|transport\.consume/i, evidence: "receive transport evidence was detected." }
+  ];
+  return realtimeMediaSignalFromSpecs(sourceFiles, specs, "transport", "signal");
+}
+
+function realtimeMediaDataChannelSignals(sourceFiles: RealtimeMediaSourceFile[]): RealtimeMediaReadinessReport["dataChannelSignals"] {
+  const specs: Array<{ signal: RealtimeMediaReadinessReport["dataChannelSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "data-channel", pattern: /RTCDataChannel|createDataChannel|ondatachannel|data channel/i, evidence: "RTC data channel evidence was detected." },
+    { signal: "data-track", pattern: /DataTrack|publishDataTrack|DataPacket|LocalDataTrack|RemoteDataTrack/i, evidence: "LiveKit data track evidence was detected." },
+    { signal: "peer-data-connection", pattern: /DataConnection|peer\.connect|conn\.on\(['"]data|dataConnection/i, evidence: "PeerJS data connection evidence was detected." },
+    { signal: "rpc", pattern: /performRpc|registerRpcMethod|RpcInvocationData|RPC/i, evidence: "RPC over realtime channel evidence was detected." },
+    { signal: "reliable-unreliable", pattern: /reliable|ordered|maxRetransmits|maxPacketLifeTime|unreliable/i, evidence: "data channel reliability evidence was detected." }
+  ];
+  return realtimeMediaSignalFromSpecs(sourceFiles, specs, "dataChannel", "signal");
+}
+
+function realtimeMediaQualitySignals(sourceFiles: RealtimeMediaSourceFile[]): RealtimeMediaReadinessReport["qualitySignals"] {
+  const specs: Array<{ signal: RealtimeMediaReadinessReport["qualitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "adaptive-stream", pattern: /adaptiveStream|supportsAdaptiveStream|RemoteVideoTrack.*adaptive/i, evidence: "adaptive stream evidence was detected." },
+    { signal: "dynacast", pattern: /dynacast|supportsDynacast/i, evidence: "dynacast evidence was detected." },
+    { signal: "connection-quality", pattern: /ConnectionQuality|connectionQuality|ConnectionQualityChanged/i, evidence: "connection quality evidence was detected." },
+    { signal: "stats", pattern: /getStats|stats|webrtc-internals|bwe|bitrate|packetLoss/i, evidence: "media stats evidence was detected." },
+    { signal: "reconnect", pattern: /reconnect|Reconnecting|Reconnected|disconnected|disconnect/i, evidence: "reconnect/disconnect evidence was detected." }
+  ];
+  return realtimeMediaSignalFromSpecs(sourceFiles, specs, "quality", "signal");
+}
+
+function realtimeMediaSecuritySignals(sourceFiles: RealtimeMediaSourceFile[]): RealtimeMediaReadinessReport["securitySignals"] {
+  const specs: Array<{ signal: RealtimeMediaReadinessReport["securitySignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "token", pattern: /token|participantToken|accessToken|jwt|serverUrl/i, evidence: "room/signaling token evidence was detected." },
+    { signal: "e2ee", pattern: /E2EE|e2ee|encryption|keyProvider|EncryptionError/i, evidence: "E2EE or encryption evidence was detected." },
+    { signal: "permission", pattern: /MediaDevicesError|NotAllowedError|permission|getUserMedia|camera|microphone/i, evidence: "media permission evidence was detected." },
+    { signal: "track-permission", pattern: /ParticipantTrackPermission|TrackPermission|autoSubscribe|permission/i, evidence: "track permission evidence was detected." },
+    { signal: "secure-peer-server", pattern: /secure:\s*true|https:\/\/|wss:\/\/|PeerServer|tls|ssl/i, evidence: "secure peer/signaling evidence was detected." }
+  ];
+  return realtimeMediaSignalFromSpecs(sourceFiles, specs, "security", "signal");
+}
+
+function realtimeMediaWorkflowSignals(sourceFiles: RealtimeMediaSourceFile[]): RealtimeMediaReadinessReport["workflowSignals"] {
+  const specs: Array<{ signal: RealtimeMediaReadinessReport["workflowSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "playwright", pattern: /playwright|@media|media\.spec/i, evidence: "Playwright media QA evidence was detected." },
+    { signal: "browserstack", pattern: /BrowserStack|browserstack/i, evidence: "BrowserStack media/browser evidence was detected." },
+    { signal: "media-e2e", pattern: /media[-_ ]?e2e|video[-_ ]?call|datachannel|mediachannel|webrtc[-_ ]?test/i, evidence: "media E2E evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|artifact|playwright-report|media-call-report|screenshots?|recordings?/i, evidence: "media artifact upload evidence was detected." },
+    { signal: "fuzzer", pattern: /fuzzer|MS_FUZZ|libFuzzer|rtp-corpus|rtcp-corpus/i, evidence: "media transport fuzzer evidence was detected." }
+  ];
+  return realtimeMediaSignalFromSpecs(sourceFiles, specs, "workflow", "signal");
+}
+
+function realtimeMediaPackageSignals(sourceFiles: RealtimeMediaSourceFile[]): RealtimeMediaReadinessReport["packageSignals"] {
+  const specs: Array<{ signal: RealtimeMediaReadinessReport["packageSignals"][number]["signal"]; pattern: RegExp; evidence: string }> = [
+    { signal: "livekit-client", pattern: /"livekit-client"|from ['"]livekit-client|livekit-client/i, evidence: "livekit-client package evidence was detected." },
+    { signal: "mediasoup", pattern: /"mediasoup"|from ['"]mediasoup|require\(['"]mediasoup|mediasoup/i, evidence: "mediasoup package evidence was detected." },
+    { signal: "mediasoup-client", pattern: /"mediasoup-client"|from ['"]mediasoup-client|mediasoup-client/i, evidence: "mediasoup-client package evidence was detected." },
+    { signal: "peerjs", pattern: /"peerjs"|from ['"]peerjs|PeerJS|new\s+Peer/i, evidence: "peerjs package evidence was detected." },
+    { signal: "simple-peer", pattern: /"simple-peer"|from ['"]simple-peer|new\s+SimplePeer/i, evidence: "simple-peer package evidence was detected." },
+    { signal: "webrtc-adapter", pattern: /"webrtc-adapter"|from ['"]webrtc-adapter|adapter\.js/i, evidence: "webrtc-adapter package evidence was detected." }
+  ];
+  return realtimeMediaSignalFromSpecs(sourceFiles, specs, "package", "signal");
+}
+
+function realtimeMediaSignalFromSpecs<T extends Record<K, string> & { pattern: RegExp; evidence: string }, K extends string>(
+  sourceFiles: RealtimeMediaSourceFile[],
+  specs: T[],
+  label: string,
+  labelKey: K
+): Array<Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec[labelKey],
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/realtime-media-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

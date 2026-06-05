@@ -8571,6 +8571,101 @@ export const WebSocketReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const RealtimeMediaReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  mediaSetups: z.array(z.object({
+    filePath: z.string(),
+    platform: z.enum(["livekit", "mediasoup", "peerjs", "webrtc", "daily", "twilio", "custom", "unknown"]),
+    roomCount: z.number().int().nonnegative(),
+    signalingCount: z.number().int().nonnegative(),
+    mediaTrackCount: z.number().int().nonnegative(),
+    deviceCount: z.number().int().nonnegative(),
+    publishCount: z.number().int().nonnegative(),
+    subscribeCount: z.number().int().nonnegative(),
+    dataChannelCount: z.number().int().nonnegative(),
+    transportCount: z.number().int().nonnegative(),
+    iceCount: z.number().int().nonnegative(),
+    qualityCount: z.number().int().nonnegative(),
+    recordingCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  platformSignals: z.array(z.object({
+    signal: z.enum(["livekit", "mediasoup", "peerjs", "native-webrtc", "twilio-video", "daily", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  roomSignals: z.array(z.object({
+    signal: z.enum(["room", "participant", "peer", "sfu-router", "call", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  deviceSignals: z.array(z.object({
+    signal: z.enum(["get-user-media", "camera", "microphone", "screen-share", "device-list", "autoplay", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  trackSignals: z.array(z.object({
+    signal: z.enum(["local-track", "remote-track", "publish-track", "subscribe-track", "media-stream", "simulcast", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  transportSignals: z.array(z.object({
+    signal: z.enum(["ice", "dtls", "stun-turn", "webrtc-transport", "send-transport", "recv-transport", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dataChannelSignals: z.array(z.object({
+    signal: z.enum(["data-channel", "data-track", "peer-data-connection", "rpc", "reliable-unreliable", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  qualitySignals: z.array(z.object({
+    signal: z.enum(["adaptive-stream", "dynacast", "connection-quality", "stats", "reconnect", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  securitySignals: z.array(z.object({
+    signal: z.enum(["token", "e2ee", "permission", "track-permission", "secure-peer-server", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["playwright", "browserstack", "media-e2e", "artifact-upload", "fuzzer", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["livekit-client", "mediasoup", "mediasoup-client", "peerjs", "simple-peer", "webrtc-adapter", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const PdfGenerationReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -12701,6 +12796,7 @@ export type IdGenerationReadinessReport = z.infer<typeof IdGenerationReadinessRe
 export type ImageProcessingReadinessReport = z.infer<typeof ImageProcessingReadinessReportSchema>;
 export type FileUploadReadinessReport = z.infer<typeof FileUploadReadinessReportSchema>;
 export type WebSocketReadinessReport = z.infer<typeof WebSocketReadinessReportSchema>;
+export type RealtimeMediaReadinessReport = z.infer<typeof RealtimeMediaReadinessReportSchema>;
 export type PdfGenerationReadinessReport = z.infer<typeof PdfGenerationReadinessReportSchema>;
 export type SpreadsheetReadinessReport = z.infer<typeof SpreadsheetReadinessReportSchema>;
 export type ChartVisualizationReadinessReport = z.infer<typeof ChartVisualizationReadinessReportSchema>;

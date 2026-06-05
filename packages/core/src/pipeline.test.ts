@@ -20246,6 +20246,136 @@ describe("RepoTutor core pipeline", () => {
     expect(mapHtml).toContain("RepoTutor records map visualization readiness only");
   });
 
+  it("detects realtime media readiness without joining rooms or requesting devices", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-realtime-media-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-realtime-media-source-"));
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "server"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "src", "livekit-room.ts"), [
+      "import { Room, RoomEvent, Track, VideoPresets, createLocalTracks } from 'livekit-client';",
+      "const room = new Room({ adaptiveStream: true, dynacast: true, videoCaptureDefaults: { resolution: VideoPresets.h720.resolution }, e2ee: { keyProvider } });",
+      "room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => attachRemoteTrack(track, participant.identity));",
+      "room.on(RoomEvent.TrackUnsubscribed, detachRemoteTrack);",
+      "room.on(RoomEvent.ConnectionQualityChanged, (quality, participant) => reportQuality(quality, participant?.identity));",
+      "room.on(RoomEvent.MediaDevicesError, error => reportDeviceError(error));",
+      "room.on(RoomEvent.AudioPlaybackStatusChanged, () => room.startAudio());",
+      "await room.connect(import.meta.env.VITE_LIVEKIT_URL, token, { autoSubscribe: true });",
+      "await room.localParticipant.setCameraEnabled(true);",
+      "await room.localParticipant.setMicrophoneEnabled(true);",
+      "await room.localParticipant.setScreenShareEnabled(true);",
+      "const tracks = await createLocalTracks({ audio: true, video: true });",
+      "await room.localParticipant.publishTrack(tracks[0].mediaStreamTrack, { source: Track.Source.Camera, simulcast: true });",
+      "await room.localParticipant.publishDataTrack({ name: 'whiteboard-events' });",
+      "room.localParticipant.registerRpcMethod('ping', async () => 'pong');",
+      "await room.localParticipant.performRpc({ destinationIdentity: 'bob', method: 'ping', payload: 'hello' });"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "server", "mediasoup.ts"), [
+      "import * as mediasoup from 'mediasoup';",
+      "const worker = await mediasoup.createWorker({ rtcMinPort: 40000, rtcMaxPort: 49999 });",
+      "const router = await worker.createRouter({ mediaCodecs: [{ kind: 'audio', mimeType: 'audio/opus', clockRate: 48000, channels: 2 }, { kind: 'video', mimeType: 'video/VP8', clockRate: 90000 }] });",
+      "const webRtcTransport = await router.createWebRtcTransport({",
+      "  listenInfos: [{ protocol: 'udp', ip: '0.0.0.0', announcedAddress: 'media.example.com' }],",
+      "  enableUdp: true, enableTcp: true, preferUdp: true",
+      "});",
+      "await webRtcTransport.connect({ dtlsParameters });",
+      "const producer = await webRtcTransport.produce({ kind: 'video', rtpParameters, appData: { simulcast: true, svc: true } });",
+      "const consumer = await webRtcTransport.consume({ producerId: producer.id, rtpCapabilities, paused: false });",
+      "await webRtcTransport.enableTraceEvent(['bwe', 'probation']);",
+      "const stats = await webRtcTransport.getStats();",
+      "console.log(webRtcTransport.iceParameters, webRtcTransport.iceCandidates, webRtcTransport.dtlsParameters, stats, consumer.id);"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "peerjs-call.ts"), [
+      "import { Peer } from 'peerjs';",
+      "const peer = new Peer('alice', {",
+      "  host: 'peer.example.com', secure: true,",
+      "  config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'turn:turn.example.com', username: 'turn-user', credential: 'turn-pass' }] }",
+      "});",
+      "peer.on('connection', conn => conn.on('data', data => console.log(data)));",
+      "const rawChannel = new RTCPeerConnection().createDataChannel('telemetry');",
+      "rawChannel.send('ready');",
+      "const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });",
+      "const call = peer.call('bob', stream, { metadata: { roomId: 'demo-room' } });",
+      "call.on('stream', remoteStream => { document.querySelector('video')!.srcObject = remoteStream; });",
+      "peer.on('call', incoming => { incoming.answer(stream); incoming.on('stream', renderRemoteStream); });",
+      "peer.on('disconnected', () => peer.reconnect());"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      dependencies: {
+        "livekit-client": "^2.0.0",
+        mediasoup: "^3.0.0",
+        "mediasoup-client": "^3.0.0",
+        peerjs: "^1.5.0",
+        "webrtc-adapter": "^9.0.0"
+      },
+      devDependencies: {
+        "@playwright/test": "^1.60.0",
+        browserstack: "^1.6.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "media.yml"), [
+      "name: realtime-media",
+      "on: [push]",
+      "jobs:",
+      "  media-smoke:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npx playwright test realtime-media.spec.ts --grep @media",
+      "      - run: npm run browserstack:media",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: media-call-report",
+      "          path: reports/realtime-media"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "junior", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "realtime-media-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      mediaSetups: Array<{ filePath: string; platform: string; roomCount: number; mediaTrackCount: number; transportCount: number; iceCount: number; readiness: string }>;
+      platformSignals: Array<{ signal: string; readiness: string }>;
+      roomSignals: Array<{ signal: string; readiness: string }>;
+      deviceSignals: Array<{ signal: string; readiness: string }>;
+      trackSignals: Array<{ signal: string; readiness: string }>;
+      transportSignals: Array<{ signal: string; readiness: string }>;
+      dataChannelSignals: Array<{ signal: string; readiness: string }>;
+      qualitySignals: Array<{ signal: string; readiness: string }>;
+      securitySignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string; why: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Realtime media readiness WebRTC LiveKit Room mediasoup WebRtcTransport PeerJS getUserMedia MediaStream Track publish subscribe ICE DTLS data channel E2EE");
+    expect(report.mediaSetups.some((item) => item.filePath === "src/livekit-room.ts" && item.platform === "livekit" && item.mediaTrackCount > 0 && item.readiness === "ready")).toBe(true);
+    expect(report.mediaSetups.some((item) => item.filePath === "server/mediasoup.ts" && item.platform === "mediasoup" && item.transportCount > 0 && item.iceCount > 0)).toBe(true);
+    expect(report.mediaSetups.some((item) => item.filePath === "src/peerjs-call.ts" && item.platform === "peerjs" && item.roomCount > 0 && item.mediaTrackCount > 0)).toBe(true);
+    expect(readySignals(report.platformSignals)).toEqual(expect.arrayContaining(["livekit", "mediasoup", "peerjs"]));
+    expect(readySignals(report.roomSignals)).toEqual(expect.arrayContaining(["room", "participant", "peer", "sfu-router", "call"]));
+    expect(readySignals(report.deviceSignals)).toEqual(expect.arrayContaining(["get-user-media", "camera", "microphone", "screen-share", "autoplay"]));
+    expect(readySignals(report.trackSignals)).toEqual(expect.arrayContaining(["local-track", "remote-track", "publish-track", "subscribe-track", "media-stream", "simulcast"]));
+    expect(readySignals(report.transportSignals)).toEqual(expect.arrayContaining(["ice", "dtls", "stun-turn", "webrtc-transport", "send-transport", "recv-transport"]));
+    expect(readySignals(report.dataChannelSignals)).toEqual(expect.arrayContaining(["data-channel", "data-track", "peer-data-connection", "rpc"]));
+    expect(readySignals(report.qualitySignals)).toEqual(expect.arrayContaining(["adaptive-stream", "dynacast", "connection-quality", "stats", "reconnect"]));
+    expect(readySignals(report.securitySignals)).toEqual(expect.arrayContaining(["token", "e2ee", "permission", "secure-peer-server"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["playwright", "browserstack", "media-e2e", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["livekit-client", "mediasoup", "mediasoup-client", "peerjs", "webrtc-adapter"]));
+    expect(report.recommendedCommands.some((item) => item.command.includes("getUserMedia"))).toBe(true);
+    expect(report.riskQueue.some((item) => item.why.includes("RepoTutor records realtime media readiness only"))).toBe(true);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "realtime-media-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "realtime-media-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "realtime-media-readiness.html"))).resolves.toBeUndefined();
+    const mediaMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "realtime-media-readiness.md"), "utf8");
+    expect(mediaMarkdown).toContain("Realtime Media Readiness");
+    expect(mediaMarkdown).toContain("LiveKit");
+    const mediaHtml = await fs.readFile(path.join(result.session.outputPaths.html, "realtime-media-readiness.html"), "utf8");
+    expect(mediaHtml).toContain("realtime-media-readiness-card");
+    expect(mediaHtml).toContain("data-source-pattern=\"Realtime Media\"");
+    expect(mediaHtml).toContain("RepoTutor records realtime media readiness only");
+  });
+
   it("compares a new study session against the previous source snapshot", async () => {
     const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-studies-"));
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-incremental-source-"));
