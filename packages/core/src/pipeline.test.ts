@@ -40,6 +40,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "consumer-contract-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "observability-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "performance-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "profiling-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "benchmark-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "e2e-report.json"))).resolves.toBeUndefined();
@@ -209,6 +210,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "consumer-contract-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "observability.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "performance.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "profiling-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "load-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "benchmark-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "e2e.md"))).resolves.toBeUndefined();
@@ -381,6 +383,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "consumer-contract-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "observability.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "performance.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "profiling-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "load-testing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "benchmark-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "e2e.html"))).resolves.toBeUndefined();
@@ -580,6 +583,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/consumer-contract-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/observability.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/performance.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/profiling-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/load-testing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/benchmark-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/e2e.html\"");
@@ -1187,6 +1191,25 @@ describe("RepoTutor core pipeline", () => {
     expect(performanceMarkdown).toContain("Source pattern: k6");
     expect(performanceMarkdown).toContain("## Workload Models");
     expect(performanceMarkdown).toContain("## Runtime Controls");
+    const profilingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "profiling-readiness-report.json"), "utf8");
+    expect(profilingText).toContain("Profiling readiness Clinic.js py-spy Pyroscope pprof flamegraph speedscope heap CPU wall sampling tags permissions CI");
+    expect(profilingText).toContain("\"profilingSetups\"");
+    expect(profilingText).toContain("\"targetSignals\"");
+    expect(profilingText).toContain("\"modeSignals\"");
+    expect(profilingText).toContain("\"outputSignals\"");
+    expect(profilingText).toContain("\"runtimeSignals\"");
+    expect(profilingText).toContain("\"safetySignals\"");
+    expect(profilingText).toContain("\"packageSignals\"");
+    expect(profilingText).toContain("Run Clinic.js, py-spy, Pyroscope, pprof, eBPF, or profiling commands only in an authorized environment");
+    const profilingHtml = await fs.readFile(path.join(result.session.outputPaths.html, "profiling-readiness.html"), "utf8");
+    expect(profilingHtml).toContain("Profiling Readiness");
+    expect(profilingHtml).toContain("profiling-readiness-card");
+    expect(profilingHtml).toContain("data-source-pattern=\"Profiling\"");
+    expect(profilingHtml).toContain("does not attach to processes");
+    const profilingMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "profiling-readiness.md"), "utf8");
+    expect(profilingMarkdown).toContain("# Profiling Readiness");
+    expect(profilingMarkdown).toContain("## Mode Signals");
+    expect(profilingMarkdown).toContain("## Safety Signals");
     const loadTestingText = await fs.readFile(path.join(result.session.outputPaths.analysis, "load-testing-readiness-report.json"), "utf8");
     expect(loadTestingText).toContain("k6 Artillery Locust load testing scenarios phases thresholds checks ensure HttpUser headless distributed reports");
     expect(loadTestingText).toContain("\"loadTestSetups\"");
@@ -3666,6 +3689,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/api-contracts.html");
     expect(exportManifestText).toContain("html/observability.html");
     expect(exportManifestText).toContain("html/performance.html");
+    expect(exportManifestText).toContain("html/profiling-readiness.html");
     expect(exportManifestText).toContain("html/load-testing-readiness.html");
     expect(exportManifestText).toContain("html/benchmark-readiness.html");
     expect(exportManifestText).toContain("html/e2e.html");
@@ -3857,6 +3881,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("api-contracts.html");
     expect(learningPathHtml).toContain("observability.html");
     expect(learningPathHtml).toContain("performance.html");
+    expect(learningPathHtml).toContain("profiling-readiness.html");
     expect(learningPathHtml).toContain("load-testing-readiness.html");
     expect(learningPathHtml).toContain("benchmark-readiness.html");
     expect(learningPathHtml).toContain("e2e.html");
@@ -5567,6 +5592,135 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "coverage-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "coverage-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "coverage-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects profiling readiness without attaching profilers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-profiling-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-profiling-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "profiling"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "scripts"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "profiling.yml"), [
+      "name: profiling",
+      "on:",
+      "  pull_request:",
+      "  schedule:",
+      "    - cron: \"0 4 * * *\"",
+      "jobs:",
+      "  profile:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: npm run profile:clinic",
+      "      " + "- run: py-spy record --pid 123 --duration 30 --rate 100 --native --subprocesses --gil --format speedscope --output profiles/app.speedscope.json",
+      "      - run: go tool pprof -http=:0 profiles/cpu.pprof",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: profiling-artifacts",
+      "          path: |",
+      "            profiles/*.html",
+      "            profiles/*.svg",
+      "            profiles/*.pprof",
+      "            profiles/*.speedscope.json"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      name: "profiling-study",
+      version: "1.0.0",
+      scripts: {
+        "profile:clinic": "clinic doctor --collect-only --autocannon [ -m GET /health ] -- node server.js && clinic bubbleprof --on-port 'autocannon http://localhost:$PORT' -- node server.js && clinic flame --visualize-only 123.clinic-flame && clinic heapprofiler --open=false -- node server.js"
+      },
+      devDependencies: {
+        clinic: "latest",
+        autocannon: "latest",
+        "@sentry/profiling-node": "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "requirements.txt"), [
+      "py-spy",
+      "pyroscope-io"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "profiling", "pyroscope.yml"), [
+      "application_name: example.api",
+      "server_address: http://pyroscope:4040",
+      "sample_rate: 100",
+      "tags:",
+      "  env: test",
+      "  service: api",
+      "scrape_configs:",
+      "  - job_name: app",
+      "    targets: [\"app:6060\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "profiling.md"), [
+      "# Profiling",
+      "Clinic.js doctor, clinic bubbleprof, clinic flame, and clinic heapprofiler are documented for Node process profiling.",
+      "py-spy top, py-spy record, and py-spy dump cover Python process CPU and wall-clock profiling.",
+      "Pyroscope continuous profiling uses profiles.grafana.com/cpu.port_name, profiles.grafana.com/memory.port_name, goroutine, k8s.grafana.com/scrape, Kubernetes pod annotations, application_name, server_address, and tags.",
+      "pprof and /debug/pprof/profile cover Go pprof and HTTP pprof endpoints.",
+      "Outputs include flamegraph, speedscope, raw, pprof, JSON, profilecli, Grafana dashboard, and HTML reports.",
+      "Runtime controls include --on-port, autocannon, duration, sample rate, native symbols, subprocesses, and GIL.",
+      "Safety notes cover sudo, ptrace, SYS_PTRACE, CAP_SYS_PTRACE, eBPF, nonblocking sampling, production warning, sampling overhead, data retention, pod, container, and profile data boundaries."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "server.go"), [
+      "package main",
+      "import _ \"net/http/pprof\"",
+      "func main() {",
+      "  // pprof is exposed only in an authorized profiling environment.",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "scripts", "profile.sh"), [
+      "py-spy top --pid 123",
+      "py-spy dump --pid 123",
+      "profilecli query --from now-1h",
+      "curl http://localhost:6060/debug/pprof/profile"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "profiling-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      profilingSetups: Array<{ filePath: string; tool: string; cpuCount: number; wallCount: number; heapCount: number; asyncCount: number; attachCount: number; continuousCount: number; outputCount: number; permissionCount: number; ciCount: number }>;
+      targetSignals: Array<{ signal: string; readiness: string }>;
+      modeSignals: Array<{ signal: string; readiness: string }>;
+      outputSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      safetySignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    expect(report.sourcePattern).toBe("Profiling readiness Clinic.js py-spy Pyroscope pprof flamegraph speedscope heap CPU wall sampling tags permissions CI");
+    expect(report.profilingSetups.length).toBeGreaterThan(0);
+    expect(report.profilingSetups.some((item) => item.tool === "workflow" && item.ciCount > 0 && item.outputCount > 0)).toBe(true);
+    expect(report.profilingSetups.some((item) => item.tool === "package-script" && item.cpuCount > 0 && item.asyncCount > 0 && item.outputCount > 0)).toBe(true);
+    expect(report.profilingSetups.some((item) => item.tool === "py-spy" && item.attachCount > 0)).toBe(true);
+    expect(report.profilingSetups.some((item) => item.tool === "pyroscope" && item.continuousCount > 0)).toBe(true);
+    expect(report.profilingSetups.some((item) => item.tool === "pprof" && item.outputCount > 0)).toBe(true);
+    expect(readySignals(report.targetSignals)).toEqual(expect.arrayContaining(["node-process", "python-process", "go-pprof", "http-pprof", "kubernetes-pod", "container"]));
+    expect(readySignals(report.modeSignals)).toEqual(expect.arrayContaining(["clinic-doctor", "clinic-bubbleprof", "clinic-flame", "clinic-heapprofiler", "py-spy-top", "py-spy-record", "py-spy-dump", "pyroscope-agent", "pprof"]));
+    expect(readySignals(report.outputSignals)).toEqual(expect.arrayContaining(["html", "flamegraph", "speedscope", "raw", "pprof", "json", "profilecli", "grafana-dashboard"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["on-port", "autocannon", "duration", "sample-rate", "native-symbols", "subprocesses", "gil", "tags", "application-name", "server-address"]));
+    expect(readySignals(report.safetySignals)).toEqual(expect.arrayContaining(["sudo", "ptrace", "sys-ptrace", "nonblocking", "production-warning", "sampling-overhead", "data-retention"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["clinic", "autocannon", "py-spy", "pyroscope", "pprof", "sentry-profiling"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.map((item) => item.action)).toContain("Run Clinic.js, py-spy, Pyroscope, pprof, eBPF, or profiling commands only in an authorized environment.");
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"clinic doctor|clinic bubbleprof|clinic flame|clinic heapprofiler|py-spy|pyroscope|pprof\" .",
+      "rg \"flamegraph|speedscope|profilecli|pprof|profiles.grafana.com|application_name|server_address\" .",
+      "rg \"sudo|ptrace|SYS_PTRACE|--native|--subprocesses|--gil|sample_rate|duration|tags\" .",
+      "rg \"autocannon|--on-port|--collect-only|--visualize-only|upload-artifact|profile artifact\" ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "profiling-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "profiling-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "profiling-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "profiling-readiness.md"), "utf8");
+    expect(markdown).toContain("# Profiling Readiness");
+    expect(markdown).toContain("## Safety Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "profiling-readiness.html"), "utf8");
+    expect(html).toContain("profiling-readiness-card");
+    expect(html).toContain("does not attach to processes");
   });
 
   it("detects load testing readiness without running load toolchains", async () => {
