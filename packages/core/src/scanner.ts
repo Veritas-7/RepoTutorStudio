@@ -59,6 +59,7 @@ import {
   TestReportingReadinessReport,
   SnapshotReadinessReport,
   PropertyBasedTestingReadinessReport,
+  FuzzReadinessReport,
   TestDataReadinessReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
@@ -246,6 +247,7 @@ export interface AnalysisBundle {
   testReportingReadinessReport: TestReportingReadinessReport;
   snapshotReadinessReport: SnapshotReadinessReport;
   propertyBasedTestingReadinessReport: PropertyBasedTestingReadinessReport;
+  fuzzReadinessReport: FuzzReadinessReport;
   testDataReadinessReport: TestDataReadinessReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
@@ -433,6 +435,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const testReportingReadinessReport = await buildTestReportingReadinessReport(walk);
   const snapshotReadinessReport = await buildSnapshotReadinessReport(walk);
   const propertyBasedTestingReadinessReport = await buildPropertyBasedTestingReadinessReport(walk);
+  const fuzzReadinessReport = await buildFuzzReadinessReport(walk);
   const testDataReadinessReport = await buildTestDataReadinessReport(walk);
   const integrationTestEnvironmentReadinessReport = await buildIntegrationTestEnvironmentReadinessReport(walk, runtimeEnvironmentReport);
   const chaosEngineeringReadinessReport = await buildChaosEngineeringReadinessReport(walk);
@@ -556,7 +559,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, sastReadinessReport, dastReadinessReport, threatModelReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, fuzzReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, containerScanReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, dependencyReviewReadinessReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, apiGatewayReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, iacDriftReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -9134,6 +9137,289 @@ function propertyBasedTestingSignalFromSpecs<T extends Record<K, string> & { pat
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec[labelKey]} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/property-based-testing-readiness.html"
     } as Record<K, T[K]> & { readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildFuzzReadinessReport(walk: WalkResult): Promise<FuzzReadinessReport> {
+  const sourceFiles = await fuzzSourceFiles(walk);
+  const fuzzSetups = fuzzSetupRows(sourceFiles);
+  const harnessSignals = fuzzHarnessSignals(sourceFiles);
+  const engineSignals = fuzzEngineSignals(sourceFiles);
+  const buildSignals = fuzzBuildSignals(sourceFiles);
+  const runtimeSignals = fuzzRuntimeSignals(sourceFiles);
+  const sanitizerSignals = fuzzSanitizerSignals(sourceFiles);
+  const ciSignals = fuzzCiSignals(sourceFiles);
+  const packageSignals = fuzzPackageSignals(sourceFiles);
+  const hasHarness = harnessSignals.some((item) => item.readiness === "ready")
+    || fuzzSetups.some((item) => item.harnessCount > 0 || item.targetCount > 0);
+  const hasEngine = engineSignals.some((item) => item.readiness === "ready")
+    || fuzzSetups.some((item) => item.engineCount > 0);
+  const hasSanitizer = sanitizerSignals.some((item) => item.readiness === "ready")
+    || fuzzSetups.some((item) => item.sanitizerCount > 0);
+  const hasRuntime = runtimeSignals.some((item) => ["seed-corpus", "dictionary", "timeout", "reproducer"].includes(item.signal) && item.readiness === "ready");
+  const hasCi = ciSignals.some((item) => item.readiness === "ready")
+    || fuzzSetups.some((item) => item.ciCount > 0);
+
+  const riskQueue: FuzzReadinessReport["riskQueue"] = [];
+  if (!hasHarness && hasEngine) {
+    riskQueue.push({
+      priority: "high",
+      action: "Add a concrete fuzz target or harness before relying on fuzzing tooling.",
+      why: "OSS-Fuzz, libFuzzer, AFL++, and Jazzer need an entrypoint that maps generated bytes to the code under test.",
+      relatedHref: "html/fuzz-readiness.html"
+    });
+  }
+  if (hasHarness && !hasEngine) {
+    riskQueue.push({
+      priority: "high",
+      action: "Declare the fuzzing engine or runner used for the harness.",
+      why: "Harness code alone does not prove it is wired to libFuzzer, AFL++, Jazzer, OSS-Fuzz, ClusterFuzzLite, or a language-native fuzz runner.",
+      relatedHref: "html/fuzz-readiness.html"
+    });
+  }
+  if (hasHarness && !hasSanitizer) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Add sanitizer or bug-detector configuration to the fuzz build.",
+      why: "Coverage-guided fuzzing is far more useful when memory, undefined behavior, coverage, or Jazzer sanitizers are enabled.",
+      relatedHref: "html/fuzz-readiness.html"
+    });
+  }
+  if (hasHarness && !hasRuntime) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Record corpus, dictionary, timeout, run count, or reproducer policy.",
+      why: "Fuzz failures are actionable only when seed material, bounds, and crash reproduction paths are clear.",
+      relatedHref: "html/fuzz-readiness.html"
+    });
+  }
+  if (hasHarness && !hasCi) {
+    riskQueue.push({
+      priority: "medium",
+      action: "Attach fuzz smoke, CIFuzz, ClusterFuzzLite, or OSS-Fuzz evidence to CI.",
+      why: "Continuous fuzzing catches regressions before fuzz harnesses drift away from the current build.",
+      relatedHref: "html/fuzz-readiness.html"
+    });
+  }
+  riskQueue.push({
+    priority: "low",
+    action: "Run OSS-Fuzz, libFuzzer, AFL++, Jazzer, ClusterFuzzLite, or language fuzz commands only in an authorized environment.",
+    why: "RepoTutor records static fuzz readiness only and never compiles harnesses, launches fuzzers, mutates corpora, or executes generated crash inputs.",
+    relatedHref: "html/fuzz-readiness.html"
+  });
+
+  return {
+    summary: `Fuzz readiness report: setup ${fuzzSetups.length}개, harness signal ${harnessSignals.filter((item) => item.readiness === "ready").length}개, engine signal ${engineSignals.filter((item) => item.readiness === "ready").length}개, runtime signal ${runtimeSignals.filter((item) => item.readiness === "ready").length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Fuzz readiness OSS-Fuzz libFuzzer AFL++ Jazzer ClusterFuzzLite fuzz targets corpus dictionary sanitizer coverage reproducer CI",
+    fuzzSetups,
+    harnessSignals,
+    engineSignals,
+    buildSignals,
+    runtimeSignals,
+    sanitizerSignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+    recommendedCommands: [
+      { command: "rg \"LLVMFuzzerTestOneInput|@FuzzTest|FuzzedDataProvider|go test -fuzz|cargo fuzz|afl-fuzz\" .", purpose: "Find fuzz harness entrypoints across native, JVM, Go, Rust, and AFL++ targets." },
+      { command: "rg \"project.yaml|build.sh|Dockerfile|infra/helper.py build_fuzzers|ClusterFuzzLite|cifuzz\" .github .", purpose: "Find OSS-Fuzz, ClusterFuzzLite, and CIFuzz build or CI wiring." },
+      { command: "rg -- \"-fsanitize=fuzzer|AFL_USE_ASAN|AFL_LLVM_CMPLOG|afl-clang-fast|jazzer-junit|rules_fuzzing\" .", purpose: "Find instrumentation, sanitizer, and package/tooling setup." },
+      { command: "rg \"corpus|seed|dictionary|-dict|-x |timeout|max_len|max_total_time|reproducer|crash-\" .", purpose: "Find corpus, dictionary, runtime bound, and reproduction policy." }
+    ],
+    learnerNextSteps: [
+      "Start by locating the fuzz harness entrypoint, then confirm which engine runs it.",
+      "Check sanitizer coverage before treating a fuzz run as security evidence.",
+      "Review corpus, dictionary, timeout, and reproducer policy so failures can be replayed.",
+      "RepoTutor does not execute fuzzers; run the commands in an isolated, authorized environment before release decisions."
+    ]
+  };
+}
+
+type FuzzSourceFile = {
+  filePath: string;
+  text: string;
+  sourceHref: string;
+};
+
+async function fuzzSourceFiles(walk: WalkResult): Promise<FuzzSourceFile[]> {
+  const files: FuzzSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !fuzzInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 220_000);
+    if (!text) continue;
+    if (!fuzzPathSignal(file.relPath) && !fuzzContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 220) break;
+  }
+  return files;
+}
+
+function fuzzInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return fuzzPathSignal(filePath)
+    || /^\.github\/workflows\/.+\.ya?ml$/i.test(filePath)
+    || /(^|\/)(fuzz|fuzzers|fuzzing|corpus|seeds|dictionaries|oss-fuzz|clusterfuzz|cifuzz|jazzer|afl)(\/|\.|-|_|$)/i.test(filePath)
+    || /^(Dockerfile|build\.sh|project\.ya?ml|package\.json|pom\.xml|build\.gradle|build\.gradle\.kts|Cargo\.toml|go\.mod|WORKSPACE|BUILD|BUILD\.bazel|README\.md)$/i.test(base)
+    || /\.(c|cc|cpp|cxx|h|hpp|rs|go|java|kt|scala|py|js|ts|sh|ya?ml|json|toml|xml|md|dict)$/i.test(filePath);
+}
+
+function fuzzPathSignal(filePath: string): boolean {
+  return /(fuzz|fuzzer|fuzzing|oss-fuzz|clusterfuzz|cifuzz|jazzer|afl|corpus|seed|dictionary|\.dict$)/i.test(filePath);
+}
+
+function fuzzContentSignal(text: string): boolean {
+  return /(LLVMFuzzerTestOneInput|@FuzzTest|FuzzedDataProvider|libFuzzer|OSS-Fuzz|ClusterFuzzLite|cifuzz|afl-fuzz|afl-clang-fast|AFL_USE_ASAN|AFL_LLVM_CMPLOG|__AFL_LOOP|__AFL_INIT|jazzer-junit|com\.code_intelligence\.jazzer|go test -fuzz|func Fuzz|cargo fuzz|-fsanitize=fuzzer|project\.yaml|build\.sh|seed corpus|generated corpus|dictionary|reproducer|crash-)/i.test(text);
+}
+
+function fuzzSetupRows(sourceFiles: FuzzSourceFile[]): FuzzReadinessReport["fuzzSetups"] {
+  const rows: FuzzReadinessReport["fuzzSetups"] = [];
+  for (const source of sourceFiles) {
+    const targetCount = countMatches(source.text, /(LLVMFuzzerTestOneInput|@FuzzTest|func Fuzz[A-Z0-9_]|fuzz_target!|FUZZ_TARGET|fuzz target|target_class|afl-fuzz)/g);
+    const harnessCount = countMatches(source.text, /(FuzzedDataProvider|LLVMFuzzerTestOneInput|@FuzzTest|fuzz target|harness|input bytes|data provider|__AFL_LOOP|__AFL_INIT)/gi);
+    const engineCount = countMatches(source.text, /(libFuzzer|OSS-Fuzz|AFL\+\+|afl-fuzz|Jazzer|ClusterFuzzLite|Honggfuzz|Centipede|go test -fuzz|cargo fuzz)/g);
+    const sanitizerCount = countMatches(source.text, /(sanitizer|AddressSanitizer|UndefinedBehaviorSanitizer|MemorySanitizer|LeakSanitizer|-fsanitize=fuzzer|-fsanitize=address|-fsanitize=undefined|AFL_USE_ASAN|AFL_USE_UBSAN|AFL_USE_MSAN|--asan|--ubsan)/g);
+    const corpusCount = countMatches(source.text, /(corpus|seed|inputs directory|generated corpus|\.cifuzz-corpus|crash-|reproducer|testcase)/gi);
+    const dictionaryCount = countMatches(source.text, /(dictionary|\.dict|-dict=|-x\s+|AFL_LLVM_DICT2FILE|tokens)/gi);
+    const coverageCount = countMatches(source.text, /(coverage|Fuzz Introspector|fuzz-introspector|--coverage_report|coverage_dump|jacoco|cov:|trace=cov)/gi);
+    const ciCount = countMatches(source.text, /(\.github\/workflows|GitHub Actions|cifuzz|ClusterFuzzLite|OSS-Fuzz|pull_request|schedule|upload-artifact|runs-on|infra\/helper\.py)/gi) + (/^\.github\/workflows\//i.test(source.filePath) ? 1 : 0);
+    const totalSignals = targetCount + harnessCount + engineCount + sanitizerCount + corpusCount + dictionaryCount + coverageCount + ciCount;
+    if (totalSignals === 0 && !fuzzPathSignal(source.filePath)) continue;
+    rows.push({
+      filePath: source.filePath,
+      ecosystem: fuzzEcosystem(source.filePath, source.text),
+      targetCount,
+      harnessCount,
+      engineCount,
+      sanitizerCount,
+      corpusCount,
+      dictionaryCount,
+      coverageCount,
+      ciCount,
+      readiness: (targetCount > 0 || harnessCount > 0) && engineCount > 0 && (sanitizerCount > 0 || corpusCount > 0) ? "ready" : totalSignals > 0 ? "partial" : "missing",
+      evidence: `${source.filePath} contains ${totalSignals} fuzz readiness signal(s).`,
+      sourceHref: source.sourceHref
+    });
+  }
+  const order = { ready: 0, partial: 1, missing: 2 };
+  return rows.sort((a, b) => {
+    const bScore = b.targetCount + b.harnessCount + b.engineCount + b.sanitizerCount + b.corpusCount + b.dictionaryCount + b.coverageCount + b.ciCount;
+    const aScore = a.targetCount + a.harnessCount + a.engineCount + a.sanitizerCount + a.corpusCount + a.dictionaryCount + a.coverageCount + a.ciCount;
+    return order[a.readiness] - order[b.readiness] || bScore - aScore || a.filePath.localeCompare(b.filePath);
+  }).slice(0, 80);
+}
+
+function fuzzEcosystem(filePath: string, text: string): FuzzReadinessReport["fuzzSetups"][number]["ecosystem"] {
+  if (/project\.ya?ml|oss-fuzz|infra\/helper\.py|build_fuzzers/i.test(`${filePath}\n${text}`)) return "oss-fuzz";
+  if (/ClusterFuzzLite|clusterfuzzlite|cifuzz/i.test(`${filePath}\n${text}`)) return "clusterfuzzlite";
+  if (/AFL\+\+|afl-fuzz|afl-clang-fast|__AFL_LOOP|__AFL_INIT/i.test(text)) return "aflplusplus";
+  if (/Jazzer|@FuzzTest|FuzzedDataProvider|jazzer-junit|com\.code_intelligence\.jazzer/i.test(text)) return "jazzer";
+  if (/cargo fuzz|fuzz_target!|libfuzzer-sys/i.test(text)) return "cargo-fuzz";
+  if (/go test -fuzz|func Fuzz[A-Z0-9_]/i.test(text)) return "go-fuzz";
+  if (/libFuzzer|LLVMFuzzerTestOneInput|-fsanitize=fuzzer/i.test(text)) return "libfuzzer";
+  if (/package\.json$/i.test(filePath) || /scripts?["']?\s*:/.test(text)) return "package-script";
+  if (/^\.github\/workflows\//i.test(filePath)) return "workflow";
+  return "unknown";
+}
+
+function fuzzHarnessSignals(sourceFiles: FuzzSourceFile[]): FuzzReadinessReport["harnessSignals"] {
+  return fuzzSignalFromSpecs(sourceFiles, [
+    { signal: "llvm-fuzzer-test-one-input", pattern: /LLVMFuzzerTestOneInput/i, evidence: "LLVMFuzzerTestOneInput harness evidence was detected." },
+    { signal: "fuzztest-annotation", pattern: /@FuzzTest|FuzzedDataProvider/i, evidence: "Jazzer/JUnit @FuzzTest evidence was detected." },
+    { signal: "jazzer-fuzztest", pattern: /com\.code_intelligence\.jazzer|jazzer-junit|Jazzer/i, evidence: "Jazzer fuzz test evidence was detected." },
+    { signal: "go-fuzz", pattern: /go test -fuzz|func Fuzz[A-Z0-9_]/i, evidence: "Go fuzz target evidence was detected." },
+    { signal: "cargo-fuzz-target", pattern: /cargo fuzz|fuzz_target!|libfuzzer_sys/i, evidence: "cargo-fuzz target evidence was detected." },
+    { signal: "afl-target", pattern: /afl-fuzz|__AFL_LOOP|__AFL_INIT|AFL_INPUT_PLACEHOLDER/i, evidence: "AFL++ target evidence was detected." }
+  ], "harness");
+}
+
+function fuzzEngineSignals(sourceFiles: FuzzSourceFile[]): FuzzReadinessReport["engineSignals"] {
+  return fuzzSignalFromSpecs(sourceFiles, [
+    { signal: "oss-fuzz", pattern: /OSS-Fuzz|project\.ya?ml|infra\/helper\.py build_fuzzers/i, evidence: "OSS-Fuzz evidence was detected." },
+    { signal: "libfuzzer", pattern: /libFuzzer|LLVMFuzzerTestOneInput|-fsanitize=fuzzer/i, evidence: "libFuzzer evidence was detected." },
+    { signal: "aflplusplus", pattern: /AFL\+\+|afl-fuzz|afl-clang-fast|AFL_LLVM/i, evidence: "AFL++ evidence was detected." },
+    { signal: "jazzer", pattern: /Jazzer|jazzer-junit|com\.code_intelligence\.jazzer/i, evidence: "Jazzer evidence was detected." },
+    { signal: "clusterfuzzlite", pattern: /ClusterFuzzLite|clusterfuzzlite|cifuzz/i, evidence: "ClusterFuzzLite/CIFuzz evidence was detected." },
+    { signal: "honggfuzz", pattern: /Honggfuzz|honggfuzz/i, evidence: "Honggfuzz evidence was detected." },
+    { signal: "centipede", pattern: /Centipede|centipede/i, evidence: "Centipede evidence was detected." }
+  ], "engine");
+}
+
+function fuzzBuildSignals(sourceFiles: FuzzSourceFile[]): FuzzReadinessReport["buildSignals"] {
+  return fuzzSignalFromSpecs(sourceFiles, [
+    { signal: "oss-fuzz-dockerfile", pattern: /Dockerfile|gcr\.io\/oss-fuzz|base-builder/i, evidence: "OSS-Fuzz Dockerfile evidence was detected." },
+    { signal: "build-sh", pattern: /build\.sh|\$OUT|\$SRC|compile fuzz/i, evidence: "OSS-Fuzz build.sh evidence was detected." },
+    { signal: "project-yaml", pattern: /project\.ya?ml|language:|fuzzing_engines:|sanitizers:/i, evidence: "OSS-Fuzz project.yaml evidence was detected." },
+    { signal: "compiler-wrapper", pattern: /afl-clang-fast|afl-clang-lto|afl-cc|CC=|CXX=|CFLAGS=|CXXFLAGS=/i, evidence: "compiler wrapper evidence was detected." },
+    { signal: "fsanitize-fuzzer", pattern: /-fsanitize=fuzzer|-fsanitize=fuzzer-no-link|-fsanitize=address|-fsanitize=undefined/i, evidence: "fuzzer sanitizer compile flag evidence was detected." },
+    { signal: "bazel-rules-fuzzing", pattern: /rules_fuzzing|fuzz_test|cc_fuzz_test|java_fuzz_test/i, evidence: "Bazel rules_fuzzing evidence was detected." },
+    { signal: "maven-plugin", pattern: /jazzer-maven-plugin|jazzer-junit|maven-surefire-plugin/i, evidence: "Maven Jazzer evidence was detected." },
+    { signal: "gradle-dependency", pattern: /jazzer-junit|com\.code-intelligence|gradle test|useJUnitPlatform/i, evidence: "Gradle Jazzer evidence was detected." }
+  ], "build");
+}
+
+function fuzzRuntimeSignals(sourceFiles: FuzzSourceFile[]): FuzzReadinessReport["runtimeSignals"] {
+  return fuzzSignalFromSpecs(sourceFiles, [
+    { signal: "seed-corpus", pattern: /seed corpus|corpus\/|inputs directory|testcases?|seeds?\//i, evidence: "seed corpus evidence was detected." },
+    { signal: "generated-corpus", pattern: /generated corpus|\.cifuzz-corpus|corpus generated|new coverage/i, evidence: "generated corpus evidence was detected." },
+    { signal: "dictionary", pattern: /dictionary|\.dict|-dict=|-x\s+|AFL_LLVM_DICT2FILE/i, evidence: "dictionary evidence was detected." },
+    { signal: "timeout", pattern: /timeout|max_total_time|-max_total_time|AFL_EXIT_ON_TIME|deadline/i, evidence: "timeout evidence was detected." },
+    { signal: "max-len", pattern: /max_len|-max_len|max_len=|AFL_MAX_FILE|max length/i, evidence: "max length evidence was detected." },
+    { signal: "runs", pattern: /-runs=|runs:|number_of_runs|max_examples|fuzzing mode/i, evidence: "bounded run evidence was detected." },
+    { signal: "fork-jobs", pattern: /-fork=|-jobs=|parallel fuzz|worker|AFL_FINAL_SYNC/i, evidence: "fork/jobs evidence was detected." },
+    { signal: "persistent-mode", pattern: /persistent mode|__AFL_LOOP|__AFL_INIT|AFL_PERSISTENT|deferred forkserver/i, evidence: "persistent mode evidence was detected." },
+    { signal: "reproducer", pattern: /reproducer|crash-|Crash-.*\.java|artifact_prefix|regression mode|reproduce/i, evidence: "reproducer evidence was detected." }
+  ], "runtime");
+}
+
+function fuzzSanitizerSignals(sourceFiles: FuzzSourceFile[]): FuzzReadinessReport["sanitizerSignals"] {
+  return fuzzSignalFromSpecs(sourceFiles, [
+    { signal: "address", pattern: /AddressSanitizer|ASAN|AFL_USE_ASAN|-fsanitize=address|--asan/i, evidence: "AddressSanitizer evidence was detected." },
+    { signal: "undefined", pattern: /UndefinedBehaviorSanitizer|UBSAN|AFL_USE_UBSAN|-fsanitize=undefined|--ubsan/i, evidence: "UndefinedBehaviorSanitizer evidence was detected." },
+    { signal: "memory", pattern: /MemorySanitizer|MSAN|AFL_USE_MSAN|-fsanitize=memory/i, evidence: "MemorySanitizer evidence was detected." },
+    { signal: "coverage", pattern: /coverage|--coverage_report|coverage_dump|Fuzz Introspector|fuzz-introspector|trace=cov/i, evidence: "coverage sanitizer/report evidence was detected." },
+    { signal: "asan", pattern: /ASAN|AFL_USE_ASAN|--asan/i, evidence: "ASAN runtime evidence was detected." },
+    { signal: "ubsan", pattern: /UBSAN|AFL_USE_UBSAN|--ubsan/i, evidence: "UBSAN runtime evidence was detected." },
+    { signal: "msan", pattern: /MSAN|AFL_USE_MSAN|Memory Sanitizer/i, evidence: "MSAN runtime evidence was detected." },
+    { signal: "jazzer-sanitizers", pattern: /Jazzer sanitizers|BugDetectorsAPI|disabled_hooks|Server-Side Request Forgery|File Path Traversal/i, evidence: "Jazzer sanitizer evidence was detected." }
+  ], "sanitizer");
+}
+
+function fuzzCiSignals(sourceFiles: FuzzSourceFile[]): FuzzReadinessReport["ciSignals"] {
+  return fuzzSignalFromSpecs(sourceFiles, [
+    { signal: "github-actions", pattern: /^\.github\/workflows\/|actions\/checkout|runs-on|GitHub Actions/i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "cifuzz", pattern: /cifuzz|CIFuzz/i, evidence: "CIFuzz evidence was detected." },
+    { signal: "oss-fuzz", pattern: /OSS-Fuzz|infra\/helper\.py build_fuzzers|project\.ya?ml/i, evidence: "OSS-Fuzz CI evidence was detected." },
+    { signal: "clusterfuzzlite", pattern: /ClusterFuzzLite|clusterfuzzlite/i, evidence: "ClusterFuzzLite evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|artifact|crash|reproducer|corpus/i, evidence: "artifact upload evidence was detected." },
+    { signal: "coverage-report", pattern: /coverage report|coverage_report|fuzz-introspector|jacoco|code coverage/i, evidence: "coverage report evidence was detected." }
+  ], "CI");
+}
+
+function fuzzPackageSignals(sourceFiles: FuzzSourceFile[]): FuzzReadinessReport["packageSignals"] {
+  return fuzzSignalFromSpecs(sourceFiles, [
+    { signal: "libfuzzer", pattern: /libFuzzer|libfuzzer-sys|-fsanitize=fuzzer/i, evidence: "libFuzzer package/tool evidence was detected." },
+    { signal: "aflplusplus", pattern: /AFL\+\+|aflplusplus|afl-fuzz|afl-clang-fast/i, evidence: "AFL++ package/tool evidence was detected." },
+    { signal: "jazzer-junit", pattern: /jazzer-junit|com\.code-intelligence.*jazzer-junit/i, evidence: "jazzer-junit package evidence was detected." },
+    { signal: "jazzer-maven-plugin", pattern: /jazzer-maven-plugin/i, evidence: "Jazzer Maven plugin evidence was detected." },
+    { signal: "rules-fuzzing", pattern: /rules_fuzzing|cc_fuzz_test|java_fuzz_test/i, evidence: "Bazel rules_fuzzing evidence was detected." },
+    { signal: "cargo-fuzz", pattern: /cargo-fuzz|cargo fuzz|libfuzzer-sys/i, evidence: "cargo-fuzz evidence was detected." },
+    { signal: "go-test-fuzz", pattern: /go test -fuzz|func Fuzz[A-Z0-9_]/i, evidence: "Go native fuzz evidence was detected." }
+  ], "package");
+}
+
+function fuzzSignalFromSpecs<const T extends readonly { signal: string; pattern: RegExp; evidence: string }[]>(
+  sourceFiles: FuzzSourceFile[],
+  specs: T,
+  label: string
+): Array<{ signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      signal: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/fuzz-readiness.html"
+    };
   });
 }
 

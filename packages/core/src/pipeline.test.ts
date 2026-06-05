@@ -48,6 +48,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-reporting-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "snapshot-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "property-based-testing-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "fuzz-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "test-data-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "integration-test-environment-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "chaos-engineering-readiness-report.json"))).resolves.toBeUndefined();
@@ -216,6 +217,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-reporting-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "snapshot-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "property-based-testing-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "fuzz-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "test-data-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "integration-test-environment-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "chaos-engineering-readiness.md"))).resolves.toBeUndefined();
@@ -387,6 +389,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "test-reporting-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "snapshot-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "property-based-testing-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "fuzz-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "test-data-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "integration-test-environment-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "chaos-engineering-readiness.html"))).resolves.toBeUndefined();
@@ -585,6 +588,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/test-reporting-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/snapshot-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/property-based-testing-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/fuzz-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/test-data-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/integration-test-environment-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/chaos-engineering-readiness.html\"");
@@ -1352,6 +1356,28 @@ describe("RepoTutor core pipeline", () => {
     expect(propertyBasedTestingMarkdown).toContain("Source pattern: Property-based testing");
     expect(propertyBasedTestingMarkdown).toContain("## Stateful Signals");
     expect(propertyBasedTestingMarkdown).toContain("## Package Signals");
+    const fuzzText = await fs.readFile(path.join(result.session.outputPaths.analysis, "fuzz-readiness-report.json"), "utf8");
+    expect(fuzzText).toContain("Fuzz readiness OSS-Fuzz libFuzzer AFL++ Jazzer ClusterFuzzLite fuzz targets corpus dictionary sanitizer coverage reproducer CI");
+    expect(fuzzText).toContain("\"fuzzSetups\"");
+    expect(fuzzText).toContain("\"harnessSignals\"");
+    expect(fuzzText).toContain("\"engineSignals\"");
+    expect(fuzzText).toContain("\"buildSignals\"");
+    expect(fuzzText).toContain("\"runtimeSignals\"");
+    expect(fuzzText).toContain("\"sanitizerSignals\"");
+    expect(fuzzText).toContain("\"ciSignals\"");
+    expect(fuzzText).toContain("\"packageSignals\"");
+    expect(fuzzText).toContain("Run OSS-Fuzz, libFuzzer, AFL++, Jazzer, ClusterFuzzLite, or language fuzz commands only in an authorized environment");
+    const fuzzHtml = await fs.readFile(path.join(result.session.outputPaths.html, "fuzz-readiness.html"), "utf8");
+    expect(fuzzHtml).toContain("Fuzz Readiness");
+    expect(fuzzHtml).toContain("fuzz-readiness-card");
+    expect(fuzzHtml).toContain("data-source-pattern=\"Fuzz\"");
+    expect(fuzzHtml).toContain("does not compile harnesses");
+    expect(fuzzHtml).toContain("Sanitizer Signals");
+    const fuzzMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "fuzz-readiness.md"), "utf8");
+    expect(fuzzMarkdown).toContain("# Fuzz Readiness");
+    expect(fuzzMarkdown).toContain("Source pattern: Fuzz readiness");
+    expect(fuzzMarkdown).toContain("## Harness Signals");
+    expect(fuzzMarkdown).toContain("## Sanitizer Signals");
     const testDataText = await fs.readFile(path.join(result.session.outputPaths.analysis, "test-data-readiness-report.json"), "utf8");
     expect(testDataText).toContain("Test data Factory Bot factory_boy Faker factories traits associations sequences seeds fixtures deterministic lint CI");
     expect(testDataText).toContain("\"dataSetups\"");
@@ -3648,6 +3674,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/test-reporting-readiness.html");
     expect(exportManifestText).toContain("html/snapshot-readiness.html");
     expect(exportManifestText).toContain("html/property-based-testing-readiness.html");
+    expect(exportManifestText).toContain("html/fuzz-readiness.html");
     expect(exportManifestText).toContain("html/test-data-readiness.html");
     expect(exportManifestText).toContain("html/integration-test-environment-readiness.html");
     expect(exportManifestText).toContain("html/chaos-engineering-readiness.html");
@@ -3838,6 +3865,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("test-reporting-readiness.html");
     expect(learningPathHtml).toContain("snapshot-readiness.html");
     expect(learningPathHtml).toContain("property-based-testing-readiness.html");
+    expect(learningPathHtml).toContain("fuzz-readiness.html");
     expect(learningPathHtml).toContain("test-data-readiness.html");
     expect(learningPathHtml).toContain("integration-test-environment-readiness.html");
     expect(learningPathHtml).toContain("chaos-engineering-readiness.html");
@@ -6802,6 +6830,206 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "property-based-testing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "property-based-testing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "property-based-testing-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects fuzz readiness without compiling or running fuzzers", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-fuzz-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-fuzz-source-"));
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "fuzz", "dicts"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "fuzz", "seeds"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "fuzz", "fuzz_targets"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src", "test", "java", "com", "example"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".clusterfuzzlite"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "fuzz.yml"), [
+      "name: fuzz",
+      "on:",
+      "  pull_request:",
+      "  schedule:",
+      "    - cron: \"0 3 * * *\"",
+      "jobs:",
+      "  fuzz:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: python3 infra/helper.py build_fuzzers --sanitizer address example",
+      "      - run: python3 infra/helper.py run_fuzzer example parse_fuzzer -runs=100 -max_len=4096 -max_total_time=60 -dict=fuzz/dicts/http.dict",
+      "      - run: cifuzz run fuzz/ParseFuzzer.java --engine jazzer --sanitizer address --coverage",
+      "      - run: ./afl-fuzz -i fuzz/seeds -o fuzz/out -x fuzz/dicts/http.dict -- ./target @@",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: fuzz-artifacts",
+      "          path: |",
+      "            fuzz/out",
+      "            .cifuzz-corpus",
+      "            coverage.exec",
+      "            crash-reproducer"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "project.yaml"), [
+      "homepage: https://example.com",
+      "language: c++",
+      "primary_contact: security@example.com",
+      "fuzzing_engines:",
+      "  - libfuzzer",
+      "  - afl",
+      "  - honggfuzz",
+      "  - centipede",
+      "sanitizers:",
+      "  - address",
+      "  - undefined",
+      "  - memory",
+      "main_repo: https://github.com/example/project"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".clusterfuzzlite", "config.yml"), [
+      "fuzzing_language: c++",
+      "fuzzing_engine: libfuzzer",
+      "sanitizer: address",
+      "ClusterFuzzLite: true",
+      "cifuzz: true"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "Dockerfile"), [
+      "FROM gcr.io/oss-fuzz-base/base-builder",
+      "RUN apt-get update && apt-get install -y clang llvm"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "build.sh"), [
+      "#!/bin/bash",
+      "$CXX $CXXFLAGS -fsanitize=fuzzer,address,undefined -I$SRC/include fuzz/parse_fuzzer.cc -o $OUT/parse_fuzzer",
+      "cp fuzz/dicts/http.dict $OUT/"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "fuzz", "parse_fuzzer.cc"), [
+      "#include <cstddef>",
+      "#include <cstdint>",
+      "extern \"C\" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {",
+      "  return size > 0 ? 0 : 0;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "fuzz", "afl_harness.c"), [
+      "int main(void) {",
+      "  __AFL_INIT();",
+      "  while (__AFL_LOOP(1000)) { }",
+      "  return 0;",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "fuzz", "dicts", "http.dict"), [
+      "\"GET\"",
+      "\"POST\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "fuzz", "seeds", "seed.txt"), "GET / HTTP/1.1\n");
+    await fs.writeFile(path.join(sourceRoot, "src", "test", "java", "com", "example", "ParseFuzzer.java"), [
+      "package com.example;",
+      "import com.code_intelligence.jazzer.junit.FuzzTest;",
+      "import com.code_intelligence.jazzer.api.FuzzedDataProvider;",
+      "public class ParseFuzzer {",
+      "  @FuzzTest",
+      "  void fuzzParse(FuzzedDataProvider data) {",
+      "    data.consumeRemainingAsString();",
+      "  }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "pom.xml"), [
+      "<project>",
+      "  <dependencies>",
+      "    <dependency><groupId>com.code-intelligence</groupId><artifactId>jazzer-junit</artifactId><version>0.0.0</version></dependency>",
+      "  </dependencies>",
+      "  <build><plugins><plugin><groupId>com.code-intelligence</groupId><artifactId>jazzer-maven-plugin</artifactId></plugin></plugins></build>",
+      "</project>"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "BUILD.bazel"), [
+      "load(\"@rules_fuzzing//fuzzing:cc_defs.bzl\", \"cc_fuzz_test\")",
+      "load(\"@rules_fuzzing//fuzzing:java_defs.bzl\", \"java_fuzz_test\")",
+      "cc_fuzz_test(name = \"parse_cc_fuzz\", srcs = [\"fuzz/parse_fuzzer.cc\"])",
+      "java_fuzz_test(name = \"parse_java_fuzz\", test_class = \"com.example.ParseFuzzer\")"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), [
+      "{",
+      "  \"scripts\": {",
+      "    \"fuzz-corpus\": \"echo dictionary corpus seed\"",
+      "  }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "fuzz", "parse_fuzz_test.go"), [
+      "package fuzz",
+      "import \"testing\"",
+      "func FuzzParse(f *testing.F) {",
+      "  f.Add([]byte(\"seed\"))",
+      "  f.Fuzz(func(t *testing.T, data []byte) {})",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "fuzz", "fuzz_targets", "parse.rs"), [
+      "use libfuzzer_sys::fuzz_target;",
+      "fuzz_target!(|data: &[u8]| {",
+      "  let _ = data.len();",
+      "});"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "fuzz", "Cargo.toml"), [
+      "[package]",
+      "name = \"parse-fuzz\"",
+      "version = \"0.0.0\"",
+      "edition = \"2021\"",
+      "[dependencies]",
+      "libfuzzer-sys = \"0.4\"",
+      "[package.metadata]",
+      "cargo-fuzz = true"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "fuzzing.md"), [
+      "# Fuzzing",
+      "ClusterFuzzLite, CIFuzz, OSS-Fuzz, Fuzz Introspector, coverage_report, coverage_dump, JaCoCo code coverage.",
+      ".cifuzz-corpus generated corpus inputs directory seed corpus reproducer crash- Crash-Example.java.",
+      "AddressSanitizer UndefinedBehaviorSanitizer MemorySanitizer ASAN UBSAN MSAN.",
+      "BugDetectorsAPI disabled_hooks --asan --ubsan -fork=2 -jobs=2 persistent mode deferred forkserver.",
+      "AFL_USE_ASAN AFL_USE_UBSAN AFL_USE_MSAN AFL_LLVM_CMPLOG afl-clang-fast -x fuzz/dicts/http.dict.",
+      "Bazel rules_fuzzing cc_fuzz_test java_fuzz_test.",
+      "timeout max_total_time max_len Honggfuzz Centipede AFL++ libFuzzer Jazzer."
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "fuzz-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      fuzzSetups: Array<{ filePath: string; ecosystem: string; targetCount: number; harnessCount: number; engineCount: number; sanitizerCount: number; corpusCount: number; dictionaryCount: number; coverageCount: number; ciCount: number; readiness: string }>;
+      harnessSignals: Array<{ signal: string; readiness: string }>;
+      engineSignals: Array<{ signal: string; readiness: string }>;
+      buildSignals: Array<{ signal: string; readiness: string }>;
+      runtimeSignals: Array<{ signal: string; readiness: string }>;
+      sanitizerSignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("Fuzz readiness OSS-Fuzz libFuzzer AFL++ Jazzer ClusterFuzzLite fuzz targets corpus dictionary sanitizer coverage reproducer CI");
+    expect(report.fuzzSetups.some((item) => item.readiness === "ready")).toBe(true);
+    expect(report.fuzzSetups.some((item) => item.targetCount > 0)).toBe(true);
+    expect(report.fuzzSetups.some((item) => item.harnessCount > 0)).toBe(true);
+    expect(report.fuzzSetups.some((item) => item.engineCount > 0)).toBe(true);
+    expect(report.fuzzSetups.some((item) => item.sanitizerCount > 0)).toBe(true);
+    expect(report.fuzzSetups.some((item) => item.corpusCount > 0 && item.dictionaryCount > 0 && item.coverageCount > 0 && item.ciCount > 0)).toBe(true);
+    expect(report.fuzzSetups.map((item) => item.ecosystem)).toEqual(expect.arrayContaining(["oss-fuzz", "libfuzzer", "aflplusplus", "jazzer", "go-fuzz", "cargo-fuzz", "clusterfuzzlite", "package-script"]));
+    expect(readySignals(report.harnessSignals)).toEqual(expect.arrayContaining(["llvm-fuzzer-test-one-input", "fuzztest-annotation", "jazzer-fuzztest", "go-fuzz", "cargo-fuzz-target", "afl-target"]));
+    expect(readySignals(report.engineSignals)).toEqual(expect.arrayContaining(["oss-fuzz", "libfuzzer", "aflplusplus", "jazzer", "clusterfuzzlite", "honggfuzz", "centipede"]));
+    expect(readySignals(report.buildSignals)).toEqual(expect.arrayContaining(["oss-fuzz-dockerfile", "build-sh", "project-yaml", "compiler-wrapper", "fsanitize-fuzzer", "bazel-rules-fuzzing", "maven-plugin"]));
+    expect(readySignals(report.runtimeSignals)).toEqual(expect.arrayContaining(["seed-corpus", "generated-corpus", "dictionary", "timeout", "max-len", "runs", "fork-jobs", "persistent-mode", "reproducer"]));
+    expect(readySignals(report.sanitizerSignals)).toEqual(expect.arrayContaining(["address", "undefined", "memory", "coverage", "asan", "ubsan", "msan", "jazzer-sanitizers"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "cifuzz", "oss-fuzz", "clusterfuzzlite", "artifact-upload", "coverage-report"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["libfuzzer", "aflplusplus", "jazzer-junit", "jazzer-maven-plugin", "rules-fuzzing", "cargo-fuzz", "go-test-fuzz"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.map((item) => item.action)).toContain("Run OSS-Fuzz, libFuzzer, AFL++, Jazzer, ClusterFuzzLite, or language fuzz commands only in an authorized environment.");
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual([
+      "rg \"LLVMFuzzerTestOneInput|@FuzzTest|FuzzedDataProvider|go test -fuzz|cargo fuzz|afl-fuzz\" .",
+      "rg \"project.yaml|build.sh|Dockerfile|infra/helper.py build_fuzzers|ClusterFuzzLite|cifuzz\" .github .",
+      "rg -- \"-fsanitize=fuzzer|AFL_USE_ASAN|AFL_LLVM_CMPLOG|afl-clang-fast|jazzer-junit|rules_fuzzing\" .",
+      "rg \"corpus|seed|dictionary|-dict|-x |timeout|max_len|max_total_time|reproducer|crash-\" ."
+    ]);
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "fuzz-readiness-report.json"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "fuzz-readiness.md"), "utf8");
+    expect(markdown).toContain("# Fuzz Readiness");
+    expect(markdown).toContain("## Harness Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "fuzz-readiness.html"), "utf8");
+    expect(html).toContain("Fuzz Readiness");
+    expect(html).toContain("fuzz-readiness-card");
+    expect(html).toContain("data-source-pattern=\"Fuzz\"");
   });
 
   it("detects test data readiness without running factory toolchains", async () => {

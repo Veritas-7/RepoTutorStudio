@@ -54,6 +54,7 @@ import type {
   TestReportingReadinessReport,
   SnapshotReadinessReport,
   PropertyBasedTestingReadinessReport,
+  FuzzReadinessReport,
   TestDataReadinessReport,
   IntegrationTestEnvironmentReadinessReport,
   ChaosEngineeringReadinessReport,
@@ -236,6 +237,7 @@ export interface StudyHtmlInput {
   testReportingReadinessReport: TestReportingReadinessReport;
   snapshotReadinessReport: SnapshotReadinessReport;
   propertyBasedTestingReadinessReport: PropertyBasedTestingReadinessReport;
+  fuzzReadinessReport: FuzzReadinessReport;
   testDataReadinessReport: TestDataReadinessReport;
   integrationTestEnvironmentReadinessReport: IntegrationTestEnvironmentReadinessReport;
   chaosEngineeringReadinessReport: ChaosEngineeringReadinessReport;
@@ -438,6 +440,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["test-reporting-readiness.html", "Test Reporting"],
     ["snapshot-readiness.html", "Snapshots"],
     ["property-based-testing-readiness.html", "Property Tests"],
+    ["fuzz-readiness.html", "Fuzz"],
     ["test-data-readiness.html", "Test Data"],
     ["chaos-engineering-readiness.html", "Chaos Engineering"],
     ["accessibility.html", "Accessibility"],
@@ -647,6 +650,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Test Reporting Readiness</h3><p>${escapeHtml(input.testReportingReadinessReport.summary)}</p><p>CTRF/Allure/JUnit/GitHub Actions 패턴으로 report format, annotations, summaries, artifacts 준비도를 정리합니다.</p><a href="test-reporting-readiness.html">Test Reporting 열기</a></article>
           <article><h3>Snapshot Readiness</h3><p>${escapeHtml(input.snapshotReadinessReport.summary)}</p><p>Jest/Vitest/Playwright 패턴으로 text, inline, file, visual, ARIA snapshots, update policy, serializers, baselines 준비도를 정리합니다.</p><a href="snapshot-readiness.html">Snapshots 열기</a></article>
           <article><h3>Property-Based Testing Readiness</h3><p>${escapeHtml(input.propertyBasedTestingReadinessReport.summary)}</p><p>fast-check/Hypothesis/jqwik 패턴으로 generator, shrink, seed, counterexample, stateful, CI 준비도를 정리합니다.</p><a href="property-based-testing-readiness.html">Property Tests 열기</a></article>
+          <article><h3>Fuzz Readiness</h3><p>${escapeHtml(input.fuzzReadinessReport.summary)}</p><p>OSS-Fuzz/libFuzzer/AFL++/Jazzer 패턴으로 harness, engine, sanitizer, corpus, dictionary, CI 준비도를 정리합니다.</p><a href="fuzz-readiness.html">Fuzz 열기</a></article>
           <article><h3>Test Data Readiness</h3><p>${escapeHtml(input.testDataReadinessReport.summary)}</p><p>Factory Bot/factory_boy/Faker 패턴으로 factories, traits, associations, sequences, seeds, lint, CI 준비도를 정리합니다.</p><a href="test-data-readiness.html">Test Data 열기</a></article>
           <article><h3>Chaos Engineering Readiness</h3><p>${escapeHtml(input.chaosEngineeringReadinessReport.summary)}</p><p>Chaos Mesh, LitmusChaos, Toxiproxy 패턴으로 experiment, fault, scope, probe/steady-state, observability 준비도를 정리합니다.</p><a href="chaos-engineering-readiness.html">Chaos Engineering 열기</a></article>
           <article><h3>Accessibility Readiness</h3><p>${escapeHtml(input.accessibilityReport.summary)}</p><p>axe-core 패턴으로 scan targets, WCAG/category tags, result buckets, impact, context controls를 정리합니다.</p><a href="accessibility.html">Accessibility 열기</a></article>
@@ -967,6 +971,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "property-based-testing-readiness.html",
       title: "Property-Based Testing Readiness",
       html: pageShell("Property-Based Testing Readiness", "property-based-testing-readiness.html", `<section class="panel" data-source-pattern="Property-Based Testing"><h2>Property-Based Testing Snapshot</h2><p>${escapeHtml(input.propertyBasedTestingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.propertyBasedTestingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.propertyBasedTestingReadinessReport.propertySetups.length}</dd></div><div><dt>generators</dt><dd>${input.propertyBasedTestingReadinessReport.generatorSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>replay</dt><dd>${input.propertyBasedTestingReadinessReport.reproductionSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>stateful</dt><dd>${input.propertyBasedTestingReadinessReport.statefulSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records property-based testing readiness only; it does not generate inputs, shrink failures, replay seeds, or execute fast-check, Hypothesis, jqwik, QuickCheck, or proptest.</p></section><section class="grid"><article class="property-based-testing-readiness-card"><h3>Property Setups</h3>${propertyBasedTestingSetupList(input.propertyBasedTestingReadinessReport.propertySetups)}</article><article class="property-based-testing-readiness-card"><h3>Generator Signals</h3>${propertyBasedTestingSignalList(input.propertyBasedTestingReadinessReport.generatorSignals, "signal")}</article><article class="property-based-testing-readiness-card"><h3>Runner Signals</h3>${propertyBasedTestingSignalList(input.propertyBasedTestingReadinessReport.runnerSignals, "signal")}</article><article class="property-based-testing-readiness-card"><h3>Reproduction Signals</h3>${propertyBasedTestingSignalList(input.propertyBasedTestingReadinessReport.reproductionSignals, "signal")}</article></section><section class="grid"><article class="property-based-testing-readiness-card"><h3>Stateful Signals</h3>${propertyBasedTestingSignalList(input.propertyBasedTestingReadinessReport.statefulSignals, "signal")}</article><article class="property-based-testing-readiness-card"><h3>CI Signals</h3>${propertyBasedTestingSignalList(input.propertyBasedTestingReadinessReport.ciSignals, "signal")}</article><article class="property-based-testing-readiness-card"><h3>Package Signals</h3>${propertyBasedTestingSignalList(input.propertyBasedTestingReadinessReport.packageSignals, "signal")}</article><article class="property-based-testing-readiness-card"><h3>Recommended Commands</h3>${propertyBasedTestingCommandList(input.propertyBasedTestingReadinessReport.recommendedCommands)}</article><article class="property-based-testing-readiness-card"><h3>Risk Queue</h3>${propertyBasedTestingRiskList(input.propertyBasedTestingReadinessReport.riskQueue)}</article><article class="property-based-testing-readiness-card"><h3>다음 확인 단계</h3>${list(input.propertyBasedTestingReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "fuzz-readiness.html",
+      title: "Fuzz Readiness",
+      html: pageShell("Fuzz Readiness", "fuzz-readiness.html", `<section class="panel" data-source-pattern="Fuzz"><h2>Fuzz Snapshot</h2><p>${escapeHtml(input.fuzzReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.fuzzReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.fuzzReadinessReport.fuzzSetups.length}</dd></div><div><dt>harness</dt><dd>${input.fuzzReadinessReport.harnessSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>engines</dt><dd>${input.fuzzReadinessReport.engineSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>runtime</dt><dd>${input.fuzzReadinessReport.runtimeSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>sanitizers</dt><dd>${input.fuzzReadinessReport.sanitizerSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>CI</dt><dd>${input.fuzzReadinessReport.ciSignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records static fuzz readiness only. It does not compile harnesses, launch fuzzers, mutate corpora, or execute generated crash inputs.</p></section><section class="grid"><article class="fuzz-readiness-card"><h3>Fuzz Setups</h3>${fuzzSetupList(input.fuzzReadinessReport.fuzzSetups)}</article><article class="fuzz-readiness-card"><h3>Harness Signals</h3>${fuzzSignalList(input.fuzzReadinessReport.harnessSignals, "signal")}</article><article class="fuzz-readiness-card"><h3>Engine Signals</h3>${fuzzSignalList(input.fuzzReadinessReport.engineSignals, "signal")}</article><article class="fuzz-readiness-card"><h3>Build Signals</h3>${fuzzSignalList(input.fuzzReadinessReport.buildSignals, "signal")}</article></section><section class="grid"><article class="fuzz-readiness-card"><h3>Runtime Signals</h3>${fuzzSignalList(input.fuzzReadinessReport.runtimeSignals, "signal")}</article><article class="fuzz-readiness-card"><h3>Sanitizer Signals</h3>${fuzzSignalList(input.fuzzReadinessReport.sanitizerSignals, "signal")}</article><article class="fuzz-readiness-card"><h3>CI Signals</h3>${fuzzSignalList(input.fuzzReadinessReport.ciSignals, "signal")}</article><article class="fuzz-readiness-card"><h3>Package Signals</h3>${fuzzSignalList(input.fuzzReadinessReport.packageSignals, "signal")}</article><article class="fuzz-readiness-card"><h3>Recommended Commands</h3>${fuzzCommandList(input.fuzzReadinessReport.recommendedCommands)}</article><article class="fuzz-readiness-card"><h3>Risk Queue</h3>${fuzzRiskList(input.fuzzReadinessReport.riskQueue)}</article><article class="fuzz-readiness-card"><h3>다음 확인 단계</h3>${list(input.fuzzReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "test-data-readiness.html",
@@ -1733,6 +1742,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Test Reporting Readiness", path: "html/test-reporting-readiness.html", description: "CTRF/Allure/JUnit/GitHub Actions식 report format, annotations, summaries, artifacts 준비도를 확인합니다." },
       { label: "Snapshot Readiness", path: "html/snapshot-readiness.html", description: "Jest/Vitest/Playwright식 snapshot assertion, update policy, serializer, baseline 준비도를 확인합니다." },
       { label: "Property-Based Testing Readiness", path: "html/property-based-testing-readiness.html", description: "fast-check/Hypothesis/jqwik식 generator, shrink, seed, counterexample, stateful, CI 준비도를 확인합니다." },
+      { label: "Fuzz Readiness", path: "html/fuzz-readiness.html", description: "OSS-Fuzz/libFuzzer/AFL++/Jazzer식 harness, engine, sanitizer, corpus, dictionary, CI 준비도를 확인합니다." },
       { label: "Test Data Readiness", path: "html/test-data-readiness.html", description: "Factory Bot/factory_boy/Faker식 factory, trait, association, sequence, seed, lint 준비도를 확인합니다." },
       { label: "Integration Test Environment Readiness", path: "html/integration-test-environment-readiness.html", description: "Testcontainers식 container fixture, wait strategy, lifecycle cleanup, runtime 준비도를 확인합니다." },
       { label: "Chaos Engineering Readiness", path: "html/chaos-engineering-readiness.html", description: "Chaos Mesh, LitmusChaos, Toxiproxy식 fault, scope, probe, cleanup 준비도를 확인합니다." },
@@ -2193,6 +2203,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "property-based-testing-readiness.html",
       goal: "fast-check, Hypothesis, jqwik식 generator, shrink, seed, counterexample, stateful/model-based test 준비도를 확인합니다.",
       evidence: `setups ${input.propertyBasedTestingReadinessReport.propertySetups.length}개, generator signals ${input.propertyBasedTestingReadinessReport.generatorSignals.filter((item) => item.readiness === "ready").length}개`
+    },
+    {
+      title: "Fuzz 준비도 확인",
+      href: "fuzz-readiness.html",
+      goal: "OSS-Fuzz/libFuzzer/AFL++/Jazzer식 harness, engine, sanitizer, corpus, dictionary, CI/reproducer 준비도를 확인합니다.",
+      evidence: `fuzz setups ${input.fuzzReadinessReport.fuzzSetups.length}개, engine signals ${input.fuzzReadinessReport.engineSignals.filter((item) => item.readiness === "ready").length}개`
     },
     {
       title: "Test data 준비도 확인",
@@ -3990,6 +4006,34 @@ function propertyBasedTestingRiskList(items: PropertyBasedTestingReadinessReport
 }
 
 function propertyBasedTestingHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function fuzzSetupList(items: FuzzReadinessReport["fuzzSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">fuzz setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.ecosystem)} / ${escapeHtml(item.readiness)}]<br>target ${item.targetCount}, harness ${item.harnessCount}, engine ${item.engineCount}, sanitizer ${item.sanitizerCount}<br>corpus ${item.corpusCount}, dictionary ${item.dictionaryCount}, coverage ${item.coverageCount}, CI ${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(fuzzHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function fuzzSignalList<T extends string>(
+  items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>,
+  labelKey: T
+): string {
+  if (items.length === 0) return "<p class=\"muted\">fuzz readiness signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(fuzzHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function fuzzCommandList(items: FuzzReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function fuzzRiskList(items: FuzzReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(fuzzHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function fuzzHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
