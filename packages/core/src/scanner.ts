@@ -115,6 +115,7 @@ import {
   DnsReadinessReport,
   CertificateReadinessReport,
   HelmReadinessReport,
+  AdmissionPolicyReadinessReport,
   CacheReadinessReport,
   LoggingReadinessReport,
   FeatureFlagReadinessReport,
@@ -294,6 +295,7 @@ export interface AnalysisBundle {
   dnsReadinessReport: DnsReadinessReport;
   certificateReadinessReport: CertificateReadinessReport;
   helmReadinessReport: HelmReadinessReport;
+  admissionPolicyReadinessReport: AdmissionPolicyReadinessReport;
   cacheReadinessReport: CacheReadinessReport;
   loggingReadinessReport: LoggingReadinessReport;
   featureFlagReadinessReport: FeatureFlagReadinessReport;
@@ -473,6 +475,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const dnsReadinessReport = await buildDnsReadinessReport(walk);
   const certificateReadinessReport = await buildCertificateReadinessReport(walk);
   const helmReadinessReport = await buildHelmReadinessReport(walk);
+  const admissionPolicyReadinessReport = await buildAdmissionPolicyReadinessReport(walk);
   const cacheReadinessReport = await buildCacheReadinessReport(walk);
   const loggingReadinessReport = await buildLoggingReadinessReport(walk);
   const featureFlagReadinessReport = await buildFeatureFlagReadinessReport(walk);
@@ -532,7 +535,7 @@ export async function analyzeRepository(sourceRoot: string, context: AnalysisCon
   const gitopsReadinessReport = await buildGitOpsReadinessReport(walk);
   const backupReadinessReport = await buildBackupReadinessReport(walk);
   const incrementalReport = emptyIncrementalReport(coverageReport);
-  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
+  return { repoMap, languageReport, dependencyReport, purposeReport, architectureReport, folderLessons, fileLessons, coverageReport, evidenceIndexReport, suggestedReadsReport, runtimeEnvironmentReport, interfaceMapReport, symbolMapReport, apiReferenceReport, contextPackReport, mcpHandoffReport, agentMemoryReport, graphQueryReport, tutorialAbstractionReport, decisionRecordReport, dependencyHealthReport, searchIndexReport, learningJournalReport, projectActivityReport, codeMetricsReadinessReport, codeOwnershipReadinessReport, largeAssetReadinessReport, licenseRightsReport, sbomReport, securityReadinessReport, advisoryReport, scorecardReport, provenanceReport, vexReport, policyGateReport, apiContractReport, consumerContractReadinessReport, observabilityReport, performanceReport, loadTestingReadinessReport, benchmarkReadinessReport, e2eReport, flakyTestReadinessReport, testImpactReadinessReport, testReportingReadinessReport, snapshotReadinessReport, propertyBasedTestingReadinessReport, testDataReadinessReport, integrationTestEnvironmentReadinessReport, chaosEngineeringReadinessReport, accessibilityReport, storybookReport, designTokensReport, i18nReport, releaseReadinessReport, secretReadinessReport, secretManagementReadinessReport, containerReadinessReport, codeQualityReport, documentationReport, databaseReadinessReport, databaseMigrationReadinessReport, databaseOrmReadinessReport, dataQualityReadinessReport, dataLineageReadinessReport, dataCatalogReadinessReport, dataAnnotationReadinessReport, lakehouseTableReadinessReport, featureStoreReadinessReport, modelRegistryReadinessReport, experimentTrackingReadinessReport, modelMonitoringReadinessReport, modelServingReadinessReport, modelTrainingReadinessReport, ciCdReport, unitTestReport, coverageReadinessReport, mutationTestingReadinessReport, typecheckReadinessReport, packageManagerReport, gitHooksReport, taskRunnerReport, dependencyUpdateReport, lintReadinessReport, formatReadinessReport, commitConventionReport, changelogReadinessReport, bundleAnalysisReport, mockingReadinessReport, dataFetchingReadinessReport, routingReadinessReport, stateManagementReadinessReport, formReadinessReport, authReadinessReport, authorizationReadinessReport, paymentReadinessReport, emailReadinessReport, queueReadinessReport, eventStreamReadinessReport, streamProcessingReadinessReport, pipelineOrchestrationReadinessReport, serviceMeshReadinessReport, ingressControllerReadinessReport, dnsReadinessReport, certificateReadinessReport, helmReadinessReport, admissionPolicyReadinessReport, cacheReadinessReport, loggingReadinessReport, featureFlagReadinessReport, rateLimitReadinessReport, errorTrackingReadinessReport, analyticsReadinessReport, httpClientReadinessReport, schemaValidationReadinessReport, dateTimeReadinessReport, idGenerationReadinessReport, imageProcessingReadinessReport, fileUploadReadinessReport, webSocketReadinessReport, pdfGenerationReadinessReport, spreadsheetReadinessReport, chartVisualizationReadinessReport, diagramRenderingReadinessReport, linkIntegrityReadinessReport, seoMetadataReadinessReport, pwaReadinessReport, browserCompatibilityReadinessReport, browserExtensionReadinessReport, envValidationReadinessReport, securityHeadersReadinessReport, graphqlReadinessReport, cliReadinessReport, llmReadinessReport, llmEvalReadinessReport, llmObservabilityReadinessReport, vectorDbReadinessReport, searchServiceReadinessReport, objectStorageReadinessReport, realtimeCollaborationReadinessReport, workflowOrchestrationReadinessReport, openApiClientReadinessReport, webhookReadinessReport, notificationReadinessReport, consentReadinessReport, privacyReadinessReport, serverFrameworkReadinessReport, rpcReadinessReport, workspaceGraphReadinessReport, scaffoldingReadinessReport, schedulerReadinessReport, buildToolReadinessReport, stylingReadinessReport, visualRegressionReadinessReport, infrastructureReadinessReport, deploymentReadinessReport, serverlessReadinessReport, mobileReadinessReport, desktopReadinessReport, edgeReadinessReport, composeReadinessReport, devContainerReadinessReport, kubernetesReadinessReport, gitopsReadinessReport, backupReadinessReport, componentGraphReport, sourceSnapshotReport, incrementalReport, flowReport, glossary, rebuildRoadmap };
 }
 
 function buildRepoMap(sourceRoot: string, walk: WalkResult): RepoMap {
@@ -25877,6 +25880,261 @@ function helmReadinessSignalFromSpecs<const T extends readonly { signal: string;
       readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
       evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
       relatedHref: match?.sourceHref ?? "html/helm-readiness.html"
+    } as { signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
+  });
+}
+
+async function buildAdmissionPolicyReadinessReport(walk: WalkResult): Promise<AdmissionPolicyReadinessReport> {
+  const sourceFiles = await admissionPolicyReadinessSourceFiles(walk);
+  const admissionSetups = admissionPolicyReadinessSetups(sourceFiles);
+  const controllerSignals = admissionPolicyControllerSignals(sourceFiles);
+  const policySignals = admissionPolicyPolicySignals(sourceFiles);
+  const ruleSignals = admissionPolicyRuleSignals(sourceFiles);
+  const enforcementSignals = admissionPolicyEnforcementSignals(sourceFiles);
+  const exceptionSignals = admissionPolicyExceptionSignals(sourceFiles);
+  const validationSignals = admissionPolicyValidationSignals(sourceFiles);
+  const observabilitySignals = admissionPolicyObservabilitySignals(sourceFiles);
+  const ciSignals = admissionPolicyCiSignals(sourceFiles);
+  const packageSignals = admissionPolicyPackageSignals(sourceFiles);
+
+  const hasSetup = admissionSetups.some((item) => item.readiness !== "missing");
+  const hasController = controllerSignals.some((item) => item.readiness === "ready");
+  const hasPolicy = policySignals.some((item) => item.readiness === "ready");
+  const hasRule = ruleSignals.some((item) => item.readiness === "ready");
+  const hasEnforcement = enforcementSignals.some((item) => item.readiness === "ready");
+  const hasValidation = validationSignals.some((item) => item.readiness === "ready");
+  const hasObservability = observabilitySignals.some((item) => item.readiness === "ready");
+  const hasCi = ciSignals.some((item) => item.readiness === "ready");
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  const riskQueue: AdmissionPolicyReadinessReport["riskQueue"] = [];
+  if (!hasController) riskQueue.push({ priority: "high", action: "Identify the admission policy engine or native Kubernetes admission API before claiming policy readiness.", why: "Admission policy readiness starts with visible Kyverno, Gatekeeper, ValidatingAdmissionPolicy, MutatingAdmissionPolicy, or admission webhook evidence.", relatedHref: "html/admission-policy-readiness.html" });
+  if (hasController && !hasPolicy) riskQueue.push({ priority: "high", action: "Add concrete policy resources such as ClusterPolicy, ConstraintTemplate, constraints, or ValidatingAdmissionPolicy.", why: "An installed controller without policy resources does not show what requests will be allowed, denied, audited, or mutated.", relatedHref: "html/admission-policy-readiness.html" });
+  if (hasPolicy && !hasRule) riskQueue.push({ priority: "medium", action: "Document validate, mutate, generate, verifyImages, CEL, Rego violation, or matchConditions rules.", why: "Learners need to see the rule language and admission request matching semantics, not only resource names.", relatedHref: "html/admission-policy-readiness.html" });
+  if (hasPolicy && !hasEnforcement) riskQueue.push({ priority: "medium", action: "Record enforcement mode such as Enforce, Audit, warn, dryrun, validationActions, or failurePolicy.", why: "Admission policies are risky when learners cannot distinguish fail-closed, fail-open, warning, and audit-only behavior.", relatedHref: "html/admission-policy-readiness.html" });
+  if (hasPolicy && !hasValidation) riskQueue.push({ priority: "low", action: "Add kyverno test/apply, gator test/verify, conftest, or kubectl dry-run evidence.", why: "Static policy resources are stronger when a safe validation workflow exists before cluster admission changes.", relatedHref: "html/admission-policy-readiness.html" });
+  if (hasPolicy && !hasObservability) riskQueue.push({ priority: "low", action: "Add PolicyReport, ClusterPolicyReport, violations, audit result, metric, or event evidence.", why: "Admission controls should leave learner-visible feedback for rejected, warned, or audited requests.", relatedHref: "html/admission-policy-readiness.html" });
+  if ((hasValidation || hasPolicy) && !hasCi) riskQueue.push({ priority: "low", action: "Publish admission policy validation artifacts from CI.", why: "CI artifacts make policy decisions and dry-run validation reproducible without contacting a learner's cluster.", relatedHref: "html/admission-policy-readiness.html" });
+  riskQueue.push({ priority: "low", action: "Run Kyverno, Gatekeeper, kubectl, and admission webhook checks only in a trusted sandbox or test cluster.", why: "RepoTutor records admission policy readiness only; it does not apply policies, call admission webhooks, mutate clusters, evaluate live requests, or run controller CLIs.", relatedHref: "html/admission-policy-readiness.html" });
+
+  return {
+    summary: `Admission policy readiness report: setup ${admissionSetups.length}개, controller signal ${controllerSignals.length}개, policy signal ${policySignals.length}개, enforcement signal ${enforcementSignals.length}개를 정적 분석으로 정리했습니다.`,
+    sourcePattern: "Admission policy readiness Kyverno ClusterPolicy PolicyException validate mutate generate verifyImages validationFailureAction Gatekeeper ConstraintTemplate constraint enforcementAction audit warn dryrun gator ValidatingAdmissionPolicy MutatingAdmissionPolicy admissionReviewVersions failurePolicy matchConditions validationActions PolicyReport",
+    admissionSetups,
+    controllerSignals,
+    policySignals,
+    ruleSignals,
+    enforcementSignals,
+    exceptionSignals,
+    validationSignals,
+    observabilitySignals,
+    ciSignals,
+    packageSignals,
+    riskQueue: riskQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]),
+    recommendedCommands: [
+      { command: "rg \"ClusterPolicy|PolicyException|validationFailureAction|verifyImages|kyverno (test|apply)\" .", purpose: "Inventory Kyverno policies, exceptions, enforcement modes, image verification, and safe CLI validation evidence." },
+      { command: "rg \"ConstraintTemplate|constraints\\.gatekeeper\\.sh|enforcementAction|violation\\[|gator (test|verify)\" .", purpose: "Trace Gatekeeper templates, constraints, enforcement actions, Rego violations, and gator validation evidence." },
+      { command: "rg \"ValidatingAdmissionPolicy|MutatingAdmissionPolicy|validationActions|matchConditions|failurePolicy|admissionReviewVersions\" .", purpose: "Find native Kubernetes admission policy and webhook matching/failure semantics." },
+      { command: "rg \"PolicyReport|ClusterPolicyReport|totalViolations|audit-results|admission_webhook|upload-artifact\" .github .", purpose: "Check policy reporting, violation feedback, admission metrics, and CI artifact evidence." },
+      { command: "rg \"namespaceSelector|objectSelector|exclude:|match:|exemptions|PolicyException\" .", purpose: "Review exception and scoping paths before changing enforcement." }
+    ],
+    learnerNextSteps: [
+      "먼저 Kyverno, Gatekeeper, Kubernetes native admission, webhook 중 어떤 admission policy engine이 보이는지 확인하세요.",
+      "ClusterPolicy, Policy, ConstraintTemplate, constraints, ValidatingAdmissionPolicy 같은 실제 policy resources를 controller evidence와 묶어 보세요.",
+      "validate, mutate, generate, verifyImages, CEL expression, Rego violation, matchConditions가 어떤 admission request를 다루는지 확인하세요.",
+      "Enforce, Audit, warn, dryrun, validationActions, failurePolicy가 fail-closed/fail-open/audit-only 중 어디에 해당하는지 분리하세요.",
+      "PolicyException, namespaceSelector, objectSelector, match/exclude, exemptions가 어떤 예외 경로를 여는지 확인하세요.",
+      "이 리포트는 정적 readiness입니다. 실제 policy apply, webhook 호출, controller CLI, cluster mutation은 안전한 sandbox 또는 test cluster에서 별도 확인하세요."
+    ]
+  };
+}
+
+type AdmissionPolicyReadinessSourceFile = { filePath: string; text: string; sourceHref: string };
+
+async function admissionPolicyReadinessSourceFiles(walk: WalkResult): Promise<AdmissionPolicyReadinessSourceFile[]> {
+  const files: AdmissionPolicyReadinessSourceFile[] = [];
+  for (const file of walk.files) {
+    if (!file.isTextCandidate || !admissionPolicyInspectablePath(file.relPath)) continue;
+    const text = await readTextIfSafe(file.absPath, 260_000);
+    if (!text) continue;
+    if (!admissionPolicyPathSignal(file.relPath) && !admissionPolicyContentSignal(text)) continue;
+    files.push({ filePath: file.relPath, text, sourceHref: `source/${encodedPath(file.relPath)}` });
+    if (files.length >= 260) break;
+  }
+  return files;
+}
+
+function admissionPolicyInspectablePath(filePath: string): boolean {
+  const base = path.basename(filePath);
+  return admissionPolicyPathSignal(filePath)
+    || /^(package\.json|go\.mod|go\.sum|requirements\.txt|pyproject\.toml|Dockerfile|Chart\.ya?ml|values\.ya?ml|kustomization\.ya?ml)$/i.test(base)
+    || /\.(json|ya?ml|toml|tf|hcl|cue|rego|md|mdx|txt|conf|sh|bash|go|py|ts|tsx|js|jsx|mjs|cjs|rst|tpl)$/i.test(filePath);
+}
+
+function admissionPolicyPathSignal(filePath: string): boolean {
+  return /(^|\/)(kyverno|gatekeeper|admission|admission[-_]?policy|policies|policy|constraints?|constraint[-_]?templates?|webhooks?|kubernetes|k8s|manifests?)(\/|\.|-|_|$)|\.github\/workflows/i.test(filePath);
+}
+
+function admissionPolicyContentSignal(text: string): boolean {
+  return /(ClusterPolicy|PolicyException|validationFailureAction|verifyImages|kyverno\s+(test|apply)|ConstraintTemplate|constraints\.gatekeeper\.sh|enforcementAction|violation\[|gator\s+(test|verify)|ValidatingAdmissionPolicy|MutatingAdmissionPolicy|ValidatingWebhookConfiguration|MutatingWebhookConfiguration|AdmissionReview|admissionReviewVersions|failurePolicy|matchConditions|validationActions|PolicyReport|ClusterPolicyReport)/i.test(text);
+}
+
+function admissionPolicyReadinessSetups(sourceFiles: AdmissionPolicyReadinessSourceFile[]): AdmissionPolicyReadinessReport["admissionSetups"] {
+  const rows: AdmissionPolicyReadinessReport["admissionSetups"] = [];
+  for (const source of sourceFiles) {
+    const policyCount = countMatches(source.text, /kind:\s*(ClusterPolicy|Policy|ValidatingAdmissionPolicy|MutatingAdmissionPolicy)\b|ClusterPolicy|PolicyException/gi);
+    const constraintCount = countMatches(source.text, /ConstraintTemplate|constraints\.gatekeeper\.sh|kind:\s*K8s[A-Za-z0-9]+|violation\[/gi);
+    const webhookCount = countMatches(source.text, /ValidatingWebhookConfiguration|MutatingWebhookConfiguration|AdmissionReview|admissionReviewVersions|webhooks?:|clientConfig:|service:/gi);
+    const validationCount = countMatches(source.text, /validate:|validationActions|validations:|expression:|cel|failurePolicy|matchConditions|kyverno apply|kyverno test|gator test|gator verify|conftest|kubectl.*dry-run/gi);
+    const mutationCount = countMatches(source.text, /mutate:|generate:|MutatingAdmissionPolicy|MutatingWebhookConfiguration|patchesJson6902|patchStrategicMerge|AssignMetadata|ModifySet|AssignImage/gi);
+    const exceptionCount = countMatches(source.text, /PolicyException|namespaceSelector|objectSelector|exclude:|match:|exemptions?|excludedNamespaces|excludedRules/gi);
+    const enforcementCount = countMatches(source.text, /validationFailureAction:\s*(Enforce|Audit)|enforcementAction:\s*(deny|dryrun|warn|audit)|validationActions:\s*\[|failurePolicy:\s*(Fail|Ignore)|dryrun|warn|audit/gi);
+    const testCount = countMatches(source.text, /kyverno\s+(test|apply)|gator\s+(test|verify)|conftest|kubectl\s+.*--dry-run|chainsaw|policy[-_ ]?test/gi);
+    const observabilityCount = countMatches(source.text, /PolicyReport|ClusterPolicyReport|totalViolations|status\.violations|audit-results|audit result|admission_webhook|apiserver_admission|events?|metrics?/gi);
+    const ciCount = countMatches(source.text, /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\/|upload-artifact|kyverno-test|gator-report|admission-policy-readiness-report\.json/gi);
+    const totalSignals = policyCount + constraintCount + webhookCount + validationCount + mutationCount + exceptionCount + enforcementCount + testCount + observabilityCount + ciCount;
+    if (totalSignals === 0) continue;
+    rows.push({
+      filePath: source.filePath,
+      framework: admissionPolicyFramework(source),
+      policyCount,
+      constraintCount,
+      webhookCount,
+      validationCount,
+      mutationCount,
+      exceptionCount,
+      enforcementCount,
+      testCount,
+      observabilityCount,
+      ciCount,
+      readiness: (policyCount > 0 || constraintCount > 0 || webhookCount > 0) && validationCount > 0 && enforcementCount > 0 && testCount > 0 ? "ready" : "partial",
+      evidence: `${source.filePath} contains policies ${policyCount}, constraints ${constraintCount}, webhooks ${webhookCount}, validation ${validationCount}, mutation ${mutationCount}, exceptions ${exceptionCount}, enforcement ${enforcementCount}, tests ${testCount}, observability ${observabilityCount}, CI ${ciCount}.`,
+      sourceHref: source.sourceHref
+    });
+  }
+  return rows.sort((a, b) => (b.policyCount + b.constraintCount + b.webhookCount + b.validationCount + b.enforcementCount + b.testCount + b.ciCount) - (a.policyCount + a.constraintCount + a.webhookCount + a.validationCount + a.enforcementCount + a.testCount + a.ciCount) || a.filePath.localeCompare(b.filePath)).slice(0, 100);
+}
+
+function admissionPolicyFramework(source: AdmissionPolicyReadinessSourceFile): AdmissionPolicyReadinessReport["admissionSetups"][number]["framework"] {
+  if (/\.github\/workflows/i.test(source.filePath)) return "workflow";
+  if (/^(package\.json|go\.mod|requirements\.txt|pyproject\.toml)$/i.test(path.basename(source.filePath))) return "package-script";
+  if (/kyverno|ClusterPolicy|PolicyException|validationFailureAction|verifyImages/i.test(source.filePath) || /kyverno|ClusterPolicy|PolicyException|validationFailureAction|verifyImages/i.test(source.text)) return "kyverno";
+  if (/gatekeeper|ConstraintTemplate|constraints\.gatekeeper\.sh|enforcementAction|gator/i.test(source.filePath) || /gatekeeper|ConstraintTemplate|constraints\.gatekeeper\.sh|enforcementAction|gator/i.test(source.text)) return "gatekeeper";
+  if (/ValidatingAdmissionPolicy|MutatingAdmissionPolicy|validationActions|matchConditions/i.test(source.text)) return "kubernetes-native";
+  if (/ValidatingWebhookConfiguration|MutatingWebhookConfiguration|AdmissionReview|admissionReviewVersions/i.test(source.text)) return "webhook";
+  if (/readme|docs?/i.test(source.filePath)) return "readme";
+  return "unknown";
+}
+
+function admissionPolicyControllerSignals(sourceFiles: AdmissionPolicyReadinessSourceFile[]): AdmissionPolicyReadinessReport["controllerSignals"] {
+  return admissionPolicySignalFromSpecs(sourceFiles, [
+    { signal: "kyverno", pattern: /kyverno|ClusterPolicy|PolicyException|validationFailureAction|verifyImages/i, evidence: "Kyverno evidence was detected." },
+    { signal: "gatekeeper", pattern: /gatekeeper|ConstraintTemplate|constraints\.gatekeeper\.sh|gator\s+(test|verify)/i, evidence: "Gatekeeper evidence was detected." },
+    { signal: "validating-admission-policy", pattern: /ValidatingAdmissionPolicy|validatingadmissionpolicy|validationActions|validations:/i, evidence: "ValidatingAdmissionPolicy evidence was detected." },
+    { signal: "mutating-admission-policy", pattern: /MutatingAdmissionPolicy|mutatingadmissionpolicy|applyConfiguration|jsonPatch/i, evidence: "MutatingAdmissionPolicy evidence was detected." },
+    { signal: "admission-webhook", pattern: /ValidatingWebhookConfiguration|MutatingWebhookConfiguration|AdmissionReview|admissionReviewVersions/i, evidence: "admission webhook evidence was detected." }
+  ], "controller", "signal");
+}
+
+function admissionPolicyPolicySignals(sourceFiles: AdmissionPolicyReadinessSourceFile[]): AdmissionPolicyReadinessReport["policySignals"] {
+  return admissionPolicySignalFromSpecs(sourceFiles, [
+    { signal: "cluster-policy", pattern: /kind:\s*ClusterPolicy\b|ClusterPolicy/i, evidence: "ClusterPolicy evidence was detected." },
+    { signal: "policy", pattern: /kind:\s*Policy\b|apiVersion:\s*kyverno\.io/i, evidence: "Kyverno Policy evidence was detected." },
+    { signal: "constraint-template", pattern: /ConstraintTemplate|templates\.gatekeeper\.sh/i, evidence: "ConstraintTemplate evidence was detected." },
+    { signal: "constraint", pattern: /constraints\.gatekeeper\.sh|kind:\s*K8s[A-Za-z0-9]+|spec:\s*\n\s*match:/i, evidence: "Gatekeeper constraint evidence was detected." },
+    { signal: "validating-admission-policy", pattern: /kind:\s*ValidatingAdmissionPolicy\b|ValidatingAdmissionPolicyBinding/i, evidence: "native admission policy evidence was detected." },
+    { signal: "policy-binding", pattern: /ValidatingAdmissionPolicyBinding|policyName:|paramRef:/i, evidence: "policy binding evidence was detected." }
+  ], "policy", "signal");
+}
+
+function admissionPolicyRuleSignals(sourceFiles: AdmissionPolicyReadinessSourceFile[]): AdmissionPolicyReadinessReport["ruleSignals"] {
+  return admissionPolicySignalFromSpecs(sourceFiles, [
+    { signal: "validate", pattern: /validate:|validations:|messageExpression|deny:/i, evidence: "validate rule evidence was detected." },
+    { signal: "mutate", pattern: /mutate:|patchStrategicMerge|patchesJson6902|AssignMetadata|ModifySet|AssignImage/i, evidence: "mutate rule evidence was detected." },
+    { signal: "generate", pattern: /generate:|synchronize:\s|clone:|data:/i, evidence: "generate rule evidence was detected." },
+    { signal: "verify-images", pattern: /verifyImages|attestors:|imageReferences|cosign|rekor/i, evidence: "image verification evidence was detected." },
+    { signal: "cel-expression", pattern: /expression:\s|object\.|oldObject\.|request\.|authorizer\./i, evidence: "CEL expression evidence was detected." },
+    { signal: "rego-violation", pattern: /violation\[|rego|package\s+[A-Za-z0-9_.-]+/i, evidence: "Rego violation evidence was detected." },
+    { signal: "match-conditions", pattern: /matchConditions|namespaceSelector|objectSelector|resources:|operations:|apiGroups:|apiVersions:/i, evidence: "request matching evidence was detected." }
+  ], "rule", "signal");
+}
+
+function admissionPolicyEnforcementSignals(sourceFiles: AdmissionPolicyReadinessSourceFile[]): AdmissionPolicyReadinessReport["enforcementSignals"] {
+  return admissionPolicySignalFromSpecs(sourceFiles, [
+    { signal: "enforce", pattern: /validationFailureAction:\s*Enforce|enforcementAction:\s*deny|\bEnforce\b/i, evidence: "enforce/deny evidence was detected." },
+    { signal: "audit", pattern: /validationFailureAction:\s*Audit|enforcementAction:\s*audit|\baudit\b/i, evidence: "audit evidence was detected." },
+    { signal: "warn", pattern: /enforcementAction:\s*warn|\bwarn\b|validationActions:\s*\[[^\]]*Warn/i, evidence: "warn evidence was detected." },
+    { signal: "dryrun", pattern: /enforcementAction:\s*dryrun|\bdryrun\b|dry[-_ ]?run/i, evidence: "dryrun evidence was detected." },
+    { signal: "failure-policy-fail", pattern: /failurePolicy:\s*Fail/i, evidence: "failurePolicy Fail evidence was detected." },
+    { signal: "failure-policy-ignore", pattern: /failurePolicy:\s*Ignore/i, evidence: "failurePolicy Ignore evidence was detected." },
+    { signal: "validation-actions", pattern: /validationActions:\s*\[|validationActions:/i, evidence: "validationActions evidence was detected." }
+  ], "enforcement", "signal");
+}
+
+function admissionPolicyExceptionSignals(sourceFiles: AdmissionPolicyReadinessSourceFile[]): AdmissionPolicyReadinessReport["exceptionSignals"] {
+  return admissionPolicySignalFromSpecs(sourceFiles, [
+    { signal: "policy-exception", pattern: /PolicyException|enablePolicyException/i, evidence: "PolicyException evidence was detected." },
+    { signal: "namespace-selector", pattern: /namespaceSelector|excludedNamespaces|namespaces:/i, evidence: "namespace selector evidence was detected." },
+    { signal: "object-selector", pattern: /objectSelector|labelSelector|matchLabels|matchExpressions/i, evidence: "object selector evidence was detected." },
+    { signal: "match-exclude", pattern: /exclude:|match:\s|notKinds|excludedRules|subjects:/i, evidence: "match/exclude evidence was detected." },
+    { signal: "exemptions", pattern: /exemptions?|exemptNamespace|exemptImages|excludedUsers|excludedGroups/i, evidence: "exemption evidence was detected." }
+  ], "exception", "signal");
+}
+
+function admissionPolicyValidationSignals(sourceFiles: AdmissionPolicyReadinessSourceFile[]): AdmissionPolicyReadinessReport["validationSignals"] {
+  return admissionPolicySignalFromSpecs(sourceFiles, [
+    { signal: "kyverno-test", pattern: /kyverno\s+test|kyverno-test|chainsaw/i, evidence: "kyverno test evidence was detected." },
+    { signal: "kyverno-apply", pattern: /kyverno\s+apply|kyverno apply|policy[-_ ]?report/i, evidence: "kyverno apply evidence was detected." },
+    { signal: "gator-test", pattern: /gator\s+test|gator-test/i, evidence: "gator test evidence was detected." },
+    { signal: "gator-verify", pattern: /gator\s+verify|gator-verify/i, evidence: "gator verify evidence was detected." },
+    { signal: "conftest", pattern: /conftest|opa\s+test/i, evidence: "conftest/OPA test evidence was detected." },
+    { signal: "kubectl-dry-run", pattern: /kubectl\s+.*--dry-run|--dry-run=server|kubectl\s+diff/i, evidence: "kubectl dry-run/diff evidence was detected." }
+  ], "validation", "signal");
+}
+
+function admissionPolicyObservabilitySignals(sourceFiles: AdmissionPolicyReadinessSourceFile[]): AdmissionPolicyReadinessReport["observabilitySignals"] {
+  return admissionPolicySignalFromSpecs(sourceFiles, [
+    { signal: "policy-report", pattern: /PolicyReport|wgpolicyk8s\.io\/v1alpha2/i, evidence: "PolicyReport evidence was detected." },
+    { signal: "cluster-policy-report", pattern: /ClusterPolicyReport/i, evidence: "ClusterPolicyReport evidence was detected." },
+    { signal: "violations", pattern: /totalViolations|status\.violations|constraint_violations|violation count/i, evidence: "violation feedback evidence was detected." },
+    { signal: "audit-results", pattern: /audit-results|audit result|auditChannel|audit-controller/i, evidence: "audit result evidence was detected." },
+    { signal: "metrics", pattern: /admission_webhook|apiserver_admission|prometheus|metrics|histogram|counter/i, evidence: "metrics evidence was detected." },
+    { signal: "events", pattern: /generateSuccessEvents|events?|EventBroadcaster|emit.*event/i, evidence: "event evidence was detected." }
+  ], "observability", "signal");
+}
+
+function admissionPolicyCiSignals(sourceFiles: AdmissionPolicyReadinessSourceFile[]): AdmissionPolicyReadinessReport["ciSignals"] {
+  return admissionPolicySignalFromSpecs(sourceFiles, [
+    { signal: "github-actions", pattern: /\.github\/workflows|github[-_ ]?actions|\buses:\s*actions\//i, evidence: "GitHub Actions evidence was detected." },
+    { signal: "artifact-upload", pattern: /upload-artifact|admission-policy-readiness-report\.json|kyverno-report\.json|gator-report\.json|policy-report\.json/i, evidence: "artifact upload evidence was detected." },
+    { signal: "kyverno-cli", pattern: /kyverno\s+(test|apply|jp)|kyverno-action/i, evidence: "Kyverno CLI CI evidence was detected." },
+    { signal: "gator-cli", pattern: /gator\s+(test|verify)|setup-gator/i, evidence: "gator CLI CI evidence was detected." },
+    { signal: "kubectl", pattern: /kubectl\s+(apply|diff|wait|get|auth|create).*dry-run|kubectl\s+diff/i, evidence: "kubectl CI evidence was detected." }
+  ], "CI", "signal");
+}
+
+function admissionPolicyPackageSignals(sourceFiles: AdmissionPolicyReadinessSourceFile[]): AdmissionPolicyReadinessReport["packageSignals"] {
+  return admissionPolicySignalFromSpecs(sourceFiles, [
+    { signal: "kyverno", pattern: /"kyverno"|kyverno\/kyverno|ghcr\.io\/kyverno|kyverno\s+(test|apply)|kyverno\.io/i, evidence: "Kyverno package/tool evidence was detected." },
+    { signal: "gatekeeper", pattern: /gatekeeper|open-policy-agent\/gatekeeper|gator\s+(test|verify)|gatekeeper\.sh/i, evidence: "Gatekeeper package/tool evidence was detected." },
+    { signal: "opa", pattern: /open-policy-agent|opa\s+(test|eval)|conftest|rego/i, evidence: "OPA/Rego package/tool evidence was detected." },
+    { signal: "kubernetes-client", pattern: /@kubernetes\/client-node|client-go|k8s\.io\/api|kubectl|kubernetes-client/i, evidence: "Kubernetes client evidence was detected." }
+  ], "package", "signal");
+}
+
+function admissionPolicySignalFromSpecs<const T extends readonly { signal: string; pattern: RegExp; evidence: string }[]>(
+  sourceFiles: AdmissionPolicyReadinessSourceFile[],
+  specs: T,
+  label: string,
+  labelKey: "signal"
+): Array<{ signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string }> {
+  return specs.map((spec) => {
+    const match = sourceFiles.find((source) => spec.pattern.test(source.filePath) || spec.pattern.test(source.text));
+    return {
+      [labelKey]: spec.signal,
+      readiness: match ? "ready" : sourceFiles.length > 0 ? "external" : "missing",
+      evidence: match ? `${match.filePath} ${spec.evidence}` : `${label} ${spec.signal} evidence was not detected.`,
+      relatedHref: match?.sourceHref ?? "html/admission-policy-readiness.html"
     } as { signal: T[number]["signal"]; readiness: "ready" | "missing" | "external"; evidence: string; relatedHref: string };
   });
 }

@@ -104,6 +104,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "dns-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "certificate-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "helm-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "admission-policy-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "cache-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "logging-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "feature-flag-readiness-report.json"))).resolves.toBeUndefined();
@@ -264,6 +265,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "dns-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "certificate-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "helm-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "admission-policy-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "cache-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "logging-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "feature-flag-readiness.md"))).resolves.toBeUndefined();
@@ -427,6 +429,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "dns-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "certificate-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "helm-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "admission-policy-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "cache-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "logging-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "feature-flag-readiness.html"))).resolves.toBeUndefined();
@@ -617,6 +620,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/dns-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/certificate-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/helm-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/admission-policy-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/cache-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/logging-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/feature-flag-readiness.html\"");
@@ -3562,6 +3566,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/dns-readiness.html");
     expect(exportManifestText).toContain("html/certificate-readiness.html");
     expect(exportManifestText).toContain("html/helm-readiness.html");
+    expect(exportManifestText).toContain("html/admission-policy-readiness.html");
     expect(exportManifestText).toContain("html/cache-readiness.html");
     expect(exportManifestText).toContain("html/logging-readiness.html");
     expect(exportManifestText).toContain("html/feature-flag-readiness.html");
@@ -3744,6 +3749,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("dns-readiness.html");
     expect(learningPathHtml).toContain("certificate-readiness.html");
     expect(learningPathHtml).toContain("helm-readiness.html");
+    expect(learningPathHtml).toContain("admission-policy-readiness.html");
     expect(learningPathHtml).toContain("cache-readiness.html");
     expect(learningPathHtml).toContain("logging-readiness.html");
     expect(learningPathHtml).toContain("feature-flag-readiness.html");
@@ -9908,6 +9914,261 @@ describe("RepoTutor core pipeline", () => {
     const helmHtml = await fs.readFile(path.join(result.session.outputPaths.html, "helm-readiness.html"), "utf8");
     expect(helmHtml).toContain("helm-readiness-card");
     expect(helmHtml).toContain("data-source-pattern=\"Helm\"");
+  });
+
+  it("detects admission policy readiness without applying policies or contacting clusters", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-admission-policy-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-admission-policy-source-"));
+    await fs.mkdir(path.join(sourceRoot, "policies", "kyverno"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "policies", "gatekeeper"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "policies", "native"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "policy:kyverno": "kyverno test policies && kyverno apply policies --resource resources/pod.yaml",
+        "policy:gatekeeper": "gator test policies && gator verify policies",
+        "policy:dry-run": "kubectl apply -f policies --dry-run=server && conftest test policies"
+      },
+      dependencies: {
+        "@kubernetes/client-node": "latest",
+        kyverno: "latest",
+        gatekeeper: "latest",
+        opa: "latest"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "policies", "kyverno", "cluster-policy.yaml"), [
+      "apiVersion: kyverno.io/v1",
+      "kind: ClusterPolicy",
+      "metadata:",
+      "  name: require-secure-images",
+      "spec:",
+      "  validationFailureAction: Enforce",
+      "  background: true",
+      "  generateSuccessEvents: true",
+      "  rules:",
+      "    - name: validate-labels",
+      "      match:",
+      "        resources:",
+      "          kinds: [Pod]",
+      "          namespaceSelector:",
+      "            matchLabels:",
+      "              team: platform",
+      "          objectSelector:",
+      "            matchLabels:",
+      "              app: web",
+      "      exclude:",
+      "        resources:",
+      "          namespaces: [kube-system]",
+      "      validate:",
+      "        message: labels are required",
+      "        pattern:",
+      "          metadata:",
+      "            labels:",
+      "              app: \"?*\"",
+      "    - name: mutate-defaults",
+      "      mutate:",
+      "        patchStrategicMerge:",
+      "          metadata:",
+      "            labels:",
+      "              admission: kyverno",
+      "    - name: generate-network-policy",
+      "      generate:",
+      "        synchronize: true",
+      "        data:",
+      "          kind: NetworkPolicy",
+      "    - name: verify-image-signature",
+      "      verifyImages:",
+      "        - imageReferences: [\"registry.example.com/*\"]",
+      "          attestors:",
+      "            - entries:",
+      "                - keys:",
+      "                    publicKeys: cosign.pub",
+      "# validationFailureAction: Audit PolicyReport ClusterPolicyReport totalViolations status.violations metrics events",
+      "# kyverno test policies && kyverno apply policies --resource resources/pod.yaml"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "policies", "kyverno", "exception.yaml"), [
+      "apiVersion: kyverno.io/v2",
+      "kind: PolicyException",
+      "metadata:",
+      "  name: allow-break-glass",
+      "spec:",
+      "  exceptions:",
+      "    - policyName: require-secure-images",
+      "      ruleNames: [validate-labels]",
+      "  match:",
+      "    any:",
+      "      - resources:",
+      "          namespaces: [sandbox]",
+      "# exemptions excludedUsers excludedGroups"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "policies", "gatekeeper", "required-labels.yaml"), [
+      "apiVersion: templates.gatekeeper.sh/v1",
+      "kind: ConstraintTemplate",
+      "metadata:",
+      "  name: k8srequiredlabels",
+      "spec:",
+      "  crd:",
+      "    spec:",
+      "      names:",
+      "        kind: K8sRequiredLabels",
+      "  targets:",
+      "    - target: admission.k8s.gatekeeper.sh",
+      "      rego: |",
+      "        package k8srequiredlabels",
+      "        violation[{\"msg\": msg}] {",
+      "          msg := \"missing labels\"",
+      "        }",
+      "---",
+      "apiVersion: constraints.gatekeeper.sh/v1beta1",
+      "kind: K8sRequiredLabels",
+      "metadata:",
+      "  name: required-labels",
+      "spec:",
+      "  enforcementAction: dryrun",
+      "  match:",
+      "    kinds:",
+      "      - apiGroups: [\"\"]",
+      "        kinds: [\"Pod\"]",
+      "# enforcementAction: warn audit-results audit-controller gator test gator verify"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "policies", "native", "validating-admission-policy.yaml"), [
+      "apiVersion: admissionregistration.k8s.io/v1",
+      "kind: ValidatingAdmissionPolicy",
+      "metadata:",
+      "  name: require-team-label",
+      "spec:",
+      "  matchConditions:",
+      "    - name: not-system",
+      "      expression: \"request.namespace != 'kube-system'\"",
+      "  validations:",
+      "    - expression: \"object.metadata.labels['team'] != ''\"",
+      "      messageExpression: \"'team label required for ' + object.metadata.name\"",
+      "  failurePolicy: Fail",
+      "---",
+      "apiVersion: admissionregistration.k8s.io/v1",
+      "kind: ValidatingAdmissionPolicyBinding",
+      "metadata:",
+      "  name: require-team-label-binding",
+      "spec:",
+      "  policyName: require-team-label",
+      "  validationActions: [Deny, Warn, Audit]",
+      "  paramRef:",
+      "    name: require-team-label-params",
+      "---",
+      "apiVersion: admissionregistration.k8s.io/v1alpha1",
+      "kind: MutatingAdmissionPolicy",
+      "metadata:",
+      "  name: set-team-label",
+      "spec:",
+      "  matchConstraints:",
+      "    resourceRules:",
+      "      - apiGroups: [\"\"]",
+      "        apiVersions: [v1]",
+      "        operations: [CREATE, UPDATE]",
+      "        resources: [pods]",
+      "  mutations:",
+      "    - patchType: JSONPatch",
+      "      jsonPatch:",
+      "        expression: \"[{ 'op': 'add', 'path': '/metadata/labels/team', 'value': 'platform' }]\""
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "policies", "native", "webhook.yaml"), [
+      "apiVersion: admissionregistration.k8s.io/v1",
+      "kind: ValidatingWebhookConfiguration",
+      "metadata:",
+      "  name: validation.example.com",
+      "webhooks:",
+      "  - name: validate.example.com",
+      "    admissionReviewVersions: [v1, v1beta1]",
+      "    failurePolicy: Ignore",
+      "    clientConfig:",
+      "      service:",
+      "        namespace: admission-system",
+      "        name: admission-webhook",
+      "---",
+      "apiVersion: admissionregistration.k8s.io/v1",
+      "kind: MutatingWebhookConfiguration",
+      "metadata:",
+      "  name: mutation.example.com",
+      "webhooks:",
+      "  - name: mutate.example.com",
+      "    admissionReviewVersions: [v1]",
+      "    failurePolicy: Fail",
+      "# kind: AdmissionReview apiserver_admission_webhook_rejection_count prometheus counter"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "admission-policy.yml"), [
+      "name: admission policy readiness",
+      "on: [push]",
+      "jobs:",
+      "  policy:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: kyverno test policies && kyverno apply policies --resource resources/pod.yaml --audit-warn",
+      "      - run: gator test policies && gator verify policies && conftest test policies",
+      "      - run: kubectl apply -f policies --dry-run=server && kubectl diff -f policies --server-side",
+      "      - run: echo '{}' > admission-policy-readiness-report.json && echo '{}' > kyverno-report.json && echo '{}' > gator-report.json && echo '{}' > policy-report.json",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          path: |",
+      "            admission-policy-readiness-report.json",
+      "            kyverno-report.json",
+      "            gator-report.json",
+      "            policy-report.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "admission-policy-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      admissionSetups: Array<{ framework: string; policyCount: number; constraintCount: number; webhookCount: number; validationCount: number; mutationCount: number; exceptionCount: number; enforcementCount: number; testCount: number; observabilityCount: number; ciCount: number }>;
+      controllerSignals: Array<{ signal: string; readiness: string }>;
+      policySignals: Array<{ signal: string; readiness: string }>;
+      ruleSignals: Array<{ signal: string; readiness: string }>;
+      enforcementSignals: Array<{ signal: string; readiness: string }>;
+      exceptionSignals: Array<{ signal: string; readiness: string }>;
+      validationSignals: Array<{ signal: string; readiness: string }>;
+      observabilitySignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+
+    expect(report.sourcePattern).toBe("Admission policy readiness Kyverno ClusterPolicy PolicyException validate mutate generate verifyImages validationFailureAction Gatekeeper ConstraintTemplate constraint enforcementAction audit warn dryrun gator ValidatingAdmissionPolicy MutatingAdmissionPolicy admissionReviewVersions failurePolicy matchConditions validationActions PolicyReport");
+    expect(report.admissionSetups.length).toBeGreaterThan(0);
+    expect(report.admissionSetups.map((item) => item.framework)).toEqual(expect.arrayContaining(["kyverno", "gatekeeper", "kubernetes-native", "webhook", "workflow"]));
+    expect(report.admissionSetups.some((item) => item.policyCount > 0 && item.validationCount > 0 && item.mutationCount > 0 && item.exceptionCount > 0 && item.enforcementCount > 0)).toBe(true);
+    expect(report.admissionSetups.some((item) => item.constraintCount > 0)).toBe(true);
+    expect(report.admissionSetups.some((item) => item.webhookCount > 0)).toBe(true);
+    expect(report.admissionSetups.some((item) => item.testCount > 0 && item.ciCount > 0)).toBe(true);
+    expect(readySignals(report.controllerSignals)).toEqual(expect.arrayContaining(["kyverno", "gatekeeper", "validating-admission-policy", "mutating-admission-policy", "admission-webhook"]));
+    expect(readySignals(report.policySignals)).toEqual(expect.arrayContaining(["cluster-policy", "policy", "constraint-template", "constraint", "validating-admission-policy", "policy-binding"]));
+    expect(readySignals(report.ruleSignals)).toEqual(expect.arrayContaining(["validate", "mutate", "generate", "verify-images", "cel-expression", "rego-violation", "match-conditions"]));
+    expect(readySignals(report.enforcementSignals)).toEqual(expect.arrayContaining(["enforce", "audit", "warn", "dryrun", "failure-policy-fail", "failure-policy-ignore", "validation-actions"]));
+    expect(readySignals(report.exceptionSignals)).toEqual(expect.arrayContaining(["policy-exception", "namespace-selector", "object-selector", "match-exclude", "exemptions"]));
+    expect(readySignals(report.validationSignals)).toEqual(expect.arrayContaining(["kyverno-test", "kyverno-apply", "gator-test", "gator-verify", "conftest", "kubectl-dry-run"]));
+    expect(readySignals(report.observabilitySignals)).toEqual(expect.arrayContaining(["policy-report", "cluster-policy-report", "violations", "audit-results", "metrics", "events"]));
+    expect(readySignals(report.ciSignals)).toEqual(expect.arrayContaining(["github-actions", "artifact-upload", "kyverno-cli", "gator-cli", "kubectl"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["kyverno", "gatekeeper", "opa", "kubernetes-client"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"ClusterPolicy|PolicyException|validationFailureAction|verifyImages|kyverno (test|apply)\" .",
+      "rg \"ConstraintTemplate|constraints\\.gatekeeper\\.sh|enforcementAction|violation\\[|gator (test|verify)\" .",
+      "rg \"ValidatingAdmissionPolicy|MutatingAdmissionPolicy|validationActions|matchConditions|failurePolicy|admissionReviewVersions\" .",
+      "rg \"PolicyReport|ClusterPolicyReport|totalViolations|audit-results|admission_webhook|upload-artifact\" .github .",
+      "rg \"namespaceSelector|objectSelector|exclude:|match:|exemptions|PolicyException\" ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "admission-policy-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "admission-policy-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "admission-policy-readiness.html"))).resolves.toBeUndefined();
+    const markdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "admission-policy-readiness.md"), "utf8");
+    expect(markdown).toContain("Controller Signals");
+    expect(markdown).toContain("Enforcement Signals");
+    expect(markdown).toContain("Observability Signals");
+    const html = await fs.readFile(path.join(result.session.outputPaths.html, "admission-policy-readiness.html"), "utf8");
+    expect(html).toContain("admission-policy-readiness-card");
+    expect(html).toContain("data-source-pattern=\"AdmissionPolicy\"");
   });
 
   it("detects feature store readiness without running feature store backends", async () => {
