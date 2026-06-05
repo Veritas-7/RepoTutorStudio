@@ -3658,6 +3658,100 @@ export const ModelServingReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ModelTrainingReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  modelTrainingSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["lightning", "accelerate", "ray", "custom", "unknown"]),
+    trainerCount: z.number().int().nonnegative(),
+    trainingLoopCount: z.number().int().nonnegative(),
+    dataCount: z.number().int().nonnegative(),
+    optimizerCount: z.number().int().nonnegative(),
+    distributedCount: z.number().int().nonnegative(),
+    acceleratorCount: z.number().int().nonnegative(),
+    checkpointCount: z.number().int().nonnegative(),
+    callbackCount: z.number().int().nonnegative(),
+    metricCount: z.number().int().nonnegative(),
+    configCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  loopSignals: z.array(z.object({
+    signal: z.enum(["trainer", "train-loop", "fit", "training-step", "validation-step", "optimizer", "scheduler", "gradient-accumulation", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  dataSignals: z.array(z.object({
+    signal: z.enum(["dataloader", "datamodule", "dataset-shard", "prepare-dataloader", "batch-size", "validation-loader", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  distributedSignals: z.array(z.object({
+    signal: z.enum(["ddp", "fsdp", "deepspeed", "torchrun", "accelerate-launch", "ray-train", "multi-gpu", "multi-node", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  acceleratorSignals: z.array(z.object({
+    signal: z.enum(["gpu", "tpu", "xla", "mixed-precision", "bf16", "fp16", "device-placement", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  checkpointSignals: z.array(z.object({
+    signal: z.enum(["checkpoint", "resume", "save-state", "load-state", "artifact-storage", "best-model", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  callbackSignals: z.array(z.object({
+    signal: z.enum(["early-stopping", "lr-monitor", "model-summary", "progress-bar", "ray-report-callback", "custom-callback", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  observabilitySignals: z.array(z.object({
+    signal: z.enum(["metric", "logger", "tensorboard", "wandb", "mlflow", "report", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  configSignals: z.array(z.object({
+    signal: z.enum(["trainer-config", "scaling-config", "run-config", "project-config", "seed", "deterministic", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "training-smoke-command", "distributed-smoke-command", "checkpoint-assertion-command", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["lightning", "accelerate", "ray", "torch", "custom", "unknown"]),
+    readiness: z.enum(["ready", "missing"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CiCdReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -9498,6 +9592,7 @@ export type ModelRegistryReadinessReport = z.infer<typeof ModelRegistryReadiness
 export type ExperimentTrackingReadinessReport = z.infer<typeof ExperimentTrackingReadinessReportSchema>;
 export type ModelMonitoringReadinessReport = z.infer<typeof ModelMonitoringReadinessReportSchema>;
 export type ModelServingReadinessReport = z.infer<typeof ModelServingReadinessReportSchema>;
+export type ModelTrainingReadinessReport = z.infer<typeof ModelTrainingReadinessReportSchema>;
 export type CiCdReport = z.infer<typeof CiCdReportSchema>;
 export type UnitTestReport = z.infer<typeof UnitTestReportSchema>;
 export type CoverageReadinessReport = z.infer<typeof CoverageReadinessReportSchema>;
