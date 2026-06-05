@@ -8654,6 +8654,64 @@ to a private repository, and preserve resumable state in this file.
 - 2026-06-05: Committed AutoResearch Upgrade 280:
   - `11e05d6` semantic layer readiness report
 
+- 2026-06-06: AutoResearch Upgrade 281 candidate selected:
+  data transformation readiness from existing ignored `dbt-labs/dbt-core`
+  clone (`https://github.com/dbt-labs/dbt-core.git`; ignored clone HEAD
+  `9ec8b8fdccdabc59f48bbfb251e9f46ada218cea`), new ignored
+  `TobikoData/sqlmesh` clone (`https://github.com/TobikoData/sqlmesh.git`;
+  ignored clone HEAD `d15203bb82c5827dc97782038e96446b597bd5b8`), and
+  new ignored `dataform-co/dataform` clone
+  (`https://github.com/dataform-co/dataform.git`; ignored clone HEAD
+  `5c49d0bf95c238d27e60652da801fc309d8cbca2`). Static source inspection
+  only; `git ls-files` for the external source paths returned `0`, and
+  `git status --ignored=matching` showed the clones only under ignored
+  `research/external-src/`.
+- 2026-06-06: Implemented dbt/SQLMesh/Dataform-style data transformation
+  readiness report: `DataTransformationReadinessReportSchema`,
+  `analysis/data-transformation-readiness-report.json`,
+  `markdown/data-transformation-readiness.md`,
+  `html/data-transformation-readiness.html`, static transformation setup
+  detection, tool, model, dependency, incrementality, environment, artifact,
+  workflow, and package signals, dbt project/model/source/macro/seed/snapshot
+  evidence, SQLMesh `MODEL`, Python model, `AUDIT`, environment, plan/test,
+  and SCD/incremental evidence, Dataform workflow settings, definitions,
+  publish/declare/assert/ref/uniqueKey/pre/post operation evidence, static-only
+  transformation guardrail, recommended inspection commands, manifest and
+  session-verification coverage, learning-path linkage, HTML page/nav entry,
+  CLI help/list-target coverage, dedicated audit coverage, and
+  `open --target data-transformation-readiness`.
+- 2026-06-06: RED/GREEN data transformation readiness smoke recorded:
+  pre-implementation precise gap checks had no
+  `DataTransformationReadinessReportSchema`, no
+  `dataTransformationReadinessReport`, and no
+  `data-transformation-readiness` target. GREEN fixture detected dbt,
+  SQLMesh, and Dataform setup rows; dbt model/source/macro/seed/snapshot,
+  SQL/Python model, Dataform table, ref/source/dependency/declaration,
+  owner/tag/grain/cron, incremental materialization, unique key,
+  `INCREMENTAL_BY_TIME_RANGE`, `SCD_TYPE_2`, pre/post ops, state/defer,
+  target/profile, SQLMesh environment, Dataform workflow settings, warehouse
+  engine, manifest/run_results/compiled graph/snapshot/state/compiled SQL,
+  GitHub Actions, dbt build/compile/ls, SQLMesh plan/test, Dataform compile,
+  artifact upload, package, recommended command, static-only guardrail, and all
+  three new artifacts.
+- 2026-06-06: Verification for Upgrade 281:
+  - `pnpm --filter @repotutor/shared build`: PASS
+  - `pnpm --filter @repotutor/html build`: PASS
+  - `pnpm --filter @repotutor/core build`: PASS
+  - focused data transformation readiness Vitest command: PASS, pipeline file
+    1/1 focused test
+  - `pnpm -w typecheck`: PASS
+  - `pnpm test`: PASS, 88/88 tests
+  - `pnpm build`: PASS
+  - `pnpm audit:brief`: PASS, 179/179 audit checks across 13 reports
+  - `node --check scripts/compliance-audit.mjs`: PASS
+  - `git diff --check`: PASS
+  - external-source ignored proof: PASS, tracked count `0`
+  - feature-stage `gitleaks protect --staged --no-banner`: PASS, scanned
+    ~88.07 KB with no leaks
+- 2026-06-06: Committed AutoResearch Upgrade 281:
+  - `964c3f4` data transformation readiness report
+
 ## Next Actions
 
 1. Continue next AutoResearch upgrade candidate unless the user stops.
