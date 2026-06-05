@@ -59,6 +59,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "secret-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "secret-management-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "container-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "container-scan-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "code-quality-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "documentation-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "database-readiness-report.json"))).resolves.toBeUndefined();
@@ -226,6 +227,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "secret-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "secret-management-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "container-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "container-scan-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "code-quality.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "documentation.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "database-readiness.md"))).resolves.toBeUndefined();
@@ -396,6 +398,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "secret-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "secret-management-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "container-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "container-scan-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "code-quality.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "documentation.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "database-readiness.html"))).resolves.toBeUndefined();
@@ -593,6 +596,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/secret-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/secret-management-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/container-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/container-scan-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/code-quality.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/documentation.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/database-readiness.html\"");
@@ -1569,6 +1573,30 @@ describe("RepoTutor core pipeline", () => {
     expect(containerMarkdown).toContain("Source pattern: Hadolint");
     expect(containerMarkdown).toContain("## Instruction Risks");
     expect(containerMarkdown).toContain("## Integration Signals");
+    const containerScanText = await fs.readFile(path.join(result.session.outputPaths.analysis, "container-scan-readiness-report.json"), "utf8");
+    expect(containerScanText).toContain("Container scan readiness Trivy Grype Dockle image filesystem SBOM vulnerability misconfig secret license CIS exit-code severity ignore-unfixed only-fixed fail-on exit-level SARIF CycloneDX SPDX JSON VEX trivyignore grype ignore dockleignore registry token docker-host");
+    expect(containerScanText).toContain("\"containerScanSetups\"");
+    expect(containerScanText).toContain("\"targetSignals\"");
+    expect(containerScanText).toContain("\"scannerSignals\"");
+    expect(containerScanText).toContain("\"gateSignals\"");
+    expect(containerScanText).toContain("\"outputSignals\"");
+    expect(containerScanText).toContain("\"policySignals\"");
+    expect(containerScanText).toContain("\"registrySignals\"");
+    expect(containerScanText).toContain("\"ciSignals\"");
+    expect(containerScanText).toContain("\"packageSignals\"");
+    expect(containerScanText).toContain("Run Trivy, Grype, Dockle, Docker, registry, vulnerability DB, and SARIF upload commands only in an authorized local or CI environment");
+    const containerScanHtml = await fs.readFile(path.join(result.session.outputPaths.html, "container-scan-readiness.html"), "utf8");
+    expect(containerScanHtml).toContain("Container Scan Readiness");
+    expect(containerScanHtml).toContain("container-scan-readiness-card");
+    expect(containerScanHtml).toContain("data-source-pattern=\"Container Scan\"");
+    expect(containerScanHtml).toContain("does not build images");
+    expect(containerScanHtml).toContain("Gate Signals");
+    expect(containerScanHtml).toContain("Policy Signals");
+    const containerScanMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "container-scan-readiness.md"), "utf8");
+    expect(containerScanMarkdown).toContain("# Container Scan Readiness");
+    expect(containerScanMarkdown).toContain("Source pattern: Container scan readiness");
+    expect(containerScanMarkdown).toContain("## Gate Signals");
+    expect(containerScanMarkdown).toContain("## Policy Signals");
     const codeQualityText = await fs.readFile(path.join(result.session.outputPaths.analysis, "code-quality-report.json"), "utf8");
     expect(codeQualityText).toContain("Biome formatter linter check ci biome.json assist organize imports diagnostics reporter editor LSP VCS ignore safe fixes");
     expect(codeQualityText).toContain("\"toolConfigs\"");
@@ -3631,6 +3659,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/secret-readiness.html");
     expect(exportManifestText).toContain("html/secret-management-readiness.html");
     expect(exportManifestText).toContain("html/container-readiness.html");
+    expect(exportManifestText).toContain("html/container-scan-readiness.html");
     expect(exportManifestText).toContain("html/code-quality.html");
     expect(exportManifestText).toContain("html/documentation.html");
     expect(exportManifestText).toContain("html/database-readiness.html");
@@ -3820,6 +3849,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("secret-readiness.html");
     expect(learningPathHtml).toContain("secret-management-readiness.html");
     expect(learningPathHtml).toContain("container-readiness.html");
+    expect(learningPathHtml).toContain("container-scan-readiness.html");
     expect(learningPathHtml).toContain("code-quality.html");
     expect(learningPathHtml).toContain("documentation.html");
     expect(learningPathHtml).toContain("database-readiness.html");
@@ -13333,6 +13363,162 @@ describe("RepoTutor core pipeline", () => {
     expect(report.packageSignals.some((item) => item.signal === "dockerfile" && item.readiness === "ready")).toBe(true);
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "compose-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "compose-readiness.html"))).resolves.toBeUndefined();
+  });
+
+  it("detects container scan readiness without building images or contacting registries", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-container-scan-readiness-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-container-scan-source-"));
+    await fs.cp(fixtureRoot, sourceRoot, { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "docs"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "Dockerfile"), [
+      "FROM node:22-alpine",
+      "WORKDIR /app",
+      "COPY package.json ./",
+      "RUN npm ci --omit=dev",
+      "COPY . .",
+      "CMD [\"node\", \"index.js\"]"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "container-scan.yml"), [
+      "name: Container Scan",
+      "on:",
+      "  pull_request:",
+      "permissions:",
+      "  contents: read",
+      "  security-events: write",
+      "jobs:",
+      "  scan:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: docker build --platform linux/amd64 -t ghcr.io/acme/app:${{ github.sha }} .",
+      "      - uses: aquasecurity/trivy-action@v0.35.0",
+      "        with:",
+      "          image-ref: ghcr.io/acme/app:${{ github.sha }}",
+      "          scanners: vuln,misconfig,secret,license",
+      "          severity: HIGH,CRITICAL",
+      "          ignore-unfixed: true",
+      "          exit-code: '1'",
+      "          format: sarif",
+      "          output: trivy-results.sarif",
+      "      - run: trivy image --scanners vuln,misconfig,secret,license --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed --format cyclonedx --output trivy.cdx.json --format spdx --offline-scan --skip-db-update --vex repo ghcr.io/acme/app:${{ github.sha }}",
+      "      - run: grype ghcr.io/acme/app:${{ github.sha }} --fail-on high --only-fixed --by-cve --scope all-layers -o sarif > grype.sarif",
+      "      - run: grype sbom:./sbom.syft.json -o json > grype.json",
+      "      - uses: goodwithtech/dockle-action@v0.4.15",
+      "        with:",
+      "          image: ghcr.io/acme/app:${{ github.sha }}",
+      "          exit-code: '1'",
+      "          exit-level: warn",
+      "          format: sarif",
+      "          ignore: CIS-DI-0001,DKL-DI-0006",
+      "      - run: docker save ghcr.io/acme/app:${{ github.sha }} -o image.tar && dockle --input image.tar -f json -o dockle.json --exit-code 1 --exit-level fatal -i CIS-DI-0001 --accept-key GPG_KEY --sensitive-file .env",
+      "      - uses: github/codeql-action/upload-sarif@v4",
+      "        with:",
+      "          sarif_file: trivy-results.sarif",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          name: container-scan-artifacts",
+      "          path: |",
+      "            trivy-results.sarif",
+      "            trivy.cdx.json",
+      "            grype.sarif",
+      "            grype.json",
+      "            dockle.json"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".trivyignore"), "CVE-2026-0001\n");
+    await fs.writeFile(path.join(sourceRoot, ".grype.yaml"), [
+      "fail-on-severity: high",
+      "ignore:",
+      "  - vulnerability: CVE-2026-0002",
+      "    vex-status: not_affected"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".dockleignore"), [
+      "CIS-DI-0001",
+      "DKL-DI-0006"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "docs", "container-scan.md"), [
+      "Container image scanning covers Trivy, Grype, and Dockle.",
+      "Operators may run trivy fs --scanners vuln,secret,misconfig ./ and trivy k8s --report summary cluster in authorized environments.",
+      "Reports include JSON, SARIF, CycloneDX, SPDX, table, --format template, and github code scanning output.",
+      "Policy includes .trivyignore, .grype.yaml ignore, .dockleignore, --ignore-policy, OpenVEX VEX, EPSS, KEV, offline DB, registry-token, DOCKER_HOST, podman-host, private registry, and platform linux/amd64.",
+      "Syft produces the SBOM before Grype reads sbom:./sbom.syft.json."
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "scan:container": "trivy image --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed --format sarif ghcr.io/acme/app:local && grype ghcr.io/acme/app:local --fail-on high --only-fixed && dockle --exit-code 1 --exit-level warn ghcr.io/acme/app:local"
+      },
+      devDependencies: {
+        trivy: "latest",
+        grype: "latest",
+        dockle: "latest",
+        syft: "latest"
+      }
+    }, null, 2));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "container-scan-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      containerScanSetups: Array<{ tool: string; imageCount: number; vulnerabilityCount: number; misconfigCount: number; secretCount: number; licenseCount: number; sbomCount: number; policyCount: number; outputCount: number; ciCount: number }>;
+      targetSignals: Array<{ signal: string; readiness: string }>;
+      scannerSignals: Array<{ signal: string; readiness: string }>;
+      gateSignals: Array<{ signal: string; readiness: string }>;
+      outputSignals: Array<{ signal: string; readiness: string }>;
+      policySignals: Array<{ signal: string; readiness: string }>;
+      registrySignals: Array<{ signal: string; readiness: string }>;
+      ciSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const ready = (items: Array<{ signal: string; readiness: string }>, signal: string) =>
+      items.some((item) => item.signal === signal && item.readiness === "ready");
+    expect(report.sourcePattern).toBe("Container scan readiness Trivy Grype Dockle image filesystem SBOM vulnerability misconfig secret license CIS exit-code severity ignore-unfixed only-fixed fail-on exit-level SARIF CycloneDX SPDX JSON VEX trivyignore grype ignore dockleignore registry token docker-host");
+    expect(report.containerScanSetups.some((item) => item.tool === "trivy")).toBe(true);
+    expect(report.containerScanSetups.some((item) => item.tool === "grype")).toBe(true);
+    expect(report.containerScanSetups.some((item) => item.tool === "dockle")).toBe(true);
+    expect(report.containerScanSetups.some((item) => item.tool === "package-script")).toBe(true);
+    expect(report.containerScanSetups.some((item) => item.imageCount > 0 && item.vulnerabilityCount > 0 && item.misconfigCount > 0 && item.secretCount > 0 && item.licenseCount > 0 && item.sbomCount > 0 && item.policyCount > 0 && item.outputCount > 0 && item.ciCount > 0)).toBe(true);
+    for (const signal of ["image", "filesystem", "sbom", "dockerfile", "kubernetes", "tar-input", "registry"]) {
+      expect(ready(report.targetSignals, signal)).toBe(true);
+    }
+    for (const signal of ["trivy", "grype", "dockle", "vulnerability", "misconfig", "secret", "license", "cis-benchmark"]) {
+      expect(ready(report.scannerSignals, signal)).toBe(true);
+    }
+    for (const signal of ["exit-code", "severity", "ignore-unfixed", "only-fixed", "fail-on", "exit-level", "ignore-policy"]) {
+      expect(ready(report.gateSignals, signal)).toBe(true);
+    }
+    for (const signal of ["json", "sarif", "cyclonedx", "spdx", "table", "template", "github", "artifact-upload"]) {
+      expect(ready(report.outputSignals, signal)).toBe(true);
+    }
+    for (const signal of ["trivyignore", "grype-ignore", "dockleignore", "vex", "ignore-policy", "accept-key", "sensitive-file", "offline-db"]) {
+      expect(ready(report.policySignals, signal)).toBe(true);
+    }
+    for (const signal of ["image-ref", "registry-token", "docker-host", "podman", "private-registry", "platform"]) {
+      expect(ready(report.registrySignals, signal)).toBe(true);
+    }
+    for (const signal of ["github-actions", "pull-request", "docker-build", "artifact-upload", "sarif-upload", "permissions"]) {
+      expect(ready(report.ciSignals, signal)).toBe(true);
+    }
+    for (const signal of ["trivy-action", "grype", "dockle-action", "docker", "syft"]) {
+      expect(ready(report.packageSignals, signal)).toBe(true);
+    }
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.riskQueue.some((item) => item.action === "Run Trivy, Grype, Dockle, Docker, registry, vulnerability DB, and SARIF upload commands only in an authorized local or CI environment.")).toBe(true);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual([
+      "rg \"trivy image|aquasecurity/trivy-action|image-ref|--scanners|--severity|--exit-code|--ignore-unfixed|--format sarif|--format cyclonedx|--format spdx\" .",
+      "rg \"grype |anchore/grype|sbom:|--fail-on|--only-fixed|--by-cve|--scope|\\.grype\\.ya?ml|GRYPE_\" .",
+      "rg \"dockle|goodwithtech/dockle-action|--exit-code|--exit-level|\\.dockleignore|DOCKLE_IGNORES|accept-key|sensitive-file|CIS-DI|DKL-DI\" .",
+      "rg \"docker build|docker save|image-ref|registry-token|docker-host|podman-host|platform|upload-sarif|upload-artifact|security-events: write\" .github ."
+    ]);
+    const containerScanMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "container-scan-readiness.md"), "utf8");
+    expect(containerScanMarkdown).toContain("# Container Scan Readiness");
+    expect(containerScanMarkdown).toContain("## Gate Signals");
+    expect(containerScanMarkdown).toContain("## Policy Signals");
+    const containerScanHtml = await fs.readFile(path.join(result.session.outputPaths.html, "container-scan-readiness.html"), "utf8");
+    expect(containerScanHtml).toContain("Container Scan Readiness");
+    expect(containerScanHtml).toContain("container-scan-readiness-card");
+    expect(containerScanHtml).toContain("data-source-pattern=\"Container Scan\"");
+    expect(containerScanHtml).toContain("does not build images");
   });
 
   it("detects Dev Container readiness patterns without running containers", async () => {

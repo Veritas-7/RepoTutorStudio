@@ -1,6 +1,6 @@
 # Compliance Audit 2
 
-Created: 2026-06-05T11:32:06.685Z
+Created: 2026-06-05T11:50:26.147Z
 
 Status: PASS
 
@@ -305,6 +305,12 @@ Status: PASS
 - forbidden hits: none
 
 ## PASS - container readiness report
+
+- missing files: none
+- missing strings: none
+- forbidden hits: none
+
+## PASS - container scan readiness report
 
 - missing files: none
 - missing strings: none

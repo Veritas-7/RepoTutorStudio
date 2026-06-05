@@ -2981,6 +2981,86 @@ export const ContainerReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const ContainerScanReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  containerScanSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["trivy", "grype", "dockle", "github-actions", "package-script", "readme", "unknown"]),
+    imageCount: z.number().int().nonnegative(),
+    vulnerabilityCount: z.number().int().nonnegative(),
+    misconfigCount: z.number().int().nonnegative(),
+    secretCount: z.number().int().nonnegative(),
+    licenseCount: z.number().int().nonnegative(),
+    sbomCount: z.number().int().nonnegative(),
+    policyCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  targetSignals: z.array(z.object({
+    signal: z.enum(["image", "filesystem", "sbom", "dockerfile", "kubernetes", "tar-input", "registry", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scannerSignals: z.array(z.object({
+    signal: z.enum(["trivy", "grype", "dockle", "vulnerability", "misconfig", "secret", "license", "cis-benchmark", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  gateSignals: z.array(z.object({
+    signal: z.enum(["exit-code", "severity", "ignore-unfixed", "only-fixed", "fail-on", "exit-level", "ignore-policy", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["json", "sarif", "cyclonedx", "spdx", "table", "template", "github", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  policySignals: z.array(z.object({
+    signal: z.enum(["trivyignore", "grype-ignore", "dockleignore", "vex", "ignore-policy", "accept-key", "sensitive-file", "offline-db", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  registrySignals: z.array(z.object({
+    signal: z.enum(["image-ref", "registry-token", "docker-host", "podman", "private-registry", "platform", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "pull-request", "docker-build", "artifact-upload", "sarif-upload", "permissions", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["trivy-action", "grype", "dockle-action", "docker", "syft", "unknown"]),
+    readiness: z.enum(["ready", "partial", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const CodeQualityReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -11209,6 +11289,7 @@ export type ReleaseReadinessReport = z.infer<typeof ReleaseReadinessReportSchema
 export type SecretReadinessReport = z.infer<typeof SecretReadinessReportSchema>;
 export type SecretManagementReadinessReport = z.infer<typeof SecretManagementReadinessReportSchema>;
 export type ContainerReadinessReport = z.infer<typeof ContainerReadinessReportSchema>;
+export type ContainerScanReadinessReport = z.infer<typeof ContainerScanReadinessReportSchema>;
 export type CodeQualityReport = z.infer<typeof CodeQualityReportSchema>;
 export type DocumentationReport = z.infer<typeof DocumentationReportSchema>;
 export type DatabaseReadinessReport = z.infer<typeof DatabaseReadinessReportSchema>;

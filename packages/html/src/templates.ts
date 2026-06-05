@@ -65,6 +65,7 @@ import type {
   SecretReadinessReport,
   SecretManagementReadinessReport,
   ContainerReadinessReport,
+  ContainerScanReadinessReport,
   CodeQualityReport,
   DocumentationReport,
   DatabaseReadinessReport,
@@ -246,6 +247,7 @@ export interface StudyHtmlInput {
   secretReadinessReport: SecretReadinessReport;
   secretManagementReadinessReport: SecretManagementReadinessReport;
   containerReadinessReport: ContainerReadinessReport;
+  containerScanReadinessReport: ContainerScanReadinessReport;
   codeQualityReport: CodeQualityReport;
   documentationReport: DocumentationReport;
   databaseReadinessReport: DatabaseReadinessReport;
@@ -446,6 +448,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["secret-readiness.html", "Secrets"],
     ["secret-management-readiness.html", "Secret Management"],
     ["container-readiness.html", "Containers"],
+    ["container-scan-readiness.html", "Container Scan"],
     ["code-quality.html", "Code Quality"],
     ["documentation.html", "Documentation"],
     ["database-readiness.html", "Database"],
@@ -654,6 +657,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
           <article><h3>Secret Readiness</h3><p>${escapeHtml(input.secretReadinessReport.summary)}</p><p>Gitleaks 패턴으로 scan targets, secret surfaces, config, reports, prevention signals를 정리합니다.</p><a href="secret-readiness.html">Secrets 열기</a></article>
           <article><h3>Secret Management Readiness</h3><p>${escapeHtml(input.secretManagementReadinessReport.summary)}</p><p>Vault/Infisical/Doppler/SOPS 패턴으로 runtime secret platform, auth, storage, delivery, governance 준비도를 정리합니다.</p><a href="secret-management-readiness.html">Secret Management 열기</a></article>
           <article><h3>Container Readiness</h3><p>${escapeHtml(input.containerReadinessReport.summary)}</p><p>Hadolint 패턴으로 Dockerfile, Compose, config, instruction risk, labels, CI signals를 정리합니다.</p><a href="container-readiness.html">Containers 열기</a></article>
+          <article><h3>Container Scan Readiness</h3><p>${escapeHtml(input.containerScanReadinessReport.summary)}</p><p>Trivy/Grype/Dockle 패턴으로 image, SBOM, vulnerability, misconfig, secret, license, CIS scan gate 준비도를 정리합니다.</p><a href="container-scan-readiness.html">Container Scan 열기</a></article>
           <article><h3>Code Quality</h3><p>${escapeHtml(input.codeQualityReport.summary)}</p><p>Biome 패턴으로 formatter, linter, assist, config, CI/editor signals를 정리합니다.</p><a href="code-quality.html">Code Quality 열기</a></article>
           <article><h3>Documentation</h3><p>${escapeHtml(input.documentationReport.summary)}</p><p>Docusaurus 패턴으로 docs, blog, pages, navigation, i18n, search, build/deploy 준비도를 정리합니다.</p><a href="documentation.html">Documentation 열기</a></article>
           <article><h3>Database Readiness</h3><p>${escapeHtml(input.databaseReadinessReport.summary)}</p><p>Prisma 패턴으로 schema, datasource, migrations, generated client, seed, env 준비도를 정리합니다.</p><a href="database-readiness.html">Database 열기</a></article>
@@ -1018,6 +1022,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       name: "container-readiness.html",
       title: "Container Readiness",
       html: pageShell("Container Readiness", "container-readiness.html", `<section class="panel" data-source-pattern="Hadolint"><h2>Container Snapshot</h2><p>${escapeHtml(input.containerReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.containerReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>dockerfiles</dt><dd>${input.containerReadinessReport.dockerfiles.length}</dd></div><div><dt>compose</dt><dd>${input.containerReadinessReport.composeFiles.length}</dd></div><div><dt>configs</dt><dd>${input.containerReadinessReport.configSignals.length}</dd></div><div><dt>integrations</dt><dd>${input.containerReadinessReport.integrationSignals.length}</dd></div></dl><p class="muted">RepoTutor records Hadolint readiness only. It does not build images, parse the Dockerfile AST, execute ShellCheck, or verify registries.</p></section><section class="grid"><article class="container-card"><h3>Dockerfiles</h3>${containerDockerfileList(input.containerReadinessReport.dockerfiles)}</article><article class="container-card"><h3>Compose Files</h3>${containerComposeList(input.containerReadinessReport.composeFiles)}</article><article class="container-card"><h3>Config Signals</h3>${containerConfigList(input.containerReadinessReport.configSignals)}</article><article class="container-card"><h3>Instruction Risks</h3>${containerSignalList(input.containerReadinessReport.instructionRisks, "rule")}</article></section><section class="grid"><article class="container-card"><h3>Label Policy</h3>${containerSignalList(input.containerReadinessReport.labelPolicy, "label")}</article><article class="container-card"><h3>Integration Signals</h3>${containerSignalList(input.containerReadinessReport.integrationSignals, "signal")}</article><article class="container-card"><h3>Recommended Commands</h3>${containerCommandList(input.containerReadinessReport.recommendedCommands)}</article><article class="container-card"><h3>Risk Queue</h3>${containerRiskList(input.containerReadinessReport.riskQueue)}</article><article class="container-card"><h3>다음 확인 단계</h3>${list(input.containerReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
+      name: "container-scan-readiness.html",
+      title: "Container Scan Readiness",
+      html: pageShell("Container Scan Readiness", "container-scan-readiness.html", `<section class="panel" data-source-pattern="Container Scan"><h2>Container Scan Snapshot</h2><p>${escapeHtml(input.containerScanReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.containerScanReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.containerScanReadinessReport.containerScanSetups.length}</dd></div><div><dt>targets</dt><dd>${input.containerScanReadinessReport.targetSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>scanners</dt><dd>${input.containerScanReadinessReport.scannerSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>gates</dt><dd>${input.containerScanReadinessReport.gateSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>outputs</dt><dd>${input.containerScanReadinessReport.outputSignals.filter((item) => item.readiness === "ready").length}</dd></div><div><dt>policies</dt><dd>${input.containerScanReadinessReport.policySignals.filter((item) => item.readiness === "ready").length}</dd></div></dl><p class="muted">RepoTutor records static container-scan readiness only. It does not build images, pull registries, download scanner databases, start Docker, or upload SARIF.</p></section><section class="grid"><article class="container-scan-readiness-card"><h3>Container Scan Setups</h3>${containerScanSetupList(input.containerScanReadinessReport.containerScanSetups)}</article><article class="container-scan-readiness-card"><h3>Target Signals</h3>${containerScanSignalList(input.containerScanReadinessReport.targetSignals, "signal")}</article><article class="container-scan-readiness-card"><h3>Scanner Signals</h3>${containerScanSignalList(input.containerScanReadinessReport.scannerSignals, "signal")}</article><article class="container-scan-readiness-card"><h3>Gate Signals</h3>${containerScanSignalList(input.containerScanReadinessReport.gateSignals, "signal")}</article></section><section class="grid"><article class="container-scan-readiness-card"><h3>Output Signals</h3>${containerScanSignalList(input.containerScanReadinessReport.outputSignals, "signal")}</article><article class="container-scan-readiness-card"><h3>Policy Signals</h3>${containerScanSignalList(input.containerScanReadinessReport.policySignals, "signal")}</article><article class="container-scan-readiness-card"><h3>Registry Signals</h3>${containerScanSignalList(input.containerScanReadinessReport.registrySignals, "signal")}</article><article class="container-scan-readiness-card"><h3>CI Signals</h3>${containerScanSignalList(input.containerScanReadinessReport.ciSignals, "signal")}</article><article class="container-scan-readiness-card"><h3>Package Signals</h3>${containerScanSignalList(input.containerScanReadinessReport.packageSignals, "signal")}</article><article class="container-scan-readiness-card"><h3>Recommended Commands</h3>${containerScanCommandList(input.containerScanReadinessReport.recommendedCommands)}</article><article class="container-scan-readiness-card"><h3>Risk Queue</h3>${containerScanRiskList(input.containerScanReadinessReport.riskQueue)}</article><article class="container-scan-readiness-card"><h3>다음 확인 단계</h3>${list(input.containerScanReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
       name: "code-quality.html",
@@ -1735,6 +1744,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Secret Readiness", path: "html/secret-readiness.html", description: "Gitleaks식 scan target, secret surface, config, report, prevention 준비도를 확인합니다." },
       { label: "Secret Management Readiness", path: "html/secret-management-readiness.html", description: "Vault/Infisical/Doppler/SOPS식 platform, auth, storage, delivery, governance 준비도를 확인합니다." },
       { label: "Container Readiness", path: "html/container-readiness.html", description: "Hadolint식 Dockerfile, Compose, config, instruction, label, CI 준비도를 확인합니다." },
+      { label: "Container Scan Readiness", path: "html/container-scan-readiness.html", description: "Trivy/Grype/Dockle식 image, SBOM, vulnerability, misconfig, secret, license, CIS scan gate 준비도를 확인합니다." },
       { label: "Code Quality", path: "html/code-quality.html", description: "Biome식 formatter, linter, assist, config, CI/editor 준비도를 확인합니다." },
       { label: "Documentation Readiness", path: "html/documentation.html", description: "Docusaurus식 docs, blog, pages, navigation, i18n, search, build/deploy 준비도를 확인합니다." },
       { label: "Database Readiness", path: "html/database-readiness.html", description: "Prisma식 schema, datasource, migration, generated client, seed/env 준비도를 확인합니다." },
@@ -2327,6 +2337,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "container-readiness.html",
       goal: "Hadolint식 Dockerfile, Compose, config, instruction risk, label, CI/report 준비도를 확인합니다.",
       evidence: `Dockerfile ${input.containerReadinessReport.dockerfiles.length}개, config signals ${input.containerReadinessReport.configSignals.length}개`
+    },
+    {
+      title: "Container scan 준비도 확인",
+      href: "container-scan-readiness.html",
+      goal: "Trivy/Grype/Dockle식 image, SBOM, vulnerability, misconfig, secret, license, CIS gate와 output/policy 준비도를 확인합니다.",
+      evidence: `container scan setups ${input.containerScanReadinessReport.containerScanSetups.length}개, gate signals ${input.containerScanReadinessReport.gateSignals.length}개`
     },
     {
       title: "Code quality 준비도 확인",
@@ -4702,6 +4718,31 @@ function containerRiskList(items: ContainerReadinessReport["riskQueue"]): string
 }
 
 function containerHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function containerScanSetupList(items: ContainerScanReadinessReport["containerScanSetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">container scan setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.tool)} / ${escapeHtml(item.readiness)}]<br>image/vuln/misconfig/secret/license/SBOM/policy/output/CI ${item.imageCount}/${item.vulnerabilityCount}/${item.misconfigCount}/${item.secretCount}/${item.licenseCount}/${item.sbomCount}/${item.policyCount}/${item.outputCount}/${item.ciCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(containerScanHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function containerScanSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">container scan signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(containerScanHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function containerScanCommandList(items: ContainerScanReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function containerScanRiskList(items: ContainerScanReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(containerScanHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function containerScanHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }
