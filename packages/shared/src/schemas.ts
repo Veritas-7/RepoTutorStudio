@@ -1005,6 +1005,92 @@ export const SecurityReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SastReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  sastSetups: z.array(z.object({
+    filePath: z.string(),
+    tool: z.enum(["semgrep", "codeql", "sonarqube", "snyk-code", "package-script", "workflow", "readme", "unknown"]),
+    languageCount: z.number().int().nonnegative(),
+    ruleCount: z.number().int().nonnegative(),
+    queryCount: z.number().int().nonnegative(),
+    configCount: z.number().int().nonnegative(),
+    scopeCount: z.number().int().nonnegative(),
+    baselineCount: z.number().int().nonnegative(),
+    suppressionCount: z.number().int().nonnegative(),
+    outputCount: z.number().int().nonnegative(),
+    ciCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  toolSignals: z.array(z.object({
+    signal: z.enum(["semgrep", "codeql", "sonarqube", "snyk-code", "eslint-security", "bandit", "gosec", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ruleSignals: z.array(z.object({
+    signal: z.enum(["semgrep-rule", "pattern", "pattern-either", "pattern-regex", "metavariable", "severity", "message", "taint-mode", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  querySignals: z.array(z.object({
+    signal: z.enum(["codeql-query", "query-suite", "query-pack", "security-extended", "security-and-quality", "qlpack", "custom-query", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  languageSignals: z.array(z.object({
+    signal: z.enum(["javascript-typescript", "python", "go", "java-kotlin", "c-cpp", "csharp", "ruby", "swift", "multi-language", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  scopeSignals: z.array(z.object({
+    signal: z.enum(["paths", "paths-ignore", "exclusions", "generated-code", "test-scope", "monorepo", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  baselineSignals: z.array(z.object({
+    signal: z.enum(["baseline-ref", "diff-aware", "pr-scan", "fail-threshold", "severity-threshold", "quality-gate", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  outputSignals: z.array(z.object({
+    signal: z.enum(["sarif", "json", "junit", "html", "code-scanning", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  ciSignals: z.array(z.object({
+    signal: z.enum(["github-actions", "semgrep-ci", "codeql-init", "codeql-analyze", "sonar-scan-action", "snyk-code", "upload-sarif", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["semgrep", "codeql-action", "codeql-cli", "sonar-scanner", "sonarqube-scan-action", "snyk", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const ScorecardReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -10741,6 +10827,7 @@ export type LargeAssetReadinessReport = z.infer<typeof LargeAssetReadinessReport
 export type LicenseRightsReport = z.infer<typeof LicenseRightsReportSchema>;
 export type SbomReport = z.infer<typeof SbomReportSchema>;
 export type SecurityReadinessReport = z.infer<typeof SecurityReadinessReportSchema>;
+export type SastReadinessReport = z.infer<typeof SastReadinessReportSchema>;
 export type ScorecardReport = z.infer<typeof ScorecardReportSchema>;
 export type ProvenanceReport = z.infer<typeof ProvenanceReportSchema>;
 export type AdvisoryReport = z.infer<typeof AdvisoryReportSchema>;
