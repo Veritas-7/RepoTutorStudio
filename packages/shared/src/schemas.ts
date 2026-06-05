@@ -6611,6 +6611,80 @@ export const EventStreamReadinessReportSchema = z.object({
   learnerNextSteps: z.array(z.string())
 });
 
+export const SchemaRegistryReadinessReportSchema = z.object({
+  summary: z.string(),
+  sourcePattern: z.string(),
+  registrySetups: z.array(z.object({
+    filePath: z.string(),
+    provider: z.enum(["confluent", "apicurio", "buf", "kafka", "custom", "unknown"]),
+    subjectCount: z.number().int().nonnegative(),
+    artifactCount: z.number().int().nonnegative(),
+    versionCount: z.number().int().nonnegative(),
+    compatibilityCount: z.number().int().nonnegative(),
+    formatCount: z.number().int().nonnegative(),
+    referenceCount: z.number().int().nonnegative(),
+    configCount: z.number().int().nonnegative(),
+    governanceCount: z.number().int().nonnegative(),
+    workflowCount: z.number().int().nonnegative(),
+    readiness: z.enum(["ready", "partial", "missing"]),
+    evidence: z.string(),
+    sourceHref: z.string()
+  })),
+  registrySignals: z.array(z.object({
+    signal: z.enum(["confluent-schema-registry", "apicurio-registry", "buf-schema-registry", "schema-registry-url", "ccompat-api", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  schemaFormatSignals: z.array(z.object({
+    signal: z.enum(["avro", "protobuf", "json-schema", "openapi", "asyncapi", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  identitySignals: z.array(z.object({
+    signal: z.enum(["subject", "artifact-id", "group-id", "version", "schema-id", "content-id", "global-id", "references", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  compatibilitySignals: z.array(z.object({
+    signal: z.enum(["backward", "forward", "full", "transitive", "none", "compatibility-check", "breaking-check", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  governanceSignals: z.array(z.object({
+    signal: z.enum(["compatibility-rule", "validity-rule", "mode", "lint", "breaking-policy", "managed-mode", "dependency-lock", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  workflowSignals: z.array(z.object({
+    signal: z.enum(["schema-register-command", "compatibility-command", "buf-lint", "buf-breaking", "buf-generate", "buf-push", "github-actions", "artifact-upload", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  packageSignals: z.array(z.object({
+    signal: z.enum(["schema-registry-client", "kafka-avro-serializer", "kafka-protobuf-serializer", "kafka-json-schema-serializer", "apicurio-client", "buf-cli", "protoc", "unknown"]),
+    readiness: z.enum(["ready", "missing", "external"]),
+    evidence: z.string(),
+    relatedHref: z.string()
+  })),
+  riskQueue: z.array(z.object({
+    priority: z.enum(["high", "medium", "low"]),
+    action: z.string(),
+    why: z.string(),
+    relatedHref: z.string()
+  })),
+  recommendedCommands: z.array(z.object({
+    command: z.string(),
+    purpose: z.string()
+  })),
+  learnerNextSteps: z.array(z.string())
+});
+
 export const StreamProcessingReadinessReportSchema = z.object({
   summary: z.string(),
   sourcePattern: z.string(),
@@ -12057,6 +12131,7 @@ export type PaymentReadinessReport = z.infer<typeof PaymentReadinessReportSchema
 export type EmailReadinessReport = z.infer<typeof EmailReadinessReportSchema>;
 export type QueueReadinessReport = z.infer<typeof QueueReadinessReportSchema>;
 export type EventStreamReadinessReport = z.infer<typeof EventStreamReadinessReportSchema>;
+export type SchemaRegistryReadinessReport = z.infer<typeof SchemaRegistryReadinessReportSchema>;
 export type StreamProcessingReadinessReport = z.infer<typeof StreamProcessingReadinessReportSchema>;
 export type PipelineOrchestrationReadinessReport = z.infer<typeof PipelineOrchestrationReadinessReportSchema>;
 export type ServiceMeshReadinessReport = z.infer<typeof ServiceMeshReadinessReportSchema>;

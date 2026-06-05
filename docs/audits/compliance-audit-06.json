@@ -1,6 +1,6 @@
 {
   "iteration": 6,
-  "createdAt": "2026-06-05T14:35:51.575Z",
+  "createdAt": "2026-06-05T14:54:50.137Z",
   "checks": [
     {
       "name": "project setup",
@@ -718,6 +718,13 @@
     },
     {
       "name": "event stream readiness report",
+      "ok": true,
+      "missingFiles": [],
+      "missingStrings": [],
+      "forbiddenHits": []
+    },
+    {
+      "name": "schema registry readiness report",
       "ok": true,
       "missingFiles": [],
       "missingStrings": [],

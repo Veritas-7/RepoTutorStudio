@@ -113,6 +113,7 @@ import type {
   EmailReadinessReport,
   QueueReadinessReport,
   EventStreamReadinessReport,
+  SchemaRegistryReadinessReport,
   StreamProcessingReadinessReport,
   PipelineOrchestrationReadinessReport,
   ServiceMeshReadinessReport,
@@ -308,6 +309,7 @@ export interface StudyHtmlInput {
   emailReadinessReport: EmailReadinessReport;
   queueReadinessReport: QueueReadinessReport;
   eventStreamReadinessReport: EventStreamReadinessReport;
+  schemaRegistryReadinessReport: SchemaRegistryReadinessReport;
   streamProcessingReadinessReport: StreamProcessingReadinessReport;
   pipelineOrchestrationReadinessReport: PipelineOrchestrationReadinessReport;
   serviceMeshReadinessReport: ServiceMeshReadinessReport;
@@ -516,6 +518,7 @@ function pageShell(title: string, active: string, body: string, input: StudyHtml
     ["authorization-readiness.html", "Authorization"],
     ["payment-readiness.html", "Payments"],
     ["email-readiness.html", "Email"],
+    ["schema-registry-readiness.html", "Schema Registry"],
     ["analytics-readiness.html", "Analytics"],
     ["http-client-readiness.html", "HTTP Client"],
     ["schema-validation-readiness.html", "Validation"],
@@ -1320,6 +1323,11 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       html: pageShell("Event Stream Readiness", "event-stream-readiness.html", `<section class="panel" data-source-pattern="EventStream"><h2>Event Stream Snapshot</h2><p>${escapeHtml(input.eventStreamReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.eventStreamReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.eventStreamReadinessReport.eventStreamSetups.length}</dd></div><div><dt>platforms</dt><dd>${input.eventStreamReadinessReport.platformSignals.length}</dd></div><div><dt>topics</dt><dd>${input.eventStreamReadinessReport.topicSignals.length}</dd></div><div><dt>reliability</dt><dd>${input.eventStreamReadinessReport.reliabilitySignals.length}</dd></div></dl><p class="muted">RepoTutor records event stream readiness only. It does not run Kafka, Redpanda, Pulsar, brokers, clients, schema registries, topic creation, producer/consumer jobs, security handshakes, or CI commands.</p></section><section class="grid"><article class="event-stream-readiness-card"><h3>Event Stream Setups</h3>${eventStreamReadinessSetupList(input.eventStreamReadinessReport.eventStreamSetups)}</article><article class="event-stream-readiness-card"><h3>Platform Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.platformSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Broker Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.brokerSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Topic Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.topicSignals, "signal")}</article></section><section class="grid"><article class="event-stream-readiness-card"><h3>Producer Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.producerSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Consumer Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.consumerSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Schema Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.schemaSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Reliability Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.reliabilitySignals, "signal")}</article></section><section class="grid"><article class="event-stream-readiness-card"><h3>Security Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.securitySignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Ops Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.opsSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>CI Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.ciSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Package Signals</h3>${eventStreamReadinessSignalList(input.eventStreamReadinessReport.packageSignals, "signal")}</article><article class="event-stream-readiness-card"><h3>Recommended Commands</h3>${eventStreamReadinessCommandList(input.eventStreamReadinessReport.recommendedCommands)}</article><article class="event-stream-readiness-card"><h3>Risk Queue</h3>${eventStreamReadinessRiskList(input.eventStreamReadinessReport.riskQueue)}</article><article class="event-stream-readiness-card"><h3>다음 확인 단계</h3>${list(input.eventStreamReadinessReport.learnerNextSteps)}</article></section>`, input)
     },
     {
+      name: "schema-registry-readiness.html",
+      title: "Schema Registry Readiness",
+      html: pageShell("Schema Registry Readiness", "schema-registry-readiness.html", `<section class="panel" data-source-pattern="Schema Registry"><h2>Schema Registry Snapshot</h2><p>${escapeHtml(input.schemaRegistryReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.schemaRegistryReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.schemaRegistryReadinessReport.registrySetups.length}</dd></div><div><dt>registries</dt><dd>${input.schemaRegistryReadinessReport.registrySignals.length}</dd></div><div><dt>formats</dt><dd>${input.schemaRegistryReadinessReport.schemaFormatSignals.length}</dd></div><div><dt>compatibility</dt><dd>${input.schemaRegistryReadinessReport.compatibilitySignals.length}</dd></div><div><dt>governance</dt><dd>${input.schemaRegistryReadinessReport.governanceSignals.length}</dd></div><div><dt>workflow</dt><dd>${input.schemaRegistryReadinessReport.workflowSignals.length}</dd></div></dl><p class="muted">RepoTutor records schema registry readiness only; it does not start registries, register schemas, change compatibility config, run Buf, publish modules, or call registry APIs.</p></section><section class="grid"><article class="schema-registry-readiness-card"><h3>Registry Setups</h3>${schemaRegistryReadinessSetupList(input.schemaRegistryReadinessReport.registrySetups)}</article><article class="schema-registry-readiness-card"><h3>Registry Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.registrySignals, "signal")}</article><article class="schema-registry-readiness-card"><h3>Schema Format Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.schemaFormatSignals, "signal")}</article><article class="schema-registry-readiness-card"><h3>Identity Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.identitySignals, "signal")}</article></section><section class="grid"><article class="schema-registry-readiness-card"><h3>Compatibility Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.compatibilitySignals, "signal")}</article><article class="schema-registry-readiness-card"><h3>Governance Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.governanceSignals, "signal")}</article><article class="schema-registry-readiness-card"><h3>Workflow Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.workflowSignals, "signal")}</article><article class="schema-registry-readiness-card"><h3>Package Signals</h3>${schemaRegistryReadinessSignalList(input.schemaRegistryReadinessReport.packageSignals, "signal")}</article><article class="schema-registry-readiness-card"><h3>Recommended Commands</h3>${schemaRegistryReadinessCommandList(input.schemaRegistryReadinessReport.recommendedCommands)}</article><article class="schema-registry-readiness-card"><h3>Risk Queue</h3>${schemaRegistryReadinessRiskList(input.schemaRegistryReadinessReport.riskQueue)}</article><article class="schema-registry-readiness-card"><h3>다음 확인 단계</h3>${list(input.schemaRegistryReadinessReport.learnerNextSteps)}</article></section>`, input)
+    },
+    {
       name: "stream-processing-readiness.html",
       title: "Stream Processing Readiness",
       html: pageShell("Stream Processing Readiness", "stream-processing-readiness.html", `<section class="panel" data-source-pattern="StreamProcessing"><h2>Stream Processing Snapshot</h2><p>${escapeHtml(input.streamProcessingReadinessReport.summary)}</p><p class="muted">${escapeHtml(input.streamProcessingReadinessReport.sourcePattern)}</p><dl class="meta"><div><dt>setups</dt><dd>${input.streamProcessingReadinessReport.streamProcessingSetups.length}</dd></div><div><dt>engines</dt><dd>${input.streamProcessingReadinessReport.engineSignals.length}</dd></div><div><dt>checkpoints</dt><dd>${input.streamProcessingReadinessReport.checkpointSignals.length}</dd></div><div><dt>sinks</dt><dd>${input.streamProcessingReadinessReport.sinkSignals.length}</dd></div></dl><p class="muted">RepoTutor records stream processing readiness only. It does not run Flink, Beam, Spark, runners, clusters, streaming jobs, checkpoint recovery, sinks, deployments, monitoring, or CI commands.</p></section><section class="grid"><article class="stream-processing-readiness-card"><h3>Stream Processing Setups</h3>${streamProcessingReadinessSetupList(input.streamProcessingReadinessReport.streamProcessingSetups)}</article><article class="stream-processing-readiness-card"><h3>Engine Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.engineSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Job Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.jobSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Source Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.sourceSignals, "signal")}</article></section><section class="grid"><article class="stream-processing-readiness-card"><h3>Transform Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.transformSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Window Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.windowSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Watermark Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.watermarkSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>State Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.stateSignals, "signal")}</article></section><section class="grid"><article class="stream-processing-readiness-card"><h3>Checkpoint Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.checkpointSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Sink Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.sinkSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Deployment Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.deploymentSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Monitoring Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.monitoringSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>CI Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.ciSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Package Signals</h3>${streamProcessingReadinessSignalList(input.streamProcessingReadinessReport.packageSignals, "signal")}</article><article class="stream-processing-readiness-card"><h3>Recommended Commands</h3>${streamProcessingReadinessCommandList(input.streamProcessingReadinessReport.recommendedCommands)}</article><article class="stream-processing-readiness-card"><h3>Risk Queue</h3>${streamProcessingReadinessRiskList(input.streamProcessingReadinessReport.riskQueue)}</article><article class="stream-processing-readiness-card"><h3>다음 확인 단계</h3>${list(input.streamProcessingReadinessReport.learnerNextSteps)}</article></section>`, input)
@@ -1877,6 +1885,7 @@ export function renderStudyHtml(input: StudyHtmlInput): RenderedStudy {
       { label: "Email Readiness", path: "html/email-readiness.html", description: "Resend식 provider client, send payload, templates, domains, webhooks, env secret 준비도를 확인합니다." },
       { label: "Queue Readiness", path: "html/queue-readiness.html", description: "BullMQ식 Queue, Worker, QueueEvents, FlowProducer, Redis connection, retry 준비도를 확인합니다." },
       { label: "Event Stream Readiness", path: "html/event-stream-readiness.html", description: "Kafka/Redpanda/Pulsar식 broker, topic, producer/consumer, schema registry, DLQ, security, CI 준비도를 확인합니다." },
+      { label: "Schema Registry Readiness", path: "html/schema-registry-readiness.html", description: "Confluent/Apicurio/Buf식 subject, artifact, version, compatibility, breaking-change 준비도를 확인합니다." },
       { label: "Stream Processing Readiness", path: "html/stream-processing-readiness.html", description: "Flink/Beam/Spark식 stream job, window, watermark, state, checkpoint, sink, deployment 준비도를 확인합니다." },
       { label: "Pipeline Orchestration Readiness", path: "html/pipeline-orchestration-readiness.html", description: "Apache Airflow/Dagster/Prefect식 DAG, task, schedule, sensor, asset, partition, executor, deployment 준비도를 확인합니다." },
       { label: "Service Mesh Readiness", path: "html/service-mesh-readiness.html", description: "Istio/Linkerd/Consul식 control plane, proxy injection, traffic policy, mTLS, gateway, telemetry 준비도를 확인합니다." },
@@ -2661,6 +2670,12 @@ function learningPathFor(input: StudyHtmlInput): Array<{ title: string; href: st
       href: "event-stream-readiness.html",
       goal: "Kafka/Redpanda/Pulsar식 broker, topic, producer/consumer, schema registry, DLQ, security, CI 흐름을 보고 streaming platform 관문을 확인합니다.",
       evidence: `event stream setups ${input.eventStreamReadinessReport.eventStreamSetups.length}개, platform signals ${input.eventStreamReadinessReport.platformSignals.length}개`
+    },
+    {
+      title: "Schema registry readiness 확인",
+      href: "schema-registry-readiness.html",
+      goal: "Confluent/Apicurio/Buf식 subject, artifact, version, compatibility, lint/breaking 흐름을 보고 schema evolution 관문을 확인합니다.",
+      evidence: `schema registry setups ${input.schemaRegistryReadinessReport.registrySetups.length}개, compatibility signals ${input.schemaRegistryReadinessReport.compatibilitySignals.length}개`
     },
     {
       title: "Stream processing readiness 확인",
@@ -5915,6 +5930,31 @@ function eventStreamReadinessRiskList(items: EventStreamReadinessReport["riskQue
 }
 
 function eventStreamReadinessHref(href: string): string {
+  if (href.startsWith("source/")) return `../${href}`;
+  return htmlPageHref(href);
+}
+
+function schemaRegistryReadinessSetupList(items: SchemaRegistryReadinessReport["registrySetups"]): string {
+  if (items.length === 0) return "<p class=\"muted\">schema registry setup이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.filePath)}</strong> [${escapeHtml(item.provider)}/${escapeHtml(item.readiness)}]<br>subject/artifact/version/compatibility/format/reference/config/governance/workflow ${item.subjectCount}/${item.artifactCount}/${item.versionCount}/${item.compatibilityCount}/${item.formatCount}/${item.referenceCount}/${item.configCount}/${item.governanceCount}/${item.workflowCount}<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(schemaRegistryReadinessHref(item.sourceHref))}">원본 열기</a></li>`).join("")}</ul>`;
+}
+
+function schemaRegistryReadinessSignalList<T extends string>(items: Array<Record<T, string> & { readiness: string; evidence: string; relatedHref: string }>, labelKey: T): string {
+  if (items.length === 0) return "<p class=\"muted\">schema registry signal이 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item[labelKey])}</strong> [${escapeHtml(item.readiness)}]<br>${escapeHtml(item.evidence)}<br><a href="${escapeHtml(schemaRegistryReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function schemaRegistryReadinessCommandList(items: SchemaRegistryReadinessReport["recommendedCommands"]): string {
+  if (items.length === 0) return "<p class=\"muted\">recommended command가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><code>${escapeHtml(item.command)}</code><br>${escapeHtml(item.purpose)}</li>`).join("")}</ul>`;
+}
+
+function schemaRegistryReadinessRiskList(items: SchemaRegistryReadinessReport["riskQueue"]): string {
+  if (items.length === 0) return "<p class=\"muted\">risk queue가 없습니다.</p>";
+  return `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.priority)}</strong>: ${escapeHtml(item.action)}<br><span class="muted">${escapeHtml(item.why)}</span><br><a href="${escapeHtml(schemaRegistryReadinessHref(item.relatedHref))}">관련 페이지 열기</a></li>`).join("")}</ul>`;
+}
+
+function schemaRegistryReadinessHref(href: string): string {
   if (href.startsWith("source/")) return `../${href}`;
   return htmlPageHref(href);
 }

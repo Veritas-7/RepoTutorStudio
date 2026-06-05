@@ -111,6 +111,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "email-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "queue-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "event-stream-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "schema-registry-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "stream-processing-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "pipeline-orchestration-readiness-report.json"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.analysis, "service-mesh-readiness-report.json"))).resolves.toBeUndefined();
@@ -288,6 +289,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "email-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "queue-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "event-stream-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "schema-registry-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "stream-processing-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "pipeline-orchestration-readiness.md"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.markdown, "service-mesh-readiness.md"))).resolves.toBeUndefined();
@@ -468,6 +470,7 @@ describe("RepoTutor core pipeline", () => {
     await expect(fs.access(path.join(result.session.outputPaths.html, "email-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "queue-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "event-stream-readiness.html"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "schema-registry-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "stream-processing-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "pipeline-orchestration-readiness.html"))).resolves.toBeUndefined();
     await expect(fs.access(path.join(result.session.outputPaths.html, "service-mesh-readiness.html"))).resolves.toBeUndefined();
@@ -672,6 +675,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathTourText).toContain("\"file\": \"html/email-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/queue-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/event-stream-readiness.html\"");
+    expect(learningPathTourText).toContain("\"file\": \"html/schema-registry-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/stream-processing-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/pipeline-orchestration-readiness.html\"");
     expect(learningPathTourText).toContain("\"file\": \"html/service-mesh-readiness.html\"");
@@ -2451,6 +2455,27 @@ describe("RepoTutor core pipeline", () => {
     expect(eventStreamReadinessMarkdown).toContain("Source pattern: Event stream readiness");
     expect(eventStreamReadinessMarkdown).toContain("## Schema Signals");
     expect(eventStreamReadinessMarkdown).toContain("## Ops Signals");
+    const schemaRegistryReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "schema-registry-readiness-report.json"), "utf8");
+    expect(schemaRegistryReadinessText).toContain("Schema registry readiness Confluent Apicurio Buf subject artifact version compatibility Avro Protobuf JSON Schema lint breaking generate push");
+    expect(schemaRegistryReadinessText).toContain("\"registrySetups\"");
+    expect(schemaRegistryReadinessText).toContain("\"registrySignals\"");
+    expect(schemaRegistryReadinessText).toContain("\"schemaFormatSignals\"");
+    expect(schemaRegistryReadinessText).toContain("\"identitySignals\"");
+    expect(schemaRegistryReadinessText).toContain("\"compatibilitySignals\"");
+    expect(schemaRegistryReadinessText).toContain("\"governanceSignals\"");
+    expect(schemaRegistryReadinessText).toContain("\"workflowSignals\"");
+    expect(schemaRegistryReadinessText).toContain("\"packageSignals\"");
+    const schemaRegistryReadinessHtml = await fs.readFile(path.join(result.session.outputPaths.html, "schema-registry-readiness.html"), "utf8");
+    expect(schemaRegistryReadinessHtml).toContain("Schema Registry Readiness");
+    expect(schemaRegistryReadinessHtml).toContain("schema-registry-readiness-card");
+    expect(schemaRegistryReadinessHtml).toContain("data-source-pattern=\"Schema Registry\"");
+    expect(schemaRegistryReadinessHtml).toContain("Compatibility Signals");
+    expect(schemaRegistryReadinessHtml).toContain("Governance Signals");
+    const schemaRegistryReadinessMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "schema-registry-readiness.md"), "utf8");
+    expect(schemaRegistryReadinessMarkdown).toContain("# Schema Registry Readiness");
+    expect(schemaRegistryReadinessMarkdown).toContain("Source pattern: Schema registry readiness");
+    expect(schemaRegistryReadinessMarkdown).toContain("## Compatibility Signals");
+    expect(schemaRegistryReadinessMarkdown).toContain("## Governance Signals");
     const streamProcessingReadinessText = await fs.readFile(path.join(result.session.outputPaths.analysis, "stream-processing-readiness-report.json"), "utf8");
     expect(streamProcessingReadinessText).toContain("Stream processing readiness Apache Flink Apache Beam Spark Structured Streaming StreamExecutionEnvironment DataStream Pipeline PCollection readStream writeStream checkpointing savepoint state backend WatermarkStrategy window trigger exactly-once sink runner deployment metrics CI");
     expect(streamProcessingReadinessText).toContain("\"streamProcessingSetups\"");
@@ -3931,6 +3956,7 @@ describe("RepoTutor core pipeline", () => {
     expect(exportManifestText).toContain("html/email-readiness.html");
     expect(exportManifestText).toContain("html/queue-readiness.html");
     expect(exportManifestText).toContain("html/event-stream-readiness.html");
+    expect(exportManifestText).toContain("html/schema-registry-readiness.html");
     expect(exportManifestText).toContain("html/stream-processing-readiness.html");
     expect(exportManifestText).toContain("html/pipeline-orchestration-readiness.html");
     expect(exportManifestText).toContain("html/service-mesh-readiness.html");
@@ -4130,6 +4156,7 @@ describe("RepoTutor core pipeline", () => {
     expect(learningPathHtml).toContain("email-readiness.html");
     expect(learningPathHtml).toContain("queue-readiness.html");
     expect(learningPathHtml).toContain("event-stream-readiness.html");
+    expect(learningPathHtml).toContain("schema-registry-readiness.html");
     expect(learningPathHtml).toContain("stream-processing-readiness.html");
     expect(learningPathHtml).toContain("pipeline-orchestration-readiness.html");
     expect(learningPathHtml).toContain("service-mesh-readiness.html");
@@ -10406,6 +10433,192 @@ describe("RepoTutor core pipeline", () => {
     const eventStreamHtml = await fs.readFile(path.join(result.session.outputPaths.html, "event-stream-readiness.html"), "utf8");
     expect(eventStreamHtml).toContain("event-stream-readiness-card");
     expect(eventStreamHtml).toContain("data-source-pattern=\"EventStream\"");
+  });
+
+  it("detects schema registry readiness without starting registries or publishing modules", async () => {
+    const studiesRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-schema-registry-studies-"));
+    const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "repotutor-schema-registry-source-"));
+    await fs.mkdir(path.join(sourceRoot, "config"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "src"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "apicurio"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, "proto", "orders", "v1"), { recursive: true });
+    await fs.mkdir(path.join(sourceRoot, ".github", "workflows"), { recursive: true });
+    await fs.writeFile(path.join(sourceRoot, "package.json"), JSON.stringify({
+      scripts: {
+        "schema:lint": "buf lint",
+        "schema:breaking": "buf breaking --against '.git#branch=main'",
+        "schema:generate": "buf generate",
+        "schema:push": "buf push"
+      },
+      dependencies: {
+        "@bufbuild/buf": "1.50.0",
+        "@kafkajs/confluent-schema-registry": "3.8.0",
+        "schema-registry-client": "1.0.0"
+      },
+      devDependencies: {
+        "protoc-gen-go": "1.34.0"
+      }
+    }, null, 2));
+    await fs.writeFile(path.join(sourceRoot, "build.gradle"), [
+      "dependencies {",
+      "  implementation(\"io.confluent:kafka-schema-registry-client:7.8.0\")",
+      "  implementation(\"io.confluent:kafka-avro-serializer:7.8.0\")",
+      "  implementation(\"io.confluent:kafka-protobuf-serializer:7.8.0\")",
+      "  implementation(\"io.confluent:kafka-json-schema-serializer:7.8.0\")",
+      "  implementation(\"io.apicurio:apicurio-registry-client:3.0.0\")",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "config", "schema-registry.properties"), [
+      "listeners=http://0.0.0.0:8081",
+      "kafkastore.bootstrap.servers=PLAINTEXT://localhost:9092",
+      "kafkastore.topic=_schemas",
+      "schema.registry.url=http://localhost:8081"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "src", "OrdersSchemas.java"), [
+      "import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;",
+      "import io.confluent.kafka.schemaregistry.client.rest.entities.SchemaReference;",
+      "import io.confluent.kafka.schemaregistry.client.rest.entities.requests.RegisterSchemaResponse;",
+      "import io.confluent.kafka.serializers.KafkaAvroSerializer;",
+      "import io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer;",
+      "import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer;",
+      "class OrdersSchemas {",
+      "  String registry = \"Confluent Schema Registry schema.registry.url SCHEMA_REGISTRY_URL /subjects/orders-value/versions /subjects/orders-key/versions /compatibility/subjects/orders-value/versions/latest schemas/ids/100\";",
+      "  String identity = \"subject subjects subjectName TopicNameStrategy RecordNameStrategy SubjectNameStrategy schema ID schemaId RegisterSchemaResponse references SchemaReference\";",
+      "  String formats = \"Avro Schema.AVRO .avsc Protobuf PROTOBUF proto3 .proto JSON Schema JSONSchema OpenAPI AsyncAPI\";",
+      "  String compatibility = \"BACKWARD FORWARD FULL_TRANSITIVE TRANSITIVE NONE compatibility check testCompatibility schema-compatibility-check\";",
+      "  Object avro = KafkaAvroSerializer.class;",
+      "  Object protobuf = KafkaProtobufSerializer.class;",
+      "  Object json = KafkaJsonSchemaSerializer.class;",
+      "  RegisterSchemaResponse response;",
+      "  SchemaReference reference;",
+      "  void register(SchemaRegistryClient client) throws Exception { client.registerWithResponse(\"orders-value\", null, true); }",
+      "}"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "apicurio", "ccompat.md"), [
+      "# Apicurio Registry ccompat",
+      "Apicurio Registry exposes /apis/ccompat/v7 and /apis/ccompat/v8 for Confluent compatible clients.",
+      "Group and artifact identity use /groups/ecommerce/artifacts with groupId and artifactId.",
+      "Version IDs map to contentId and globalId, and rules include compatibility rule plus validity rule.",
+      "Mode endpoints allow READWRITE, READONLY, and IMPORT for registry governance.",
+      "artifactType JSON OPENAPI AsyncAPI contentId globalId artifactId groupId versionId"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "buf.yaml"), [
+      "version: v2",
+      "modules:",
+      "  - path: proto",
+      "    name: buf.build/acme/orders",
+      "deps:",
+      "  - buf.build/googleapis/googleapis",
+      "lint:",
+      "  use:",
+      "    - STANDARD",
+      "breaking:",
+      "  use:",
+      "    - FILE",
+      "    - PACKAGE",
+      "    - WIRE_JSON",
+      "    - WIRE"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "buf.gen.yaml"), [
+      "version: v2",
+      "managed:",
+      "  enabled: true",
+      "plugins:",
+      "  - remote: buf.build/protocolbuffers/go",
+      "    out: gen/go"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "buf.lock"), [
+      "version: v2",
+      "deps:",
+      "  - name: buf.build/googleapis/googleapis",
+      "    commit: abcdef123456"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, "proto", "orders", "v1", "orders.proto"), [
+      "syntax = \"proto3\";",
+      "package orders.v1;",
+      "import \"google/protobuf/timestamp.proto\";",
+      "message OrderPlaced { string order_id = 1; google.protobuf.Timestamp created_at = 2; }"
+    ].join("\n"));
+    await fs.writeFile(path.join(sourceRoot, ".github", "workflows", "schema-registry.yml"), [
+      "name: schema registry readiness",
+      "on: [push]",
+      "jobs:",
+      "  schema:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: buf lint",
+      "      - run: buf breaking --against '.git#branch=main'",
+      "      - run: buf generate",
+      "      - run: buf push",
+      "      - run: schema-compatibility-check --subject orders-value --schema schemas/order.avsc",
+      "      - run: curl -X POST http://localhost:8081/subjects/orders-value/versions",
+      "      - run: curl -X POST http://localhost:8081/compatibility/subjects/orders-value/versions/latest",
+      "      - uses: actions/upload-artifact@v4",
+      "        with:",
+      "          path: |",
+      "            schema-registry-report.json",
+      "            buf-breaking.json",
+      "            compatibility-report.json",
+      "            schema-readiness.json"
+    ].join("\n"));
+
+    const result = await runStudy({ source: sourceRoot, mode: "quick", level: "beginner", studiesRoot });
+    const report = JSON.parse(await fs.readFile(path.join(result.session.outputPaths.analysis, "schema-registry-readiness-report.json"), "utf8")) as {
+      sourcePattern: string;
+      registrySetups: Array<{ provider: string; subjectCount: number; artifactCount: number; versionCount: number; compatibilityCount: number; formatCount: number; referenceCount: number; configCount: number; governanceCount: number; workflowCount: number }>;
+      registrySignals: Array<{ signal: string; readiness: string }>;
+      schemaFormatSignals: Array<{ signal: string; readiness: string }>;
+      identitySignals: Array<{ signal: string; readiness: string }>;
+      compatibilitySignals: Array<{ signal: string; readiness: string }>;
+      governanceSignals: Array<{ signal: string; readiness: string }>;
+      workflowSignals: Array<{ signal: string; readiness: string }>;
+      packageSignals: Array<{ signal: string; readiness: string }>;
+      riskQueue: Array<{ priority: string; action: string }>;
+      recommendedCommands: Array<{ command: string; purpose: string }>;
+    };
+    const readySignals = <T extends { signal: string; readiness: string }>(items: T[]) => items.filter((item) => item.readiness === "ready").map((item) => item.signal);
+    const setupTotals = (provider: string) => report.registrySetups
+      .filter((item) => item.provider === provider)
+      .reduce((totals, item) => ({
+        subjectCount: totals.subjectCount + item.subjectCount,
+        artifactCount: totals.artifactCount + item.artifactCount,
+        versionCount: totals.versionCount + item.versionCount,
+        compatibilityCount: totals.compatibilityCount + item.compatibilityCount,
+        formatCount: totals.formatCount + item.formatCount,
+        referenceCount: totals.referenceCount + item.referenceCount,
+        configCount: totals.configCount + item.configCount,
+        governanceCount: totals.governanceCount + item.governanceCount,
+        workflowCount: totals.workflowCount + item.workflowCount
+      }), { subjectCount: 0, artifactCount: 0, versionCount: 0, compatibilityCount: 0, formatCount: 0, referenceCount: 0, configCount: 0, governanceCount: 0, workflowCount: 0 });
+
+    expect(report.sourcePattern).toBe("Schema registry readiness Confluent Apicurio Buf subject artifact version compatibility Avro Protobuf JSON Schema lint breaking generate push");
+    expect(setupTotals("confluent").subjectCount).toBeGreaterThan(0);
+    expect(setupTotals("apicurio").artifactCount).toBeGreaterThan(0);
+    expect(setupTotals("buf").governanceCount).toBeGreaterThan(0);
+    expect(report.registrySetups.some((item) => item.workflowCount > 0)).toBe(true);
+    expect(readySignals(report.registrySignals)).toEqual(expect.arrayContaining(["confluent-schema-registry", "apicurio-registry", "buf-schema-registry", "schema-registry-url", "ccompat-api"]));
+    expect(readySignals(report.schemaFormatSignals)).toEqual(expect.arrayContaining(["avro", "protobuf", "json-schema", "openapi", "asyncapi"]));
+    expect(readySignals(report.identitySignals)).toEqual(expect.arrayContaining(["subject", "artifact-id", "group-id", "version", "schema-id", "content-id", "global-id", "references"]));
+    expect(readySignals(report.compatibilitySignals)).toEqual(expect.arrayContaining(["backward", "forward", "full", "transitive", "none", "compatibility-check", "breaking-check"]));
+    expect(readySignals(report.governanceSignals)).toEqual(expect.arrayContaining(["compatibility-rule", "validity-rule", "mode", "lint", "breaking-policy", "managed-mode", "dependency-lock"]));
+    expect(readySignals(report.workflowSignals)).toEqual(expect.arrayContaining(["schema-register-command", "compatibility-command", "buf-lint", "buf-breaking", "buf-generate", "buf-push", "github-actions", "artifact-upload"]));
+    expect(readySignals(report.packageSignals)).toEqual(expect.arrayContaining(["schema-registry-client", "kafka-avro-serializer", "kafka-protobuf-serializer", "kafka-json-schema-serializer", "apicurio-client", "buf-cli", "protoc"]));
+    expect(report.riskQueue.filter((item) => item.priority !== "low")).toHaveLength(0);
+    expect(report.recommendedCommands.map((item) => item.command)).toEqual(expect.arrayContaining([
+      "rg \"schema.registry.url|Schema Registry|/subjects/.*/versions|/compatibility/subjects|schema-compatibility-check\" .",
+      "rg \"buf.yaml|buf.gen.yaml|buf.lock|buf lint|buf breaking|buf generate|buf push|breaking:\" .",
+      "rg \"KafkaAvroSerializer|KafkaProtobufSerializer|KafkaJsonSchemaSerializer|@bufbuild/buf|protoc|upload-artifact\" package.json pom.xml build.gradle .github ."
+    ]));
+    await expect(fs.access(path.join(result.session.outputPaths.analysis, "schema-registry-readiness-report.json"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.markdown, "schema-registry-readiness.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(result.session.outputPaths.html, "schema-registry-readiness.html"))).resolves.toBeUndefined();
+    const schemaRegistryMarkdown = await fs.readFile(path.join(result.session.outputPaths.markdown, "schema-registry-readiness.md"), "utf8");
+    expect(schemaRegistryMarkdown).toContain("Compatibility Signals");
+    expect(schemaRegistryMarkdown).toContain("Governance Signals");
+    const schemaRegistryHtml = await fs.readFile(path.join(result.session.outputPaths.html, "schema-registry-readiness.html"), "utf8");
+    expect(schemaRegistryHtml).toContain("schema-registry-readiness-card");
+    expect(schemaRegistryHtml).toContain("data-source-pattern=\"Schema Registry\"");
   });
 
   it("detects stream processing readiness without running Flink Beam or Spark jobs", async () => {
